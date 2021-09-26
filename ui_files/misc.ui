@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Misc</class>
+ <widget class="QWidget" name="Misc">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1042</width>
+    <height>625</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+*{
+    font: 16px &quot;Segoe UI&quot;;
+	background-color: rgb(255, 255, 255);
+}</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget_4" native="true">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QScrollArea" name="sa_Misc">
+           <property name="widgetResizable">
+            <bool>true</bool>
+           </property>
+           <widget class="QWidget" name="scrollAreaWidgetContents">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>974</width>
+              <height>557</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="0">
+              <widget class="QPushButton" name="pb_Waveguide_Calculations">
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(194, 108, 255);</string>
+               </property>
+               <property name="text">
+                <string>WAVEGUIDE
+CALCULATIONS</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QPushButton" name="pb_Mode_Nomenclature">
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(255, 167, 66);</string>
+               </property>
+               <property name="text">
+                <string>MODE
+NOMENCLATURE</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pushButton_4">
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(185, 239, 255);</string>
+               </property>
+               <property name="text">
+                <string>Useful Formulas</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QPushButton" name="pushButton_5">
+               <property name="minimumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>200</width>
+                 <height>200</height>
+                </size>
+               </property>
+               <property name="styleSheet">
+                <string notr="true">background-color: rgb(160, 255, 192);</string>
+               </property>
+               <property name="text">
+                <string>PushButton</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

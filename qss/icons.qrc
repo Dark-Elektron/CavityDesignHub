@@ -1,0 +1,39 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/PNG/back.png</file>
+    <file>icons/PNG/forward.png</file>
+    <file>icons/PNG/home.png</file>
+    <file>icons/PNG/options.png</file>
+    <file>icons/PNG/pan.png</file>
+    <file>icons/PNG/subplots.png</file>
+    <file>icons/PNG/zoom.png</file>
+    <file>icons/PNG/genmesh.png</file>
+    <file>icons/PNG/slans.png</file>
+    <file>icons/PNG/top_drawer.png</file>
+    <file>icons/PNG/pause.png</file>
+    <file>icons/PNG/resume.png</file>
+    <file>icons/PNG/run.png</file>
+    <file>icons/PNG/stop.png</file>
+    <file>icons/PNG/go-down-symbolic.symbolic.png</file>
+    <file>icons/PNG/go-next-symbolic.symbolic.png</file>
+    <file>icons/PNG/go-previous-symbolic.symbolic.png</file>
+    <file>icons/PNG/go-up-symbolic.symbolic.png</file>
+    <file>icons/PNG/object-select-symbolic.symbolic.png</file>
+    <file>icons/PNG/save.png</file>
+    <file>icons/PNG/dB.png</file>
+    <file>icons/PNG/lin.png</file>
+    <file>icons/PNG/log.png</file>
+    <file>icons/PNG/exe.png</file>
+    <file>icons/PNG/accelerator.png</file>
+    <file>icons/PNG/menu.png</file>
+    <file>icons/PNG/settings.png</file>
+  </qresource>
+  <qresource prefix="imgs">
+    <file>images/end_same_cell.png</file>
+    <file>images/end_cell.png</file>
+    <file>images/mid_cell.png</file>
+    <file>images/one_cell.png</file>
+    <file>images/EMHub.png</file>
+    <file>images/end_cell_tune_parameters.png</file>
+  </qresource>
+</RCC>
