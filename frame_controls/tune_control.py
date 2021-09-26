@@ -356,7 +356,6 @@ class TuneControl:
 
             print("row column ", row_count, col_count, proc_count)
 
-
             self.pg_list = []
             self.pygraph_list = []
             print("pglist before ", self.pg_list)
@@ -374,7 +373,6 @@ class TuneControl:
             print("pygraph after ", self.pygraph_list)
 
             for p in range(proc_count):
-                # try:
                 if True:
                     if p < proc_count-1:
                         proc_keys_list = keys[p * share:p * share + share]
@@ -563,7 +561,6 @@ class TuneControl:
         path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
         print(path)
         if os.path.exists(path):
-            # print_("Do you want to continue from the last key?\n If you select 'No' previous results will overwritten.")
             msg = QMessageBox()
             msg.setWindowTitle("Resume Simulation")
             msg.setText("The pseudo shape space file already exist. Would you love to update or overwrite its content?")
