@@ -261,8 +261,6 @@ class TuneControl:
                     self.existing_keys = list(self.pseudo_shape_space.keys())
                     # self.log(f'last saved key: {self.existing_keys}')
                     print("Existing keys", self.existing_keys)
-            elif resume == "Cancel":
-                return
 
         freq = float(self.tuneUI.le_Freq.text())
         # get variables from ui or from pseudo shape space
@@ -562,6 +560,7 @@ class TuneControl:
 
     def continue_check(self):
         path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
+        print(path)
         if os.path.exists(path):
             # print_("Do you want to continue from the last key?\n If you select 'No' previous results will overwritten.")
             msg = QMessageBox()
