@@ -108,8 +108,8 @@ class Tune:
 
     def write_geometry_parameters_end_tune(self, par_in, par_out):
         # print(par_in)
-        A, B, a, b, Ri, L, Req_i = par_in
-        Ae, Be, ae, be, Rie, Le, Req_e = par_out
+        A, B, a, b, Ri, L, Req_i, _ = par_in
+        Ae, Be, ae, be, Rie, Le, Req_e, _ = par_out
         at, bt, c = 0, 0, 0
         with open(fr'{self.slans_files_end}\tesla_end2.tgpe', 'w') as f:
             f.write('{:g} {:g}  {:g} : Req(mm), Rae(mm), Le(mm) - parameters of the end half-cell \n'.format(Req_i, Rie, Le))

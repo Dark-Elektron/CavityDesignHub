@@ -4,7 +4,6 @@ import stat
 from distutils.dir_util import copy_tree
 from math import floor
 import threading
-
 from PyQt5.QtCore import QPropertyAnimation
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
@@ -1102,7 +1101,6 @@ def end_routine(proc_ids, filename, projectDir):
             pass
 
     # combine dictionaries
-    # print_(f'Parellel run took {time.time()-self.start} s')
     combine_dict(proc_count, filename, projectDir)
     delete_process_dict(proc_count, projectDir)
 
@@ -1133,81 +1131,4 @@ def delete_process_dict(proc_count, projectDir):
 
 def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner, tune_variable, iter_set, cell_type):
     analysis.GSSEC(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner=tuner,
-                   tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type) #, last_key=last_key This would have to be tested again #val2
-
-# def run_sequential(self, pseudo_shape_space):
-    #     try:
-    #         resume = self.continue_check()
-    #
-    #         tune_variable = self.tuneUI.cb_Tune_Option.currentText().split(' ')[-1]
-    #         # get iteration settings
-    #         iter_method = self.tuneUI.cb_Iterative_Method.currentText()
-    #         tolerance = self.text_to_list(self.tuneUI.le_Tolerance.text())[0]
-    #         max_iter = self.text_to_list(self.tuneUI.le_Max_Iteration.text())[0]
-    #
-    #         iter_set = [iter_method, tolerance, max_iter]
-    #
-    #         # cell type
-    #         cell_type = self.tuneUI.cb_Cell_Type.currentText()
-    #
-    #         # run in thread
-    #         print(self.main_control.projectDir)
-    #         self.t = Thread(target=self.main_control.analysis.GSSEC, args=(pseudo_shape_space, self.main_control.parentDir, self.main_control.projectDir, resume),
-    #                         kwargs={"proc": '', 'tuner': self.tuner, 'tune_variable': tune_variable, 'iter_set': iter_set, 'cell_type': cell_type})
-    #         self.t.start()
-    #
-    #     except Exception as e:
-    #         print_("TUNE CONTROL:: run sequential:: Encountered an exception running initial_population -> ", e)
-    #
-    # def run_parallel(self, proc_count, pseudo_shape_space_name):
-    #     try:
-    #         print_("End cell tuner widget")
-    #         resume = self.continue_check()
-    #         print(resume)
-    #
-    #         # run slans
-    #         # print(type(pseudo_shape_space_name))
-    #         command = ["mpiexec", "-np", fr"{proc_count}", "python", fr"{self.main_control.parentDir}\modules\tune_module\tuners\parallel_tuneR_script.py",
-    #                    fr"{pseudo_shape_space_name}", fr"{resume}", fr'{self.lk}', fr'{self.main_control.parentDir}']
-    #
-    #         sp = subprocess.run(command)
-    #
-    #         # combine dictionaries
-    #         self.combine_dict(proc_count)
-    #
-    #     except Exception as e:
-    #         print_(fr'Exception encountered in parallel code -> {e}')
-
-    # def run_parallel_MP(self, pseudo_shape_space_name, proc_count):
-    #     resume = self.continue_check()
-    #     tune_variable = self.tuneUI.cb_Tune_Option.currentText().split(' ')[-1]
-    #
-    #     # get iteration settings
-    #     iter_method = self.tuneUI.cb_Iterative_Method.currentText()
-    #     tolerance = self.text_to_list(self.tuneUI.le_Tolerance.text())[0]
-    #     max_iter = self.text_to_list(self.tuneUI.le_Max_Iteration.text())[0]
-    #     iter_set = [iter_method, tolerance, max_iter]
-    #
-    #     # cell type
-    #     cell_type = self.tuneUI.cb_Cell_Type.currentText()
-    #
-    #     try:
-    #         self.start = time.time()
-    #         resume = self.continue_check()
-    #         print_(resume)
-    #
-    #         # run in thread ##change the program not to depend on Ri start position
-    #         command = ["python", fr"{self.main_control.parentDir}\modules\tune_module\tuners\parallel_tune_script_MP.py",
-    #                    fr"{proc_count}", fr"{pseudo_shape_space_name}", fr"{resume}", fr'{self.lk}',
-    #                    fr'{self.main_control.parentDir}', fr'{self.main_control.projectDir}', fr'{self.tuner}',
-    #                    fr'{tune_variable}', fr'{iter_set}', fr'{cell_type}']
-    #
-    #         self.sp = subprocess.Popen(command)
-    #
-    #         print_(f'Parellel run took {time.time()-self.start} s')
-    #         self.combine_dict(proc_count)
-    #         self.delete_process_dict(proc_count)
-    #
-    #     except Exception as e:
-    #         print_("TUNE CONTROL:: run_algorithm:: Encountered an exception running initial_population -> ", e)
-
+                   tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type) # last_key=last_key This would have to be tested again #val2

@@ -46,7 +46,6 @@ class Analysis:
         # tuner
         self.pytune = Tuner()
 
-
         if tuner == 'SLANS':
             self.slans_tune = Tune(parentDir, projectDir)
 
@@ -73,9 +72,7 @@ class Analysis:
         print("Resume", resume)
         if resume == "Yes":
             # check if value set is already written. This is to enable continuation in case of break in program
-            print(filename)
             if os.path.exists(fr'{projectDir}/Cavities/{filename}'):
-                # print("here2")
                 self.population = json.load(open(fr'{projectDir}/Cavities/{filename}', 'r'))
 
                 existing_keys = list(self.population.keys())
@@ -84,7 +81,6 @@ class Analysis:
         start_time = time.time()
 
         for key, pseudo_shape in pseudo_shape_space.items():
-            # print_(pseudo_shape)
             A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _ = pseudo_shape['IC'] # Req here is none but required since the shape space consists of all variables
             A_o, B_o, a_o, b_o, Ri_o, L_o, Req, _ = pseudo_shape['OC'] # Req here is none but required since the shape space consists of all variables
             beampipes = pseudo_shape['BP']

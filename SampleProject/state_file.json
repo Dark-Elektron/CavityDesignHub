@@ -25,7 +25,7 @@
     "Tune_Option": 0,
     "Method": 0,
     "No_Of_Shapes_Monte_Carlo": 1,
-    "Tuner": 0,
+    "Tuner": 1,
     "LBC": 2,
     "RBC": 2,
     "Inner_Cell": 2,
