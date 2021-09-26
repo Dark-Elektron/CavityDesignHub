@@ -14,8 +14,12 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Misc(object):
     def setupUi(self, Misc):
         Misc.setObjectName("Misc")
-        Misc.resize(824, 625)
-        Misc.setStyleSheet("background-color: rgb(252, 255, 255);")
+        Misc.resize(1042, 625)
+        Misc.setStyleSheet("\n"
+"*{\n"
+"    font: 16px \"Segoe UI\";\n"
+"    background-color: rgb(255, 255, 255);\n"
+"}")
         self.gridLayout = QtWidgets.QGridLayout(Misc)
         self.gridLayout.setObjectName("gridLayout")
         self.widget = QtWidgets.QWidget(Misc)
@@ -30,7 +34,7 @@ class Ui_Misc(object):
         self.sa_Misc.setWidgetResizable(True)
         self.sa_Misc.setObjectName("sa_Misc")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 768, 569))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 974, 557))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_6.setObjectName("gridLayout_6")
@@ -73,7 +77,7 @@ class Ui_Misc(object):
 "CALCULATIONS"))
         self.pb_Mode_Nomenclature.setText(_translate("Misc", "MODE\n"
 "NOMENCLATURE"))
-        self.pushButton_4.setText(_translate("Misc", "PushButton"))
+        self.pushButton_4.setText(_translate("Misc", "Useful Formulas"))
         self.pushButton_5.setText(_translate("Misc", "PushButton"))
 
 

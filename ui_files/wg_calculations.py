@@ -208,7 +208,7 @@ class Ui_WG_Calc(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollArea_3.setObjectName("scrollArea_3")
         self.scrollAreaWidgetContents_3 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 307, 222))
+        self.scrollAreaWidgetContents_3.setGeometry(QtCore.QRect(0, 0, 307, 380))
         self.scrollAreaWidgetContents_3.setObjectName("scrollAreaWidgetContents_3")
         self.gridLayout_16 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_3)
         self.gridLayout_16.setObjectName("gridLayout_16")
@@ -223,6 +223,7 @@ class Ui_WG_Calc(object):
         self.label_18.setObjectName("label_18")
         self.gridLayout_14.addWidget(self.label_18, 0, 0, 1, 1)
         self.tableWidget = QtWidgets.QTableWidget(self.widget_8)
+        self.tableWidget.setMinimumSize(QtCore.QSize(0, 150))
         self.tableWidget.setObjectName("tableWidget")
         self.tableWidget.setColumnCount(4)
         self.tableWidget.setRowCount(5)
@@ -264,6 +265,7 @@ class Ui_WG_Calc(object):
         self.tableWidget.setItem(2, 2, item)
         self.gridLayout_14.addWidget(self.tableWidget, 1, 0, 1, 1)
         self.tableWidget_3 = QtWidgets.QTableWidget(self.widget_8)
+        self.tableWidget_3.setMinimumSize(QtCore.QSize(0, 150))
         self.tableWidget_3.setObjectName("tableWidget_3")
         self.tableWidget_3.setColumnCount(4)
         self.tableWidget_3.setRowCount(5)
@@ -410,7 +412,7 @@ class Ui_WG_Calc(object):
 
         self.retranslateUi(WG_Calc)
         self.stackedWidget.setCurrentIndex(0)
-        self.toolBox.setCurrentIndex(0)
+        self.toolBox.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(WG_Calc)
 
     def retranslateUi(self, WG_Calc):
