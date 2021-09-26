@@ -99,10 +99,9 @@ class Analysis:
             if key not in existing_keys:
                 if tuner == 'SLANS':
                     if tune_variable == 'Req':
-                        # Tune cell to get Req.
+                        # Tune cell to get Req
                         Req, freq, alpha, h, e = self.slans_tune.mid_cell_tune(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, freq, proc=proc)
                     else:
-                        print('here in tune L')
                         L, freq, alpha, h, e = self.slans_tune.end_cell_tune(inner_cell, outer_cell, freq, proc=proc)
 
                         if cell_type == 'Mid Cell':
