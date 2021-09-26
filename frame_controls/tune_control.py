@@ -153,7 +153,7 @@ class TuneControl:
         self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.tuneUI.w_Iteration_Settings.setEnabled(False) if self.tuneUI.cb_Tuner.currentText() == 'SLANS'
                                                         else self.tuneUI.w_Iteration_Settings.setEnabled(True))
 
-        # control to ensure that SLANS mid cell tuner is always set to tune for Req and end cell tuner is always set to tune L
+        # control to ensure that SLANS mid cell tuner is always set to tune for Req and end cell tuner is always set to L
         self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.slans_tuners_control())
         self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.slans_tuners_control())
 
@@ -231,7 +231,7 @@ class TuneControl:
             self.tuneUI.cb_LBP.setCheckState(2)
             self.tuneUI.cb_LBP.setEnabled(False)
 
-            if self.tuneUI.cb_Tune_Option.currentText() == 'Tune L':
+            if self.tuneUI.cb_Tune_Option.currentText() == 'L':
                 self.tuneUI.w_End_Cell_Tune_Extra_Variable.show()
             else:
                 self.tuneUI.w_End_Cell_Tune_Extra_Variable.hide()
@@ -271,7 +271,7 @@ class TuneControl:
         Ri_i = self.text_to_list(self.tuneUI.le_Ri_i.text())
 
         # check tune type
-        if self.tuneUI.cb_Tune_Option.currentText() == "Tune L":
+        if self.tuneUI.cb_Tune_Option.currentText() == "L":
             Req_i = self.text_to_list(self.tuneUI.le_Tune_Variable.text())
             L_i = None
             inner_half_cell_parameters = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i]
@@ -287,7 +287,7 @@ class TuneControl:
             b_o = self.text_to_list(self.tuneUI.le_b_o.text())
             Ri_o =self.text_to_list(self.tuneUI.le_Ri_o.text())
 
-            if self.tuneUI.cb_Tune_Option.currentText() == 'Tune L':
+            if self.tuneUI.cb_Tune_Option.currentText() == 'L':
                 # update mid cell L_i
                 inner_half_cell_parameters[5] = self.text_to_list(self.tuneUI.le_L_Mid_Cell.text())
                 L_o = None
@@ -634,7 +634,7 @@ class TuneControl:
                 self.tuneUI.le_b_i.setText(fr"{d[key]['IC'][3]}")
                 self.tuneUI.le_Ri_i.setText(fr"{d[key]['IC'][4]}")
                 # check tune variable
-                if self.tuneUI.cb_Tune_Option.currentText() == 'Tune Req':
+                if self.tuneUI.cb_Tune_Option.currentText() == 'Req':
                     self.tuneUI.le_Tune_Variable.setText(fr"{d[key]['IC'][5]}")
                 else:
                     self.tuneUI.le_Tune_Variable.setText(fr"{d[key]['IC'][6]}")
@@ -666,7 +666,7 @@ class TuneControl:
                     b_i = self.process_range(ihc[3])
                     Ri_i =self.process_range(ihc[4])
 
-                    if self.tuneUI.cb_Tune_Option.currentText() == 'Tune L':
+                    if self.tuneUI.cb_Tune_Option.currentText() == 'L':
                         if self.tuneUI.cb_Outer_Cell.checkState() == 2:
                             L_i = self.process_range(ihc[5])
                         else:
@@ -689,7 +689,7 @@ class TuneControl:
                         b_o = self.process_range(ohc[3])
                         Ri_o =self.process_range(ohc[4])
 
-                        if self.tuneUI.cb_Tune_Option.currentText() == 'Tune L':
+                        if self.tuneUI.cb_Tune_Option.currentText() == 'L':
                             L_o = A_o + a_o
                         else:
                             L_o = self.process_range(ohc[5])
@@ -749,7 +749,7 @@ class TuneControl:
                         for b_o in b_o_space:
                             for Ri_o in Ri_o_space:
 
-                                if self.tuneUI.cb_Tune_Option.currentText() == 'Tune Req':
+                                if self.tuneUI.cb_Tune_Option.currentText() == 'Req':
                                     L_o_space = ohc[5]
                                     for L_o in L_o_space:
                                         Req_o = B_o + b_o + Ri_o
@@ -873,7 +873,7 @@ class TuneControl:
         return dir
 
     def change_tune_option(self, txt):
-        if txt == 'Tune Req':
+        if txt == 'Req':
             self.tuneUI.l_Tune_Alternate_Variable.setText("L")
             self.tuneUI.l_Tune_Alternate_Variable_End_Cell.setText('L')
             self.tuneUI.le_Tune_Variable_End_Cell.setEnabled(True)
@@ -959,7 +959,7 @@ class TuneControl:
         Ri_i = self.text_to_list(self.tuneUI.le_Ri_i.text())
         tune_var = self.text_to_list(self.tuneUI.le_Tune_Variable.text())
 
-        if self.tuneUI.cb_Tune_Option.currentText() == "Tune Req":
+        if self.tuneUI.cb_Tune_Option.currentText() == "Req":
             L = tune_var
             if A_i[0] + a_i[0] > L[0]:
                 x = False
