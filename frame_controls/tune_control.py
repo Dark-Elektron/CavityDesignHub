@@ -261,6 +261,8 @@ class TuneControl:
                     self.existing_keys = list(self.pseudo_shape_space.keys())
                     # self.log(f'last saved key: {self.existing_keys}')
                     print("Existing keys", self.existing_keys)
+            elif resume == "Cancel":
+                return
 
         freq = float(self.tuneUI.le_Freq.text())
         # get variables from ui or from pseudo shape space
