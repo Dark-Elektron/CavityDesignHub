@@ -275,16 +275,6 @@ if you have any questions or suggestions about the app.</string>
                <string>Color Splash</string>
               </property>
              </item>
-             <item>
-              <property name="text">
-               <string>Grayscale</string>
-              </property>
-             </item>
-             <item>
-              <property name="text">
-               <string>Monochrome</string>
-              </property>
-             </item>
             </widget>
            </item>
           </layout>
@@ -349,7 +339,7 @@ if you have any questions or suggestions about the app.</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>800</width>
+                       <width>910</width>
                        <height>561</height>
                       </rect>
                      </property>
@@ -597,7 +587,7 @@ P R O C E S S</string>
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>377</width>
+                    <width>267</width>
                     <height>488</height>
                    </rect>
                   </property>
@@ -717,149 +707,6 @@ P R O C E S S</string>
            <property name="topMargin">
             <number>0</number>
            </property>
-           <item row="0" column="4">
-            <widget class="QPushButton" name="pb_rEigenmode">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(216, 74, 255);
-border-style: solid;
-border-color: rgb(216, 74, 255);
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>E</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QPushButton" name="pb_rTune">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 181, 76);
-border-style: solid;
-border-color: rgb(255, 181, 76);
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>T</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="9">
-            <spacer name="horizontalSpacer_2">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="1">
-            <widget class="QPushButton" name="pb_rBack">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: gray;
-border-style: solid;
-border-color: gray;
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>&lt;-</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="6">
-            <widget class="QPushButton" name="pb_rPostprocess">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(167, 222, 255);
-border-style: solid;
-border-color: rgb(167, 222, 255);
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>PP</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="5">
-            <widget class="QPushButton" name="pb_rWakefield">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 69, 119);
-border-style: solid;
-border-color: rgb(255, 69, 119);
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>W</string>
-             </property>
-            </widget>
-           </item>
            <item row="0" column="7">
             <widget class="QPushButton" name="pb_rPlot">
              <property name="minimumSize">
@@ -950,6 +797,152 @@ border-radius: 15px;</string>
               <string>H</string>
              </property>
             </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="pb_rBack">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: gray;
+border-style: solid;
+border-color: gray;
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>&lt;-</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="pb_rTune">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 181, 76);
+border-style: solid;
+border-color: rgb(255, 181, 76);
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>T</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QPushButton" name="pb_rEigenmode">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(216, 74, 255);
+border-style: solid;
+border-color: rgb(216, 74, 255);
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>E</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="9">
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="6">
+            <widget class="QPushButton" name="pb_rPostprocess">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(167, 222, 255);
+border-style: solid;
+border-color: rgb(167, 222, 255);
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>PP</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="5">
+            <widget class="QPushButton" name="pb_rWakefield">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 69, 119);
+border-style: solid;
+border-color: rgb(255, 69, 119);
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>W</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="10">
+            <widget class="QWidget" name="w_Progress_Monitor" native="true"/>
            </item>
           </layout>
          </widget>

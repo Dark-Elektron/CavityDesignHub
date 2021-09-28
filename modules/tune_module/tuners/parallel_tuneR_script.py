@@ -97,7 +97,7 @@ def run_mpi():
 
     # try:
     # run slans code
-    evol.GSSEC(pseudo_shape_space_proc, resume=resume, proc=rank) #, last_key=last_key This would have to be tested again #val2
+    evol.tune(pseudo_shape_space_proc,,  #, last_key=last_key This would have to be tested again #val2
     # except Exception as e:
     #     print_(f"PROCESS {rank} COULD NOT COMPLETE THE CODE -> {e}")
 

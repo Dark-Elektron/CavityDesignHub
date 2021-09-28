@@ -2,6 +2,7 @@ import ast
 import json
 import os
 import subprocess
+import threading
 import time
 import multiprocessing as mp
 from threading import Thread
@@ -24,6 +25,8 @@ fr = FileReader()
 
 file_color = 'red'
 DEBUG = True
+
+
 def print_(*arg):
     if DEBUG: print(colored(f'\t{arg}', file_color))
 
@@ -64,6 +67,8 @@ class EigenmodeControl:
         # shape space initialization
         self._shape_space = {}
         self._selected_keys = []
+        self.processes = []
+        self.processes_id = []
 
     def initUI(self):
         # add checkable combobox
@@ -179,7 +184,6 @@ class EigenmodeControl:
         shape_space_len = len(keys)
         share = round(shape_space_len / proc_count)
 
-        self.processes = []
         for p in range(proc_count):
             try:
                 if p < proc_count - 1:
@@ -196,8 +200,12 @@ class EigenmodeControl:
                 service = mp.Process(target=run_sequential, args=(
                 n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir, self.main_control.projectDir))
                 service.start()
+
                 self.processes.append(psutil.Process(service.pid))
-                # print("Done")
+                self.processes_id.append(service.pid)
+
+                t = threading.Thread(target=self.end_routine, args=(self.processes_id, ))
+                t.start()
 
             except Exception as e:
                 self.log.error(fr"Exception in run_MP:: {e}")
@@ -267,6 +275,20 @@ class EigenmodeControl:
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
         self.log.info("Process terminated.")
+
+    def end_routine(self, proc_ids):
+        print(proc_ids, type(proc_ids))
+        for pid in proc_ids:
+            try:
+                p = psutil.Process(pid)
+                while p.is_running():
+                    pass
+
+                print(fr"process {p} ended")
+            except:
+                pass
+
+        self.cancel()
 
     def get_geometric_parameters(self, code):
         self.shape_space = {}
@@ -619,6 +641,7 @@ def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, 
             print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
         except Exception as e:
             print(f'Error in slans_mpi_mp:: run_sequential -> {e}')
+
 
 class CheckableComboBox(QComboBox):
 

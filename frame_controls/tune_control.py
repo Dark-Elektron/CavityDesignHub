@@ -7,12 +7,13 @@ import threading
 from PyQt5.QtCore import QPropertyAnimation
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
+from scipy.optimize import fsolve
+from modules.tune_module.tuners.tuner import Tuner
+from simulation_codes.SLANS.slans_tune import Tune
 from ui_files.run_tune import Ui_w_Tune
-from modules.analysis_module.analysis_codes import Analysis
 import ast
 import json
 import os
-import subprocess
 import time
 import multiprocessing as mp
 from termcolor import colored
@@ -31,10 +32,10 @@ def print_(*arg):
     if DEBUG: print(colored(f'\t{arg}', file_color))
 
 fr = FileReader()
-analysis = Analysis()
 slans_geom = SLANSGeometry()
 
 AN_DURATION = 200
+
 
 class TuneControl:
     def __init__(self, parent):
@@ -52,14 +53,14 @@ class TuneControl:
         self.log = self.main_control.log
 
         self.initUI()
-        # self.parentDir = self.main_control.parentDir
-        # self.projectDir = self.main_control.projectDir
-
         self.signals()
 
         self.pg_list = []
         self.pygraph_list = []
         self.tune_ended = False
+        self.processes = []
+        self.processes_id = []
+        self.show_progress_bar = False
 
     def initUI(self):
         self.tuneUI.cb_Inner_Cell.setCheckState(2)
@@ -131,14 +132,6 @@ class TuneControl:
         self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.tuner_routine())
         self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.tuner_routine())
         self.tuneUI.cb_Tune_Option.currentTextChanged.connect(lambda: self.tuner_routine())
-
-        # load shape space signals
-        # self.tuneUI.pb_Load_Inner.clicked.connect(lambda: self.open_file(self.tuneUI.le_Load_Inner, self.tuneUI.cb_Load_Inner, self.loaded_inner_dict))
-        # self.tuneUI.pb_Load_Outer.clicked.connect(lambda: self.open_file(self.tuneUI.le_Load_Outer, self.tuneUI.cb_Load_Outer, self.loaded_outer_dict))
-        #
-        # # change geometric parameters from loaded shape space
-        # self.tuneUI.cb_Load_Inner.currentTextChanged.connect(lambda: self.change_cell_parameters(self.loaded_inner_dict, self.tuneUI.cb_Load_Inner.currentText(), 'inner'))
-        # self.tuneUI.cb_Load_Outer.currentTextChanged.connect(lambda: self.change_cell_parameters(self.loaded_outer_dict, self.tuneUI.cb_Load_Outer.currentText(), 'outer'))
 
         # change cavity display image
         self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.change_cavity_image())
@@ -342,11 +335,8 @@ class TuneControl:
             shape_space_len = len(keys)
             share = floor(shape_space_len / proc_count)
 
-
             for i in reversed(range(self.tuneUI.gl_PyqtGraph.count())):
                 self.tuneUI.gl_PyqtGraph.itemAt(i).widget().setParent(None)
-            self.processes = []
-            self.processes_id = []
             print("\t1b")
 
             # insert graphs for convergence monitor
@@ -372,6 +362,12 @@ class TuneControl:
             print("pglist after ", self.pg_list)
             print("pygraph after ", self.pygraph_list)
 
+            # create progress bar object and add to widget
+            self.progress_bar = QProgressBar(self.tuneUI.widget_4)
+            self.progress_bar.setMaximum(100)
+            self.progress_bar.setValue(10)
+            self.tuneUI.gridLayout_10.addWidget(self.progress_bar, 0, 7, 1, 1)
+
             for p in range(proc_count):
                 if True:
                     if p < proc_count-1:
@@ -395,7 +391,7 @@ class TuneControl:
                                                self.main_control.projectDir, self.filename, self.tuner,
                                                tune_variable, iter_set, cell_type)
 
-                    service = mp.Process(target=run_sequential,
+                    service = mp.Process(target=self.run_sequential,
                                          args=(processor_shape_space, resume, p, bc, self.main_control.parentDir,
                                                self.main_control.projectDir, self.filename, self.tuner,
                                                tune_variable, iter_set, cell_type))
@@ -408,12 +404,15 @@ class TuneControl:
                 #     self.log.info("Exception in run_MP::", e)
                 #     # write to log
 
-            # start convergence monitor
-            t = threading.Thread(target=self.monitor_convergence)
-            t.start()
+            # display progress bar
+            self.show_progress_bar = True
 
-            print(self.processes_id)
-            print(self.processes)
+            t_progress_monitor = threading.Thread(target=self.progress_monitor, args=(self.processes_id, ))
+            t_progress_monitor.start()
+
+            # start convergence monitor
+            t_monitor_convergence = threading.Thread(target=self.monitor_convergence)
+            t_monitor_convergence.start()
 
             self.log.info("Tune started")
             # change process state to running
@@ -424,9 +423,8 @@ class TuneControl:
             filename = self.filename
             projectDir = self.main_control.projectDir
 
-            self.end_p = mp.Process(target=end_routine, args=(self.processes_id, filename, projectDir))
-            print(self.end_p.pid)
-            self.end_p.start()
+            t_end_routine = threading.Thread(target=self.end_routine, args=(self.processes_id, filename, projectDir))
+            t_end_routine.start()
 
         # except Exception as e:
         #     self.log.error(fr"TUNE CONTROL:: run_tune:: {e}")
@@ -480,14 +478,12 @@ class TuneControl:
 
     def cancel(self):
         self.log.info("Terminating process...")
-        # terminate end routine first
-        self.end_p.terminate()
-        # self.end_p.join()
+        # signal to progress bar
+        self.show_progress_bar = False
 
         try:
             for p in self.processes:
                 p.terminate()
-                # p.join()
         except:
             pass
 
@@ -501,127 +497,48 @@ class TuneControl:
         # set exit signal
         self.tune_ended = True
 
-    def overwriteFolder(self, invar, projectDir):
-        path = f"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}"
+    def end_routine(self, proc_ids, filename, projectDir):
+        proc_count = len(proc_ids)
+        for pid in proc_ids:
+            try:
+                p = psutil.Process(pid)
+                while p.is_running():
+                    pass
 
-        if os.path.exists(path):
-            shutil.rmtree(path)
-            dir_util._path_created = {}
+                print(fr"process {p} ended")
+            except:
+                pass
 
-        os.makedirs(path)
-
-    def copyFiles(self, invar, parentDir, projectDir):
-        src = fr"{parentDir}\em_codes\SLANS_exe"
-        dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
-
-        dir_util.copy_tree(src, dst)
-
-    def show_hide(self):
-        if self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == 'Monte Carlo':
-            self.tuneUI.w_No_Of_Shapes_Monte_Carlo.show()
-        else:
-            self.tuneUI.w_No_Of_Shapes_Monte_Carlo.hide()
-
-        if self.tuneUI.cb_Tuner.currentText() == 'PyTune':
-            self.tuneUI.w_BC.show()
-        else:
-            self.tuneUI.w_BC.hide()
-
-    def cb_show_hide(self, wid1, wid2):
-        if wid1.checkState() == 2:
-            wid2.show()
-        else:
-            wid2.hide()
-
-    def cb_toggle(self, wid1, wid2, wid3):
-        if wid1.checkState() == 2:
-            wid2.show()
-            wid3.hide()
-        else:
-            wid2.hide()
-            wid3.show()
-
-    def text_to_list(self, txt):
-        if "range" in txt:
-            txt = txt.replace('range', '')
-            l = ast.literal_eval(txt)
-            return range(l[0], l[1], l[2])
-        elif 'linspace' in txt:
-            l = eval(f'np.{txt}')
-            return l
-        else:
-            l = ast.literal_eval(txt)
-            if isinstance(l, int) or isinstance(l, float):
-                return [l]
-            else:
-                print('here', list(l))
-                return list(l)
-
-    def continue_check(self):
-        path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
-        print(path)
-        if os.path.exists(path):
-            msg = QMessageBox()
-            msg.setWindowTitle("Resume Simulation")
-            msg.setText("The pseudo shape space file already exist. Would you love to update or overwrite its content?")
-            msg.setIcon(QMessageBox.Question)
-            msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-
-            buttonY = msg.button(QMessageBox.Yes)
-            buttonY.setText('Update')
-            buttonN = msg.button(QMessageBox.No)
-            buttonN.setText('Overwrite')
-
-            msg.setDefaultButton(buttonY)
-
-            msg.buttonClicked.connect(self.button_clicked)
-
-            x = msg.exec_()
-
-            if x == 16384:
-                return "Yes"
-            elif x == 65536:
-                return "No"
-            elif x == 4194304:
-                return "Cancel"
-        else:
-            return "Cancel"
-
-    def button_clicked(self, i):
-        return i.text()
-
-    def load_shape_space(self, filename, arg=None):
-        fr = FileReader()
-        dir = f'{filename}'
-
-        # check if extension is included
-        if dir.split('.')[-1] != 'json':
-            dir = f'{dir}.json'
-
-        print_(dir)
-        df = fr.json_reader(dir)
-        print(df)
-
-        if arg:
-            return df.loc[arg].to_dict()
-        else:
-            return df.to_dict(orient='list').values()
-
-    def open_file(self, le, cb, d):
-        filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Json Files (*.json)")
+        # combine dictionaries
         try:
-            le.setText(filename)
-            with open(filename, 'r') as file:
-                dd = json.load(file)
-
-            # populate checkboxes with key
-            for col in dd.keys():
-                cb.addItem(fr'{col}')
-
-            d.update(dd)
-
+            self.combine_dict(proc_count, filename, projectDir)
+            self.delete_process_dict(proc_count, projectDir)
         except Exception as e:
-            print('Failed to open file:: ', e)
+            self.log.error(f"Some error occurred -> {e}")
+
+        self.cancel()
+
+    def progress_monitor(self, proc_ids):
+        # read progress files and update progress
+        while self.show_progress_bar:
+            try:
+                progress = 0
+                for i in range(len(proc_ids)):
+                    if os.path.exists(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
+                        with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
+                            a = f.readline()
+                            progress += eval(a)
+                self.progress_bar.setValue(progress*100/len(proc_ids))
+            except:
+                print("Error in progress update")
+                pass
+
+        try:
+            # remove progress bar
+            self.tuneUI.gridLayout_10.removeWidget(self.progress_bar)
+            self.progress_bar = None
+        except:
+            pass
 
     def change_cell_parameters(self, d, key, par):
         try:
@@ -859,41 +776,16 @@ class TuneControl:
         else:
             return check
 
-    def input_control(self, wid_l_bound, wid_r_bound):
-        if wid_r_bound.value() < wid_l_bound.value():
-            wid_r_bound.setValue(wid_l_bound.value())
-
-    def proof_filename(self, dir):
-        # check if extension is included
-        if dir.split('.')[-1] != 'json':
-            dir = f'{dir}.json'
-
-        return dir
-
-    def change_tune_option(self, txt):
-        if txt == 'Req':
-            self.tuneUI.l_Tune_Alternate_Variable.setText("L")
-            self.tuneUI.l_Tune_Alternate_Variable_End_Cell.setText('L')
-            self.tuneUI.le_Tune_Variable_End_Cell.setEnabled(True)
+    def show_hide(self):
+        if self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == 'Monte Carlo':
+            self.tuneUI.w_No_Of_Shapes_Monte_Carlo.show()
         else:
-            self.tuneUI.l_Tune_Alternate_Variable.setText("Req")
-            self.tuneUI.l_Tune_Alternate_Variable_End_Cell.setText("Req")
+            self.tuneUI.w_No_Of_Shapes_Monte_Carlo.hide()
 
-            # set end cell Req equal to mid cell Req
-            self.tuneUI.le_Tune_Variable_End_Cell.setText(self.tuneUI.le_Tune_Variable.text())
-            self.tuneUI.le_Tune_Variable_End_Cell.setEnabled(False)
-
-    def process_range(self, l):
-        if isinstance(l, list):
-            if len(l) > 1:
-                val = (l[0] if l[0] == l[-1] else round(r.uniform(l[0], l[-1]), 2))
-                return val
-            else:
-                return l[0]
-        elif isinstance(l, int) or isinstance(l, float):
-            return l
+        if self.tuneUI.cb_Tuner.currentText() == 'PyTune':
+            self.tuneUI.w_BC.show()
         else:
-            print("Seems something is wrong with the input.")
+            self.tuneUI.w_BC.hide()
 
     def animate_width(self, cb, widget, min_width, standard, enable):
         if enable:
@@ -1044,6 +936,11 @@ class TuneControl:
         state_dict["Tolerance"] = self.tuneUI.le_Tolerance.text()
         state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
 
+    @staticmethod
+    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner, tune_variable, iter_set, cell_type):
+        tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner=tuner,
+                       tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type) # last_key=last_key This would have to be tested again #val2
+
     def deserialize(self, state_dict):
         # update state file
         self.tuneUI.le_Freq.setText(state_dict["Frequency"])
@@ -1084,48 +981,358 @@ class TuneControl:
         self.tuneUI.le_Tolerance.setText(state_dict["Tolerance"])
         self.tuneUI.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
 
+    @staticmethod
+    def overwriteFolder(invar, projectDir):
+        path = f"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}"
 
-def end_routine(proc_ids, filename, projectDir):
-    proc_count = len(proc_ids)
-    for pid in proc_ids:
+        if os.path.exists(path):
+            shutil.rmtree(path)
+            dir_util._path_created = {}
+
+        os.makedirs(path)
+
+    @staticmethod
+    def copyFiles(invar, parentDir, projectDir):
+        src = fr"{parentDir}\em_codes\SLANS_exe"
+        dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
+
+        dir_util.copy_tree(src, dst)
+
+    @staticmethod
+    def cb_show_hide(wid1, wid2):
+        if wid1.checkState() == 2:
+            wid2.show()
+        else:
+            wid2.hide()
+
+    @staticmethod
+    def cb_toggle(wid1, wid2, wid3):
+        if wid1.checkState() == 2:
+            wid2.show()
+            wid3.hide()
+        else:
+            wid2.hide()
+            wid3.show()
+
+    @staticmethod
+    def text_to_list(txt):
+        if "range" in txt:
+            txt = txt.replace('range', '')
+            l = ast.literal_eval(txt)
+            return range(l[0], l[1], l[2])
+        elif 'linspace' in txt:
+            l = eval(f'np.{txt}')
+            return l
+        else:
+            l = ast.literal_eval(txt)
+            if isinstance(l, int) or isinstance(l, float):
+                return [l]
+            else:
+                print('here', list(l))
+                return list(l)
+
+    def continue_check(self):
+        path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
+        print(path)
+        if os.path.exists(path):
+            msg = QMessageBox()
+            msg.setWindowTitle("Resume Simulation")
+            msg.setText("The pseudo shape space file already exist. Would you love to update or overwrite its content?")
+            msg.setIcon(QMessageBox.Question)
+            msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+
+            buttonY = msg.button(QMessageBox.Yes)
+            buttonY.setText('Update')
+            buttonN = msg.button(QMessageBox.No)
+            buttonN.setText('Overwrite')
+
+            msg.setDefaultButton(buttonY)
+
+            msg.buttonClicked.connect(self.button_clicked)
+
+            x = msg.exec_()
+
+            if x == 16384:
+                return "Yes"
+            elif x == 65536:
+                return "No"
+            elif x == 4194304:
+                return "Cancel"
+        else:
+            return "Cancel"
+
+    @staticmethod
+    def button_clicked(i):
+        return i.text()
+
+    @staticmethod
+    def load_shape_space(filename, arg=None):
+        fr = FileReader()
+        dir = f'{filename}'
+
+        # check if extension is included
+        if dir.split('.')[-1] != 'json':
+            dir = f'{dir}.json'
+
+        print_(dir)
+        df = fr.json_reader(dir)
+        print(df)
+
+        if arg:
+            return df.loc[arg].to_dict()
+        else:
+            return df.to_dict(orient='list').values()
+
+    @staticmethod
+    def open_file(le, cb, d):
+        filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Json Files (*.json)")
         try:
-            p = psutil.Process(pid)
-            while p.is_running():
+            le.setText(filename)
+            with open(filename, 'r') as file:
+                dd = json.load(file)
+
+            # populate checkboxes with key
+            for col in dd.keys():
+                cb.addItem(fr'{col}')
+
+            d.update(dd)
+
+        except Exception as e:
+            print('Failed to open file:: ', e)
+
+    @staticmethod
+    def input_control(wid_l_bound, wid_r_bound):
+        if wid_r_bound.value() < wid_l_bound.value():
+            wid_r_bound.setValue(wid_l_bound.value())
+
+    @staticmethod
+    def proof_filename(dir):
+        # check if extension is included
+        if dir.split('.')[-1] != 'json':
+            dir = f'{dir}.json'
+
+        return dir
+
+    def change_tune_option(self, txt):
+        if txt == 'Req':
+            self.tuneUI.l_Tune_Alternate_Variable.setText("L")
+            self.tuneUI.l_Tune_Alternate_Variable_End_Cell.setText('L')
+            self.tuneUI.le_Tune_Variable_End_Cell.setEnabled(True)
+        else:
+            self.tuneUI.l_Tune_Alternate_Variable.setText("Req")
+            self.tuneUI.l_Tune_Alternate_Variable_End_Cell.setText("Req")
+
+            # set end cell Req equal to mid cell Req
+            self.tuneUI.le_Tune_Variable_End_Cell.setText(self.tuneUI.le_Tune_Variable.text())
+            self.tuneUI.le_Tune_Variable_End_Cell.setEnabled(False)
+
+    @staticmethod
+    def process_range(l):
+        if isinstance(l, list):
+            if len(l) > 1:
+                val = (l[0] if l[0] == l[-1] else round(r.uniform(l[0], l[-1]), 2))
+                return val
+            else:
+                return l[0]
+        elif isinstance(l, int) or isinstance(l, float):
+            return l
+        else:
+            print("Seems something is wrong with the input.")
+
+    def change_app_status(self):
+        # Application status
+        movie = QMovie(':/general/icons/GIF/spinner-icon.gif')
+        movie.setScaledSize(self.ui.l_Status.size())
+        self.ui.l_Status.setMovie(movie)
+        self.ui.l_Status_Text.setText("Busy")
+        movie.start()
+
+        t_status = Thread(target=self.app_status, args=(movie,))
+        t_status.start()
+
+    def app_status(self, movie):
+        print("Second thread started")
+        # keep on while t is alive
+        for t in self.thread_list:
+            # while t.isAlive():
+            while t.is_alive():
                 pass
 
-            print(fr"process {p} ended")
-        except:
-            pass
+            t.join()
 
-    # combine dictionaries
-    combine_dict(proc_count, filename, projectDir)
-    delete_process_dict(proc_count, projectDir)
+        movie.stop()
+        self.ui.l_Status_Text.setText("Ready")
+        self.thread_list = []
 
+    @staticmethod
+    def combine_dict(proc_count, filename, projectDir):
+        # Combining dictionaries
+        print_('Combining dictionaries')
 
-def combine_dict(proc_count, filename, projectDir):
-    # Combining dictionaries
-    print_('Combining dictionaries')
-
-    result = {}
-    for index in range(proc_count):
-        with open(fr'{projectDir}\Cavities\shape_space{index}.json', "r") as infile:
-            result.update(json.load(infile))
-
-    # check if extension is included
-    if filename.split('.')[-1] != 'json':
-        filename = f'{filename}.json'
-
-    with open(fr'{projectDir}\Cavities\{filename}', "w") as outfile:
-        json.dump(result, outfile, indent=4, separators=(',', ': '))
-
-    print_('Done combining dictionaries')
-
-
-def delete_process_dict(proc_count, projectDir):
+        result = {}
         for index in range(proc_count):
-            os.remove(fr'{projectDir}\Cavities\shape_space{index}.json')
+            with open(fr'{projectDir}\Cavities\shape_space{index}.json', "r") as infile:
+                result.update(json.load(infile))
+
+        # check if extension is included
+        if filename.split('.')[-1] != 'json':
+            filename = f'{filename}.json'
+
+        with open(fr'{projectDir}\Cavities\{filename}', "w") as outfile:
+            json.dump(result, outfile, indent=4, separators=(',', ': '))
+
+        print_('Done combining dictionaries')
+
+    @staticmethod
+    def delete_process_dict(proc_count, projectDir):
+            for index in range(proc_count):
+                os.remove(fr'{projectDir}\Cavities\shape_space{index}.json')
 
 
-def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner, tune_variable, iter_set, cell_type):
-    analysis.GSSEC(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner=tuner,
-                   tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type) # last_key=last_key This would have to be tested again #val2
+def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
+          proc=0, tuner='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell'):
+
+    # tuner
+    pytune = Tuner()
+
+    if tuner == 'SLANS':
+        slans_tune = Tune(parentDir, projectDir)
+    else:
+        slans_tune = None
+
+    start = time.time()
+    population = {}
+    dip_dist = {}
+    freq = {}
+    total_no_of_shapes = len(list(pseudo_shape_space.keys()))
+
+    # check for already processed shapes
+    existing_keys = []
+
+    if resume == "Yes":
+        # check if value set is already written. This is to enable continuation in case of break in program
+        if os.path.exists(fr'{projectDir}/Cavities/{filename}'):
+            population = json.load(open(fr'{projectDir}/Cavities/{filename}', 'r'))
+
+            existing_keys = list(population.keys())
+            print_(f'Existing keys: {existing_keys}')
+
+    start_time = time.time()
+
+    progress = 0
+    # write to progress file
+    try:
+        with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
+            txt = f"{progress+1}/{total_no_of_shapes}"
+            file.write(txt)
+    except:
+        pass
+
+    for key, pseudo_shape in pseudo_shape_space.items():
+
+        A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _ = pseudo_shape['IC'] # Req here is none but required since the shape space consists of all variables
+        A_o, B_o, a_o, b_o, Ri_o, L_o, Req, _ = pseudo_shape['OC'] # Req here is none but required since the shape space consists of all variables
+        beampipes = pseudo_shape['BP']
+        freq = pseudo_shape['FREQ']
+
+        # new mid cell and end cell with initial Req guess
+        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0]
+        outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0]
+
+        # edit to check for key later
+        if key not in existing_keys:
+            if tuner == 'SLANS' and slans_tune:
+                if tune_variable == 'Req':
+                    # Tune cell to get Req
+                    Req, freq, alpha, h, e = slans_tune.mid_cell_tune(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, freq, proc=proc)
+                else:
+                    L, freq, alpha, h, e = slans_tune.end_cell_tune(inner_cell, outer_cell, freq, proc=proc)
+
+                    if cell_type == 'Mid Cell':
+                        L_i, L_o = L, L
+                    else:
+                        L_o = L
+
+                inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha]
+                outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha]
+            else:
+                if tune_variable == 'Req':
+                    print('PyTune Req')
+                    Req, freq = pytune.tune("Req", inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
+                    # round
+                    Req, freq = round(Req, 4), round(freq, 2)
+                else:
+                    print('PyTune L')
+                    L, freq = pytune.tune("L", inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
+
+                    # round
+                    L, freq = round(L, 2), round(freq, 2)
+
+                    if cell_type == 'Mid Cell':
+                        L_i, L_o = L, L
+                    else:
+                        L_o = L
+
+                alpha_i = calculate_alpha(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0)
+                alpha_o = calculate_alpha(A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0)
+
+                inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha_i]
+                outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha_o]
+
+            print_(f'Done Tuning Cavity {key}')
+
+            # write to progress file
+            try:
+                with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
+                    txt = f"{progress+1}/{total_no_of_shapes}"
+                    file.write(txt)
+            except:
+                pass
+
+            if cell_type == 'Mid Cell':
+                population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'none', 'FREQ': freq}
+            else:
+                population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'both', 'FREQ': freq}
+
+        # Update progressbar
+        progress += 1
+
+        print_("SAVING DICTIONARIES", f"shape_space{proc}.json")
+        with open(fr"{projectDir}\Cavities\shape_space{proc}.json", 'w') as file:
+            file.write(json.dumps(population, indent=4, separators=(',', ': ')))
+        print_("DONE SAVING")
+
+        print_("Time run:: ", time.time() - start_time)
+        start_time = time.time()
+
+    # print_("Extracted Data::", self.population)
+    end = time.time()
+
+    runtime = end - start
+    print_(f'Proc {proc} runtime: {runtime}')
+
+
+def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
+
+    data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
+            [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    x1, y1, x2, y2 = fsolve(ellipse_tangent,
+                            np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
+                            args=data)
+    m = (y2 - y1) / (x2 - x1)
+    alpha = 180 - np.arctan(m) * 180 / np.pi
+    return alpha
+
+
+def ellipse_tangent(z, *data):
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    return f1, f2, f3, f4

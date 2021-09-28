@@ -110,8 +110,6 @@ class Ui_MainWindow(object):
         self.comboBox = QtWidgets.QComboBox(self.widget_3)
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
         self.gridLayout_6.addWidget(self.comboBox, 0, 10, 1, 1)
         self.gridLayout_4.addWidget(self.widget_3, 0, 0, 1, 3)
         self.widget = QtWidgets.QWidget(self.tab)
@@ -138,7 +136,7 @@ class Ui_MainWindow(object):
         self.sa_Home.setWidgetResizable(True)
         self.sa_Home.setObjectName("sa_Home")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 800, 561))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 910, 561))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_5 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.setObjectName("gridLayout_5")
@@ -269,7 +267,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 377, 488))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 267, 488))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_3.setObjectName("gridLayout_3")
@@ -311,58 +309,6 @@ class Ui_MainWindow(object):
         self.gridLayout_8 = QtWidgets.QGridLayout(self.w_Pane)
         self.gridLayout_8.setContentsMargins(-1, 0, -1, -1)
         self.gridLayout_8.setObjectName("gridLayout_8")
-        self.pb_rEigenmode = QtWidgets.QPushButton(self.w_Pane)
-        self.pb_rEigenmode.setMinimumSize(QtCore.QSize(50, 50))
-        self.pb_rEigenmode.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rEigenmode.setStyleSheet("background-color: rgb(216, 74, 255);\n"
-"border-style: solid;\n"
-"border-color: rgb(216, 74, 255);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
-        self.pb_rEigenmode.setObjectName("pb_rEigenmode")
-        self.gridLayout_8.addWidget(self.pb_rEigenmode, 0, 4, 1, 1)
-        self.pb_rTune = QtWidgets.QPushButton(self.w_Pane)
-        self.pb_rTune.setMinimumSize(QtCore.QSize(50, 50))
-        self.pb_rTune.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rTune.setStyleSheet("background-color: rgb(255, 181, 76);\n"
-"border-style: solid;\n"
-"border-color: rgb(255, 181, 76);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
-        self.pb_rTune.setObjectName("pb_rTune")
-        self.gridLayout_8.addWidget(self.pb_rTune, 0, 3, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_8.addItem(spacerItem4, 0, 9, 1, 1)
-        self.pb_rBack = QtWidgets.QPushButton(self.w_Pane)
-        self.pb_rBack.setMinimumSize(QtCore.QSize(50, 50))
-        self.pb_rBack.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rBack.setStyleSheet("background-color: gray;\n"
-"border-style: solid;\n"
-"border-color: gray;\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
-        self.pb_rBack.setObjectName("pb_rBack")
-        self.gridLayout_8.addWidget(self.pb_rBack, 0, 1, 1, 1)
-        self.pb_rPostprocess = QtWidgets.QPushButton(self.w_Pane)
-        self.pb_rPostprocess.setMinimumSize(QtCore.QSize(50, 50))
-        self.pb_rPostprocess.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rPostprocess.setStyleSheet("background-color: rgb(167, 222, 255);\n"
-"border-style: solid;\n"
-"border-color: rgb(167, 222, 255);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
-        self.pb_rPostprocess.setObjectName("pb_rPostprocess")
-        self.gridLayout_8.addWidget(self.pb_rPostprocess, 0, 6, 1, 1)
-        self.pb_rWakefield = QtWidgets.QPushButton(self.w_Pane)
-        self.pb_rWakefield.setMinimumSize(QtCore.QSize(50, 50))
-        self.pb_rWakefield.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rWakefield.setStyleSheet("background-color: rgb(255, 69, 119);\n"
-"border-style: solid;\n"
-"border-color: rgb(255, 69, 119);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
-        self.pb_rWakefield.setObjectName("pb_rWakefield")
-        self.gridLayout_8.addWidget(self.pb_rWakefield, 0, 5, 1, 1)
         self.pb_rPlot = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rPlot.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rPlot.setMaximumSize(QtCore.QSize(50, 50))
@@ -373,8 +319,8 @@ class Ui_MainWindow(object):
 "border-radius: 15px;")
         self.pb_rPlot.setObjectName("pb_rPlot")
         self.gridLayout_8.addWidget(self.pb_rPlot, 0, 7, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_8.addItem(spacerItem5, 0, 0, 1, 1)
+        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_8.addItem(spacerItem4, 0, 0, 1, 1)
         self.pb_rMisc = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rMisc.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rMisc.setMaximumSize(QtCore.QSize(50, 50))
@@ -395,6 +341,61 @@ class Ui_MainWindow(object):
 "border-radius: 15px;")
         self.pb_rHome.setObjectName("pb_rHome")
         self.gridLayout_8.addWidget(self.pb_rHome, 0, 2, 1, 1)
+        self.pb_rBack = QtWidgets.QPushButton(self.w_Pane)
+        self.pb_rBack.setMinimumSize(QtCore.QSize(50, 50))
+        self.pb_rBack.setMaximumSize(QtCore.QSize(50, 50))
+        self.pb_rBack.setStyleSheet("background-color: gray;\n"
+"border-style: solid;\n"
+"border-color: gray;\n"
+"border-width: 5px;\n"
+"border-radius: 15px;")
+        self.pb_rBack.setObjectName("pb_rBack")
+        self.gridLayout_8.addWidget(self.pb_rBack, 0, 1, 1, 1)
+        self.pb_rTune = QtWidgets.QPushButton(self.w_Pane)
+        self.pb_rTune.setMinimumSize(QtCore.QSize(50, 50))
+        self.pb_rTune.setMaximumSize(QtCore.QSize(50, 50))
+        self.pb_rTune.setStyleSheet("background-color: rgb(255, 181, 76);\n"
+"border-style: solid;\n"
+"border-color: rgb(255, 181, 76);\n"
+"border-width: 5px;\n"
+"border-radius: 15px;")
+        self.pb_rTune.setObjectName("pb_rTune")
+        self.gridLayout_8.addWidget(self.pb_rTune, 0, 3, 1, 1)
+        self.pb_rEigenmode = QtWidgets.QPushButton(self.w_Pane)
+        self.pb_rEigenmode.setMinimumSize(QtCore.QSize(50, 50))
+        self.pb_rEigenmode.setMaximumSize(QtCore.QSize(50, 50))
+        self.pb_rEigenmode.setStyleSheet("background-color: rgb(216, 74, 255);\n"
+"border-style: solid;\n"
+"border-color: rgb(216, 74, 255);\n"
+"border-width: 5px;\n"
+"border-radius: 15px;")
+        self.pb_rEigenmode.setObjectName("pb_rEigenmode")
+        self.gridLayout_8.addWidget(self.pb_rEigenmode, 0, 4, 1, 1)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_8.addItem(spacerItem5, 0, 9, 1, 1)
+        self.pb_rPostprocess = QtWidgets.QPushButton(self.w_Pane)
+        self.pb_rPostprocess.setMinimumSize(QtCore.QSize(50, 50))
+        self.pb_rPostprocess.setMaximumSize(QtCore.QSize(50, 50))
+        self.pb_rPostprocess.setStyleSheet("background-color: rgb(167, 222, 255);\n"
+"border-style: solid;\n"
+"border-color: rgb(167, 222, 255);\n"
+"border-width: 5px;\n"
+"border-radius: 15px;")
+        self.pb_rPostprocess.setObjectName("pb_rPostprocess")
+        self.gridLayout_8.addWidget(self.pb_rPostprocess, 0, 6, 1, 1)
+        self.pb_rWakefield = QtWidgets.QPushButton(self.w_Pane)
+        self.pb_rWakefield.setMinimumSize(QtCore.QSize(50, 50))
+        self.pb_rWakefield.setMaximumSize(QtCore.QSize(50, 50))
+        self.pb_rWakefield.setStyleSheet("background-color: rgb(255, 69, 119);\n"
+"border-style: solid;\n"
+"border-color: rgb(255, 69, 119);\n"
+"border-width: 5px;\n"
+"border-radius: 15px;")
+        self.pb_rWakefield.setObjectName("pb_rWakefield")
+        self.gridLayout_8.addWidget(self.pb_rWakefield, 0, 5, 1, 1)
+        self.w_Progress_Monitor = QtWidgets.QWidget(self.w_Pane)
+        self.w_Progress_Monitor.setObjectName("w_Progress_Monitor")
+        self.gridLayout_8.addWidget(self.w_Progress_Monitor, 0, 10, 1, 1)
         self.gridLayout_4.addWidget(self.w_Pane, 2, 0, 1, 3)
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
@@ -427,8 +428,6 @@ class Ui_MainWindow(object):
         self.pb_Save_State.setText(_translate("MainWindow", "Save"))
         self.pb_Load_State_File.setText(_translate("MainWindow", "Load"))
         self.comboBox.setItemText(0, _translate("MainWindow", "Color Splash"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "Grayscale"))
-        self.comboBox.setItemText(2, _translate("MainWindow", "Monochrome"))
         self.pb_Wakefield_Analysis.setText(_translate("MainWindow", "W A K E F I E L D\n"
 "A N A L Y S I S"))
         self.pb_Tune.setText(_translate("MainWindow", "T U N E"))
@@ -441,14 +440,14 @@ class Ui_MainWindow(object):
         self.pb_Save_Log.setText(_translate("MainWindow", "Save"))
         self.pb_Clear_Log.setText(_translate("MainWindow", "Clear"))
         self.label_2.setText(_translate("MainWindow", "Session Log"))
-        self.pb_rEigenmode.setText(_translate("MainWindow", "E"))
-        self.pb_rTune.setText(_translate("MainWindow", "T"))
-        self.pb_rBack.setText(_translate("MainWindow", "<-"))
-        self.pb_rPostprocess.setText(_translate("MainWindow", "PP"))
-        self.pb_rWakefield.setText(_translate("MainWindow", "W"))
         self.pb_rPlot.setText(_translate("MainWindow", "P"))
         self.pb_rMisc.setText(_translate("MainWindow", "M"))
         self.pb_rHome.setText(_translate("MainWindow", "H"))
+        self.pb_rBack.setText(_translate("MainWindow", "<-"))
+        self.pb_rTune.setText(_translate("MainWindow", "T"))
+        self.pb_rEigenmode.setText(_translate("MainWindow", "E"))
+        self.pb_rPostprocess.setText(_translate("MainWindow", "PP"))
+        self.pb_rWakefield.setText(_translate("MainWindow", "W"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Hub"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Node"))
 import icons_rc

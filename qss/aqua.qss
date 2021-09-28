@@ -116,17 +116,16 @@ QSpinBox::down-arrow, QDoubleSpinBox::down-arrow, QTimeEdit::down-arrow, QDateEd
     image: url(:/icons/icons/PNG/go-down-symbolic.symbolic.png);
 }
 QProgressBar {
-    max-height: 8px;
     text-align: center;
-    font: italic bold 11px;
-    color: #3d3d3d;
+    font: bold 13px;
+    color: #000000;
     border: 1px solid transparent;
-    border-radius:4px;
+    border-radius:13px;
     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #ddd5d5, stop:0.5 #dad3d3, stop:1 #ddd5d5);
 }
 QProgressBar::chunk {
     background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #467dd1, stop:0.5 #3b88fc, stop:1 #467dd1);
-    border-radius: 4px;
+    border-radius: 13px;
 }
 QProgressBar:disabled {
     color: #616161;

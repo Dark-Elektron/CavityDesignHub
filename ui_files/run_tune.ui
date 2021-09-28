@@ -1360,7 +1360,7 @@
                       <property name="bottomMargin">
                        <number>0</number>
                       </property>
-                      <item row="0" column="7">
+                      <item row="0" column="6">
                        <spacer name="horizontalSpacer_6">
                         <property name="orientation">
                          <enum>Qt::Horizontal</enum>
@@ -1747,97 +1747,6 @@
             <string notr="true">background-color: rgb(250, 250, 250);</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_10">
-            <item row="0" column="6">
-             <widget class="QPushButton" name="pb_Cancel">
-              <property name="styleSheet">
-               <string notr="true"/>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="icon">
-               <iconset resource="../qss/icons.qrc">
-                <normaloff>:/icons/icons/PNG/stop.png</normaloff>:/icons/icons/PNG/stop.png</iconset>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="5">
-             <widget class="QPushButton" name="pb_Pause_Resume">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="iconSize">
-               <size>
-                <width>24</width>
-                <height>24</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QLabel" name="label_21">
-              <property name="text">
-               <string>Marker</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_48">
-              <property name="minimumSize">
-               <size>
-                <width>75</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>75</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>Filename</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="3">
-             <widget class="QLineEdit" name="le_Marker">
-              <property name="minimumSize">
-               <size>
-                <width>75</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>75</width>
-                <height>16777215</height>
-               </size>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QLineEdit" name="le_Generated_Shape_Space_Name">
-              <property name="minimumSize">
-               <size>
-                <width>200</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="text">
-               <string>test</string>
-              </property>
-              <property name="placeholderText">
-               <string>shape_space_name</string>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="4">
              <widget class="QPushButton" name="pb_Run">
               <property name="maximumSize">
@@ -1867,18 +1776,96 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="7">
-             <spacer name="horizontalSpacer_10">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
+            <item row="0" column="6">
+             <widget class="QPushButton" name="pb_Cancel">
+              <property name="styleSheet">
+               <string notr="true"/>
               </property>
-              <property name="sizeHint" stdset="0">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="../qss/icons.qrc">
+                <normaloff>:/icons/icons/PNG/stop.png</normaloff>:/icons/icons/PNG/stop.png</iconset>
+              </property>
+              <property name="iconSize">
                <size>
-                <width>40</width>
-                <height>20</height>
+                <width>24</width>
+                <height>24</height>
                </size>
               </property>
-             </spacer>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="le_Generated_Shape_Space_Name">
+              <property name="minimumSize">
+               <size>
+                <width>200</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>test</string>
+              </property>
+              <property name="placeholderText">
+               <string>shape_space_name</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QLineEdit" name="le_Marker">
+              <property name="minimumSize">
+               <size>
+                <width>75</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>75</width>
+                <height>16777215</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_48">
+              <property name="minimumSize">
+               <size>
+                <width>75</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>75</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Filename</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="5">
+             <widget class="QPushButton" name="pb_Pause_Resume">
+              <property name="text">
+               <string/>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_21">
+              <property name="text">
+               <string>Marker</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
