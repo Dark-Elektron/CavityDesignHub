@@ -5,13 +5,17 @@ import subprocess
 import numpy as np
 
 
-class Tune:
+class SLANSTune:
     def __init__(self, parentDir, projectDir):
+        """
+        parentDir:
+        """
+
         self.parentDir = parentDir
         self.projectDir = projectDir
         self.filename = 'tuned'
 
-    def mid_cell_tune(self, A, B, a, b, Ri, L, Req_0, freq0, proc, f_shift=0, n_modes=1, beta=1):
+    def mid_cell_tune(self, A, B, a, b, Ri, L, Req_0, freq0, proc=0, f_shift=0, n_modes=1, beta=1):
         self.tuner = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
         self.slans_files = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
 
@@ -227,8 +231,18 @@ class Tune:
         return data['L'], data['Freq'], data['alpha'], data['h'], data['e']
 
 
-# if __name__ == '__main__':
-#     tune = Tune(fr'parentDir', fr'projectDir')
-#     # tune.mid_cell_tune(801.58, 160, 67.72, 67.72, 21.75, 21.75, 60, 93.5)
-#     L, freq, alpha, h, e = tune.end_cell_tune([52, 52, 28.5, 28.5, 55, 93.5, 169.476], [52.0, 52.0, 28.5, 28.5, 82, 93.5, 169.476], 801.58) # par_out = [Ae, Be, ae, be, Rie, Le, at, bt, c]
-#     print(L, freq, alpha, h, e)
+if __name__ == '__main__':
+    parentDir = "D:\Dropbox\CEMCodesHub" # '<parentDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
+    projectDir = "D:\Dropbox\CEMCodesHub\SampleProject" # '<projectDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
+    """"
+    The parent directory 
+    """
+
+    # Create tuner object
+    tune = SLANSTune(parentDir, projectDir)
+
+    # Call mid_cell_tune function
+    L, freq, alpha, h, e = tune.mid_cell_tune(67.72, 67.72, 21.75, 21.75, 60, 93.5, 160, 801.58)
+    # L, freq, alpha, h, e = tune.end_cell_tune([52, 52, 28.5, 28.5, 55, 93.5, 169.476], [52.0, 52.0, 28.5, 28.5, 82, 93.5, 169.476], 801.58) # par_out = [Ae, Be, ae, be, Rie, Le, at, bt, c]
+
+    print(L, freq, alpha, h, e)

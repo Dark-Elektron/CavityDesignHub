@@ -8,10 +8,10 @@ from threading import Thread
 import numpy as np
 from scipy.optimize import fsolve
 from termcolor import colored
-from simulation_codes.SLANS.slans_tune import Tune
+from simulation_codes.SLANS.slansTuner import SLANSTune
 # from objective_functions import *
 from utils import misc_functions as f
-from modules.tune_module.tuners.tuner import Tuner
+from modules.tune_module.tuners.pyTuner import PyTune
 
 file_color = 'green'
 

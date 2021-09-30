@@ -34,8 +34,8 @@
        <number>0</number>
       </property>
       <item row="3" column="1">
-       <widget class="QWidget" name="widget_5" native="true">
-        <layout class="QGridLayout" name="gridLayout_7">
+       <widget class="QWidget" name="w_Simulation_Controls" native="true">
+        <layout class="QGridLayout" name="gl_Simulation_Controls">
          <item row="0" column="1">
           <widget class="QPushButton" name="pb_Run">
            <property name="maximumSize">

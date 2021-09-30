@@ -39,6 +39,63 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget_8" native="true">
+        <layout class="QGridLayout" name="gridLayout_25">
+         <item row="0" column="1">
+          <widget class="QComboBox" name="comboBox_3">
+           <item>
+            <property name="text">
+             <string>MHz</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>GHz</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Hz</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer_14">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="2">
+          <widget class="QComboBox" name="comboBox_2">
+           <item>
+            <property name="text">
+             <string>mm</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>cm</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>m</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QWidget" name="widget_3" native="true">
         <layout class="QGridLayout" name="gridLayout_24">
@@ -56,7 +113,7 @@
            <widget class="QWidget" name="scrollAreaWidgetContents">
             <property name="geometry">
              <rect>
-              <x>-63</x>
+              <x>0</x>
               <y>0</y>
               <width>1308</width>
               <height>533</height>
@@ -1551,7 +1608,7 @@
                          </size>
                         </property>
                         <property name="toolTip">
-                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Flexibility:&lt;/span&gt; SLANS Tuners are the mid and end cell tuners for Req and L respectively. Currently, the mid-cell tuner can only tune for Req and the end-cell tuner can only tune for L. PyTune offers more flexibility to cell combinations. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Timing:&lt;/span&gt; In terms of timing, sometimes PyTune is faster and at other times. PyTune also has a better chance of returning a result. This also means some degenerate shapes could be returned when a degerate set of input parameters are given so it is always good to check.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Accuracy:&lt;/span&gt; The accuracy of PyTune could be adjusted from the settings. Currently, it is not clear how this can be achieved with the SLANS tuners.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Flexibility:&lt;/span&gt; SLANS Tuners are the mid and end cell tuners for Req and L respectively. Currently, the mid-cell tuner can only tune for Req and the end-cell tuner can only tune for L. PyTune offers more flexibility to cell combinations. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Timing:&lt;/span&gt; In terms of timing, sometimes PyTune is faster and at other times. PyTune also has a better chance of returning a result. This also means some degenerate shapes could be returned when a degerate set of input parameters are given so it is always good to check.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <item>
                          <property name="text">
@@ -1745,11 +1802,11 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QWidget" name="widget_4" native="true">
+          <widget class="QWidget" name="w_Simulation_Controls" native="true">
            <property name="styleSheet">
             <string notr="true">background-color: rgb(250, 250, 250);</string>
            </property>
-           <layout class="QGridLayout" name="gridLayout_10">
+           <layout class="QGridLayout" name="gl_Simulation_Controls">
             <item row="0" column="4">
              <widget class="QPushButton" name="pb_Run">
               <property name="maximumSize">
@@ -1872,63 +1929,6 @@
             </item>
            </layout>
           </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QWidget" name="widget_8" native="true">
-        <layout class="QGridLayout" name="gridLayout_25">
-         <item row="0" column="1">
-          <widget class="QComboBox" name="comboBox_3">
-           <item>
-            <property name="text">
-             <string>MHz</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>GHz</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>Hz</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QComboBox" name="comboBox_2">
-           <item>
-            <property name="text">
-             <string>mm</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>cm</string>
-            </property>
-           </item>
-           <item>
-            <property name="text">
-             <string>m</string>
-            </property>
-           </item>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <spacer name="horizontalSpacer_14">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </widget>

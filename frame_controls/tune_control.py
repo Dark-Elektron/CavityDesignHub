@@ -9,8 +9,8 @@ from PyQt5.QtCore import QPropertyAnimation, QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 from scipy.optimize import fsolve
-from modules.tune_module.tuners.tuner import Tuner
-from simulation_codes.SLANS.slans_tune import Tune
+# from modules.tune_module.tuners.pyTuner import Tuner
+# from simulation_codes.SLANS.slansTuner import Tune
 from ui_files.run_tune import Ui_w_Tune
 import ast
 import json
@@ -26,6 +26,7 @@ from utils.file_reader import FileReader
 import pyqtgraph as pg
 from distutils import dir_util
 import psutil
+from modules.tune_module.tuners.tuner import Tuner
 
 file_color = 'red'
 DEBUG = True
@@ -34,6 +35,8 @@ def print_(*arg):
 
 fr = FileReader()
 slans_geom = SLANSGeometry()
+
+tuner = Tuner()
 
 AN_DURATION = 200
 
@@ -119,10 +122,10 @@ class TuneControl:
         self.tuneUI.cb_RBC.setCurrentIndex(2)
 
         # create progress bar object and add to widget
-        self.progress_bar = QProgressBar(self.tuneUI.widget_4)
+        self.progress_bar = QProgressBar(self.tuneUI.w_Simulation_Controls)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.tuneUI.gridLayout_10.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.tuneUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
         self.progress_bar.hide()
 
         # disable convergence monitor checkbox
@@ -263,7 +266,7 @@ class TuneControl:
 
     def run_tune(self, pseudo_shape_space, resume):
         # set tuner
-        self.tuner = self.tuneUI.cb_Tuner.currentText()
+        self.tuner_option = self.tuneUI.cb_Tuner.currentText()
         proc_count = self.tuneUI.sb_No_Of_Processors_Tune.value()
         tune_variable = self.tuneUI.cb_Tune_Option.currentText().split(' ')[-1]
 
@@ -305,12 +308,12 @@ class TuneControl:
             col_count = int(proc_count/3)
             row_count = proc_count - col_count
 
-            print("row column ", row_count, col_count, proc_count)
+            # print("row column ", row_count, col_count, proc_count)
 
             self.pg_list = []
             self.pygraph_list = []
-            print("pglist before ", self.pg_list)
-            print("pygraph before ", self.pygraph_list)
+            # print("pglist before ", self.pg_list)
+            # print("pygraph before ", self.pygraph_list)
 
             if col_count == 0:
                 for i in range(row_count):
@@ -320,8 +323,8 @@ class TuneControl:
                     for j in range(col_count):
                         self.createPyGraph(i, j)
 
-            print("pglist after ", self.pg_list)
-            print("pygraph after ", self.pygraph_list)
+            # print("pglist after ", self.pg_list)
+            # print("pygraph after ", self.pygraph_list)
 
             # show progress bar
             self.progress_bar.show()
@@ -343,7 +346,7 @@ class TuneControl:
 
                     service = mp.Process(target=self.run_sequential,
                                          args=(processor_shape_space, resume, p, bc, self.main_control.parentDir,
-                                               self.main_control.projectDir, self.filename, self.tuner,
+                                               self.main_control.projectDir, self.filename, self.tuner_option,
                                                tune_variable, iter_set, cell_type))
                     print("\t1d")
                     service.start()
@@ -360,10 +363,10 @@ class TuneControl:
             self.progress_monitor_thread.sig.connect(self.update_progress_bar)
             self.progress_monitor_thread.start()
 
-            # start convergence monitor
-            self.convergence_monitor_thread = MonitorConvergence(self, self.main_control.projectDir)
-            self.convergence_monitor_thread.sig.connect(self.monitor_convergence)
-            self.convergence_monitor_thread.start()
+            # # start convergence monitor
+            # self.convergence_monitor_thread = MonitorConvergence(self, self.main_control.projectDir)
+            # self.convergence_monitor_thread.sig.connect(self.monitor_convergence)
+            # self.convergence_monitor_thread.start()
 
             self.log.info("Tune started")
             # change process state to running
@@ -402,13 +405,8 @@ class TuneControl:
                 self.pygraph_list[i].addLine(x=None, y=self.freq, pen=pg.mkPen('r', width=1))
 
                 if not self.plot_list[i]:
-                    print("pygraph", self.pygraph_list)
-                    print("plot list ", self.plot_list)
-                    print("convergene ", conv)
                     self.plot_list[i] = self.pygraph_list[i].plot(conv[i][0], conv[i][1], pen=None, symbol='o')
                 else:
-                    print("Plotted values", i)
-                    print("\t\t", conv)
                     self.plot_list[i].setData(conv[i][0], conv[i][1], pen=None, symbol='o')
 
             time.sleep(1)
@@ -918,8 +916,8 @@ class TuneControl:
         state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
 
     @staticmethod
-    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner, tune_variable, iter_set, cell_type):
-        tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner=tuner,
+    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type):
+        tuner.tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner_option=tuner_option,
                        tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type) # last_key=last_key This would have to be tested again #val2
 
     def deserialize(self, state_dict):
@@ -1193,8 +1191,6 @@ class ProgressMonitor(QThread):
                         with open(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
                             a = f.readline()
                             progress += eval(a)
-                            print(f"Processor {i}", eval(a)*100)
-                print(f"Total", progress*100/len(proc_ids), len(proc_ids))
                 self.sig.emit(progress*100/len(proc_ids))
 
             except:
@@ -1283,144 +1279,5 @@ class MonitorConvergence(QThread):
                     L, freq = df["tv"].to_list(), df["freq"].to_list()
 
                     conv.append([L, freq])
-            print(conv)
             self.sig.emit(conv)
 
-
-def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
-          proc=0, tuner='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell'):
-
-    # tuner
-    pytune = Tuner()
-
-    if tuner == 'SLANS':
-        slans_tune = Tune(parentDir, projectDir)
-    else:
-        slans_tune = None
-
-    start = time.time()
-    population = {}
-    total_no_of_shapes = len(list(pseudo_shape_space.keys()))
-
-    # check for already processed shapes
-    existing_keys = []
-
-    if resume == "Yes":
-        # check if value set is already written. This is to enable continuation in case of break in program
-        if os.path.exists(fr'{projectDir}/Cavities/{filename}'):
-            population = json.load(open(fr'{projectDir}/Cavities/{filename}', 'r'))
-
-            existing_keys = list(population.keys())
-            print_(f'Existing keys: {existing_keys}')
-
-    progress = 0
-    # write to progress file
-    try:
-        with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
-            txt = f"{progress+1}/{total_no_of_shapes}"
-            file.write(txt)
-    except IOError:
-        pass
-
-    for key, pseudo_shape in pseudo_shape_space.items():
-
-        A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _ = pseudo_shape['IC'] # Req here is none but required since the shape space consists of all variables
-        A_o, B_o, a_o, b_o, Ri_o, L_o, Req, _ = pseudo_shape['OC'] # Req here is none but required since the shape space consists of all variables
-        beampipes = pseudo_shape['BP']
-        freq = pseudo_shape['FREQ']
-
-        # new mid cell and end cell with initial Req guess
-        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0]
-        outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0]
-
-        # edit to check for key later
-        if key not in existing_keys:
-            if tuner == 'SLANS' and slans_tune:
-                if tune_variable == 'Req':
-                    # Tune cell to get Req
-                    Req, freq, alpha, h, e = slans_tune.mid_cell_tune(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, freq, proc=proc)
-                else:
-                    L, freq, alpha, h, e = slans_tune.end_cell_tune(inner_cell, outer_cell, freq, proc=proc)
-
-                    if cell_type == 'Mid Cell':
-                        L_i, L_o = L, L
-                    else:
-                        L_o = L
-
-                inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha]
-                outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha]
-            else:
-                if tune_variable == 'Req':
-                    Req, freq = pytune.tune("Req", inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
-                    # round
-                    Req, freq = round(Req, 4), round(freq, 2)
-                else:
-                    L, freq = pytune.tune("L", inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
-
-                    # round
-                    L, freq = round(L, 2), round(freq, 2)
-
-                    if cell_type == 'Mid Cell':
-                        L_i, L_o = L, L
-                    else:
-                        L_o = L
-
-                alpha_i = calculate_alpha(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0)
-                alpha_o = calculate_alpha(A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0)
-
-                inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha_i]
-                outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha_o]
-
-            print_(f'Done Tuning Cavity {key}')
-
-            # write to progress file
-            try:
-                with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
-                    txt = f"{progress+1}/{total_no_of_shapes}"
-                    file.write(txt)
-            except IOError:
-                pass
-
-            if cell_type == 'Mid Cell':
-                population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'none', 'FREQ': freq}
-            else:
-                population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'both', 'FREQ': freq}
-
-        # Update progressbar
-        progress += 1
-
-        # print_("Saving Dictionary", f"shape_space{proc}.json")
-        with open(fr"{projectDir}\Cavities\shape_space{proc}.json", 'w') as file:
-            file.write(json.dumps(population, indent=4, separators=(',', ': ')))
-        # print_("Done saving")
-
-    end = time.time()
-
-    runtime = end - start
-    print_(f'Processor {proc} runtime: {runtime}')
-
-
-def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
-
-    data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
-            [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-    x1, y1, x2, y2 = fsolve(ellipse_tangent,
-                            np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
-                            args=data)
-    m = (y2 - y1) / (x2 - x1)
-    alpha = 180 - np.arctan(m) * 180 / np.pi
-    return alpha
-
-
-def ellipse_tangent(z, *data):
-    coord, dim = data
-    h, k, p, q = coord
-    a, b, A, B = dim
-    x1, y1, x2, y2 = z
-
-    f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-    f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-    f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-    f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-
-    return f1, f2, f3, f4

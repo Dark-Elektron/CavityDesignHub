@@ -7,6 +7,8 @@ import threading
 import time
 import multiprocessing as mp
 from threading import Thread
+
+from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import QPropertyAnimation
 from termcolor import colored
@@ -70,6 +72,7 @@ class WakefieldControl:
         self._selected_keys = []
         self.processes = []
         self.processes_id = []
+        self.show_progress_bar = False
 
     def signals(self):
         # signals
@@ -145,6 +148,13 @@ class WakefieldControl:
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
 
+        # create progress bar object and add to widget
+        self.progress_bar = QProgressBar(self.wakefieldUI.w_Simulation_Controls)
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setValue(0)
+        self.wakefieldUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.progress_bar.hide()
+
     def shape_entry_widgets_control(self):
         if self.wakefieldUI.cb_Shape_Entry_Mode.currentIndex() == 0:
             self.main_control.animate_height(self.wakefieldUI.w_Select_Shape_Space, 0, 50, True)
@@ -199,6 +209,9 @@ class WakefieldControl:
         shape_space_len = len(keys)
         share = round(shape_space_len / proc_count)
 
+        # show progress bar
+        self.progress_bar.show()
+
         self.processes = []
         for p in range(proc_count):
             try:
@@ -225,16 +238,22 @@ class WakefieldControl:
                 self.processes.append(psutil.Process(service.pid))
                 self.processes_id.append(service.pid)
 
-                t = threading.Thread(target=self.end_routine, args=(self.processes_id, ))
-                t.start()
-
             except Exception as e:
                 self.log.error(f"Exception in run_MP:: {e}")
+
+            # display progress bar
+            self.show_progress_bar = True
+            self.progress_monitor_thread = ProgressMonitor(self, self.main_control.projectDir)
+            self.progress_monitor_thread.sig.connect(self.update_progress_bar)
+            self.progress_monitor_thread.start()
 
             self.log.info("Wakefield simulation started")
             # change process state to running
             self.process_state = 'running'
             self.run_pause_resume_stop_routine()
+
+            self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
+            self.end_routine_thread.start()
 
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
@@ -309,6 +328,14 @@ class WakefieldControl:
                 pass
 
         self.cancel()
+
+    def update_progress_bar(self, val):
+        self.progress_bar.setValue(val)
+
+        if val == 100 or not self.show_progress_bar:
+            # reset progress bar
+            self.progress_bar.setValue(0)
+            self.progress_bar.hide()
 
     def get_geometric_parameters(self, code):
         self.shape_space = {}
@@ -661,6 +688,61 @@ def run_sequential(n_cells, n_modules, processor_shape_space,
             print_(f'Cavity {key}. Time: {time.time() - start_time}')
         except Exception as e:
             print(f'Error in abci_mpi_mp:: run_sequential -> {e}')
+
+
+class ProgressMonitor(QThread):
+    sig = QtCore.pyqtSignal(int)
+
+    def __init__(self, tune_control, projectDir):
+        super(QThread, self).__init__()
+        self.tune_control = tune_control
+        self.proc_ids = tune_control.processes_id
+        self.progress_bar = tune_control.progress_bar
+        self.projectDir = projectDir
+
+    def run(self):
+        self.progress_monitor(self.proc_ids)
+
+    def progress_monitor(self, proc_ids):
+        # read progress files and update progress
+        while self.tune_control.show_progress_bar:
+            try:
+                progress = 0
+                for i in range(len(proc_ids)):
+                    if os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
+                        with open(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
+                            a = f.readline()
+                            progress += eval(a)
+                self.sig.emit(progress*100/len(proc_ids))
+
+            except:
+                print("Error in progress update")
+                pass
+
+
+class EndRoutine(QThread):
+    def __init__(self, control, projectDir):
+        super(QThread, self).__init__()
+        self.control = control
+        self.proc_ids = control.processes_id
+        self.projectDir = projectDir
+
+    def run(self):
+        self.end_routine()
+
+    def end_routine(self):
+        for pid in self.proc_ids:
+            try:
+                p = psutil.Process(pid)
+                while p.is_running():
+                    pass
+
+                print(fr"process {p} ended")
+            except:
+                pass
+
+        self.control.cancel()
+
 
 class CheckableComboBox(QComboBox):
 

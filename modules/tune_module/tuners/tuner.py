@@ -1,316 +1,166 @@
 import json
-
-from termcolor import colored
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
-from utils.file_reader import FileReader
+import os
+import time
 import numpy as np
-from itertools import groupby
+from scipy.optimize import fsolve
+from modules.tune_module.tuners.pyTuner import PyTune
+from simulation_codes.SLANS.slansTuner import SLANSTune
 
-slans_geom = SLANSGeometry()
-fr = FileReader()
-file_color = 'cyan'
-
-DEBUG = True
-def print_(*arg):
-    if DEBUG: print(colored(f'\t\t\t{arg}', file_color))
 
 class Tuner:
     def __init__(self):
-        self.plot = None
+        pass
 
-    def tune(self, tune_var, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0):
-        # tv => tune variable
-        if tune_var == "Req":
-            indx = 6
+    def tune(self, pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
+              proc=0, tuner_option='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell'):
+
+        # tuner
+        pytune = PyTune()
+
+        if tuner_option == 'SLANS':
+            slans_tune = SLANSTune(parentDir, projectDir)
         else:
-            indx = 5
+            slans_tune = None
 
-        if proc == '':
-            fid = '_process_0'
-        else:
-            fid = f'_process_{proc}'
+        start = time.time()
+        population = {}
+        total_no_of_shapes = len(list(pseudo_shape_space.keys()))
 
-        # get parameters
-        freq_list = []
-        tv_list = []
-        error = 1
+        # check for already processed shapes
+        existing_keys = []
 
-        slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid, parentDir=parentDir, projectDir=projectDir)
-        dirc = f'{projectDir}\SimulationData\SLANS\Cavity{fid}\cavity_{bc}.svl'
-        d = fr.svl_reader(dirc)
+        if resume == "Yes":
+            # check if value set is already written. This is to enable continuation in case of break in program
+            if os.path.exists(fr'{projectDir}/Cavities/{filename}'):
+                population = json.load(open(fr'{projectDir}/Cavities/{filename}', 'r'))
 
-        tv = par_end[indx]
-        freq = d['FREQUENCY'][0]
-        freq_list.append(freq)
-        tv_list.append(tv)
+                existing_keys = list(population.keys())
+                print(f'Existing keys: {existing_keys}')
 
-        # first shot
-        tv = tv + 10
+        progress = 0
+        # write to progress file
+        try:
+            with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
+                txt = f"{progress+1}/{total_no_of_shapes}"
+                file.write(txt)
+        except IOError:
+            pass
 
-        par_end[indx], par_mid[indx] = tv, tv
+        for key, pseudo_shape in pseudo_shape_space.items():
 
-        tol = iter_set[1]
-        max_iter = iter_set[2]
-        n = 0
+            A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _ = pseudo_shape['IC'] # Req here is none but required since the shape space consists of all variables
+            A_o, B_o, a_o, b_o, Ri_o, L_o, Req, _ = pseudo_shape['OC'] # Req here is none but required since the shape space consists of all variables
+            beampipes = pseudo_shape['BP']
+            freq = pseudo_shape['FREQ']
 
-        self.f_min, self.f_max = 0, 0
-        self.tv_min, self.tv_max = 0, 0
-        control_switch = True
+            # new mid cell and end cell with initial Req guess
+            inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0]
+            outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0]
 
-        while abs(error) > tol:
-            # run slans cavity code
-            slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid, parentDir=parentDir, projectDir=projectDir)
-
-            # get results and compare with set value
-            d = fr.svl_reader(dirc)
-            freq = d['FREQUENCY'][0]
-            freq_list.append(freq)
-            tv_list.append(tv)
-            print(tv_list)
-            print(freq_list, self.f_min, self.f_max)
-
-            # update bounds
-            if self.f_min < freq <= target_freq and freq > self.f_min:
-                self.f_min = freq
-                self.tv_min = tv
-
-            if freq >= target_freq:
-                if self.f_max == 0:
-                    print("First max set")
-                    self.f_max = freq
-                    self.tv_max = tv
-                elif freq <= self.f_max:
-                    print("Max update")
-                    self.f_max = freq
-                    self.tv_max = tv
-
-            # calculate slope of line from base point to new point
-            if freq_list[n] - freq_list[n+1] != 0 and control_switch and self.f_max - self.f_min != 0:
-                if iter_set[0] == "Linear Interpolation":
-                    m = (tv_list[n+1] - tv_list[n])/(freq_list[n+1] - freq_list[n])
-                    # calculate new tv with straight line formula
-                    tv = tv_list[n+1] + m*(target_freq - freq_list[n+1])
-
-                    # check if new tv is between the current min and max tv
-                    if self.tv_min < abs(tv) < self.tv_max or (self.tv_min == 0 or self.tv_max == 0):
-                        if self.tv_min == 0:
-                            tv = self.tv_max - 5
-                        pass
+            # edit to check for key later
+            if key not in existing_keys:
+                if tuner_option == 'SLANS' and slans_tune:
+                    if tune_variable == 'Req':
+                        # Tune cell to get Req
+                        Req, freq, alpha, h, e = slans_tune.mid_cell_tune(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, freq, proc=proc)
                     else:
-                        if self.tv_min*self.tv_max != 0:
-                            tv = self.tv_min + (self.tv_max-self.tv_min)*(target_freq-self.f_min)/(self.f_max - self.f_min)
+                        L, freq, alpha, h, e = slans_tune.end_cell_tune(inner_cell, outer_cell, freq, proc=proc)
 
-                        elif self.tv_min != 0:
-                            # check the side of the curve the new value falls to
-                            if abs(tv) > self.tv_min:
-                                tv = max(self.tv_min + 1, self.tv_min*(target_freq/self.f_min))
-                            else:
-                                tv = max(self.tv_min - 1, self.tv_min/(target_freq/self.f_min))
-                        elif self.tv_max != 0:
-                            # check the side of the curve the new value falls to
-                            if abs(tv) < self.tv_max:
-                                tv = self.tv_max - 1
-                            else:
-                                tv = self.tv_max + 1
+                        if cell_type == 'Mid Cell':
+                            L_i, L_o = L, L
+                        else:
+                            L_o = L
 
-
+                    inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha]
+                    outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha]
                 else:
-                    # newton interpolation
-                    a_s = self.divided_diff(freq_list, tv_list)[0, :]
+                    if tune_variable == 'Req':
+                        Req, freq = pytune.tuneR(inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
+                        # round
+                        Req, freq = round(Req, 4), round(freq, 2)
+                    else:
+                        L, freq = pytune.tuneL(inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
 
-                    # use curve to compute for x
-                    tv = self.newton_poly(a_s, freq_list, target_freq)
+                        # round
+                        L, freq = round(L, 2), round(freq, 2)
 
-            elif self.f_max - self.f_min != 0:
-                # switch control to just this part of the code for the end parts of the simulation for convergence
-                control_switch = False
-                if self.tv_min*self.tv_max != 0:
-                    tv = (self.tv_min + self.tv_max)/2
+                        if cell_type == 'Mid Cell':
+                            L_i, L_o = L, L
+                        else:
+                            L_o = L
 
+                    alpha_i = self.calculate_alpha(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0)
+                    alpha_o = self.calculate_alpha(A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0)
 
-            # change tv
-            par_end[indx], par_mid[indx] = tv, tv
+                    inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha_i]
+                    outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha_o]
 
-            # if equal, break else continue with new shape
-            error = target_freq - freq_list[-1]
+                print(f'Done Tuning Cavity {key}')
 
-            if n > max_iter:
-                print('here at breaking')
-                break
+                # write to progress file
+                try:
+                    with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
+                        txt = f"{progress+1}/{total_no_of_shapes}"
+                        file.write(txt)
+                except IOError:
+                    pass
 
-            # condition for repeated last four values
-            if self.all_equal(freq_list[-2:]):
-                print("break because last two elements are equal")
-                break
+                if cell_type == 'Mid Cell':
+                    population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'none', 'FREQ': freq}
+                else:
+                    population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'both', 'FREQ': freq}
 
-            # write output
-            self.write_output(tv_list, freq_list, fid, projectDir)
-            n += 1
+            # Update progressbar
+            progress += 1
 
-        # return best answer from iteration
-        min_error = [abs(x-target_freq) for x in freq_list]
-        key = min_error.index(min(min_error))
+            # print("Saving Dictionary", f"shape_space{proc}.json")
+            with open(fr"{projectDir}\Cavities\shape_space{proc}.json", 'w') as file:
+                file.write(json.dumps(population, indent=4, separators=(',', ': ')))
+            # print("Done saving")
 
-        # import matplotlib.pyplot as plt
-        # plt.scatter(tv_list, freq_list)
-        # plt.show()
+        end = time.time()
 
-        return tv_list[key], freq_list[key]
+        runtime = end - start
+        print(f'Processor {proc} runtime: {runtime}')
 
-    @staticmethod
-    def divided_diff(x, y):
-        '''
-        function to calculate the divided
-        differences table
-        '''
-        n = len(y)
-        coef = np.zeros([n, n])
-        # the first column is y
-        coef[:, 0] = y
+    def calculate_alpha(self, A, B, a, b, Ri, L, Req, L_bp):
 
-        for j in range(1, n):
-            for i in range(n - j):
-                coef[i][j] = (coef[i + 1][j - 1] - coef[i][j - 1]) / (x[i + j] - x[i]) if (x[i + j] - x[i]) != 0  else 0
+        data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
+                [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        x1, y1, x2, y2 = fsolve(self.ellipse_tangent,
+                                np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
+                                args=data)
+        m = (y2 - y1) / (x2 - x1)
+        alpha = 180 - np.arctan(m) * 180 / np.pi
+        return alpha
 
-        return coef
+    def ellipse_tangent(self, z, *data):
+        coord, dim = data
+        h, k, p, q = coord
+        a, b, A, B = dim
+        x1, y1, x2, y2 = z
 
-    @staticmethod
-    def newton_poly(coef, x_data, x):
-        '''
-        evaluate the newton polynomial
-        at x
-        '''
-        n = len(x_data) - 1
-        p = coef[n]
-        for k in range(1, n + 1):
-            p = coef[n - k] + (x - x_data[n - k]) * p
-        return p
+        f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+        f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+        f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
 
-        # return Shape([self.A, self.B, self.a, self.b, self.r, self.l, self.R])
-
-    @staticmethod
-    def all_equal(iterable):
-        g = groupby(iterable)
-        return next(g, True) and not next(g, False)
-
-    @staticmethod
-    def write_output(tv_list, freq_list, fid, projectDir):
-        print("Writing output")
-        dd = {"tv": tv_list, "freq": freq_list}
-
-        with open(f"{projectDir}\SimulationData\SLANS\Cavity{fid}\convergence_output.json", "w") as outfile:
-            json.dump(dd, outfile, indent=4, separators=(',', ': '))
-
-    # def tuneR(self, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0):
-    #     if self.pygraph:
-    #         self.pygraph.clear()
-    #
-    #     if proc == '':
-    #         fid = '_process_0'
-    #     else:
-    #         fid = f'_process_{proc}'
-    #
-    #     # get parameters
-    #     freq_list = []
-    #     Req_list = []
-    #     error = 1
-    #     print("in tuner ", projectDir)
-    #     slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid, parentDir=parentDir, projectDir=projectDir)
-    #     dirc = f'{projectDir}\SimulationData\SLANS\Cavity{fid}\cavity_{bc}.svl'
-    #     d = fr.svl_reader(dirc)
-    #
-    #     Req = par_end[6]
-    #     freq = d['FREQUENCY'][0]
-    #     freq_list.append(freq)
-    #     Req_list.append(Req)
-    #
-    #     # first shot
-    #     Req = Req + 20
-    #     par_end[6], par_mid[6] = Req, Req
-    #
-    #     # iteration settings
-    #     tol = iter_set[1]
-    #     max_iter = iter_set[2]
-    #     n = 0
-    #     self.Req_min, self.Req_max = 0, 0
-    #     self.f_min, self.f_max = 0, 0
-    #
-    #     while abs(error) > tol:
-    #         # run slans cavity code
-    #         slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid, parentDir=parentDir, projectDir=projectDir)
-    #
-    #         # get results and compare with set value
-    #         d = fr.svl_reader(dirc)
-    #         freq = d['FREQUENCY'][0]
-    #         freq_list.append(freq)
-    #         Req_list.append(Req)
-    #
-    #         # update bounds
-    #         if self.f_min < freq < target_freq and freq > self.f_min:
-    #             self.f_min = freq
-    #             self.Req_min = Req
-    #
-    #         if target_freq < freq < self.f_max and freq < self.f_max:
-    #             self.f_max = freq
-    #             self.Req_max = Req
-    #
-    #         # calculate slope of line from base point to new point
-    #         if freq_list[n] - freq_list[n + 1] != 0:
-    #             m = (Req_list[n + 1] - Req_list[n]) / (freq_list[n + 1] - freq_list[n])
-    #
-    #             if iter_set[0] == "Linear Interpolation":
-    #                 # calculate new Req with straight line formula
-    #                 Req = Req_list[n+1] + m * (target_freq - freq_list[n+1])
-    #
-    #                 # check if new Req is between the current min and max Req
-    #                 if self.Req_min < abs(Req) < self.Req_max:
-    #                     pass
-    #                 else:
-    #                     if self.Req_min*self.Req_max != 0:
-    #                         Req = (self.Req_min + self.Req_max)/2
-    #
-    #                     elif self.Req_min != 0:
-    #                         # check the side of the curve the new value falls to
-    #                         if abs(Req) > self.Req_min:
-    #                             Req = max(self.Req_min + 1, self.Req_min*(target_freq/self.f_min))
-    #                         else:
-    #                             Req = max(self.Req_min - 1, self.Req_min/(target_freq/self.f_min))
-    #                     elif self.Req_max != 0:
-    #                         # check the side of the curve the new value falls to
-    #                         if abs(Req) < self.Req_max:
-    #                             Req = self.Req_max - 1
-    #                         else:
-    #                             Req = self.Req_max + 1
-    #
-    #             else:
-    #                 # newton interpolation
-    #                 a_s = self.divided_diff(freq_list, Req_list)[0, :]
-    #
-    #                 # use curve to compute for x
-    #                 Req = self.newton_poly(a_s, freq_list, target_freq)
-    #         # else:
-    #         #     Req = Req_list[n+1] + 0.5
-    #
-    #         # change R
-    #         par_end[6], par_mid[6] = Req, Req
-    #
-    #         # if equal, break else continue with new shape
-    #         error = target_freq - freq
-    #
-    #         # avoid infinite loop-1
-    #         if n > max_iter:
-    #             break
-    #
-    #         n += 1
-    #
-    #     # return best answer from iteration
-    #     min_error = [abs(x-target_freq) for x in freq_list]
-    #     key = min_error.index(min(min_error))
-    #
-    #     import matplotlib.pyplot as plt
-    #     plt.scatter(Req_list, freq_list)
-    #     plt.show()
-    #
-    #     return Req_list[key], freq_list[key]
+        return f1, f2, f3, f4
 
 
+# if __name__ == '__main__':
+#     #
+#     tune = Tuner()
+#
+#     tune_var =
+#     par_mid =
+#     par_end =
+#     target_freq = 400  # MHz
+#     beampipes =
+#     bc =  # boundary conditions
+#     parentDir = ""  # location of slans code. See folder structure in the function above
+#     projectDir = ""  # location to write results to
+#     iter_set =
+#     proc = 0
+#
+#     tune.tune(self, tune_var, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0):
