@@ -642,6 +642,7 @@ class Ui_w_Tune(object):
         self.label_20.setText(_translate("w_Tune", "Iterative Method"))
         self.le_Tolerance.setText(_translate("w_Tune", "1e-4"))
         self.pushButton.setToolTip(_translate("w_Tune", "<html><head/><body><p>Thresholds smaller than 1e-5 make no difference because the frequency result output of SLANS is rounded to 4 dp.</p></body></html>"))
+        self.cb_Monitor_Convergence.setToolTip(_translate("w_Tune", "Feature not yet available"))
         self.cb_Monitor_Convergence.setText(_translate("w_Tune", "Monitor Convergence"))
         self.cb_Outer_Cell.setText(_translate("w_Tune", "Outer cell"))
         self.cb_Inner_Cell.setText(_translate("w_Tune", "Inner cell"))

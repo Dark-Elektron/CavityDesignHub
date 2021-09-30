@@ -93,32 +93,25 @@ class Tuner:
 
                     # check if new tv is between the current min and max tv
                     if self.tv_min < abs(tv) < self.tv_max or (self.tv_min == 0 or self.tv_max == 0):
-                        print("pass here1")
                         if self.tv_min == 0:
                             tv = self.tv_max - 5
-                            print_("Hereeeee")
                         pass
                     else:
                         if self.tv_min*self.tv_max != 0:
                             tv = self.tv_min + (self.tv_max-self.tv_min)*(target_freq-self.f_min)/(self.f_max - self.f_min)
-                            print("pass here2")
 
                         elif self.tv_min != 0:
                             # check the side of the curve the new value falls to
                             if abs(tv) > self.tv_min:
                                 tv = max(self.tv_min + 1, self.tv_min*(target_freq/self.f_min))
-                                print("pass here3")
                             else:
                                 tv = max(self.tv_min - 1, self.tv_min/(target_freq/self.f_min))
-                                print("pass here4")
                         elif self.tv_max != 0:
                             # check the side of the curve the new value falls to
                             if abs(tv) < self.tv_max:
                                 tv = self.tv_max - 1
-                                print("pass here5")
                             else:
                                 tv = self.tv_max + 1
-                                print("pass here6")
 
 
                 else:
@@ -133,7 +126,6 @@ class Tuner:
                 control_switch = False
                 if self.tv_min*self.tv_max != 0:
                     tv = (self.tv_min + self.tv_max)/2
-                    print("pass here4")
 
 
             # change tv

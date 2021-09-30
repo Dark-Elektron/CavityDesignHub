@@ -26,8 +26,10 @@ fr = FileReader()
 
 file_color = 'red'
 
+
 def print_(*arg):
     print(colored(f'\t{arg}', file_color))
+
 
 class WakefieldControl:
     def __init__(self, parent):

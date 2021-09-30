@@ -506,6 +506,7 @@ class CustomFormatter(logging.Formatter):
         self._style._fmt = last_fmt
         return res
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     main_win = MainWindow()

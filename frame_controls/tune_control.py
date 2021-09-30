@@ -4,7 +4,8 @@ import stat
 from distutils.dir_util import copy_tree
 from math import floor
 import threading
-from PyQt5.QtCore import QPropertyAnimation
+from PyQt5 import QtCore
+from PyQt5.QtCore import QPropertyAnimation, QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtWidgets import *
 from scipy.optimize import fsolve
@@ -117,6 +118,16 @@ class TuneControl:
         self.tuneUI.cb_LBC.setCurrentIndex(2)
         self.tuneUI.cb_RBC.setCurrentIndex(2)
 
+        # create progress bar object and add to widget
+        self.progress_bar = QProgressBar(self.tuneUI.widget_4)
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setValue(0)
+        self.tuneUI.gridLayout_10.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.progress_bar.hide()
+
+        # disable convergence monitor checkbox
+        self.tuneUI.cb_Monitor_Convergence.setEnabled(False)
+
     def signals(self):
 
         # signals/slots
@@ -160,55 +171,6 @@ class TuneControl:
         self.tuneUI.le_Tune_Variable.textChanged.connect(lambda: self.tuneUI.le_Tune_Variable_End_Cell.setText(self.tuneUI.le_Tune_Variable.text())
                                                          if self.tuneUI.cb_Tune_Option.currentIndex() == 1
                                                          else None)
-
-    def createPyGraph(self, row, column):
-        print(row, column)
-        # add pyqgraph
-        pg_ = pg
-        pygraph = pg_.PlotWidget()
-        pygraph.setBackground('w')
-        print("here here")
-        self.tuneUI.gl_PyqtGraph.addWidget(pygraph, row, column, 1, 1)
-
-        self.pg_list.append(pg_)
-        self.pygraph_list.append(pygraph)
-
-    def monitor_convergence(self):
-        print("in here monitor")
-        self.plot_list = [None for i in range(self.tuneUI.sb_No_Of_Processors_Tune.value())]
-
-        for p in self.pygraph_list:
-            if p:
-                p.clear()
-
-        while not self.tune_ended:
-            # if update_count%update_interval == 0:
-            # print("In while loop")
-            # read data from file
-            i = 0
-            for pg, pygraph in zip(self.pg_list, self.pygraph_list):
-                filename = f"{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\convergence_output.json"
-
-                if os.path.exists(filename):
-                    df = fr.json_reader(filename)
-                    L_list, freq_list = df["tv"].to_list(), df["freq"].to_list()
-
-                    if self.tuneUI.cb_Monitor_Convergence.checkState() == 2:
-                        pygraph.addLine(x=None, y=400.79, pen=pg.mkPen('r', width=1))
-
-                        if not self.plot_list[i]:
-                            self.plot_list[i] = pygraph.plot(L_list, freq_list, pen=None, symbol='o')
-                        else:
-                            print("Plotted calues", i)
-                            print("\t\t", L_list)
-                            print("\t\t", freq_list)
-                            self.plot_list[i].setData(L_list, freq_list, pen=None, symbol='o')
-
-                i += 1
-
-            time.sleep(1)
-
-        self.tune_ended = False
 
     def tuner_routine(self):
         if self.tuneUI.cb_Cell_Type.currentText() == 'Mid Cell':
@@ -256,7 +218,7 @@ class TuneControl:
             elif resume == "Cancel":
                 return
 
-        freq = float(self.tuneUI.le_Freq.text())
+        self.freq = float(self.tuneUI.le_Freq.text())
         # get variables from ui or from pseudo shape space
         A_i = self.text_to_list(self.tuneUI.le_A_i.text())
         B_i = self.text_to_list(self.tuneUI.le_B_i.text())
@@ -294,7 +256,7 @@ class TuneControl:
             outer_half_cell_parameters = inner_half_cell_parameters
 
         print(inner_half_cell_parameters, outer_half_cell_parameters)
-        pseudo_shape_space = self.generate_pseudo_shape_space(freq, inner_half_cell_parameters, outer_half_cell_parameters)
+        pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, inner_half_cell_parameters, outer_half_cell_parameters)
 
         if pseudo_shape_space:
             self.run_tune(pseudo_shape_space, resume)
@@ -318,7 +280,6 @@ class TuneControl:
         lbc = self.tuneUI.cb_LBC.currentIndex()+1
         rbc = self.tuneUI.cb_RBC.currentIndex()+1
         bc = 10*lbc + rbc
-        print("1")
 
         # try:
         if True:
@@ -362,11 +323,8 @@ class TuneControl:
             print("pglist after ", self.pg_list)
             print("pygraph after ", self.pygraph_list)
 
-            # create progress bar object and add to widget
-            self.progress_bar = QProgressBar(self.tuneUI.widget_4)
-            self.progress_bar.setMaximum(100)
-            self.progress_bar.setValue(10)
-            self.tuneUI.gridLayout_10.addWidget(self.progress_bar, 0, 7, 1, 1)
+            # show progress bar
+            self.progress_bar.show()
 
             for p in range(proc_count):
                 if True:
@@ -375,21 +333,13 @@ class TuneControl:
                     else:
                         proc_keys_list = keys[p * share:]
 
-                    print("\t1c", p, proc_keys_list)
-
                     self.overwriteFolder(p, self.main_control.projectDir)
-                    print("\t\t1ci")
                     self.copyFiles(p, self.main_control.parentDir, self.main_control.projectDir)
-                    print("\t1d")
 
                     processor_shape_space = {}
                     for key, val in pseudo_shape_space.items():
                         if key in proc_keys_list:
                             processor_shape_space[key] = val
-                    # print(f'Processor {p}: {processor_shape_space}')
-                    print("\t1e:: ", resume, p, bc, self.main_control.parentDir,
-                                               self.main_control.projectDir, self.filename, self.tuner,
-                                               tune_variable, iter_set, cell_type)
 
                     service = mp.Process(target=self.run_sequential,
                                          args=(processor_shape_space, resume, p, bc, self.main_control.parentDir,
@@ -406,29 +356,72 @@ class TuneControl:
 
             # display progress bar
             self.show_progress_bar = True
-
-            t_progress_monitor = threading.Thread(target=self.progress_monitor, args=(self.processes_id, ))
-            t_progress_monitor.start()
+            self.progress_monitor_thread = ProgressMonitor(self, self.main_control.projectDir)
+            self.progress_monitor_thread.sig.connect(self.update_progress_bar)
+            self.progress_monitor_thread.start()
 
             # start convergence monitor
-            t_monitor_convergence = threading.Thread(target=self.monitor_convergence)
-            t_monitor_convergence.start()
+            self.convergence_monitor_thread = MonitorConvergence(self, self.main_control.projectDir)
+            self.convergence_monitor_thread.sig.connect(self.monitor_convergence)
+            self.convergence_monitor_thread.start()
 
             self.log.info("Tune started")
             # change process state to running
             self.process_state = 'running'
             self.run_pause_resume_stop_routine()
 
-            # initiate end routine
-            filename = self.filename
-            projectDir = self.main_control.projectDir
-
-            t_end_routine = threading.Thread(target=self.end_routine, args=(self.processes_id, filename, projectDir))
-            t_end_routine.start()
+            self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
+            self.end_routine_thread.start()
 
         # except Exception as e:
         #     self.log.error(fr"TUNE CONTROL:: run_tune:: {e}")
         #     print_("TUNE CONTROL:: run_tune:: ", e)
+
+    def createPyGraph(self, row, column):
+        print(row, column)
+        # add pyqgraph
+        pg_ = pg
+        pygraph = pg_.PlotWidget()
+        pygraph.setBackground('w')
+        print("here here")
+        self.tuneUI.gl_PyqtGraph.addWidget(pygraph, row, column, 1, 1)
+
+        self.pg_list.append(pg_)
+        self.pygraph_list.append(pygraph)
+
+    def monitor_convergence(self, conv):
+        print("in here monitor", conv)
+        self.plot_list = [None for i in range(self.tuneUI.sb_No_Of_Processors_Tune.value())]
+
+        for p in self.pygraph_list:
+            if p:
+                p.clear()
+
+        for i in range(self.tuneUI.sb_No_Of_Processors_Tune.value()):
+            if self.tuneUI.cb_Monitor_Convergence.checkState() == 2:
+                self.pygraph_list[i].addLine(x=None, y=self.freq, pen=pg.mkPen('r', width=1))
+
+                if not self.plot_list[i]:
+                    print("pygraph", self.pygraph_list)
+                    print("plot list ", self.plot_list)
+                    print("convergene ", conv)
+                    self.plot_list[i] = self.pygraph_list[i].plot(conv[i][0], conv[i][1], pen=None, symbol='o')
+                else:
+                    print("Plotted values", i)
+                    print("\t\t", conv)
+                    self.plot_list[i].setData(conv[i][0], conv[i][1], pen=None, symbol='o')
+
+            time.sleep(1)
+
+        self.tune_ended = False
+
+    def update_progress_bar(self, val):
+        self.progress_bar.setValue(val)
+
+        if val == 100 or not self.show_progress_bar:
+            # reset progress bar
+            self.progress_bar.setValue(0)
+            self.progress_bar.hide()
 
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
@@ -487,8 +480,11 @@ class TuneControl:
         except:
             pass
 
+        # lear processes
         self.processes.clear()
+        self.processes_id.clear()
 
+        # reset application state
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
 
@@ -519,24 +515,24 @@ class TuneControl:
         self.cancel()
 
     def progress_monitor(self, proc_ids):
-        # read progress files and update progress
-        while self.show_progress_bar:
-            try:
-                progress = 0
-                for i in range(len(proc_ids)):
-                    if os.path.exists(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
-                        with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
-                            a = f.readline()
-                            progress += eval(a)
-                self.progress_bar.setValue(progress*100/len(proc_ids))
-            except:
-                print("Error in progress update")
-                pass
+        # # read progress files and update progress
+        # while self.show_progress_bar:
+        #     try:
+        #         progress = 0
+        #         for i in range(len(proc_ids)):
+        #             if os.path.exists(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
+        #                 with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
+        #                     a = f.readline()
+        #                     progress += eval(a)
+        #         self.progress_bar.setValue(progress*100/len(proc_ids))
+        #     except:
+        #         print("Error in progress update")
+        #         pass
 
         try:
-            # remove progress bar
-            self.tuneUI.gridLayout_10.removeWidget(self.progress_bar)
-            self.progress_bar = None
+            # reset progress bar
+            self.progress_bar.setValue(0)
+            self.progress_bar.hide()
         except:
             pass
 
@@ -594,7 +590,6 @@ class TuneControl:
                         Req_i = B_i + b_i + Ri_i
 
                     inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                    print(inner_cell)
 
                     if self.tuneUI.cb_Outer_Cell.checkState() == 2:
                         # This also checks if the right and left bounds are equal in which case it returns a single value
@@ -616,7 +611,6 @@ class TuneControl:
                         # inner_cell[5] = L_i
 
                         other_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0]
-                        print(other_cell)
                     else:
                         other_cell = inner_cell
 
@@ -649,7 +643,6 @@ class TuneControl:
 
             check = self.check_input()
 
-            print_('6c')
             A_o_space = ohc[0]
             B_o_space = ohc[1]
             a_o_space = ohc[2]
@@ -657,7 +650,6 @@ class TuneControl:
             Ri_o_space =ohc[4]
 
             count = 0
-            print("Ao", A_o_space)
             for A_o in A_o_space:
                 for B_o in B_o_space:
                     for a_o in a_o_space:
@@ -711,28 +703,18 @@ class TuneControl:
 
                                 else:
                                     Req_o_space = ohc[6]
-                                    print('1', Req_o_space)
                                     for Req_o in Req_o_space:
-                                        print('2')
                                         L_o = A_o + a_o
                                         outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0]
-                                        print('3')
 
                                         if self.tuneUI.cb_Outer_Cell.checkState() == 2:
                                             A_i_space = ihc[0]
-                                            print('5', A_i_space)
                                             B_i_space = ihc[1]
-                                            print('6')
                                             a_i_space = ihc[2]
-                                            print('7')
                                             b_i_space = ihc[3]
-                                            print('8')
                                             Ri_i_space = ihc[4]
-                                            print('9', ihc)
                                             L_i_space = ihc[5]
-                                            print('10')
                                             Req_i = Req_o
-                                            print('11')
 
                                             for A_i in A_i_space:
                                                 for B_i in B_i_space:
@@ -741,7 +723,6 @@ class TuneControl:
                                                             for Ri_i in Ri_i_space:
                                                                 for L_i in L_i_space:
                                                                     inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                                                                    print('4')
 
                                                                     if self.tuneUI.cb_LBP.checkState() == 2:
                                                                         key = f"{self.tuneUI.le_Marker.text()}_{count}"
@@ -1106,12 +1087,12 @@ class TuneControl:
             wid_r_bound.setValue(wid_l_bound.value())
 
     @staticmethod
-    def proof_filename(dir):
+    def proof_filename(dirc):
         # check if extension is included
-        if dir.split('.')[-1] != 'json':
-            dir = f'{dir}.json'
+        if dirc.split('.')[-1] != 'json':
+            dirc = f'{dirc}.json'
 
-        return dir
+        return dirc
 
     def change_tune_option(self, txt):
         if txt == 'Req':
@@ -1189,6 +1170,123 @@ class TuneControl:
                 os.remove(fr'{projectDir}\Cavities\shape_space{index}.json')
 
 
+class ProgressMonitor(QThread):
+    sig = QtCore.pyqtSignal(int)
+
+    def __init__(self, tune_control, projectDir):
+        super(QThread, self).__init__()
+        self.tune_control = tune_control
+        self.proc_ids = tune_control.processes_id
+        self.progress_bar = tune_control.progress_bar
+        self.projectDir = projectDir
+
+    def run(self):
+        self.progress_monitor(self.proc_ids)
+
+    def progress_monitor(self, proc_ids):
+        # read progress files and update progress
+        while self.tune_control.show_progress_bar:
+            try:
+                progress = 0
+                for i in range(len(proc_ids)):
+                    if os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
+                        with open(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
+                            a = f.readline()
+                            progress += eval(a)
+                            print(f"Processor {i}", eval(a)*100)
+                print(f"Total", progress*100/len(proc_ids), len(proc_ids))
+                self.sig.emit(progress*100/len(proc_ids))
+
+            except:
+                print("Error in progress update")
+                pass
+
+
+class EndRoutine(QThread):
+    def __init__(self, tune_control, projectDir):
+        super(QThread, self).__init__()
+        self.tune_control = tune_control
+        self.proc_ids = tune_control.processes_id
+        self.filename = tune_control.filename
+        self.projectDir = projectDir
+
+    def run(self):
+        self.end_routine()
+
+    def end_routine(self):
+        proc_count = len(self.proc_ids)
+        for pid in self.proc_ids:
+            try:
+                p = psutil.Process(pid)
+                while p.is_running():
+                    pass
+
+            except psutil.NoSuchProcess:
+                pass
+
+        # combine dictionaries
+        try:
+            self.combine_dict(proc_count, self.filename, self.projectDir)
+            self.delete_process_dict(proc_count, self.projectDir)
+        except IOError as e:
+            self.tune_control.log.error(f"Some error occurred -> {e}")
+
+        self.tune_control.cancel()
+
+    @staticmethod
+    def combine_dict(proc_count, filename, projectDir):
+        # Combining dictionaries
+        print_('Combining dictionaries')
+
+        result = {}
+        for index in range(proc_count):
+            with open(fr'{projectDir}\Cavities\shape_space{index}.json', "r") as infile:
+                result.update(json.load(infile))
+
+        # check if extension is included
+        if filename.split('.')[-1] != 'json':
+            filename = f'{filename}.json'
+
+        with open(fr'{projectDir}\Cavities\{filename}', "w") as outfile:
+            json.dump(result, outfile, indent=4, separators=(',', ': '))
+
+        print_('Done combining dictionaries')
+
+    @staticmethod
+    def delete_process_dict(proc_count, projectDir):
+            for index in range(proc_count):
+                os.remove(fr'{projectDir}\Cavities\shape_space{index}.json')
+
+
+class MonitorConvergence(QThread):
+    sig = QtCore.pyqtSignal(list)
+
+    def __init__(self, main_control, projectDir):
+        super(QThread, self).__init__()
+        self.main_control = main_control
+        self.proc_ids = main_control.processes_id
+        self.projectDir = projectDir
+
+    def run(self):
+        self.monitor_convergence(self.proc_ids)
+
+    def monitor_convergence(self, proc_ids):
+
+        while not self.main_control.tune_ended:
+            conv = []
+            # read data from file
+            for i in range(len(proc_ids)):
+                filename = fr"{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\convergence_output.json"
+
+                if os.path.exists(filename):
+                    df = fr.json_reader(filename)
+                    L, freq = df["tv"].to_list(), df["freq"].to_list()
+
+                    conv.append([L, freq])
+            print(conv)
+            self.sig.emit(conv)
+
+
 def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
           proc=0, tuner='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell'):
 
@@ -1202,8 +1300,6 @@ def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
 
     start = time.time()
     population = {}
-    dip_dist = {}
-    freq = {}
     total_no_of_shapes = len(list(pseudo_shape_space.keys()))
 
     # check for already processed shapes
@@ -1217,15 +1313,13 @@ def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
             existing_keys = list(population.keys())
             print_(f'Existing keys: {existing_keys}')
 
-    start_time = time.time()
-
     progress = 0
     # write to progress file
     try:
         with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
             txt = f"{progress+1}/{total_no_of_shapes}"
             file.write(txt)
-    except:
+    except IOError:
         pass
 
     for key, pseudo_shape in pseudo_shape_space.items():
@@ -1257,12 +1351,10 @@ def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
                 outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha]
             else:
                 if tune_variable == 'Req':
-                    print('PyTune Req')
                     Req, freq = pytune.tune("Req", inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
                     # round
                     Req, freq = round(Req, 4), round(freq, 2)
                 else:
-                    print('PyTune L')
                     L, freq = pytune.tune("L", inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
 
                     # round
@@ -1286,7 +1378,7 @@ def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
                 with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
                     txt = f"{progress+1}/{total_no_of_shapes}"
                     file.write(txt)
-            except:
+            except IOError:
                 pass
 
             if cell_type == 'Mid Cell':
@@ -1297,19 +1389,15 @@ def tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
         # Update progressbar
         progress += 1
 
-        print_("SAVING DICTIONARIES", f"shape_space{proc}.json")
+        # print_("Saving Dictionary", f"shape_space{proc}.json")
         with open(fr"{projectDir}\Cavities\shape_space{proc}.json", 'w') as file:
             file.write(json.dumps(population, indent=4, separators=(',', ': ')))
-        print_("DONE SAVING")
+        # print_("Done saving")
 
-        print_("Time run:: ", time.time() - start_time)
-        start_time = time.time()
-
-    # print_("Extracted Data::", self.population)
     end = time.time()
 
     runtime = end - start
-    print_(f'Proc {proc} runtime: {runtime}')
+    print_(f'Processor {proc} runtime: {runtime}')
 
 
 def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
