@@ -228,10 +228,10 @@ if __name__ == '__main__':
     Req, freq, alpha, h, e = tune.mid_cell_tune(67.72, 67.72, 21.75, 21.75, 60, 93.5, 160, 801.58)
     print(Req, freq, alpha, h, e)
 
+    # Note: The tune for end cell still gives zeros for many inpus. I think that this might be because of the variable
+    # "ll" on line 100 (...Al(mm), Bl(mm), al(mm), bl(mm), ll(mm), Ral(mm), Ll(mm) .... I don't know what small "ll" stands for.
+    # It is set to a constant value.
     # # Uncomment to run end cell tune
     # # Call end_cell_tune function
     # L, freq, alpha, h, e = tune.end_cell_tune([67.72, 67.72, 21.75, 21.75, 60, 93.5, 171.381], [52.0, 52.0, 28.5, 28.5, 82, 93.5, 169.476], 801.58) # par_out = [Ae, Be, ae, be, Rie, Le]
     # print(L, freq, alpha, h, e)
-    # Note: The tune for end cell still gives zeros for many inpus. I think that this might be because of the variable
-    # "ll" on line 100 (...Al(mm), Bl(mm), al(mm), bl(mm), ll(mm), Ral(mm), Ll(mm) .... I don't know what small "ll" stands for.
-    # It is set to a constant value.

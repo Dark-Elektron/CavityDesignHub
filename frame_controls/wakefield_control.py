@@ -7,7 +7,7 @@ import threading
 import time
 import multiprocessing as mp
 from threading import Thread
-
+from simulation_codes.ABCI.abci_geometry import ABCIGeometry
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import QPropertyAnimation
@@ -25,6 +25,7 @@ from utils.file_reader import FileReader
 import psutil
 
 fr = FileReader()
+abci_geom = ABCIGeometry()
 
 file_color = 'red'
 
@@ -152,7 +153,7 @@ class WakefieldControl:
         self.progress_bar = QProgressBar(self.wakefieldUI.w_Simulation_Controls)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.wakefieldUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.wakefieldUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 4, 1, 1)
         self.progress_bar.hide()
 
     def shape_entry_widgets_control(self):
@@ -212,6 +213,11 @@ class WakefieldControl:
         # show progress bar
         self.progress_bar.show()
 
+        # progress list
+        manager = mp.Manager()
+        self.progress_list = manager.list()
+        self.progress_list.append(0)
+
         self.processes = []
         for p in range(proc_count):
             try:
@@ -224,14 +230,11 @@ class WakefieldControl:
                 for key, val in shape_space.items():
                     if key in proc_keys_list:
                         processor_shape_space[key] = val
-                # print(f'Processor {p}: {processor_shape_space}')
-
-                print(n_cells, n_modules, processor_shape_space, MROT, MT, NFS, UBT, bunch_length, DDR_SIG, DDZ_SIG, self.main_control.parentDir, self.main_control.projectDir)
 
                 service = mp.Process(target=run_sequential, args=(n_cells, n_modules, processor_shape_space,
                                                                   MROT, MT, NFS, UBT, bunch_length,
                                                                   DDR_SIG, DDZ_SIG,
-                                                                  self.main_control.parentDir, self.main_control.projectDir
+                                                                  self.main_control.parentDir, self.main_control.projectDir, self.progress_list
                                                                   ))
 
                 service.start()
@@ -241,19 +244,19 @@ class WakefieldControl:
             except Exception as e:
                 self.log.error(f"Exception in run_MP:: {e}")
 
-            # display progress bar
-            self.show_progress_bar = True
-            self.progress_monitor_thread = ProgressMonitor(self, self.main_control.projectDir)
-            self.progress_monitor_thread.sig.connect(self.update_progress_bar)
-            self.progress_monitor_thread.start()
+        # display progress bar
+        self.show_progress_bar = True
+        self.progress_monitor_thread = ProgressMonitor(self, self.main_control.projectDir)
+        self.progress_monitor_thread.sig.connect(self.update_progress_bar)
+        self.progress_monitor_thread.start()
 
-            self.log.info("Wakefield simulation started")
-            # change process state to running
-            self.process_state = 'running'
-            self.run_pause_resume_stop_routine()
+        self.log.info("Wakefield simulation started")
+        # change process state to running
+        self.process_state = 'running'
+        self.run_pause_resume_stop_routine()
 
-            self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
-            self.end_routine_thread.start()
+        self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
+        self.end_routine_thread.start()
 
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
@@ -303,6 +306,9 @@ class WakefieldControl:
 
     def cancel(self):
         self.log.info("Terminating process...")
+        # signal to progress bar
+        self.show_progress_bar = False
+
         try:
             for p in self.processes:
                 p.terminate()
@@ -310,6 +316,7 @@ class WakefieldControl:
             pass
 
         self.processes.clear()
+        self.processes_id.clear()
 
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
@@ -322,7 +329,6 @@ class WakefieldControl:
                 p = psutil.Process(pid)
                 while p.is_running():
                     pass
-
                 print(fr"process {p} ended")
             except:
                 pass
@@ -665,59 +671,47 @@ class WakefieldControl:
 def run_sequential(n_cells, n_modules, processor_shape_space,
                    MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
                    DDR_SIG=0.1, DDZ_SIG=0.1,
-                   parentDir=None, projectDir=None):
-    from simulation_codes.ABCI.abci_geometry import ABCIGeometry
-    abci_geom = ABCIGeometry()
-    print("It got hereeeee44")
+                   parentDir=None, projectDir=None, progress_list=None):
+    progress = 0
+    # get length of processor
+    total_no_of_shapes = len(list(processor_shape_space.keys()))
     for key, shape in processor_shape_space.items():
+        # run abci code
+        start_time = time.time()
         try:
-            # # create folders for all keys
-            # slans_geom.createFolder(key)
+            abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                             fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                             DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
+        except:
+            abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                             fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                             DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
 
-            # run slans code
-            start_time = time.time()
-            try:
-                abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                 fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
-            except:
-                abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                 fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
+        print_(f'Cavity {key}. Time: {time.time() - start_time}')
 
-            print_(f'Cavity {key}. Time: {time.time() - start_time}')
-        except Exception as e:
-            print(f'Error in abci_mpi_mp:: run_sequential -> {e}')
+        # update progress
+        progress_list.append((progress+1)/total_no_of_shapes)
 
 
 class ProgressMonitor(QThread):
     sig = QtCore.pyqtSignal(int)
 
-    def __init__(self, tune_control, projectDir):
+    def __init__(self, wake_control, projectDir):
         super(QThread, self).__init__()
-        self.tune_control = tune_control
-        self.proc_ids = tune_control.processes_id
-        self.progress_bar = tune_control.progress_bar
+        self.wake_control = wake_control
+        self.proc_ids = wake_control.processes_id
+        self.progress_bar = wake_control.progress_bar
         self.projectDir = projectDir
 
     def run(self):
         self.progress_monitor(self.proc_ids)
 
     def progress_monitor(self, proc_ids):
-        # read progress files and update progress
-        while self.tune_control.show_progress_bar:
-            try:
-                progress = 0
-                for i in range(len(proc_ids)):
-                    if os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
-                        with open(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
-                            a = f.readline()
-                            progress += eval(a)
-                self.sig.emit(progress*100/len(proc_ids))
-
-            except:
-                print("Error in progress update")
-                pass
+        proc_count = len(proc_ids)
+        while self.wake_control.show_progress_bar:
+            # print("\t\t\t\t\t\t printing progress:: ", self.wake_control.progress_list)
+            progress = sum(self.wake_control.progress_list)/proc_count
+            self.sig.emit(round(progress*100, 10))
 
 
 class EndRoutine(QThread):

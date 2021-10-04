@@ -6,7 +6,7 @@
  *                                                                          *
  *  SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                               *
  *                                                                          *
- *     DATE:27/ 9/21   TIME:11:36:38    VERSION 12.5,  NOVEMBER 2007        *
+ *     DATE: 4/10/21   TIME:21:40:06    VERSION 12.5,  NOVEMBER 2007        *
  *                                                                          *
  ****************************************************************************
 
@@ -117,8 +117,8 @@
  SAVE TRANSVERSE WAKE IN A FILE   (LSVWT)   :  F
  SAVE LONGITUDINAL WAKE IN A FILE (LSVWL)   :  T
  SAVE FFT RESULTS IN A FILE       (LSVF)    :  T
-1PROBLEM : SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                                27/ 9/21 11:36:38     SIG/M= 5.000E-02  MROT= 0
-                                                                        CPUTIME USED: 9.544E-01(S)   DDR= 5.000E-03  DDZ= 5.000E-03
+1PROBLEM : SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                                 4/10/21 21:40:06     SIG/M= 5.000E-02  MROT= 0
+                                                                        CPUTIME USED: 1.040E+00(S)   DDR= 5.000E-03  DDZ= 5.000E-03
  (A,T,L,P) = WAKE POTENTIAL AS A FUNCTION OF THE BUNCH COORDINATES S IN (M), (*)=BUNCH SHAPE,  FRONT LEFT     LCHIN= F   LNAPOLY= F
   1.00E+00 +*----------------------+-----------------------+-----------------------+-----------------------+-----------------------+
            I*                      I                       I                       I                       I                       I

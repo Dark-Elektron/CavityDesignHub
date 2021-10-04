@@ -12,7 +12,7 @@ class Tuner:
         pass
 
     def tune(self, pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
-              proc=0, tuner_option='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell'):
+              proc=0, tuner_option='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell', progress_list=None):
 
         # tuner
         pytune = PyTune()
@@ -38,13 +38,6 @@ class Tuner:
                 print(f'Existing keys: {existing_keys}')
 
         progress = 0
-        # write to progress file
-        try:
-            with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
-                txt = f"{progress+1}/{total_no_of_shapes}"
-                file.write(txt)
-        except IOError:
-            pass
 
         for key, pseudo_shape in pseudo_shape_space.items():
 
@@ -97,13 +90,8 @@ class Tuner:
 
                 print(f'Done Tuning Cavity {key}')
 
-                # write to progress file
-                try:
-                    with open(fr"{projectDir}\SimulationData\SLANS\Cavity_process_{proc}\progress_file.txt", 'w') as file:
-                        txt = f"{progress+1}/{total_no_of_shapes}"
-                        file.write(txt)
-                except IOError:
-                    pass
+                # update progress
+                progress_list.append((progress + 1) / total_no_of_shapes)
 
                 if cell_type == 'Mid Cell':
                     population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'none', 'FREQ': freq}

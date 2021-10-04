@@ -126,7 +126,7 @@ class EigenmodeControl:
         self.progress_bar = QProgressBar(self.eigenmodeUI.w_Simulation_Controls)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.eigenmodeUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.eigenmodeUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 4, 1, 1)
         self.progress_bar.hide()
 
     def signals(self):
@@ -185,6 +185,7 @@ class EigenmodeControl:
         bc = 10*lbc + rbc
 
         proc_count = self.eigenmodeUI.sb_No_Of_Processors_SLANS.value()
+
         # get geometric parameters
         shape_space = self.get_geometric_parameters('SLANS')
 
@@ -195,6 +196,11 @@ class EigenmodeControl:
 
         # show progress bar
         self.progress_bar.show()
+
+        # progress list
+        manager = mp.Manager()
+        self.progress_list = manager.list()
+        self.progress_list.append(0)
 
         for p in range(proc_count):
             try:
@@ -210,7 +216,8 @@ class EigenmodeControl:
                 # print(f'Processor {p}: {processor_shape_space}')
 
                 service = mp.Process(target=run_sequential, args=(
-                n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir, self.main_control.projectDir))
+                    n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
+                    self.main_control.projectDir, self.progress_list))
                 service.start()
 
                 self.processes.append(psutil.Process(service.pid))
@@ -220,19 +227,19 @@ class EigenmodeControl:
                 self.log.error(fr"Exception in run_MP:: {e}")
                 # print_("Exception in run_MP::", e)
 
-            # display progress bar
-            self.show_progress_bar = True
-            self.progress_monitor_thread = ProgressMonitor(self, self.main_control.projectDir)
-            self.progress_monitor_thread.sig.connect(self.update_progress_bar)
-            self.progress_monitor_thread.start()
+        # display progress bar
+        self.show_progress_bar = True
+        self.progress_monitor_thread = ProgressMonitor(self, self.main_control.projectDir)
+        self.progress_monitor_thread.sig.connect(self.update_progress_bar)
+        self.progress_monitor_thread.start()
 
-            self.log.info("Eigenmode simulation started")
-            # change process state to running
-            self.process_state = 'running'
-            self.run_pause_resume_stop_routine()
+        self.log.info("Eigenmode simulation started")
+        # change process state to running
+        self.process_state = 'running'
+        self.run_pause_resume_stop_routine()
 
-            self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
-            self.end_routine_thread.start()
+        self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
+        self.end_routine_thread.start()
 
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
@@ -282,6 +289,9 @@ class EigenmodeControl:
 
     def cancel(self):
         self.log.info("Terminating process...")
+        # signal to progress bar
+        self.show_progress_bar = False
+
         try:
             for p in self.processes:
                 p.terminate()
@@ -289,6 +299,7 @@ class EigenmodeControl:
             pass
 
         self.processes.clear()
+        self.processes_id.clear()
 
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
@@ -647,56 +658,50 @@ class EigenmodeControl:
                 ci += 1
 
 
-def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir):
+def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir, progress_list):
+    progress = 0
+    # get length of processor
+    total_no_of_shapes = len(list(processor_shape_space.keys()))
+
     for key, shape in processor_shape_space.items():
+        # # create folders for all keys
+        slans_geom.createFolder(key, projectDir)
+
+        # run slans code
+        start_time = time.time()
         try:
-            # # create folders for all keys
-            slans_geom.createFolder(key, projectDir)
+            slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                              n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                              parentDir=parentDir, projectDir=projectDir)
+        except:
+            slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                              n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                              parentDir=parentDir, projectDir=projectDir)
 
-            # run slans code
-            start_time = time.time()
-            try:
-                slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                  n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir)
-            except:
-                slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                  n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir)
+        print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
 
-            print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
-        except Exception as e:
-            print(f'Error in slans_mpi_mp:: run_sequential -> {e}')
+        # update progress
+        progress_list.append((progress+1)/total_no_of_shapes)
 
 
 class ProgressMonitor(QThread):
     sig = QtCore.pyqtSignal(int)
 
-    def __init__(self, tune_control, projectDir):
+    def __init__(self, eig_control, projectDir):
         super(QThread, self).__init__()
-        self.tune_control = tune_control
-        self.proc_ids = tune_control.processes_id
-        self.progress_bar = tune_control.progress_bar
+        self.eig_control = eig_control
+        self.proc_ids = eig_control.processes_id
+        self.progress_bar = eig_control.progress_bar
         self.projectDir = projectDir
 
     def run(self):
         self.progress_monitor(self.proc_ids)
 
     def progress_monitor(self, proc_ids):
-        # read progress files and update progress
-        while self.tune_control.show_progress_bar:
-            try:
-                progress = 0
-                for i in range(len(proc_ids)):
-                    if os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
-                        with open(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
-                            a = f.readline()
-                            progress += eval(a)
-                self.sig.emit(progress*100/len(proc_ids))
-
-            except:
-                print("Error in progress update")
-                pass
+        proc_count = len(proc_ids)
+        while self.eig_control.show_progress_bar:
+            progress = sum(self.eig_control.progress_list)/proc_count
+            self.sig.emit(round(progress*100, 10))
 
 
 class EndRoutine(QThread):

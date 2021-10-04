@@ -329,6 +329,11 @@ class TuneControl:
             # show progress bar
             self.progress_bar.show()
 
+            # progress list
+            manager = mp.Manager()
+            self.progress_list = manager.list()
+            self.progress_list.append(0)
+
             for p in range(proc_count):
                 if True:
                     if p < proc_count-1:
@@ -347,7 +352,7 @@ class TuneControl:
                     service = mp.Process(target=self.run_sequential,
                                          args=(processor_shape_space, resume, p, bc, self.main_control.parentDir,
                                                self.main_control.projectDir, self.filename, self.tuner_option,
-                                               tune_variable, iter_set, cell_type))
+                                               tune_variable, iter_set, cell_type, self.progress_list))
                     print("\t1d")
                     service.start()
                     self.processes.append(psutil.Process(service.pid))
@@ -513,19 +518,19 @@ class TuneControl:
         self.cancel()
 
     def progress_monitor(self, proc_ids):
-        # # read progress files and update progress
-        # while self.show_progress_bar:
-        #     try:
-        #         progress = 0
-        #         for i in range(len(proc_ids)):
-        #             if os.path.exists(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
-        #                 with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
-        #                     a = f.readline()
-        #                     progress += eval(a)
-        #         self.progress_bar.setValue(progress*100/len(proc_ids))
-        #     except:
-        #         print("Error in progress update")
-        #         pass
+        # read progress files and update progress
+        while self.show_progress_bar:
+            try:
+                progress = 0
+                for i in range(len(proc_ids)):
+                    if os.path.exists(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
+                        with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
+                            a = f.readline()
+                            progress += eval(a)
+                self.progress_bar.setValue(progress*100/len(proc_ids))
+            except:
+                print("Error in progress update")
+                pass
 
         try:
             # reset progress bar
@@ -916,9 +921,9 @@ class TuneControl:
         state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
 
     @staticmethod
-    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type):
+    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type, progress_list):
         tuner.tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner_option=tuner_option,
-                       tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type) # last_key=last_key This would have to be tested again #val2
+                       tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type, progress_list=progress_list) # last_key=last_key This would have to be tested again #val2
 
     def deserialize(self, state_dict):
         # update state file
@@ -1182,20 +1187,10 @@ class ProgressMonitor(QThread):
         self.progress_monitor(self.proc_ids)
 
     def progress_monitor(self, proc_ids):
-        # read progress files and update progress
+        proc_count = len(proc_ids)
         while self.tune_control.show_progress_bar:
-            try:
-                progress = 0
-                for i in range(len(proc_ids)):
-                    if os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
-                        with open(fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt', "r") as f:
-                            a = f.readline()
-                            progress += eval(a)
-                self.sig.emit(progress*100/len(proc_ids))
-
-            except:
-                print("Error in progress update")
-                pass
+            progress = sum(self.tune_control.progress_list)/proc_count
+            self.sig.emit(round(progress*100, 10))
 
 
 class EndRoutine(QThread):

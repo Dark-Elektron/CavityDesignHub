@@ -232,7 +232,8 @@ class SLANSGeometry(Geometry):
         subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
-    def write_dtr(self, path, filename, beta, f_shift, n_modes):
+    @staticmethod
+    def write_dtr(path, filename, beta, f_shift, n_modes):
         with open("{}\{}.dtr".format(path, filename), 'w') as f:
             f.write(':          Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
@@ -249,8 +250,8 @@ class SLANSGeometry(Geometry):
             f.write('0 : number of mark volumes,then:sign,EPS,MU,TGE,TGM\n')
             f.write('{:g} : beta (v/c)\n'.format(beta))
 
-
-    def createFolder(self, fid, projectDir):
+    @staticmethod
+    def createFolder(fid, projectDir):
         path = f"{projectDir}/SimulationData/SLANS/Cavity{fid}"
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -258,5 +259,6 @@ class SLANSGeometry(Geometry):
         else:
             os.mkdir(path)
 
-    def button_clicked(self, i):
+    @staticmethod
+    def button_clicked(i):
         return i.text()

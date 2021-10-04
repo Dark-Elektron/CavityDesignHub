@@ -1,7 +1,7 @@
   TITLE: LONGITUDINAL WAKE POTENTIAL             
    SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                              
    DATE:     TIME:      MROT:     NO. OF POINTS:
-  27/ 9/21  11:36:38      0          10001
+   4/10/21  21:40:06      0          10001
       S  (m)    WZ  (V/pC)    
    0.00000E+00 -0.41994E-06
    0.50000E-02 -0.27918E-06
@@ -10008,7 +10008,7 @@
   TITLE: REAL PART OF LONGITUDINAL IMPEDANCE                      
    SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                              
    DATE:     TIME:      MROT:     NO. OF POINTS:
-  27/ 9/21  11:36:38      0          10000
+   4/10/21  21:40:06      0          10000
   Freq. f (GHz) Real Z (kOhm)    
    0.00000E+00 -0.32966E-04
    0.23374E-03 -0.31850E-04
@@ -20014,7 +20014,7 @@
   TITLE: IMAGINARY PART OF LONGITUDINAL IMPEDANCE                 
    SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                              
    DATE:     TIME:      MROT:     NO. OF POINTS:
-  27/ 9/21  11:36:38      0          10000
+   4/10/21  21:40:06      0          10000
   Freq. f (GHz) Imag Z (kOhm)    
    0.00000E+00  0.00000E+00
    0.23374E-03  0.70247E-04
@@ -30020,7 +30020,7 @@
   TITLE: FREQUENCY SPECTRUM OF LONGITUDINAL LOSS FACTOR           
    SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                              
    DATE:     TIME:      MROT:     NO. OF POINTS:
-  27/ 9/21  11:36:38      0          10000
+   4/10/21  21:40:06      0          10000
   Freq. f (GHz) dk/df (V/pC/GHz) 
    0.00000E+00 -0.65933E-04
    0.23374E-03 -0.63700E-04
@@ -40026,7 +40026,7 @@
   TITLE: LONGITUDINAL LOSS FACTOR INTEGRATED OVER FREQUENCY UPTO F
    SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                              
    DATE:     TIME:      MROT:     NO. OF POINTS:
-  27/ 9/21  11:36:38      0          10000
+   4/10/21  21:40:06      0          10000
   Freq. F (GHz) k(F) (V/pC)      
    0.00000E+00 -0.15411E-07
    0.23374E-03 -0.30301E-07

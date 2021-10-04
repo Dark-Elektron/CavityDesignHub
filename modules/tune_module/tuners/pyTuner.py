@@ -166,55 +166,11 @@ class PyTune:
         min_error = [abs(x-target_freq) for x in freq_list]
         key = min_error.index(min(min_error))
 
-        import matplotlib.pyplot as plt
-        plt.scatter(tv_list, freq_list)
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.scatter(tv_list, freq_list)
+        # plt.show()
 
         return tv_list[key], freq_list[key]
-
-    @staticmethod
-    def divided_diff(x, y):
-        '''
-        function to calculate the divided
-        differences table
-        '''
-        n = len(y)
-        coef = np.zeros([n, n])
-        # the first column is y
-        coef[:, 0] = y
-
-        for j in range(1, n):
-            for i in range(n - j):
-                coef[i][j] = (coef[i + 1][j - 1] - coef[i][j - 1]) / (x[i + j] - x[i]) if (x[i + j] - x[i]) != 0  else 0
-
-        return coef
-
-    @staticmethod
-    def newton_poly(coef, x_data, x):
-        '''
-        evaluate the newton polynomial
-        at x
-        '''
-        n = len(x_data) - 1
-        p = coef[n]
-        for k in range(1, n + 1):
-            p = coef[n - k] + (x - x_data[n - k]) * p
-        return p
-
-        # return Shape([self.A, self.B, self.a, self.b, self.r, self.l, self.R])
-
-    @staticmethod
-    def all_equal(iterable):
-        g = groupby(iterable)
-        return next(g, True) and not next(g, False)
-
-    @staticmethod
-    def write_output(tv_list, freq_list, fid, projectDir):
-        print("Writing output")
-        dd = {"tv": tv_list, "freq": freq_list}
-
-        with open(f"{projectDir}\SimulationData\SLANS\Cavity{fid}\convergence_output.json", "w") as outfile:
-            json.dump(dd, outfile, indent=4, separators=(',', ': '))
 
     def tuneR(self, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0):
 
@@ -320,8 +276,52 @@ class PyTune:
         min_error = [abs(x-target_freq) for x in freq_list]
         key = min_error.index(min(min_error))
 
-        import matplotlib.pyplot as plt
-        plt.scatter(Req_list, freq_list)
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.scatter(Req_list, freq_list)
+        # plt.show()
 
         return Req_list[key], freq_list[key]
+
+    @staticmethod
+    def divided_diff(x, y):
+        '''
+        function to calculate the divided
+        differences table
+        '''
+        n = len(y)
+        coef = np.zeros([n, n])
+        # the first column is y
+        coef[:, 0] = y
+
+        for j in range(1, n):
+            for i in range(n - j):
+                coef[i][j] = (coef[i + 1][j - 1] - coef[i][j - 1]) / (x[i + j] - x[i]) if (x[i + j] - x[i]) != 0  else 0
+
+        return coef
+
+    @staticmethod
+    def newton_poly(coef, x_data, x):
+        '''
+        evaluate the newton polynomial
+        at x
+        '''
+        n = len(x_data) - 1
+        p = coef[n]
+        for k in range(1, n + 1):
+            p = coef[n - k] + (x - x_data[n - k]) * p
+        return p
+
+        # return Shape([self.A, self.B, self.a, self.b, self.r, self.l, self.R])
+
+    @staticmethod
+    def all_equal(iterable):
+        g = groupby(iterable)
+        return next(g, True) and not next(g, False)
+
+    @staticmethod
+    def write_output(tv_list, freq_list, fid, projectDir):
+        print("Writing output")
+        dd = {"tv": tv_list, "freq": freq_list}
+
+        with open(f"{projectDir}\SimulationData\SLANS\Cavity{fid}\convergence_output.json", "w") as outfile:
+            json.dump(dd, outfile, indent=4, separators=(',', ': '))
