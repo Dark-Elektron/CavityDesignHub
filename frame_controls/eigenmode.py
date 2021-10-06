@@ -48,14 +48,12 @@ class EigenmodeControl:
         self.log = self.main_control.log
 
         # ###########################
-        #
         # Create Scene
         self.scene = Scene(self)
 
         # QGraphicsView
         self.graphicsView = GraphicsView(self, 'Eigenmode')
         self.eigenmodeUI.vL_2D_Graphics_View.addWidget(self.graphicsView)
-        #
         # ##########################
 
         self.initUI()
@@ -215,7 +213,7 @@ class EigenmodeControl:
                         processor_shape_space[key] = val
                 # print(f'Processor {p}: {processor_shape_space}')
 
-                service = mp.Process(target=run_sequential, args=(
+                service = mp.Process(target=self.run_sequential, args=(
                     n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
                     self.main_control.projectDir, self.progress_list))
                 service.start()
@@ -492,19 +490,6 @@ class EigenmodeControl:
                                                                                                 count += 1
             return self.shape_space
 
-    def load_shape_space(self, filename):
-        fr = FileReader()
-        dir = filename
-
-        # check if extension is included
-        if dir.split('.')[-1] != 'json':
-            dir = f'{dir}.json'
-
-        df = fr.json_reader(dir)
-        # print_(df)
-
-        return df.to_dict()
-
     def prompt(self, code, fid):
         path = os.getcwd()
         path = os.path.join(path, fr"Data\{code}\Cavity{fid}")
@@ -534,16 +519,6 @@ class EigenmodeControl:
         else:
             return 'YesToAll'
 
-    def show_hide_(self, wid1, wid2):
-        print('here')
-        if wid1.currentText().lower() == 'parallel':
-            wid2.show()
-        else:
-            wid2.hide()
-
-    def button_clicked(self, i):
-        return i.text()
-
     def open_file(self, le, cb):
         # clear combobox
         self.cb_Shape_Space_Keys.clear()
@@ -564,21 +539,6 @@ class EigenmodeControl:
 
         except Exception as e:
             print('Failed to open file:: ', e)
-
-    def text_to_list(self, txt):
-        if "range" in txt:
-            txt = txt.replace('range', '')
-            l = ast.literal_eval(txt)
-            return range(l[0], l[1], l[2])
-        elif 'linspace' in txt:
-            l = eval(f'np.{txt}')
-            return l
-        else:
-            l = ast.literal_eval(txt)
-            if isinstance(l, int) or isinstance(l, float):
-                return [l]
-            else:
-                return list(l)
 
     def animate_width(self, cb, widget, min_width, standard, enable, reverse=False):
         if enable:
@@ -643,7 +603,7 @@ class EigenmodeControl:
         t.start()
 
     def draw_shape_from_shape_space(self):
-        colors = [[48,162,218, 255], [252,79,48, 255], [229,174,56, 255], [109,144,79, 255], [139,139,139, 255]]
+        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255], [109, 144, 79, 255], [139, 139, 139, 255]]
         ci = 0
 
         # remove existing cells
@@ -657,31 +617,73 @@ class EigenmodeControl:
 
                 ci += 1
 
+    @staticmethod
+    def load_shape_space(filename):
+        fr = FileReader()
+        dir = filename
 
-def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir, progress_list):
-    progress = 0
-    # get length of processor
-    total_no_of_shapes = len(list(processor_shape_space.keys()))
+        # check if extension is included
+        if dir.split('.')[-1] != 'json':
+            dir = f'{dir}.json'
 
-    for key, shape in processor_shape_space.items():
-        # # create folders for all keys
-        slans_geom.createFolder(key, projectDir)
+        df = fr.json_reader(dir)
+        # print_(df)
 
-        # run slans code
-        start_time = time.time()
-        try:
-            slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                              n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                              parentDir=parentDir, projectDir=projectDir)
-        except:
-            slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                              n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                              parentDir=parentDir, projectDir=projectDir)
+        return df.to_dict()
 
-        print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
+    @staticmethod
+    def show_hide_(wid1, wid2):
+        print('here')
+        if wid1.currentText().lower() == 'parallel':
+            wid2.show()
+        else:
+            wid2.hide()
 
-        # update progress
-        progress_list.append((progress+1)/total_no_of_shapes)
+    @staticmethod
+    def button_clicked(i):
+        return i.text()
+
+    @staticmethod
+    def text_to_list(txt):
+        if "range" in txt:
+            txt = txt.replace('range', '')
+            l = ast.literal_eval(txt)
+            return range(l[0], l[1], l[2])
+        elif 'linspace' in txt:
+            l = eval(f'np.{txt}')
+            return l
+        else:
+            l = ast.literal_eval(txt)
+            if isinstance(l, int) or isinstance(l, float):
+                return [l]
+            else:
+                return list(l)
+
+    @staticmethod
+    def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir, progress_list):
+        progress = 0
+        # get length of processor
+        total_no_of_shapes = len(list(processor_shape_space.keys()))
+
+        for key, shape in processor_shape_space.items():
+            # # create folders for all keys
+            slans_geom.createFolder(key, projectDir)
+
+            # run slans code
+            start_time = time.time()
+            try:
+                slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                  n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                  parentDir=parentDir, projectDir=projectDir)
+            except:
+                slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                  n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                  parentDir=parentDir, projectDir=projectDir)
+
+            print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
+
+            # update progress
+            progress_list.append((progress+1)/total_no_of_shapes)
 
 
 class ProgressMonitor(QThread):

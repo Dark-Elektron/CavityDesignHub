@@ -65,8 +65,6 @@ class PyTune:
             freq = d['FREQUENCY'][0]
             freq_list.append(freq)
             tv_list.append(tv)
-            print(tv_list)
-            print(freq_list, self.f_min, self.f_max)
 
             # update bounds
             if self.f_min < freq <= target_freq and freq > self.f_min:
@@ -75,53 +73,39 @@ class PyTune:
 
             if freq >= target_freq:
                 if self.f_max == 0:
-                    print("First max set")
                     self.f_max = freq
                     self.tv_max = tv
                 elif freq <= self.f_max:
-                    print("Max update")
                     self.f_max = freq
                     self.tv_max = tv
 
             # calculate slope of line from base point to new point
             if freq_list[n] - freq_list[n+1] != 0 and control_switch and self.f_max - self.f_min != 0:
                 if iter_set[0] == "Linear Interpolation":
-                    print("\t\t\t\t 1")
                     m = (tv_list[n+1] - tv_list[n])/(freq_list[n+1] - freq_list[n])
                     # calculate new tv with straight line formula
                     tv = tv_list[n+1] + m*(target_freq - freq_list[n+1])
 
                     # check if new tv is between the current min and max tv
                     if self.tv_min < abs(tv) < self.tv_max or (self.tv_min == 0 or self.tv_max == 0):
-                        print("\t\t\t\t 2")
                         if self.tv_min == 0:
-                            print("\t\t\t\t 2a")
                             tv = self.tv_max - 5
-                            print("tv, max tv", tv, self.tv_max)
                         pass
                     else:
-                        print("\t\t\t\t 3")
                         if self.tv_min*self.tv_max != 0:
-                            print("\t\t\t\t  4")
                             tv = self.tv_min + (self.tv_max-self.tv_min)*(target_freq-self.f_min)/(self.f_max - self.f_min)
 
                         elif self.tv_min != 0:
-                            print("\t\t\t\t 5")
                             # check the side of the curve the new value falls to
                             if abs(tv) > self.tv_min:
-                                print("\t\t\t\t 6")
                                 tv = max(self.tv_min + 1, self.tv_min*(target_freq/self.f_min))
                             else:
-                                print("\t\t\t\t 7")
                                 tv = max(self.tv_min - 1, self.tv_min/(target_freq/self.f_min))
                         elif self.tv_max != 0:
-                            print("\t\t\t\t 8")
                             # check the side of the curve the new value falls to
                             if abs(tv) < self.tv_max:
-                                print("\t\t\t\t 9")
                                 tv = self.tv_max - 1
                             else:
-                                print("\t\t\t\t 10")
                                 tv = self.tv_max + 1
 
                 else:
@@ -133,10 +117,8 @@ class PyTune:
 
             elif self.f_max - self.f_min != 0:
                 # switch control to just this part of the code for the end parts of the simulation for convergence
-                print("\t\t\t\t 11")
                 control_switch = False
                 if self.tv_min*self.tv_max != 0:
-                    print("\t\t\t\t 12")
                     tv = (self.tv_min + self.tv_max)/2
 
             # change tv
@@ -183,7 +165,6 @@ class PyTune:
         freq_list = []
         Req_list = []
         error = 1
-        print("in tuner ", projectDir)
         slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid, parentDir=parentDir, projectDir=projectDir)
         dirc = f'{projectDir}\SimulationData\SLANS\Cavity{fid}\cavity_{bc}.svl'
         d = fr.svl_reader(dirc)
@@ -206,7 +187,8 @@ class PyTune:
 
         while abs(error) > tol:
             # run slans cavity code
-            slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid, parentDir=parentDir, projectDir=projectDir)
+            slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc,
+                              fid=fid, parentDir=parentDir, projectDir=projectDir)
 
             # get results and compare with set value
             d = fr.svl_reader(dirc)
@@ -320,7 +302,6 @@ class PyTune:
 
     @staticmethod
     def write_output(tv_list, freq_list, fid, projectDir):
-        print("Writing output")
         dd = {"tv": tv_list, "freq": freq_list}
 
         with open(f"{projectDir}\SimulationData\SLANS\Cavity{fid}\convergence_output.json", "w") as outfile:

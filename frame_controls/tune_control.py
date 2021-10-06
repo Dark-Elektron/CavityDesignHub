@@ -1,16 +1,9 @@
-import ctypes
 import shutil
-import stat
-from distutils.dir_util import copy_tree
 from math import floor
 import threading
 from PyQt5 import QtCore
 from PyQt5.QtCore import QPropertyAnimation, QThread, pyqtSignal
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtWidgets import *
-from scipy.optimize import fsolve
-# from modules.tune_module.tuners.pyTuner import Tuner
-# from simulation_codes.SLANS.slansTuner import Tune
 from ui_files.run_tune import Ui_w_Tune
 import ast
 import json
@@ -21,7 +14,6 @@ from termcolor import colored
 from PyQt5.QtWidgets import *
 import random as r
 from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
-import numpy as np
 from utils.file_reader import FileReader
 import pyqtgraph as pg
 from distutils import dir_util
@@ -32,6 +24,7 @@ file_color = 'red'
 DEBUG = True
 def print_(*arg):
     if DEBUG: print(colored(f'\t{arg}', file_color))
+
 
 fr = FileReader()
 slans_geom = SLANSGeometry()
@@ -217,7 +210,6 @@ class TuneControl:
 
                     self.existing_keys = list(self.pseudo_shape_space.keys())
                     # self.log(f'last saved key: {self.existing_keys}')
-                    print("Existing keys", self.existing_keys)
             elif resume == "Cancel":
                 return
 
@@ -258,7 +250,6 @@ class TuneControl:
         else:
             outer_half_cell_parameters = inner_half_cell_parameters
 
-        print(inner_half_cell_parameters, outer_half_cell_parameters)
         pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, inner_half_cell_parameters, outer_half_cell_parameters)
 
         if pseudo_shape_space:
@@ -294,14 +285,12 @@ class TuneControl:
             # check if number of processors selected is greater than the number of keys in the pseudo shape space
             if proc_count > len(keys):
                 proc_count = len(keys)
-                print(f"Changed processor count to {proc_count}.")
 
             shape_space_len = len(keys)
             share = floor(shape_space_len / proc_count)
 
             for i in reversed(range(self.tuneUI.gl_PyqtGraph.count())):
                 self.tuneUI.gl_PyqtGraph.itemAt(i).widget().setParent(None)
-            print("\t1b")
 
             # insert graphs for convergence monitor
             # divide processors into ratio 1 to 3
@@ -353,7 +342,6 @@ class TuneControl:
                                          args=(processor_shape_space, resume, p, bc, self.main_control.parentDir,
                                                self.main_control.projectDir, self.filename, self.tuner_option,
                                                tune_variable, iter_set, cell_type, self.progress_list))
-                    print("\t1d")
                     service.start()
                     self.processes.append(psutil.Process(service.pid))
                     self.processes_id.append(service.pid)
@@ -386,12 +374,10 @@ class TuneControl:
         #     print_("TUNE CONTROL:: run_tune:: ", e)
 
     def createPyGraph(self, row, column):
-        print(row, column)
         # add pyqgraph
         pg_ = pg
         pygraph = pg_.PlotWidget()
         pygraph.setBackground('w')
-        print("here here")
         self.tuneUI.gl_PyqtGraph.addWidget(pygraph, row, column, 1, 1)
 
         self.pg_list.append(pg_)
@@ -642,8 +628,6 @@ class TuneControl:
                 print('Please check input parameters.')
         else:
             ########## UPDATE CODE TO CHECK FOR ALL THE ITEMS IN THE SHAPE SPACE FOR SHAPES WITH A + a > L
-            print_("Grid shape space generate")
-
             check = self.check_input()
 
             A_o_space = ohc[0]
@@ -750,8 +734,6 @@ class TuneControl:
                                             count += 1
 
         if check:
-            print_(f"pseudo shape space check: {self.pseudo_shape_space}")
-
             pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
             with open(pseudo_shape_space_name, 'w') as file:
                 file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))

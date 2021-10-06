@@ -458,8 +458,8 @@ class MainWindow:
 
     def eventFilter(self, object, event):
         if event.type() == QEvent.Enter: # Enter
-            object.setMaximumSize(75,75)
-            object.setMinimumSize(75, 75)
+            object.setMaximumWidth(75)
+            object.setMinimumWidth(75)
 
             return True
 

@@ -76,18 +76,9 @@ class SLANSGeometry(Geometry):
 
         filename = f'cavity_{bc}'
 
-        # # Write parameters to folder
-        # if self.ui.cb_Only_Mid_Cells.checkState() == 2:
-        #     self.write_cst_paramters_mid(self.fid)
-        # else:
-        #     self.write_cst_paramters(self.fid)
-
         # Write Slans Geometry
         with open(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.geo', 'w') as f:
-            # print_("it got here")
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
-            # print_(n)
-            # print_(self.WG_mesh)
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
                 self.Jxy * n + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
                     1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh, self.Jxy, self.unit))

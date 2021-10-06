@@ -66,6 +66,21 @@ class GraphicsView(QGraphicsView):
         # self.drawCells()
         self.update_signal()
 
+    def initUi(self):
+        # Housekeeping QGraphicsView
+        self.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
+        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+
+        # enable dropping
+        self.setAcceptDrops(True)
+
+        # set initial zoom scale
+        self.scale(0.2, 0.2)
+
     def update_signal(self):
         self.ui.le_A_i.textChanged.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
         self.ui.le_B_i.textChanged.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
@@ -101,23 +116,7 @@ class GraphicsView(QGraphicsView):
         self.ui.cb_Outer_Cell_L.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
         self.ui.cb_Outer_Cell_R.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
-    def initUi(self):
-        # Housekeeping QGraphicsView
-        self.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
-        self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-
-        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
-
-        # enable dropping
-        self.setAcceptDrops(True)
-
-        # set initial zoom scale
-        self.scale(0.26, 0.26)
-
     def drawCells(self, IC=None, OC=None, BP=None, color="#ffffff"):
-        print("calls this")
         line_T = Line(self, line_type='line', section="top", IC=IC, OC=OC, BP=BP, color=color)
         line_B = Line(self, line_type='line', section="bottom", IC=IC, OC=OC, BP=BP, color=color)
 
@@ -132,7 +131,6 @@ class GraphicsView(QGraphicsView):
     # override required to enable drops
     def dragMoveEvent(self, event):
         event.acceptProposedAction()
-        pass
 
     # def dragEnterEvent(self, event):
     #     if event.mimeData().hasFormat(LISTBOX_MIMETYPE):

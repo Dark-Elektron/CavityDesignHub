@@ -2,21 +2,17 @@ import ast
 import json
 import os
 import subprocess
-import sys
 import threading
 import time
 import multiprocessing as mp
 from threading import Thread
-from simulation_codes.ABCI.abci_geometry import ABCIGeometry
 from PyQt5 import QtCore
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import QPropertyAnimation
 from termcolor import colored
-
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from simulation_codes.ABCI.abci_geometry import ABCIGeometry
@@ -192,18 +188,6 @@ class WakefieldControl:
 
         # get geometric parameters
         shape_space = self.get_geometric_parameters('ABCI')
-
-        # print(f'shape paremeters: {mid_cell_par, left_end_cell_par, right_end_cell_par}')
-        # check if a geometry was returned
-
-        # # save shape space as temporary file to be read from the parallel code
-        # shape_space_name = '_temp_shape_space.json'
-        # with open(fr'{self.main_control.projectDir}\Cavities\{shape_space_name}', "w") as outfile:
-        #     json.dump(shape_space, outfile, indent=4, separators=(',', ': '))
-        #
-        # # get dictionary from json file
-        # dirc = fr'{self.main_control.projectDir}\Cavities\{shape_space_name}'
-        # shape_space = fr.json_reader(dirc)
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(shape_space.keys())
@@ -557,7 +541,8 @@ class WakefieldControl:
         else:
             wid2.hide()
 
-    def button_clicked(self, i):
+    @staticmethod
+    def button_clicked(i):
         return i.text()
 
     def open_file(self, le, cb):
@@ -581,7 +566,8 @@ class WakefieldControl:
         except Exception as e:
             print('Failed to open file:: ', e)
 
-    def text_to_list(self, txt):
+    @staticmethod
+    def text_to_list(txt):
         if "range" in txt:
             txt = txt.replace('range', '')
             l = ast.literal_eval(txt)
@@ -647,13 +633,14 @@ class WakefieldControl:
         # Abci
         self.wakefieldUI.pb_Top_Drawer.clicked.connect(lambda: self.run_abci_exe(fr'{self.main_control.parentDir}\em_codes\ABCI_exe\TopDrawer for Windows\TopDrawW.exe'))
 
-    def run_abci_exe(self, path):
+    @staticmethod
+    def run_abci_exe(path):
         path = os.path.join(os.getcwd(), path)
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
 
     def draw_shape_from_shape_space(self):
-        colors = [[48,162,218, 255], [252,79,48, 255], [229,174,56, 255], [109,144,79, 255], [139,139,139, 255]]
+        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255], [109, 144, 79, 255], [139, 139, 139, 255]]
         ci = 0
 
         # remove existing cells
@@ -668,29 +655,30 @@ class WakefieldControl:
                 ci += 1
 
 
-def run_sequential(n_cells, n_modules, processor_shape_space,
-                   MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
-                   DDR_SIG=0.1, DDZ_SIG=0.1,
-                   parentDir=None, projectDir=None, progress_list=None):
-    progress = 0
-    # get length of processor
-    total_no_of_shapes = len(list(processor_shape_space.keys()))
-    for key, shape in processor_shape_space.items():
-        # run abci code
-        start_time = time.time()
-        try:
-            abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                             fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                             DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
-        except:
-            abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                             fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                             DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
+    @staticmethod
+    def run_sequential(n_cells, n_modules, processor_shape_space,
+                       MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
+                       DDR_SIG=0.1, DDZ_SIG=0.1,
+                       parentDir=None, projectDir=None, progress_list=None):
+        progress = 0
+        # get length of processor
+        total_no_of_shapes = len(list(processor_shape_space.keys()))
+        for key, shape in processor_shape_space.items():
+            # run abci code
+            start_time = time.time()
+            try:
+                abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                 fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
+            except:
+                abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                 fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
 
-        print_(f'Cavity {key}. Time: {time.time() - start_time}')
+            print_(f'Cavity {key}. Time: {time.time() - start_time}')
 
-        # update progress
-        progress_list.append((progress+1)/total_no_of_shapes)
+            # update progress
+            progress_list.append((progress+1)/total_no_of_shapes)
 
 
 class ProgressMonitor(QThread):

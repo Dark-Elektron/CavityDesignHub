@@ -1,16 +1,10 @@
-import ast
-import os
 import subprocess
-# from geometry import Geometry
 import numpy as np
+from scipy.optimize import fsolve
 
 
 class SLANSTune:
     def __init__(self, parentDir, projectDir):
-        """
-        parentDir:
-        """
-
         self.parentDir = parentDir
         self.projectDir = projectDir
         self.filename = 'tuned'
@@ -21,16 +15,21 @@ class SLANSTune:
 
         self.freq0 = freq0
         print("\t\tSLANS_TUNE:: Started tuning, initial values -> ", A, B, a, b, Req_0, Ri, L, freq0)
-        if A:
-            self.write_geometry_parameters_mid_tune(A, B, a, b, Req_0, Ri, L)
+        self.write_geometry_parameters_mid_tune(A, B, a, b, Req_0, Ri, L)
 
         print("\t\tDone writing geometry parameters")
         self.write_beta_mid_Tune(beta, f_shift, n_modes)
         print("\t\tDone writing tuned parameters")
 
-        filepath = fr'{self.slans_files}\tuned'
+        filepath = fr'{self.slans_files}\{self.filename}'
         print("\t\tCalling subprocess, TunedCell\n")
-        subprocess.run([self.tuner, filepath, '-b'])
+
+        # the next two lines suppress pop up windows from the slans codes
+        # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
+        startupinfo = subprocess.STARTUPINFO()
+        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        cwd = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune'
+        subprocess.call([self.tuner, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
         print("\t\t\tDone tuning")
 
         R_eq, freq, alpha, h, e = self.read_tuned_data()
@@ -39,25 +38,24 @@ class SLANSTune:
         return R_eq, freq, alpha, h, e
 
     def end_cell_tune(self, par_in, par_out, freq0, proc, f_shift=0, n_modes=1, beta=1):
+        print("here in end cell tuner", proc)
         self.tuner_end = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe'
         self.slans_files_end = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files'
 
         self.freq0 = freq0
         print("\t\tSLANS_TUNE:: Started tuning, initial values -> ", par_in, par_out, freq0)
-        if par_in:
-            self.write_geometry_parameters_end_tune(par_in, par_out)
-        # else:
-        #     self.write_geometry_parameters_mid_tune(self.A_M, self.B_M, self.a_M, self.b_M, Req_0, self.ri_M, self.L_M)
+        self.write_geometry_parameters_end_tune(par_in, par_out)
 
         print("\t\tDone writing geometry parameters")
         self.write_beta_end_Tune(beta, f_shift, n_modes)
         print("\t\tDone writing tuned parameters")
 
-        filepath = fr'{self.slans_files_end}\tesla_end2'
+        filepath = fr'{self.slans_files_end}/{self.filename}'
 
         print("\t\tCalling subprocess, TunedCell\n")
-        print("\t\t", filepath)
-        subprocess.run([self.tuner_end, filepath, '-b'])
+        cwd = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files'
+        print(filepath)
+        subprocess.call([self.tuner_end, filepath], cwd=cwd)
         print("\t\t\tDone tuning")
 
         L, freq, alpha, h, e = self.read_tuned_data_end()
@@ -67,7 +65,7 @@ class SLANSTune:
 
     def write_geometry_parameters_mid_tune(self, A, B, a, b, Req0, Rbp, L):
         file_text = []
-        filename = fr'{self.slans_files}\tuned_reference.tgp'
+        filename = fr'{self.slans_files}\{self.filename}.tgp'
         with open(filename, 'r') as f:
             tline = f.readline().rstrip('\n')
             while isinstance(tline, str):
@@ -104,12 +102,14 @@ class SLANSTune:
 
     def write_geometry_parameters_end_tune(self, par_in, par_out):
         A, B, a, b, Ri, L, Req_i, _ = par_in
+        li = self.calculate_li(A, B, a, b, Ri, L, Req_i, 0)
+
         Ae, Be, ae, be, Rie, Le, Req_e, _ = par_out
         at, bt, c = 0, 0, 0
-        with open(fr'{self.slans_files_end}\tesla_end2.tgpe', 'w') as f:
+        with open(fr'{self.slans_files_end}\{self.filename}.tgpe', 'w') as f:
             f.write('{:g} {:g}  {:g} : Req(mm), Rae(mm), Le(mm) - parameters of the end half-cell \n'.format(Req_i, Rie, Le))
-            f.write('{:g}  {:g}  {:g}  {:g}  {:g}  {:g}  {:g} : Al(mm), Bl(mm), al(mm), bl(mm), ll(mm), Ral(mm), Ll(mm) - parameters of the inner half-cell\n'.format(A, B, a, b, 32.408, Ri, L))
-            f.write('{:g}    5            : Freq(MHz), mode\n'.format(self.freq0))
+            f.write('{:g}  {:g}  {:g}  {:g}  {:g}  {:g}  {:g} : Al(mm), Bl(mm), al(mm), bl(mm), ll(mm), Ral(mm), Ll(mm) - parameters of the inner half-cell\n'.format(A, B, a, b, li, Ri, L))
+            f.write('{:g}    1            : Freq(MHz), mode\n'.format(self.freq0))
             f.write('1.           16                  : delta(mm), m\n')
             f.write('{:g}     90      0      : ZA1(mm), A2(mm), nA\n'.format(Ae))
             f.write('{:g}      80     0      : B1(mm), B2(mm), nB\n'.format(Be))
@@ -144,7 +144,7 @@ class SLANSTune:
             f.write('{:g} : beta (v/c)\n'.format(beta))
 
     def write_beta_end_Tune(self, beta, f_shift, n_modes):
-        filename = fr'{self.slans_files_end}\tesla_end2.dtr'
+        filename = fr'{self.slans_files_end}\{self.filename}.dtr'
         with open(filename, 'w') as f:
             f.write(':          Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes+1))
@@ -186,7 +186,7 @@ class SLANSTune:
             v = 0
             for key, val in data.items():
                 try:
-                    data[key]= float(var_values[v])
+                    data[key] = float(var_values[v])
                     v += 1
                 except:
                     continue
@@ -194,8 +194,7 @@ class SLANSTune:
         return data['Req'], data['Freq'], data['alpha'], data['h'], data['e']
 
     def read_tuned_data_end(self):
-        filename = fr'{self.slans_files_end}\tesla_end2.tgpe'
-        # filename = 'D:\Dropbox\\2D_Codes\SLANS_software\Matlab_Slans\EndCellTune\Superlans_Files\\tesla_end2.tgpe'
+        filename = fr'{self.slans_files_end}\{self.filename}.tgpe'
         print("Reading data from:: ", filename)
         with open(filename, 'r') as f:
 
@@ -230,19 +229,50 @@ class SLANSTune:
         # This could be modified to return more parameter values
         return data['L'], data['Freq'], data['alpha'], data['h'], data['e']
 
+    def calculate_li(self, A, B, a, b, Ri, L, Req, L_bp):
+        data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
+                [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        x1, y1, x2, y2 = fsolve(self.ellipse_tangent,
+                                np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
+                                args=data)
+
+        li = np.sqrt((x1-x2)**2 + (y1-y2)**2)
+        return li
+
+    @staticmethod
+    def ellipse_tangent(z, *data):
+        coord, dim = data
+        h, k, p, q = coord
+        a, b, A, B = dim
+        x1, y1, x2, y2 = z
+
+        f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+        f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+        f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+        return f1, f2, f3, f4
+
 
 if __name__ == '__main__':
     parentDir = "D:\Dropbox\CEMCodesHub" # '<parentDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
     projectDir = "D:\Dropbox\CEMCodesHub\SampleProject" # '<projectDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
-    """"
-    The parent directory 
-    """
-
+    "D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe"
     # Create tuner object
     tune = SLANSTune(parentDir, projectDir)
 
-    # Call mid_cell_tune function
-    L, freq, alpha, h, e = tune.mid_cell_tune(67.72, 67.72, 21.75, 21.75, 60, 93.5, 160, 801.58)
-    # L, freq, alpha, h, e = tune.end_cell_tune([52, 52, 28.5, 28.5, 55, 93.5, 169.476], [52.0, 52.0, 28.5, 28.5, 82, 93.5, 169.476], 801.58) # par_out = [Ae, Be, ae, be, Rie, Le, at, bt, c]
+    # # Call mid_cell_tune function
+    # L, freq, alpha, h, e = tune.mid_cell_tune(67.72, 67.72, 21.75, 21.75, 60, 93.5, 160, 801.58)
+    # # L, freq, alpha, h, e = tune.end_cell_tune([52, 52, 28.5, 28.5, 55, 93.5, 169.476], [52.0, 52.0, 28.5, 28.5, 82, 93.5, 169.476], 801.58) # par_out = [Ae, Be, ae, be, Rie, Le, at, bt, c]
+    #
+    # print(L, freq, alpha, h, e)
 
+
+    mid_cell_par = [71.25, 49.87, 20, 28.07, 65, 93.5, 165.355, 0] # par_in = [A, B, a, bi, R, L, Req]
+    end_cell_par = [72.500, 52.031, 19.966, 18.202, 75, 93.5, 165.355, 0] # par_out = [Ae, Be, ae, be, Rie, Le, Req]
+    target_freq = 801.58 # MHz
+    L, freq, alpha, h, e = tune.end_cell_tune(mid_cell_par, end_cell_par, target_freq, 0)
     print(L, freq, alpha, h, e)
+
+# D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
+# D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
