@@ -486,6 +486,9 @@ border-radius: 15px;</string>
              <property name="text">
               <string>T</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="4" column="0">
@@ -511,6 +514,9 @@ border-radius: 15px;</string>
              </property>
              <property name="text">
               <string>E</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -538,6 +544,9 @@ border-radius: 15px;</string>
              <property name="text">
               <string>W</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="8" column="0">
@@ -563,6 +572,9 @@ border-radius: 15px;</string>
              </property>
              <property name="text">
               <string>M</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -590,6 +602,9 @@ border-radius: 15px;</string>
              <property name="text">
               <string>PP</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
            <item row="7" column="0">
@@ -615,6 +630,9 @@ border-radius: 15px;</string>
              </property>
              <property name="text">
               <string>P</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>
@@ -706,6 +724,9 @@ border-radius: 15px;</string>
              </property>
              <property name="text">
               <string>H</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
              </property>
             </widget>
            </item>

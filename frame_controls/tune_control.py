@@ -293,35 +293,31 @@ class TuneControl:
                 self.tuneUI.gl_PyqtGraph.itemAt(i).widget().setParent(None)
 
             # insert graphs for convergence monitor
-            # divide processors into ratio 1 to 3
-            col_count = int(proc_count/3)
-            row_count = proc_count - col_count
-
-            # print("row column ", row_count, col_count, proc_count)
-
             self.pg_list = []
             self.pygraph_list = []
+            graph_order = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (3, 0), (3, 1), (4, 0), (4, 1), (5, 0), (5, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 0), (6, 1), (6, 2), (7, 0), (7, 1), (7, 2), (8, 0), (8, 1), (8, 2), (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3)]
             # print("pglist before ", self.pg_list)
             # print("pygraph before ", self.pygraph_list)
 
-            if col_count == 0:
-                for i in range(row_count):
-                    self.createPyGraph(i, 0)
-            else:
-                for i in range(row_count):
-                    for j in range(col_count):
-                        self.createPyGraph(i, j)
+            for p in range(proc_count):
+                self.createPyGraph(graph_order[p][0], graph_order[p][1])
 
             # print("pglist after ", self.pg_list)
             # print("pygraph after ", self.pygraph_list)
 
             # show progress bar
             self.progress_bar.show()
+            time.sleep(1)
 
             # progress list
             manager = mp.Manager()
             self.progress_list = manager.list()
             self.progress_list.append(0)
+
+            # convergence list
+            self.convergence_list = manager.list()
+            for i in range(proc_count):
+                self.convergence_list.append([])
 
             for p in range(proc_count):
                 if True:
@@ -341,7 +337,7 @@ class TuneControl:
                     service = mp.Process(target=self.run_sequential,
                                          args=(processor_shape_space, resume, p, bc, self.main_control.parentDir,
                                                self.main_control.projectDir, self.filename, self.tuner_option,
-                                               tune_variable, iter_set, cell_type, self.progress_list))
+                                               tune_variable, iter_set, cell_type, self.progress_list, self.convergence_list))
                     service.start()
                     self.processes.append(psutil.Process(service.pid))
                     self.processes_id.append(service.pid)
@@ -357,7 +353,7 @@ class TuneControl:
             self.progress_monitor_thread.start()
 
             # # start convergence monitor
-            # self.convergence_monitor_thread = MonitorConvergence(self, self.main_control.projectDir)
+            # self.convergence_monitor_thread = MonitorConvergence(self)
             # self.convergence_monitor_thread.sig.connect(self.monitor_convergence)
             # self.convergence_monitor_thread.start()
 
@@ -384,25 +380,21 @@ class TuneControl:
         self.pygraph_list.append(pygraph)
 
     def monitor_convergence(self, conv):
-        print("in here monitor", conv)
-        self.plot_list = [None for i in range(self.tuneUI.sb_No_Of_Processors_Tune.value())]
+        l = len(self.convergence_list)
+        self.plot_list = [None for i in range(l)]
 
         for p in self.pygraph_list:
             if p:
                 p.clear()
 
-        for i in range(self.tuneUI.sb_No_Of_Processors_Tune.value()):
-            if self.tuneUI.cb_Monitor_Convergence.checkState() == 2:
+        if self.tuneUI.cb_Monitor_Convergence.checkState() == 2:
+            for i in range(l):
                 self.pygraph_list[i].addLine(x=None, y=self.freq, pen=pg.mkPen('r', width=1))
 
                 if not self.plot_list[i]:
-                    self.plot_list[i] = self.pygraph_list[i].plot(conv[i][0], conv[i][1], pen=None, symbol='o')
+                    self.plot_list[i] = self.pygraph_list[i].plot(self.convergence_list[i][0], self.convergence_list[i][1], pen=None, symbol='o')
                 else:
-                    self.plot_list[i].setData(conv[i][0], conv[i][1], pen=None, symbol='o')
-
-            time.sleep(1)
-
-        self.tune_ended = False
+                    self.plot_list[i].setData(self.convergence_list[i][0], self.convergence_list[i][1], pen=None, symbol='o')
 
     def update_progress_bar(self, val):
         self.progress_bar.setValue(val)
@@ -481,6 +473,7 @@ class TuneControl:
 
         # set exit signal
         self.tune_ended = True
+        print("Tune ended")
 
     def end_routine(self, proc_ids, filename, projectDir):
         proc_count = len(proc_ids)
@@ -903,9 +896,9 @@ class TuneControl:
         state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
 
     @staticmethod
-    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type, progress_list):
+    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type, progress_list, convergence_list):
         tuner.tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner_option=tuner_option,
-                       tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type, progress_list=progress_list) # last_key=last_key This would have to be tested again #val2
+                       tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type, progress_list=progress_list, convergence_list=convergence_list) # last_key=last_key This would have to be tested again #val2
 
     def deserialize(self, state_dict):
         # update state file
@@ -1234,27 +1227,14 @@ class EndRoutine(QThread):
 class MonitorConvergence(QThread):
     sig = QtCore.pyqtSignal(list)
 
-    def __init__(self, main_control, projectDir):
+    def __init__(self, tune_control):
         super(QThread, self).__init__()
-        self.main_control = main_control
-        self.proc_ids = main_control.processes_id
-        self.projectDir = projectDir
+        self.tune_control = tune_control
 
     def run(self):
-        self.monitor_convergence(self.proc_ids)
+        self.monitor_convergence()
 
-    def monitor_convergence(self, proc_ids):
-
-        while not self.main_control.tune_ended:
-            conv = []
-            # read data from file
-            for i in range(len(proc_ids)):
-                filename = fr"{self.projectDir}\SimulationData\SLANS\Cavity_process_{i}\convergence_output.json"
-
-                if os.path.exists(filename):
-                    df = fr.json_reader(filename)
-                    L, freq = df["tv"].to_list(), df["freq"].to_list()
-
-                    conv.append([L, freq])
-            self.sig.emit(conv)
+    def monitor_convergence(self):
+        while not self.tune_control.tune_ended:
+            self.sig.emit(self.tune_control.convergence_list._getvalue())
 

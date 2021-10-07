@@ -121,6 +121,16 @@ class MainWindow:
                             'Plot': [self.ui.pb_Plot],
                             'Misc': [self.ui.pb_Misc]
                             }
+
+        self.tray_buttons_dict = {'Home': [self.ui.pb_rHome],
+                                  'Tune': [self.ui.pb_rTune],
+                                  'Wakefield': [self.ui.pb_rWakefield],
+                                  'Eigenmode': [self.ui.pb_rEigenmode],
+                                  'Postprocess': [self.ui.pb_rPostprocess],
+                                  'Plot': [self.ui.pb_rPlot],
+                                  'Misc': [self.ui.pb_rMisc]
+                                  }
+
         self.create_frames_ui()
         self.signals()
 
@@ -188,7 +198,7 @@ class MainWindow:
         # save last frame
         self.last_frame = self.ui.g_Display.itemAt(index).widget()
 
-        while (index >= 0):
+        while index >= 0:
             widget = self.ui.g_Display.itemAt(index).widget()
             self.ui.g_Display.removeWidget(widget)
             widget.hide()
@@ -198,6 +208,16 @@ class MainWindow:
         w = self.frames_dict[key][1]
         self.ui.g_Display.addWidget(w, 0, 1, 1, 1)
         w.show()
+
+        for k, pb in self.tray_buttons_dict.items():
+            if key == k:
+                pb[0].setChecked(True)
+                pb[0].setMinimumWidth(75)
+                pb[0].setMaximumWidth(75)
+            else:
+                pb[0].setChecked(False)
+                pb[0].setMinimumWidth(50)
+                pb[0].setMaximumWidth(50)
 
     def return_to_last_frame(self):
         if self.last_frame is not None:
@@ -258,12 +278,6 @@ class MainWindow:
             self.animation.setStartValue(height)
             self.animation.setEndValue(heightCollapsed)
             self.animation.start()
-
-    def loadStylesheet(self, filename):
-        file = QFile(filename)
-        file.open(QFile.ReadOnly | QFile.Text)
-        stylesheet = file.readAll()
-        QApplication.instance().setStyleSheet(str(stylesheet, encoding="utf-8"))
 
     def create_project(self):
         project_name = self.ui.le_New_Project_Filename.text()
@@ -424,14 +438,6 @@ class MainWindow:
         if x == msg.Yes:
             self.deserialize('ui_state_files/state_file.json')
 
-    def button_clicked(self, i):
-        return i.text()
-
-    def f2b_slashes(self, path):
-        # replaces forward slashes with backward slashes for windows OS
-        path = path.replace(r"/", "\\")
-        return path
-
     def checkIfPathExist(self, directory, folder):
         path = f"{directory}/{folder}"
         if os.path.exists(path):
@@ -457,18 +463,36 @@ class MainWindow:
             return True
 
     def eventFilter(self, object, event):
-        if event.type() == QEvent.Enter: # Enter
-            object.setMaximumWidth(75)
-            object.setMinimumWidth(75)
+        if not object.isChecked():
+            if event.type() == QEvent.Enter: # Enter
+                object.setMaximumWidth(75)
+                object.setMinimumWidth(75)
 
-            return True
+                return True
 
-        if event.type() == QEvent.Leave: # Enter
-            object.setMaximumSize(50,50)
-            object.setMinimumSize(50, 50)
-            return True
+            if event.type() == QEvent.Leave: # Enter
+                object.setMaximumSize(50,50)
+                object.setMinimumSize(50, 50)
+                return True
 
         return self.default_ef(object, event)
+
+    @staticmethod
+    def button_clicked(i):
+        return i.text()
+
+    @staticmethod
+    def f2b_slashes(path):
+        # replaces forward slashes with backward slashes for windows OS
+        path = path.replace(r"/", "\\")
+        return path
+
+    @staticmethod
+    def loadStylesheet(filename):
+        file = QFile(filename)
+        file.open(QFile.ReadOnly | QFile.Text)
+        stylesheet = file.readAll()
+        QApplication.instance().setStyleSheet(str(stylesheet, encoding="utf-8"))
 
     def show(self):
         self.main_win.show()

@@ -237,6 +237,7 @@ class Ui_MainWindow(object):
 "border-color: rgb(255, 181, 76);\n"
 "border-width: 5px;\n"
 "border-radius: 15px;")
+        self.pb_rTune.setCheckable(True)
         self.pb_rTune.setObjectName("pb_rTune")
         self.gridLayout_8.addWidget(self.pb_rTune, 3, 0, 1, 1)
         self.pb_rEigenmode = QtWidgets.QPushButton(self.w_Pane)
@@ -247,6 +248,7 @@ class Ui_MainWindow(object):
 "border-color: rgb(216, 74, 255);\n"
 "border-width: 5px;\n"
 "border-radius: 15px;")
+        self.pb_rEigenmode.setCheckable(True)
         self.pb_rEigenmode.setObjectName("pb_rEigenmode")
         self.gridLayout_8.addWidget(self.pb_rEigenmode, 4, 0, 1, 1)
         self.pb_rWakefield = QtWidgets.QPushButton(self.w_Pane)
@@ -257,6 +259,7 @@ class Ui_MainWindow(object):
 "border-color: rgb(255, 69, 119);\n"
 "border-width: 5px;\n"
 "border-radius: 15px;")
+        self.pb_rWakefield.setCheckable(True)
         self.pb_rWakefield.setObjectName("pb_rWakefield")
         self.gridLayout_8.addWidget(self.pb_rWakefield, 5, 0, 1, 1)
         self.pb_rMisc = QtWidgets.QPushButton(self.w_Pane)
@@ -267,6 +270,7 @@ class Ui_MainWindow(object):
 "border-color: rgb(255, 235, 188);\n"
 "border-width: 5px;\n"
 "border-radius: 15px;")
+        self.pb_rMisc.setCheckable(True)
         self.pb_rMisc.setObjectName("pb_rMisc")
         self.gridLayout_8.addWidget(self.pb_rMisc, 8, 0, 1, 1)
         self.pb_rPostprocess = QtWidgets.QPushButton(self.w_Pane)
@@ -277,6 +281,7 @@ class Ui_MainWindow(object):
 "border-color: rgb(167, 222, 255);\n"
 "border-width: 5px;\n"
 "border-radius: 15px;")
+        self.pb_rPostprocess.setCheckable(True)
         self.pb_rPostprocess.setObjectName("pb_rPostprocess")
         self.gridLayout_8.addWidget(self.pb_rPostprocess, 6, 0, 1, 1)
         self.pb_rPlot = QtWidgets.QPushButton(self.w_Pane)
@@ -287,6 +292,7 @@ class Ui_MainWindow(object):
 "border-color: rgb(167, 255, 151);\n"
 "border-width: 5px;\n"
 "border-radius: 15px;")
+        self.pb_rPlot.setCheckable(True)
         self.pb_rPlot.setObjectName("pb_rPlot")
         self.gridLayout_8.addWidget(self.pb_rPlot, 7, 0, 1, 1)
         spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -313,6 +319,7 @@ class Ui_MainWindow(object):
 "border-color: black;\n"
 "border-width: 1px;\n"
 "border-radius: 15px;")
+        self.pb_rHome.setCheckable(True)
         self.pb_rHome.setObjectName("pb_rHome")
         self.gridLayout_8.addWidget(self.pb_rHome, 2, 0, 1, 1)
         self.gridLayout_4.addWidget(self.w_Pane, 1, 0, 1, 1)

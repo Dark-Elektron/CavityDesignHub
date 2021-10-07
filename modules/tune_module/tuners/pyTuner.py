@@ -20,7 +20,7 @@ class PyTune:
     def __init__(self):
         self.plot = None
 
-    def tuneL(self, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0):
+    def tuneL(self, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0, conv_list=None):
         # tv => tune variable
         indx = 5
 
@@ -140,8 +140,10 @@ class PyTune:
                 print("Negative value encountered. It is possible that there no solution for the parameter input set.")
                 break
 
-            # write output
-            self.write_output(tv_list, freq_list, fid, projectDir)
+            # update convergence list
+            if conv_list:
+                conv_list[proc] = [tv_list, freq_list]
+            # self.write_output(tv_list, freq_list, fid, projectDir)
             n += 1
 
         # return best answer from iteration
@@ -154,7 +156,7 @@ class PyTune:
 
         return tv_list[key], freq_list[key]
 
-    def tuneR(self, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0):
+    def tuneR(self, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0, conv_list=None):
 
         if proc == '':
             fid = '_process_0'
@@ -251,6 +253,10 @@ class PyTune:
             # avoid infinite loop-1
             if n > max_iter:
                 break
+
+            # update convergence list
+            if conv_list:
+                conv_list[proc] = [Req_list, freq_list]
 
             n += 1
 

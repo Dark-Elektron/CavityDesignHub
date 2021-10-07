@@ -12,7 +12,7 @@ class Tuner:
         pass
 
     def tune(self, pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
-              proc=0, tuner_option='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell', progress_list=None):
+              proc=0, tuner_option='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell', progress_list=None, convergence_list=None):
 
         # tuner
         pytune = PyTune()
@@ -68,11 +68,11 @@ class Tuner:
                     outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha]
                 else:
                     if tune_variable == 'Req':
-                        Req, freq = pytune.tuneR(inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
+                        Req, freq = pytune.tuneR(inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc, conv_list=convergence_list)
                         # round
                         Req, freq = round(Req, 4), round(freq, 2)
                     else:
-                        L, freq = pytune.tuneL(inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc)
+                        L, freq = pytune.tuneL(inner_cell, outer_cell, freq, beampipes, bc, parentDir, projectDir, iter_set=iter_set, proc=proc, conv_list=convergence_list)
 
                         # round
                         L, freq = round(L, 2), round(freq, 2)
