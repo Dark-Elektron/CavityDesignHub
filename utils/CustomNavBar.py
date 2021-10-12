@@ -4,10 +4,12 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 
+
 class MyCustomToolbar(NavigationToolbar):
     def __init__(self, plotCanvas, parent, coordinates=True):
 
         self.canvas = plotCanvas
+        # self.setContentsMargins(0, 0, 0, 0)
 
         # create the default toolbar
         NavigationToolbar.__init__(self, plotCanvas, parent, coordinates)
@@ -33,6 +35,9 @@ class MyCustomToolbar(NavigationToolbar):
                      ('Save', 'Save the figure', 'save', 'save_figure'),
                      ]
 
+        self.canvas.toolbar.setContentsMargins(0, 0, 0, 0)
+        print(type(self.canvas.toolbar))
+
         actions = self.findChildren(QAction)
         for a in actions:
             self.removeAction(a)
@@ -49,10 +54,12 @@ class MyCustomToolbar(NavigationToolbar):
                 for a in plot_settings_options:
                     self.cb_Save_Plot_Settings.addItem(a)
                 self.addWidget(self.cb_Save_Plot_Settings)
+
             else:
                 a = self.addAction(self._icon(image_file + '.png'),
                                    text, getattr(self, callback))
                 self._actions[callback] = a
+
                 if callback in ['zoom', 'pan']:
                     a.setCheckable(True)
                 if tooltip_text is not None:

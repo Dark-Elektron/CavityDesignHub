@@ -21,6 +21,32 @@
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="3">
+    <spacer name="horizontalSpacer_8">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="0" column="1" colspan="2">
     <widget class="QWidget" name="widget" native="true">
      <property name="minimumSize">
@@ -118,199 +144,16 @@
         </layout>
        </widget>
       </item>
-      <item row="4" column="1">
-       <widget class="QWidget" name="widget_7" native="true">
-        <layout class="QGridLayout" name="gridLayout_8">
-         <item row="0" column="1">
-          <widget class="QPushButton" name="pb_Genmsh">
-           <property name="minimumSize">
-            <size>
-             <width>75</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>GENMSH</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/genmesh.png</normaloff>:/icons/icons/PNG/genmesh.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="6">
-          <widget class="QPushButton" name="pb_Slansre">
-           <property name="minimumSize">
-            <size>
-             <width>75</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>SLANSRE</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="8">
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="5">
-          <widget class="QPushButton" name="pb_Slanss">
-           <property name="minimumSize">
-            <size>
-             <width>75</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>SLANSS</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="3">
-          <widget class="QPushButton" name="pb_Sl">
-           <property name="minimumSize">
-            <size>
-             <width>75</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>SL</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QPushButton" name="pb_Slansc">
-           <property name="minimumSize">
-            <size>
-             <width>75</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>SLANSC</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="pb_Slansm">
-           <property name="minimumSize">
-            <size>
-             <width>75</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>SLANSM</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="7">
-          <widget class="QPushButton" name="pb_MTFView">
-           <property name="minimumSize">
-            <size>
-             <width>75</width>
-             <height>0</height>
-            </size>
-           </property>
-           <property name="maximumSize">
-            <size>
-             <width>100</width>
-             <height>16777215</height>
-            </size>
-           </property>
-           <property name="text">
-            <string>MFTView</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <spacer name="horizontalSpacer_7">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="1" column="1">
        <widget class="QScrollArea" name="scrollArea">
         <property name="styleSheet">
          <string notr="true">background-color: rgba(255, 255, 255, 100);</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
         </property>
         <property name="widgetResizable">
          <bool>true</bool>
@@ -318,11 +161,14 @@
         <widget class="QWidget" name="scrollAreaWidgetContents">
          <property name="geometry">
           <rect>
-           <x>-488</x>
+           <x>0</x>
            <y>0</y>
            <width>1242</width>
-           <height>681</height>
+           <height>683</height>
           </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_11">
           <item row="3" column="0">
@@ -1660,8 +1506,8 @@
         </widget>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QWidget" name="widget_13" native="true">
+      <item row="1" column="2" rowspan="3">
+       <widget class="QWidget" name="w_Settings" native="true">
         <property name="minimumSize">
          <size>
           <width>300</width>
@@ -1977,34 +1823,197 @@
         </layout>
        </widget>
       </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QWidget" name="widget_7" native="true">
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="pb_Genmsh">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>GENMSH</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qss/icons.qrc">
+             <normaloff>:/icons/icons/PNG/genmesh.png</normaloff>:/icons/icons/PNG/genmesh.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="6">
+          <widget class="QPushButton" name="pb_Slansre">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>SLANSRE</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qss/icons.qrc">
+             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="8">
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="5">
+          <widget class="QPushButton" name="pb_Slanss">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>SLANSS</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qss/icons.qrc">
+             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QPushButton" name="pb_Sl">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>SL</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qss/icons.qrc">
+             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QPushButton" name="pb_Slansc">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>SLANSC</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qss/icons.qrc">
+             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QPushButton" name="pb_Slansm">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>SLANSM</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qss/icons.qrc">
+             <normaloff>:/icons/icons/PNG/slans.png</normaloff>:/icons/icons/PNG/slans.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="7">
+          <widget class="QPushButton" name="pb_MTFView">
+           <property name="minimumSize">
+            <size>
+             <width>75</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>100</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="text">
+            <string>MFTView</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </widget>
-   </item>
-   <item row="0" column="0">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="3">
-    <spacer name="horizontalSpacer_8">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

@@ -197,6 +197,7 @@ class Plot(FigureCanvasQTAgg):
         # if action == deleteAct:
         #     self.close()
 
+
 class ZoomPan:
     def __init__(self):
         self.press = None

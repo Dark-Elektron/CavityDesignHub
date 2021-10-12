@@ -18,6 +18,7 @@ from utils.file_reader import FileReader
 
 fr = FileReader()
 
+
 class PlotControl:
     def __init__(self, parent):
         self.w_Plot = QWidget()
@@ -292,7 +293,6 @@ class PlotControl:
                         self.axins.plot(line.get_xdata(), line.get_ydata(), linestyle='None', marker='x', markersize=10.0)
                     else:
                         self.axins.plot(line.get_xdata(), line.get_ydata(), linewidth=2)
-
 
             # sub region of the original image
             # get values from line edit

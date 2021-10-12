@@ -70,6 +70,9 @@ class EigenmodeControl:
         self.processes_id = []
         self.show_progress_bar = False
 
+        # ui effects
+        self.ui_effects()
+
     def initUI(self):
         # add checkable combobox
         self.cb_Shape_Space_Keys = CheckableComboBox()
@@ -616,6 +619,23 @@ class EigenmodeControl:
                 self.graphicsView.drawCells(IC, OC, BP, QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
 
                 ci += 1
+
+    def ui_effects(self):
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.eigenmodeUI.w_Settings.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.eigenmodeUI.scrollArea.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.eigenmodeUI.w_Simulation_Controls.setGraphicsEffect(shadow)
 
     @staticmethod
     def load_shape_space(filename):

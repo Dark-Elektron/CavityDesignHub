@@ -3,7 +3,7 @@ from math import floor
 import threading
 from PyQt5 import QtCore
 from PyQt5.QtCore import QPropertyAnimation, QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtGui import QPixmap, QIcon, QColor
 from ui_files.run_tune import Ui_w_Tune
 import ast
 import json
@@ -58,6 +58,9 @@ class TuneControl:
         self.processes = []
         self.processes_id = []
         self.show_progress_bar = False
+
+        # ui effects
+        self.ui_effects()
 
     def initUI(self):
         self.tuneUI.cb_Inner_Cell.setCheckState(2)
@@ -894,6 +897,33 @@ class TuneControl:
         state_dict["Iterative_Method"] = self.tuneUI.cb_Iterative_Method.currentIndex()
         state_dict["Tolerance"] = self.tuneUI.le_Tolerance.text()
         state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
+
+    def ui_effects(self):
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Tune_Input.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Simulation_Controls.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Inner_Cell.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Outer_Cell.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Cell_Component_Control.setGraphicsEffect(shadow)
 
     @staticmethod
     def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type, progress_list, convergence_list):

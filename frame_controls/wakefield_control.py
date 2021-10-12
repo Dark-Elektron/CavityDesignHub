@@ -71,6 +71,9 @@ class WakefieldControl:
         self.processes_id = []
         self.show_progress_bar = False
 
+        # ui effects
+        self.ui_effects()
+
     def signals(self):
         # signals
         self.wakefieldUI.pb_Run.clicked.connect(lambda: self.run_ABCI())
@@ -632,6 +635,24 @@ class WakefieldControl:
     def exe_control(self):
         # Abci
         self.wakefieldUI.pb_Top_Drawer.clicked.connect(lambda: self.run_abci_exe(fr'{self.main_control.parentDir}\em_codes\ABCI_exe\TopDrawer for Windows\TopDrawW.exe'))
+
+    def ui_effects(self):
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.wakefieldUI.w_Settings.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.wakefieldUI.scrollArea.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.wakefieldUI.w_Simulation_Controls.setGraphicsEffect(shadow)
+
+
 
     @staticmethod
     def run_abci_exe(path):

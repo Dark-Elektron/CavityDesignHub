@@ -96,6 +96,9 @@ class MainWindow:
         self.ui.pb_rPostprocess.installEventFilter(self.main_win)
         self.ui.pb_rMisc.installEventFilter(self.main_win)
 
+        # ui effects
+        self.ui_effects()
+
     def new_open_folder(self):
         # disable all buttons
         # signals to create folder
@@ -476,6 +479,23 @@ class MainWindow:
                 return True
 
         return self.default_ef(object, event)
+
+    def ui_effects(self):
+        for push_buttons in self.frames_dict.values():
+            shadow_effect = QGraphicsDropShadowEffect()
+            shadow_effect.setOffset(5)
+            shadow_effect.setColor(QColor(0, 0, 0, 77))
+            shadow_effect.setBlurRadius(5)
+
+            push_buttons[0].setGraphicsEffect(shadow_effect)
+
+        for push_buttons in self.tray_buttons_dict.values():
+            shadow_effect = QGraphicsDropShadowEffect()
+            shadow_effect.setOffset(2.5)
+            shadow_effect.setColor(QColor(0, 0, 0, 77))
+            shadow_effect.setBlurRadius(5)
+
+            push_buttons[0].setGraphicsEffect(shadow_effect)
 
     @staticmethod
     def button_clicked(i):

@@ -21,6 +21,32 @@
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <spacer name="horizontalSpacer_7">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="2">
+    <spacer name="horizontalSpacer_9">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
    <item row="0" column="1">
     <widget class="QWidget" name="widget" native="true">
      <property name="minimumSize">
@@ -36,65 +62,10 @@
       <property name="topMargin">
        <number>0</number>
       </property>
-      <item row="2" column="0">
-       <widget class="QWidget" name="widget_10" native="true">
-        <layout class="QGridLayout" name="gridLayout_18">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="2">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="pb_Top_Drawer">
-           <property name="text">
-            <string>TOP Drawer</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/top_drawer.png</normaloff>:/icons/icons/PNG/top_drawer.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
       <item row="0" column="0">
        <widget class="QScrollArea" name="scrollArea">
         <property name="styleSheet">
-         <string notr="true">background-color: rgba(255, 255, 255, 100);</string>
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
@@ -110,6 +81,9 @@
            <width>1266</width>
            <height>780</height>
           </rect>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(255, 255, 255);</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
           <item row="0" column="0">
@@ -1451,6 +1425,9 @@
       </item>
       <item row="1" column="0">
        <widget class="QWidget" name="w_Simulation_Controls" native="true">
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
+        </property>
         <layout class="QGridLayout" name="gl_Simulation_Controls">
          <property name="leftMargin">
           <number>0</number>
@@ -1546,10 +1523,10 @@
         </layout>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QWidget" name="widget_14" native="true">
+      <item row="0" column="1" rowspan="2">
+       <widget class="QWidget" name="w_Settings" native="true">
         <property name="styleSheet">
-         <string notr="true"/>
+         <string notr="true">background-color: rgb(255, 255, 255);</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_21">
          <property name="topMargin">
@@ -1563,6 +1540,9 @@
          </property>
          <item row="0" column="0" rowspan="2">
           <widget class="QWidget" name="widget_5" native="true">
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
            <layout class="QGridLayout" name="gridLayout_7">
             <property name="leftMargin">
              <number>0</number>
@@ -1592,19 +1572,6 @@
               </property>
               <property name="text">
                <string>No. of Modules</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="0" colspan="2">
-             <widget class="QLabel" name="label_11">
-              <property name="styleSheet">
-               <string notr="true">background-color: rgb(209, 209, 209);</string>
-              </property>
-              <property name="text">
-               <string>Cell Parameters</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>
@@ -1774,6 +1741,19 @@
                </size>
               </property>
              </spacer>
+            </item>
+            <item row="0" column="0" colspan="3">
+             <widget class="QLabel" name="label_11">
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(209, 209, 209);</string>
+              </property>
+              <property name="text">
+               <string>Cell Parameters</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -2091,34 +2071,63 @@
         </layout>
        </widget>
       </item>
+      <item row="2" column="0" colspan="2">
+       <widget class="QWidget" name="widget_10" native="true">
+        <layout class="QGridLayout" name="gridLayout_18">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item row="0" column="1">
+          <widget class="QPushButton" name="pb_Top_Drawer">
+           <property name="text">
+            <string>TOP Drawer</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../qss/icons.qrc">
+             <normaloff>:/icons/icons/PNG/top_drawer.png</normaloff>:/icons/icons/PNG/top_drawer.png</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
      </layout>
     </widget>
-   </item>
-   <item row="0" column="0">
-    <spacer name="horizontalSpacer_7">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="0" column="2">
-    <spacer name="horizontalSpacer_9">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>

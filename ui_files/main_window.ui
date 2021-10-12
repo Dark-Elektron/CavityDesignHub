@@ -38,6 +38,18 @@
         <item row="1" column="1" colspan="2">
          <widget class="QWidget" name="widget" native="true">
           <layout class="QGridLayout" name="gridLayout_12">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
            <item row="0" column="0">
             <widget class="QSplitter" name="splitter">
              <property name="orientation">
@@ -94,8 +106,8 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>849</width>
-                       <height>668</height>
+                       <width>862</width>
+                       <height>712</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_5">
@@ -299,6 +311,15 @@ P R O C E S S</string>
              </widget>
              <widget class="QWidget" name="w_Log" native="true">
               <layout class="QGridLayout" name="gridLayout_2">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
                <item row="1" column="1">
                 <widget class="QWidget" name="widget_4" native="true">
                  <layout class="QGridLayout" name="gridLayout_11">
@@ -342,8 +363,8 @@ P R O C E S S</string>
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>247</width>
-                    <height>595</height>
+                    <width>270</width>
+                    <height>648</height>
                    </rect>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_3">
@@ -460,6 +481,9 @@ P R O C E S S</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_8">
            <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
             <number>0</number>
            </property>
            <item row="3" column="0">
@@ -999,7 +1023,6 @@ if you have any questions or suggestions about the app.</string>
     </rect>
    </property>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
   <include location="../qss/icons.qrc"/>
