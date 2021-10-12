@@ -637,6 +637,105 @@ class EigenmodeControl:
 
         self.eigenmodeUI.w_Simulation_Controls.setGraphicsEffect(shadow)
 
+    def serialize(self, state_dict):
+        # update state file
+        state_dict["Eigen_Shape_Entry_Mode"] = self.eigenmodeUI.cb_Shape_Entry_Mode.currentIndex()
+        state_dict["Eigen_Shape Space"] = self.eigenmodeUI.le_Shape_Space.text()
+        state_dict["Eigen_Mid_Cell_CB"] = self.eigenmodeUI.cb_Inner_Cell.checkState()
+        state_dict["Eigen_Left_Cell_CB"] = self.eigenmodeUI.cb_Outer_Cell_L.checkState()
+        state_dict["Eigen_Right_Cell_CB"] = self.eigenmodeUI.cb_Outer_Cell_R.checkState()
+        state_dict["Eigen_Expansion_CB"] = self.eigenmodeUI.cb_Expansion.checkState()
+        state_dict["Eigen_LBP_CB"] = self.eigenmodeUI.cb_LBP.checkState()
+        state_dict["Eigen_RBP_CB"] = self.eigenmodeUI.cb_RBP.checkState()
+
+        # cell parameters
+        state_dict["Eigen_A_i"] = self.eigenmodeUI.le_A_i.text()
+        state_dict["Eigen_B_i"] = self.eigenmodeUI.le_B_i.text()
+        state_dict["Eigen_a_i"] = self.eigenmodeUI.le_a_i.text()
+        state_dict["Eigen_b_i"] = self.eigenmodeUI.le_b_i.text()
+        state_dict["Eigen_Ri_i"] = self.eigenmodeUI.le_Ri_i.text()
+        state_dict["Eigen_L_i"] = self.eigenmodeUI.le_L_i.text()
+        state_dict["Eigen_Req_i"] = self.eigenmodeUI.le_Req_i.text()
+        state_dict["Eigen_Alpha_i"] = self.eigenmodeUI.le_Alpha.text()
+
+        state_dict["Eigen_A_ol"] = self.eigenmodeUI.le_A_ol.text()
+        state_dict["Eigen_B_ol"] = self.eigenmodeUI.le_B_ol.text()
+        state_dict["Eigen_a_ol"] = self.eigenmodeUI.le_a_ol.text()
+        state_dict["Eigen_b_ol"] = self.eigenmodeUI.le_b_ol.text()
+        state_dict["Eigen_Ri_ol"] = self.eigenmodeUI.le_Ri_ol.text()
+        state_dict["Eigen_L_ol"] = self.eigenmodeUI.le_L_ol.text()
+        state_dict["Eigen_Req_ol"] = self.eigenmodeUI.le_Req_ol.text()
+        state_dict["Eigen_Alpha_ol"] = self.eigenmodeUI.le_Alpha_ol.text()
+
+        state_dict["Eigen_A_or"] = self.eigenmodeUI.le_A_or.text()
+        state_dict["Eigen_B_or"] = self.eigenmodeUI.le_B_or.text()
+        state_dict["Eigen_a_or"] = self.eigenmodeUI.le_a_or.text()
+        state_dict["Eigen_b_or"] = self.eigenmodeUI.le_b_or.text()
+        state_dict["Eigen_Ri_or"] = self.eigenmodeUI.le_Ri_or.text()
+        state_dict["Eigen_L_or"] = self.eigenmodeUI.le_L_or.text()
+        state_dict["Eigen_Req_or"] = self.eigenmodeUI.le_Req_or.text()
+        state_dict["Eigen_Alpha_or"] = self.eigenmodeUI.le_Alpha_or.text()
+
+        # settings
+        state_dict["Eigen_N_Cells"] = self.eigenmodeUI.sb_N_Cells.value()
+        state_dict["Eigen_N_Modules"] = self.eigenmodeUI.sb_N_Modules.value()
+        state_dict["Eigen_Polarization"] = self.eigenmodeUI.cb_Polarization_SLANS.currentIndex()
+
+        state_dict["Eigen_Freq_Shift"] = self.eigenmodeUI.le_Freq_Shift.text()
+        state_dict["Eigen_No_Of_Modes"] = self.eigenmodeUI.le_No_Of_Modes.text()
+        state_dict["Eigen_LBC"] = self.eigenmodeUI.cb_LBC.currentIndex()
+        state_dict["Eigen_RBC"] = self.eigenmodeUI.cb_RBC.currentIndex()
+        state_dict["Eigen_No_Of_Processors"] = self.eigenmodeUI.sb_No_Of_Processors_SLANS.value()
+
+    def deserialize(self, state_dict):
+        # update state file
+        self.eigenmodeUI.cb_Shape_Entry_Mode.setCurrentIndex(state_dict["Eigen_Shape_Entry_Mode"])
+        self.eigenmodeUI.le_Shape_Space.setText(state_dict["Eigen_Shape Space"])
+        self.eigenmodeUI.cb_Inner_Cell.setCheckState(state_dict["Eigen_Mid_Cell_CB"])
+        self.eigenmodeUI.cb_Outer_Cell_L.setCheckState(state_dict["Eigen_Left_Cell_CB"])
+        self.eigenmodeUI.cb_Outer_Cell_R.setCheckState(state_dict["Eigen_Right_Cell_CB"])
+        self.eigenmodeUI.cb_Expansion.setCheckState(state_dict["Eigen_Expansion_CB"])
+        self.eigenmodeUI.cb_LBP.setCheckState(state_dict["Eigen_LBP_CB"])
+        self.eigenmodeUI.cb_RBP.setCheckState(state_dict["Eigen_RBP_CB"])
+
+        # cell parameters
+        self.eigenmodeUI.le_A_i.setText(state_dict["Eigen_A_i"])
+        self.eigenmodeUI.le_B_i.setText(state_dict["Eigen_B_i"])
+        self.eigenmodeUI.le_a_i.setText(state_dict["Eigen_a_i"])
+        self.eigenmodeUI.le_b_i.setText(state_dict["Eigen_b_i"])
+        self.eigenmodeUI.le_Ri_i.setText(state_dict["Eigen_Ri_i"])
+        self.eigenmodeUI.le_L_i.setText(state_dict["Eigen_L_i"])
+        self.eigenmodeUI.le_Req_i.setText(state_dict["Eigen_Req_i"])
+        self.eigenmodeUI.le_Alpha.setText(state_dict["Eigen_Alpha_i"])
+
+        self.eigenmodeUI.le_A_ol.setText(state_dict["Eigen_A_ol"])
+        self.eigenmodeUI.le_B_ol.setText(state_dict["Eigen_B_ol"])
+        self.eigenmodeUI.le_a_ol.setText(state_dict["Eigen_a_ol"])
+        self.eigenmodeUI.le_b_ol.setText(state_dict["Eigen_b_ol"])
+        self.eigenmodeUI.le_Ri_ol.setText(state_dict["Eigen_Ri_ol"])
+        self.eigenmodeUI.le_L_ol.setText(state_dict["Eigen_L_ol"])
+        self.eigenmodeUI.le_Req_ol.setText(state_dict["Eigen_Req_ol"])
+        self.eigenmodeUI.le_Alpha_ol.setText(state_dict["Eigen_Alpha_ol"])
+
+        self.eigenmodeUI.le_A_or.setText(state_dict["Eigen_A_or"])
+        self.eigenmodeUI.le_B_or.setText(state_dict["Eigen_B_or"])
+        self.eigenmodeUI.le_a_or.setText(state_dict["Eigen_a_or"])
+        self.eigenmodeUI.le_b_or.setText(state_dict["Eigen_b_or"])
+        self.eigenmodeUI.le_Ri_or.setText(state_dict["Eigen_Ri_or"])
+        self.eigenmodeUI.le_L_or.setText(state_dict["Eigen_L_or"])
+        self.eigenmodeUI.le_Req_or.setText(state_dict["Eigen_Req_or"])
+        self.eigenmodeUI.le_Alpha_or.setText(state_dict["Eigen_Alpha_or"])
+
+        # settings
+        self.eigenmodeUI.sb_N_Cells.setValue(state_dict["Eigen_N_Cells"])
+        self.eigenmodeUI.sb_N_Modules.setValue(state_dict["Eigen_N_Modules"])
+        self.eigenmodeUI.cb_Polarization_SLANS.setCurrentIndex(state_dict["Eigen_Polarization"])
+        self.eigenmodeUI.le_Freq_Shift.setText(state_dict["Eigen_Freq_Shift"])
+        self.eigenmodeUI.le_No_Of_Modes.setText(state_dict["Eigen_No_Of_Modes"])
+        self.eigenmodeUI.cb_LBC.setCurrentIndex(state_dict["Eigen_LBC"])
+        self.eigenmodeUI.cb_RBC.setCurrentIndex(state_dict["Eigen_RBC"])
+        self.eigenmodeUI.sb_No_Of_Processors_SLANS.setValue(state_dict["Eigen_No_Of_Processors"])
+
     @staticmethod
     def load_shape_space(filename):
         fr = FileReader()

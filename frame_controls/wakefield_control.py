@@ -218,11 +218,12 @@ class WakefieldControl:
                     if key in proc_keys_list:
                         processor_shape_space[key] = val
 
-                service = mp.Process(target=run_sequential, args=(n_cells, n_modules, processor_shape_space,
-                                                                  MROT, MT, NFS, UBT, bunch_length,
-                                                                  DDR_SIG, DDZ_SIG,
-                                                                  self.main_control.parentDir, self.main_control.projectDir, self.progress_list
-                                                                  ))
+                service = mp.Process(target=self.run_sequential, args=(n_cells, n_modules, processor_shape_space,
+                                                                       MROT, MT, NFS, UBT, bunch_length,
+                                                                       DDR_SIG, DDZ_SIG,
+                                                                       self.main_control.parentDir,
+                                                                       self.main_control.projectDir, self.progress_list
+                                                                       ))
 
                 service.start()
                 self.processes.append(psutil.Process(service.pid))
@@ -652,6 +653,107 @@ class WakefieldControl:
 
         self.wakefieldUI.w_Simulation_Controls.setGraphicsEffect(shadow)
 
+    def serialize(self, state_dict):
+        # update state file
+        state_dict["Wakefield_Shape_Entry_Mode"] = self.wakefieldUI.cb_Shape_Entry_Mode.currentIndex()
+        state_dict["Wakefield_Shape_Space"] = self.wakefieldUI.le_Shape_Space.text()
+        state_dict["Wakefield_Mid_Cell_CB"] = self.wakefieldUI.cb_Inner_Cell.checkState()
+        state_dict["Wakefield_Left_Cell_CB"] = self.wakefieldUI.cb_Outer_Cell_L.checkState()
+        state_dict["Wakefield_Right_Cell_CB"] = self.wakefieldUI.cb_Outer_Cell_R.checkState()
+        state_dict["Wakefield_Expansion_CB"] = self.wakefieldUI.cb_Expansion.checkState()
+        state_dict["Wakefield_LBP_CB"] = self.wakefieldUI.cb_LBP.checkState()
+        state_dict["Wakefield_RBP_CB"] = self.wakefieldUI.cb_RBP.checkState()
+
+        # cell parameters
+        state_dict["Wakefield_A_i"] = self.wakefieldUI.le_A_i.text()
+        state_dict["Wakefield_B_i"] = self.wakefieldUI.le_B_i.text()
+        state_dict["Wakefield_a_i"] = self.wakefieldUI.le_a_i.text()
+        state_dict["Wakefield_b_i"] = self.wakefieldUI.le_b_i.text()
+        state_dict["Wakefield_Ri_i"] = self.wakefieldUI.le_Ri_i.text()
+        state_dict["Wakefield_L_i"] = self.wakefieldUI.le_L_i.text()
+        state_dict["Wakefield_Req_i"] = self.wakefieldUI.le_Req_i.text()
+        state_dict["Wakefield_Alpha_i"] = self.wakefieldUI.le_Alpha.text()
+
+        state_dict["Wakefield_A_ol"] = self.wakefieldUI.le_A_ol.text()
+        state_dict["Wakefield_B_ol"] = self.wakefieldUI.le_B_ol.text()
+        state_dict["Wakefield_a_ol"] = self.wakefieldUI.le_a_ol.text()
+        state_dict["Wakefield_b_ol"] = self.wakefieldUI.le_b_ol.text()
+        state_dict["Wakefield_Ri_ol"] = self.wakefieldUI.le_Ri_ol.text()
+        state_dict["Wakefield_L_ol"] = self.wakefieldUI.le_L_ol.text()
+        state_dict["Wakefield_Req_ol"] = self.wakefieldUI.le_Req_ol.text()
+        state_dict["Wakefield_Alpha_ol"] = self.wakefieldUI.le_Alpha_ol.text()
+
+        state_dict["Wakefield_A_or"] = self.wakefieldUI.le_A_or.text()
+        state_dict["Wakefield_B_or"] = self.wakefieldUI.le_B_or.text()
+        state_dict["Wakefield_a_or"] = self.wakefieldUI.le_a_or.text()
+        state_dict["Wakefield_b_or"] = self.wakefieldUI.le_b_or.text()
+        state_dict["Wakefield_Ri_or"] = self.wakefieldUI.le_Ri_or.text()
+        state_dict["Wakefield_L_or"] = self.wakefieldUI.le_L_or.text()
+        state_dict["Wakefield_Req_or"] = self.wakefieldUI.le_Req_or.text()
+        state_dict["Wakefield_Alpha_or"] = self.wakefieldUI.le_Alpha_or.text()
+
+        # settings
+        state_dict["Wakefield_N_Cells"] = self.wakefieldUI.sb_N_Cells.value()
+        state_dict["Wakefield_N_Modules"] = self.wakefieldUI.sb_N_Modules.value()
+        state_dict["Wakefield_Polarization"] = self.wakefieldUI.cb_Polarization_ABCI.currentIndex()
+        state_dict["Wakefield_No_Of_Processors"] = self.wakefieldUI.sb_No_Of_Processors_ABCI.value()
+        state_dict["Wakefield_Wakelength"] = self.wakefieldUI.le_Wakelength.text()
+        state_dict["Wakefield_Bunch_Length"] = self.wakefieldUI.le_Bunch_Length.text()
+        state_dict["Wakefield_NFS"] = self.wakefieldUI.le_NFS.text()
+        state_dict["Wakefield_MT"] = self.wakefieldUI.le_MT.text()
+        state_dict["Wakefield_DDz/SIG"] = self.wakefieldUI.le_DDZ_SIG.text()
+        state_dict["Wakefield_DDr/SIG"] = self.wakefieldUI.le_DDR_SIG.text()
+
+    def deserialize(self, state_dict):
+        # update state file
+        self.wakefieldUI.cb_Shape_Entry_Mode.setCurrentIndex(state_dict["Wakefield_Shape_Entry_Mode"])
+        self.wakefieldUI.le_Shape_Space.setText(state_dict["Wakefield_Shape_Space"])
+        self.wakefieldUI.cb_Inner_Cell.setCheckState(state_dict["Wakefield_Mid_Cell_CB"])
+        self.wakefieldUI.cb_Outer_Cell_L.setCheckState(state_dict["Wakefield_Left_Cell_CB"])
+        self.wakefieldUI.cb_Outer_Cell_R.setCheckState(state_dict["Wakefield_Right_Cell_CB"])
+        self.wakefieldUI.cb_Expansion.setCheckState(state_dict["Wakefield_Expansion_CB"])
+        self.wakefieldUI.cb_LBP.setCheckState(state_dict["Wakefield_LBP_CB"])
+        self.wakefieldUI.cb_RBP.setCheckState(state_dict["Wakefield_RBP_CB"])
+
+        # cell parameters
+        self.wakefieldUI.le_A_i.setText(state_dict["Wakefield_A_i"])
+        self.wakefieldUI.le_B_i.setText(state_dict["Wakefield_B_i"])
+        self.wakefieldUI.le_a_i.setText(state_dict["Wakefield_a_i"])
+        self.wakefieldUI.le_b_i.setText(state_dict["Wakefield_b_i"])
+        self.wakefieldUI.le_Ri_i.setText(state_dict["Wakefield_Ri_i"])
+        self.wakefieldUI.le_L_i.setText(state_dict["Wakefield_L_i"])
+        self.wakefieldUI.le_Req_i.setText(state_dict["Wakefield_Req_i"])
+        self.wakefieldUI.le_Alpha.setText(state_dict["Wakefield_Alpha_i"])
+
+        self.wakefieldUI.le_A_ol.setText(state_dict["Wakefield_A_ol"])
+        self.wakefieldUI.le_B_ol.setText(state_dict["Wakefield_B_ol"])
+        self.wakefieldUI.le_a_ol.setText(state_dict["Wakefield_a_ol"])
+        self.wakefieldUI.le_b_ol.setText(state_dict["Wakefield_b_ol"])
+        self.wakefieldUI.le_Ri_ol.setText(state_dict["Wakefield_Ri_ol"])
+        self.wakefieldUI.le_L_ol.setText(state_dict["Wakefield_L_ol"])
+        self.wakefieldUI.le_Req_ol.setText(state_dict["Wakefield_Req_ol"])
+        self.wakefieldUI.le_Alpha_ol.setText(state_dict["Wakefield_Alpha_ol"])
+        
+        self.wakefieldUI.le_A_or.setText(state_dict["Wakefield_A_or"])
+        self.wakefieldUI.le_B_or.setText(state_dict["Wakefield_B_or"])
+        self.wakefieldUI.le_a_or.setText(state_dict["Wakefield_a_or"])
+        self.wakefieldUI.le_b_or.setText(state_dict["Wakefield_b_or"])
+        self.wakefieldUI.le_Ri_or.setText(state_dict["Wakefield_Ri_or"])
+        self.wakefieldUI.le_L_or.setText(state_dict["Wakefield_L_or"])
+        self.wakefieldUI.le_Req_or.setText(state_dict["Wakefield_Req_or"])
+        self.wakefieldUI.le_Alpha_or.setText(state_dict["Wakefield_Alpha_or"])
+        
+        # settings
+        self.wakefieldUI.sb_N_Cells.setValue(state_dict["Wakefield_N_Cells"])
+        self.wakefieldUI.sb_N_Modules.setValue(state_dict["Wakefield_N_Modules"])
+        self.wakefieldUI.cb_Polarization_ABCI.setCurrentIndex(state_dict["Wakefield_Polarization"])
+        self.wakefieldUI.sb_No_Of_Processors_ABCI.setValue(state_dict["Wakefield_No_Of_Processors"])
+        self.wakefieldUI.le_Wakelength.setText(state_dict["Wakefield_Wakelength"])
+        self.wakefieldUI.le_Bunch_Length.setText(state_dict["Wakefield_Bunch_Length"])
+        self.wakefieldUI.le_NFS.setText(state_dict["Wakefield_NFS"])
+        self.wakefieldUI.le_MT.setText(state_dict["Wakefield_MT"])
+        self.wakefieldUI.le_DDZ_SIG.setText(state_dict["Wakefield_DDz/SIG"])
+        self.wakefieldUI.le_DDR_SIG.setText(state_dict["Wakefield_DDr/SIG"])
 
 
     @staticmethod

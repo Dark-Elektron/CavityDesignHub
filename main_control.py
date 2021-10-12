@@ -384,11 +384,17 @@ class MainWindow:
         # serialize home
         state_dict["Project Directory"] = self.projectDir
 
+        # serialize tuneUI
+        self.tune_widget.serialize(state_dict)
+
+        # serialize eigenmodeUI
+        self.eigenmode_widget.serialize(state_dict)
+
+        # serialize wakefieldUI
+        self.wakefield_widget.serialize(state_dict)
+
         # serialize plotUI
         self.plot_widget.serialize(state_dict)
-
-        # serialize tunetUI
-        self.tune_widget.serialize(state_dict)
 
         # dump save state file
         with open('ui_state_files/state_file.json', 'w', encoding='utf-8') as file:
@@ -411,17 +417,29 @@ class MainWindow:
                 # open project
                 self.open_project(self.projectDir)
 
-                # deserialise plotUI
-                try:
-                    self.plot_widget.deserialize(state_dict)
-                except:
-                    print("Could not deserialise plot!")
-
                 # deserialise tuneUI
                 try:
                     self.tune_widget.deserialize(state_dict)
                 except:
-                    print("Could not deserialise tune!")
+                    print("Could not deserialise tuneUI!")
+
+                # deserialise eigenmodeUI
+                try:
+                    self.eigenmode_widget.deserialize(state_dict)
+                except:
+                    print("Could not deserialise eigenmodeUI!")
+
+                # deserialise wakefieldUI
+                try:
+                    self.wakefield_widget.deserialize(state_dict)
+                except:
+                    print("Could not deserialise wakefieldUI!")
+
+                # deserialise plotUI
+                try:
+                    self.plot_widget.deserialize(state_dict)
+                except:
+                    print("Could not deserialise plotUI!")
 
             except:
                 print("Corrupt state file!")

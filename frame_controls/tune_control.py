@@ -898,38 +898,6 @@ class TuneControl:
         state_dict["Tolerance"] = self.tuneUI.le_Tolerance.text()
         state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
 
-    def ui_effects(self):
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Tune_Input.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Simulation_Controls.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Inner_Cell.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Outer_Cell.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Cell_Component_Control.setGraphicsEffect(shadow)
-
-    @staticmethod
-    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type, progress_list, convergence_list):
-        tuner.tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner_option=tuner_option,
-                       tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type, progress_list=progress_list, convergence_list=convergence_list) # last_key=last_key This would have to be tested again #val2
-
     def deserialize(self, state_dict):
         # update state file
         self.tuneUI.le_Freq.setText(state_dict["Frequency"])
@@ -969,6 +937,38 @@ class TuneControl:
         self.tuneUI.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
         self.tuneUI.le_Tolerance.setText(state_dict["Tolerance"])
         self.tuneUI.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
+
+    def ui_effects(self):
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Tune_Input.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Simulation_Controls.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Inner_Cell.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Outer_Cell.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+
+        self.tuneUI.w_Cell_Component_Control.setGraphicsEffect(shadow)
+
+    @staticmethod
+    def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option, tune_variable, iter_set, cell_type, progress_list, convergence_list):
+        tuner.tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p, tuner_option=tuner_option,
+                       tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type, progress_list=progress_list, convergence_list=convergence_list) # last_key=last_key This would have to be tested again #val2
 
     @staticmethod
     def overwriteFolder(invar, projectDir):
