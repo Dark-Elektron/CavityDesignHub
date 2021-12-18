@@ -8,6 +8,7 @@ import numpy as np
 from PyQt5.QtGui import QStandardItemModel, QPalette, QFontMetrics, QStandardItem
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
+from scipy.special import jn_zeros, jnp_zeros
 from ui_files.plot import Ui_Plot
 from modules.plot_module.plotter import Plot
 from modules.data_module.slans_data import SLANSData
@@ -77,6 +78,19 @@ class PlotControl:
         # clear plots
         self.plotUI.pb_Clear.clicked.connect(lambda: self.clear_plots())
 
+        # signals for cutoff
+        # self.plotUI.cb_Check_1.clicked.connect(lambda: self.plot_cutoff(0, self.plotUI.cb_Check_1))
+        # self.plotUI.cb_Check_2.clicked.connect(lambda: self.plot_cutoff(1, self.plotUI.cb_Check_2))
+        # self.plotUI.cb_Check_3.clicked.connect(lambda: self.plot_cutoff(2, self.plotUI.cb_Check_1))
+
+        # update label
+        self.plotUI.pb_Apply_Axis_Labels.clicked.connect(lambda: self.update_labels())
+
+        # plot text
+        self.plotUI.pb_Add_Textt.clicked.connect(lambda: self.plt.add_text(
+            self.plotUI.le_Plot_Text_2.text(), self.plotUI.cb_Text_Box.currentText(),
+                                                 self.plotUI.sb_Annotation_Text_Size.value()))
+
     def initUI(self):
         # create argument dictionary
         self.args_dict = {'Code': [],
@@ -90,9 +104,15 @@ class PlotControl:
                           'Axis': [],
                           'Type': []
                           }
-
+        self.other_data = []
+        self.ax_obj_dict = {}
         # baseline matplotlib line.Line2D objects
         self.baseline_line_objects = []
+        self.axes_decorations_dict = {"xlabel": "x",
+                                      "ylabel": "y",
+                                      "ylabel2": "",
+                                      "title": "Title",
+                                      "legend": []}
 
         # add row to table
         self.plotUI.tableWidget.setRowCount(1)  # and one row in the table
@@ -108,15 +128,26 @@ class PlotControl:
         self.plotUI.tableWidget.customContextMenuRequested.connect(self.generateMenu)
         self.set_table_size()
 
+        # add checkable combobox
+        cutoff = CheckableComboBox()
+        cutoff.addItem("All")
+        cutoff.setMinimumWidth(150)
+        self.plotUI.gl_Cutoff.addWidget(cutoff, 2, 0, 1, 1)
+        self.populate_cutoff_combobox(cutoff)
+
+        # add signal
+        cutoff.currentTextChanged.connect(lambda: self.plot_cutoff(cutoff))
+
     def plot(self):
         try:
             # args = list(self.args_dict.values())
             # print(args)
+            # self.copy_ax_pathes()
             self.clear_plots()
+            # self.restore_ax_patches()
 
             # use same color cycler for both axes
             self.ax_right._get_lines.prop_cycler = self.ax._get_lines.prop_cycler
-
             plot_count = 1
             for i in range(len(self.args_dict['Code'])):
                 code = self.args_dict['Code'][i].currentText()
@@ -143,11 +174,18 @@ class PlotControl:
             lines2, labels2 = self.ax_right.get_legend_handles_labels()
 
             self.leg = self.ax_right.legend(lines + lines2, labels + labels2, loc='lower left', prop={'size': 18})
+            self.leg.set_zorder(10)
             self.leg.set_draggable(state=True, use_blit=True)
 
             # plot inset if check box is checked
             self.plot_inset()
             # self.fig.canvas.draw_idle()
+
+            # plot thresholds if threshold is checked
+            if self.plotUI.cb_Longitudinal_Threshold.checkState() == 2:
+                self.calc_limits('monopole')
+            if self.plotUI.cb_Transverse_Threshold.checkState() == 2:
+                self.calc_limits('dipole')
 
         except:
             self.log.error("Please enter a valid argument")
@@ -225,9 +263,9 @@ class PlotControl:
                     ax_selected = self.ax_right
                     self.ax_right.plot(xr, y, label='${' + f'{str(id).replace("_", ",")}' + '}$'+f' ({abci_data_long.wakelength} m)', linewidth=2)
 
-                ax_selected.set_xlabel('$f \mathrm{ [GHz]}$')
-                ax_selected.set_ylabel('$Z_{\parallel, \mathrm{HOM}} \mathrm{[k\Omega]}$')
-                # ax_selected.set_yscale('log')
+                # ax_selected.set_xlabel('$f \mathrm{ [GHz]}$')
+                # ax_selected.set_ylabel('$Z_{\parallel, \mathrm{HOM}} \mathrm{[k\Omega]}$')
+                ax_selected.set_yscale('log')
                 ax_selected.set_ylim(min(y), max(y))
                 ax_selected.set_xlim(min(xr), max(xr))
 
@@ -265,13 +303,12 @@ class PlotControl:
                     ax_selected = self.ax_right
                     self.ax_right.plot(xr, y, label='${' + f'{str(id).replace("_", ",")}' + '}$'+f' ({abci_data_trans.wakelength} m)', linewidth=2)
 
-                # plot settings
-                ax_selected.set_xlabel('$f \mathrm{[GHz]}$')
-                ax_selected.set_ylabel('$Z_{\perp, \mathrm{HOM}} \mathrm{[k\Omega/m]}$')
-
                 ax_selected.set_yscale('log')
-                ax_selected.set_ylim(1e-2, 1e2)
-                ax_selected.set_xlim(0.25, 2.24)
+                ax_selected.set_ylim(min(y), max(y))
+                ax_selected.set_xlim(min(xr), max(xr))
+
+            # plot axes labels
+            self.update_labels()
 
             # increment plot count
             plot_count += 1
@@ -326,16 +363,9 @@ class PlotControl:
         self.fig.canvas.draw_idle()
 
     def plot_other(self, args, i):
-        # i is the code index
-        filename = args['Id'][i].text()
-
-        # # check if filename has correct extenstion
-        # if filename.split('.')[-1] != 'xlsx':
-        #     filename = fr'{filename}.xlsx'
-
+        print("it got here2")
         requestX = args['Request'][i][1].currentText()
         requestY = args['Request'][i][2].currentText().split(', ')
-        print(requestX, requestY)
 
         filename = args['Folder'][i][0].text()
         state = args['Toggle'][i].checkState()
@@ -345,7 +375,8 @@ class PlotControl:
         try:
             scaleX = float(args['ScaleX'][i].text())
             scaleY = float(args['ScaleY'][i].text())
-        except:
+        except Exception as e:
+            print(e)
             scaleX = 1
             scaleY = 1
 
@@ -357,26 +388,25 @@ class PlotControl:
         # sheet_name = list(df.keys())[0]
         #
         # data = df[sheet_name]
-
         if requestY != [] and requestX != []:
-            x_data = [a*scaleX for a in self.other_data[requestX].tolist()]
+            x_data = [a*scaleX for a in self.other_data[i][requestX].tolist()]
             self.freq_glob = x_data
 
-            for i in range(len(requestY)):
-                y = [a*scaleY for a in self.other_data[requestY[i]].tolist()]
+            for j in range(len(requestY)):
+                y = [a*scaleY for a in self.other_data[i][requestY[j]].tolist()]
                 if axis == 'Left':
                     if type == 'Line':
-                        self.ax.plot(x_data, y, label=requestY[i], linewidth=2)
+                        self.ax.plot(x_data, y, label=requestY[j], linewidth=2)
                     else:
-                        self.ax.plot(x_data, y, linestyle='None', marker='x', markersize=10.0)
-                    self.ax.set_ylabel('$S$ [dB]')
-                    self.ax.set_xlabel('$f \mathrm{ [GHz]}$')
+                        self.ax.plot(x_data, y, linestyle='None', marker='x', markersize=10.0, label="Legend")
+                    self.ax.set_ylabel('$Y$ []')
+                    self.ax.set_xlabel('$X$ []')
                 else:
                     if type == 'Line':
-                        self.ax_right.plot(x_data, self.other_data[requestY[i]].tolist(), label=requestY[i], linewidth=2)
+                        self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2)
                     else:
-                        self.ax_right.plot(x_data, y, linestyle='None', marker='X', markersize=10.0)
-                    self.ax_right.set_ylabel('$S$ [dB]')
+                        self.ax_right.plot(x_data, y, linestyle='None', marker='X', markersize=10.0, label="Legend")
+                    self.ax_right.set_ylabel('$Y$ [dB]')
         else:
             print("Please specify columns to plot")
 
@@ -399,6 +429,8 @@ class PlotControl:
         le_Folder = QLineEdit()
         le_Folder.setReadOnly(True)
         pb_Open_Folder = QPushButton('...')
+        pb_Open_Folder.setMaximumWidth(50)
+        pb_Open_Folder.setMinimumWidth(50)
         # signal to change place holder text is 'Other'
         cb_code.currentIndexChanged.connect(lambda: le_Folder.setPlaceholderText('Select file') if cb_code.currentText() == 'Other' else le_Folder.setPlaceholderText('Select Folder'))
 
@@ -661,18 +693,6 @@ class PlotControl:
             row = self.plotUI.tableWidget.currentRow()
             self.row = row
 
-    def calc_cutoff(self, Ri, mode):
-        # calculate frequency from Ri
-        p_TM01, p_TE11 = 2.405, 1.841
-        c = 299792458  # m/s
-
-        if mode == 'TM01':
-            freq = 400.79 * 1e-3
-        else:
-            freq = (c * p_TE11) / (2 * np.pi * Ri * 1e9) * 1e3
-
-        return freq
-
     def calc_limits(self, mode):
         if len(self.freq_glob) > 0:
             if self.plotUI.cb_Longitudinal_Threshold.checkState() == 2 or self.plotUI.cb_Transverse_Threshold.checkState() == 2:
@@ -767,8 +787,86 @@ class PlotControl:
         self.ax.relim()
         self.plt.draw()
 
-    def other_plots(self):
-        pass
+    def populate_cutoff_combobox(self, cutoff):
+
+        Ri = self.plotUI.dsb_Ri_1.value()*1e-3 # convert to m
+        c = 299792458
+
+        M = [0, 1, 2, 3]
+        N = [1, 2, 3, 4]
+        mode_list = []
+        mode_name_list = ['TM', 'TE']
+        f_list = []
+
+        for m in M:
+            for n in N:
+                # get jacobian
+                j_mn = jn_zeros(m, n)[n - 1]
+                j_mn_p = jnp_zeros(m, n)[n - 1]
+                J = [j_mn, j_mn_p]
+                # for p in P:
+                for mode_type, j in enumerate(J):
+                    # formula
+                    # f = c / (2 * np.pi) * ((j / Ri) ** 2 + (p * np.pi / L) ** 2) ** 0.5
+                    f = c / (2 * np.pi) * (j / Ri)
+
+                    # append mode name
+                    mode_list.append(f'{mode_name_list[mode_type]}{m}{n}')
+
+                    # append to f list
+                    f_list.append(f * 1e-9)
+
+        self.mode_list_sorted = [x for _, x in sorted(zip(f_list, mode_list))]
+
+        cutoff.addItems(self.mode_list_sorted)
+        self.f_list_sorted = sorted(f_list)
+
+        color = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
+        step = [0.02, 0.2, 0.4, 0.6, 0.8]
+        count = 0
+
+    def plot_cutoff(self, cutoff):
+        # selected
+        selected = cutoff.currentText().split(", ")
+
+        for ii in selected:
+            if ii not in self.ax_obj_dict.keys() and ii != '':
+                indx = self.mode_list_sorted.index(ii)
+                freq = self.f_list_sorted[indx]
+
+                vl = self.ax.axvline(freq, label=f"{ii} cutoff", ls='--', c='gray')
+
+                ab = self.ax.text(freq, 0.02, "$f_\mathrm{"+f"{ii}"+"} \mathrm{cutoff}$",
+                                  size="x-large", rotation=90)
+
+                # update axes object dictionary
+                self.ax_obj_dict.update({f"{ii}": [vl, ab]})
+
+        # compare selected to ax_obj_dict
+        deleted_lines = []
+        for key in self.ax_obj_dict.keys():
+            if key not in selected:
+                deleted_lines.append(key)
+
+        for k in deleted_lines:
+            for obj in self.ax_obj_dict[k]:
+                if obj in self.ax.findobj():
+                    obj.remove()
+            del self.ax_obj_dict[f"{k}"]
+        self.fig.canvas.draw()
+
+    def calc_cutoff(self, Ri, mode):
+        # calculate frequency from Ri
+        p_TM01, p_TE11 = 2.405, 1.841
+        c = 299792458  # m/s
+
+        if mode == 'TM01':
+            freq = (c * p_TM01) / (2 * np.pi * Ri * 1e9) * 1e3
+        else:
+            print("here")
+            freq = (c * p_TE11) / (2 * np.pi * Ri * 1e9) * 1e3
+
+        return freq
 
     def toggle_page(self, key):
 
@@ -813,7 +911,7 @@ class PlotControl:
                 # populate checkable combobox
                 self.populate_IDs(data_dir, cb_pol, ccb)
         else:
-            filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Excel Files (*.xlsx)")
+            filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Excel Files (*.txt *.xlsx)")
             if filename != '':
                 le.setText(filename)
 
@@ -821,13 +919,17 @@ class PlotControl:
         if dirc != "":
             dir_list = os.listdir(dirc)
 
+            # copy selection
+            selection = []
+            if ccb.currentText():
+                selection = ccb.currentText().split(", ")
+
             # clear checkable check box
             ccb.clear()
             ccb.addItem("All")
 
             # polarisation
             pol = cb_pol.currentText()
-            i = 0
             if pol == "Long":
                 i = 0
             else:
@@ -837,6 +939,13 @@ class PlotControl:
             for d in dir_list:
                 if os.path.exists(fr"{dirc}\{d}\Cavity_MROT_{i}.pot"):
                     ccb.addItem(d)
+
+            # try to select copied selection
+            for txt in selection:
+                print(txt)
+                if txt in dir_list:
+                    item = ccb.model().item(dir_list.index(txt)+1)
+                    item.setCheckState(2)
 
     def open_file(self):
         filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Excel Files (*.xlsx)")
@@ -901,10 +1010,74 @@ class PlotControl:
             df = fr.excel_reader(filename)
             sheet_name = list(df.keys())[0]
 
-            self.other_data = df[sheet_name]
-            for a in self.other_data.keys():
-                cb_X.addItem(a)
-                cb_Y.addItem(a)
+            dd = df[sheet_name]
+            self.other_data.append(dd)
+            for a in dd.keys():
+                cb_X.addItem(f"{a}")
+                cb_Y.addItem(f"{a}")
+
+        if filename.split('.')[-1] == 'txt':
+            # load file txt
+            df = fr.txt_reader(filename, "\t")
+            self.other_data.append(df)
+            for a in df.keys():
+                cb_X.addItem(f"{a}")
+                cb_Y.addItem(f"{a}")
+
+    def update_labels(self):
+        xlabel = self.plotUI.le_Xlabel.text()
+        ylabel = self.plotUI.le_Ylabel.text()
+        title = self.plotUI.le_Title.text()
+        xsize = self.plotUI.sb_XLabel_Size.value()
+        ysize = self.plotUI.sb_YLabel_Size.value()
+        title_size = self.plotUI.sb_Title_Size.value()
+        xtick_size = self.plotUI.sb_XLabel_Tick_Size.value()
+        ytick_size = self.plotUI.sb_YLabel_Tick_Size.value()
+        legend_size = self.plotUI.sb_Legend_Size.value()
+
+        legend_labels = self.plotUI.le_Legend.text().split("%%")
+
+        # update plot
+        self.ax.set_xlabel(xlabel, fontsize=xsize)
+        self.ax.set_ylabel(ylabel, fontsize=ysize)
+        self.ax.set_title(title, fontsize=title_size)
+        self.ax.tick_params(axis='x', labelsize=xtick_size, size=xtick_size)
+        self.ax.tick_params(axis='y', labelsize=ytick_size, size=ytick_size)
+
+        # update axes decoration dict
+        self.axes_decorations_dict["xlabel"] = xlabel
+        self.axes_decorations_dict["ylabel"] = ylabel
+        self.axes_decorations_dict["title"] = title
+
+        # update legend
+        handles, labels = self.ax.get_legend_handles_labels()
+
+        for i in range(len(legend_labels)):
+            labels[i] = legend_labels[i] if legend_labels[i] != "" else labels[i]
+
+        self.leg = self.ax_right.legend(handles, labels, fontsize=legend_size)
+        self.leg.set_zorder(10)
+        self.leg.set_draggable(state=True, use_blit=True)
+        self.draw_legend()
+
+        self.fig.canvas.draw()
+
+    def draw_legend(self):
+        legend = self.ax.get_legend()
+        if legend:
+            legend.remove()
+
+    def copy_ax_pathes(self):
+        # self.axpatches = self.ax.patches
+        self.axtexts = self.ax.texts
+        # self.axrightpathes = self.ax.patches
+        self.axrightpathes = self.ax_right.texts
+
+    def restore_ax_patches(self):
+        # self.ax.patches.extend([self.axpatches])
+        self.ax.text.extend([self.axtexts])
+        # self.ax_right.patches.extend([self.axrightpathes])
+        self.ax_right.text.extend([self.axrightpathes])
 
     def serialize(self, state_dict):
         # update state file
@@ -932,6 +1105,16 @@ class PlotControl:
         state_dict["Threshold Line Color"] = self.plotUI.cb_Threshold_Line_Color.currentText()
         state_dict["Threshold Linestyle"] = self.plotUI.cb_Threshold_Linestyle.currentText()
 
+        state_dict["xlabel"] = self.plotUI.le_Xlabel.text()
+        state_dict["ylabel"] = self.plotUI.le_Ylabel.text()
+        state_dict["title"] = self.plotUI.le_Title.text()
+        state_dict["xlabel_size"] = self.plotUI.sb_XLabel_Size.value()
+        state_dict["ylabel_size"] = self.plotUI.sb_YLabel_Size.value()
+        state_dict["title_size"] = self.plotUI.sb_Title_Size.value()
+        state_dict["xlabeltick_size"] = self.plotUI.sb_XLabel_Tick_Size.value()
+        state_dict["ylabeltick_size"] = self.plotUI.sb_YLabel_Tick_Size.value()
+        state_dict["legend_size"] = self.plotUI.sb_Legend_Size.value()
+
     def deserialize(self, state_dict):
         self.plotUI.le_Inset_Position.setText(state_dict["Inlet_Position"])
         self.plotUI.le_Inset_Window.setText( state_dict["Inset_Window"])
@@ -958,6 +1141,16 @@ class PlotControl:
         self.plotUI.cb_Transverse_Threshold.setCheckState(state_dict["Transverse Threshold Checkbox"])
         self.plotUI.cb_Threshold_Line_Color.setCurrentText(state_dict["Threshold Line Color"])
         self.plotUI.cb_Threshold_Linestyle.setCurrentText(state_dict["Threshold Linestyle"])
+
+        self.plotUI.le_Xlabel.setText(state_dict["xlabel"])
+        self.plotUI.le_Ylabel.setText(state_dict["ylabel"])
+        self.plotUI.le_Title.setText(state_dict["title"])
+        self.plotUI.sb_XLabel_Size.setValue(state_dict["xlabel_size"])
+        self.plotUI.sb_YLabel_Size.setValue(state_dict["ylabel_size"])
+        self.plotUI.sb_Title_Size.setValue(state_dict["title_size"])
+        self.plotUI.sb_XLabel_Tick_Size.setValue(state_dict["xlabeltick_size"])
+        self.plotUI.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
+        self.plotUI.sb_Legend_Size.setValue(state_dict["legend_size"])
 
 
 class CheckableComboBox(QComboBox):

@@ -12,11 +12,9 @@ from modules.data_module.slans_data import SLANSData
 from modules.data_module.abci_data import ABCIData
 
 # from Plotter.zoom_pan import ZoomPan
-
 matplotlib.use('Qt5Agg')
-
 from PyQt5 import QtCore, QtWidgets
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg#, NavigationToolbar2QT as NavigationToolbar
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg  # NavigationToolbar2QT as NavigationToolbar
 from utils.CustomNavBar import MyCustomToolbar as NavigationToolbar
 from matplotlib.figure import Figure
 import utils.misc_functions as f
@@ -24,7 +22,8 @@ import utils.misc_functions as f
 import matplotlib as mpl
 plt.rcParams['toolbar'] = 'toolmanager'
 from matplotlib.backend_tools import ToolBase, ToolToggleBase
-
+from modules.plot_module.matplotlib_annotation_objects import DraggableText
+from frame_controls.edit_annotated_text_dialog import EditATextDialog
 
 fr = FileReader()
 
@@ -34,6 +33,7 @@ class Plot(FigureCanvasQTAgg):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.fig.set_tight_layout(True)
         self.ax = self.fig.add_subplot(111)
+        self.ax.set_label("Left axis Default")
 
         mpl.rcParams['savefig.facecolor'] = 'ffffff'
 
@@ -46,7 +46,6 @@ class Plot(FigureCanvasQTAgg):
         self.GLOBAL_STATE = 0
         # plot appearance
         # self.aesthetics()
-        self.plot_settings('presentation')
 
         # handle events
         # self.event_handler()
@@ -74,6 +73,9 @@ class Plot(FigureCanvasQTAgg):
         self.event_handler()
 
         self.signals()
+        self.text_dict = {}
+
+        self.selected_object = None
 
     def signals(self):
         pass
@@ -85,7 +87,7 @@ class Plot(FigureCanvasQTAgg):
         self.fig.canvas.flush_events()
 
     def plot_settings(self, mode):
-        plt.style.use(['science', 'no-latex'])
+        # plt.style.use(['science', 'no-latex'])
         if mode == 'presentation':
             # plt.rcParams["figure.figsize"] = (11, 6)
             #
@@ -100,14 +102,26 @@ class Plot(FigureCanvasQTAgg):
             #
 
             # plot settings
-            mpl.rcParams['xtick.labelsize'] = 15
-            mpl.rcParams['ytick.labelsize'] = 15
+            mpl.rcParams['xtick.labelsize'] = 20
+            mpl.rcParams['ytick.labelsize'] = 20
 
-            mpl.rcParams['axes.labelsize'] = 15
-            mpl.rcParams['axes.titlesize'] = 15
+            mpl.rcParams['axes.labelsize'] = 24
+            mpl.rcParams['axes.titlesize'] = 24
             mpl.rcParams['legend.fontsize'] = 'large'
 
             mpl.rcParams['figure.figsize'] = [9.8, 6]
+            mpl.rcParams['figure.dpi'] = 100
+
+        if mode.lower() == 'square':
+            # plot settings
+            mpl.rcParams['xtick.labelsize'] = 20
+            mpl.rcParams['ytick.labelsize'] = 20
+
+            mpl.rcParams['axes.labelsize'] = 24
+            mpl.rcParams['axes.titlesize'] = 24
+            mpl.rcParams['legend.fontsize'] = 'large'
+
+            mpl.rcParams['figure.figsize'] = [6, 6]
             mpl.rcParams['figure.dpi'] = 100
 
     def create_secondary_axes(self):
@@ -117,6 +131,7 @@ class Plot(FigureCanvasQTAgg):
         # turn off axis ticks and labels
         self.ax_right.axes.xaxis.set_visible(False)
         self.ax_right.axes.yaxis.set_visible(False)
+        self.ax_right.set_label("Right axis Default")
 
         # # top axis # code incomplete
         # self.ax_top = self.ax.twinx()
@@ -127,9 +142,9 @@ class Plot(FigureCanvasQTAgg):
         # self.ax_bottom.spines['bottom'].set_color(colors[0])
 
     def event_handler(self):
-        self.object = None
         cid = self.fig.canvas.mpl_connect('button_press_event', self.onclick)
         cid2 = self.fig.canvas.mpl_connect('pick_event', self.onpick)
+        cid_release = self.fig.canvas.mpl_connect('button_release_event', self.release)
 
     def onclick(self, event):
         # print('%s click: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
@@ -138,41 +153,58 @@ class Plot(FigureCanvasQTAgg):
 
         # handle identifying objects
         if event.button == 1:
-            self.bt = 1
             # print("Left click")
-
+            pass
         if event.button == 2:
-            self.bt = 2
             # print("MMB click")
+            pass
         if event.button == 3:
-            self.bt = 3
-            print("Right click")
-            if not isinstance(self.object, matplotlib.text.Annotation):
-                self.contextMenuEvent(event)
+            # print("Right click")
             # selecting objects right click
-            if isinstance(self.object, matplotlib.text.Annotation):
+            if isinstance(self.selected_object, matplotlib.text.Annotation):
                 # print("We got ourselves a right click")
                 self.draggableTextContextMenuEvent(event)
+            else:
+                self.contextMenuEvent(event)
 
     def onpick(self, event):
-        print("Pick")
-        # legend toggle
-        # on the pick event, find the orig line corresponding to the
-        # legend proxy line, and toggle the visibility
-        legline = event.artist
-        print("legline: ", legline)
-        origline = self.lined[legline]
-        print("origline: ", origline)
-        vis = not origline.get_visible()
-        origline.set_visible(vis)
-        # Change the alpha on the line in the legend so we can see what lines
-        # have been toggled
-        if vis:
-            legline.set_alpha(1.0)
+        ########################################################
+        # # legend toggle
+        # # on the pick event, find the orig line corresponding to the
+        # # legend proxy line, and toggle the visibility
+        # legline = event.artist
+        # print("legline: ", legline)
+        # origline = self.lined[legline]
+        # print("origline: ", origline)
+        # vis = not origline.get_visible()
+        # origline.set_visible(vis)
+        # # Change the alpha on the line in the legend so we can see what lines
+        # # have been toggled
+        # if vis:
+        #     legline.set_alpha(1.0)
+        # else:
+        #     legline.set_alpha(0.2)
+        #############################################################
+        artist = event.artist
+        self.selected_object = artist
+
+        if isinstance(self.selected_object, matplotlib.text.Annotation):
+            pass
         else:
-            legline.set_alpha(0.2)
+            xmouse, ymouse = event.mouseevent.xdata, event.mouseevent.ydata
+            x, y = artist.get_xdata(), artist.get_ydata()
+            ind = event.ind
+            # print('Artist picked:', event.artist)
+            # print('{} vertices picked'.format(len(ind)))
+            # print('Pick between vertices {} and {}'.format(min(ind), max(ind) + 1))
+            # print('x, y of mouse: {:.2f},{:.2f}'.format(xmouse, ymouse))
+            # print('Data point:', x[ind[0]], y[ind[0]])
 
         self.fig.canvas.draw()
+
+    def release(self, event):
+        # reset selected object to none
+        self.selected_object = None
 
     def contextMenuEvent(self, event):
         contextMenu = QMenu(self)
@@ -186,16 +218,48 @@ class Plot(FigureCanvasQTAgg):
         # get figure size and subtract from event.y because event.y counts bottom up.
         action = contextMenu.exec_(self.mapToGlobal(QtCore.QPoint(event.x, self.fig.get_size_inches()[1]*self.fig.dpi-event.y)))
 
-        # selected = None
-        # item = self.scene.getItemAt(event.pos())
-        #
-        # if hasattr(item, 'edge'):
-        #     selected = item.edge
-        #
-        # if selected and action == bezierAct: selected.edge_type = EDGE_TYPE_BEZIER
-        # if selected and action == directAct: selected.edge_type = EDGE_TYPE_DIRECT
-        # if action == deleteAct:
-        #     self.close()
+        if action == textAct:
+            # create pop up widget
+            self.eat = EditATextDialog(self, self.selected_object)
+            self.eat.show()
+
+    def draggableTextContextMenuEvent(self, event):
+        contextMenu = QMenu(self)
+        editAct = contextMenu.addAction("Edit")
+        deleteAct = contextMenu.addAction("Delete")
+
+        # get figure size and subtract from event.y because event.y counts bottom up.
+        action = contextMenu.exec_(self.mapToGlobal(QtCore.QPoint(event.x, self.fig.get_size_inches()[1]*self.fig.dpi-event.y)))
+
+        if action == deleteAct:
+            self.remove_text()
+            self.text_dict.pop(f"{id(self.selected_object)}")
+            self.draw()
+
+        elif action == editAct:
+            # create pop up widget
+            self.eat = EditATextDialog(self, self.selected_object)
+            self.eat.show()
+
+    def add_text(self, text, box, size=14):
+        if text.strip("") == "":
+            return
+
+        # add text
+        if box == "None":
+            annotext = self.ax_right.annotate(text, xy=(0.5, 0.5), xycoords='figure fraction', fontsize=size)
+        else:
+            bbox_props = dict(boxstyle='{}'.format(box), fc='w', ec='k')
+            annotext = self.ax_right.annotate(text, xy=(0.5, 0.5), xycoords='figure fraction', bbox=bbox_props, fontsize=size)
+
+        self.draw()
+
+        dt = DraggableText(annotext)
+        dt.connect()
+        self.text_dict[f"{id(annotext)}"] = dt
+
+    def remove_text(self):
+        self.text_dict[f"{id(self.selected_object)}"].remove()
 
 
 class ZoomPan:

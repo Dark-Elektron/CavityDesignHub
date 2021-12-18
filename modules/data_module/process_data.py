@@ -7,6 +7,7 @@ import pandas as pd
 from utils.file_reader import FileReader
 fr = FileReader()
 
+
 class ProcessData:
     def __init__(self):
         pass

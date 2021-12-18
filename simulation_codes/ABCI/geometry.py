@@ -37,7 +37,7 @@ class Geometry:
         # beam pipe
         self.WG_L = 4*self.L_M # self.ui.dsb_Lbp_L.value()*self.u   # Length of the beam pipe connecting to the cavity
         self.WG_R = self.WG_L # Right Waveguide
-        self.L_all = self.WG_L + self.WG_R + self.L_L + self.L_R + 2*(self.n - 1)*self.L_M # Total length of each cavity
+        # self.L_all = self.WG_L + self.WG_R + self.L_L + self.L_R + 2*(self.n - 1)*self.L_M # Total length of each cavity
 
         self.Rbp_L = self.ri_L*self.u
         self.at_L = 0*self.u

@@ -1,0 +1,258 @@
+ ****************************************************************************
+ *                                                                          *
+ *                              ABCI_MP                                     *
+ *                                                                          *
+ * Azimuthal Beam Cavity Interaction in a cylindrically symmetric structure *
+ *                                                                          *
+ *  SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                               *
+ *                                                                          *
+ *     DATE:30/11/21   TIME:12:52:53    VERSION 12.5,  NOVEMBER 2007        *
+ *                                                                          *
+ ****************************************************************************
+
+
+ $FILE:
+ SAVE FIELDS INTO FILE  (LSAV)  :  F
+ RECOVER FROM FILE      (LREC)  :  F
+ CPUTIME MONITOR ACTIVE (LCPUTM):  F
+
+ $BOUN:
+ BOUNDARY CONDITIONS     LEFT   : OPEN              
+ BOUNDARY CONDITIONS     RIGHT  : OPEN              
+
+ $MESH:
+ NUMBER OF MESH LINES IN R      : NR   =        556
+ NUMBER OF MESH LINES IN Z      : NZ   =       4935
+ NUMBER OF MESH POINTS          : NP   =      95632
+ TOTAL RADIUS OF THE STRUCTURE  : RAD  =  0.33318    (M)
+ TOTAL LENGTH OF THE STRUCTURE  : ZL   =   2.9610    (M)
+ STEP SIZE IN R                 : DDR  =  0.60000E-03(M)
+ STEP SIZE IN Z                 : DDZ  =  0.60000E-03(M)
+
+ #CAVITYSHAPE (##CAVITYSHAPE) :  FULL CELL INPUT 
+
+ INPUT:       (R, Z)                   (IR, IZ)
+ (   0.00000E+00  0.00000E+00 )  (       1      1 )
+ (   0.15600      0.00000E+00 )  (     261      1 )
+ (   0.15600      0.74800     )  (     261   1248 ) ---> (   0.15600      0.74820     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.20200      0.74800     )
+ (   0.19464      0.78156     )  (     325   1304 ) ---> (   0.19440      0.78180     )
+ (   0.24051      0.78706     )  (     402   1313 ) ---> (   0.24060      0.78720     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.23118      0.91950     )
+ (   0.33300      0.91950     )  (     556   1533 ) ---> (   0.33300      0.91920     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.21828      0.91950     )
+ (   0.23528       1.0534     )  (     393   1757 ) ---> (   0.23520       1.0536     )
+ (   0.17145       1.0647     )  (     287   1776 ) ---> (   0.17160       1.0650     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.19119       1.1065     )
+ (   0.12000       1.1065     )  (     201   1845 ) ---> (   0.12000       1.1064     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.19119       1.1065     )
+ (   0.17145       1.1483     )  (     287   1915 ) ---> (   0.17160       1.1484     )
+ (   0.23528       1.1596     )  (     393   1934 ) ---> (   0.23520       1.1598     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.21828       1.2935     )
+ (   0.33300       1.2935     )  (     556   2157 ) ---> (   0.33300       1.2936     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.21828       1.2935     )
+ (   0.23528       1.4274     )  (     393   2380 ) ---> (   0.23520       1.4274     )
+ (   0.17145       1.4387     )  (     287   2399 ) ---> (   0.17160       1.4388     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.19119       1.4805     )
+ (   0.12000       1.4805     )  (     201   2468 ) ---> (   0.12000       1.4802     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.19119       1.4805     )
+ (   0.17145       1.5223     )  (     287   2538 ) ---> (   0.17160       1.5222     )
+ (   0.23528       1.5336     )  (     393   2557 ) ---> (   0.23520       1.5336     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.21828       1.6675     )
+ (   0.33300       1.6675     )  (     556   2780 ) ---> (   0.33300       1.6674     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.21828       1.6675     )
+ (   0.23528       1.8014     )  (     393   3003 ) ---> (   0.23520       1.8012     )
+ (   0.17145       1.8127     )  (     287   3022 ) ---> (   0.17160       1.8126     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.19119       1.8545     )
+ (   0.12000       1.8545     )  (     201   3092 ) ---> (   0.12000       1.8546     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.19119       1.8545     )
+ (   0.17145       1.8963     )  (     287   3161 ) ---> (   0.17160       1.8960     )
+ (   0.23528       1.9076     )  (     393   3180 ) ---> (   0.23520       1.9074     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.21828       2.0415     )
+ (   0.33300       2.0415     )  (     556   3403 ) ---> (   0.33300       2.0412     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.23118       2.0415     )
+ (   0.24051       2.1739     )  (     402   3624 ) ---> (   0.24060       2.1738     )
+ (   0.19464       2.1794     )  (     325   3633 ) ---> (   0.19440       2.1792     )
+ CONNECTED BY AN ELLIPSE,       IKIND=-3,  (RM, ZM)=     (   0.20200       2.2130     )
+ (   0.15600       2.2130     )  (     261   3689 ) ---> (   0.15600       2.2128     )
+ (   0.15600       2.9610     )  (     261   4935 )
+ (   0.00000E+00   2.9610     )  (       1   4936 )
+ (   0.00000E+00  0.00000E+00 )  (       1      1 )
+
+ $BEAM:
+ SIGMA OF THE GAUSSIAN BUNCH    : SIG  =  0.60000E-02(M)
+ NUMBER OF STAND.DEV. USED      : ISIG = +/-  5
+ RADIAL BEAM OFFSET AT          :RDRIVE=  0.12000    (M)
+ MODE NUMBER (MONOPOLE/DIPOLE)  : MROT =      0
+
+ $WAKE:
+ RADIAL WAKE OFFSET        (LEFT)   AT  R   =  0.15600    (M)
+ WAKE    BETWEEN THE BUNCH  COORDINATES UBF =  0.00000E+00(M)
+                                    AND UBT =  0.10000    (M)
+ WINDOW FOR FRONT                 (LCFRON)  :  T
+ WINDOW FOR BACK                  (LCBACK)  :  T
+ CHIN WAKE INTEGRATION METHOD     (LCHIN )  :  F
+ NAPOLY WAKE INTEGRATION METHOD   (LNAPOLY) :  F
+ CONVENTIONAL INTEGRATION METHOD  (LNONAP)  :  F
+ WAKE FOR A COUNTER-ROTATING BEAM (LCRBW)   :  F
+ NUMBER OF WAKE POTENTIAL POINTS: NW   =     168
+
+ $TIME:
+ TIME STEPS TO BE PROCESSED     : NT   =  20413
+ NUMBER OF TIME STEPS/MESH STEP : MT   =      4
+ VELOCITY OF THE BUNCH / C      : BETA =   1.0000    
+ TIME-STEP VALUE                : DT   =  0.50035    (PS)
+ TIME FOR A PARTICLE TO PASS    : PT   =   9876.8    (PS)
+
+ $PLOT:
+ PLOT OF CAVITY SHAPE INPUT       (LCAVIN)  :  T
+ PLOT OF CAVITY SHAPE USED        (LCAVUS)  :  T
+ PLOT OF NAPOLY-ZOTTER CONTOUR    (LPATH)   :  T
+ PLOT OF ALL WAKE POTENTIALS      (LPLW)    :  T
+ PLOT OF AZIMUTHAL WAKE POTENTIAL (LPLWA)   :  F
+ PLOT OF TRANSVERSE WAKE POTENT.  (LPLWT)   :  F
+ PLOT OF LONGITUDINAL WAKE POTENT.(LPLWL)   :  F
+ PLOT OF FFT OF WAKE POTENTIALS   (LFFT)    :  T
+ PLOT OF FFT OF AZIMUTHAL WAKE    (LFFTA)   :  F
+ PLOT OF FFT OF TRANSVERSE WAKE   (LFFTT)   :  F
+ PLOT OF FFT OF LONGITUDINAL WAKE (LFFTL)   :  F
+ PLOT OF INTEGRATION OF IMPEDANCE (LINTZ)   :  F
+ PLOT OF ENERGY LOSS SPECTRUM     (LSPEC)   :  T
+ PLOT OF ELECTRIC FIELD LINES     (LPLE)    :  F
+ PLOT OF TOTAL CURRENT LINES      (LPLC)    :  F
+ SWITCH FROM ABSOLUTE TO RELATVE  (LPALL)   :  F
+ NUMBER OF CONTOUR LINES        : NPLOT=      10
+ ENHANCEMENT FACTOR FOR FFT PLOT:EXPFAC=   20.000    
+ CUTOFF FREQUENCY FOR FFT PLOT  :CUTOFF=   19.479    (GHZ)
+ WINDOWING FOR FOURIER TRANSFORMS (LWNDW)   :  T
+ WINDOW FUNCTION                : NWFUN=       1
+ WINDOW PARAMETER FOR WIDTH     : ALPHA=   3.0000    
+
+ $PRIN:
+ PRINTOUT OF CAVITY SHAPE USED    (LMATPR)  :  F
+ PRINTOUT OF WAKE POTENTIALS      (LPRW)    :  T
+ LINE-PRINTER PLOT OF WAKE POT.   (LPPW)    :  T
+ SAVE WAKE POTENTIALS IN A FILE   (LSVW)    :  T
+ SAVE AZIMUTHAL WAKE IN A FILE    (LSVWA)   :  F
+ SAVE TRANSVERSE WAKE IN A FILE   (LSVWT)   :  F
+ SAVE LONGITUDINAL WAKE IN A FILE (LSVWL)   :  T
+ SAVE FFT RESULTS IN A FILE       (LSVF)    :  T
+0*** CAUTION *** YOU MUST NOW USE NAPOLY INTEGRATION FOR CALCULATION OF THE WAKE POTENTIALS.
+ YOUR CASE: LNAPOLY= F
+ IF LNAPOLY=F, ABCI NOW CHANGES IT TO LNAPOLY=T.
+ CHECK IF THE CONTOUR IS VALID.
+ *** WARNING *** NAPOLY INTEGRATION METHOD WAS NOT CHOSEN DESPITE OF THE MATERIAL COMING DOWN 
+ BELOW THE BEAM PIPE RADIUS OR UNEQUAL BEAM PIPE RADII AT BOTH ENDS.
+ *** ABCI CHOOSES THE FOLLOWING CONTOUR: ***
+ ZCF=   1.0674    (M)    ZCT=   1.8936    (M)    AND RWAK=  0.12000    (M)
+ YOU SHOULD STILL CHECK IF THIS CONTOUR IS VALID OR NOT. 
+1PROBLEM : SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE                                30/11/21 12:52:53     SIG/M= 6.000E-03  MROT= 0
+                                                                        CPUTIME USED: 1.036E+00(S)   DDR= 6.000E-04  DDZ= 6.000E-04
+ (A,T,L,P) = WAKE POTENTIAL AS A FUNCTION OF THE BUNCH COORDINATES S IN (M), (*)=BUNCH SHAPE,  FRONT LEFT     LCHIN= F   LNAPOLY= T
+  1.00E+00 +-------------------+--------***--------+-------------------+-------------------+-------------------+-------------------+
+           I                   I       *   *       I                   I                   I                   I                   I
+           I                   I      **   **      I                   I                   I                   I                   I
+           I                   I     *       *     I                   I                   I                   I                   I
+           I                   I     *       *     I                   I                   I                   I                   I
+           I                   I    *         *    I                   I                   I                   I                   I
+           I                   I                   I                   I                   I                   I                   I
+           I                   I    *         *    I                   I                   I                   I                   I
+           I                   I   *           *   I                   I                   I                   I                   I
+           I                   I  *             *  I                   I                   I                   I                   I
+  5.00E-01 +-------------------+--*-------------*--+-------------------+-------------------+-------------------+-------------------+
+           I                   I *               * I                   I                   I                   I                   I
+           I                   I *               * I                   I                   I                   I                   I
+           I                   I                   I                   I                   I                   I                   I
+           I                   **                 **                   I                   I                   I                   I
+           I                   *                   *                   I                   I                   I                   I
+           I                  *I                   I*                  I                   I                   I                   I
+           I                 **I                   I**                 I                   I                   I                   I
+           I                *  I                   I  *                I                   I                   I                   I
+           I             ***   I                   I   ***             I                   I                   I                   I
+  0.00E+00 LLLLLLLLLLLLLLL-----+-------------------+------******************************************************-------------------+
+           I             LLLL  I                   I                   I                   I                   I                   I
+           I                 LLI                   I                   I                   I                   I                   I
+           I                  LL                   I                   I                   I                   I                   I
+           I                   LL                  I                   I                   I                LLLL                   I
+           I                   I L                 I                   I                   I       LLLLLLLLLL  I                   I
+           I                   I L                 I                   I                   LLLLLLLLL           I                   I
+           I                   I  L                I                   I             LLLLLLI                   I                   I
+           I                   I  L                I                   I   LLLLLLLLLL      I                   I                   I
+           I                   I   L               I         LLLLLLLLLLLLLL                I                   I                   I
+ -5.00E-01 +-------------------+----L--------------+-----LLLLL---------+-------------------+-------------------+-------------------+
+           I                   I    L              I   LLL             I                   I                   I                   I
+           I                   I     L             I LL                I                   I                   I                   I
+           I                   I     L             IL                  I                   I                   I                   I
+           I                   I      L            L                   I                   I                   I                   I
+           I                   I       L          LL                   I                   I                   I                   I
+           I                   I       L         L I                   I                   I                   I                   I
+           I                   I        L       LL I                   I                   I                   I                   I
+           I                   I        LL     LL  I                   I                   I                   I                   I
+           I                   I          L   L    I                   I                   I                   I                   I
+ -1.00E+00 +-------------------+-----------LLL-----+-------------------+-------------------+-------------------+-------------------+
+0       0.00E+00            0.00E+00            0.00E+00            0.00E+00            0.00E+00            0.00E+00
+
+ LINE CHARGE DENSITY MIN/MAX= 0.000E+00/ 6.649E+01    C/M**1, SCALE= 6.649E+01    C/M**1, PASSING    AT R= 1.200E-01 M
+ LONGITUDINAL WAKE   MIN/MAX=-1.462E+00/ 0.000E+00 V/PC/M**0, SCALE= 1.462E+00 V/PC/M**0
+0
+ INTEGRATED  LONGITUDINAL WAKE * CHARGE DENSITY = -1.078E+00 V/PC/M**0   (FIRST/LAST HALF = -4.137E-01/-6.644E-01 V/PC/M**0)
+1
+ LONGITUDINAL WAKE FIELDS --->
+
+ S/M      =   0.0000E+00  6.0000E-04  1.2000E-03  1.8000E-03  2.4000E-03  3.0000E-03  3.6000E-03  4.2000E-03  4.8000E-03  5.4000E-03
+ LWAKE/V  =  -1.0599E+07 -2.2136E+07 -4.7673E+07 -8.4443E+07 -1.3514E+08 -2.0245E+08 -2.8730E+08 -3.9776E+08 -5.3642E+08 -7.1750E+08
+
+ S/M      =   6.0000E-03  6.6000E-03  7.2000E-03  7.8000E-03  8.4000E-03  9.0000E-03  9.6000E-03  1.0200E-02  1.0800E-02  1.1400E-02
+ LWAKE/V  =  -9.4912E+08 -1.2532E+09 -1.6482E+09 -2.1666E+09 -2.8427E+09 -3.7250E+09 -4.8713E+09 -6.3546E+09 -8.2661E+09 -1.0715E+10
+
+ S/M      =   1.2000E-02  1.2600E-02  1.3200E-02  1.3800E-02  1.4400E-02  1.5000E-02  1.5600E-02  1.6200E-02  1.6800E-02  1.7400E-02
+ LWAKE/V  =  -1.3837E+10 -1.7793E+10 -2.2775E+10 -2.9006E+10 -3.6748E+10 -4.6293E+10 -5.7973E+10 -7.2147E+10 -8.9205E+10 -1.0955E+11
+
+ S/M      =   1.8000E-02  1.8600E-02  1.9200E-02  1.9800E-02  2.0400E-02  2.1000E-02  2.1600E-02  2.2200E-02  2.2800E-02  2.3400E-02
+ LWAKE/V  =  -1.3360E+11 -1.6175E+11 -1.9439E+11 -2.3186E+11 -2.7442E+11 -3.2226E+11 -3.7543E+11 -4.3387E+11 -4.9736E+11 -5.6549E+11
+
+ S/M      =   2.4000E-02  2.4600E-02  2.5200E-02  2.5800E-02  2.6400E-02  2.7000E-02  2.7600E-02  2.8200E-02  2.8800E-02  2.9400E-02
+ LWAKE/V  =  -6.3769E+11 -7.1320E+11 -7.9108E+11 -8.7024E+11 -9.4945E+11 -1.0274E+12 -1.1026E+12 -1.1738E+12 -1.2395E+12 -1.2985E+12
+
+ S/M      =   3.0000E-02  3.0600E-02  3.1200E-02  3.1800E-02  3.2400E-02  3.3000E-02  3.3600E-02  3.4200E-02  3.4800E-02  3.5400E-02
+ LWAKE/V  =  -1.3496E+12 -1.3919E+12 -1.4246E+12 -1.4474E+12 -1.4600E+12 -1.4624E+12 -1.4552E+12 -1.4390E+12 -1.4145E+12 -1.3830E+12
+
+ S/M      =   3.6000E-02  3.6600E-02  3.7200E-02  3.7800E-02  3.8400E-02  3.9000E-02  3.9600E-02  4.0200E-02  4.0800E-02  4.1400E-02
+ LWAKE/V  =  -1.3455E+12 -1.3035E+12 -1.2582E+12 -1.2109E+12 -1.1630E+12 -1.1154E+12 -1.0692E+12 -1.0253E+12 -9.8411E+11 -9.4620E+11
+
+ S/M      =   4.2000E-02  4.2600E-02  4.3200E-02  4.3800E-02  4.4400E-02  4.5000E-02  4.5600E-02  4.6200E-02  4.6800E-02  4.7400E-02
+ LWAKE/V  =  -9.1179E+11 -8.8096E+11 -8.5362E+11 -8.2960E+11 -8.0862E+11 -7.9035E+11 -7.7441E+11 -7.6044E+11 -7.4810E+11 -7.3707E+11
+
+ S/M      =   4.8000E-02  4.8600E-02  4.9200E-02  4.9800E-02  5.0400E-02  5.1000E-02  5.1600E-02  5.2200E-02  5.2800E-02  5.3400E-02
+ LWAKE/V  =  -7.2708E+11 -7.1789E+11 -7.0936E+11 -7.0137E+11 -6.9382E+11 -6.8668E+11 -6.7994E+11 -6.7359E+11 -6.6765E+11 -6.6212E+11
+
+ S/M      =   5.4000E-02  5.4600E-02  5.5200E-02  5.5800E-02  5.6400E-02  5.7000E-02  5.7600E-02  5.8200E-02  5.8800E-02  5.9400E-02
+ LWAKE/V  =  -6.5704E+11 -6.5239E+11 -6.4818E+11 -6.4441E+11 -6.4107E+11 -6.3812E+11 -6.3555E+11 -6.3332E+11 -6.3141E+11 -6.2975E+11
+
+ S/M      =   6.0000E-02  6.0600E-02  6.1200E-02  6.1800E-02  6.2400E-02  6.3000E-02  6.3600E-02  6.4200E-02  6.4800E-02  6.5400E-02
+ LWAKE/V  =  -6.2832E+11 -6.2706E+11 -6.2593E+11 -6.2486E+11 -6.2379E+11 -6.2268E+11 -6.2145E+11 -6.2004E+11 -6.1839E+11 -6.1645E+11
+
+ S/M      =   6.6000E-02  6.6600E-02  6.7200E-02  6.7800E-02  6.8400E-02  6.9000E-02  6.9600E-02  7.0200E-02  7.0800E-02  7.1400E-02
+ LWAKE/V  =  -6.1417E+11 -6.1150E+11 -6.0839E+11 -6.0483E+11 -6.0080E+11 -5.9628E+11 -5.9127E+11 -5.8581E+11 -5.7989E+11 -5.7357E+11
+
+ S/M      =   7.2000E-02  7.2600E-02  7.3200E-02  7.3800E-02  7.4400E-02  7.5000E-02  7.5600E-02  7.6200E-02  7.6800E-02  7.7400E-02
+ LWAKE/V  =  -5.6688E+11 -5.5988E+11 -5.5262E+11 -5.4515E+11 -5.3754E+11 -5.2985E+11 -5.2215E+11 -5.1448E+11 -5.0690E+11 -4.9945E+11
+
+ S/M      =   7.8000E-02  7.8600E-02  7.9200E-02  7.9800E-02  8.0400E-02  8.1000E-02  8.1600E-02  8.2200E-02  8.2800E-02  8.3400E-02
+ LWAKE/V  =  -4.9218E+11 -4.8511E+11 -4.7826E+11 -4.7166E+11 -4.6529E+11 -4.5917E+11 -4.5328E+11 -4.4761E+11 -4.4213E+11 -4.3683E+11
+
+ S/M      =   8.4000E-02  8.4600E-02  8.5200E-02  8.5800E-02  8.6400E-02  8.7000E-02  8.7600E-02  8.8200E-02  8.8800E-02  8.9400E-02
+ LWAKE/V  =  -4.3168E+11 -4.2666E+11 -4.2173E+11 -4.1688E+11 -4.1210E+11 -4.0735E+11 -4.0263E+11 -3.9793E+11 -3.9323E+11 -3.8853E+11
+
+ S/M      =   9.0000E-02  9.0600E-02  9.1200E-02  9.1800E-02  9.2400E-02  9.3000E-02  9.3600E-02  9.4200E-02  9.4800E-02  9.5400E-02
+ LWAKE/V  =  -3.8383E+11 -3.7912E+11 -3.7439E+11 -3.6966E+11 -3.6492E+11 -3.6017E+11 -3.5541E+11 -3.5065E+11 -3.4588E+11 -3.4112E+11
+
+ S/M      =   9.6000E-02  9.6600E-02  9.7200E-02  9.7800E-02  9.8400E-02  9.9000E-02  9.9600E-02  1.0020E-01  1.0080E-01  1.0140E-01
+ LWAKE/V  =  -3.3636E+11 -3.3161E+11 -3.2689E+11 -3.2220E+11 -3.1755E+11 -3.1296E+11 -3.0843E+11 -3.0396E+11 -2.9955E+11 -2.9518E+11
+
+1
+ **********************************************************************************************************************************
+
+ ABCI_MP ENDED WITHOUT ERROR       TOTAL CPU TIME USED:       1.0 (S)
+
+ **********************************************************************************************************************************

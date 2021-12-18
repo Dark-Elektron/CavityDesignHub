@@ -3,13 +3,18 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
+from frame_controls.plot_properties import PPropsControl
 
 
 class MyCustomToolbar(NavigationToolbar):
     def __init__(self, plotCanvas, parent, coordinates=True):
 
         self.canvas = plotCanvas
+        self.ax = self.canvas.ax
         # self.setContentsMargins(0, 0, 0, 0)
+
+        # propertiesl widget
+        self.pprops = PPropsControl(self.canvas)
 
         # create the default toolbar
         NavigationToolbar.__init__(self, plotCanvas, parent, coordinates)
@@ -27,16 +32,18 @@ class MyCustomToolbar(NavigationToolbar):
                      ('Subplots', 'Configure subplots', 'subplots', 'configure_subplots'),
                      ('Customize', 'Edit axis, curve and image parameters', 'options', 'edit_parameters'),
                      (None, None, None, None),
+                     ('Plot format', 'Edit rcParams, curve and image parameters', 'options', 'rcParams'),
                      ('Linear', 'Save the figure', 'lin', 'linear_scale'),
                      ('Log', 'Save the figure', 'log', 'log_scale'),
-                     ('Decibel', 'Save the figure', 'dB', 'save_figure'),
+                     ('Decibel', 'Save the figure', 'dB', 'decibel_scale'),
+                     ('Grid', 'Toggle Grid', 'dB', 'toggle_grid'),
                      (None, None, None, None),
                      ("Size", None, None, None),
                      ('Save', 'Save the figure', 'save', 'save_figure'),
                      ]
 
         self.canvas.toolbar.setContentsMargins(0, 0, 0, 0)
-        print(type(self.canvas.toolbar))
+        # print(type(self.canvas.toolbar))
 
         actions = self.findChildren(QAction)
         for a in actions:
@@ -54,6 +61,10 @@ class MyCustomToolbar(NavigationToolbar):
                 for a in plot_settings_options:
                     self.cb_Save_Plot_Settings.addItem(a)
                 self.addWidget(self.cb_Save_Plot_Settings)
+            elif text == 'Grid':
+                self.cb_Grid = QCheckBox()
+                self.cb_Grid.clicked.connect(lambda: self.toggle_grid())
+                self.addWidget(self.cb_Grid)
 
             else:
                 a = self.addAction(self._icon(image_file + '.png'),
@@ -78,17 +89,19 @@ class MyCustomToolbar(NavigationToolbar):
     def save_figure(self, *args):
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(None,"QFileDialog.getSaveFileName()","","PNG Files (*.png)", options=options)
+        fileName, _ = QFileDialog.getSaveFileName(None, "QFileDialog.getSaveFileName()", "", "PNG Files (*.png)", options=options)
         if fileName:
             if fileName.split('.')[-1] != 'png':
                 fileName = f'{fileName}.png'
 
             try:
                 if self.cb_Save_Plot_Settings.currentText() == 'Presentation':
-                    self.fig.set_size_inches(8, 6) # actual size = 8*dpi, 6*dpi; dpi = 100
+                    self.canvas.fig.set_size_inches(8, 6) # actual size = 8*dpi, 6*dpi; dpi = 100
                 elif self.cb_Save_Plot_Settings.currentText() == 'Square':
                     self.cb_Save_Plot_Settings.set_size_inches(8, 8) #, forward=False
-                self.fig.savefig(fileName, transparent=True, bbox_inches='tight', pad_inches=0.2)
+                elif self.cb_Save_Plot_Settings.currentText() == 'Landscape':
+                    self.cb_Save_Plot_Settings.set_size_inches(12, 8) #, forward=False
+                self.canvas.fig.savefig(fileName, transparent=True, bbox_inches='tight', pad_inches=0.2)
 
             except Exception as e:
                 print("Cannot save file -> ", e)
@@ -119,3 +132,17 @@ class MyCustomToolbar(NavigationToolbar):
 
     def decibel_scale(self):
         pass
+
+    def toggle_grid(self):
+        if self.cb_Grid.checkState() == 2:
+            self.canvas.fig.get_axes()[0].grid(True, 'both')
+        else:
+            self.canvas.fig.get_axes()[0].grid(False)
+        self.canvas.draw()
+
+    def rcParams(self):
+        # pop up plot properties widget
+        # create pop up widget instance
+        self.pprops.ppropsUI.cb_Plots.addItems([x.get_label() for x in self.canvas.fig.get_axes()])
+        self.pprops.w_PProps.show()
+

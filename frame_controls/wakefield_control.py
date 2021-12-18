@@ -180,6 +180,17 @@ class WakefieldControl:
         # get analysis parameters
         n_cells = self.wakefieldUI.sb_N_Cells.value()
         n_modules = self.wakefieldUI.sb_N_Modules.value()
+
+        WG_M = self.wakefieldUI.le_LBP.text()  # half length of beam pipe between cavities in module
+
+        if WG_M == '':
+            WG_M = None
+        else:
+            try:
+                WG_M = ast.literal_eval(WG_M)
+            except:
+                WG_M = None
+
         MROT = self.wakefieldUI.cb_Polarization_ABCI.currentIndex()
         MT = float(self.wakefieldUI.le_MT.text())  # number of time steps for a beam to move one cell to another default = 3
         bunch_length = float(self.wakefieldUI.le_Bunch_Length.text())
@@ -188,6 +199,7 @@ class WakefieldControl:
         DDZ_SIG = float(self.wakefieldUI.le_DDZ_SIG.text())
         DDR_SIG = float(self.wakefieldUI.le_DDR_SIG.text())
         proc_count = self.wakefieldUI.sb_No_Of_Processors_ABCI.value()
+        marker = self.wakefieldUI.le_Marker.text()
 
         # get geometric parameters
         shape_space = self.get_geometric_parameters('ABCI')
@@ -217,12 +229,13 @@ class WakefieldControl:
                 for key, val in shape_space.items():
                     if key in proc_keys_list:
                         processor_shape_space[key] = val
-
+                print(WG_M)
                 service = mp.Process(target=self.run_sequential, args=(n_cells, n_modules, processor_shape_space,
                                                                        MROT, MT, NFS, UBT, bunch_length,
                                                                        DDR_SIG, DDZ_SIG,
                                                                        self.main_control.parentDir,
-                                                                       self.main_control.projectDir, self.progress_list
+                                                                       self.main_control.projectDir, self.progress_list,
+                                                                       WG_M, marker
                                                                        ))
 
                 service.start()
@@ -782,21 +795,25 @@ class WakefieldControl:
     def run_sequential(n_cells, n_modules, processor_shape_space,
                        MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
                        DDR_SIG=0.1, DDZ_SIG=0.1,
-                       parentDir=None, projectDir=None, progress_list=None):
+                       parentDir=None, projectDir=None, progress_list=None,
+                       WG_M=None, marker=''):
         progress = 0
         # get length of processor
         total_no_of_shapes = len(list(processor_shape_space.keys()))
         for key, shape in processor_shape_space.items():
             # run abci code
             start_time = time.time()
-            try:
-                abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                 fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
-            except:
-                abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                 fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir)
+            for ii in WG_M:
+                try:
+                    abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                     fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
+                                     WG_M=ii*0.001, marker=ii)
+                except:
+                    abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                     fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
+                                     WG_M=ii*0.001, marker=ii)
 
             print_(f'Cavity {key}. Time: {time.time() - start_time}')
 

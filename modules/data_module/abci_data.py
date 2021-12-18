@@ -26,8 +26,10 @@ file_color = 'cyan'
 # DEBUG = False
 DEBUG = True
 
+
 def print_(*arg):
     if DEBUG: print(colored(f'\t\t{arg}', file_color))
+
 
 class ABCIData:
     def __init__(self, dir, fid, MROT):
@@ -41,12 +43,13 @@ class ABCIData:
         self.wakelength = None
         self.checks(dir, fid, MROT)
 
-    def checks(self, dir, fid, MROT):
-        dir = f'{dir}/{fid}/Cavity_MROT_{MROT}.top'
-        if os.path.exists(dir):
-            self._get_plot_data(dir)
+    def checks(self, dirc, fid, MROT):
+        dirc = f'{dirc}/{fid}/Cavity_MROT_{MROT}.top'
+        print(dirc)
+        if os.path.exists(dirc):
+            self._get_plot_data(dirc)
         else:
-            print_("Hey boss, there seems to be a problem with the file directory. Please check.")
+            print_("Hey chief, there seems to be a problem with the file directory. Please check.")
 
     def _get_plot_data(self, dir):
         frame_objects = {}
@@ -165,6 +168,17 @@ class ABCIData:
                 self.data_dict[key] = [x, y]
 
     def get_data(self, key):
+        plot_decorations = [r'Cavity Shape Input', r'Cavity Shape Used', r'Wake Potentials',
+                            r'Real Part of Longitudinal Impedance', r'Imaginary Part of Longitudinal Impedance',
+                            'Frequency Spectrum of Loss Factor', r'Loss Factor Spectrum Integrated upto F',
+                            r'Real Part of Long. + Log Impedance', r'Imaginary Part of Long. + Log Impedance',
+                            r'Spectrum of Long. + Log Loss Factor', r'Long. + Log Factor Integrated up to F',
+                            r'Real Part of Azimuthal Impedance',
+                            r'Imaginary Part of Azimuthal Impedance', r'Real Part of Transverse Impedance',
+                            r'Imaginary Part of Transverse Impedance']
+        if isinstance(key, int):
+            key = plot_decorations[key]
+
         # print_(self.data_dict)
         self.x = self.data_dict[key][0]
         self.y = self.data_dict[key][1]
@@ -357,6 +371,7 @@ class ABCIData:
             axs[1].axvspan(lb, rb, 0, 1, color=color[key], alpha=0.3)
 
         plt.show()
+
 
 class ABCIDataExtraction:
     def __init__(self):
@@ -706,3 +721,38 @@ class ABCIDataExtraction:
             df.to_excel(f'{save_excel}.xlsx', index=False)
         except Exception as e:
             print("Oops! Encountered some error trying to save file: ", e)
+
+
+if __name__ == '__main__':
+    directory = r"D:\Dropbox\Projects\NewFolder\SimulationData\ABCI"
+    fid = "Cavity0"  # folder name
+    MROT = "1"  # 0 for monopole, 1 for dipole
+
+    # create ABCIData object
+    abci_data = ABCIData(directory, fid, MROT)
+
+    # call get_data method and provide key
+    keys = {0: r'Cavity Shape Input',
+            1: r'Cavity Shape Used',
+            2: r'Wake Potentials',
+            3: r'Real Part of Longitudinal Impedance',
+            4: r'Imaginary Part of Longitudinal Impedance',
+            5: 'Frequency Spectrum of Loss Factor',
+            6: r'Loss Factor Spectrum Integrated upto F',
+            7: r'Real Part of Long. + Log Impedance',
+            8: r'Imaginary Part of Long. + Log Impedance',
+            9: r'Spectrum of Long. + Log Loss Factor',
+            10: r'Long. + Log Factor Integrated up to F',
+            11: r'Real Part of Azimuthal Impedance',
+            12: r'Imaginary Part of Azimuthal Impedance',
+            13: r'Real Part of Transverse Impedance',
+            14: r'Imaginary Part of Transverse Impedance'}
+
+    x, y, _ = abci_data.get_data(key=3)  # For the key, either the title of the plot can be given as input or the index
+    print(x)
+    print(y)
+
+    import matplotlib.pyplot as plt
+    plt.plot(x, y)
+    plt.show()
+

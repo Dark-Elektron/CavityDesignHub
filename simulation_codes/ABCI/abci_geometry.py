@@ -26,8 +26,11 @@ class ABCIGeometry(Geometry):
                fid="_0", MROT=0, beampipes=None,
                bunch_length=50, MT=3, NFS=5000, UBT=0,
                DDZ_SIG=0.1, DDR_SIG=0.1,
-               parentDir='', projectDir=''):
-
+               parentDir='', projectDir='', WG_M=None, marker=''):
+        print(WG_M)
+        if WG_M is None:
+            WG_M = self.WG_L
+        print(WG_M)
         # Adding parameter arguments here for testing purposes # fid, fileID
         self.fid = f'{fid}'.upper()
 
@@ -91,7 +94,7 @@ class ABCIGeometry(Geometry):
             # #  Write ABCI code
 
             # create folder for file output set
-            check = self.createFolder(self.fid, projectDir)
+            check = self.createFolder(self.fid, projectDir, marker)
 
             # # write parameters to folder
             # if self.ui.cb_Only_Mid_Cells.checkState() == 2:
@@ -99,9 +102,11 @@ class ABCIGeometry(Geometry):
             # else:
             #     self.write_cst_paramters(self.fid)
 
-            fname = (f'{projectDir}\SimulationData\ABCI\Cavity{self.fid}\Cavity_MROT_{MROT}.abc')
+            fname = (f'{projectDir}\SimulationData\ABCI\Cavity{self.fid}_{marker}\Cavity_MROT_{MROT}.abc')
             print('filename:: ', fname)
 
+            self.L_all_increment = 0
+            self.L_all = 0
             # print(fname)
             with open(fname, 'w') as f:
                 f.write(' &FILE LSAV = .F., ITEST = 0, LREC = .F. &END \n')
@@ -159,35 +164,70 @@ class ABCIGeometry(Geometry):
                     f.write('9999. 9999. \n')
 
                 # #  n>1 multicell cavity
+
                 if n > 1:
                     for i_mode in range(1, module_nu+1):
+
+                        print("imode:", i_mode, i_mode)
+                        # change waveguide length
+                        if module_nu == 2:
+                            if i_mode == 1:
+                                self.WG_R = WG_M
+                            if i_mode == 2:
+                                self.WG_L = WG_M
+                                self.WG_R = 4*self.L_M
+
+                        elif module_nu > 2:
+                            if i_mode == 1:
+                                self.WG_R = WG_M
+                            elif 1 < i_mode < module_nu:
+                                self.WG_L = WG_M
+                            else:
+                                self.WG_R = 4*self.L_M
+
+                        self.L_all_increment = self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M  # Total length of each cavity
+                        print(self.WG_L, self.WG_R, WG_M, self.L_all)
+
                         if i_mode > 1:
                             if self.WG_L > 0:
                                 if end_L == 2:
-                                    f.write('{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L + (i_mode-1)*self.L_all))
+                                    # f.write('{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L + (i_mode-1)*self.L_all))
+                                    f.write('{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L + self.L_all))
                                 else:
-                                    f.write('{} {} \n'.format(self.ri_L, self.WG_L + (i_mode-1)*self.L_all))
+                                    # f.write('{} {} \n'.format(self.ri_L, self.WG_L + (i_mode-1)*self.L_all))
+                                    f.write('{} {} \n'.format(self.ri_L, self.WG_L + self.L_all))
 
                         if end_L == 2:
-                            self.abci.abci_bp_L(n, zr12_BPL, self.WG_L + (i_mode-1)*self.L_all, f)
+                            # self.abci.abci_bp_L(n, zr12_BPL, self.WG_L + (i_mode-1)*self.L_all, f)
+                            self.abci.abci_bp_L(n, zr12_BPL, self.WG_L + self.L_all, f)
 
-                        self.abci.abci_n1_L(n, zr12_L, self.WG_L + (i_mode-1)*self.L_all, f)
+                        # self.abci.abci_n1_L(n, zr12_L, self.WG_L + (i_mode-1)*self.L_all, f)
+                        self.abci.abci_n1_L(n, zr12_L, self.WG_L + self.L_all, f)
 
                         for i in range(1, n):
-                            self.abci.abci_M(n, zr12_M, self.WG_L + (i_mode-1)*self.L_all, f, i, end_type)
+                            # self.abci.abci_M(n, zr12_M, self.WG_L + (i_mode-1)*self.L_all, f, i, end_type)
+                            self.abci.abci_M(n, zr12_M, self.WG_L + self.L_all, f, i, end_type)
 
-                        self.abci.abci_n1_R(n, zr12_R, self.WG_L + (i_mode-1)*self.L_all, f)
+                        # self.abci.abci_n1_R(n, zr12_R, self.WG_L + (i_mode-1)*self.L_all, f)
+                        self.abci.abci_n1_R(n, zr12_R, self.WG_L + self.L_all, f)
 
                         if end_R == 2:
-                            self.abci.abci_bp_R(n, zr12_BPR, self.WG_L + (i_mode-1)*self.L_all, f)
+                            # self.abci.abci_bp_R(n, zr12_BPR, self.WG_R + (i_mode-1)*self.L_all, f)
+                            self.abci.abci_bp_R(n, zr12_BPR, self.WG_R + self.L_all, f)
 
                         if self.WG_R > 0:
                             if end_R == 2:
-                                f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R + 2*(n-1)*self.L_M+(i_mode-1)*self.L_all))
+                                # f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R + 2*(n-1)*self.L_M+(i_mode-1)*self.L_all))
+                                f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R + 2*(n-1)*self.L_M+self.L_all))
                             else:
-                                f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L+ self.L_R+2*(n-1)*self.L_M + (i_mode-1)*self.L_all))
+                                # f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L+ self.L_R+2*(n-1)*self.L_M + (i_mode-1)*self.L_all))
+                                f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L+ self.L_R+2*(n-1)*self.L_M + self.L_all))
 
-                    f.write('0 {} \n'.format(self.WG_L + self.WG_R+ self.L_L + self.L_R+2*(n-1)*self.L_M+(module_nu-1)*self.L_all))
+                        if i_mode < no_of_modules:
+                            self.L_all += self.L_all_increment
+
+                    # f.write('0 {} \n'.format(self.WG_L + self.WG_R+ self.L_L + self.L_R+2*(n-1)*self.L_M+(module_nu-1)*self.L_all))
+                    f.write('0 {} \n'.format(self.WG_L + self.WG_R+ self.L_L + self.L_R+2*(n-1)*self.L_M+self.L_all))
                     f.write('0 0 \n')
                     f.write('9999. 9999. \n')
 
@@ -204,12 +244,12 @@ class ABCIGeometry(Geometry):
             # print(abci_path)
             exe_path = os.path.join(abci_path, f'{parentDir}\em_codes\ABCI_exe\ABCI_MP64+.exe')
             # print(exe_path)
-            subprocess.call([exe_path, f'{projectDir}\SimulationData\ABCI\Cavity{self.fid}\Cavity_MROT_{MROT}.abc'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.call([exe_path, f'{projectDir}\SimulationData\ABCI\Cavity{self.fid}_{marker}\Cavity_MROT_{MROT}.abc'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    def createFolder(self, fid, projectDir):
+    def createFolder(self, fid, projectDir, marker):
         path = os.getcwd()
 
-        path = os.path.join(path, f"{projectDir}\SimulationData\ABCI\Cavity{fid}")
+        path = os.path.join(path, f"{projectDir}\SimulationData\ABCI\Cavity{fid}_{marker}")
         if os.path.exists(path):
             pass
         else:

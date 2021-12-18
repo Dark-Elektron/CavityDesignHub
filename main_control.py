@@ -33,6 +33,7 @@ from frame_controls.wakefield_control import WakefieldControl
 # pyuic5 -x ui_files/mode_nomenclature.ui -o ui_files/mode_nomenclature.py
 # pyuic5 -x ui_files/pandas_table.ui -o ui_files/pandas_table.py
 # pyuic5 -x ui_files/pp_plot.ui -o ui_files/pp_plot.py
+# pyuic5 -x ui_files/plot_properties.ui -o ui_files/pprops.py
 # pyrcc5 qss/icons.qrc -o icons_rc.py
 
 fr = FileReader()
@@ -41,6 +42,7 @@ myappid = u'll' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 AN_DURATION = 200
+
 
 class MainWindow:
     def __init__(self):

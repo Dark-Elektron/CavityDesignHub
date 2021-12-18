@@ -3,13 +3,13 @@ import shutil
 
 import scipy
 from PyQt5.QtWidgets import QMessageBox
-from scipy.optimize import fsolve
 import multiprocessing as mp
 from utils.file_reader import FileReader
 import numpy as np
 import pandas as pd
 
 fr = FileReader()
+
 
 class SLANSData:
     ##### COMPLETE CODE
@@ -25,7 +25,7 @@ class SLANSData:
 
     def get_0D_plot_data(self):
         # print("\t\tSTARTED WITH GETTING 0D PLOT DATA")
-        filename = fr'{self.path}\Cavity{self.fid}\cavity_{self.bc}.svl'
+        filename = fr'{self.path}\{self.fid}\cavity_{self.bc}.svl'
         # print(filename)
 
         data_dict = fr.svl_reader(filename)
@@ -406,3 +406,14 @@ class SLANSDataExtraction:
             df.to_excel(f'{save_excel}.xlsx', index=False)
         except Exception as e:
             print("Oops! Encountered some error trying to save file: ", e)
+
+
+if __name__ == '__main__':
+    directory = r"D:\Dropbox\Projects\NewFolder\SimulationData\SLANS"
+    fid = "Cavity0"  # folder name
+
+    # create ABCIData object
+    abci_data = SLANSData(directory, fid, 22)
+
+    data = abci_data.get_0D_plot_data()  # For the key, either the title of the plot can be given as input or the index
+    print(data['TITLE'])

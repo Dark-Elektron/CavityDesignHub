@@ -15,14 +15,14 @@ class FileReader:
         #### TAKES IN PYTHON DICTIONARY AS ARGUMENT AND RETURNS PANDAS DATAFRAME
         pass
 
-    def txt_reader(self, filename):
+    def txt_reader(self, filename, delimeter):
         lines_list = []
         #### OPEN FILE AND UPDATE LINE LIST
         with open(filename, 'r') as f:
             for l in f.readlines():
                 line = []
                 l = l.strip()
-                a = l.split(' ')
+                a = l.split(delimeter)
                 for b in a:
                     if b == '':
                         continue
@@ -46,7 +46,7 @@ class FileReader:
         #### CONVERT LIST TO PYTHON DICTIONARY
         data_dict = {}
         for key in range(0, len(line)):
-            data_dict[key] = [val[key] for val in list_update]
+            data_dict[f"{key}"] = [val[key] for val in list_update]
 
         #### CONVERT DICTIONARY TO PANDAS DATAFRAME
         df = pd.DataFrame.from_dict(data_dict, orient='index').transpose()
@@ -210,7 +210,14 @@ if __name__ == '__main__':
     # for value in df.to_dict(orient='list').values():
     #     print(value)
 
-    # svl reader
-    dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data\SLANS\Cavity_process_0/cavity_mm.svl'
-    d = fr.svl_reader(dir)
-    print(d['FREQUENCY'])
+    # # svl reader
+    # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data\SLANS\Cavity_process_0/cavity_mm.svl'
+    # d = fr.svl_reader(dir)
+    # print(d['FREQUENCY'])
+
+    # txt reader
+    durr = r"D:\CST Studio\Comparisons_Hook_Coupler_Designs\Wakefield_Trans_C3794_Optimized_Coupler_4hooks_1km_short\Export\Mix 1D.txt"
+
+    d = fr.txt_reader(durr, "\t")
+    print(type(d))
+    print(d)

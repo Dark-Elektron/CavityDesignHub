@@ -58,8 +58,8 @@ class PostprocessControl:
         self.ppplot = PPPlot(self)
         self.pppUI = self.ppplot.pppUI
 
-        self.w_dict = {'Dataset': [self.ppUI.pb_Dataset_From_Simulation, self.ppUI.w_Dataset_From_Simulation],
-                       'Combine': [self.ppUI.pb_Combine_Dataset, self.ppUI.w_Combine_Dataset]}
+        self.w_dict = {'Dataset': [self.ppUI.pb_CEM, self.ppUI.w_Dataset_From_Simulation],
+                       'Combine': [self.ppUI.pb_CST, self.ppUI.w_Combine_Dataset]}
 
         # combine dictionaries list
         self.combine_dict_dict = {}
@@ -75,9 +75,8 @@ class PostprocessControl:
     def signals(self):
 
         # widget display signals
-        self.ppUI.pb_Dataset_From_Simulation.clicked.connect(lambda: self.toggle_page('Dataset From Simulation'))
-        self.ppUI.pb_Combine_Dataset.clicked.connect(lambda: self.toggle_page('Combine Datasets'))
-        self.ppUI.pb_Filter_Data.clicked.connect(lambda: self.toggle_page('Filter Data'))
+        self.ppUI.pb_CEM.clicked.connect(lambda: self.toggle_page('CEM'))
+        self.ppUI.pb_CST.clicked.connect(lambda: self.toggle_page('CST'))
 
         # load dir
         self.ppUI.pb_Load_Doc1.clicked.connect(lambda: self.load_dir(self.ppUI.le_Dir1.text(),
@@ -191,8 +190,8 @@ class PostprocessControl:
 
         # interactive plot
         # self.cid_click = self.ppplot.fig.canvas.mpl_connect('button_press_event', self.onclick)
-        # self.cid_pick = self.ppplot.fig.canvas.mpl_connect('pick_event', self.onpick)
-        # self.ppplot.fig.canvas.mpl_connect("motion_notify_event", self.hover)
+        self.cid_pick = self.ppplot.fig.canvas.mpl_connect('pick_event', self.onpick)
+        self.ppplot.fig.canvas.mpl_connect("motion_notify_event", self.hover)
 
     def run_mode_control(self):
         if self.ppUI.cb_Run_Mode.currentText() == "Sequential":
@@ -597,14 +596,11 @@ class PostprocessControl:
                 wid[1].hide()
 
     def toggle_page(self, key):
-        if key == 'Dataset From Simulation':
+        if key == 'CEM':
             self.ppUI.stackedWidget.setCurrentIndex(0)
 
-        if key == 'Combine Datasets':
+        if key == 'CST':
             self.ppUI.stackedWidget.setCurrentIndex(1)
-
-        if key == 'Filter Data':
-            self.ppUI.stackedWidget.setCurrentIndex(2)
 
     def load_file(self):
         filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Excel Files (*.xlsx)")
@@ -811,7 +807,6 @@ class PostprocessControl:
         pass
 
     def onpick(self, event):
-        print('here')
         ind = event.ind
         print('onpick scatter:', ind, np.take(self.x, ind), np.take(self.y, ind))
         print(self.df.loc[ind, 'A':'alpha'])
@@ -833,7 +828,8 @@ class PostprocessControl:
 
     def hover(self, event):
         vis = self.annot.get_visible()
-        if event.inaxes == self.ppplot.ax:
+        # print(type(event.inaxes), type(self.ppplot.ax))
+        if type(event.inaxes) == type(self.ppplot.ax): # not so good fix
             cont, ind = self.scatter_plot_object.contains(event)
             if cont:
                 self.update_annot(ind["ind"][0]) # ind returns an array of close points. ind['ind'][0] returns just the first point
