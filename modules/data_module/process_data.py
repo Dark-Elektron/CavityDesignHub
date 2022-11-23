@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 
 from scipy.optimize import fsolve
 import numpy as np
@@ -42,30 +43,42 @@ class ProcessData:
 
         return wed_dict, problem_keys
 
-    def weed_maintain_key(self, d):
+    def weed_maintain_key(self, d, bp, dirc):
         wed_dict = {}
         problem_keys = []
         for key, val in d.items():
-            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp = val['MC'][0], val['MC'][1], val['MC'][2], val['MC'][3], val['MC'][4], val['MC'][5], val['MC'][6], 0
-            A_le, B_le, a_le, b_le, Ri_le, L_le, Req_le, L_bp = val['LC'][0], val['LC'][1], val['LC'][2], val['LC'][3], val['LC'][4], val['LC'][5], val['LC'][6], 0
-            A_re, B_re, a_re, b_re, Ri_re, L_re, Req_re, L_bp = val['RC'][0], val['RC'][1], val['RC'][2], val['RC'][3], val['RC'][4], val['RC'][5], val['RC'][6], 0
+            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp = val['IC'][0], val['IC'][1], val['IC'][2], val['IC'][3], val['IC'][4], val['IC'][5], val['IC'][6], 0
+            A_le, B_le, a_le, b_le, Ri_le, L_le, Req_le, L_bp = val['OC'][0], val['OC'][1], val['OC'][2], val['OC'][3], val['OC'][4], val['OC'][5], val['OC'][6], 0
+            # A_re, B_re, a_re, b_re, Ri_re, L_re, Req_re, L_bp = val['RC'][0], val['RC'][1], val['RC'][2], val['RC'][3], val['RC'][4], val['RC'][5], val['RC'][6], 0
 
-            alpha_mc = self._calculate_alpha(A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp)
-            alpha_lc = self._calculate_alpha(A_le, B_le, a_le, b_le, Ri_le, L_le, Req_le, L_bp)
-            alpha_rc = self._calculate_alpha(A_re, B_re, a_re, b_re, Ri_re, L_re, Req_re, L_bp)
+            alpha_ic = self._calculate_alpha(A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp)
+            alpha_oc = self._calculate_alpha(A_le, B_le, a_le, b_le, Ri_le, L_le, Req_le, L_bp)
+            # alpha_rc = self._calculate_alpha(A_re, B_re, a_re, b_re, Ri_re, L_re, Req_re, L_bp)
 
-            if (91 <= alpha_mc <= 180) and (91 <= alpha_lc <= 180) and (91 <= alpha_rc <= 180) and (400.29 < val['FREQ'] < 401.29):
+            # get freq from folder
 
-                wed_dict[key] = {'MC': [], 'LC': [], 'RC': [], 'BP': 0, 'FREQ': 0}
+            try:
+                d = fr.svl_reader(fr"{dirc}\Cavity{key}\cavity_33.svl")
+                freq = d['FREQUENCY'][0]
+                print(key, freq)
+                ic = [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, alpha_ic]
+                oc = [A_le, B_le, a_le, b_le, Ri_le, L_le, Req_le, alpha_oc]
+                cell_type = val['IC'], val['OC'], 'Mid Cell'
 
-                # update save new
-                wed_dict[key]['MC'] = [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
-                wed_dict[key]['LC'] = [A_le, B_le, a_le, b_le, Ri_le, L_le, Req_le]
-                wed_dict[key]['RC'] = [A_re, B_re, a_re, b_re, Ri_re, L_re, Req_re]
-                wed_dict[key]['BP'] = 'both'
-                wed_dict[key]['FREQ'] = val['FREQ']
+                self.write_cst_paramters(key, ic, oc, cell_type, dirc)
 
-            else:
+                if (90.1 <= alpha_ic <= 180) and (90.1 <= alpha_oc <= 180) and ((1 - 0.001)*801.58 < freq < (1 + 0.001)*801.58):
+
+                    wed_dict[key] = {'IC': [], 'OC': [], 'BP': 0, 'FREQ': 0}
+
+                    # update save new
+                    wed_dict[key]['IC'] = [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, alpha_ic]
+                    wed_dict[key]['OC'] = [A_le, B_le, a_le, b_le, Ri_le, L_le, Req_le, alpha_oc]
+                    wed_dict[key]['BP'] = bp
+                    wed_dict[key]['FREQ'] = freq
+                else:
+                    problem_keys.append(key)
+            except FileNotFoundError:
                 problem_keys.append(key)
 
         return wed_dict, problem_keys
@@ -270,8 +283,14 @@ class ProcessData:
         data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
                 [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
         x1, y1, x2, y2 = fsolve(self._ellipse_tangent,
-                                np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
+                                np.array([a + L_bp, Ri + 0.5 * b, L - A + L_bp, Req - 0.5 * B]),
                                 args=data)
+        df = fsolve(self._ellipse_tangent,
+                                np.array([a + L_bp, Ri + 0.5 * b, L - A + L_bp, Req - 0.5 * B]),
+                                args=data, full_output=True)
+
+        print(df[0])
+        print(x1, y1, x2, y2)
         m = (y2 - y1) / (x2 - x1)
         alpha = 180 - np.arctan(m) * 180 / np.pi
 
@@ -290,42 +309,92 @@ class ProcessData:
 
         return f1, f2, f3, f4
 
-    def write_cst_paramters(self, key, A, B, a, b, Ri, L, Req):
+    def calculate_alpha_dataframe(self, df):
+        alpha_list = []
+        for i, row in df.iterrows():
+            # print(row)
+            A, B, a, b, Ri, L, Req = row[2:9]
+            alpha = self._calculate_alpha(A, B, a, b, Ri, L, Req, 0)
+            alpha_list.append(alpha)
+
+        # print(alpha_list)
+        df['alpha'] = alpha_list
+        df.to_excel(r'D:\Dropbox\To Shahnam\TestBook1_w_alpha.xlsx')
+        #
+    # def write_cst_paramters(self, key, A, B, a, b, Ri, L, Req):
+    #     # print("Writing parameters to file")
+    #     cwd = os.getcwd()
+    #     path = os.path.join(cwd, f"CST Shape Parameters_9064\{key}.txt")
+    #
+    #     # print(path)
+    #     with open(path, 'w') as f:
+    #         name_list = ['Aeq', 'Beq', 'ai', 'bi', 'Ri', 'L', 'Req', 'x_tr', 'key']
+    #
+    #         value_list = [A, B, a, b, Ri, L, Req, 20, key]
+    #
+    #         for i in range(len(name_list)):
+    #             f.write(f"{name_list[i]}={value_list[i]}\n")
+    #
+    #     # print("Writing to file complete.")
+
+    def write_cst_paramters(self, key, ic, oc, cell_type, projectDir):
         # print("Writing parameters to file")
-        cwd = os.getcwd()
-        path = os.path.join(cwd, f"CST Shape Parameters_9064\{key}.txt")
+        path = fr'{projectDir}/Cavity{key}/{key}.txt'
 
         # print(path)
         with open(path, 'w') as f:
-            name_list = ['Aeq', 'Beq', 'ai', 'bi', 'Ri', 'L', 'Req', 'x_tr', 'key']
+            name_list = ['Aeq', 'Beq', 'ai', 'bi', 'Ri', 'L', 'Req', 'alpha', 'Aeq_e', 'Beq_e', 'ai_e', 'bi_e', 'Ri_e', 'L_e', 'Req', 'alpha_e', 'key']
 
-            value_list = [A, B, a, b, Ri, L, Req, 20, key]
+            if cell_type == 'Mid Cell':
+                value_list = [ic[0], ic[1], ic[2], ic[3], ic[4], ic[5], ic[6], ic[7],
+                              'Aeq', 'Beq', 'ai', 'bi', 'Ri', 'L', 'Req', 'alpha_e', key]
+            else:
+                value_list = [ic[0], ic[1], ic[2], ic[3], ic[4], ic[5], ic[6], ic[7],
+                              oc[0], oc[1], oc[2], oc[3], oc[4], oc[5], oc[6], oc[7], key]
 
             for i in range(len(name_list)):
-                f.write(f"{name_list[i]}={value_list[i]}\n")
-
-        # print("Writing to file complete.")
+                f.write(f'{name_list[i]} = "{value_list[i]}" ""\n')
 
 
 if __name__ == '__main__':
     pr = ProcessData()
+    ###########################################################
+    dirc = r'D:\Dropbox\To Shahnam\TestBook1.xlsx'
+    df = pd.read_excel(dirc, 'Sheet1')
+    pr.calculate_alpha_dataframe(df)
+
+
+# #################################################
+#     dirc = r'D:\Dropbox\CEMCodesHub\C800MHz\Cavities\GridSpace.json'
+#     # d = fr.json_reader(dir)
+#     f = open(dirc, "r")
+#     d = json.load(f)
+#     f.close()
+#     # print(d)
+#     wd, pd = pr.weed_maintain_key(d, bp="none", dirc=fr'D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS')
+#     # wd, pd = pr.weed(d)
+#     # print(wd)
+#     # print()
+#     print(pd)
+#     print(len(pd))
+#     # remove problematic folder
+#     # for key in pd:
+#     #     pf = fr'D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS\Cavity{key}'
+#     #     if os.path.exists(pf):
+#     #         shutil.rmtree(pf)
+#
+#     with open(fr'D:\Dropbox\CEMCodesHub\C800MHz\Cavities\GridSpace_weed_Update.json', "w") as outfile:
+#         json.dump(wd, outfile, indent=4, separators=(',', ': '))
 
 #################################################
-    # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Cavity Population\fourth_batch_Ri155.json'
-    # d = fr.json_reader(dir)
-    # # print(d)
-    # # wd, pd = pr.weed_maintain_key(d)
-    # wd, pd = pr.weed(d)
-    # print(wd)
-    # print()
-    # print(pd)
-    # print(len(pd))
+    # root = fr'D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS'
+    # folders = list(os.walk(root))[1:]
     #
-    # with open(fr'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Cavity Population\fourth_batch_Ri155_weed.json', "w") as outfile:
-    #     json.dump(wd, outfile, indent=4, separators=(',', ': '))
-
-#################################################
-
+    # for folder in folders:
+    #     # folder example: ('FOLDER/3', [], ['file'])
+    #     print(folder)
+    #     if not folder[2]:
+    #         os.rmdir(folder[0])
 #################################################
     # dir_FM = fr'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\modules\data_module\Data_0D_fourth_batch.xlsx'
     # dir_HOM = fr'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\modules\data_module\HOM_combined_fourth_batch.xlsx'
@@ -335,9 +404,9 @@ if __name__ == '__main__':
 
 #################################################
 
-    d1 = fr'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\modules\data_module\COMPLETE_THIRD_BATCH_9276.xlsx'
-    d2 = fr'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\modules\data_module\Zmax_combined_730f770.xlsx'
-    pr.combine_results_2(d1, d2, 'COMPLETE_RI150_w_0.73_f_0.77')
+    # d1 = fr'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\modules\data_module\COMPLETE_THIRD_BATCH_9276.xlsx'
+    # d2 = fr'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\modules\data_module\Zmax_combined_730f770.xlsx'
+    # pr.combine_results_2(d1, d2, 'COMPLETE_RI150_w_0.73_f_0.77')
 
 #################################################
 

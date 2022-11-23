@@ -4,10 +4,11 @@ from PyQt5 import QtGui, QtWidgets, QtCore
 class HouseKeeping:
     def __init__(self, win):
         self.main_control = win
+        self.win = win
         self.ui = win.ui
-        self.wakefieldUI = self.main_control.wakefield_widget.wakefieldUI
-        self.tuneUI = self.main_control.tune_widget.tuneUI
-        self.eigenmodeUI = self.main_control.eigenmode_widget.eigenmodeUI
+        self.wakefieldUI = self.main_control.wakefield_widget.ui
+        self.tuneUI = self.main_control.tune_widget.ui
+        self.eigenmodeUI = self.main_control.eigenmode_widget.ui
 
         # Signals
         # self.ui.cb_Objective.currentIndexChanged.connect(lambda: self.change_image(self.ui.l_Objective, self.ui.cb_Objective))

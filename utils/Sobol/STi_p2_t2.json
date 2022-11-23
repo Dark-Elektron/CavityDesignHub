@@ -1,0 +1,41 @@
+{
+    "S_0": {
+        "V[E[S_0|shaft_y]]": 0.04128539404455689,
+        "V[E[S_0|bend_out_sec_prob_length]]": 0.012720604548383307,
+        "V[E[S_0|bend_out_cap_gap]]": 0.04282713383894643,
+        "V[E[S_0|Window_margin]]": 0.0062070808730516625,
+        "V[E[S_0|Shift_from_center]]": 0.6512536917553136,
+        "V[E[S_0|Cap_y]]": 0.018454219585618215,
+        "V[E[S_0|Cap_thickness]]": 0.011273474658124116,
+        "V[E[S_0|Cap_Height]]": 0.08957642608882799,
+        "V[E[S_0|Cap_Gap]]": 0.10611216517735456,
+        "V[E[S_0|Bend_out_chamber_Length]]": 0.22249891629447083,
+        "V[E[S_0|BP_HOM_Penetration]]": 0.051145634929225525
+    },
+    "f_0": {
+        "V[E[f_0|shaft_y]]": 0.03943623067269897,
+        "V[E[f_0|bend_out_sec_prob_length]]": 0.014474838749867991,
+        "V[E[f_0|bend_out_cap_gap]]": 0.025124159495973353,
+        "V[E[f_0|Window_margin]]": 0.11927187440208897,
+        "V[E[f_0|Shift_from_center]]": 0.5247576312471023,
+        "V[E[f_0|Cap_y]]": 0.05063983982652065,
+        "V[E[f_0|Cap_thickness]]": 0.03329242380283981,
+        "V[E[f_0|Cap_Height]]": 0.20302898076781284,
+        "V[E[f_0|Cap_Gap]]": 0.05027322971768722,
+        "V[E[f_0|Bend_out_chamber_Length]]": 0.17743214675342156,
+        "V[E[f_0|BP_HOM_Penetration]]": 0.11488550740342118
+    },
+    "BW": {
+        "V[E[BW|shaft_y]]": 0.08068067740512963,
+        "V[E[BW|bend_out_sec_prob_length]]": 0.03612508885367183,
+        "V[E[BW|bend_out_cap_gap]]": 0.1955277738186405,
+        "V[E[BW|Window_margin]]": 0.03439556425792889,
+        "V[E[BW|Shift_from_center]]": 0.4692059429928521,
+        "V[E[BW|Cap_y]]": 0.06003488933612877,
+        "V[E[BW|Cap_thickness]]": 0.024691244447520133,
+        "V[E[BW|Cap_Height]]": 0.10687369444945038,
+        "V[E[BW|Cap_Gap]]": 0.06312864972411825,
+        "V[E[BW|Bend_out_chamber_Length]]": 0.5184319768096721,
+        "V[E[BW|BP_HOM_Penetration]]": 0.04564022853831473
+    }
+}

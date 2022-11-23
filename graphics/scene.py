@@ -2,6 +2,7 @@ from graphics.graphics_scene import GraphicsScene
 
 DEBUG = True
 
+
 class Scene:
     def __init__(self, main_win=None):
         self.main_win = main_win

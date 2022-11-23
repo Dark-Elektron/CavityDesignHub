@@ -11,6 +11,7 @@ LINE_CP_ROUNDNESS = 100
 
 #### THIS IS WHERE ALL THE PAINTING IS DONE
 
+
 class QGraphicsLine(QGraphicsPathItem):
     def __init__(self, line, color="#000000", parent=None):
         super().__init__(parent)
@@ -85,6 +86,7 @@ class QGraphicsLineDirect(QGraphicsLine):
         self.IC, self.OC, self.BP = IC, OC, BP
 
         self.main_win = line.main_win
+        self.geom_in = self.main_win.geom_in
         self.ui = self.main_win.ui
 
         self.color = color
@@ -96,54 +98,54 @@ class QGraphicsLineDirect(QGraphicsLine):
 
         if self.IC == None or self.OC ==None or self.BP == None:
             #### DEFINE VARIABLES
-            A_m = self.text_to_list(self.ui.le_A_i.text())[0]
-            B_m = self.text_to_list(self.ui.le_B_i.text())[0]
-            a_m = self.text_to_list(self.ui.le_a_i.text())[0]
-            b_m = self.text_to_list(self.ui.le_b_i.text())[0]
-            Ri_m = self.text_to_list(self.ui.le_Ri_i.text())[0]
-            L_m = self.text_to_list(self.ui.le_L_i.text())[0]
-            Req_m = self.text_to_list(self.ui.le_Req_i.text())[0]
+            A_m = self.text_to_list(self.geom_in.le_A_i.text())[0]
+            B_m = self.text_to_list(self.geom_in.le_B_i.text())[0]
+            a_m = self.text_to_list(self.geom_in.le_a_i.text())[0]
+            b_m = self.text_to_list(self.geom_in.le_b_i.text())[0]
+            Ri_m = self.text_to_list(self.geom_in.le_Ri_i.text())[0]
+            L_m = self.text_to_list(self.geom_in.le_L_i.text())[0]
+            Req_m = self.text_to_list(self.geom_in.le_Req_i.text())[0]
 
             ### left end cell
-            A_el = self.text_to_list(self.ui.le_A_ol.text())[0]
-            B_el = self.text_to_list(self.ui.le_B_ol.text())[0]
-            a_el = self.text_to_list(self.ui.le_a_ol.text())[0]
-            b_el = self.text_to_list(self.ui.le_b_ol.text())[0]
-            Ri_el = self.text_to_list(self.ui.le_Ri_ol.text())[0]
-            L_el= self.text_to_list(self.ui.le_L_ol.text())[0]
-            Req_el = self.text_to_list(self.ui.le_Req_ol.text())[0]
+            A_el = self.text_to_list(self.geom_in.le_A_ol.text())[0]
+            B_el = self.text_to_list(self.geom_in.le_B_ol.text())[0]
+            a_el = self.text_to_list(self.geom_in.le_a_ol.text())[0]
+            b_el = self.text_to_list(self.geom_in.le_b_ol.text())[0]
+            Ri_el = self.text_to_list(self.geom_in.le_Ri_ol.text())[0]
+            L_el= self.text_to_list(self.geom_in.le_L_ol.text())[0]
+            Req_el = self.text_to_list(self.geom_in.le_Req_ol.text())[0]
 
             ### right end cell
-            A_er = self.text_to_list(self.ui.le_A_or.text())[0]
-            B_er = self.text_to_list(self.ui.le_B_or.text())[0]
-            a_er = self.text_to_list(self.ui.le_a_or.text())[0]
-            b_er = self.text_to_list(self.ui.le_b_or.text())[0]
-            Ri_er = self.text_to_list(self.ui.le_Ri_or.text())[0]
-            L_er= self.text_to_list(self.ui.le_L_or.text())[0]
-            Req_er = self.text_to_list(self.ui.le_Req_or.text())[0]
+            A_er = self.text_to_list(self.geom_in.le_A_or.text())[0]
+            B_er = self.text_to_list(self.geom_in.le_B_or.text())[0]
+            a_er = self.text_to_list(self.geom_in.le_a_or.text())[0]
+            b_er = self.text_to_list(self.geom_in.le_b_or.text())[0]
+            Ri_er = self.text_to_list(self.geom_in.le_Ri_or.text())[0]
+            L_er= self.text_to_list(self.geom_in.le_L_or.text())[0]
+            Req_er = self.text_to_list(self.geom_in.le_Req_or.text())[0]
 
-            if self.ui.cb_Outer_Cell_L.checkState() == 0:
-                if self.ui.cb_Outer_Cell_R.checkState() == 2:
+            if self.geom_in.cb_Outer_Cell_L.checkState() == 0:
+                if self.geom_in.cb_Outer_Cell_R.checkState() == 2:
                     A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er
                 else:
                     A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m
 
-            if self.ui.cb_Outer_Cell_R.checkState() == 0:
-                if self.ui.cb_Outer_Cell_L.checkState() == 2:
+            if self.geom_in.cb_Outer_Cell_R.checkState() == 0:
+                if self.geom_in.cb_Outer_Cell_L.checkState() == 2:
                     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el
                 else:
                     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m
 
             #### ADD BEAM PIPES IF ONLY MID CELLS IS CHECKED AND ABCI CODE SELECTED
-            if self.ui.cb_Inner_Cell.checkState() == 2 and self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 0:
+            if self.geom_in.cb_Inner_Cell.checkState() == 2 and self.geom_in.cb_LBP.checkState() == 0 and self.geom_in.cb_RBP.checkState() == 0:
                 L_bp_l, L_bp_r = 0, 0
             else:
-                if self.ui.cb_LBP.checkState() == 2:
+                if self.geom_in.cb_LBP.checkState() == 2:
                     L_bp_l = 4*L_m
                 else:
                     L_bp_l = 0
 
-                if self.ui.cb_RBP.checkState() == 2:
+                if self.geom_in.cb_RBP.checkState() == 2:
                     L_bp_r = 4*L_m
                 else:
                     L_bp_r = 0
@@ -162,7 +164,7 @@ class QGraphicsLineDirect(QGraphicsLine):
             else:
                 L_bp_l, L_bp_r = 4*L_m, 4*L_m
 
-        n_cell = self.ui.sb_N_Cells.value()
+        n_cell = self.geom_in.sb_N_Cells.value()
 
         # calculate shift
         shift = (L_bp_r+L_bp_l + (n_cell-1)*2*L_m + L_el + L_er)/2
@@ -179,7 +181,7 @@ class QGraphicsLineDirect(QGraphicsLine):
         # calculate angles outside loop
         ### CALCULATE x1_el, y1_el, x2_el, y2_el
         data = ([0+L_bp_l, Ri_el+b_el, L_el+L_bp_l, Req_el-B_el], [a_el, b_el, A_el, B_el]) # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1el, y1el, x2el, y2el = fsolve(self.f, np.array([a_el+L_bp_l, Ri_el+0.85*b_el, L_el-A_el + L_bp_l, Req_el-0.85*B_el]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        x1el, y1el, x2el, y2el = fsolve(self.f, np.array([0.5*a_el+L_bp_l, Ri_el+0.5*b_el, L_el-A_el + L_bp_l, Req_el-0.5*B_el]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
         # calculate iris angle
         alpha1_el = np.arctan((Ri_el+b_el-y1el)/(x1el-L_bp_l))
         alpha1_el = np.rad2deg(alpha1_el)
@@ -189,7 +191,7 @@ class QGraphicsLineDirect(QGraphicsLine):
 
         ### CALCULATE x1, y1, x2, y2
         data = ([0+L_bp_l, Ri_m+b_m, L_m+L_bp_l, Req_m-B_m], [a_m, b_m, A_m, B_m]) # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1, y1, x2, y2 = fsolve(self.f, np.array([a_m+L_bp_l, Ri_m+0.85*b_m, L_m-A_m + L_bp_l, Req_m-0.85*B_m]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        x1, y1, x2, y2 = fsolve(self.f, np.array([0.5*a_m+L_bp_l, Ri_m+0.5*b_m, L_m-A_m + L_bp_l, Req_m-0.5*B_m]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
         # calculate angle
         alpha1 = np.arctan((Ri_m+b_m-y1)/(x1-L_bp_l))
         alpha1 = np.rad2deg(alpha1)
@@ -199,7 +201,7 @@ class QGraphicsLineDirect(QGraphicsLine):
 
         ### CALCULATE x1_er, y1_er, x2_er, y2_er
         data = ([0+L_bp_l, Ri_er+b_er, L_er+L_bp_l, Req_er-B_er], [a_er, b_er, A_er, B_er]) # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1er, y1er, x2er, y2er = fsolve(self.f, np.array([a_er+L_bp_l, Ri_er+0.85*b_er, L_er-A_er + L_bp_l, Req_er-0.85*B_er]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        x1er, y1er, x2er, y2er = fsolve(self.f, np.array([0.5*a_er+L_bp_l, Ri_er+0.5*b_er, L_er-A_er + L_bp_l, Req_er-0.5*B_er]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
         # calculate angle
         alpha1_er = np.arctan((Ri_er+b_er-y1er)/(x1er-L_bp_l))
         alpha1_er = np.rad2deg(alpha1_er)
@@ -306,7 +308,11 @@ class QGraphicsLineDirect(QGraphicsLine):
             l = ast.literal_eval(txt)
             return range(l[0], l[1], l[2])
         elif 'linspace' in txt:
-            l = eval(f'np.{txt}')
+            try:
+                l = eval(f'np.{txt}')
+            except SyntaxError:
+                l = [0]
+
             return l
         else:
             l = ast.literal_eval(txt)

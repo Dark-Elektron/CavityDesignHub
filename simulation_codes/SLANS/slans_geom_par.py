@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 import subprocess
@@ -8,6 +9,9 @@ from simulation_codes.SLANS.geometry_manual import Geometry
 from simulation_codes.SLANS.slans_code import SLANS
 import numpy as np
 
+from utils.file_reader import FileReader
+fr = FileReader()
+
 
 class SLANSGeometry(Geometry):
     def __init__(self, win=None):
@@ -16,7 +20,8 @@ class SLANSGeometry(Geometry):
 
             self.ui = win.ui
 
-    def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None, fid=None, bc=33, f_shift='default', beta=1, n_modes=2, proc=0, beampipes=None,
+    def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
+               fid=None, bc=33, f_shift='default', beta=1, n_modes=2, proc=0, beampipes=None,
                parentDir=None, projectDir=None):
 
         if os.path.exists(projectDir):
@@ -67,7 +72,7 @@ class SLANSGeometry(Geometry):
 
         # Set boundary conditions
         BC_Left = floor(bc/10) # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
-        BC_Right = bc%10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        BC_Right = bc % 10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
 
         filename = f'cavity_{bc}'
 
@@ -200,13 +205,14 @@ class SLANSGeometry(Geometry):
         subprocess.call([genmesh_path, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
         path = fr'{projectDir}\SimulationData\SLANS\Cavity{self.fid}'
 
-        if f_shift == 'default':
+        # if f_shift == 'default':
             # parameters delete later
-            if self.ui.le_Beta.text() or self.ui.le_Freq_Shift.text() or self.ui.sb_No_Of_Modes.value():
-                beta, f_shift, n_modes = float(self.ui.le_Beta.text()), float(self.ui.le_Freq_Shift.text()), self.ui.sb_No_Of_Modes.value()
-                # print(beta, f_shift, n_modes)
-            else:
-                beta, f_shift, n_modes = 1, 0, 1
+            # try:
+            #     if self.ui.le_Beta.text() or self.ui.le_Freq_Shift.text() or self.ui.sb_No_Of_Modes.value():
+            #         beta, f_shift, n_modes = float(self.ui.le_Beta.text()), float(self.ui.le_Freq_Shift.text()), self.ui.sb_No_Of_Modes.value()
+            #         # print(beta, f_shift, n_modes)
+            # except:
+        beta, f_shift, n_modes = 1, 0, no_of_cells + 1
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
@@ -215,11 +221,75 @@ class SLANSGeometry(Geometry):
         slanss_path = fr'{parentDir}\em_codes\SLANS_exe\slanss'
         slansre_path = fr'{parentDir}\em_codes\SLANS_exe\slansre'
 
-        # print(cwd)
-        subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)  # settings, number of modes, etc
-        subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
-        subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
-        subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+        # check if corresponding file exists at before the executable is called
+        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.geo'):
+            subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)  # settings, number of modes, etc
+
+            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.gem'):
+                subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+
+                if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\aslans.mtx') \
+                        and os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\bslans.mtx'):
+                    subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+
+                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.res'):
+                        subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+
+        run_save_directory = f"{projectDir}/SimulationData/SLANS/Cavity{fid}"
+        # save json file
+        shape = {'IC': mid_cells_par,
+                 'OC': l_end_cell_par,
+                 'OC_R': r_end_cell_par}
+
+        with open(f"{run_save_directory}/geometric_parameters.json", 'w') as f:
+            json.dump(shape, f, indent=4, separators=(',', ': '))
+
+        filename = fr'{run_save_directory}/cavity_33.svl'
+        d = fr.svl_reader(filename)
+
+        Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
+        Freq = d['FREQUENCY'][no_of_cells - 1]
+        E_stored = d['STORED ENERGY'][no_of_cells - 1]
+        Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
+        Q = d['QUALITY FACTOR'][no_of_cells - 1]
+        Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
+        Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
+        # Vacc = dict['ACCELERATION'][no_of_cells - 1]
+        Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
+        r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
+        G = 0.00948 * Q * (Freq / 1300)
+        GR_Q = G * 2 * r_Q
+
+        Vacc = np.sqrt(
+            2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
+        # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+        norm_length = 2*mid_cells_par[5]
+        Eacc = Vacc / (
+                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
+        Epk_Eacc = Epk / Eacc
+        Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
+        Bpk_Eacc = Bpk / Eacc
+
+        d = {
+            "Req": Req,
+            "Normalization Length": norm_length,
+            "freq": Freq,
+            "Q": Q,
+            "E": E_stored,
+            "Vacc": Vacc,
+            "Eacc": Eacc,
+            "Epk": Epk,
+            "Hpk": Hpk,
+            "Bpk": Bpk,
+            "R/Q": 2 * r_Q,
+            "Epk/Eacc": Epk_Eacc,
+            "Bpk/Eacc": Bpk_Eacc,
+            "G": G,
+            "GR/Q": GR_Q
+        }
+
+        with open(fr'{run_save_directory}\qois.json', "w") as f:
+            json.dump(d, f, indent=4, separators=(',', ': '))
 
     def write_dtr(self, path, filename, beta, f_shift, n_modes):
         with open("{}\{}.dtr".format(path, filename), 'w') as f:

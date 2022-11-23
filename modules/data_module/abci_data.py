@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 # mpl.rcParams['text.usetex'] = True
 # mpl.rcParams['text.latex.preamble'] = [r'\usepackage{amsmath}']  # for \text command
-from labellines import labelLine, labelLines
+# from labellines import labelLine, labelLines
 import multiprocessing as mp
 fr = FileReader()
 
@@ -32,20 +32,20 @@ def print_(*arg):
 
 
 class ABCIData:
-    def __init__(self, dir, fid, MROT):
+    def __init__(self, dirc, fid, MROT):
         self.title_dict = {}
         self.data_dict = {}
-        self.dir = dir
+        self.dir = dirc
         self.fid = fid
         self.MROT = MROT
         self.loss_factor = {}
         self.SIG = None
         self.wakelength = None
-        self.checks(dir, fid, MROT)
+        self.checks(dirc, fid, MROT)
 
     def checks(self, dirc, fid, MROT):
-        dirc = f'{dirc}/{fid}/Cavity_MROT_{MROT}.top'
-        print(dirc)
+        dirc = fr'{dirc}\{fid}\Cavity_MROT_{MROT}.top'
+        # print(dirc)
         if os.path.exists(dirc):
             self._get_plot_data(dirc)
         else:
@@ -127,8 +127,8 @@ class ABCIData:
                     # get wakelength
                     if 'SET LIMITS X   0.00000E+00' in line:
                         indx_0 = line.index('SET LIMITS X   0.00000E+00')
-                        indx_1 = line.index('   Y')
-                        self.wakelength = float(line[indx_0 + len('SET LIMITS X   0.00000E+00'):indx_1])
+                        indx_1 = line.index('Y')
+                        self.wakelength = float(line[indx_0 + len('SET LIMITS X   0.00000E+00'):indx_1].strip())
 
                 if 'JOIN' in line:
                     new_line_object = True
@@ -151,6 +151,7 @@ class ABCIData:
 
             # EOF append last list
             frame_titles_objects[frame_count - 1] = frame_title
+
             # select suitable title
             for decor in plot_decorations:
                 if decor in frame_title[0] + frame_title[1]:
@@ -164,6 +165,15 @@ class ABCIData:
                     if len(line[0]) > 2:
                         x += line[0]
                         y += line[1]
+
+                if key in [r'Cavity Shape Input', r'Cavity Shape Used']:
+                    x = np.array(x)-np.amax(x)/2
+
+                    # # insert values to complete shape
+                    # x = np.insert(x, 0, x[0])
+                    # y = np.insert(y, 0, 0)
+                    # x = np.insert(x, -1, x[-1]).tolist()
+                    # y = np.insert(y, -1, 0).tolist()
 
                 self.data_dict[key] = [x, y]
 
@@ -423,11 +433,15 @@ class ABCIDataExtraction:
             # create list to hold Z
             Zmax_mon_list = []
             Zmax_dip_list = []
+            xmax_mon_list = []
+            xmax_dip_list = []
             for i in range(len(mon_interval)):
                 Zmax_mon_list.append([])
+                xmax_mon_list.append([])
 
             for i in range(len(dip_interval)):
                 Zmax_dip_list.append([])
+                xmax_dip_list.append([])
 
             def append_geom_parameters(values):
                 A.append(values[0])
@@ -474,7 +488,7 @@ class ABCIDataExtraction:
                 if dip_interval is None:
                     dip_interval = [0.0, 2e10]
 
-                for key, value in d.keys():
+                for key, value in d.items():
                     print(f"Processing for Cavity {key}")
                     abci_data_mon = ABCIData(abci_data_dir, key, 0)
                     abci_data_dip = ABCIData(abci_data_dir, key, 1)
@@ -534,8 +548,8 @@ class ABCIDataExtraction:
             def all(mon_interval, dip_interval):
                 for key, value in d.items():
                     print(f"Processing for Cavity {key}")
-                    abci_data_long = ABCIData(abci_data_dir, key, 0)
-                    abci_data_trans = ABCIData(abci_data_dir, key, 1)
+                    abci_data_long = ABCIData(abci_data_dir, f"Cavity{key}_", 0)
+                    abci_data_trans = ABCIData(abci_data_dir, f"Cavity{key}_", 1)
 
                     # get longitudinal and transverse impedance plot data
                     xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
@@ -576,10 +590,13 @@ class ABCIDataExtraction:
 
                         if len(yp_mon[msk_mon]) != 0:
                             Zmax_mon = max(yp_mon[msk_mon])
+                            xmax_mon = xp_mon[np.where(yp_mon == Zmax_mon)][0]
 
                             Zmax_mon_list[i].append(Zmax_mon)
+                            xmax_mon_list[i].append(xmax_mon)
                         elif len(yp_mon) != 0:
-                            Zmax_mon_list[i].append(0)
+                            Zmax_mon_list[i].append(0.0)
+                            xmax_mon_list[i].append(0.0)
                         else:
                             continue
 
@@ -589,10 +606,13 @@ class ABCIDataExtraction:
 
                         if len(yp_dip[msk_dip]) != 0:
                             Zmax_dip = max(yp_dip[msk_dip])
+                            xmax_dip = xp_dip[np.where(yp_dip == Zmax_dip)][0]
 
                             Zmax_dip_list[i].append(Zmax_dip)
+                            xmax_dip_list[i].append(xmax_dip)
                         elif len(yp_dip) != 0:
-                            Zmax_dip_list[i].append(0)
+                            Zmax_dip_list[i].append(0.0)
+                            xmax_dip_list[i].append(0.0)
                         else:
                             continue
 
@@ -647,9 +667,11 @@ class ABCIDataExtraction:
                     # add impedance lists
                     for i, msk in enumerate(mon_interval):
                         data[f'Z_long[max({msk[0]}<f<{msk[1]})]'] = Zmax_mon_list[i]
+                        data[f'fmax[max({msk[0]}<f<{msk[1]})]'] = xmax_mon_list[i]
 
                     for i, msk in enumerate(dip_interval):
                         data[f'Z_trans[max({msk[0]}<f<{msk[1]})]'] = Zmax_dip_list[i]
+                        data[f'fmax[max({msk[0]}<f<{msk[1]})]'] = xmax_dip_list[i]
 
                     df = pd.DataFrame.from_dict(data)
                     df.to_excel(f'{save_excel}.xlsx', index=False)

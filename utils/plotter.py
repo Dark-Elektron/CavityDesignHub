@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 class Plotter:
     def __init__(self):
         self.color = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
+
     def formatAxis(self, ax, color, position, offset=None):
         if offset is None:
             offset = {'right': 0}
@@ -93,4 +94,4 @@ class Plotter:
 
 if __name__ == '__main__':
     plotter = Plotter()
-    plotter.plot('Midcell Data', 'Ri', 'ZTM011', 'ZTM012', 'ZD1', 'ZD2')
+    plotter.plot('Midcell node_editor', 'Ri', 'ZTM011', 'ZTM012', 'ZD1', 'ZD2')

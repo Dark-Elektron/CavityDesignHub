@@ -27,7 +27,7 @@ class EditATextDialog:
         if self.annotate_object:
             self.eatUI.le_Text.setText(self.annotate_object.get_text())
             # self.eatUI.cb_Box.setCurrentText(self.annotate_object.get_bbox_patch())
-            self.eatUI.sb_Font_Size.setValue(self.annotate_object.get_fontsize())
+            self.eatUI.sb_Font_Size.setValue(int(self.annotate_object.get_fontsize()))
 
     def signals(self):
         self.eatUI.pb_Apply.clicked.connect(lambda: self.apply())
@@ -40,13 +40,14 @@ class EditATextDialog:
         txt = self.eatUI.le_Text.text()
         box = self.eatUI.cb_Box.currentText()
         font_size = self.eatUI.sb_Font_Size.value()
+        rotation = self.eatUI.sb_Rotation.value()
 
         if self.annotate_object is None:
             # create new text
             if txt == "":
                 pass
             else:
-                self.parent.add_text(txt, box, font_size)
+                self.parent.add_text(text=txt, box=box, size=font_size, rotation=rotation)
                 self.parent.draw()
                 self.close()
         else:
@@ -55,6 +56,7 @@ class EditATextDialog:
             else:
                 self.annotate_object.set_text(txt)
                 self.annotate_object.set_size(font_size)
+                self.annotate_object.set_rotation(rotation)
 
                 if box != "None":
                     bbox_props = dict(boxstyle='{}'.format(box), fc='w', ec='k')

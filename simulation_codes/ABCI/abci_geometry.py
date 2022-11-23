@@ -1,8 +1,6 @@
+import json
 import os
 import subprocess
-
-from PyQt5.QtWidgets import QMessageBox
-
 from simulation_codes.ABCI.geometry import Geometry
 from simulation_codes.ABCI.abci_code import ABCI
 
@@ -11,14 +9,16 @@ class ABCIGeometry(Geometry):
     def __init__(self):
         super().__init__()
 
-        # create Data folder on initialisation
+        # create node_editor folder on initialisation
+        self.abci = None
         path = os.getcwd()
-        path = os.path.join(path, "Data")
+        path = os.path.join(path, "node_editor")
         if os.path.exists(path):
             pass
         else:
             os.mkdir(path)
 
+        self.fid = 0
         # initiate codes
 
     def cavity(self, no_of_cells, no_of_modules,
@@ -26,11 +26,7 @@ class ABCIGeometry(Geometry):
                fid="_0", MROT=0, beampipes=None,
                bunch_length=50, MT=3, NFS=5000, UBT=0,
                DDZ_SIG=0.1, DDR_SIG=0.1,
-               parentDir='', projectDir='', WG_M=None, marker=''):
-        print(WG_M)
-        if WG_M is None:
-            WG_M = self.WG_L
-        print(WG_M)
+               parentDir='', projectDir='', WG_M=None, marker='', sub_dir=''):
         # Adding parameter arguments here for testing purposes # fid, fileID
         self.fid = f'{fid}'.upper()
 
@@ -40,25 +36,31 @@ class ABCIGeometry(Geometry):
         else:
             self.set_geom_parameters(no_of_cells)
 
+        if WG_M == '':
+            WG_M = self.WG_L
+        # print(WG_M)
+
         self.abci = ABCI(self.left_beam_pipe, self.left_end_cell, self.mid_cell, self.right_end_cell,
                          self.right_beam_pipe)
 
-        output_name = 5
-        SIG = 0.003  # One standard deviation of bunch length
-        MROT = MROT # MROT = 0 for monopole fields, MROT = 1 for dipole fields
-        # UBT = 0.3  # The last longitudinal coordinate relative to the head of the beam, up to which the potentials are calculated (defaults 10*Sig). The longer the better resolution of impedance
+        # output_name = 5
+        # SIG = 0.003  # One standard deviation of bunch length
+        MROT = MROT  # MROT = 0 for monopole fields, MROT = 1 for dipole fields
+        # UBT = 0.3  # The last longitudinal coordinate relative to the head of the beam,
+        # up to which the potentials are calculated (defaults 10*Sig). The longer the better resolution of impedance
         bunch_length = bunch_length
-        sig_var = [x*1e-3 for x in [bunch_length]] # bunch length converted to m
+        sig_var = [x*1e-3 for x in [bunch_length]]  # bunch length converted to m
 
         # not needed for our parametrization
-        end_type = 1 # if _type = 1 the  HALF cell is changed for tuning. If _type = 2 the WHOLE  cell is changed for tuning
-        end_L = 1 # if _L = 1 the type of  cell is type a (without iris) if _L = 2 the type of  cell is type b
+        end_type = 1  # if _type = 1 the  HALF cell is changed for tuning.
+        # If _type = 2 the WHOLE  cell is changed for tuning
+        end_L = 1  # if _L = 1 the type of  cell is type a (without iris) if _L = 2 the type of  cell is type b
         end_R = 1
 
-        for i_out in range(1): # check!!!
-            module_nu = no_of_modules # Number of cavities in module
-            n = no_of_cells # Number of cells
-            SIG = sig_var[i_out] # One standard deviation of bunch length
+        for i_out in range(1):  # check!!!
+            module_nu = no_of_modules  # Number of cavities in module
+            n = no_of_cells  # Number of cells
+            SIG = sig_var[i_out]  # One standard deviation of bunch length
             mesh_DDR = DDR_SIG*SIG
             mesh_DDZ = DDZ_SIG*SIG
 
@@ -76,15 +78,15 @@ class ABCIGeometry(Geometry):
                 self.Rbp_R = self.ri_R
 
             # #  Ellipse conjugate points x,y
-            zr12_L, alpha_L = self.abci.rz_conjug('left') # zr12_R first column is z , second column is r
-            zr12_R, alpha_R = self.abci.rz_conjug('right') # zr12_R first column is z , second column is r
-            zr12_M, alpha_M = self.abci.rz_conjug('mid') # zr12_R first column is z , second column is r
+            zr12_L, alpha_L = self.abci.rz_conjug('left')  # zr12_R first column is z , second column is r
+            zr12_R, alpha_R = self.abci.rz_conjug('right')  # zr12_R first column is z , second column is r
+            zr12_M, alpha_M = self.abci.rz_conjug('mid')  # zr12_R first column is z , second column is r
 
             if end_L == 2:
-                zr12_BPL, alpha_BPL = self.abci.rz_conjug('left') # zr12_R first column is z , second column is r
+                zr12_BPL, alpha_BPL = self.abci.rz_conjug('left')  # zr12_R first column is z , second column is r
 
             if end_R == 2:
-                zr12_BPR, alpha_BPR = self.abci.rz_conjug('right') # zr12_R first column is z , second column is r
+                zr12_BPR, alpha_BPR = self.abci.rz_conjug('right')  # zr12_R first column is z , second column is r
 
             # print("GUI_ABCI:: zr12_L", zr12_L)
             # print("GUI_ABCI:: zr12_R", zr12_R)
@@ -94,7 +96,7 @@ class ABCIGeometry(Geometry):
             # #  Write ABCI code
 
             # create folder for file output set
-            check = self.createFolder(self.fid, projectDir, marker)
+            self.createFolder(self.fid, projectDir, sub_dir, marker)
 
             # # write parameters to folder
             # if self.ui.cb_Only_Mid_Cells.checkState() == 2:
@@ -102,10 +104,16 @@ class ABCIGeometry(Geometry):
             # else:
             #     self.write_cst_paramters(self.fid)
 
-            fname = (f'{projectDir}\SimulationData\ABCI\Cavity{self.fid}_{marker}\Cavity_MROT_{MROT}.abc')
-            print('filename:: ', fname)
+            # change save directory
+            if sub_dir == '':
+                run_save_directory = fr'{projectDir}\SimulationData\ABCI\Cavity{fid}'
+            else:
+                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{sub_dir}\Cavity{fid}'
 
-            self.L_all_increment = 0
+            fname = fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'
+            # print('filename:: ', fname)
+
+            L_all_increment = 0
             self.L_all = 0
             # print(fname)
             with open(fname, 'w') as f:
@@ -155,20 +163,22 @@ class ABCIGeometry(Geometry):
 
                         if self.WG_R > 0:
                             if end_R == 2:
-                                f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R+(i_mode-1)*self.L_all))
+                                f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R + self.L_L
+                                                          + self.L_R+(i_mode-1)*self.L_all))
                             else:
-                                f.write('{} {} \n'.format(self.ri_R, self.WG_L+self.WG_R+ self.L_L + self.L_R + (i_mode-1)*self.L_all))
+                                f.write('{} {} \n'.format(self.ri_R, self.WG_L+self.WG_R + self.L_L
+                                                          + self.L_R + (i_mode-1)*self.L_all))
 
                     f.write('0 {} \n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R + (module_nu-1)*self.L_all))
                     f.write('0 0 \n')
                     f.write('9999. 9999. \n')
 
-                # #  n>1 multicell cavity
+                # #  n>1 multi-cell cavity
 
                 if n > 1:
                     for i_mode in range(1, module_nu+1):
 
-                        print("imode:", i_mode, i_mode)
+                        # print("imode:", i_mode, i_mode)
                         # change waveguide length
                         if module_nu == 2:
                             if i_mode == 1:
@@ -184,14 +194,15 @@ class ABCIGeometry(Geometry):
                                 self.WG_L = WG_M
                             else:
                                 self.WG_R = 4*self.L_M
-
-                        self.L_all_increment = self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M  # Total length of each cavity
-                        print(self.WG_L, self.WG_R, WG_M, self.L_all)
+                        # Total length of each cavity
+                        L_all_increment = self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M
+                        # print(self.WG_L, self.WG_R, WG_M, self.L_all)
 
                         if i_mode > 1:
                             if self.WG_L > 0:
                                 if end_L == 2:
-                                    # f.write('{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L + (i_mode-1)*self.L_all))
+                                    # f.write('{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L
+                                    # + (i_mode-1)*self.L_all))
                                     f.write('{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L + self.L_all))
                                 else:
                                     # f.write('{} {} \n'.format(self.ri_L, self.WG_L + (i_mode-1)*self.L_all))
@@ -217,17 +228,22 @@ class ABCIGeometry(Geometry):
 
                         if self.WG_R > 0:
                             if end_R == 2:
-                                # f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R + 2*(n-1)*self.L_M+(i_mode-1)*self.L_all))
-                                f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R + 2*(n-1)*self.L_M+self.L_all))
+                                # f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R
+                                # + 2*(n-1)*self.L_M+(i_mode-1)*self.L_all))
+                                f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R + self.L_L
+                                                          + self.L_R + 2*(n-1)*self.L_M+self.L_all))
                             else:
-                                # f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L+ self.L_R+2*(n-1)*self.L_M + (i_mode-1)*self.L_all))
-                                f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L+ self.L_R+2*(n-1)*self.L_M + self.L_all))
+                                # f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L
+                                # + self.L_R+2*(n-1)*self.L_M + (i_mode-1)*self.L_all))
+                                f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L
+                                                          + self.L_R+2*(n-1)*self.L_M + self.L_all))
 
                         if i_mode < no_of_modules:
-                            self.L_all += self.L_all_increment
+                            self.L_all += L_all_increment
 
-                    # f.write('0 {} \n'.format(self.WG_L + self.WG_R+ self.L_L + self.L_R+2*(n-1)*self.L_M+(module_nu-1)*self.L_all))
-                    f.write('0 {} \n'.format(self.WG_L + self.WG_R+ self.L_L + self.L_R+2*(n-1)*self.L_M+self.L_all))
+                    # f.write('0 {} \n'.format(self.WG_L + self.WG_R+ self.L_L
+                    # + self.L_R+2*(n-1)*self.L_M+(module_nu-1)*self.L_all))
+                    f.write('0 {} \n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R+2*(n-1)*self.L_M+self.L_all))
                     f.write('0 0 \n')
                     f.write('9999. 9999. \n')
 
@@ -235,25 +251,53 @@ class ABCIGeometry(Geometry):
                 f.write(' &TIME  MT = {} &END \n'.format(MT))
                 f.write(' &WAKE  UBT = {} &END \n'.format(UBT))
                 f.write(' &WAKE   &END \n')
-                f.write(' &PLOT  LCAVIN = .T., LCAVUS = .T., LPLW = .T., LFFT = .T., LSPEC = .T., LINTZ = .F., LPATH = .T., NFS = {} &END \n'.format(NFS))
+                f.write(' &PLOT  LCAVIN = .T., LCAVUS = .T., LPLW = .T., LFFT = .T., LSPEC = .T., '
+                        'LINTZ = .F., LPATH = .T., NFS = {} &END \n'.format(NFS))
                 f.write(' &PRIN  LPRW = .T. ,LSVW = .T., LSVWL = .T.,  LSVF = .T.   &END\n')
                 f.write('\nSTOP\n')
 
             abci_path = os.getcwd()
 
             # print(abci_path)
-            exe_path = os.path.join(abci_path, f'{parentDir}\em_codes\ABCI_exe\ABCI_MP64+.exe')
+            exe_path = os.path.join(abci_path, fr'{parentDir}\em_codes\ABCI_exe\ABCI_MP64+.exe')
             # print(exe_path)
-            subprocess.call([exe_path, f'{projectDir}\SimulationData\ABCI\Cavity{self.fid}_{marker}\Cavity_MROT_{MROT}.abc'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.call([exe_path, fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'],
+                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-    def createFolder(self, fid, projectDir, marker):
-        path = os.getcwd()
+            # save json file
+            shape = {'IC': mid_cells_par,
+                     'OC': l_end_cell_par,
+                     'OC_R': r_end_cell_par}
 
-        path = os.path.join(path, f"{projectDir}\SimulationData\ABCI\Cavity{fid}_{marker}")
-        if os.path.exists(path):
-            pass
+            with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
+                json.dump(shape, f, indent=4, separators=(',', ': '))
+
+    @staticmethod
+    def createFolder(fid, projectDir, subdir='', marker=''):
+        # path = os.path.join(path, f"{projectDir}\SimulationData\ABCI\Cavity{fid}{marker}")
+        # if os.path.exists(path):
+        #     pass
+        # else:
+        #     os.mkdir(path)
+
+        # change save directory
+        if subdir == '':
+            path = fr'{projectDir}\SimulationData\ABCI\Cavity{fid}{marker}'
+            if os.path.exists(path):
+                pass
+            else:
+                os.mkdir(path)
         else:
-            os.mkdir(path)
+            new_path = fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}\Cavity{fid}'
+            if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}'):
+                if os.path.exists(new_path):
+                    pass
+                else:
+                    os.mkdir(new_path)
+            else:
+                os.mkdir(fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}')
+                os.mkdir(new_path)
 
-    def button_clicked(self, i):
+    @staticmethod
+    def button_clicked(i):
         return i.text()

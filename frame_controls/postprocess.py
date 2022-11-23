@@ -1,13 +1,14 @@
 import ast
 import json
 import math
-import os
-import re
 
+# import mayavi
 import oapackage
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
+from icecream import ic
+from scipy.interpolate import LinearNDInterpolator, griddata
 from termcolor import colored
 import scipy.signal as sps
 import numpy as np
@@ -20,19 +21,27 @@ from utils.file_reader import FileReader
 from modules.plot_module.plotter import Plot
 from frame_controls.postprocess_widgets.pandas_widget import PandasTV
 from frame_controls.postprocess_widgets.ppplot import PPPlot
+from utils.write_geometry import writeCavity
+import matplotlib as mpl
+from utils.shared_classes import *
+from utils.shared_functions import *
+# from mayavi import mlab
 
 fr = FileReader()
 # abci_data = ABCIData()
 abci_data_ex = ABCIDataExtraction()
 slans_data_ex = SLANSDataExtraction()
 
-
-# All_outputs_filtered=(find(All_outputs(:,14)<0.05&All_outputs(:,16)<0.3&All_outputs(:,17)<0.3&All_outputs(:,18)<2.2&All_outputs(:,19)<1&All_outputs(:,20)<3.5&All_outputs(:,29)<2.4&All_outputs(:,30)<6.5 ));%for Ri 150 mm
+# All_outputs_filtered=(find(All_outputs(:,14)<0.05&All_outputs(:,16)<0.3&All_outputs(:,17)<0.3&All_outputs(:,
+# 18)<2.2&All_outputs(:,19)<1&All_outputs(:,20)<3.5&All_outputs(:,29)<2.4&All_outputs(:,30)<6.5 ));%for Ri 150 mm
 #
-# All_outputs_filtered=(find(All_outputs(:,14)<0.1&All_outputs(:,17)<0.5&All_outputs(:,19)<2&All_outputs(:,20)<1&All_outputs(:,29)<2.4&All_outputs(:,30)<6.7 ));%for Ri 160 mm
+# All_outputs_filtered=(find(All_outputs(:,14)<0.1&All_outputs(:,17)<0.5&All_outputs(:,19)<2&All_outputs(:,
+# 20)<1&All_outputs(:,29)<2.4&All_outputs(:,30)<6.7 ));%for Ri 160 mm
 
 file_color = 'red'
 DEBUG = True
+
+
 def print_(*arg):
     if DEBUG: print(colored(f'\t{arg}', file_color))
 
@@ -51,18 +60,43 @@ class PostprocessControl:
         self.main_ui = parent.ui
 
         # initialise pandas object
-        self.pandas_object = PandasTV(self)
-        self.pandasUI = self.pandas_object.pandasUI
+        self.pandas_object_dict = {}
 
         # initialise ppplot object
         self.ppplot = PPPlot(self)
         self.pppUI = self.ppplot.pppUI
+
+        self.ppplot_statistics = PPPlot(self)
+        self.pppUI_Stat = self.ppplot_statistics.pppUI
 
         self.w_dict = {'Dataset': [self.ppUI.pb_CEM, self.ppUI.w_Dataset_From_Simulation],
                        'Combine': [self.ppUI.pb_CST, self.ppUI.w_Combine_Dataset]}
 
         # combine dictionaries list
         self.combine_dict_dict = {}
+
+        # handle dict
+        self.OF_slider_dict = {}
+        self.datasets = {}
+        self.pandas_model_dict = {}
+        self.sub_window_dict = {}
+        self.x_dict = {}
+        self.x_inv_dict = {}
+        self.x_global_dict = {}
+        self.y_dict = {}
+        self.y_inv_dict = {}
+        self.y_global_dict = {}
+        self.z_dict = {}
+        self.z_inv_dict = {}
+        self.z_global_dict = {}
+        self.filtered_df_dict = {}
+        self.filtered_df_inverse_dict = {}
+        self.annot_dict = {}
+
+        # plot objects
+        self.scatter_plot_object = {}
+        self.scatter_plot_object_inv = {}
+        self.arrow_patch_list = []
 
         self.constants()
         self.signals()
@@ -73,61 +107,67 @@ class PostprocessControl:
         self.MDI_DATAFRAME_COUNT = 0
 
     def signals(self):
-
+        self.ppUI.pb_Clear.clicked.connect(self.clear_plots)
         # widget display signals
         self.ppUI.pb_CEM.clicked.connect(lambda: self.toggle_page('CEM'))
         self.ppUI.pb_CST.clicked.connect(lambda: self.toggle_page('CST'))
 
         # load dir
         self.ppUI.pb_Load_Doc1.clicked.connect(lambda: self.load_dir(self.ppUI.le_Dir1.text(),
-                                                                              self.ppUI.lw_Doc1,
-                                                                              self.ppUI.lw_Selected_Columns_Doc1,
-                                                                              self.column_list_1, 0))
+                                                                     self.ppUI.lw_Doc1,
+                                                                     self.ppUI.lw_Selected_Columns_Doc1,
+                                                                     self.column_list_1, 0))
         self.ppUI.pb_Load_Doc2.clicked.connect(lambda: self.load_dir(self.ppUI.le_Dir2.text(),
-                                                                              self.ppUI.lw_Doc2,
-                                                                              self.ppUI.lw_Selected_Columns_Doc2,
-                                                                              self.column_list_2, 1))
+                                                                     self.ppUI.lw_Doc2,
+                                                                     self.ppUI.lw_Selected_Columns_Doc2,
+                                                                     self.column_list_2, 1))
 
         # add items to combine
-        self.column_list_1 = [] # list to hold added columns
-        self.column_list_2 = [] # list to hold added columns
-        self.ppUI.pb_Add_Doc1.clicked.connect(lambda: self.add_to_list_widget(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Add_Doc2.clicked.connect(lambda: self.add_to_list_widget(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.column_list_1 = []  # list to hold added columns
+        self.column_list_2 = []  # list to hold added columns
+        self.ppUI.pb_Add_Doc1.clicked.connect(
+            lambda: self.add_to_list_widget(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ppUI.pb_Add_Doc2.clicked.connect(
+            lambda: self.add_to_list_widget(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
         # add all
-        self.ppUI.pb_Add_All_Doc1.clicked.connect(lambda: self.add_all(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Add_All_Doc2.clicked.connect(lambda: self.add_all(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.ppUI.pb_Add_All_Doc1.clicked.connect(
+            lambda: self.add_all(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ppUI.pb_Add_All_Doc2.clicked.connect(
+            lambda: self.add_all(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
 
         # combine from folder parallel run
-        self.ppUI.pb_Combine_Parallel.clicked.connect(lambda: self.combine_files_parallel_run(self.ppUI.sb_Proc_Count.value(),
-                                                               self.ppUI.le_Folder.text(), self.ppUI.le_Filename_Parallel.text()))
+        self.ppUI.pb_Combine_Parallel.clicked.connect(
+            lambda: self.combine_files_parallel_run(self.ppUI.sb_Proc_Count.value(),
+                                                    self.ppUI.le_Folder.text(), self.ppUI.le_Filename_Parallel.text()))
 
         # remove items
-        self.ppUI.pb_Remove_Doc1.clicked.connect(lambda: self.remove_from_list_widget(self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Remove_Doc2.clicked.connect(lambda: self.remove_from_list_widget(self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.ppUI.pb_Remove_Doc1.clicked.connect(
+            lambda: self.remove_from_list_widget(self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ppUI.pb_Remove_Doc2.clicked.connect(
+            lambda: self.remove_from_list_widget(self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
         # remove all
-        self.ppUI.pb_Remove_All_Doc1.clicked.connect(lambda: self.remove_all(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Remove_All_Doc2.clicked.connect(lambda: self.remove_all(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.ppUI.pb_Remove_All_Doc1.clicked.connect(
+            lambda: self.remove_all(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ppUI.pb_Remove_All_Doc2.clicked.connect(
+            lambda: self.remove_all(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
 
         # combine files
         self.ppUI.pb_Combine.clicked.connect(lambda: self.combine_files(self.ppUI.le_Filename.text()))
 
         # load excel file
         self.ppUI.pb_Select_File.clicked.connect(lambda: self.load_file())
+        self.ppUI.pb_Select_File.clicked.connect(lambda: self.add_new_dataset())
 
         # objective function/pareto
-        self.ppUI.pb_Plot_Objective.clicked.connect(lambda: self.plot_objective_function())
-        self.ppUI.cb_Pareto.stateChanged.connect(lambda: self.plot_pareto())
+        self.ppUI.pb_Plot_Objective.clicked.connect(lambda: self.plot_objective_function_3D() if self.ppUI.sc_Toggle_3D.isChecked() else
+                                                    self.plot_objective_function())
+
+        self.ppUI.cb_Pareto.stateChanged.connect(lambda: self.plot_pareto_3D() if self.ppUI.sc_Toggle_3D.isChecked() else
+                                                    self.plot_pareto())
 
         # mdi signals
         self.ppUI.pb_MDI_Tiled.clicked.connect(lambda: self.ppUI.mdiArea.tileSubWindows())
         self.ppUI.pb_MDI_Cascade.clicked.connect(lambda: self.ppUI.mdiArea.cascadeSubWindows())
-
-        # collapse analysis/right menu
-        self.ppUI.pb_Collapse_Analysis_Menu.clicked.connect(lambda: self.main_control.animate_width(self.ppUI.w_Analysis_Menu, 0, 375, True))
-
-        # analysis menu signals
-        self.ppUI.pb_Objective_Function.clicked.connect(lambda: self.ppUI.sw_Analysis_Menu.setCurrentIndex(0))
-        self.ppUI.pb_Filter.clicked.connect(lambda: self.ppUI.sw_Analysis_Menu.setCurrentIndex(1))
 
         # add/remove filter
         self.ppUI.pb_Add_DFFilter.clicked.connect(lambda: self.add_filter())
@@ -135,12 +175,14 @@ class PostprocessControl:
 
         # enable/disable filter
         self.ppUI.cb_Filter_Toggle_0.clicked.connect(lambda: self.apply_filter())
+        self.ppUI.hs_Alpha.valueChanged.connect(lambda: self.change_alpha(self.ppUI.hs_Alpha.value() / 100))
 
         # enable interactive
         self.ppUI.cb_Interactive.clicked.connect(lambda: self.toggle_interactive())
 
         # load shape space
-        self.ppUI.pb_Select_Shape_Space.clicked.connect(lambda: self.open_file(self.ppUI.le_Shape_Space, self.cb_Shape_Space_Keys))
+        self.ppUI.pb_Select_Shape_Space.clicked.connect(
+            lambda: self.open_file(self.ppUI.le_Shape_Space, self.cb_Shape_Space_Keys))
 
         # select folder
         self.ppUI.pb_Select_Folder.clicked.connect(lambda: self.open_folder(self.ppUI.le_SimulationData_Folder))
@@ -154,29 +196,48 @@ class PostprocessControl:
         # sequential vs parallel
         self.ppUI.cb_Run_Mode.currentTextChanged.connect(lambda: self.run_mode_control())
 
+        #
+        self.f1_dict = {}
+        self.f2_dict = {}
+        self.f3_dict = {}
+        self.ppUI.ccb_Objective_Function_F1.currentTextChanged.connect(lambda: self.populate_objective_function(
+            self.ppUI.ccb_Objective_Function_F1.currentText().split(', '), self.ppUI.ccb_Objective_Function_F1,
+            self.ppUI.tw_Objective_Function_F1, self.f1_dict))
+
+        self.ppUI.ccb_Objective_Function_F2.currentTextChanged.connect(lambda: self.populate_objective_function(
+            self.ppUI.ccb_Objective_Function_F2.currentText().split(', '), self.ppUI.ccb_Objective_Function_F2,
+            self.ppUI.tw_Objective_Function_F2, self.f2_dict))
+
+        self.ppUI.ccb_Objective_Function_F3.currentTextChanged.connect(lambda: self.populate_objective_function(
+            self.ppUI.ccb_Objective_Function_F3.currentText().split(', '), self.ppUI.ccb_Objective_Function_F3,
+            self.ppUI.tw_Objective_Function_F3, self.f3_dict))
+
     def initUI(self):
         # hide code
         self.ppUI.w_SLANS.hide()
+
+        self.ppUI.w_Toggle_F3.hide()
 
         # diable combine button
         self.ppUI.pb_Combine.setEnabled(False)
 
         # initial table dataframe
-        self.df = None
-        self.filtered_df = None
+        # self.df = None
+        # self.filtered_df = None
 
         # dataframe filters dict
-        self.df_filter_dict = {0: [self.ppUI.w_Filter_0, self.ppUI.le_LB_0, self.ppUI.le_RB_0, self.ppUI.cb_DFFilter_0, self.ppUI.cb_Filter_Toggle_0, self.ppUI.pb_Remove_Filter]}
+        self.df_filter_dict = {
+            0: [self.ppUI.w_Filter_0, self.ppUI.le_LB_0, self.ppUI.le_RB_0, self.ppUI.cb_DFFilter_0,
+                self.ppUI.cb_Filter_Toggle_0, self.ppUI.pb_Remove_Filter]}
         self.filter_count = 1
 
         # plot variables
-        self.x = []
-        self.y = []
-        self.x_pareto = []
-        self.y_pareto = []
+        # self.x = []
+        # self.y = []
+        self.scatter_pareto_object = {}
 
         # add checkable combobox
-        self.cb_Shape_Space_Keys = CheckableComboBox()
+        self.cb_Shape_Space_Keys = QCheckableComboBox()
         self.cb_Shape_Space_Keys.setMinimumWidth(75)
         self.ppUI.gl_Selected_Shapes.addWidget(self.cb_Shape_Space_Keys)
 
@@ -192,6 +253,9 @@ class PostprocessControl:
         # self.cid_click = self.ppplot.fig.canvas.mpl_connect('button_press_event', self.onclick)
         self.cid_pick = self.ppplot.fig.canvas.mpl_connect('pick_event', self.onpick)
         self.ppplot.fig.canvas.mpl_connect("motion_notify_event", self.hover)
+
+        self.ppUI.w_Constraints.setVisible(self.ppUI.pb_Constraints.isChecked())
+        self.ppUI.w_Save_Sub_Data.setVisible(self.ppUI.pb_Save_Sub_Data.isChecked())
 
     def run_mode_control(self):
         if self.ppUI.cb_Run_Mode.currentText() == "Sequential":
@@ -434,9 +498,9 @@ class PostprocessControl:
                 get_Zmax(mon_mask, dip_mask)
                 problem_keys_sorted = sorted(problem_keys,
                                              reverse=True)  # this is so as to start deleting from the largest key. If this is not done, the index is messed up
-                print(problem_keys_sorted)
+                # print(problem_keys_sorted)
                 delete_problem_keys(problem_keys_sorted)
-                print(len(Zmax_mon_list), len(Zmax_dip_list), len(A))
+                # print(len(Zmax_mon_list), len(Zmax_dip_list), len(A))
                 # save excel
                 if save_excel:
                     data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req,
@@ -448,12 +512,12 @@ class PostprocessControl:
 
             if request == 'all':
                 all()
-                print(len(k_loss_array_longitudinal), len(k_loss_array_transverse), len(df_M0D1_array), len(A))
+                # print(len(k_loss_array_longitudinal), len(k_loss_array_transverse), len(df_M0D1_array), len(A))
                 problem_keys_sorted = sorted(problem_keys,
                                              reverse=True)  # this is so as to start deleting from the largest key. If this is not done, the index is messed up
-                print(problem_keys_sorted)
+                # print(problem_keys_sorted)
                 delete_problem_keys(problem_keys_sorted)
-                print(len(k_loss_array_longitudinal), len(k_loss_array_transverse), len(df_M0D1_array), len(A))
+                # print(len(k_loss_array_longitudinal), len(k_loss_array_transverse), len(df_M0D1_array), len(A))
 
                 # save excel
                 if save_excel:
@@ -467,12 +531,19 @@ class PostprocessControl:
             print(f"Hey Chief, seems you've already processed the {save_excel} data for this folder. "
                   "Delete the file to reprocess or rename save_excel argument")
 
+    def process_SLANS_data(self, slans_data_dir, mode, bc, request, save_excel, parallel=False):
+        reply = "Yes"
+        if os.path.exists(f"{slans_data_dir}\geometric_parameters.json"):
+            with open(f"{slans_data_dir}\geometric_parameters.json", 'r') as f:
+                d = json.load(f)
+
     def combine_files(self, save_excel):
         if len(list(self.combine_dict_dict.keys())) == 2:
             f1 = self.combine_dict_dict[0]
             f2 = self.combine_dict_dict[1]
 
-            f3 = f1[self.column_list_1].merge(f2[self.column_list_2], on=self.ppUI.cb_On.currentText(), how=self.ppUI.cb_How.currentText())
+            f3 = f1[self.column_list_1].merge(f2[self.column_list_2], on=self.ppUI.cb_On.currentText(),
+                                              how=self.ppUI.cb_How.currentText())
             if save_excel.split('.')[-1] != 'xlsx':
                 save_excel = f'{save_excel}.xlsx'
 
@@ -582,7 +653,6 @@ class PostprocessControl:
             self.ppUI.pb_Combine.setEnabled(False)
 
     def show_hide_(self, wid1, wid2):
-        print('here')
         if wid1.currentText().lower() == 'parallel':
             wid2.show()
         else:
@@ -605,115 +675,717 @@ class PostprocessControl:
     def load_file(self):
         filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Excel Files (*.xlsx)")
         self.ppUI.le_Pandas_Filename.setText(filename)
+
+        self.dataset_filename = filename
         try:
-            self.df = pd.read_excel(filename)
-            self.pandas_model = PandasModel(self.df)
-            self.pandasUI.tv_Pandas.setModel(self.pandas_model)
+            if filename not in list(self.datasets.keys()):
+                print("loading dict")
+                df = pd.read_excel(filename)
+                self.datasets[filename] = df
+                pandas_model = PandasModel(df)
+                self.pandas_model_dict[filename] = pandas_model
 
-            if self.MDI_DATAFRAME_COUNT == 0:
-                # show in mdi area
-                sub = QMdiSubWindow()
-                sub.setWidget(self.pandas_object.w_Pandas)
-                sub.setWindowTitle('Dataframe')
-                self.ppUI.mdiArea.addSubWindow(sub)
-                sub.show()
-                self.MDI_DATAFRAME_COUNT += 1
+                # initialise pandas object
+                pandas_object = PandasTV(self)
+                pandasUI = pandas_object.pandasUI
 
-            # populate first filter
-            for val in self.df_filter_dict.values():
-                self.populate_filter(val[3], self.df)
+                pandasUI.tv_Pandas.setModel(pandas_model)
+
+                if self.MDI_DATAFRAME_COUNT == 0:
+                    self.pandas_object_dict[filename] = pandas_object
+
+                    # show in mdi area
+                    sub = QMdiSubWindow()
+                    sub.setWidget(pandas_object.w_Pandas)
+                    sub.setWindowTitle(f'Dataframe: {filename}')
+                    self.ppUI.mdiArea.addSubWindow(sub)
+                    sub.show()
+                    self.sub_window_dict[filename] = sub
+                    # self.MDI_DATAFRAME_COUNT += 1
+
+                # populate first objective functions combo bozed and filter
+                for val in self.df_filter_dict.values():
+                    self.populate_filter(self.ppUI.ccb_Objective_Function_F1, df)
+                    self.populate_filter(self.ppUI.ccb_Objective_Function_F2, df)
+                    self.populate_filter(self.ppUI.ccb_Objective_Function_F3, df)
+                    self.populate_filter(val[3], df)
+
+                # print("datasets: ", self.datasets)
 
         except:
             print('Please select file.')
 
-    def process_objective_function_input(self, exp, norm):
-        if self.df is not None:
+    def add_new_dataset(self):
+        # create widget
+        w = QWidget()
+        gl = QGridLayout()
+        w.setLayout(gl)
+
+        # create buttons
+        le = QLineEdit(self.dataset_filename)
+        le.setMaximumWidth(150)
+        gl.addWidget(le, 0, 0, 1, 1)
+        cb = QCheckBox()
+        cb.clicked.connect(lambda: print("checkbox clicked"))
+        gl.addWidget(cb, 0, 1, 1, 1)
+        pb = QPushButton('')
+        pb.clicked.connect(lambda: print('Cancel clicked'))
+        gl.addWidget(pb, 0, 2, 1, 1)
+
+        self.ppUI.gl_Datasets_Widgets.addWidget(w)
+
+    def process_objective_function_input(self, key, df, exp, norm, weight):
+        if df is not None:
             operands = []
+            operands_global = []
+            operands_inv = []
             for i, e in enumerate(exp):
-                if self.filtered_df is not None:
-                    operands.append(self.filtered_df.iloc[:, e]/norm[i])
+                # compute global pareto front
+                if df is not None:
+                    operands_global.append(df[e] * weight[i] / norm[i])
+
+                # compute local pareto front
+                if len(self.filtered_df_dict.keys()) != 0:
+                    operands.append(self.filtered_df_dict[key][e] * weight[i] / norm[i])
+                    operands_inv.append(self.filtered_df_inverse_dict[key][e] * weight[i] / norm[i])
                 else:
-                    print(self.df.iloc[:, e])
-                    operands.append(self.df.iloc[:, e]/norm[i])
+                    operands.append(df[e] * weight[i] / norm[i])
 
             var = sum(operands)
-            # print(var.tolist())
+            var_inv = sum(operands_inv)
+            var_global = sum(operands_global)
 
-            return var.tolist()
-
-    def plot_objective_function(self):
-        # get operands
-        exp_x = ast.literal_eval(self.ppUI.le_Objective_X.text())
-        exp_y = ast.literal_eval(self.ppUI.le_Objective_Y.text())
-        # get norms
-        x_norm = ast.literal_eval(self.ppUI.le_X_Norm.text())
-        y_norm = ast.literal_eval(self.ppUI.le_Y_Norm.text())
-
-        print(exp_x, x_norm, exp_y, y_norm)
-        print('='*50)
-
-        # check if norm count equal operand count
-        if len(exp_x) == len(x_norm) and len(exp_y) == len(y_norm):
-            self.ppplot.ax.cla()
-            self.x = self.process_objective_function_input(exp_x, x_norm)
-            self.y = self.process_objective_function_input(exp_y, y_norm)
-
-            self.scatter_plot_object = self.ppplot.ax.scatter(self.x, self.y, facecolors='none', edgecolors='b', picker=True)
-
-            # add annotation
-            self.annot = self.ppplot.ax.annotate("", xy=(0,0), xytext=(-20,-10),textcoords="offset points",
-                                bbox=dict(boxstyle="round", fc="w"),
-                                arrowprops=dict(arrowstyle="->"))
-            self.annot.set_visible(True)
-
-            self.ppplot.plt.draw()
-
-            if self.MDI_PLOT_COUNT == 0:
-                # show in mdi area
-                sub = QMdiSubWindow()
-                sub.setWidget(self.ppplot.w_PPPlot)
-                sub.setWindowTitle('Plot')
-                self.ppUI.mdiArea.addSubWindow(sub)
-                sub.show()
-                self.MDI_PLOT_COUNT += 1
+            if isinstance(var_inv, int):
+                return var.tolist(), [], var_global.tolist()
+            else:
+                return var.tolist(), var_inv.tolist(), var_global.tolist()
         else:
-            print("Operand and Norm count are not equal. Please check.")
+            return [], [], []
 
-    def plot_pareto(self):
-        if self.ppUI.cb_Pareto.checkState() == 2:
-            self.x_pareto, self.y_pareto = self.pareto_front(self.x, self.y)
-            self.scatter_pareto_object = self.ppplot.ax.scatter(self.x_pareto, self.y_pareto, c='r', picker=True)
+    def update_F_Value_Dict(self, d, ccb, tw):
+        f = ccb.currentText().split(', ')
+        for i, x in enumerate(f):
+            d[x] = {'norm': tw.cellWidget(i, 1).value(), 'weight': tw.cellWidget(i, 2).value()}
 
-            self.ppplot.plt.draw()
+    def change_alpha(self, alpha):
+        for key in self.datasets.keys():
+            self.scatter_plot_object_inv[key][0].set_alpha(alpha)
+
+        self.ppplot.fig.canvas.draw_idle()
+
+    def plot_objective_function(self, alpha=1.0):
+        # get operands
+        exp_x = self.ppUI.ccb_Objective_Function_F1.currentText().split(', ')
+        exp_y = self.ppUI.ccb_Objective_Function_F2.currentText().split(', ')
+
+        x_norm, y_norm, x_weight, y_weight = [], [], [], []
+        if exp_x != [''] and exp_y != ['']:
+            # get norms
+            for i in range(len(exp_x)):
+                x_norm.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 1).value())
+                x_weight.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 2).value())
+
+            for i in range(len(exp_y)):
+                y_norm.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 1).value())
+                y_weight.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 2).value())
+
+            # check if norm count equal operand count
+            if len(exp_x) == len(x_norm) and len(exp_y) == len(y_norm):
+                # self.ppplot.ax.cla()
+                for key, df in self.datasets.items():
+                    x, x_inv, x_global = self.process_objective_function_input(key, df, exp_x, x_norm, x_weight)
+                    self.x_dict[key], self.x_inv_dict[key], self.x_global_dict[key] = x, x_inv, x_global
+                    y, y_inv, y_global = self.process_objective_function_input(key, df, exp_y, y_norm, y_weight)
+                    self.y_inv_dict[key], self.y_inv_dict[key], self.y_global_dict = y, y_inv, y_global
+
+                    # self.scatter_plot_object_inv = self.ppplot.ax.scatter(self.x_inv, self.y_inv, edgecolors='k', s=150,
+                    #                                                       picker=True, alpha=alpha, label="Cavity Geometry")
+                    # self.scatter_plot_object = self.ppplot.ax.scatter(self.x, self.y, edgecolors='k', s=150,
+                    #                                                   picker=True, label="Cavity Geometry (Filtered)")
+
+                    if key in self.scatter_plot_object_inv.keys():
+                        self.scatter_plot_object_inv[key][0].set_xdata(x_inv)
+                        self.scatter_plot_object_inv[key][0].set_ydata(y_inv)
+                    else:
+                        self.scatter_plot_object_inv[key] = self.ppplot.ax.plot(x_inv, y_inv, linestyle='None', marker='o', markersize=10.0, markeredgecolor="black",
+                                                                          picker=True, alpha=alpha, label=f"{key.split('.')[-1]} Cavity Geometry")
+
+                    if self.scatter_plot_object[key]:
+                        self.scatter_plot_object[key][0].set_xdata(x)
+                        self.scatter_plot_object[key][0].set_ydata(y)
+                    else:
+                        if f"{type(self.ppplot.ax)}" == "<class 'matplotlib.axes._subplots.Axes3DSubplot'>":
+                            self.ppplot.ax.remove()
+                            self.ppplot.ax = self.ppplot.fig.add_subplot()
+
+                        self.scatter_plot_object[key] = self.ppplot.ax.plot(x, y, linestyle='None', marker='o', markersize=10.0, markeredgecolor="black",
+                                                                   picker=True, label=f"{key.split('.')[-1]} Cavity Geometry (Filtered)")
+
+                    # add annotation
+                    self.annot = self.ppplot.ax.annotate("", xy=(0, 0), xytext=(-20, -10), textcoords="offset points",
+                                                         bbox=dict(boxstyle="round", fc="w"),
+                                                         arrowprops=dict(arrowstyle="->"))
+
+                    data = x, y, x_inv, y_inv, x_global, y_global
+                    # plot pareto
+                    self.plot_pareto(key, data)
+
+                # axis decorations
+                self.ppplot.ax.set_xlabel("$F_1$")
+                self.ppplot.ax.set_ylabel("$F_2$")
+
+                self.ppplot.ax.relim()
+                self.ppplot.ax.autoscale()
+                self.leg = self.ppplot.ax.legend()
+                self.ppplot.fig.canvas.draw_idle()
+
+                # show MDI window. Just one for multiple plots. Maybe change later if need arises
+                if self.MDI_PLOT_COUNT == 0:
+                    # show in mdi area
+                    sub = QMdiSubWindow()
+                    sub.setWidget(self.ppplot.w_PPPlot)
+                    sub.setWindowTitle('Plot')
+                    self.ppUI.mdiArea.addSubWindow(sub)
+                    sub.show()
+                    self.MDI_PLOT_COUNT += 1
+            else:
+                print("Operand and Norm count are not equal. Please check.")
         else:
             pass
 
-    def pareto_front(self, x, y, reverse='bottom'):
-        if reverse == 'top':
-            def reverse_list(l):
-                return l
-        else:
-            def reverse_list(l):
-                return [-x for x in l]
+    def plot_objective_function_3D(self, alpha=1.0):
+        # get operands
+        exp_x = self.ppUI.ccb_Objective_Function_F1.currentText().split(', ')
+        exp_y = self.ppUI.ccb_Objective_Function_F2.currentText().split(', ')
+        exp_z = self.ppUI.ccb_Objective_Function_F3.currentText().split(', ')
 
-        datapoints = np.array([reverse_list(x), reverse_list(y)])
-        #     print(datapoints)
+        x_norm, y_norm, x_weight, y_weight, z_norm, z_weight = [], [], [], [], [], []
+        if exp_x != [''] and exp_y != [''] and exp_z != ['']:
+            # get norms
+            for i in range(len(exp_x)):
+                x_norm.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 1).value())
+                x_weight.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 2).value())
+
+            for i in range(len(exp_y)):
+                y_norm.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 1).value())
+                y_weight.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 2).value())
+
+            for i in range(len(exp_z)):
+                z_norm.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 1).value())
+                z_weight.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 2).value())
+
+            # check if norm count equal operand count
+            if len(exp_x) == len(x_norm) and len(exp_y) == len(y_norm) and len(exp_z) == len(z_norm):
+                for key, df in self.datasets.items():
+                    # self.ppplot.ax.cla()
+                    x, x_inv, x_global = self.process_objective_function_input(key, df, exp_x, x_norm, x_weight)
+                    y, y_inv, y_global = self.process_objective_function_input(key, df, exp_y, y_norm, y_weight)
+                    z, z_inv, z_global = self.process_objective_function_input(key, df, exp_z, z_norm, z_weight)
+                    self.x_dict[key], self.x_inv_dict[key], self.x_global_dict[key] = x, x_inv, x_global
+                    self.y_dict[key], self.y_inv_dict[key], self.y_global_dict[key] = y, y_inv, y_global
+                    self.z_dict[key], self.z_inv_dict[key], self.z_global_dict[key] = z, z_inv, z_global
+
+                    # self.scatter_plot_object_inv = self.ppplot.ax.scatter(self.x_inv, self.y_inv, edgecolors='k', s=150,
+                    #                                                       picker=True, alpha=alpha, label="Cavity Geometry")
+                    # self.scatter_plot_object = self.ppplot.ax.scatter(self.x, self.y, edgecolors='k', s=150,
+                    #                                                   picker=True, label="Cavity Geometry (Filtered)")
+                    # print(self.scatter_plot_object_inv)
+
+                    if key in self.scatter_plot_object_inv.keys():
+                        self.scatter_plot_object_inv[key][0].set_xdata(x_inv)
+                        self.scatter_plot_object_inv[key][0].set_ydata(y_inv)
+                        self.scatter_plot_object_inv[key][0].set_zdata(z_inv)
+                    else:
+                        print(type(self.ppplot.ax))
+                        if f"{type(self.ppplot.ax)}" == "<class 'matplotlib.axes._subplots.AxesSubplot'>":
+                            self.ppplot.ax.remove()
+                            self.ppplot.ax = self.ppplot.fig.add_subplot(projection='3d')
+
+                        # if isinstance(self.ppplot.ax, mpl.axes._subplots.Axes3DSubplot):
+
+                        self.scatter_plot_object_inv[key] = self.ppplot.ax.plot(x_inv, y_inv, z_inv, linestyle='None',
+                                                                           marker='o', markersize=4,
+                                                                           markeredgecolor="black",
+                                                                           picker=True, alpha=alpha,
+                                                                           label=f"{key.split('/')[-1]} Cavity Geometry")
+
+                    if key in self.scatter_plot_object.keys():
+                        self.scatter_plot_object[key][0].set_xdata(x)
+                        self.scatter_plot_object[key][0].set_ydata(y)
+                        self.scatter_plot_object[key][0].set_ydata(z)
+                    else:
+                        self.scatter_plot_object[key] = self.ppplot.ax.plot(x, y, z, linestyle='None', marker='o',
+                                                                       markersize=4, markeredgecolor="black",
+                                                                       picker=True, label=f"{key.split('/')[-1]} Cavity Geometry (Filtered)")
+                        print("check key:", key, self.scatter_plot_object)
+
+                    # add annotation
+                    self.annot_dict[key] = self.ppplot.ax.annotate("", xy=(0, 0), xytext=(-20, -10), textcoords="offset points",
+                                                         bbox=dict(boxstyle="round", fc="w"),
+                                                         arrowprops=dict(arrowstyle="->"))
+
+                    data = x, y, z, x_inv, y_inv, z_inv, x_global, y_global, z_global
+                    # plot pareto
+                    self.plot_pareto_3D(key, data)
+
+                # axis decorations
+                self.ppplot.ax.set_xlabel("$F_1$")
+                self.ppplot.ax.set_ylabel("$F_2$")
+                self.ppplot.ax.set_zlabel("$F_3$")
+
+                self.ppplot.ax.relim()
+                self.ppplot.ax.autoscale()
+                self.ppplot.ax.set_xlim([min(x_global), max(x_global)])
+                self.ppplot.ax.set_ylim([min(y_global), max(y_global)])
+                self.ppplot.ax.set_zlim([min(z_global), max(z_global)])
+                self.leg = self.ppplot.ax.legend()
+                self.ppplot.fig.canvas.draw_idle()
+
+                if self.MDI_PLOT_COUNT == 0:
+                    # show in mdi area
+                    sub = QMdiSubWindow()
+                    sub.setWidget(self.ppplot.w_PPPlot)
+                    sub.setWindowTitle('Plot')
+                    self.ppUI.mdiArea.addSubWindow(sub)
+                    sub.show()
+                    self.MDI_PLOT_COUNT += 1
+
+                # self.plot_objective_function_3D_mayavi()
+            else:
+                print("Operand and Norm count are not equal. Please check.")
+        else:
+            pass
+
+    # def plot_objective_function_3D_mayavi(self, alpha=1.0):
+    #     # get operands
+    #     exp_x = self.ppUI.ccb_Objective_Function_F1.currentText().split(', ')
+    #     exp_y = self.ppUI.ccb_Objective_Function_F2.currentText().split(', ')
+    #     exp_z = self.ppUI.ccb_Objective_Function_F3.currentText().split(', ')
+    #
+    #     x_norm, y_norm, x_weight, y_weight, z_norm, z_weight = [], [], [], [], [], []
+    #     if exp_x != [''] and exp_y != [''] and exp_z != ['']:
+    #         # get norms
+    #         for i in range(len(exp_x)):
+    #             x_norm.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 1).value())
+    #             x_weight.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 2).value())
+    #
+    #         for i in range(len(exp_y)):
+    #             y_norm.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 1).value())
+    #             y_weight.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 2).value())
+    #
+    #         for i in range(len(exp_z)):
+    #             z_norm.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 1).value())
+    #             z_weight.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 2).value())
+    #
+    #         # check if norm count equal operand count
+    #         if len(exp_x) == len(x_norm) and len(exp_y) == len(y_norm) and len(exp_z) == len(z_norm):
+    #             for key, df in self.datasets.items():
+    #                 # self.ppplot.ax.cla()
+    #                 x, x_inv, x_global = self.process_objective_function_input(key, df, exp_x, x_norm, x_weight)
+    #                 y, y_inv, y_global = self.process_objective_function_input(key, df, exp_y, y_norm, y_weight)
+    #                 z, z_inv, z_global = self.process_objective_function_input(key, df, exp_z, z_norm, z_weight)
+    #                 self.x_dict[key], self.x_inv_dict[key], self.x_global_dict[key] = x, x_inv, x_global
+    #                 self.y_dict[key], self.y_inv_dict[key], self.y_global_dict[key] = y, y_inv, y_global
+    #                 self.z_dict[key], self.z_inv_dict[key], self.z_global_dict[key] = z, z_inv, z_global
+    #
+    #                 data = x, y, z, x_inv, y_inv, z_inv, x_global, y_global, z_global
+    #                 # plot pareto
+    #                 self.plot_pareto_3D_mayavi(key, data)
+    #                 mlab.show()
+    #
+    #                 # # axis decorations
+    #                 # self.ppplot.ax.set_xlabel("$F_1$")
+    #                 # self.ppplot.ax.set_ylabel("$F_2$")
+    #                 # self.ppplot.ax.set_zlabel("$F_3$")
+    #                 #
+    #                 # self.ppplot.ax.relim()
+    #                 # self.ppplot.ax.autoscale()
+    #                 # self.ppplot.ax.set_xlim([min(self.x_global), max(self.x_global)])
+    #                 # self.ppplot.ax.set_ylim([min(self.y_global), max(self.y_global)])
+    #                 # self.ppplot.ax.set_zlim([min(self.z_global), max(self.z_global)])
+    #                 # self.leg = self.ppplot.ax.legend()
+    #                 # self.ppplot.fig.canvas.draw_idle()
+    #                 #
+    #                 # if self.MDI_PLOT_COUNT == 0:
+    #                 #     # show in mdi area
+    #                 #     sub = QMdiSubWindow()
+    #                 #     sub.setWidget(self.ppplot.w_PPPlot)
+    #                 #     sub.setWindowTitle('Plot')
+    #                 #     self.ppUI.mdiArea.addSubWindow(sub)
+    #                 #     sub.show()
+    #                 #     self.MDI_PLOT_COUNT += 1
+    #         else:
+    #             print("Operand and Norm count are not equal. Please check.")
+    #     else:
+    #         pass
+
+    def populate_objective_function(self, f, ccb, tw, d):
+        tw.setRowCount(len(f))  # and one row in the table
+
+        for i, x in enumerate(f):
+            label = QLabel(x)
+            tw.setCellWidget(i, 0, label)
+
+            dsb = QDoubleSpinBox()
+            dsb2 = QDoubleSpinBox()
+            try:
+                dsb.setValue(d[x]['norm'])
+                dsb2.setValue(d[x]['weight'])
+            except:
+                dsb.setValue(1)
+                dsb2.setValue(1)
+
+            tw.setCellWidget(i, 1, dsb)
+            tw.setCellWidget(i, 2, dsb2)
+            dsb.editingFinished.connect(lambda: self.update_F_Value_Dict(d, ccb, tw))
+
+    def plot_pareto(self, key, data):
+        x, y, x_inv, y_inv, x_global, y_global = data
+
+        if self.ppUI.cb_Pareto.checkState() == 2:
+            if self.ppUI.cb_Pareto_Setting.currentText().lower() == "global":
+                x_pareto, y_pareto = self.pareto_front(x_global, y_global)
+            else:
+                x_pareto, y_pareto = self.pareto_front(x, y)
+
+            y_pareto = [y for _, y in sorted(zip(x_pareto, y_pareto))]
+            x_pareto.sort()
+
+            if key in self.scatter_pareto_object.keys():
+                self.scatter_pareto_object[key][0].set_xdata(x_pareto)
+                self.scatter_pareto_object[key][0].set_ydata(y_pareto)
+            else:
+                self.scatter_pareto_object[key] = self.ppplot.ax.plot(x_pareto, y_pareto, c='r', marker='o', lw=2,
+                                                                 markersize=6, mec='k',
+                                                                 picker=True, label="Pareto Front")
+
+            if not self.ppUI.sc_Toggle_3D.isChecked():
+                self.ppplot.plt.toggle_ax(True)
+
+                # print pareto shapes
+                pareto_list = []
+                plotted_pareto_pts = []
+                for x, y in zip(x_pareto, y_pareto):
+                    if self.ppUI.cb_Pareto_Setting.currentText().lower() == 'global':
+                        xvalues = x_global
+                        yvalues = y_global
+                    else:
+                        xvalues = self.scatter_plot_object[key][0].get_xdata()
+                        yvalues = self.scatter_plot_object[key][0].get_ydata()
+
+                    ind = (np.where(xvalues == x) and np.where(yvalues == y))[0][0]
+                    plotted_pareto_pts.append((x, y))
+                    try:
+                        k = self.filtered_df_dict[key].loc[ind][0:8]
+                    except (AttributeError, KeyError):
+                        k = self.datasets[key].loc[ind][0:8]
+
+                    pareto_list.append(k.tolist())
+                subax_count = self.ppplot.plt.n*2-1
+                for i in range(subax_count):
+                    if i == subax_count-1:
+                        id_to_plot = -1
+                    else:
+                        id_to_plot = int(len(pareto_list)/(subax_count-1)*i)
+
+                    #uncomment to plot cavities
+                    # self.plot_cavity(pareto_list[id_to_plot][0], pareto_list[id_to_plot][1:], self.ppplot.plt.plot_list[i])
+
+                    # add arrows
+                    # clear old arrows
+                    # print(self.ppplot.ax.patches, type(self.ppplot.ax.patches))
+
+                    if i < (subax_count-1)/2:
+                        self.add_cross_arrow(self.ppplot.ax, plotted_pareto_pts[id_to_plot], self.ppplot.plt.plot_list[i], (188, 388/2))
+                    elif i == (subax_count-1)/2:
+                        self.add_cross_arrow(self.ppplot.ax, plotted_pareto_pts[id_to_plot], self.ppplot.plt.plot_list[i], (188, 388))
+                    else:
+                        self.add_cross_arrow(self.ppplot.ax, plotted_pareto_pts[id_to_plot], self.ppplot.plt.plot_list[i], (0, 388))
+
+                    self.ppplot.fig.tight_layout()
+
+        else:
+            for a in self.arrow_patch_list:
+                self.ppplot.fig.patches.remove(a)
+            self.arrow_patch_list = []
+
+            if self.scatter_pareto_object:
+                self.scatter_pareto_object[0].remove()
+                self.scatter_pareto_object = None
+
+            self.ppplot.plt.toggle_ax(False)
+
+        self.ppplot.fig.canvas.draw_idle()
+
+    def plot_pareto_3D(self, key, data):
+        x, y, z, x_inv, y_inv, z_inv, x_global, y_global, z_global = data
+        # if self.ppUI.cb_Pareto.checkState() == 2:
+        if True:
+            if self.ppUI.cb_Pareto_Setting.currentText().lower() == "global":
+                x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x_global, y_global, z_global)
+            else:
+                x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x, y, z)
+
+            y_pareto = [y for _, y in sorted(zip(x_pareto, y_pareto))]
+            z_pareto = [z for _, z in sorted(zip(x_pareto, z_pareto))]
+            x_pareto.sort()
+
+            # ppppp = pd.DataFrame(columns=["Epk/Eacc", "Bpk/Eacc", "R/Q"])
+            # ppppp["Epk/Eacc"] = x_pareto
+            # ppppp["Bpk/Eacc"] = y_pareto
+            # ppppp["R/Q"] = z_pareto
+            # ic(x_pareto)
+            # ic(y_pareto)
+            # ic(z_pareto)
+            # ic(ppppp)
+
+            if key in self.scatter_pareto_object.keys():
+                self.scatter_pareto_object[key][0].set_xdata(x_pareto)
+                self.scatter_pareto_object[key][0].set_ydata(y_pareto)
+                self.scatter_pareto_object[key][0].set_zdata(z_pareto)
+            else:
+
+                xi = np.linspace(min(x_pareto), max(x_pareto), 500)
+                yi = np.linspace(min(y_pareto), max(y_pareto), 500)
+                # VERY IMPORTANT, to tell matplotlib how is your data organized
+                zi = griddata((x_pareto, y_pareto), z_pareto, (xi[None, :], yi[:, None]), method='linear')
+                xig, yig = np.meshgrid(xi, yi)
+
+                self.scatter_pareto_object[key] = self.ppplot.ax.plot(x_pareto, y_pareto, z_pareto, c='k', marker='o', linestyle='None', markersize=6, mec='k',
+                                                  picker=True, label="Pareto Front", zorder=1)
+                # surf = self.ppplot.ax.plot_trisurf(x_pareto, y_pareto, z_pareto, cmap='jet', linewidth=0, zorder=0,
+                #                                     antialiased=True,)
+                surf = self.ppplot.ax.plot_surface(xig, yig, zi, linewidth=0, cmap='jet', antialiased=True,)
+
+            # trial
+            import plotly.graph_objects as go
+            import plotly.express as px
+            df = pd.DataFrame(list(zip(x_pareto, y_pareto, z_pareto)), columns=['Epk', 'Bpk', 'RQ'])
+            fig = px.scatter_3d(df, x='Epk', y='Bpk', z='RQ')#, color='species'
+            # fig = go.Figure(data=[go.Scatter3d(z=z_pareto, x=x_pareto, y=y_pareto)])
+            # fig.update_layout(title='Mt Bruno Elevation', autosize=False,
+            #                   width=500, height=500,
+            #                   margin=dict(l=65, r=50, b=65, t=90))
+            fig.show()
+
+            print("Hereee")
+
+            # print pareto shapes
+            pareto_list = []
+            plotted_pareto_pts = []
+            for x, y, z in zip(x_pareto, y_pareto, z_pareto):
+                if self.ppUI.cb_Pareto_Setting.currentText().lower() == 'global':
+                    xvalues = x_global
+                    yvalues = y_global
+                    zvalues = z_global
+                else:
+                    xvalues = self.scatter_plot_object[key][0].get_xdata()
+                    yvalues = self.scatter_plot_object[key][0].get_ydata()
+                    zvalues = self.scatter_plot_object[key][0].get_zdata()
+
+                ind = (np.where(xvalues == x) and np.where(yvalues == y) and np.where(zvalues == z))[0][0]
+                plotted_pareto_pts.append((x, y, z))
+                # try:
+                #     k = self.filtered_df_dict[key].loc[ind][0:8]
+                # except (AttributeError, KeyError):
+                #     k = df[key].loc[ind][0:8]
+                #
+                # pareto_list.append(k.tolist())
+
+            # subax_count = self.ppplot.plt.n*2-1
+            # for i in range(subax_count):
+            #     if i == subax_count-1:
+            #         id_to_plot = -1
+            #     else:
+            #         id_to_plot = int(len(pareto_list)/(subax_count-1)*i)
+            #
+            #     self.plot_cavity(pareto_list[id_to_plot][0], pareto_list[id_to_plot][1:], self.ppplot.plt.plot_list[i])
+            #
+            #     # add arrows
+            #     # clear old arrows
+            #     # print(self.ppplot.ax.patches, type(self.ppplot.ax.patches))
+            #
+            #     if i < (subax_count-1)/2:
+            #         self.add_cross_arrow(self.ppplot.ax, plotted_pareto_pts[id_to_plot], self.ppplot.plt.plot_list[i], (188, 388/2))
+            #     elif i == (subax_count-1)/2:
+            #         self.add_cross_arrow(self.ppplot.ax, plotted_pareto_pts[id_to_plot], self.ppplot.plt.plot_list[i], (188, 388))
+            #     else:
+            #         self.add_cross_arrow(self.ppplot.ax, plotted_pareto_pts[id_to_plot], self.ppplot.plt.plot_list[i], (0, 388))
+
+                # self.ppplot.fig.tight_layout()
+
+            print("Hereee 22")
+        else:
+            for a in self.arrow_patch_list:
+                self.ppplot.fig.patches.remove(a)
+            self.arrow_patch_list = []
+
+            if self.scatter_pareto_object:
+                self.scatter_pareto_object[key][0].remove()
+                self.scatter_pareto_object[key] = None
+
+            self.ppplot.plt.toggle_ax(False)
+
+        self.ppplot.fig.canvas.draw_idle()
+
+    # def plot_pareto_3D_mayavi(self, key, data):
+    #     x, y, z, x_inv, y_inv, z_inv, x_global, y_global, z_global = data
+    #     if self.ppUI.cb_Pareto_Setting.currentText().lower() == "global":
+    #         x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x_global, y_global, z_global)
+    #     else:
+    #         x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x, y, z)
+    #
+    #     y_pareto = [y for _, y in sorted(zip(x_pareto, y_pareto))]
+    #     z_pareto = [z for _, z in sorted(zip(x_pareto, z_pareto))]
+    #     x_pareto.sort()
+    #
+    #     # self.scatter_pareto_object = self.ppplot.ax.plot(x_pareto, y_pareto, z_pareto, c='k', marker='o', linestyle='None', markersize=6, mec='k',
+    #     #                                                  picker=True, label="Pareto Front", zorder=1)
+    #     # surf = self.ppplot.ax.plot_trisurf(x_pareto, y_pareto, z_pareto, cmap='jet', linewidth=0, zorder=0)
+    #     # s2 = mlab.points3d(x_pareto, y_pareto, z_pareto, color=(1, 0, 0), mode='sphere', extent=[0, 1, 0, 1, 0, 1])
+    #
+    #     print("heehhwer")
+    #     pts = mlab.points3d(x_pareto, y_pareto, z_pareto, z_pareto)
+    #     # Triangulate based on X, Y with Delaunay 2D algorithm.
+    #     # Save resulting triangulation.
+    #
+    #     from scipy.spatial import Delaunay
+    #     interp = LinearNDInterpolator(list(zip(x_pareto, y_pareto)), z_pareto)
+    #     p2d = np.vstack([x_pareto, y_pareto]).T
+    #     d2d = Delaunay(p2d)
+    #     # Remove the point representation from the plot
+    #     pts.remove()
+    #
+    #     # Draw a surface based on the triangulation
+    #     tmesh = mlab.triangular_mesh(x_pareto, y_pareto, z_pareto, d2d.vertices, scalars=z_pareto, colormap='jet', extent=[0, 1, 0, 1, 0, 1])
+    #
+    #     # surf = mlab.surf(x_pareto, y_pareto, z_pareto, color=(1, 1, 0), extent=[0, 1, 0, 1, 0, 1])
+    #
+    #     # mlab.outline(extent=(0, 1, 0, 1, 0, 1))
+    #     # mlab.axes(extent=(0, 1, 0, 1, 0, 1))
+    #     mlab.axes(tmesh, ranges=[min(x_global), max(x_global),
+    #                              min(y_global), max(y_global),
+    #                              min(z_global), max(z_global)])
+    #
+    #     # print pareto shapes
+    #     pareto_list = []
+    #     plotted_pareto_pts = []
+    #     for x, y, z in zip(x_pareto, y_pareto, z_pareto):
+    #         if self.ppUI.cb_Pareto_Setting.currentText().lower() == 'global':
+    #             xvalues = x_global
+    #             yvalues = y_global
+    #             zvalues = z_global
+    #         else:
+    #             xvalues = self.scatter_plot_object[key][0].get_xdata()
+    #             yvalues = self.scatter_plot_object[key][0].get_ydata()
+    #             zvalues = self.scatter_plot_object[key][0].get_zdata()
+    #
+    #         ind = (np.where(xvalues == x) and np.where(yvalues == y) and np.where(zvalues == z))[0][0]
+    #         plotted_pareto_pts.append((x, y, z))
+    #
+    #         try:
+    #             k = self.filtered_df_dict[key].loc[ind][0:8]
+    #         except (AttributeError, KeyError):
+    #             k = self.datasets[key].loc[ind][0:8]
+    #
+    #         pareto_list.append(k.tolist())
+    #
+    #     print("Hereee 22")
+
+    def pareto_front(self, x, y):
+        def reverse_list(l, goal):
+            if goal == 'max':
+                return l  # to find the pareto maxima
+            else:
+                return [-x for x in l]  # to find the pareto minima
+
+        datapoints = np.array([reverse_list(x, self.ppUI.cb_Goal_F1.currentText()), reverse_list(y, self.ppUI.cb_Goal_F2.currentText())])
 
         pareto = oapackage.ParetoDoubleLong()
 
         for ii in range(0, datapoints.shape[1]):
             w = oapackage.doubleVector((datapoints[0, ii], datapoints[1, ii]))
             pareto.addvalue(w, ii)
-
-        pareto.show(verbose=1)
+        # pareto.show(verbose=1)  # Prints out the results from pareto
 
         lst = pareto.allindices()  # the indices of the Pareto optimal designs
 
         optimal_datapoints = datapoints[:, lst]
 
-        return reverse_list(optimal_datapoints[0, :]), reverse_list(optimal_datapoints[1, :])
+        return reverse_list(optimal_datapoints[0, :], self.ppUI.cb_Goal_F1.currentText()), reverse_list(optimal_datapoints[1, :], self.ppUI.cb_Goal_F2.currentText())
+
+    def pareto_front_3D(self, x, y, z):
+        def reverse_list(l, r):
+            if r == 'max':
+                return l
+            else:
+                return [-x for x in l]
+
+        datapoints = np.array([reverse_list(x, self.ppUI.cb_Goal_F1.currentText()),
+                               reverse_list(y, self.ppUI.cb_Goal_F2.currentText()),
+                               reverse_list(z, self.ppUI.cb_Goal_F3.currentText())])
+
+        pareto = oapackage.ParetoDoubleLong()
+
+        for ii in range(0, datapoints.shape[1]):
+            w = oapackage.doubleVector((datapoints[0, ii], datapoints[1, ii], datapoints[2, ii]))
+            pareto.addvalue(w, ii)
+        # pareto.show(verbose=1)  # Prints out the results from pareto
+
+        lst = pareto.allindices()  # the indices of the Pareto optimal designs
+
+        optimal_datapoints = datapoints[:, lst]
+
+        return reverse_list(optimal_datapoints[0, :], self.ppUI.cb_Goal_F1.currentText()), \
+               reverse_list(optimal_datapoints[1, :], self.ppUI.cb_Goal_F2.currentText()), \
+               reverse_list(optimal_datapoints[2, :], self.ppUI.cb_Goal_F3.currentText())
+
+    def plot_cavity(self, key, mid_cell, ax):
+        # clear axis (improve later
+        ax.cla()
+        # write geometry
+        mid_cell = mid_cell
+        lend_cell = mid_cell
+        rend_cell = mid_cell
+        writeCavity(int(key), mid_cell, lend_cell, rend_cell, beampipe=[0.001, 0.001])
+        data = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\{int(key)}_geom.txt", sep='\s+',
+                           header=None)
+
+        ax.plot(data[1] * 1e3, data[0] * 1e3, lw=6, label=f"C{key}")
+        ax.legend(loc='lower center')
+
+        x_label = "z [mm]"
+        y_label = "r [mm]"
+        # plt.xlabel(x_label)
+        # plt.ylabel(y_label)
+        ax.set_axis_off()
+        ax.set_xlim(-94, 94)
+        ax.set_ylim(-0.5, 200)
+        # ax.relim()
+
+    def add_cross_arrow(self, ax_main, ax_mani_pt, ax_sub, ax_sub_pt):
+        # Create the arrow
+        # 1. Get transformation operators for axis and figure
+        ax0tr = ax_main.transData  # Axis 0 -> Display
+        ax1tr = ax_sub.transData  # Axis 1 -> Display
+        figtr = self.ppplot.fig.transFigure.inverted()  # Display -> Figure
+        # 2. Transform arrow start point from axis 0 to figure coordinates
+        ptB = figtr.transform(ax0tr.transform(ax_mani_pt))
+        # 3. Transform arrow end point from axis 1 to figure coordinates
+        ptE = figtr.transform(ax1tr.transform(ax_sub_pt))
+        # 4. Create the patch
+        arrow = mpl.patches.FancyArrowPatch(
+            ptB, ptE, transform=self.ppplot.fig.transFigure,  # Place arrow in figure coord system
+            fc="g", connectionstyle="arc3, rad=0.0", arrowstyle='simple', alpha=0.3,
+            mutation_scale=20.
+        )
+        self.arrow_patch_list.append(arrow)
+        # 5. Add patch to list of objects to draw onto the figure
+        self.ppplot.fig.patches.append(arrow)
 
     def populate_filter(self, cb, df):
+        # clear cb
+        cb.clear()
         for col in df.columns:
             cb.addItem(col)
 
@@ -723,24 +1395,26 @@ class PostprocessControl:
         l = QGridLayout(w)
 
         lb = QLineEdit()
+        lb.setFixedWidth(100)
         l.addWidget(lb, 0, 0, 1, 1)
         rb = QLineEdit()
+        rb.setFixedWidth(100)
         l.addWidget(rb, 0, 2, 1, 1)
         cb = QComboBox()
-        cb.setMinimumWidth(75)
-        cb.setMaximumWidth(75)
         l.addWidget(cb, 0, 1, 1, 1)
+
         chk = QCheckBox()
-        l.addWidget(chk, 0, 3, 1, 1)
+        l.addWidget(chk, 0, 4, 1, 1)
         # add signal
         chk.stateChanged.connect(lambda: self.apply_filter())
+        chk.setFixedWidth(25)
 
         pb = QPushButton()
         pb.setMaximumWidth(25)
         pb.setMinimumWidth(25)
         pb.setText('X')
         pb.setStyleSheet('background-color: rgb(255, 89, 67);')
-        l.addWidget(pb, 0, 4, 1, 1)
+        l.addWidget(pb, 0, 5, 1, 1)
         # add signal
         pb.clicked.connect(lambda: self.remove_filter(pb))
 
@@ -760,7 +1434,7 @@ class PostprocessControl:
     def remove_filter(self, pb_clicked):
         k = None
         for key, wids in self.df_filter_dict.items():
-            print(key, pb_clicked, self.df_filter_dict)
+            # print(key, pb_clicked, self.df_filter_dict)
             if pb_clicked in wids:
                 # delete widgets
                 for wid in wids:
@@ -780,65 +1454,139 @@ class PostprocessControl:
         self.apply_filter()
 
     def apply_filter(self):
-        # check if a dataframe already exists
-        if self.df is not None:
-            # copy main data frame
-            self.filtered_df = self.df.copy(deep=True)
 
-            # apply filter from to dataframe
-            # check if filter dict is not empty
-            if self.df_filter_dict:
-                for key, val in self.df_filter_dict.items():
-                    if val[4].checkState() == 2:
-                        lb = float(val[1].text())
-                        rb = float(val[2].text())
-                        key = val[3].currentText()
+        for key, df in self.datasets.items():
+            # check if a dataframe already exists
+            if df is not None:
+                # copy main data frame
+                filtered_df = df.copy(deep=True)
+                filtered_df_inverse = df.copy(deep=True)
 
-                        self.filtered_df = self.filtered_df[(self.filtered_df[key] >= lb) & (self.filtered_df[key] <= rb)]
-                        self.filtered_df = self.filtered_df.reset_index(drop=True)
+                # apply filter from to dataframe
+                # check if filter dict is not empty
+                if len(self.df_filter_dict.keys()) != 0:
+                    for k, val in self.df_filter_dict.items():
+                        if val[4].checkState() == 2:
+                            lb = float(val[1].text())
+                            rb = float(val[2].text())
+                            k = val[3].currentText()
 
-            self.pandas_model = PandasModel(self.filtered_df)
-            self.pandasUI.tv_Pandas.setModel(self.pandas_model)
+                            filtered_df = filtered_df[
+                                (filtered_df[key] >= lb) & (filtered_df[key] <= rb)]
+                            # print(self.filtered_df_inverse)
+
+                            filtered_df = filtered_df.reset_index(drop=True)
+                    self.filtered_df_dict[key] = filtered_df
+
+                    filtered_df_inverse = filtered_df_inverse[~filtered_df_inverse.isin(filtered_df)]
+                    filtered_df_inverse = filtered_df_inverse.reset_index(drop=True)
+
+                self.filtered_df_inverse_dict[key] = filtered_df_inverse
+
+                self.pandas_model_dict[key] = PandasModel(filtered_df)
+                self.pandas_model_dict[key].pandasUI.tv_Pandas.setModel(self.pandas_model_dict[key])
 
         # update plot if any
-        self.plot_objective_function()
+        self.plot_objective_function(self.ppUI.hs_Alpha.value()/100)
 
-    def add_handles(self):
+    def add_handle(self, i, var, val):
+        # combo box
+        cbb = QLabel(var)
+
+        # horizontal slider
+        dsb = QDoubleSpinBox()
+        dsb.setValue(val)
+
+        # slider
+        hs = QSlider(Qt.Horizontal)
+        hs.setRange(0, 1)
+        hs.setValue(0)
+        hs.setTickInterval(100)
+
+        # check box
+        cb = QCheckBox()
+
+        # add to widget
+        self.ppUI.gl_Handles.addWidget(cbb, i, 0)
+        self.ppUI.gl_Handles.addWidget(dsb, i, 1)
+        self.ppUI.gl_Handles.addWidget(cb, i, 2)
+        self.ppUI.gl_Handles.addWidget(hs, i, 3)
+
+        self.OF_slider_dict[var] = [cbb, dsb, cb, hs]
+
+    def remove_handle(self, handle):
         pass
 
     def onpick(self, event):
-        ind = event.ind
-        print('onpick scatter:', ind, np.take(self.x, ind), np.take(self.y, ind))
-        print(self.df.loc[ind, 'A':'alpha'])
-
-    def update_annot(self, ind):
-        pos = self.scatter_plot_object.get_offsets()[ind]
-        self.annot.xy = pos
         try:
-            text = f"ti: {ind}, {self.filtered_df.loc[ind, 'key':'key']}"
-            # text = f"ti: {ind}, {self.filtered_df.loc[ind, 'key':'alpha']}"
-            # text = f"ti: {ind}, {self.filtered_df.loc[ind, 'key':'B']}"
-        except:
-            text = f"ti: {ind}, {self.df.loc[ind, 'key':'key']}"
-            # text = f"ti: {ind}, {self.df.loc[ind, 'key':'Req']}"
+            ind = event.ind
+            # print('onpick scatter:', ind, np.take(self.x, ind), np.take(self.y, ind))
+            # print(self.df.loc[ind, 'A':'alpha'])
+        except AttributeError:
+            pass
 
-        self.annot.set_text(f'{text}')
-        self.annot.get_bbox_patch().set_facecolor((167/255, 222/255, 255/255))
-        # self.annot.get_bbox_patch().set_alpha(1)
+    def update_annot(self, ind, event):
+        inv = self.ppplot.ax.transData.inverted()
+        # pos = self.scatter_plot_object[0].get_offsets()[ind]
+        pos = [event.x, event.y]
+
+        for key, df in self.datasets.items():
+            self.annot_dict[key].xy = inv.transform(pos)
+            try:
+                try:
+                    text = f"ti: {ind}, {self.filtered_df_dict[key].loc[ind, 'key':'key']}"
+                    # text = f"ti: {ind}, {self.filtered_df.loc[ind, 'key':'alpha']}"
+                    # text = f"ti: {ind}, {self.filtered_df.loc[ind, 'key':'B']}"
+                except:
+                    text = f"ti: {ind}, {df.loc[ind, 'key':'key']}"
+                    # text = f"ti: {ind}, {self.df.loc[ind, 'key':'Req']}"
+
+                self.annot_dict[key].set_text(f'{text}')
+                self.annot_dict[key].get_bbox_patch().set_facecolor((167 / 255, 222 / 255, 255 / 255))
+                # self.annot.get_bbox_patch().set_alpha(1)
+            except KeyError:
+                pass
+
+    def update_annot_inv(self, ind, event):
+        inv = self.ppplot.ax.transData.inverted()
+        # pos = self.scatter_plot_object_inv[0].get_offsets()[ind]
+        pos = [event.x, event.y]
+
+        self.annot.xy = inv.transform(pos)
+        for key, df in self.datasets.items():
+            try:
+                text = f"ti: {ind}, {self.filtered_df_inverse_dict[key].loc[ind, 'key':'key']}"
+                # text = f"ti: {ind}, {self.filtered_df.loc[ind, 'key':'alpha']}"
+                # text = f"ti: {ind}, {self.filtered_df.loc[ind, 'key':'B']}"
+            except:
+                text = f"ti: {ind}, {df.loc[ind, 'key':'key']}"
+                # text = f"ti: {ind}, {self.df.loc[ind, 'key':'Req']}"
+
+            self.annot_dict[key].set_text(f'{text}')
+            self.annot_dict[key].get_bbox_patch().set_facecolor((167 / 255, 222 / 255, 255 / 255))
+            # self.annot.get_bbox_patch().set_alpha(1)
 
     def hover(self, event):
-        vis = self.annot.get_visible()
-        # print(type(event.inaxes), type(self.ppplot.ax))
-        if type(event.inaxes) == type(self.ppplot.ax): # not so good fix
-            cont, ind = self.scatter_plot_object.contains(event)
-            if cont:
-                self.update_annot(ind["ind"][0]) # ind returns an array of close points. ind['ind'][0] returns just the first point
-                self.annot.set_visible(True)
-                self.ppplot.fig.canvas.draw_idle()
-            else:
-                if vis:
-                    self.annot.set_visible(False)
+        for key, df in self.datasets.items():
+            vis = self.annot_dict[key].get_visible()
+            # print(type(event.inaxes), type(self.ppplot.ax))
+            if type(event.inaxes) == type(self.ppplot.ax):  # not so good fix
+                cont, ind = self.scatter_plot_object[key][0].contains(event)
+                # print(self.scatter_plot_object[0].get_ydata())
+                if cont:
+                    self.update_annot(ind["ind"][0], event)  # ind returns an array of close points. ind['ind'][0] returns just the first point
+                    self.annot_dict[key].set_visible(True)
                     self.ppplot.fig.canvas.draw_idle()
+                else:
+                    cont, ind = self.scatter_plot_object_inv[key][0].contains(event)
+                    if cont:
+                        self.update_annot_inv(ind["ind"][0], event)  # ind returns an array of close points. ind['ind'][0] returns just the first point
+                        self.annot_dict[key].set_visible(True)
+                        self.ppplot.fig.canvas.draw_idle()
+                    else:
+                        if vis:
+                            self.annot_dict[key].set_visible(False)
+                            self.ppplot.fig.canvas.draw_idle()
 
     def toggle_interactive(self):
         if self.ppUI.cb_Interactive.checkState() == 2:
@@ -850,37 +1598,52 @@ class PostprocessControl:
         folder = self.ppUI.le_SimulationData_Folder.text()
         filename = fr"{self.main_control.projectDir}\PostprocessingData\Data\{self.ppUI.le_Save_Filename.text()}"
         proc_count = self.ppUI.sb_No_Of_Processors.value()
+
         temp_folder = fr"{self.main_control.projectDir}\PostprocessingData\Data\_temp"
+        # create temp folder
+        if not os.path.exists(fr"{self.main_control.projectDir}\PostprocessingData\Data"):
+            os.mkdir(fr"{self.main_control.projectDir}\PostprocessingData\Data")
 
-        if len(list(self._shape_space.keys())) != 0:
-            if self.ppUI.cb_Run_Mode.currentText() == 'Sequential':
-                if self.ppUI.cb_Code.currentText() == "ABCI":
-                    mon_interval = self.text_to_list(self.ppUI.le_Longitudinal_Intervals.text())
-                    dip_interval = self.text_to_list(self.ppUI.le_Transverse_Intervals.text())
+        # create temp folder
+        if not os.path.exists(temp_folder):
+            os.mkdir(temp_folder)
 
-                    abci_data_ex.multiple_folders_data(self._shape_space, folder, "all", filename, mon_interval, dip_interval)
+        # if len(list(self._shape_space.keys())) != 0:
+        if self.ppUI.cb_Run_Mode.currentText() == 'Sequential':
+            if self.ppUI.cb_Code.currentText() == "ABCI":
+                mon_interval = text_to_list(self.ppUI.le_Longitudinal_Intervals.text())
+                dip_interval = text_to_list(self.ppUI.le_Transverse_Intervals.text())
 
-                else:
-                    request = self.ppUI.cb_SLANS_Request.currentText()
-                    mode = self.ppUI.sb_SLANS_Mode.value()
-                    bc = self.ppUI.cb_BC.currentText()
-
-                    slans_data_ex.multiple_folders_data(self._shape_space, folder, mode, bc, request, filename)
+                abci_data_ex.multiple_folders_data(self._shape_space, folder, "all", filename, mon_interval,
+                                                   dip_interval)
 
             else:
-                if self.ppUI.cb_Code.currentText() == "ABCI":
-                    mon_interval = self.text_to_list(self.ppUI.le_Longitudinal_Intervals.text())
-                    dip_interval = self.text_to_list(self.ppUI.le_Transverse_Intervals.text())
-                    abci_data_ex.multiple_folders_data_parallel(self._shape_space, folder, proc_count, 'all', filename, temp_folder, mon_interval, dip_interval)
-                else:
-                    request = self.ppUI.cb_SLANS_Request.currentText()
-                    mode = self.ppUI.sb_SLANS_Mode.value()
-                    bc = self.ppUI.cb_BC.currentText()
+                request = self.ppUI.cb_SLANS_Request.currentText()
+                mode = self.ppUI.sb_SLANS_Mode.value()
+                bc = self.ppUI.cb_BC.currentText()
+                bc = bc.replace('m', '3')
+                bc = bc.replace('e', '2')
 
-                    slans_data_ex.multiple_folders_data_parallel(self._shape_space, folder, proc_count, mode, bc, request, filename, temp_folder)
+                slans_data_ex.multiple_folders_data(folder, mode, bc, request, filename)
 
         else:
-            print("Please select at least one key.")
+            if self.ppUI.cb_Code.currentText() == "ABCI":
+                mon_interval = text_to_list(self.ppUI.le_Longitudinal_Intervals.text())
+                dip_interval = text_to_list(self.ppUI.le_Transverse_Intervals.text())
+                abci_data_ex.multiple_folders_data_parallel(self._shape_space, folder, proc_count, 'all', filename,
+                                                            temp_folder, mon_interval, dip_interval)
+            else:
+                request = self.ppUI.cb_SLANS_Request.currentText()
+                mode = self.ppUI.sb_SLANS_Mode.value()
+
+                bc = self.ppUI.cb_BC.currentText()
+                bc = bc.replace('m', '3')
+                bc = bc.replace('e', '2')
+                slans_data_ex.multiple_folders_data_parallel(self._shape_space, folder, proc_count, mode, bc, request,
+                                                             filename, temp_folder)
+
+        # else:
+        #     print("Please select at least one key.")
 
     def open_folder(self, le):
         project_dir = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
@@ -901,148 +1664,22 @@ class PostprocessControl:
             # populate checkboxes with key
             for col in dd.keys():
                 cb.addItem(fr'{col}')
+                print(f"Added col: {col}")
 
             self._shape_space = dd
 
         except Exception as e:
             print('Failed to open file:: ', e)
 
-    def text_to_list(self, l):
-        if l == '':
-            return None
-        else:
-            l = ast.literal_eval(l)
-            if isinstance(l, int) or isinstance(l, float):
-                return [l, 2e10]
-            else:
-                return list(l)
+    def clear_plots(self):
+        # clear axis
+        self.ppplot.ax.cla()
 
-class CheckableComboBox(QComboBox):
-    # Subclass Delegate to increase item height
-    class Delegate(QStyledItemDelegate):
-        def sizeHint(self, option, index):
-            size = super().sizeHint(option, index)
-            size.setHeight(20)
-            return size
+        # clear plot objects
+        self.scatter_plot_object = None
+        self.scatter_plot_object_inv = None
+        self.scatter_pareto_object = None
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        # update plot
+        self.ppplot.fig.canvas.draw_idle()
 
-        # Make the combo editable to set a custom text, but readonly
-        self.setEditable(True)
-        self.lineEdit().setReadOnly(True)
-        # Make the lineedit the same color as QPushButton
-        palette = qApp.palette()
-        palette.setBrush(QPalette.Base, palette.button())
-        self.lineEdit().setPalette(palette)
-
-        # Use custom delegate
-        self.setItemDelegate(CheckableComboBox.Delegate())
-
-        # Update the text when an item is toggled
-        self.model().dataChanged.connect(self.updateText)
-
-        # Hide and show popup when clicking the line edit
-        self.lineEdit().installEventFilter(self)
-        self.closeOnLineEditClick = False
-
-        # Prevent popup from closing when clicking on an item
-        self.view().viewport().installEventFilter(self)
-
-    def resizeEvent(self, event):
-        # Recompute text to elide as needed
-        self.updateText()
-        super().resizeEvent(event)
-
-    def eventFilter(self, object, event):
-
-        if object == self.lineEdit():
-            if event.type() == QEvent.MouseButtonRelease:
-                if self.closeOnLineEditClick:
-                    self.hidePopup()
-                else:
-                    self.showPopup()
-                return True
-            return False
-
-        if object == self.view().viewport():
-            if event.type() == QEvent.MouseButtonRelease:
-                index = self.view().indexAt(event.pos())
-                item = self.model().item(index.row())
-
-                if item.checkState() == Qt.Checked:
-                    item.setCheckState(Qt.Unchecked)
-
-                    if item == self.model().item(0):
-                        # deselect all items if item check is all
-                        for i in range(1, self.model().rowCount()):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Unchecked)
-                else:
-                    item.setCheckState(Qt.Checked)
-
-                    if item == self.model().item(0):
-                        # deselect all items if item check is all
-                        for i in range(1, self.model().rowCount()):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Checked)
-
-                return True
-        return False
-
-    def showPopup(self):
-        super().showPopup()
-        # When the popup is displayed, a click on the lineedit should close it
-        self.closeOnLineEditClick = True
-
-    def hidePopup(self):
-        super().hidePopup()
-        # Used to prevent immediate reopening when clicking on the lineEdit
-        self.startTimer(100)
-        # Refresh the display text when closing
-        self.updateText()
-
-    def timerEvent(self, event):
-        # After timeout, kill timer, and reenable click on line edit
-        self.killTimer(event.timerId())
-        self.closeOnLineEditClick = False
-
-    def updateText(self):
-        texts = []
-        for i in range(1, self.model().rowCount()):
-            if self.model().item(i).checkState() == Qt.Checked:
-                texts.append(self.model().item(i).text())
-        text = ", ".join(texts)
-        self.lineEdit().setText(text)
-
-        # # Compute elided text (with "...")
-        # metrics = QFontMetrics(self.lineEdit().font())
-        # elidedText = metrics.elidedText(text, Qt.ElideRight, self.lineEdit().width())
-        # self.lineEdit().setText(elidedText)
-
-    def addItem(self, text, data=None):
-        item = QStandardItem()
-        item.setText(text)
-        if data is None:
-            item.setData(text)
-        else:
-            item.setData(data)
-        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        item.setData(Qt.Unchecked, Qt.CheckStateRole)
-        self.model().appendRow(item)
-
-    def addItems(self, texts, datalist=None):
-        for i, text in enumerate(texts):
-            try:
-                data = datalist[i]
-            except (TypeError, IndexError):
-                data = None
-            self.addItem(text, data)
-
-    def currentData(self):
-        # Return the list of selected items data
-        res = []
-        for i in range(self.model().rowCount()):
-            if self.model().item(i).checkState() == Qt.Checked:
-                res.append(self.model().item(i).data())
-        return res

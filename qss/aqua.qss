@@ -6,7 +6,7 @@ Last updated: 22/01/2019, 07:55.
 Available at: https://github.com/GTRONICK/QSS/blob/master/Aqua.qss qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
 */
 *{
-    font: 16px "Segoe UI";
+    font: 13px "Segoe UI";
 }
 #pb_Tune, #pb_Eigenmode_Analysis, #pb_Wakefield_Analysis, #pb_Tune, #pb_Plot, #pb_Misc, #pb_Post_Process{
     font: 18px "Segoe UI";
@@ -24,15 +24,15 @@ QMainWindow {
     background-color:#ececec;
 }
 QPushButton, QToolButton, QCommandLinkButton{
-    padding: 5px 5px 5px 5px;
+    padding: 2px 2px 2px 2px;
     border-style: solid transparent;
     border-width: 2px;
     border-radius: 8px;
     background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #fbfdfd, stop:0.5 #ffffff, stop:1 #fbfdfd);
 }
-QPushButton::default, QToolButton::default, QCommandLinkButton::default{
+QPushButton:default, QToolButton:default, QCommandLinkButton:default{
     border: solid transparent;
-    color: #FFFFFF;
+    color: #000000;
     background-color: qlineargradient(spread:pad, x1:0.5, y1:0, x2:0.5, y2:1, stop:0 #84afe5, stop:1 #1168e4);
 }
 QPushButton:hover, QToolButton:hover, QCommandLinkButton:hover{
@@ -446,7 +446,6 @@ QScrollBar::right-arrow:horizontal {
 }
 
 QDialogButtonBox QPushButton{
-  color: rgb(0,0,0);
   height: 20px;
   font: 16px "Segoe UI";
   padding: 10px;

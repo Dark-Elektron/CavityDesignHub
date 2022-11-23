@@ -14,15 +14,15 @@ class SLANSTune:
         self.slans_files = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
 
         self.freq0 = freq0
-        print("\t\tSLANS_TUNE:: Started tuning, initial values -> ", A, B, a, b, Req_0, Ri, L, freq0)
+        # print("\t\tSLANS_TUNE:: Started tuning, initial values -> ", A, B, a, b, Req_0, Ri, L, freq0)
         self.write_geometry_parameters_mid_tune(A, B, a, b, Req_0, Ri, L)
 
-        print("\t\tDone writing geometry parameters")
+        # print("\t\tDone writing geometry parameters")
         self.write_beta_mid_Tune(beta, f_shift, n_modes)
-        print("\t\tDone writing tuned parameters")
+        # print("\t\tDone writing tuned parameters")
 
         filepath = fr'{self.slans_files}\{self.filename}'
-        print("\t\tCalling subprocess, TunedCell\n")
+        # print("\t\tCalling subprocess, TunedCell\n")
 
         # the next two lines suppress pop up windows from the slans codes
         # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
@@ -30,10 +30,10 @@ class SLANSTune:
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         cwd = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune'
         subprocess.call([self.tuner, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
-        print("\t\t\tDone tuning")
+        # print("\t\t\tDone tuning")
 
         R_eq, freq, alpha, h, e = self.read_tuned_data()
-        print("\t\t", R_eq, freq, alpha)
+        # print("\t\t", R_eq, freq, alpha)
 
         return R_eq, freq, alpha, h, e
 

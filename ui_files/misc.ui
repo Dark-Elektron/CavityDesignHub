@@ -17,7 +17,6 @@
    <string notr="true">
 *{
     font: 16px &quot;Segoe UI&quot;;
-	background-color: rgb(255, 255, 255);
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -37,19 +36,13 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>974</width>
-              <height>557</height>
+              <width>962</width>
+              <height>545</height>
              </rect>
             </property>
             <layout class="QGridLayout" name="gridLayout_6">
              <item row="0" column="0">
               <widget class="QPushButton" name="pb_Waveguide_Calculations">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
                <property name="maximumSize">
                 <size>
                  <width>200</width>
@@ -67,12 +60,6 @@ CALCULATIONS</string>
              </item>
              <item row="0" column="1">
               <widget class="QPushButton" name="pb_Mode_Nomenclature">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
                <property name="maximumSize">
                 <size>
                  <width>200</width>
@@ -90,12 +77,6 @@ NOMENCLATURE</string>
              </item>
              <item row="0" column="2">
               <widget class="QPushButton" name="pushButton_4">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
                <property name="maximumSize">
                 <size>
                  <width>200</width>
@@ -111,13 +92,7 @@ NOMENCLATURE</string>
               </widget>
              </item>
              <item row="1" column="0">
-              <widget class="QPushButton" name="pushButton_5">
-               <property name="minimumSize">
-                <size>
-                 <width>200</width>
-                 <height>200</height>
-                </size>
-               </property>
+              <widget class="QPushButton" name="pb_Power_Calculations">
                <property name="maximumSize">
                 <size>
                  <width>200</width>
@@ -128,7 +103,7 @@ NOMENCLATURE</string>
                 <string notr="true">background-color: rgb(160, 255, 192);</string>
                </property>
                <property name="text">
-                <string>PushButton</string>
+                <string>Power Calculations</string>
                </property>
               </widget>
              </item>

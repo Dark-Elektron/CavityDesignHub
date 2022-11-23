@@ -1,43 +1,51 @@
-import ast
-import json
-import os
 import subprocess
-import threading
 import time
 import multiprocessing as mp
 from threading import Thread
-from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-from termcolor import colored
 from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from simulation_codes.SLANS.slans_geometry import SLANSGeometry
 from ui_files.eigenmode import Ui_Eigenmode
 from utils.file_reader import FileReader
-import psutil
+from ui_files.geometry_input import Ui_Geometry_Input
+from utils.shared_classes import *
+from utils.shared_functions import *
 
-# evol = Evolution()
 slans_geom = SLANSGeometry()
 fr = FileReader()
 
-file_color = 'red'
+file_color = 'green'
 DEBUG = True
 
 
 def print_(*arg):
-    if DEBUG: print(colored(f'\t{arg}', file_color))
+    if DEBUG:
+        print(colored(f'\t{arg}', file_color))
 
 
 class EigenmodeControl:
     def __init__(self, parent):
+        self.animation = None
+        self.progress_bar = None
+        self.pause_icon = None
+        self.resume_icon = None
+        self.process_state = None
+        self.progress_monitor_thread = None
+        self.progress_list = None
+        self.shape_space = None
+        self.end_routine_thread = None
         self.w_Eigenmode = QWidget()
 
-        self.eigenmodeUI = Ui_Eigenmode()
-        self.eigenmodeUI.setupUi(self.w_Eigenmode)
+        self.ui = Ui_Eigenmode()
+        self.ui.setupUi(self.w_Eigenmode)
+
+        # geometry input
+        self.w_Geometry_Input = QWidget()
+        self.geom_in = Ui_Geometry_Input()
+        self.geom_in.setupUi(self.w_Geometry_Input)
+
+        self.ui.gl_Enter_Geometry.addWidget(self.w_Geometry_Input)
 
         # Create main window object
         self.win = parent
@@ -53,12 +61,13 @@ class EigenmodeControl:
 
         # QGraphicsView
         self.graphicsView = GraphicsView(self, 'Eigenmode')
-        self.eigenmodeUI.vL_2D_Graphics_View.addWidget(self.graphicsView)
+        self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
         # ##########################
 
         self.initUI()
         self.signals()
         self.exe_control()
+        self.filename = None  # place holder, made a booboo copying the end routine
 
         # instantiate geometry
         self.slans_geom = SLANSGeometry()
@@ -74,40 +83,35 @@ class EigenmodeControl:
         self.ui_effects()
 
     def initUI(self):
-        # add checkable combobox
-        self.cb_Shape_Space_Keys = CheckableComboBox()
-        # self.cb_Shape_Space_Keys.addItem('All')
-        self.cb_Shape_Space_Keys.setMinimumWidth(75)
-        self.eigenmodeUI.gl_Shape_Space_Keys.addWidget(self.cb_Shape_Space_Keys)
 
         # init shape entry mode
         self.shape_entry_widgets_control()
 
         # disable expansion section for now. Feature to come later
-        self.eigenmodeUI.cb_Expansion.setEnabled(False)
+        self.geom_in.cb_Expansion.setEnabled(False)
 
         # inner cell
-        self.eigenmodeUI.cb_Inner_Cell.setCheckState(2)
-        self.eigenmodeUI.cb_Inner_Cell.setEnabled(False)
+        self.geom_in.cb_Inner_Cell.setCheckState(2)
+        self.geom_in.cb_Inner_Cell.setEnabled(False)
 
         # expand/collapse sections widgets
-        if self.eigenmodeUI.cb_Expansion.checkState() == 2:
-            self.eigenmodeUI.w_Expansion.setMinimumWidth(300)
+        if self.geom_in.cb_Expansion.checkState() == 2:
+            self.geom_in.w_Expansion.setMinimumHeight(160)
         else:
-            self.eigenmodeUI.w_Expansion.setMinimumWidth(0)
-            self.eigenmodeUI.w_Expansion.setMaximumWidth(0)
+            self.geom_in.w_Expansion.setMinimumHeight(0)
+            self.geom_in.w_Expansion.setMaximumHeight(0)
 
-        if self.eigenmodeUI.cb_Outer_Cell_L.checkState() == 2:
-            self.eigenmodeUI.w_Outer_Cell_L.setMinimumWidth(300)
+        if self.geom_in.cb_Outer_Cell_L.checkState() == 2:
+            self.geom_in.w_Outer_Cell_L.setMinimumHeight(160)
         else:
-            self.eigenmodeUI.w_Outer_Cell_L.setMinimumWidth(0)
-            self.eigenmodeUI.w_Outer_Cell_L.setMaximumWidth(0)
+            self.geom_in.w_Outer_Cell_L.setMinimumHeight(0)
+            self.geom_in.w_Outer_Cell_L.setMaximumHeight(0)
 
-        if self.eigenmodeUI.cb_Outer_Cell_R.checkState() == 2:
-            self.eigenmodeUI.w_Outer_Cell_R.setMinimumWidth(300)
+        if self.geom_in.cb_Outer_Cell_R.checkState() == 2:
+            self.geom_in.w_Outer_Cell_R.setMinimumHeight(160)
         else:
-            self.eigenmodeUI.w_Outer_Cell_R.setMinimumWidth(0)
-            self.eigenmodeUI.w_Outer_Cell_R.setMaximumWidth(0)
+            self.geom_in.w_Outer_Cell_R.setMinimumHeight(0)
+            self.geom_in.w_Outer_Cell_R.setMaximumHeight(0)
 
         # create pause and resume icons to avoid creating them over and over again
         self.pause_icon = QIcon()
@@ -120,78 +124,96 @@ class EigenmodeControl:
         self.run_pause_resume_stop_routine()
 
         # set default boundary condition to magnetic wall at both ends
-        self.eigenmodeUI.cb_LBC.setCurrentIndex(2)
-        self.eigenmodeUI.cb_RBC.setCurrentIndex(2)
+        self.ui.cb_LBC.setCurrentIndex(2)
+        self.ui.cb_RBC.setCurrentIndex(2)
 
         # create progress bar object and add to widget
-        self.progress_bar = QProgressBar(self.eigenmodeUI.w_Simulation_Controls)
+        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.eigenmodeUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 4, 1, 1)
+        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 4, 1, 1)
         self.progress_bar.hide()
 
     def signals(self):
         # run eigenmode solver
-        self.eigenmodeUI.pb_Run.clicked.connect(lambda: self.run_SLANS())
+        self.ui.pb_Run.clicked.connect(lambda: self.run_SLANS())
 
         # load shape space
-        self.eigenmodeUI.pb_Select_Shape_Space.clicked.connect(lambda: self.open_file(self.eigenmodeUI.le_Shape_Space, self.cb_Shape_Space_Keys))
+        self.geom_in.pb_Select_Shape_Space.clicked.connect(
+            lambda: self.open_file(self.geom_in.le_Shape_Space, self.geom_in.cb_Shape_Space_Keys))
 
         # control shape entry mode
-        self.eigenmodeUI.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
+        self.geom_in.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
 
         # cell parameters control signals
-        self.eigenmodeUI.cb_Outer_Cell_L.stateChanged.connect(lambda: self.animate_width(self.eigenmodeUI.cb_Outer_Cell_L, self.eigenmodeUI.w_Outer_Cell_L, 0, 300, True))
-        self.eigenmodeUI.cb_Outer_Cell_R.stateChanged.connect(lambda: self.animate_width(self.eigenmodeUI.cb_Outer_Cell_R, self.eigenmodeUI.w_Outer_Cell_R, 0, 300, True))
-        self.eigenmodeUI.cb_Expansion.stateChanged.connect(lambda: self.animate_width(self.eigenmodeUI.cb_Expansion, self.eigenmodeUI.w_Expansion, 0, 300, True))
+        self.geom_in.cb_Outer_Cell_L.stateChanged.connect(lambda: self.animate_height(
+            self.geom_in.cb_Outer_Cell_L, self.geom_in.w_Outer_Cell_L, 0, 160, True))
+        self.geom_in.cb_Outer_Cell_R.stateChanged.connect(lambda: self.animate_height(
+            self.geom_in.cb_Outer_Cell_R, self.geom_in.w_Outer_Cell_R, 0, 160, True))
+        self.geom_in.cb_Expansion.stateChanged.connect(lambda: self.animate_height(
+            self.geom_in.cb_Expansion, self.geom_in.w_Expansion, 0, 160, True))
 
         # cancel
-        self.eigenmodeUI.pb_Cancel.clicked.connect(lambda: self.cancel())
-        self.eigenmodeUI.pb_Pause_Resume.clicked.connect(lambda: self.pause() if self.process_state == 'running' else self.resume())
+        self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
+        self.ui.pb_Pause_Resume.clicked.connect(lambda: self.pause() if self.process_state == 'running' else self.resume())
+
+        # uncomment to draw again
+        # self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
 
         #
-        self.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
+        self.geom_in.le_Alpha.editingFinished.connect(lambda: self.update_alpha())
+
+        #
+        self.geom_in.le_Req_i.editingFinished.connect(lambda: self.geom_in.le_Req_ol.setText(self.geom_in.le_Req_i.text()))
+        self.geom_in.le_Req_i.editingFinished.connect(lambda: self.geom_in.le_Req_or.setText(self.geom_in.le_Req_i.text()))
 
     def shape_entry_widgets_control(self):
-        if self.eigenmodeUI.cb_Shape_Entry_Mode.currentIndex() == 0:
-            self.main_control.animate_height(self.eigenmodeUI.w_Select_Shape_Space, 0, 50, True)
+        if self.geom_in.cb_Shape_Entry_Mode.currentIndex() == 0:
+            self.main_control.animate_height(self.geom_in.w_Select_Shape_Space, 0, 50, True)
 
-            self.eigenmodeUI.w_Enter_Geometry_Manual.setMinimumHeight(0)
-            self.eigenmodeUI.w_Enter_Geometry_Manual.setMaximumHeight(0)
+            self.ui.w_Enter_Geometry_Manual.setMinimumHeight(0)
+            self.ui.w_Enter_Geometry_Manual.setMaximumHeight(0)
 
             # clear cells from graphics view
             self.graphicsView.removeCells()
         else:
-            self.main_control.animate_height(self.eigenmodeUI.w_Enter_Geometry_Manual, 0, 375, True)
+            self.main_control.animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
 
-            self.eigenmodeUI.w_Select_Shape_Space.setMinimumHeight(0)
-            self.eigenmodeUI.w_Select_Shape_Space.setMaximumHeight(0)
+            self.geom_in.w_Select_Shape_Space.setMinimumHeight(0)
+            self.geom_in.w_Select_Shape_Space.setMaximumHeight(0)
 
-            # clear cells from graphics view
-            self.graphicsView.removeCells()
-
-            # draw new cell
-            self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
+            # uncomment following lines to draw
+            # # clear cells from graphics view
+            # self.graphicsView.removeCells()
+            #
+            # # draw new cell
+            # self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
 
     def run_SLANS(self):
         # get analysis parameters
-        n_cells = self.eigenmodeUI.sb_N_Cells.value()
-        n_modules = self.eigenmodeUI.sb_N_Modules.value()
-        f_shift = float(self.eigenmodeUI.le_Freq_Shift.text())
-        n_modes = float(self.eigenmodeUI.le_No_Of_Modes.text())
+        n_cells = self.geom_in.sb_N_Cells.value()
+        n_modules = self.geom_in.sb_N_Modules.value()
+        f_shift = float(self.ui.le_Freq_Shift.text())
+        n_modes = float(self.ui.le_No_Of_Modes.text())
 
         # boundary conditions
-        lbc = self.eigenmodeUI.cb_LBC.currentIndex()+1
-        rbc = self.eigenmodeUI.cb_RBC.currentIndex()+1
+        lbc = self.ui.cb_LBC.currentIndex()+1
+        rbc = self.ui.cb_RBC.currentIndex()+1
         bc = 10*lbc + rbc
 
-        proc_count = self.eigenmodeUI.sb_No_Of_Processors_SLANS.value()
+        proc_count = self.ui.sb_No_Of_Processors_SLANS.value()
+
+        # uq
+        if self.ui.cb_UQ.isChecked():
+            UQ = True
+        else:
+            UQ = False
 
         # get geometric parameters
-        shape_space = self.get_geometric_parameters('SLANS')
+        self.shape_space = self.get_geometric_parameters('SLANS')
 
         # split shape_space for different processes/ MPI share process by rank
-        keys = list(shape_space.keys())
+        keys = list(self.shape_space.keys())
         shape_space_len = len(keys)
         share = round(shape_space_len / proc_count)
 
@@ -211,17 +233,24 @@ class EigenmodeControl:
                     proc_keys_list = keys[p * share:]
 
                 processor_shape_space = {}
-                for key, val in shape_space.items():
+                for key, val in self.shape_space.items():
                     if key in proc_keys_list:
                         processor_shape_space[key] = val
                 # print(f'Processor {p}: {processor_shape_space}')
+                print_("it's here")
+                print_(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
+                       self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text())
 
                 service = mp.Process(target=self.run_sequential, args=(
                     n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
-                    self.main_control.projectDir, self.progress_list))
+                    self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(), UQ))
+
+                print_("it's now hersssse")
                 service.start()
+                print_("it's now here")
 
                 self.processes.append(psutil.Process(service.pid))
+                print_(self.processes_id)
                 self.processes_id.append(service.pid)
 
             except Exception as e:
@@ -245,30 +274,30 @@ class EigenmodeControl:
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
             # change pause/resume icon to pause icon
-            self.eigenmodeUI.pb_Pause_Resume.setIcon(self.pause_icon)
+            self.ui.pb_Pause_Resume.setIcon(self.pause_icon)
 
             # disable pause/resume and cancel buttons
-            self.eigenmodeUI.pb_Pause_Resume.setEnabled(False)
-            self.eigenmodeUI.pb_Cancel.setEnabled(False)
+            self.ui.pb_Pause_Resume.setEnabled(False)
+            self.ui.pb_Cancel.setEnabled(False)
 
             # enable run button in case it was disabled
-            self.eigenmodeUI.pb_Run.setEnabled(True)
+            self.ui.pb_Run.setEnabled(True)
 
         if self.process_state == "running":
             # enable run, pause/resume and cancel buttons
-            self.eigenmodeUI.pb_Pause_Resume.setEnabled(True)
-            self.eigenmodeUI.pb_Cancel.setEnabled(True)
-            self.eigenmodeUI.pb_Run.setEnabled(False)
+            self.ui.pb_Pause_Resume.setEnabled(True)
+            self.ui.pb_Cancel.setEnabled(True)
+            self.ui.pb_Run.setEnabled(False)
 
             # change pause/resume icon to pause icon
-            self.eigenmodeUI.pb_Pause_Resume.setIcon(self.pause_icon)
+            self.ui.pb_Pause_Resume.setIcon(self.pause_icon)
 
         if self.process_state == 'paused':
             # disable run button
-            self.eigenmodeUI.pb_Run.setEnabled(False)
+            self.ui.pb_Run.setEnabled(False)
 
             # change pause/resume button icon to resume icon
-            self.eigenmodeUI.pb_Pause_Resume.setIcon(self.resume_icon)
+            self.ui.pb_Pause_Resume.setIcon(self.resume_icon)
 
     def pause(self):
         # self.log.info("Pausing...")
@@ -331,22 +360,23 @@ class EigenmodeControl:
     def get_geometric_parameters(self, code):
         self.shape_space = {}
         print_('Getting geometric parameters')
-        if self.eigenmodeUI.cb_Shape_Entry_Mode.currentIndex() == 0:
+        if self.geom_in.cb_Shape_Entry_Mode.currentIndex() == 0:
             print_("Test worked")
             try:
                 # self._shape_space = self.load_shape_space(shape_space_name)
-                print_(self._shape_space)
+                # print_(self._shape_space)
 
                 # get selected keys
-                self._selected_keys = self.cb_Shape_Space_Keys.currentText()
+                self._selected_keys = self.geom_in.cb_Shape_Space_Keys.currentText()
+                print("selected keys: ", self.geom_in.cb_Shape_Space_Keys.currentText())
                 # print("Selected keys: ", self._selected_keys, type(self._selected_keys[0]))
-
 
                 # check keys of shape space if results already exist
                 toall = None
                 for key, val in self._shape_space.items():
                     # process for only keys selected in combobox
-                    if self.cb_Shape_Space_Keys.currentText() == "":
+                    if self.geom_in.cb_Shape_Space_Keys.currentText() == "" \
+                            or self.geom_in.cb_Shape_Space_Keys.currentText() == "All":
                         pass
                     else:
                         if key not in self._selected_keys:
@@ -366,6 +396,10 @@ class EigenmodeControl:
 
                         if ans == 'NoToAll':
                             toall = 'NoToAll'
+
+                        if ans == "Does not exist":
+                            self.shape_space[key] = val
+                            toall = None
                     else:
                         if toall == 'YesToAll':
                             self.shape_space[key] = val
@@ -376,52 +410,51 @@ class EigenmodeControl:
                             else:
                                 self.shape_space[key] = val
 
-                print_(self.shape_space)
+                # print_(self.shape_space)
                 return self.shape_space
             except Exception as e:
                 print_(f"File not found, check path:: {e}")
         else:
-            if self.eigenmodeUI.cb_Inner_Cell.checkState() == 2:
+            if self.geom_in.cb_Inner_Cell.checkState() == 2:
                 # Middle Ellipse data
-                A_i_space = self.text_to_list(self.eigenmodeUI.le_A_i.text())
-                B_i_space = self.text_to_list(self.eigenmodeUI.le_B_i.text())
-                a_i_space = self.text_to_list(self.eigenmodeUI.le_a_i.text())
-                b_i_space = self.text_to_list(self.eigenmodeUI.le_b_i.text())
-                Ri_i_space = self.text_to_list(self.eigenmodeUI.le_Ri_i.text())
-                L_i_space = self.text_to_list(self.eigenmodeUI.le_L_i.text())
-                Req_i_space = self.text_to_list(self.eigenmodeUI.le_Req_i.text())
-                alpha_i_space = self.text_to_list(self.eigenmodeUI.le_Alpha.text())
+                A_i_space = self.text_to_list(self.geom_in.le_A_i.text())
+                B_i_space = self.text_to_list(self.geom_in.le_B_i.text())
+                a_i_space = self.text_to_list(self.geom_in.le_a_i.text())
+                b_i_space = self.text_to_list(self.geom_in.le_b_i.text())
+                Ri_i_space = self.text_to_list(self.geom_in.le_Ri_i.text())
+                L_i_space = self.text_to_list(self.geom_in.le_L_i.text())
+                Req_i_space = self.text_to_list(self.geom_in.le_Req_i.text())
+                alpha_i_space = self.text_to_list(self.geom_in.le_Alpha.text())
 
                 inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, alpha_i_space]
             else:
                 inner_cell_space = [[0], [0], [0], [0], [0], [0], [0], [0]]
 
-
-            if self.eigenmodeUI.cb_Outer_Cell_L.checkState() == 2:
+            if self.geom_in.cb_Outer_Cell_L.checkState() == 2:
                 # Middle Ellipse data
-                A_ol_space = self.text_to_list(self.eigenmodeUI.le_A_ol.text())
-                B_ol_space = self.text_to_list(self.eigenmodeUI.le_B_ol.text())
-                a_ol_space = self.text_to_list(self.eigenmodeUI.le_a_ol.text())
-                b_ol_space = self.text_to_list(self.eigenmodeUI.le_b_ol.text())
-                Ri_ol_space = self.text_to_list(self.eigenmodeUI.le_Ri_ol.text())
-                L_ol_space = self.text_to_list(self.eigenmodeUI.le_L_ol.text())
-                Req_ol_space = self.text_to_list(self.eigenmodeUI.le_Req_ol.text())
-                alpha_ol_space = self.text_to_list(self.eigenmodeUI.le_Alpha_ol.text())
+                A_ol_space = self.text_to_list(self.geom_in.le_A_ol.text())
+                B_ol_space = self.text_to_list(self.geom_in.le_B_ol.text())
+                a_ol_space = self.text_to_list(self.geom_in.le_a_ol.text())
+                b_ol_space = self.text_to_list(self.geom_in.le_b_ol.text())
+                Ri_ol_space = self.text_to_list(self.geom_in.le_Ri_ol.text())
+                L_ol_space = self.text_to_list(self.geom_in.le_L_ol.text())
+                Req_ol_space = self.text_to_list(self.geom_in.le_Req_ol.text())
+                alpha_ol_space = self.text_to_list(self.geom_in.le_Alpha_ol.text())
 
                 outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space, Req_ol_space, alpha_ol_space]
             else:
                 outer_cell_L_space = inner_cell_space
 
-            if self.eigenmodeUI.cb_Outer_Cell_R.checkState() == 2:
+            if self.geom_in.cb_Outer_Cell_R.checkState() == 2:
                 # Middle Ellipse data
-                A_or_space = self.text_to_list(self.eigenmodeUI.le_A_or.text())
-                B_or_space = self.text_to_list(self.eigenmodeUI.le_B_or.text())
-                a_or_space = self.text_to_list(self.eigenmodeUI.le_a_or.text())
-                b_or_space = self.text_to_list(self.eigenmodeUI.le_b_or.text())
-                Ri_or_space = self.text_to_list(self.eigenmodeUI.le_Ri_or.text())
-                L_or_space = self.text_to_list(self.eigenmodeUI.le_L_or.text())
-                Req_or_space = self.text_to_list(self.eigenmodeUI.le_Req_or.text())
-                alpha_or_space = self.text_to_list(self.eigenmodeUI.le_Alpha_or.text())
+                A_or_space = self.text_to_list(self.geom_in.le_A_or.text())
+                B_or_space = self.text_to_list(self.geom_in.le_B_or.text())
+                a_or_space = self.text_to_list(self.geom_in.le_a_or.text())
+                b_or_space = self.text_to_list(self.geom_in.le_b_or.text())
+                Ri_or_space = self.text_to_list(self.geom_in.le_Ri_or.text())
+                L_or_space = self.text_to_list(self.geom_in.le_L_or.text())
+                Req_or_space = self.text_to_list(self.geom_in.le_Req_or.text())
+                alpha_or_space = self.text_to_list(self.geom_in.le_Alpha_or.text())
 
                 outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space, Req_or_space, alpha_or_space]
             else:
@@ -438,11 +471,11 @@ class EigenmodeControl:
                                             inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
                                             outer_cell_L = inner_cell
 
-                                            if self.eigenmodeUI.cb_LBP.checkState() == 2 and self.eigenmodeUI.cb_RBP.checkState() == 2:
+                                            if self.geom_in.cb_LBP.checkState() == 2 and self.geom_in.cb_RBP.checkState() == 2:
                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'both', 'FREQ': None}
-                                            elif self.eigenmodeUI.cb_LBP.checkState() == 2 and self.eigenmodeUI.cb_RBP.checkState() == 0:
+                                            elif self.geom_in.cb_LBP.checkState() == 2 and self.geom_in.cb_RBP.checkState() == 0:
                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'left', 'FREQ': None}
-                                            elif self.eigenmodeUI.cb_LBP.checkState() == 0 and self.eigenmodeUI.cb_RBP.checkState() == 2:
+                                            elif self.geom_in.cb_LBP.checkState() == 0 and self.geom_in.cb_RBP.checkState() == 2:
                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'right', 'FREQ': None}
                                             else:
                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'none', 'FREQ': None}
@@ -460,11 +493,11 @@ class EigenmodeControl:
                                                                         inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
                                                                         outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
                                                                         outer_cell_R = outer_cell_L
-                                                                        if self.eigenmodeUI.cb_LBP.checkState() == 2 and self.eigenmodeUI.cb_RBP.checkState() == 0:
+                                                                        if self.geom_in.cb_LBP.checkState() == 2 and self.geom_in.cb_RBP.checkState() == 0:
                                                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
-                                                                        elif self.eigenmodeUI.cb_LBP.checkState() == 0 and self.eigenmodeUI.cb_RBP.checkState() == 2:
+                                                                        elif self.geom_in.cb_LBP.checkState() == 0 and self.geom_in.cb_RBP.checkState() == 2:
                                                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
-                                                                        elif self.eigenmodeUI.cb_LBP.checkState() == 2 and self.eigenmodeUI.cb_RBP.checkState() == 2:
+                                                                        elif self.geom_in.cb_LBP.checkState() == 2 and self.geom_in.cb_RBP.checkState() == 2:
                                                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
                                                                         else:
                                                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
@@ -481,11 +514,11 @@ class EigenmodeControl:
                                                                                                 inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
                                                                                                 outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
                                                                                                 outer_cell_R = [A_or, B_or, a_or, b_or, Ri_or, L_or, Req_i, 0]
-                                                                                                if self.eigenmodeUI.cb_LBP.checkState() == 2 and self.eigenmodeUI.cb_RBP.checkState() == 0:
+                                                                                                if self.geom_in.cb_LBP.checkState() == 2 and self.geom_in.cb_RBP.checkState() == 0:
                                                                                                     self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
-                                                                                                elif self.eigenmodeUI.cb_LBP.checkState() == 0 and self.eigenmodeUI.cb_RBP.checkState() == 2:
+                                                                                                elif self.geom_in.cb_LBP.checkState() == 0 and self.geom_in.cb_RBP.checkState() == 2:
                                                                                                     self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
-                                                                                                elif self.eigenmodeUI.cb_LBP.checkState() == 2 and self.eigenmodeUI.cb_RBP.checkState() == 2:
+                                                                                                elif self.geom_in.cb_LBP.checkState() == 2 and self.geom_in.cb_RBP.checkState() == 2:
                                                                                                     self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
                                                                                                 else:
                                                                                                     self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
@@ -494,13 +527,14 @@ class EigenmodeControl:
             return self.shape_space
 
     def prompt(self, code, fid):
-        path = os.getcwd()
-        path = os.path.join(path, fr"Data\{code}\Cavity{fid}")
+        path = fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity{fid}'
+        # print(path)
+        # path = os.path.join(path, fr"{}\{code}\Cavity{fid}")
         if os.path.exists(path):
-            print_("Data already exists. Do you want to overwrite it?")
+            print_("Simulation data already exists. Do you want to overwrite it?")
             msg = QMessageBox()
             msg.setWindowTitle("Folder Exist")
-            msg.setText("Data already exists. Do you want to overwrite it?")
+            msg.setText("Simulation data already exists. Do you want to overwrite it?")
             msg.setIcon(QMessageBox.Question)
             msg.setStandardButtons(QMessageBox.YesToAll | QMessageBox.Yes | QMessageBox.No | QMessageBox.NoToAll)
             msg.setDefaultButton(QMessageBox.Yes)
@@ -520,12 +554,12 @@ class EigenmodeControl:
             if x == msg.NoToAll:
                 return 'NoToAll'
         else:
-            return 'YesToAll'
+            return "Does not exist"
 
     def open_file(self, le, cb):
         # clear combobox
-        self.cb_Shape_Space_Keys.clear()
-        self.cb_Shape_Space_Keys.addItem('All')
+        self.geom_in.cb_Shape_Space_Keys.clear()
+        self.geom_in.cb_Shape_Space_Keys.addItem('All')
         # self._selected_keys.clear()
 
         filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Json Files (*.json)")
@@ -545,7 +579,7 @@ class EigenmodeControl:
 
     def animate_width(self, cb, widget, min_width, standard, enable, reverse=False):
         if enable:
-            #### GET WIDTH
+            #### GET Height
             width = widget.width()
             #### SET MAX WIDTH
 
@@ -573,9 +607,9 @@ class EigenmodeControl:
 
     def animate_height(self, cb, widget, min_height, standard, enable):
         if enable:
-            #### GET WIDTH
+            # GET WIDTH
             height = widget.width()
-            #### SET MAX WIDTH
+            # SET MAX WIDTH
             if cb.checkState() != 2:
                 heightCollapsed = min_height
                 widget.setMinimumHeight(0)
@@ -583,7 +617,7 @@ class EigenmodeControl:
                 heightCollapsed = standard
                 # widget.setMinimumWidth(standard)
 
-            #### ANIMATION
+            # ANIMATION
             self.animation = QPropertyAnimation(widget, b"maximumHeight")
             self.animation.setDuration(200)
             self.animation.setStartValue(height)
@@ -592,13 +626,13 @@ class EigenmodeControl:
 
     def exe_control(self):
         # Slans
-        self.eigenmodeUI.pb_Genmsh.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\genmesh2.exe"))
-        self.eigenmodeUI.pb_Sl.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\Sl.exe"))
-        self.eigenmodeUI.pb_Slansc.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\slansc.exe"))
-        self.eigenmodeUI.pb_Slansm.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\slansm.exe"))
-        self.eigenmodeUI.pb_Slanss.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\slanss.exe"))
-        self.eigenmodeUI.pb_Slansre.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\slansre.exe"))
-        self.eigenmodeUI.pb_MTFView.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\Mtfview\mtfview.exe"))
+        self.ui.pb_Genmsh.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\genmesh2.exe"))
+        self.ui.pb_Sl.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\Sl.exe"))
+        self.ui.pb_Slansc.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slansc.exe"))
+        self.ui.pb_Slansm.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slansm.exe"))
+        self.ui.pb_Slanss.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slanss.exe"))
+        self.ui.pb_Slansre.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slansre.exe"))
+        self.ui.pb_MTFView.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\Mtfview\mtfview.exe"))
 
     def run_slans_exe(self, path, filename=None):
         path = fr"{self.main_control.parentDir}\em_codes\{path}"
@@ -606,13 +640,14 @@ class EigenmodeControl:
         t.start()
 
     def draw_shape_from_shape_space(self):
-        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255], [109, 144, 79, 255], [139, 139, 139, 255]]
+        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255],
+                  [109, 144, 79, 255], [139, 139, 139, 255]]
         ci = 0
 
         # remove existing cells
         self.graphicsView.removeCells()
         for key in self._shape_space.keys():
-            if key in self.cb_Shape_Space_Keys.currentText():
+            if key in self.geom_in.cb_Shape_Space_Keys.currentText():
                 IC = self._shape_space[key]["IC"]
                 OC = self._shape_space[key]["OC"]
                 BP = self._shape_space[key]["BP"]
@@ -624,128 +659,144 @@ class EigenmodeControl:
 
         shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
         shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.eigenmodeUI.w_Settings.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.eigenmodeUI.scrollArea.setGraphicsEffect(shadow)
+        self.ui.w_Settings.setGraphicsEffect(shadow)
 
         shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
         shadow.setColor(QColor(0, 0, 0, 77))
+        self.geom_in.w_Inner_Cell.setGraphicsEffect(shadow)
 
-        self.eigenmodeUI.w_Simulation_Controls.setGraphicsEffect(shadow)
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+        self.geom_in.w_Outer_Cell_L.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+        self.geom_in.w_Outer_Cell_R.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+        self.geom_in.w_Expansion.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+        self.ui.w_Simulation_Controls.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+        self.ui.w_Show_Cavity.setGraphicsEffect(shadow)
+
+        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        shadow.setColor(QColor(0, 0, 0, 77))
+        self.geom_in.w_Load_Manual.setGraphicsEffect(shadow)
 
     def serialize(self, state_dict):
         # update state file
-        state_dict["Eigen_Shape_Entry_Mode"] = self.eigenmodeUI.cb_Shape_Entry_Mode.currentIndex()
-        state_dict["Eigen_Shape Space"] = self.eigenmodeUI.le_Shape_Space.text()
-        state_dict["Eigen_Mid_Cell_CB"] = self.eigenmodeUI.cb_Inner_Cell.checkState()
-        state_dict["Eigen_Left_Cell_CB"] = self.eigenmodeUI.cb_Outer_Cell_L.checkState()
-        state_dict["Eigen_Right_Cell_CB"] = self.eigenmodeUI.cb_Outer_Cell_R.checkState()
-        state_dict["Eigen_Expansion_CB"] = self.eigenmodeUI.cb_Expansion.checkState()
-        state_dict["Eigen_LBP_CB"] = self.eigenmodeUI.cb_LBP.checkState()
-        state_dict["Eigen_RBP_CB"] = self.eigenmodeUI.cb_RBP.checkState()
+        state_dict["Eigen_Shape_Entry_Mode"] = self.geom_in.cb_Shape_Entry_Mode.currentIndex()
+        state_dict["Eigen_Shape Space"] = self.geom_in.le_Shape_Space.text()
+        state_dict["Eigen_Mid_Cell_CB"] = self.geom_in.cb_Inner_Cell.checkState()
+        state_dict["Eigen_Left_Cell_CB"] = self.geom_in.cb_Outer_Cell_L.checkState()
+        state_dict["Eigen_Right_Cell_CB"] = self.geom_in.cb_Outer_Cell_R.checkState()
+        state_dict["Eigen_Expansion_CB"] = self.geom_in.cb_Expansion.checkState()
+        state_dict["Eigen_LBP_CB"] = self.geom_in.cb_LBP.checkState()
+        state_dict["Eigen_RBP_CB"] = self.geom_in.cb_RBP.checkState()
 
         # cell parameters
-        state_dict["Eigen_A_i"] = self.eigenmodeUI.le_A_i.text()
-        state_dict["Eigen_B_i"] = self.eigenmodeUI.le_B_i.text()
-        state_dict["Eigen_a_i"] = self.eigenmodeUI.le_a_i.text()
-        state_dict["Eigen_b_i"] = self.eigenmodeUI.le_b_i.text()
-        state_dict["Eigen_Ri_i"] = self.eigenmodeUI.le_Ri_i.text()
-        state_dict["Eigen_L_i"] = self.eigenmodeUI.le_L_i.text()
-        state_dict["Eigen_Req_i"] = self.eigenmodeUI.le_Req_i.text()
-        state_dict["Eigen_Alpha_i"] = self.eigenmodeUI.le_Alpha.text()
+        state_dict["Eigen_A_i"] = self.geom_in.le_A_i.text()
+        state_dict["Eigen_B_i"] = self.geom_in.le_B_i.text()
+        state_dict["Eigen_a_i"] = self.geom_in.le_a_i.text()
+        state_dict["Eigen_b_i"] = self.geom_in.le_b_i.text()
+        state_dict["Eigen_Ri_i"] = self.geom_in.le_Ri_i.text()
+        state_dict["Eigen_L_i"] = self.geom_in.le_L_i.text()
+        state_dict["Eigen_Req_i"] = self.geom_in.le_Req_i.text()
+        state_dict["Eigen_Alpha_i"] = self.geom_in.le_Alpha.text()
 
-        state_dict["Eigen_A_ol"] = self.eigenmodeUI.le_A_ol.text()
-        state_dict["Eigen_B_ol"] = self.eigenmodeUI.le_B_ol.text()
-        state_dict["Eigen_a_ol"] = self.eigenmodeUI.le_a_ol.text()
-        state_dict["Eigen_b_ol"] = self.eigenmodeUI.le_b_ol.text()
-        state_dict["Eigen_Ri_ol"] = self.eigenmodeUI.le_Ri_ol.text()
-        state_dict["Eigen_L_ol"] = self.eigenmodeUI.le_L_ol.text()
-        state_dict["Eigen_Req_ol"] = self.eigenmodeUI.le_Req_ol.text()
-        state_dict["Eigen_Alpha_ol"] = self.eigenmodeUI.le_Alpha_ol.text()
+        state_dict["Eigen_A_ol"] = self.geom_in.le_A_ol.text()
+        state_dict["Eigen_B_ol"] = self.geom_in.le_B_ol.text()
+        state_dict["Eigen_a_ol"] = self.geom_in.le_a_ol.text()
+        state_dict["Eigen_b_ol"] = self.geom_in.le_b_ol.text()
+        state_dict["Eigen_Ri_ol"] = self.geom_in.le_Ri_ol.text()
+        state_dict["Eigen_L_ol"] = self.geom_in.le_L_ol.text()
+        state_dict["Eigen_Req_ol"] = self.geom_in.le_Req_ol.text()
+        state_dict["Eigen_Alpha_ol"] = self.geom_in.le_Alpha_ol.text()
 
-        state_dict["Eigen_A_or"] = self.eigenmodeUI.le_A_or.text()
-        state_dict["Eigen_B_or"] = self.eigenmodeUI.le_B_or.text()
-        state_dict["Eigen_a_or"] = self.eigenmodeUI.le_a_or.text()
-        state_dict["Eigen_b_or"] = self.eigenmodeUI.le_b_or.text()
-        state_dict["Eigen_Ri_or"] = self.eigenmodeUI.le_Ri_or.text()
-        state_dict["Eigen_L_or"] = self.eigenmodeUI.le_L_or.text()
-        state_dict["Eigen_Req_or"] = self.eigenmodeUI.le_Req_or.text()
-        state_dict["Eigen_Alpha_or"] = self.eigenmodeUI.le_Alpha_or.text()
+        state_dict["Eigen_A_or"] = self.geom_in.le_A_or.text()
+        state_dict["Eigen_B_or"] = self.geom_in.le_B_or.text()
+        state_dict["Eigen_a_or"] = self.geom_in.le_a_or.text()
+        state_dict["Eigen_b_or"] = self.geom_in.le_b_or.text()
+        state_dict["Eigen_Ri_or"] = self.geom_in.le_Ri_or.text()
+        state_dict["Eigen_L_or"] = self.geom_in.le_L_or.text()
+        state_dict["Eigen_Req_or"] = self.geom_in.le_Req_or.text()
+        state_dict["Eigen_Alpha_or"] = self.geom_in.le_Alpha_or.text()
 
         # settings
-        state_dict["Eigen_N_Cells"] = self.eigenmodeUI.sb_N_Cells.value()
-        state_dict["Eigen_N_Modules"] = self.eigenmodeUI.sb_N_Modules.value()
-        state_dict["Eigen_Polarization"] = self.eigenmodeUI.cb_Polarization_SLANS.currentIndex()
+        state_dict["Eigen_N_Cells"] = self.geom_in.sb_N_Cells.value()
+        state_dict["Eigen_N_Modules"] = self.geom_in.sb_N_Modules.value()
+        state_dict["Eigen_Polarization"] = self.ui.cb_Polarization_SLANS.currentIndex()
 
-        state_dict["Eigen_Freq_Shift"] = self.eigenmodeUI.le_Freq_Shift.text()
-        state_dict["Eigen_No_Of_Modes"] = self.eigenmodeUI.le_No_Of_Modes.text()
-        state_dict["Eigen_LBC"] = self.eigenmodeUI.cb_LBC.currentIndex()
-        state_dict["Eigen_RBC"] = self.eigenmodeUI.cb_RBC.currentIndex()
-        state_dict["Eigen_No_Of_Processors"] = self.eigenmodeUI.sb_No_Of_Processors_SLANS.value()
+        state_dict["Eigen_Freq_Shift"] = self.ui.le_Freq_Shift.text()
+        state_dict["Eigen_No_Of_Modes"] = self.ui.le_No_Of_Modes.text()
+        state_dict["Eigen_LBC"] = self.ui.cb_LBC.currentIndex()
+        state_dict["Eigen_RBC"] = self.ui.cb_RBC.currentIndex()
+        state_dict["Eigen_No_Of_Processors"] = self.ui.sb_No_Of_Processors_SLANS.value()
 
     def deserialize(self, state_dict):
         # update state file
-        self.eigenmodeUI.cb_Shape_Entry_Mode.setCurrentIndex(state_dict["Eigen_Shape_Entry_Mode"])
-        self.eigenmodeUI.le_Shape_Space.setText(state_dict["Eigen_Shape Space"])
-        self.eigenmodeUI.cb_Inner_Cell.setCheckState(state_dict["Eigen_Mid_Cell_CB"])
-        self.eigenmodeUI.cb_Outer_Cell_L.setCheckState(state_dict["Eigen_Left_Cell_CB"])
-        self.eigenmodeUI.cb_Outer_Cell_R.setCheckState(state_dict["Eigen_Right_Cell_CB"])
-        self.eigenmodeUI.cb_Expansion.setCheckState(state_dict["Eigen_Expansion_CB"])
-        self.eigenmodeUI.cb_LBP.setCheckState(state_dict["Eigen_LBP_CB"])
-        self.eigenmodeUI.cb_RBP.setCheckState(state_dict["Eigen_RBP_CB"])
+        self.geom_in.cb_Shape_Entry_Mode.setCurrentIndex(state_dict["Eigen_Shape_Entry_Mode"])
+        self.geom_in.le_Shape_Space.setText(state_dict["Eigen_Shape Space"])
+        self.geom_in.cb_Inner_Cell.setCheckState(state_dict["Eigen_Mid_Cell_CB"])
+        self.geom_in.cb_Outer_Cell_L.setCheckState(state_dict["Eigen_Left_Cell_CB"])
+        self.geom_in.cb_Outer_Cell_R.setCheckState(state_dict["Eigen_Right_Cell_CB"])
+        self.geom_in.cb_Expansion.setCheckState(state_dict["Eigen_Expansion_CB"])
+        self.geom_in.cb_LBP.setCheckState(state_dict["Eigen_LBP_CB"])
+        self.geom_in.cb_RBP.setCheckState(state_dict["Eigen_RBP_CB"])
 
         # cell parameters
-        self.eigenmodeUI.le_A_i.setText(state_dict["Eigen_A_i"])
-        self.eigenmodeUI.le_B_i.setText(state_dict["Eigen_B_i"])
-        self.eigenmodeUI.le_a_i.setText(state_dict["Eigen_a_i"])
-        self.eigenmodeUI.le_b_i.setText(state_dict["Eigen_b_i"])
-        self.eigenmodeUI.le_Ri_i.setText(state_dict["Eigen_Ri_i"])
-        self.eigenmodeUI.le_L_i.setText(state_dict["Eigen_L_i"])
-        self.eigenmodeUI.le_Req_i.setText(state_dict["Eigen_Req_i"])
-        self.eigenmodeUI.le_Alpha.setText(state_dict["Eigen_Alpha_i"])
+        self.geom_in.le_A_i.setText(state_dict["Eigen_A_i"])
+        self.geom_in.le_B_i.setText(state_dict["Eigen_B_i"])
+        self.geom_in.le_a_i.setText(state_dict["Eigen_a_i"])
+        self.geom_in.le_b_i.setText(state_dict["Eigen_b_i"])
+        self.geom_in.le_Ri_i.setText(state_dict["Eigen_Ri_i"])
+        self.geom_in.le_L_i.setText(state_dict["Eigen_L_i"])
+        self.geom_in.le_Req_i.setText(state_dict["Eigen_Req_i"])
+        self.geom_in.le_Alpha.setText(state_dict["Eigen_Alpha_i"])
 
-        self.eigenmodeUI.le_A_ol.setText(state_dict["Eigen_A_ol"])
-        self.eigenmodeUI.le_B_ol.setText(state_dict["Eigen_B_ol"])
-        self.eigenmodeUI.le_a_ol.setText(state_dict["Eigen_a_ol"])
-        self.eigenmodeUI.le_b_ol.setText(state_dict["Eigen_b_ol"])
-        self.eigenmodeUI.le_Ri_ol.setText(state_dict["Eigen_Ri_ol"])
-        self.eigenmodeUI.le_L_ol.setText(state_dict["Eigen_L_ol"])
-        self.eigenmodeUI.le_Req_ol.setText(state_dict["Eigen_Req_ol"])
-        self.eigenmodeUI.le_Alpha_ol.setText(state_dict["Eigen_Alpha_ol"])
+        self.geom_in.le_A_ol.setText(state_dict["Eigen_A_ol"])
+        self.geom_in.le_B_ol.setText(state_dict["Eigen_B_ol"])
+        self.geom_in.le_a_ol.setText(state_dict["Eigen_a_ol"])
+        self.geom_in.le_b_ol.setText(state_dict["Eigen_b_ol"])
+        self.geom_in.le_Ri_ol.setText(state_dict["Eigen_Ri_ol"])
+        self.geom_in.le_L_ol.setText(state_dict["Eigen_L_ol"])
+        self.geom_in.le_Req_ol.setText(state_dict["Eigen_Req_ol"])
+        self.geom_in.le_Alpha_ol.setText(state_dict["Eigen_Alpha_ol"])
 
-        self.eigenmodeUI.le_A_or.setText(state_dict["Eigen_A_or"])
-        self.eigenmodeUI.le_B_or.setText(state_dict["Eigen_B_or"])
-        self.eigenmodeUI.le_a_or.setText(state_dict["Eigen_a_or"])
-        self.eigenmodeUI.le_b_or.setText(state_dict["Eigen_b_or"])
-        self.eigenmodeUI.le_Ri_or.setText(state_dict["Eigen_Ri_or"])
-        self.eigenmodeUI.le_L_or.setText(state_dict["Eigen_L_or"])
-        self.eigenmodeUI.le_Req_or.setText(state_dict["Eigen_Req_or"])
-        self.eigenmodeUI.le_Alpha_or.setText(state_dict["Eigen_Alpha_or"])
+        self.geom_in.le_A_or.setText(state_dict["Eigen_A_or"])
+        self.geom_in.le_B_or.setText(state_dict["Eigen_B_or"])
+        self.geom_in.le_a_or.setText(state_dict["Eigen_a_or"])
+        self.geom_in.le_b_or.setText(state_dict["Eigen_b_or"])
+        self.geom_in.le_Ri_or.setText(state_dict["Eigen_Ri_or"])
+        self.geom_in.le_L_or.setText(state_dict["Eigen_L_or"])
+        self.geom_in.le_Req_or.setText(state_dict["Eigen_Req_or"])
+        self.geom_in.le_Alpha_or.setText(state_dict["Eigen_Alpha_or"])
 
         # settings
-        self.eigenmodeUI.sb_N_Cells.setValue(state_dict["Eigen_N_Cells"])
-        self.eigenmodeUI.sb_N_Modules.setValue(state_dict["Eigen_N_Modules"])
-        self.eigenmodeUI.cb_Polarization_SLANS.setCurrentIndex(state_dict["Eigen_Polarization"])
-        self.eigenmodeUI.le_Freq_Shift.setText(state_dict["Eigen_Freq_Shift"])
-        self.eigenmodeUI.le_No_Of_Modes.setText(state_dict["Eigen_No_Of_Modes"])
-        self.eigenmodeUI.cb_LBC.setCurrentIndex(state_dict["Eigen_LBC"])
-        self.eigenmodeUI.cb_RBC.setCurrentIndex(state_dict["Eigen_RBC"])
-        self.eigenmodeUI.sb_No_Of_Processors_SLANS.setValue(state_dict["Eigen_No_Of_Processors"])
+        self.geom_in.sb_N_Cells.setValue(state_dict["Eigen_N_Cells"])
+        self.geom_in.sb_N_Modules.setValue(state_dict["Eigen_N_Modules"])
+        self.ui.cb_Polarization_SLANS.setCurrentIndex(state_dict["Eigen_Polarization"])
+        self.ui.le_Freq_Shift.setText(state_dict["Eigen_Freq_Shift"])
+        self.ui.le_No_Of_Modes.setText(state_dict["Eigen_No_Of_Modes"])
+        self.ui.cb_LBC.setCurrentIndex(state_dict["Eigen_LBC"])
+        self.ui.cb_RBC.setCurrentIndex(state_dict["Eigen_RBC"])
+        self.ui.sb_No_Of_Processors_SLANS.setValue(state_dict["Eigen_No_Of_Processors"])
 
     @staticmethod
     def load_shape_space(filename):
-        fr = FileReader()
-        dir = filename
+        dirc = filename
 
         # check if extension is included
-        if dir.split('.')[-1] != 'json':
-            dir = f'{dir}.json'
+        if dirc.split('.')[-1] != 'json':
+            dirc = f'{dir}.json'
 
-        df = fr.json_reader(dir)
+        df = fr.json_reader(dirc)
         # print_(df)
 
         return df.to_dict()
@@ -770,6 +821,7 @@ class EigenmodeControl:
             return range(l[0], l[1], l[2])
         elif 'linspace' in txt:
             l = eval(f'np.{txt}')
+            print(l)
             return l
         else:
             l = ast.literal_eval(txt)
@@ -779,315 +831,217 @@ class EigenmodeControl:
                 return list(l)
 
     @staticmethod
-    def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir, progress_list):
+    def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir,
+                       progress_list, sub_dir='', UQ=False):
         progress = 0
         # get length of processor
         total_no_of_shapes = len(list(processor_shape_space.keys()))
 
         for key, shape in processor_shape_space.items():
             # # create folders for all keys
-            slans_geom.createFolder(key, projectDir)
+            slans_geom.createFolder(key, projectDir, subdir=sub_dir)
 
-            # run slans code
+            write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+
+            # run SLANS code
             start_time = time.time()
             try:
                 slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
                                   n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir)
-            except:
+                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+            except KeyError:
                 slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
                                   n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir)
+                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+
+            # run UQ
+            if UQ:
+                print_("UQ")
+                uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
+                   n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
+                   f_shift=f_shift, bc=bc, parentDir=parentDir, projectDir=projectDir)
 
             print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
 
             # update progress
             progress_list.append((progress+1)/total_no_of_shapes)
 
-
-class ProgressMonitor(QThread):
-    sig = QtCore.pyqtSignal(int)
-
-    def __init__(self, eig_control, projectDir):
-        super(QThread, self).__init__()
-        self.eig_control = eig_control
-        self.proc_ids = eig_control.processes_id
-        self.progress_bar = eig_control.progress_bar
-        self.projectDir = projectDir
-
-    def run(self):
-        self.progress_monitor(self.proc_ids)
-
-    def progress_monitor(self, proc_ids):
-        proc_count = len(proc_ids)
-        while self.eig_control.show_progress_bar:
-            progress = sum(self.eig_control.progress_list)/proc_count
-            self.sig.emit(round(progress*100, 10))
+    def update_alpha(self):
+        A_i_space = self.text_to_list(self.geom_in.le_A_i.text())[0]
+        B_i_space = self.text_to_list(self.geom_in.le_B_i.text())[0]
+        a_i_space = self.text_to_list(self.geom_in.le_a_i.text())[0]
+        b_i_space = self.text_to_list(self.geom_in.le_b_i.text())[0]
+        Ri_i_space = self.text_to_list(self.geom_in.le_Ri_i.text())[0]
+        L_i_space = self.text_to_list(self.geom_in.le_L_i.text())[0]
+        Req_i_space = self.text_to_list(self.geom_in.le_Req_i.text())[0]
+        print(A_i_space)
+        try:
+            alpha_i_space = calculate_alpha(A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, 0)
+            self.geom_in.le_Alpha.setText(f"{round(alpha_i_space, 2)}")
+        except:
+            pass
 
 
-class EndRoutine(QThread):
-    def __init__(self, control, projectDir):
-        super(QThread, self).__init__()
-        self.control = control
-        self.proc_ids = control.processes_id
-        self.projectDir = projectDir
+def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, projectDir):
+    err = False
+    result_dict_slans = {}
+    slans_obj_list = qois
+    for o in qois:
+        result_dict_slans[o] = {'expe': [], 'stdDev': []}
 
-    def run(self):
-        self.end_routine()
+    # EXAMPLE: p_true = np.array([1, 2, 3, 4, 5]).T
+    p_true = shape['IC'][0:5]
+    # ic(p_true)
+    rdim = len(p_true)  # How many variabels will be considered as random in our case 5
+    degree = 1
 
-    def end_routine(self):
-        for pid in self.proc_ids:
+    #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
+    flag_stroud = 1
+    if flag_stroud == 1:
+        nodes, weights, bpoly = quad_stroud3(rdim, degree)
+        nodes = 2. * nodes - 1.
+    elif flag_stroud == 2:
+        nodes, weights, bpoly = quad_stroud3(rdim, degree)  # change to stroud 5 later
+        nodes = 2. * nodes - 1.
+    else:
+        ic('flag_stroud==1 or flag_stroud==2')
+
+    #  mean value of geometrical parameters
+    p_init = np.zeros(np.shape(p_true))
+
+    no_parm, no_sims = np.shape(nodes)
+    ic(nodes)
+    delta = 0.005  # or 0.1
+
+    Ttab_val_f = []
+    print_('3')
+    sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
+    for i in range(no_sims):
+        skip = False
+        p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
+        p_init[1] = p_true[1] * (1 + delta * nodes[1, i])
+        p_init[2] = p_true[2] * (1 + delta * nodes[2, i])
+        p_init[3] = p_true[3] * (1 + delta * nodes[3, i])
+        p_init[4] = p_true[4] * (1 + delta * nodes[4, i])
+
+        par_mid = np.append(p_init, shape['IC'][5:]).tolist()
+        par_end = par_mid
+        print_(par_mid)
+
+        # perform checks on geometry
+        ok = perform_geometry_checks(par_mid, par_end)
+        print_("OK", ok)
+        if not ok:
+            err = True
+            break
+        fid = fr'{key}_Q{i}'
+
+        # check if folder exists and skip if it does
+        print_(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}')
+        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}'):
+            skip = True
+            # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\Cavity{key}\Cavity{fid}')
+
+        # skip analysis if folder already exists.
+        if not skip:
+            #  run model using SLANS or CST
+            # # create folders for all keys
+            slans_geom.createFolder(fid, projectDir, subdir=sub_dir)
             try:
-                p = psutil.Process(pid)
-                while p.is_running():
-                    pass
+                slans_geom.cavity(n_cells, n_modules, par_mid, par_end, par_end,
+                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+            except KeyError:
+                slans_geom.cavity(n_cells, n_modules, par_mid, par_end, par_end,
+                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
 
-                print(fr"process {p} ended")
-            except:
-                pass
+        filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\cavity_{bc}.svl'
+        if os.path.exists(filename):
+            params = fr.svl_reader(filename)
+            norm_length = 2*n_cells*shape['IC'][5]
+            ic(n_cells, norm_length)
+            qois_result = get_qoi_value(params, slans_obj_list, n_cells, norm_length)
+            print_(qois_result)
+            # sometimes some degenerate shapes are still generated and the solver returns zero
+            # for the objective functions, such shapes are considered invalid
+            for objr in qois_result:
+                if objr == 0:
+                    # skip key
+                    err = True
+                    break
 
-        self.control.cancel()
+            tab_val_f = qois_result
 
-
-class CheckableComboBox(QComboBox):
-
-    # Subclass Delegate to increase item height
-    class Delegate(QStyledItemDelegate):
-        def sizeHint(self, option, index):
-            size = super().sizeHint(option, index)
-            size.setHeight(20)
-            return size
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Make the combo editable to set a custom text, but readonly
-        self.setEditable(True)
-        self.lineEdit().setReadOnly(True)
-        # Make the lineedit the same color as QPushButton
-        palette = qApp.palette()
-        palette.setBrush(QPalette.Base, palette.button())
-        self.lineEdit().setPalette(palette)
-
-        # Use custom delegate
-        self.setItemDelegate(CheckableComboBox.Delegate())
-
-        # Update the text when an item is toggled
-        self.model().dataChanged.connect(self.updateText)
-
-        # Hide and show popup when clicking the line edit
-        self.lineEdit().installEventFilter(self)
-        self.closeOnLineEditClick = False
-
-        # Prevent popup from closing when clicking on an item
-        self.view().viewport().installEventFilter(self)
-
-    def resizeEvent(self, event):
-        # Recompute text to elide as needed
-        self.updateText()
-        super().resizeEvent(event)
-
-    def eventFilter(self, object, event):
-
-        if object == self.lineEdit():
-            if event.type() == QEvent.MouseButtonRelease:
-                if self.closeOnLineEditClick:
-                    self.hidePopup()
-                else:
-                    self.showPopup()
-                return True
-            return False
-
-        if object == self.view().viewport():
-            if event.type() == QEvent.MouseButtonRelease:
-                index = self.view().indexAt(event.pos())
-                item = self.model().item(index.row())
-
-                if item.checkState() == Qt.Checked:
-                    item.setCheckState(Qt.Unchecked)
-
-                    if item == self.model().item(0):
-                        # deselect all items if item check is all
-                        for i in range(1, self.model().rowCount()):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Unchecked)
-                else:
-                    item.setCheckState(Qt.Checked)
-
-                    if item == self.model().item(0):
-                        # deselect all items if item check is all
-                        for i in range(1, self.model().rowCount()):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Checked)
-
-                return True
-        return False
-
-    def showPopup(self):
-        super().showPopup()
-        # When the popup is displayed, a click on the lineedit should close it
-        self.closeOnLineEditClick = True
-
-    def hidePopup(self):
-        super().hidePopup()
-        # Used to prevent immediate reopening when clicking on the lineEdit
-        self.startTimer(100)
-        # Refresh the display text when closing
-        self.updateText()
-
-    def timerEvent(self, event):
-        # After timeout, kill timer, and reenable click on line edit
-        self.killTimer(event.timerId())
-        self.closeOnLineEditClick = False
-
-    def updateText(self):
-        texts = []
-        for i in range(1, self.model().rowCount()):
-            if self.model().item(i).checkState() == Qt.Checked:
-                texts.append(self.model().item(i).text())
-        text = ", ".join(texts)
-        self.lineEdit().setText(text)
-
-        # # Compute elided text (with "...")
-        # metrics = QFontMetrics(self.lineEdit().font())
-        # elidedText = metrics.elidedText(text, Qt.ElideRight, self.lineEdit().width())
-        # self.lineEdit().setText(elidedText)
-
-    def addItem(self, text, data=None):
-        item = QStandardItem()
-        item.setText(text)
-        if data is None:
-            item.setData(text)
+            Ttab_val_f.append(tab_val_f)
         else:
-            item.setData(data)
-        item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        item.setData(Qt.Unchecked, Qt.CheckStateRole)
-        self.model().appendRow(item)
+            err = True
 
-    def addItems(self, texts, datalist=None):
-        for i, text in enumerate(texts):
-            try:
-                data = datalist[i]
-            except (TypeError, IndexError):
-                data = None
-            self.addItem(text, data)
+    # # add original point
+    # filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\cavity_33.svl'
+    # params = fr.svl_reader(filename)
+    # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
+    # tab_val_f = obj_result
+        # Ttab_val_f.append(tab_val_f)
 
-    def currentData(self):
-        # Return the list of selected items data
-        res = []
-        for i in range(self.model().rowCount()):
-            if self.model().item(i).checkState() == Qt.Checked:
-                res.append(self.model().item(i).data())
-        return res
+    print_("Error: ", err)
+    ic(Ttab_val_f)
+    # import matplotlib.pyplot as plt
+    if not err:
+        v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)
+        # ic(v_expe_fobj, v_stdDev_fobj)
+        # append results to dict
+        ic(v_expe_fobj, v_stdDev_fobj)
+        for i, o in enumerate(slans_obj_list):
+            result_dict_slans[o]['expe'].append(v_expe_fobj[i])
+            result_dict_slans[o]['stdDev'].append(v_stdDev_fobj[i])
 
-    # def run_SLANS_sequential(self, n_cells, n_modules, shape_space, f_shift, n_modes):
-    #     try:
-    #         start = time.time()
-    #         for key, shape in shape_space.items():
-    #             print_(f'key, shape: {key, shape}')
-    #
-    #             # create folder
-    #             self.slans_geom.createFolder(key, self.main_control.projectDir)
-    #
-    #             try:
-    #                 self.slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'], fid=key, f_shift=f_shift, beampipes=shape['BP'], n_modes=n_modes+1,
-    #                                        parentDir=self.main_control.parentDir, projectDir=self.main_control.projectDir)
-    #             except:
-    #                 self.slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'], fid=key, f_shift=f_shift, beampipes=shape['BP'], n_modes=n_modes+1,
-    #                                        parentDir=self.main_control.parentDir, projectDir=self.main_control.projectDir)
-    #
-    #
-    #             print_(f'Runtime/shape: {time.time() - start}')
-    #         end = time.time()
-    #         runtime = end - start
-    #         print_(f'Runtime: {runtime}')
-    #     except Exception as e:
-    #         print_("SLANS code ran into an exception starting simulation::", e)
-    #
-    # def run_SLANS_parallel(self, proc_count, n_cells, n_modules, shape_space, f_shift, n_modes):
-    #     try:
-    #
-    #         # create folders for all keys
-    #         for key in shape_space.keys():
-    #             self.slans_geom.createFolder(key, self.main_control.projectDir)
-    #
-    #         # run slans
-    #         command = ["mpiexec", "-np", f"{proc_count}", "python", fr"{self.win.parentDir}/SLANS_code/slans_mpi.py",
-    #                    f"{n_cells}", f'{n_modules}', f'{shape_space}', f'{f_shift}', f'{n_modes+1}',
-    #                    f'{self.main_control.parentDir}', f'{self.main_control.projectDir}']
-    #
-    #         print_(command)
-    #         sp = subprocess.run(command)
-    #
-    #         # Combining dictionaries
-    #         print_('Combining dictionaries')
-    #
-    #         result = {}
-    #         for index in range(proc_count):
-    #             with open(f'{self.main_control.parentDir}\Cavities\shape_space{index}.json', "r") as infile:
-    #                 result.update(json.load(infile))
-    #
-    #         # check if extension is included
-    #         if self.filename.split('.')[-1] != 'json':
-    #             self.filename = f'{self.filename}.json'
-    #
-    #         with open(f'{self.win.parentDir}/Cavity Population/{self.filename}', "w") as outfile:
-    #             json.dump(result, outfile, indent=4, separators=(',', ': '))
-    #
-    #     except Exception as e:
-    #         print_(f'Exception encountered in parallel code -> {e}')
+            # pdf = normal_dist(np.sort(np.array(Ttab_val_f).T[i]), v_expe_fobj[i], v_stdDev_fobj[i])
+            # plt.plot(np.sort(np.array(Ttab_val_f).T[i]), pdf)
 
-    # def run_SLANS_parallel_MP(self, proc_count, n_cells, n_modules, shape_space, f_shift, n_modes):
-    #     try:
-    #         # save shape space as temporaty file to be read from the parallel code
-    #         shape_space_name = '_temp_shape_space.json'
-    #         with open(fr'{self.main_control.projectDir}\Cavities\{shape_space_name}', "w") as outfile:
-    #             json.dump(shape_space, outfile, indent=4, separators=(',', ': '))
-    #
-    #         # run in thread ##change the program not to depend on Ri start position
-    #         command = ["python", fr"{self.main_control.parentDir}\simulation_codes\SLANS\slans_mpi_MP.py",
-    #                    f"{n_cells}", f'{n_modules}', fr"{shape_space_name}",
-    #                    f'{f_shift}', f'{n_modes+1}', fr"{proc_count}",
-    #                    fr'{self.main_control.parentDir}', fr'{self.main_control.projectDir}']
-    #
-    #         start_time = time.time()
-    #         sp = subprocess.run(command)
-    #         print()
-    #         print_(f'Total runtime: {time.time() - start_time}')
-    #
-    #     except Exception as e:
-    #         print_(f'Exception encountered in parallel code -> {e}')
+        # plt.show()
+
+        with open(fr"{projectDir}\SimulationData\SLANS\Cavity{key}\uq.json", 'w') as file:
+            file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
+    else:
+        print_(fr"There was a problem running UQ analysis for Cavity{key}")
 
 
-    # def run_SLANS_parallel_MP_1(self, proc_count, n_cells, n_modules, shape_space, f_shift, n_modes):
-    #
-    #     # get dictionary from json file
-    #     dirc = fr'{projectDir}\Cavities\{shape_space_name}'
-    #     shape_space = fr.json_reader(dirc)
-    #
-    #     # split shape_space for different processes/ MPI share process by rank
-    #     keys = list(shape_space.keys())
-    #     shape_space_len = len(keys)
-    #     share = round(shape_space_len / proc_count)
-    #
-    #     processes = []
-    #     for p in range(proc_count):
-    #         try:
-    #             if p < proc_count-1:
-    #                 proc_keys_list = keys[p * share:p * share + share]
-    #             else:
-    #                 proc_keys_list = keys[p * share:]
-    #
-    #             processor_shape_space = {}
-    #             for key, val in shape_space.items():
-    #                 if proc_keys_list[0] <= int(key) <= proc_keys_list[-1]:
-    #                     processor_shape_space[key] = val
-    #             # print(f'Processor {p}: {processor_shape_space}')
-    #
-    #             service = mp.Process(target=run_sequential, args=(n_cells, n_modules, processor_shape_space, n_modes, f_shift, parentDir, projectDir))
-    #             service.start()
-    #             processes.append(service)
-    #             # print("Done")
-    #
-    #         except Exception as e:
-    #             print_("Exception in run_MP::", e)
+def get_qoi_value(d, obj, n_cells, norm_length):
+    Req = d['CAVITY RADIUS'][n_cells-1] * 10  # convert to mm
+    Freq = d['FREQUENCY'][n_cells-1]
+    E_stored = d['STORED ENERGY'][n_cells-1]
+    Rsh = d['SHUNT IMPEDANCE'][n_cells-1]  # MOhm
+    Q = d['QUALITY FACTOR'][n_cells-1]
+    Epk = d['MAXIMUM ELEC. FIELD'][n_cells-1]  # MV/m
+    Hpk = d['MAXIMUM MAG. FIELD'][n_cells-1]  # A/m
+    # Vacc = dict['ACCELERATION'][0]
+    Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells-1]  # MV/m
+    Rsh_Q = d['EFFECTIVE IMPEDANCE'][n_cells-1]  # Ohm
+
+    Vacc = np.sqrt(
+        2 * Rsh_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6
+    # factor of 2, remember circuit and accelerator definition
+    # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+    Eacc = Vacc / (norm_length * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
+    Epk_Eacc = Epk / Eacc
+    Bpk_Eacc = (Hpk * 4 * np.pi * 1e-7) * 1e3 / Eacc
+
+    d = {
+        "Req": Req,
+        "freq": Freq,
+        "Q": Q,
+        "E": E_stored,
+        "R/Q": 2 * Rsh_Q,
+        "Epk/Eacc": Epk_Eacc,
+        "Bpk/Eacc": Bpk_Eacc
+    }
+
+    objective = []
+
+    # append objective functions
+    for o in obj:
+        if o in d.keys():
+            objective.append(d[o])
+
+    return objective

@@ -104,7 +104,7 @@ class SLANSData:
             Rmsh, Zmsh = np.meshgrid(Z, R)
 
             #### DIRECTION GRID AND DATA
-            print("Direction Grid Data")
+            print("Direction Grid node_editor")
             Er_mat = Er.reshape(len(R), len(Z))
             Ez_mat = Ez.reshape(len(R), len(Z))
             Emag_mat = Emag.reshape(len(R), len(Z))
@@ -327,7 +327,7 @@ class SLANSDataExtraction:
 
             print(request)
 
-            if request == '0D Data':
+            if request == '0D node_editor':
                 get_0D_plot_data()
                 print(len(Epk_Eacc_arr), len(Bpk_Eacc_arr), len(Epk_arr), len(A), len(kcc_arr))
 
@@ -340,7 +340,7 @@ class SLANSDataExtraction:
                     df = pd.DataFrame.from_dict(data)
                     df.to_excel(f'{save_excel}.xlsx', index=False)
 
-            if request == '1D Data':
+            if request == '1D node_editor':
                 if not os.path.exists(f'{save_excel}_Axis_Fields.xlsx') and not os.path.exists(f'{save_excel}_Surface_Fields.xlsx'):
                     get_1D_plot_data()
                 else:

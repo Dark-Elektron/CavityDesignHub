@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_EAT(object):
     def setupUi(self, EAT):
         EAT.setObjectName("EAT")
-        EAT.resize(317, 75)
+        EAT.resize(321, 75)
         EAT.setMinimumSize(QtCore.QSize(0, 75))
         EAT.setMaximumSize(QtCore.QSize(16777215, 75))
         self.gridLayout = QtWidgets.QGridLayout(EAT)
@@ -47,6 +47,10 @@ class Ui_EAT(object):
         self.sb_Font_Size.setProperty("value", 14)
         self.sb_Font_Size.setObjectName("sb_Font_Size")
         self.gridLayout_2.addWidget(self.sb_Font_Size, 0, 3, 1, 1)
+        self.sb_Rotation = QtWidgets.QSpinBox(self.widget)
+        self.sb_Rotation.setMaximum(360)
+        self.sb_Rotation.setObjectName("sb_Rotation")
+        self.gridLayout_2.addWidget(self.sb_Rotation, 0, 4, 1, 1)
         self.gridLayout.addWidget(self.widget, 0, 0, 1, 2)
 
         self.retranslateUi(EAT)
@@ -61,6 +65,7 @@ class Ui_EAT(object):
         self.cb_Box.setItemText(1, _translate("EAT", "Round"))
         self.cb_Box.setItemText(2, _translate("EAT", "Square"))
         self.cb_Box.setItemText(3, _translate("EAT", "Round4"))
+        self.le_Text.setText(_translate("EAT", "Text"))
 
 
 if __name__ == "__main__":

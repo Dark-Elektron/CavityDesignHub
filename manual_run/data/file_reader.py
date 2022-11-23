@@ -196,13 +196,13 @@ class FileReader:
 
 if __name__ == '__main__':
     fr = FileReader()
-    # txt = fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data/SLANS/Cavity382/cavity_mm.pam")
-    # fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data/SLANS/Cavity1/cavity_mm_7.af")
+    # txt = fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor/SLANS/Cavity382/cavity_mm.pam")
+    # fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor/SLANS/Cavity1/cavity_mm_7.af")
     # df = fr.excel_reader(r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Dataframe_full_data.xlsx')
-    # print([[x] for x in df["Midcell Data"].iloc[0][1:8]])
-    # print(len(df["Midcell Data"]))
-    # print([[x] for x in df["Midcell Data"].iloc[0][8:20]])
-    # print([[x] for x in df["Midcell Data"].iloc[0][10:11]])
+    # print([[x] for x in df["Midcell node_editor"].iloc[0][1:8]])
+    # print(len(df["Midcell node_editor"]))
+    # print([[x] for x in df["Midcell node_editor"].iloc[0][8:20]])
+    # print([[x] for x in df["Midcell node_editor"].iloc[0][10:11]])
 
     # # dataframe from json
     # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Cavity Population/pseudo_shape_space.json'

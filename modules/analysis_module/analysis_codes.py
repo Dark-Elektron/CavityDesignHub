@@ -150,7 +150,7 @@ class Analysis:
             print_("Time run:: ", time.time() - start_time)
             start_time = time.time()
 
-        # print_("Extracted Data::", self.population)
+        # print_("Extracted node_editor::", self.population)
         end = time.time()
 
         runtime = end - start
@@ -167,13 +167,13 @@ class Analysis:
             pass
         else:
             if self.data_dir == "":
-                self.data_dir = 'Data\ABCI\Cavity{}\Cavity_MROT_{}.top'.format(fid, MROT)
+                self.data_dir = 'node_editor\ABCI\Cavity{}\Cavity_MROT_{}.top'.format(fid, MROT)
             elif ":" in self.data_dir:
                 self.data_dir = '{}\ABCI\Cavity{}\Cavity_MROT_{}.top'.format(self.data_dir, fid, MROT)
             else:
                 self.data_dir = os.path.join(os.getcwd(), '{}\ABCI\Cavity{}\Cavity_MROT_{}.top'.format(self.data_dir, fid, MROT))
 
-        print_("\t\t Data folder --> ", self.data_dir)
+        print_("\t\t node_editor folder --> ", self.data_dir)
 
     def calculate_Ri(self, A, B, a, b, Ri):
         Ri_list = []
@@ -196,7 +196,7 @@ class Analysis:
     def get_freq(self, A, B, a, b, Ri):
         freq = 1000 # random value holder
         l = [A, B, a, b, Ri]
-        freq_pop = json.load(open('Extracted Data\dipole_mode_freq.json', 'r'))
+        freq_pop = json.load(open('Extracted node_editor\dipole_mode_freq.json', 'r'))
 
         fid = f.get_point_fid(l)
         print_(fid, freq_pop[fid][0])

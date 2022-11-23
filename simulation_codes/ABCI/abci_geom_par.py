@@ -14,7 +14,7 @@ class ABCIGeometry(Geometry):
             self.win = win
             self.ui = win.ui
 
-        # create Data folder on initialisation
+        # create node_editor folder on initialisation
         path = os.getcwd()
         self.path = os.path.join(path, "ABCI_Data_end")
         if os.path.exists(self.path):

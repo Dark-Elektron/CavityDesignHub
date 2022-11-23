@@ -12,7 +12,7 @@ class ABCIPar:
         mid_cell_key = 46
 
         # get input dictionary
-        self.mid_cell_par = json.load(open('Extracted Data\population.json', 'r'))["{}".format(mid_cell_key)]
+        self.mid_cell_par = json.load(open('Extracted node_editor\population.json', 'r'))["{}".format(mid_cell_key)]
         self.end_cell_par_dict = json.load(open('Population_C46\population.json', 'r'))
 
         # get list of input

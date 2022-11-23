@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1661</width>
-    <height>850</height>
+    <height>1186</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
   <property name="styleSheet">
    <string notr="true">*{
     font: 16px &quot;Segoe UI&quot;;
-	background-color: rgb(255, 255, 255);
+	/*background-color: rgb(255, 255, 255);*/
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -93,7 +93,7 @@
                   <item row="0" column="0">
                    <widget class="QScrollArea" name="sa_Home">
                     <property name="styleSheet">
-                     <string notr="true">background-color: rgb(255, 255, 255);</string>
+                     <string notr="true">/*background-color: rgb(255, 255, 255);;*/</string>
                     </property>
                     <property name="frameShape">
                      <enum>QFrame::NoFrame</enum>
@@ -106,23 +106,32 @@
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>1096</width>
-                       <height>703</height>
+                       <width>1040</width>
+                       <height>1029</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_5">
+                      <property name="spacing">
+                       <number>20</number>
+                      </property>
                       <item row="1" column="2">
                        <widget class="QPushButton" name="pb_Wakefield_Analysis">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="minimumSize">
                          <size>
-                          <width>250</width>
-                          <height>250</height>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
                          </size>
                         </property>
                         <property name="font">
@@ -135,7 +144,13 @@
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">background-color: rgb(255, 69, 119);</string>
+                         <string notr="true">
+QPushButton{
+background-color: rgb(255, 69, 119);
+}
+QPushButton:hover{
+background-color: rgb(230,62, 107);
+}</string>
                         </property>
                         <property name="text">
                          <string>W A K E F I E L D
@@ -146,15 +161,21 @@ A N A L Y S I S</string>
                       <item row="1" column="0">
                        <widget class="QPushButton" name="pb_Tune">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="minimumSize">
                          <size>
-                          <width>250</width>
-                          <height>250</height>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
                          </size>
                         </property>
                         <property name="font">
@@ -167,56 +188,36 @@ A N A L Y S I S</string>
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">background-color: rgb(255, 181, 76);</string>
+                         <string notr="true">QPushButton{
+background-color: rgb(255, 181, 76);
+}
+QPushButton:hover{
+background-color: rgb(230,163, 76);
+}</string>
                         </property>
                         <property name="text">
                          <string>T U N E</string>
                         </property>
                        </widget>
                       </item>
-                      <item row="3" column="2">
-                       <widget class="QPushButton" name="pb_Misc">
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                         <size>
-                          <width>250</width>
-                          <height>250</height>
-                         </size>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <family>Segoe UI</family>
-                          <pointsize>-1</pointsize>
-                          <weight>50</weight>
-                          <italic>false</italic>
-                          <bold>false</bold>
-                         </font>
-                        </property>
-                        <property name="styleSheet">
-                         <string notr="true">background-color: rgb(255, 235, 188);</string>
-                        </property>
-                        <property name="text">
-                         <string>M I S C</string>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="1" column="1">
                        <widget class="QPushButton" name="pb_Eigenmode_Analysis">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="minimumSize">
                          <size>
-                          <width>250</width>
-                          <height>250</height>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
                          </size>
                         </property>
                         <property name="font">
@@ -229,7 +230,13 @@ A N A L Y S I S</string>
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">background-color: rgb(216, 74, 255);</string>
+                         <string notr="true">
+QPushButton{
+background-color: rgb(216, 74, 255);
+}
+QPushButton:hover{
+background-color: rgb(195, 67, 230);
+}</string>
                         </property>
                         <property name="text">
                          <string>E I G E N M O D E
@@ -237,18 +244,24 @@ A N A L Y S I S</string>
                         </property>
                        </widget>
                       </item>
-                      <item row="3" column="0">
-                       <widget class="QPushButton" name="pb_Post_Process">
+                      <item row="3" column="1">
+                       <widget class="QPushButton" name="pb_Plot">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="minimumSize">
                          <size>
-                          <width>250</width>
-                          <height>250</height>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
                          </size>
                         </property>
                         <property name="font">
@@ -261,7 +274,56 @@ A N A L Y S I S</string>
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">background-color: rgb(167, 222, 255);</string>
+                         <string notr="true">
+QPushButton{
+background-color: rgb(167, 255, 151);
+}
+QPushButton:hover{
+background-color: rgb(151, 230, 136);
+}</string>
+                        </property>
+                        <property name="text">
+                         <string>P L O T</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="0">
+                       <widget class="QPushButton" name="pb_Post_Process">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <family>Segoe UI</family>
+                          <pointsize>-1</pointsize>
+                          <weight>50</weight>
+                          <italic>false</italic>
+                          <bold>false</bold>
+                         </font>
+                        </property>
+                        <property name="styleSheet">
+                         <string notr="true">
+QPushButton{
+background-color: rgb(167, 222, 255);
+}
+QPushButton:hover{
+background-color: rgb(151, 200, 230);
+}</string>
                         </property>
                         <property name="text">
                          <string>P O S T
@@ -269,18 +331,49 @@ P R O C E S S</string>
                         </property>
                        </widget>
                       </item>
-                      <item row="3" column="1">
-                       <widget class="QPushButton" name="pb_Plot">
+                      <item row="1" column="3">
+                       <widget class="QPushButton" name="pb_Multipacting_Analysis">
                         <property name="sizePolicy">
-                         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                           <horstretch>0</horstretch>
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
                         <property name="minimumSize">
                          <size>
-                          <width>250</width>
-                          <height>250</height>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>M U L T I P A C T I N G</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="3">
+                       <widget class="QPushButton" name="pb_Misc">
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
                          </size>
                         </property>
                         <property name="font">
@@ -293,10 +386,29 @@ P R O C E S S</string>
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">background-color: rgb(167, 255, 151);</string>
+                         <string notr="true">
+QPushButton{
+background-color: rgb(255, 235, 188);
+}
+QPushButton:hover{
+background-color: rgb(230, 212, 170);
+}</string>
                         </property>
                         <property name="text">
-                         <string>P L O T</string>
+                         <string>M I S C</string>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="3" column="2">
+                       <widget class="QPushButton" name="pb_Statistics">
+                        <property name="minimumSize">
+                         <size>
+                          <width>200</width>
+                          <height>200</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>S T A T I S T I C S</string>
                         </property>
                        </widget>
                       </item>
@@ -363,8 +475,8 @@ P R O C E S S</string>
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>378</width>
-                    <height>631</height>
+                    <width>421</width>
+                    <height>945</height>
                    </rect>
                   </property>
                   <layout class="QGridLayout" name="gridLayout_3">
@@ -486,6 +598,161 @@ P R O C E S S</string>
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item row="4" column="1">
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="10" column="0">
+            <spacer name="verticalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="0">
+            <spacer name="verticalSpacer_4">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="9" column="0">
+            <widget class="QPushButton" name="pb_rMisc">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 235, 188);
+border-style: solid;
+border-color: rgb(255, 235, 188);
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>M</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0">
+            <widget class="QPushButton" name="pb_rWakefield">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 69, 119);
+border-style: solid;
+border-color: rgb(255, 69, 119);
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>W</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="8" column="0">
+            <widget class="QPushButton" name="pb_rPlot">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(167, 255, 151);
+border-style: solid;
+border-color: rgb(167, 255, 151);
+border-width: 5px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>P</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pb_rHome">
+             <property name="minimumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>50</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">background-color:white;
+border-style: solid;
+border-color: black;
+border-width: 1px;
+border-radius: 15px;</string>
+             </property>
+             <property name="text">
+              <string>H</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
            <item row="3" column="0">
             <widget class="QPushButton" name="pb_rTune">
              <property name="minimumSize">
@@ -544,65 +811,7 @@ border-radius: 15px;</string>
              </property>
             </widget>
            </item>
-           <item row="5" column="0">
-            <widget class="QPushButton" name="pb_rWakefield">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 69, 119);
-border-style: solid;
-border-color: rgb(255, 69, 119);
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>W</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="8" column="0">
-            <widget class="QPushButton" name="pb_rMisc">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 235, 188);
-border-style: solid;
-border-color: rgb(255, 235, 188);
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>M</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="6" column="0">
+           <item row="7" column="0">
             <widget class="QPushButton" name="pb_rPostprocess">
              <property name="minimumSize">
               <size>
@@ -631,61 +840,6 @@ border-radius: 15px;</string>
              </property>
             </widget>
            </item>
-           <item row="7" column="0">
-            <widget class="QPushButton" name="pb_rPlot">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>50</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(167, 255, 151);
-border-style: solid;
-border-color: rgb(167, 255, 151);
-border-width: 5px;
-border-radius: 15px;</string>
-             </property>
-             <property name="text">
-              <string>P</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item row="9" column="0">
-            <spacer name="verticalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="4" column="1">
-            <spacer name="horizontalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
            <item row="1" column="0">
             <widget class="QPushButton" name="pb_rBack">
              <property name="minimumSize">
@@ -712,21 +866,8 @@ border-radius: 15px;</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="0">
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="2" column="0">
-            <widget class="QPushButton" name="pb_rHome">
+           <item row="6" column="0">
+            <widget class="QPushButton" name="pb_rMultipacting">
              <property name="minimumSize">
               <size>
                <width>50</width>
@@ -740,17 +881,14 @@ border-radius: 15px;</string>
               </size>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color:white;
+              <string notr="true">background-color: rgb(200, 200, 200);
 border-style: solid;
-border-color: black;
-border-width: 1px;
+border-color: rgb(200, 200, 200);
+border-width: 5px;
 border-radius: 15px;</string>
              </property>
              <property name="text">
-              <string>H</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
+              <string>M</string>
              </property>
             </widget>
            </item>
@@ -772,7 +910,7 @@ border-radius: 15px;</string>
            </size>
           </property>
           <property name="styleSheet">
-           <string notr="true">background-color: rgb(240, 240, 240);</string>
+           <string notr="true">/*background-color: rgb(240, 240, 240);*/</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
            <property name="topMargin">
@@ -781,6 +919,161 @@ border-radius: 15px;</string>
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <item row="0" column="11">
+            <widget class="QPushButton" name="pb_Apply_Theme">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Apply</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="7">
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="pb_New_Project">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(120, 190, 255);</string>
+             </property>
+             <property name="text">
+              <string>New</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QPushButton" name="pb_Save_State">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(146, 234, 114);</string>
+             </property>
+             <property name="text">
+              <string>Save</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="10">
+            <widget class="QComboBox" name="cb_Theme">
+             <item>
+              <property name="text">
+               <string>Light VS</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Dark VS</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Solarized Light</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Abyss</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Kimbie Dark</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Monokai</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Monokai Dimmed</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Red</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Solarized Dark</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Tomorrow Night Blue</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>Dark High Contrast</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLineEdit" name="le_New_Project_Filename">
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="5">
+            <widget class="QLabel" name="l_Project_Name">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(255, 184, 83);</string>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ProjectName&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="pb_Open_Project">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(226, 255, 129);</string>
+             </property>
+             <property name="text">
+              <string>Open</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="8">
+            <widget class="QLineEdit" name="lineEdit">
+             <property name="maximumSize">
+              <size>
+               <width>150</width>
+               <height>16777215</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QPushButton" name="pb_Load_State_File">
+             <property name="styleSheet">
+              <string notr="true">background-color: rgb(130, 222, 255);</string>
+             </property>
+             <property name="text">
+              <string>Load</string>
+             </property>
+            </widget>
+           </item>
            <item row="0" column="9">
             <widget class="QWidget" name="widget_5" native="true">
              <property name="maximumSize">
@@ -818,217 +1111,6 @@ border-radius: 15px;</string>
              </layout>
             </widget>
            </item>
-           <item row="0" column="7">
-            <spacer name="horizontalSpacer">
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>40</width>
-               <height>20</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="pb_New_Project">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(120, 190, 255);</string>
-             </property>
-             <property name="text">
-              <string>New</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="8">
-            <widget class="QLineEdit" name="lineEdit">
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="2">
-            <widget class="QPushButton" name="pb_Open_Project">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(226, 255, 129);</string>
-             </property>
-             <property name="text">
-              <string>Open</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="11">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>Dark</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="13">
-            <widget class="QPushButton" name="pushButton">
-             <property name="toolTip">
-              <string>You can reach me at sosoho-abasi.udongwo@uni-rostock.de 
-if you have any questions or suggestions about the app.</string>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgba(255, 255, 255, 0);</string>
-             </property>
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset>
-               <normaloff>:/icons/icons/ICO/Knob Info.ico</normaloff>:/icons/icons/ICO/Knob Info.ico</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>24</width>
-               <height>24</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLineEdit" name="le_New_Project_Filename">
-             <property name="maximumSize">
-              <size>
-               <width>150</width>
-               <height>16777215</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="5">
-            <widget class="QLabel" name="l_Project_Name">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>16777215</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 184, 83);</string>
-             </property>
-             <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ProjectName&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="alignment">
-              <set>Qt::AlignCenter</set>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="3">
-            <widget class="QPushButton" name="pb_Save_State">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(146, 234, 114);</string>
-             </property>
-             <property name="text">
-              <string>Save</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="4">
-            <widget class="QPushButton" name="pb_Load_State_File">
-             <property name="minimumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>50</width>
-               <height>25</height>
-              </size>
-             </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(130, 222, 255);</string>
-             </property>
-             <property name="text">
-              <string>Load</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="12">
-            <widget class="QSlider" name="hs_Theme">
-             <property name="minimumSize">
-              <size>
-               <width>30</width>
-               <height>0</height>
-              </size>
-             </property>
-             <property name="maximumSize">
-              <size>
-               <width>30</width>
-               <height>16777215</height>
-              </size>
-             </property>
-             <property name="maximum">
-              <number>1</number>
-             </property>
-             <property name="pageStep">
-              <number>1</number>
-             </property>
-             <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="10">
-            <widget class="QComboBox" name="comboBox">
-             <item>
-              <property name="text">
-               <string>Color Splash</string>
-              </property>
-             </item>
-            </widget>
-           </item>
           </layout>
          </widget>
         </item>
@@ -1038,6 +1120,38 @@ if you have any questions or suggestions about the app.</string>
        <attribute name="title">
         <string>Node</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout_14">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gl_Node_Editor"/>
+        </item>
+        <item row="0" column="1">
+         <widget class="QWidget" name="widget_6" native="true">
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="pushButton_3">
+             <property name="text">
+              <string>PushButton</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="pushButton_4">
+             <property name="text">
+              <string>PushButton</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pushButton_5">
+             <property name="text">
+              <string>PushButton</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>

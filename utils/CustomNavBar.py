@@ -1,4 +1,4 @@
-from PyQt5.QtCore import qVersion
+from PyQt5.QtCore import qVersion, QSize
 from PyQt5.QtGui import *
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import *
@@ -43,6 +43,7 @@ class MyCustomToolbar(NavigationToolbar):
                      ]
 
         self.canvas.toolbar.setContentsMargins(0, 0, 0, 0)
+        self.canvas.toolbar.setIconSize(QSize(20, 20))
         # print(type(self.canvas.toolbar))
 
         actions = self.findChildren(QAction)
@@ -75,7 +76,6 @@ class MyCustomToolbar(NavigationToolbar):
                     a.setCheckable(True)
                 if tooltip_text is not None:
                     a.setToolTip(tooltip_text)
-
         # Add the (x, y) location widget at the right side of the toolbar
         # The stretch factor is 1 which means any resizing of the toolbar
         # will resize this label instead of the buttons.
@@ -96,12 +96,36 @@ class MyCustomToolbar(NavigationToolbar):
 
             try:
                 if self.cb_Save_Plot_Settings.currentText() == 'Presentation':
-                    self.canvas.fig.set_size_inches(8, 6) # actual size = 8*dpi, 6*dpi; dpi = 100
+                    # get size of figure before change
+                    fig_size = self.canvas.fig.get_size_inches()
+                    self.canvas.fig.set_size_inches(8, 6)  # actual size = 8*dpi, 6*dpi; dpi = 100
                 elif self.cb_Save_Plot_Settings.currentText() == 'Square':
-                    self.cb_Save_Plot_Settings.set_size_inches(8, 8) #, forward=False
+                    # get size of figure before change
+                    fig_size = self.canvas.fig.get_size_inches()
+                    self.canvas.fig.set_size_inches(8, 8)  #, forward=False
                 elif self.cb_Save_Plot_Settings.currentText() == 'Landscape':
-                    self.cb_Save_Plot_Settings.set_size_inches(12, 8) #, forward=False
+                    # get size of figure before change
+                    fig_size = self.canvas.fig.get_size_inches()
+                    self.canvas.fig.set_size_inches(12, 8)  #, forward=False
+                else:
+                    # get size of figure before change
+                    fig_size = self.canvas.fig.get_size_inches()
+
+                    # open popup window to get size input
+                    size_input_dialog = SizeInputDialog(self)
+                    size_input_dialog.show()
+                    if size_input_dialog.exec_():
+                        width, height = size_input_dialog.getInputs()
+                        width, height = float(width)/self.canvas.fig.dpi, float(height)/self.canvas.fig.dpi
+
+                        self.canvas.fig.set_size_inches(width, height)  # , forward=False
+
                 self.canvas.fig.savefig(fileName, transparent=True, bbox_inches='tight', pad_inches=0.2)
+
+                # restore windows size
+                self.canvas.fig.set_size_inches(fig_size[0], fig_size[1])  # actual size = 8*dpi, 6*dpi; dpi = 100
+                self.canvas.draw()
+                self.canvas.flush_events()
 
             except Exception as e:
                 print("Cannot save file -> ", e)
@@ -144,5 +168,61 @@ class MyCustomToolbar(NavigationToolbar):
         # pop up plot properties widget
         # create pop up widget instance
         self.pprops.ppropsUI.cb_Plots.addItems([x.get_label() for x in self.canvas.fig.get_axes()])
+
+        # get and set default parameters
+        # legend
+        # update legend
+        handles, labels = self.canvas.ax.get_legend_handles_labels()
+        legend_labels = '%%'.join(labels)
+        self.pprops.ppropsUI.le_Legend.setText(legend_labels)
+
+        # axis limits
+        self.pprops.ppropsUI.dsb_X0.setValue(0.45*(self.canvas.ax.get_xlim()[1]+self.canvas.ax.get_xlim()[0]))
+        self.pprops.ppropsUI.dsb_X1.setValue(0.55*(self.canvas.ax.get_xlim()[1]+self.canvas.ax.get_xlim()[0]))
+        self.pprops.ppropsUI.dsb_Y0.setValue(0.45*(self.canvas.ax.get_ylim()[1]+self.canvas.ax.get_ylim()[0]))
+        self.pprops.ppropsUI.dsb_Y1.setValue(0.55*(self.canvas.ax.get_ylim()[1]+self.canvas.ax.get_ylim()[0]))
+
         self.pprops.w_PProps.show()
+
+
+class SizeInputDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.first = QLineEdit(self)
+        self.second = QLineEdit(self)
+
+        # add validator for only integers
+        self.first.textChanged.connect(lambda: self.validating(self.first))
+        self.second.textChanged.connect(lambda: self.validating(self.second))
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel, self)
+
+        layout = QFormLayout(self)
+        layout.addRow("Width", self.first)
+        layout.addRow("Height", self.second)
+        layout.addWidget(buttonBox)
+
+        buttonBox.accepted.connect(self.accept)
+        buttonBox.rejected.connect(self.reject)
+
+    def validating(self, le):
+        validation_rule = QDoubleValidator(1, 3840, 0)
+        if validation_rule.validate(le.text(), 20)[0] == QValidator.Acceptable:
+            le.setFocus()
+        else:
+            le.setText('')
+
+    def getInputs(self):
+        return self.first.text(), self.second.text()
+
+    def button_press(self):
+        if self.sender() == self.btn_ok:
+            self.ok = True
+        self.close()
+
+    @classmethod
+    def isOkay(cls, parent):
+        dialog = cls(parent)
+        dialog.exec_()
+        return dialog.ok
 

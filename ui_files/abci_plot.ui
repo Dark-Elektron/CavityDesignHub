@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>ABCI_Plot</class>
+ <widget class="QWidget" name="ABCI_Plot">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>341</width>
+    <height>340</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QWidget" name="w_Bottom" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>250</width>
+       <height>250</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>250</width>
+       <height>250</height>
+      </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color:transparent;</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="4" column="0">
+       <widget class="QComboBox" name="comboBox"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="comboBox_4"/>
+      </item>
+      <item row="4" column="2">
+       <widget class="QSpinBox" name="spinBox"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+      </item>
+      <item row="2" column="0" colspan="3">
+       <widget class="QCheckableComboBox" name="checkableComboBox"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QComboBox" name="comboBox_3"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QComboBox" name="comboBox_2"/>
+      </item>
+      <item row="1" column="0" colspan="3">
+       <widget class="QCheckableComboBox" name="checkableComboBox_2"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCheckableComboBox</class>
+   <extends>QComboBox</extends>
+   <header>QCheckableComboBox</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

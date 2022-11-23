@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1361</width>
-    <height>665</height>
+    <width>1656</width>
+    <height>1083</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <string notr="true">
 *{
     font: 16px &quot;Segoe UI&quot;;
-	background-color: rgb(255, 255, 255);
+	/*background-color: rgb(255, 255, 255);;*/
 }</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -108,54 +108,6 @@
                <property name="spacing">
                 <number>0</number>
                </property>
-               <item row="10" column="0">
-                <spacer name="verticalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="1" column="0">
-                <widget class="QPushButton" name="pb_Plot_Area_Menu">
-                 <property name="sizePolicy">
-                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                   <horstretch>40</horstretch>
-                   <verstretch>40</verstretch>
-                  </sizepolicy>
-                 </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>40</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>40</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="icon">
-                  <iconset resource="../qss/icons.qrc">
-                   <normaloff>:/icons/icons/PNG/menu.png</normaloff>:/icons/icons/PNG/menu.png</iconset>
-                 </property>
-                 <property name="iconSize">
-                  <size>
-                   <width>38</width>
-                   <height>38</height>
-                  </size>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="0">
                 <widget class="QWidget" name="w_Plot_Area_Buttons" native="true">
                  <layout class="QVBoxLayout" name="verticalLayout">
@@ -238,6 +190,54 @@
                  </layout>
                 </widget>
                </item>
+               <item row="10" column="0">
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="1" column="0">
+                <widget class="QPushButton" name="pb_Plot_Area_Menu">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                   <horstretch>40</horstretch>
+                   <verstretch>40</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>40</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/menu.png</normaloff>:/icons/icons/PNG/menu.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>38</width>
+                   <height>38</height>
+                  </size>
+                 </property>
+                </widget>
+               </item>
               </layout>
              </widget>
             </item>
@@ -281,18 +281,6 @@
                  </property>
                  <widget class="QWidget" name="widget_6" native="true">
                   <layout class="QGridLayout" name="gridLayout_10">
-                   <property name="leftMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="topMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="rightMargin">
-                    <number>0</number>
-                   </property>
-                   <property name="bottomMargin">
-                    <number>0</number>
-                   </property>
                    <item row="0" column="0">
                     <widget class="QSplitter" name="splitter">
                      <property name="orientation">
@@ -300,207 +288,8 @@
                      </property>
                      <widget class="QWidget" name="widget_14" native="true">
                       <property name="styleSheet">
-                       <string notr="true">background-color: rgb(55, 222, 255);</string>
+                       <string notr="true"/>
                       </property>
-                      <layout class="QGridLayout" name="gridLayout_18">
-                       <property name="leftMargin">
-                        <number>2</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>2</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>2</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>2</number>
-                       </property>
-                       <item row="0" column="0">
-                        <layout class="QGridLayout" name="gl_Plot_Area"/>
-                       </item>
-                       <item row="1" column="0">
-                        <widget class="QWidget" name="widget_13" native="true">
-                         <layout class="QGridLayout" name="gridLayout_15">
-                          <property name="leftMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="topMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="rightMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="bottomMargin">
-                           <number>0</number>
-                          </property>
-                          <property name="spacing">
-                           <number>0</number>
-                          </property>
-                          <item row="1" column="11">
-                           <widget class="QSpinBox" name="sb_Legend_Marker_Size">
-                            <property name="minimum">
-                             <number>8</number>
-                            </property>
-                            <property name="maximum">
-                             <number>10000000</number>
-                            </property>
-                            <property name="value">
-                             <number>18</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="10" colspan="2">
-                           <widget class="QLineEdit" name="le_Legend"/>
-                          </item>
-                          <item row="0" column="7">
-                           <widget class="QLineEdit" name="le_Title"/>
-                          </item>
-                          <item row="1" column="5">
-                           <widget class="QSpinBox" name="sb_YLabel_Tick_Size">
-                            <property name="minimum">
-                             <number>8</number>
-                            </property>
-                            <property name="maximum">
-                             <number>10000000</number>
-                            </property>
-                            <property name="value">
-                             <number>18</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="1" colspan="2">
-                           <widget class="QLineEdit" name="le_Xlabel">
-                            <property name="text">
-                             <string>X</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="4" colspan="2">
-                           <widget class="QLineEdit" name="le_Ylabel">
-                            <property name="text">
-                             <string>Y</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="0">
-                           <widget class="QLabel" name="label_2">
-                            <property name="text">
-                             <string>X</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="6">
-                           <widget class="QLabel" name="label_6">
-                            <property name="text">
-                             <string>Title</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="12">
-                           <widget class="QPushButton" name="pb_Apply_Axis_Labels">
-                            <property name="text">
-                             <string>Apply</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="7">
-                           <widget class="QSpinBox" name="sb_Title_Size">
-                            <property name="minimum">
-                             <number>8</number>
-                            </property>
-                            <property name="maximum">
-                             <number>10000000</number>
-                            </property>
-                            <property name="value">
-                             <number>18</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="1">
-                           <widget class="QSpinBox" name="sb_XLabel_Size">
-                            <property name="minimum">
-                             <number>8</number>
-                            </property>
-                            <property name="maximum">
-                             <number>10000000</number>
-                            </property>
-                            <property name="value">
-                             <number>18</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="10">
-                           <widget class="QSpinBox" name="sb_Legend_Size">
-                            <property name="minimum">
-                             <number>8</number>
-                            </property>
-                            <property name="maximum">
-                             <number>10000000</number>
-                            </property>
-                            <property name="value">
-                             <number>18</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="4">
-                           <widget class="QSpinBox" name="sb_YLabel_Size">
-                            <property name="minimum">
-                             <number>8</number>
-                            </property>
-                            <property name="maximum">
-                             <number>10000000</number>
-                            </property>
-                            <property name="value">
-                             <number>18</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="9">
-                           <widget class="QLabel" name="label_7">
-                            <property name="text">
-                             <string>Legend</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="3">
-                           <widget class="QLabel" name="label_5">
-                            <property name="text">
-                             <string>Y</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="2">
-                           <widget class="QSpinBox" name="sb_XLabel_Tick_Size">
-                            <property name="minimum">
-                             <number>8</number>
-                            </property>
-                            <property name="maximum">
-                             <number>10000000</number>
-                            </property>
-                            <property name="value">
-                             <number>18</number>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="13">
-                           <spacer name="horizontalSpacer_2">
-                            <property name="orientation">
-                             <enum>Qt::Horizontal</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>40</width>
-                              <height>20</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                         </layout>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                     <widget class="QWidget" name="w_Plot_Args" native="true">
                       <layout class="QGridLayout" name="gridLayout_9">
                        <property name="leftMargin">
                         <number>0</number>
@@ -514,91 +303,583 @@
                        <property name="bottomMargin">
                         <number>0</number>
                        </property>
-                       <item row="0" column="1">
-                        <widget class="QPushButton" name="pb_Plot">
-                         <property name="styleSheet">
-                          <string notr="true">background-color: rgb(43, 188, 255);</string>
+                       <property name="spacing">
+                        <number>0</number>
+                       </property>
+                       <item row="0" column="0">
+                        <layout class="QGridLayout" name="gl_Plot_Area">
+                         <property name="topMargin">
+                          <number>0</number>
                          </property>
-                         <property name="text">
-                          <string>Plot</string>
+                         <property name="rightMargin">
+                          <number>0</number>
                          </property>
-                        </widget>
+                         <property name="bottomMargin">
+                          <number>0</number>
+                         </property>
+                         <property name="spacing">
+                          <number>0</number>
+                         </property>
+                        </layout>
                        </item>
-                       <item row="2" column="1">
-                        <spacer name="verticalSpacer">
+                      </layout>
+                     </widget>
+                     <widget class="QWidget" name="w_Plot_Args" native="true">
+                      <layout class="QGridLayout" name="gridLayout_18">
+                       <item row="0" column="0">
+                        <widget class="QSplitter" name="splitter_3">
                          <property name="orientation">
                           <enum>Qt::Vertical</enum>
                          </property>
-                         <property name="sizeHint" stdset="0">
-                          <size>
-                           <width>20</width>
-                           <height>40</height>
-                          </size>
-                         </property>
-                        </spacer>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QPushButton" name="pb_Clear">
-                         <property name="styleSheet">
-                          <string notr="true">background-color: rgb(255, 170, 0);</string>
-                         </property>
-                         <property name="text">
-                          <string>Clear</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="0" rowspan="3">
-                        <widget class="QTableWidget" name="tableWidget">
-                         <column>
-                          <property name="text">
-                           <string>Code</string>
+                         <widget class="QWidget" name="widget_13" native="true">
+                          <property name="minimumSize">
+                           <size>
+                            <width>0</width>
+                            <height>100</height>
+                           </size>
                           </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>File/Folder</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>Polarisation</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>ID</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>Request</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>Toggle</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>ScaleX</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>ScaleY</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>Axis</string>
-                          </property>
-                         </column>
-                         <column>
-                          <property name="text">
-                           <string>Type</string>
-                          </property>
-                         </column>
+                          <layout class="QGridLayout" name="gridLayout_15">
+                           <property name="leftMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>6</number>
+                           </property>
+                           <property name="horizontalSpacing">
+                            <number>6</number>
+                           </property>
+                           <property name="verticalSpacing">
+                            <number>0</number>
+                           </property>
+                           <item row="1" column="1" colspan="2">
+                            <widget class="QLineEdit" name="le_Xlabel">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>200</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                             <property name="placeholderText">
+                              <string>X axis label</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="3">
+                            <widget class="QSpinBox" name="sb_YLabel_Size">
+                             <property name="minimumSize">
+                              <size>
+                               <width>50</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="toolTip">
+                              <string>Y axis label size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="7">
+                            <widget class="QSpinBox" name="sb_Legend_Size">
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="8">
+                            <widget class="QSpinBox" name="sb_Legend_Marker_Size">
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="2">
+                            <widget class="QSpinBox" name="sb_XLabel_Tick_Size">
+                             <property name="toolTip">
+                              <string>X axis xtick size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="10">
+                            <spacer name="horizontalSpacer_2">
+                             <property name="orientation">
+                              <enum>Qt::Horizontal</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>40</width>
+                               <height>20</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                           <item row="1" column="5">
+                            <widget class="QLineEdit" name="le_Title">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>200</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="placeholderText">
+                              <string>Plot Title</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="3" colspan="2">
+                            <widget class="QLineEdit" name="le_Ylabel">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>200</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string/>
+                             </property>
+                             <property name="placeholderText">
+                              <string>Y axis label</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QSpinBox" name="sb_XLabel_Size">
+                             <property name="toolTip">
+                              <string>X axis label size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="4">
+                            <widget class="QSpinBox" name="sb_YLabel_Tick_Size">
+                             <property name="toolTip">
+                              <string>Y axis ytick size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="7" colspan="2">
+                            <widget class="QLineEdit" name="le_Legend">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>200</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="placeholderText">
+                              <string>Legend Title</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="5">
+                            <widget class="QSpinBox" name="sb_Title_Size">
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="9">
+                            <widget class="QPushButton" name="pb_Apply_Axis_Labels">
+                             <property name="text">
+                              <string>Apply</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="0" rowspan="3">
+                            <widget class="QComboBox" name="cb_Active_Axis">
+                             <property name="minimumSize">
+                              <size>
+                               <width>0</width>
+                               <height>100</height>
+                              </size>
+                             </property>
+                             <item>
+                              <property name="text">
+                               <string>Left</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>Right</string>
+                              </property>
+                             </item>
+                            </widget>
+                           </item>
+                           <item row="2" column="3" colspan="2">
+                            <widget class="QCheckableComboBox" name="ccb_Freq_Used_Ylabel">
+                             <item>
+                              <property name="text">
+                               <string>All</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$Z_\parallel~ [\mathrm{k\Omega}]$</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$Z_\perp ~[\mathrm{k\Omega/m}]$</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$</string>
+                              </property>
+                             </item>
+                            </widget>
+                           </item>
+                           <item row="2" column="1" colspan="2">
+                            <widget class="QCheckableComboBox" name="ccb_Freq_Used_Xlabel">
+                             <item>
+                              <property name="text">
+                               <string>All</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$f$ [MHz]</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$f$ [GHz]</string>
+                              </property>
+                             </item>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
+                         <widget class="QWidget" name="widget_23" native="true">
+                          <layout class="QGridLayout" name="gridLayout_28">
+                           <property name="leftMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="topMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="rightMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="bottomMargin">
+                            <number>0</number>
+                           </property>
+                           <property name="spacing">
+                            <number>0</number>
+                           </property>
+                           <item row="1" column="1">
+                            <widget class="QPushButton" name="pb_Clear">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Clear</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1">
+                            <widget class="QPushButton" name="pb_Plot">
+                             <property name="maximumSize">
+                              <size>
+                               <width>100</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="text">
+                              <string>Plot</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="0" rowspan="3">
+                            <widget class="QWidget" name="widget_24" native="true">
+                             <layout class="QGridLayout" name="gridLayout_30">
+                              <item row="0" column="0">
+                               <widget class="QSplitter" name="splitter_4">
+                                <property name="orientation">
+                                 <enum>Qt::Vertical</enum>
+                                </property>
+                                <widget class="QWidget" name="widget_25" native="true">
+                                 <layout class="QGridLayout" name="gridLayout_29">
+                                  <item row="1" column="0">
+                                   <widget class="QPushButton" name="pb_Add_Row">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>20</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                     <size>
+                                      <width>20</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                    <property name="text">
+                                     <string/>
+                                    </property>
+                                    <property name="icon">
+                                     <iconset resource="../qss/icons.qrc">
+                                      <normaloff>:/icons/icons/PNG/add.png</normaloff>:/icons/icons/PNG/add.png</iconset>
+                                    </property>
+                                    <property name="iconSize">
+                                     <size>
+                                      <width>20</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="1" column="1">
+                                   <spacer name="horizontalSpacer_4">
+                                    <property name="orientation">
+                                     <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                     <size>
+                                      <width>40</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                   </spacer>
+                                  </item>
+                                  <item row="0" column="0" colspan="2">
+                                   <widget class="QTableWidget" name="tableWidget">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>0</width>
+                                      <height>200</height>
+                                     </size>
+                                    </property>
+                                    <column>
+                                     <property name="text">
+                                      <string/>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>Code</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>File/Folder</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>Polarisation</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>ID</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>Request</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>ScaleX</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>ScaleY</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>Axis</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>Type</string>
+                                     </property>
+                                    </column>
+                                    <column>
+                                     <property name="text">
+                                      <string>Filter</string>
+                                     </property>
+                                    </column>
+                                   </widget>
+                                  </item>
+                                 </layout>
+                                </widget>
+                                <widget class="QScrollArea" name="scrollArea">
+                                 <property name="widgetResizable">
+                                  <bool>true</bool>
+                                 </property>
+                                 <widget class="QWidget" name="scrollAreaWidgetContents">
+                                  <property name="geometry">
+                                   <rect>
+                                    <x>0</x>
+                                    <y>0</y>
+                                    <width>893</width>
+                                    <height>312</height>
+                                   </rect>
+                                  </property>
+                                  <layout class="QGridLayout" name="gridLayout_27">
+                                   <item row="0" column="1">
+                                    <widget class="QPushButton" name="pb_Add">
+                                     <property name="minimumSize">
+                                      <size>
+                                       <width>30</width>
+                                       <height>0</height>
+                                      </size>
+                                     </property>
+                                     <property name="maximumSize">
+                                      <size>
+                                       <width>30</width>
+                                       <height>16777215</height>
+                                      </size>
+                                     </property>
+                                     <property name="text">
+                                      <string>+</string>
+                                     </property>
+                                    </widget>
+                                   </item>
+                                   <item row="1" column="2">
+                                    <spacer name="horizontalSpacer_3">
+                                     <property name="orientation">
+                                      <enum>Qt::Horizontal</enum>
+                                     </property>
+                                     <property name="sizeHint" stdset="0">
+                                      <size>
+                                       <width>40</width>
+                                       <height>20</height>
+                                      </size>
+                                     </property>
+                                    </spacer>
+                                   </item>
+                                   <item row="2" column="0">
+                                    <spacer name="verticalSpacer_5">
+                                     <property name="orientation">
+                                      <enum>Qt::Vertical</enum>
+                                     </property>
+                                     <property name="sizeHint" stdset="0">
+                                      <size>
+                                       <width>20</width>
+                                       <height>40</height>
+                                      </size>
+                                     </property>
+                                    </spacer>
+                                   </item>
+                                   <item row="1" column="1">
+                                    <spacer name="verticalSpacer_2">
+                                     <property name="orientation">
+                                      <enum>Qt::Vertical</enum>
+                                     </property>
+                                     <property name="sizeHint" stdset="0">
+                                      <size>
+                                       <width>20</width>
+                                       <height>40</height>
+                                      </size>
+                                     </property>
+                                    </spacer>
+                                   </item>
+                                   <item row="0" column="0" rowspan="2">
+                                    <layout class="QGridLayout" name="gl_Plot_Type_Selector"/>
+                                   </item>
+                                  </layout>
+                                 </widget>
+                                </widget>
+                               </widget>
+                              </item>
+                             </layout>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
                         </widget>
                        </item>
                       </layout>
@@ -637,8 +918,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>431</width>
-                        <height>658</height>
+                        <width>517</width>
+                        <height>1074</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_14">
@@ -686,8 +967,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>298</width>
-                                <height>123</height>
+                                <width>306</width>
+                                <height>131</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1038,10 +1319,10 @@
                              <widget class="QWidget" name="scrollAreaWidgetContents_3">
                               <property name="geometry">
                                <rect>
-                                <x>-23</x>
+                                <x>0</x>
                                 <y>0</y>
-                                <width>425</width>
-                                <height>566</height>
+                                <width>482</width>
+                                <height>991</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
@@ -1106,14 +1387,33 @@
                                      <property name="bottomMargin">
                                       <number>0</number>
                                      </property>
-                                     <item row="2" column="2">
-                                      <widget class="QLabel" name="label_22">
-                                       <property name="text">
-                                        <string>[mA]</string>
-                                       </property>
+                                     <item row="1" column="0" alignment="Qt::AlignLeft">
+                                      <widget class="QWidget" name="widget_20" native="true">
+                                       <layout class="QGridLayout" name="gridLayout_17">
+                                        <item row="0" column="4">
+                                         <widget class="SwitchControl" name="cb_Transverse_Threshold"/>
+                                        </item>
+                                        <item row="0" column="3">
+                                         <widget class="QLatexLabel" name="latexLabel_23">
+                                          <property name="Text" stdset="0">
+                                           <string>$Z_{\perp, \mathrm{th}}$</string>
+                                          </property>
+                                         </widget>
+                                        </item>
+                                        <item row="0" column="1">
+                                         <widget class="QLatexLabel" name="latexLabel_22">
+                                          <property name="Text" stdset="0">
+                                           <string>$Z_{\parallel, \mathrm{th}}$</string>
+                                          </property>
+                                         </widget>
+                                        </item>
+                                        <item row="0" column="2">
+                                         <widget class="SwitchControl" name="cb_Longitudinal_Threshold"/>
+                                        </item>
+                                       </layout>
                                       </widget>
                                      </item>
-                                     <item row="8" column="0" colspan="7">
+                                     <item row="5" column="0">
                                       <widget class="QWidget" name="widget_5" native="true">
                                        <layout class="QGridLayout" name="gridLayout_7">
                                         <item row="0" column="0">
@@ -1182,353 +1482,294 @@
                                        </layout>
                                       </widget>
                                      </item>
-                                     <item row="3" column="2">
-                                      <widget class="QLabel" name="label_26">
-                                       <property name="text">
-                                        <string>[ms]</string>
+                                     <item row="2" column="0">
+                                      <widget class="QScrollArea" name="scrollArea_3">
+                                       <property name="widgetResizable">
+                                        <bool>true</bool>
                                        </property>
+                                       <widget class="QWidget" name="scrollAreaWidgetContents_4">
+                                        <property name="geometry">
+                                         <rect>
+                                          <x>0</x>
+                                          <y>0</y>
+                                          <width>480</width>
+                                          <height>449</height>
+                                         </rect>
+                                        </property>
+                                        <layout class="QGridLayout" name="gridLayout_31">
+                                         <item row="0" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_20">
+                                           <property name="Text" stdset="0">
+                                            <string>$[\mathrm{GeV}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="1" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_2">
+                                           <property name="toolTip">
+                                            <string>Beam current</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$I_0$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="1" column="1">
+                                          <widget class="QLineEdit" name="le_I0">
+                                           <property name="text">
+                                            <string>[1390, 147, 29, 10.8]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="1" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_19">
+                                           <property name="Text" stdset="0">
+                                            <string>$[\mathrm{mA}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="4" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_3">
+                                           <property name="toolTip">
+                                            <string>Longitudinal damping time</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$\tau_{z}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="4" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_18">
+                                           <property name="Text" stdset="0">
+                                            <string>$[\mathrm{ms}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="4" column="1">
+                                          <widget class="QLineEdit" name="le_Tau_Z">
+                                           <property name="text">
+                                            <string>[424.6, 78.7, 23.4, 6.8]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="2" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_8">
+                                           <property name="toolTip">
+                                            <string>Synchrotron oscillation tune</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$\nu_{s}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="2" column="1">
+                                          <widget class="QLineEdit" name="le_Nu_S">
+                                           <property name="text">
+                                            <string>[0.025, 0.0506, 0.036, 0.087]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="3" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_9">
+                                           <property name="toolTip">
+                                            <string>Momentum compaction factor</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$\alpha_{c}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="3" column="1">
+                                          <widget class="QLineEdit" name="le_Alpha_S">
+                                           <property name="text">
+                                            <string>[1.48, 1.48, 0.73, 0.73]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="3" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_16">
+                                           <property name="Text" stdset="0">
+                                            <string>$[1e^{-5}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="5" column="1">
+                                          <widget class="QLineEdit" name="le_Tau_XY">
+                                           <property name="text">
+                                            <string>[849.2, 157.4, 46.8, 13.6]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="5" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_10">
+                                           <property name="toolTip">
+                                            <string>Transverse damping time</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$\tau_{xy}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="5" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_15">
+                                           <property name="Text" stdset="0">
+                                            <string>$[\mathrm{ms}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="9" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_5">
+                                           <property name="toolTip">
+                                            <string>Beta function</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$\beta_{xy}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="8" column="1">
+                                          <widget class="QLineEdit" name="le_N_Cav">
+                                           <property name="text">
+                                            <string>[52, 100, 268, 584]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="6" column="1">
+                                          <widget class="QLineEdit" name="le_F_Rev">
+                                           <property name="text">
+                                            <string>[3.07, 3.07, 3.07, 3.07]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="6" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_17">
+                                           <property name="Text" stdset="0">
+                                            <string>$[\mathrm{kHz}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="9" column="1">
+                                          <widget class="QLineEdit" name="le_Beta_XY">
+                                           <property name="minimumSize">
+                                            <size>
+                                             <width>75</width>
+                                             <height>0</height>
+                                            </size>
+                                           </property>
+                                           <property name="text">
+                                            <string>50</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="9" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_21">
+                                           <property name="Text" stdset="0">
+                                            <string>$[\mathrm{m}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="10" column="1">
+                                          <widget class="QLineEdit" name="le_Zth_Long"/>
+                                         </item>
+                                         <item row="11" column="1">
+                                          <widget class="QLineEdit" name="le_Zth_Trans"/>
+                                         </item>
+                                         <item row="10" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_7">
+                                           <property name="Text" stdset="0">
+                                            <string>$\mathrm{[k}\Omega\mathrm{]}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="6" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_4">
+                                           <property name="toolTip">
+                                            <string>Frequency revolution</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$f_{\mathrm{rev}}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="11" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_13">
+                                           <property name="Text" stdset="0">
+                                            <string>$\mathrm{[k}\Omega/\mathrm{m}]}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="11" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_12">
+                                           <property name="toolTip">
+                                            <string>Transverse impedance threshold</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$Z_{\perp, \mathrm{th}}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="0" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel">
+                                           <property name="toolTip">
+                                            <string>Beam energy</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$E_{0}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="8" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_11">
+                                           <property name="toolTip">
+                                            <string>Number of cavities per beam</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$N_{\mathrm{cav}}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="0" column="1">
+                                          <widget class="QLineEdit" name="le_E0">
+                                           <property name="text">
+                                            <string>[45.6, 80, 120, 182.5]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="10" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_6">
+                                           <property name="toolTip">
+                                            <string>Longitudinal impedance threshold</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$Z_{\parallel, \mathrm{th}}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="12" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_14">
+                                           <property name="Text" stdset="0">
+                                            <string>$\mathrm{Label}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="12" column="1">
+                                          <widget class="QLineEdit" name="le_Threshold_Label">
+                                           <property name="minimumSize">
+                                            <size>
+                                             <width>75</width>
+                                             <height>0</height>
+                                            </size>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                        </layout>
+                                       </widget>
                                       </widget>
                                      </item>
-                                     <item row="0" column="1" colspan="6">
+                                     <item row="0" column="0">
                                       <widget class="QLabel" name="label_9">
                                        <property name="text">
                                         <string>Machine parameters</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="6" column="2">
-                                      <widget class="QLabel" name="label_28">
-                                       <property name="text">
-                                        <string>[kOhm]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="4" column="2">
-                                      <widget class="QLabel" name="label_27">
-                                       <property name="text">
-                                        <string>[kHz]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="7" column="4" colspan="3">
-                                      <widget class="QCheckBox" name="cb_Transverse_Threshold">
-                                       <property name="text">
-                                        <string>Transverse threshhold</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="6" column="6">
-                                      <widget class="QLabel" name="label_30">
-                                       <property name="text">
-                                        <string>[kOhm/m]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="3" column="6">
-                                      <widget class="QLabel" name="label_25">
-                                       <property name="text">
-                                        <string>[ms]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="2" column="6">
-                                      <widget class="QLabel" name="label_23">
-                                       <property name="text">
-                                        <string>[1e-5]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="2" column="5">
-                                      <widget class="QLineEdit" name="le_Alpha_S">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[1.48, 1.48, 0.73, 0.73]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="6" column="1">
-                                      <widget class="QLineEdit" name="le_Zth_Long">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="6" column="0">
-                                      <widget class="QLabel" name="label_17">
-                                       <property name="toolTip">
-                                        <string>Longitudinal impedance limit</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>Zth_l</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="3" column="4">
-                                      <widget class="QLabel" name="label_15">
-                                       <property name="toolTip">
-                                        <string>Transverse damping time</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>tau_xy</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="1" column="0">
-                                      <widget class="QLabel" name="label_4">
-                                       <property name="toolTip">
-                                        <string>Energy</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>E0</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="2" column="0">
-                                      <widget class="QLabel" name="label_10">
-                                       <property name="toolTip">
-                                        <string>Beam Current</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>I0</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="3" column="1">
-                                      <widget class="QLineEdit" name="le_Tau_Z">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[424.6, 78.7, 23.4, 6.8]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="3" column="5">
-                                      <widget class="QLineEdit" name="le_Tau_XY">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[849.2, 157.4, 46.8, 13.6]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="2" column="4">
-                                      <widget class="QLabel" name="label_16">
-                                       <property name="toolTip">
-                                        <string>Momentum compaction factor</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>alpha_c</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="6" column="5">
-                                      <widget class="QLineEdit" name="le_Zth_Trans">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="3" column="0">
-                                      <widget class="QLabel" name="label_11">
-                                       <property name="toolTip">
-                                        <string>Longitudinal damping time</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>tau_z</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="6" column="4">
-                                      <widget class="QLabel" name="label_20">
-                                       <property name="toolTip">
-                                        <string>Transverse impedance limit</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>Z_th_t</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="4" column="0">
-                                      <widget class="QLabel" name="label_12">
-                                       <property name="toolTip">
-                                        <string>Revolution frequency</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>f_rev</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="1" column="5">
-                                      <widget class="QLineEdit" name="le_Nu_S">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[0.025, 0.0506, 0.036, 0.087]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="1" column="3" rowspan="6">
-                                      <widget class="Line" name="line_2">
-                                       <property name="orientation">
-                                        <enum>Qt::Vertical</enum>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="4" column="1">
-                                      <widget class="QLineEdit" name="le_F_Rev">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[3.07, 3.07, 3.07, 3.07]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="1" column="4">
-                                      <widget class="QLabel" name="label_14">
-                                       <property name="toolTip">
-                                        <string>Synchrotron oscillation tune</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>nu_s</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="2" column="1">
-                                      <widget class="QLineEdit" name="le_I0">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[1390, 147, 29, 10.8]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="4" column="5">
-                                      <widget class="QLineEdit" name="le_N_Cav">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[52, 100, 268, 584]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="4" column="4">
-                                      <widget class="QLabel" name="label_13">
-                                       <property name="toolTip">
-                                        <string>Number of cavities per beam</string>
-                                       </property>
-                                       <property name="text">
-                                        <string>N_cav</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="7" column="0" colspan="4">
-                                      <widget class="QCheckBox" name="cb_Longitudinal_Threshold">
-                                       <property name="text">
-                                        <string>Longitudinal threshold</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="1" column="2">
-                                      <widget class="QLabel" name="label_21">
-                                       <property name="text">
-                                        <string>[GeV]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="1" column="1">
-                                      <widget class="QLineEdit" name="le_E0">
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>[45.6, 80, 120, 182.5]</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="5" column="0">
-                                      <widget class="QLabel" name="label">
-                                       <property name="text">
-                                        <string>beta_xy</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="5" column="1">
-                                      <widget class="QLineEdit" name="le_Beta_XY">
-                                       <property name="minimumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>0</height>
-                                        </size>
-                                       </property>
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                       <property name="text">
-                                        <string>50</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="5" column="5">
-                                      <widget class="QLineEdit" name="le_Threshold_Label">
-                                       <property name="minimumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>0</height>
-                                        </size>
-                                       </property>
-                                       <property name="maximumSize">
-                                        <size>
-                                         <width>75</width>
-                                         <height>16777215</height>
-                                        </size>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="5" column="4">
-                                      <widget class="QLabel" name="label_31">
-                                       <property name="text">
-                                        <string>Label</string>
                                        </property>
                                       </widget>
                                      </item>
@@ -1538,128 +1779,197 @@
                                  </layout>
                                 </widget>
                                </item>
-                               <item row="1" column="0">
-                                <widget class="QWidget" name="widget_12" native="true">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>400</width>
-                                   <height>0</height>
-                                  </size>
-                                 </property>
-                                 <layout class="QGridLayout" name="gridLayout_21">
-                                  <item row="0" column="0" colspan="6">
-                                   <widget class="QLabel" name="label_32">
-                                    <property name="text">
-                                     <string>Cutoff</string>
-                                    </property>
-                                    <property name="alignment">
-                                     <set>Qt::AlignCenter</set>
-                                    </property>
-                                   </widget>
-                                  </item>
-                                  <item row="3" column="0">
-                                   <layout class="QGridLayout" name="gl_Cutoff">
-                                    <item row="0" column="0">
-                                     <widget class="QLabel" name="label_33">
-                                      <property name="text">
-                                       <string>Ri</string>
-                                      </property>
-                                      <property name="alignment">
-                                       <set>Qt::AlignCenter</set>
-                                      </property>
-                                     </widget>
-                                    </item>
-                                    <item row="1" column="0">
-                                     <widget class="QDoubleSpinBox" name="dsb_Ri_1">
-                                      <property name="maximum">
-                                       <double>1000000000000000013287555072.000000000000000</double>
-                                      </property>
-                                      <property name="value">
-                                       <double>150.000000000000000</double>
-                                      </property>
-                                     </widget>
-                                    </item>
-                                   </layout>
-                                  </item>
-                                  <item row="3" column="1">
-                                   <widget class="QPushButton" name="pb_Recalculate_cutoff">
-                                    <property name="text">
-                                     <string>Refresh</string>
-                                    </property>
-                                   </widget>
-                                  </item>
-                                  <item row="3" column="2" colspan="3">
-                                   <spacer name="horizontalSpacer">
-                                    <property name="orientation">
-                                     <enum>Qt::Horizontal</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                     <size>
-                                      <width>40</width>
-                                      <height>20</height>
-                                     </size>
-                                    </property>
-                                   </spacer>
-                                  </item>
-                                 </layout>
-                                </widget>
-                               </item>
                                <item row="2" column="0">
                                 <widget class="QWidget" name="widget_19" native="true">
                                  <layout class="QGridLayout" name="gridLayout_16">
-                                  <item row="1" column="3">
-                                   <widget class="QPushButton" name="pb_Add_Textt">
-                                    <property name="text">
-                                     <string>Add Text</string>
-                                    </property>
-                                   </widget>
-                                  </item>
                                   <item row="1" column="0">
-                                   <widget class="QLineEdit" name="le_Plot_Text_2">
-                                    <property name="text">
-                                     <string>Text</string>
+                                   <widget class="QWidget" name="widget_12" native="true">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>400</width>
+                                      <height>0</height>
+                                     </size>
                                     </property>
+                                    <layout class="QGridLayout" name="gridLayout_21">
+                                     <item row="0" column="0" colspan="6">
+                                      <widget class="QLabel" name="label_32">
+                                       <property name="text">
+                                        <string>Cutoff</string>
+                                       </property>
+                                       <property name="alignment">
+                                        <set>Qt::AlignCenter</set>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="3" column="0">
+                                      <layout class="QGridLayout" name="gl_Cutoff">
+                                       <item row="0" column="0">
+                                        <widget class="QLabel" name="label_33">
+                                         <property name="text">
+                                          <string>Ri</string>
+                                         </property>
+                                         <property name="alignment">
+                                          <set>Qt::AlignCenter</set>
+                                         </property>
+                                        </widget>
+                                       </item>
+                                       <item row="1" column="0">
+                                        <widget class="QLineEdit" name="le_Ri_Cutoff_List"/>
+                                       </item>
+                                       <item row="1" column="1">
+                                        <widget class="QSpinBox" name="sb_Mode_Text_Rotation"/>
+                                       </item>
+                                      </layout>
+                                     </item>
+                                     <item row="3" column="1">
+                                      <widget class="QPushButton" name="pb_Recalculate_cutoff">
+                                       <property name="text">
+                                        <string>Refresh</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="3" column="2" colspan="3">
+                                      <spacer name="horizontalSpacer">
+                                       <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                       </property>
+                                       <property name="sizeHint" stdset="0">
+                                        <size>
+                                         <width>40</width>
+                                         <height>20</height>
+                                        </size>
+                                       </property>
+                                      </spacer>
+                                     </item>
+                                    </layout>
                                    </widget>
                                   </item>
                                   <item row="0" column="0">
                                    <widget class="QLabel" name="label_8">
                                     <property name="text">
-                                     <string>TextLabel</string>
+                                     <string>Annotations</string>
                                     </property>
                                    </widget>
                                   </item>
-                                  <item row="1" column="1">
-                                   <widget class="QComboBox" name="cb_Text_Box">
-                                    <item>
-                                     <property name="text">
-                                      <string>None</string>
-                                     </property>
-                                    </item>
-                                    <item>
-                                     <property name="text">
-                                      <string>Round</string>
-                                     </property>
-                                    </item>
-                                    <item>
-                                     <property name="text">
-                                      <string>Square</string>
-                                     </property>
-                                    </item>
-                                    <item>
-                                     <property name="text">
-                                      <string>Round4</string>
-                                     </property>
-                                    </item>
+                                  <item row="2" column="0">
+                                   <widget class="QWidget" name="widget_21" native="true">
+                                    <layout class="QGridLayout" name="gridLayout_25">
+                                     <item row="0" column="2">
+                                      <widget class="QSpinBox" name="sb_Annotation_Text_Size">
+                                       <property name="minimumSize">
+                                        <size>
+                                         <width>50</width>
+                                         <height>0</height>
+                                        </size>
+                                       </property>
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>50</width>
+                                         <height>16777215</height>
+                                        </size>
+                                       </property>
+                                       <property name="minimum">
+                                        <number>5</number>
+                                       </property>
+                                       <property name="value">
+                                        <number>14</number>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="0" column="3">
+                                      <widget class="QSpinBox" name="sb_Rotation"/>
+                                     </item>
+                                     <item row="0" column="1">
+                                      <widget class="QComboBox" name="cb_Text_Box">
+                                       <item>
+                                        <property name="text">
+                                         <string>None</string>
+                                        </property>
+                                       </item>
+                                       <item>
+                                        <property name="text">
+                                         <string>Round</string>
+                                        </property>
+                                       </item>
+                                       <item>
+                                        <property name="text">
+                                         <string>Square</string>
+                                        </property>
+                                       </item>
+                                       <item>
+                                        <property name="text">
+                                         <string>Round4</string>
+                                        </property>
+                                       </item>
+                                      </widget>
+                                     </item>
+                                     <item row="0" column="0">
+                                      <widget class="QLineEdit" name="le_Plot_Text_2">
+                                       <property name="text">
+                                        <string>Text</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="0" column="4">
+                                      <widget class="QPushButton" name="pb_Add_Textt">
+                                       <property name="text">
+                                        <string>Add Text</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                    </layout>
                                    </widget>
                                   </item>
-                                  <item row="1" column="2">
-                                   <widget class="QSpinBox" name="sb_Annotation_Text_Size">
-                                    <property name="minimum">
-                                     <number>5</number>
-                                    </property>
-                                    <property name="value">
-                                     <number>14</number>
-                                    </property>
+                                  <item row="5" column="0">
+                                   <widget class="QWidget" name="widget_22" native="true">
+                                    <layout class="QGridLayout" name="gridLayout_26">
+                                     <item row="1" column="0">
+                                      <widget class="QDoubleSpinBox" name="dsb_Axvline_X">
+                                       <property name="maximum">
+                                        <double>9999999999999999635896294965248.000000000000000</double>
+                                       </property>
+                                       <property name="singleStep">
+                                        <double>0.010000000000000</double>
+                                       </property>
+                                       <property name="value">
+                                        <double>0.100000000000000</double>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="1" column="1">
+                                      <widget class="QComboBox" name="cb_Linestyle">
+                                       <item>
+                                        <property name="text">
+                                         <string>-</string>
+                                        </property>
+                                       </item>
+                                       <item>
+                                        <property name="text">
+                                         <string>--</string>
+                                        </property>
+                                       </item>
+                                       <item>
+                                        <property name="text">
+                                         <string>-.-</string>
+                                        </property>
+                                       </item>
+                                      </widget>
+                                     </item>
+                                     <item row="1" column="2">
+                                      <widget class="QPushButton" name="pb_Add_Vline">
+                                       <property name="text">
+                                        <string>Add Vline</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="0" column="0">
+                                      <widget class="QLabel" name="label">
+                                       <property name="text">
+                                        <string>Axvline</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                    </layout>
                                    </widget>
                                   </item>
                                  </layout>
@@ -1695,6 +2005,23 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QCheckableComboBox</class>
+   <extends>QComboBox</extends>
+   <header>QCheckableComboBox</header>
+  </customwidget>
+  <customwidget>
+   <class>QLatexLabel</class>
+   <extends>QWidget</extends>
+   <header>QLatexLabel</header>
+  </customwidget>
+  <customwidget>
+   <class>SwitchControl</class>
+   <extends>QCheckBox</extends>
+   <header>QSwitchControl</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../qss/icons.qrc"/>
  </resources>

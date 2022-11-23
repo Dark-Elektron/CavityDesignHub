@@ -65,6 +65,7 @@ class FileReader:
         dict = {
               'TITLE': [],
               'CAVITY RADIUS': [],
+              'LENGTH': [],
               'FREQUENCY': [],
               'LENGTH OF WAVE': [],
               'WAVE VALUE': [],
@@ -88,52 +89,53 @@ class FileReader:
                     dict['TITLE'].append(line)
 
                 if 'CAVITY RADIUS' in line:
-                    dict['CAVITY RADIUS'].append(self._process_line(line))
+                    dict['CAVITY RADIUS'].append(self._process_line(line, 'CAVITY RADIUS'))
+                    dict['LENGTH'].append(self._process_line(line, 'LENGTH'))
 
                 if 'FREQUENCY' in line:
-                    dict['FREQUENCY'].append(self._process_line(line))
+                    dict['FREQUENCY'].append(self._process_line(line, 'FREQUENCY'))
 
                 if 'LENGTH OF WAVE' in line:
-                    dict['LENGTH OF WAVE'].append(self._process_line(line))
+                    dict['LENGTH OF WAVE'].append(self._process_line(line, 'LENGTH OF WAVE'))
 
                 if 'WAVE VALUE' in line:
-                    dict['WAVE VALUE'].append(self._process_line(line))
+                    dict['WAVE VALUE'].append(self._process_line(line, 'WAVE VALUE'))
 
                 if 'QUALITY FACTOR' in line:
-                    dict['QUALITY FACTOR'].append(self._process_line(line))
+                    dict['QUALITY FACTOR'].append(self._process_line(line, 'QUALITY FACTOR'))
 
                 if 'STORED ENERGY' in line:
-                    dict['STORED ENERGY'].append(self._process_line(line))
+                    dict['STORED ENERGY'].append(self._process_line(line, 'STORED ENERGY'))
 
                 if 'TRANSIT TIME' in line:
-                    dict['TRANSIT TIME'].append(self._process_line(line))
+                    dict['TRANSIT TIME'].append(self._process_line(line, 'TRANSIT TIME'))
 
                 if 'EFFECTIVE IMPEDANCE' in line:
-                    dict['EFFECTIVE IMPEDANCE'].append(self._process_line(line))
+                    dict['EFFECTIVE IMPEDANCE'].append(self._process_line(line, 'EFFECTIVE IMPEDANCE'))
 
                 if 'SHUNT IMPEDANCE' in line:
-                    dict['SHUNT IMPEDANCE'].append(self._process_line(line))
+                    dict['SHUNT IMPEDANCE'].append(self._process_line(line, 'SHUNT IMPEDANCE'))
 
                 if 'MAXIMUM MAG. FIELD' in line:
-                    dict['MAXIMUM MAG. FIELD'].append(self._process_line(line))
+                    dict['MAXIMUM MAG. FIELD'].append(self._process_line(line, 'MAXIMUM MAG. FIELD'))
 
                 if 'MAXIMUM ELEC.FIELD' in line:
-                    dict['MAXIMUM ELEC. FIELD'].append(self._process_line(line))
+                    dict['MAXIMUM ELEC. FIELD'].append(self._process_line(line, 'MAXIMUM ELEC.FIELD'))
 
                 if 'ACCELERATION' in line and not 'RATE' in line:
-                    dict['ACCELERATION'].append(self._process_line(line))
+                    dict['ACCELERATION'].append(self._process_line(line, 'ACCELERATION'))
 
                 if 'ACCELERATION RATE' in line:
-                    dict['ACCELERATION RATE'].append(self._process_line(line))
+                    dict['ACCELERATION RATE'].append(self._process_line(line, 'ACCELERATION RATE'))
 
                 if 'AVERAGE E.FIELD ON AXIS' in line:
-                    dict['AVERAGE E.FIELD ON AXIS'].append(self._process_line(line))
+                    dict['AVERAGE E.FIELD ON AXIS'].append(self._process_line(line, 'AVERAGE E.FIELD ON AXIS'))
 
                 if 'KM (Emax/Accel.rate)' in line:
-                    dict['KM (Emax/Accel.rate)'].append(self._process_line(line))
+                    dict['KM (Emax/Accel.rate)'].append(self._process_line(line, 'KM (Emax/Accel.rate)'))
 
                 if 'KH (Hmax*Z0/Accel.rate)' in line:
-                    dict['KH (Hmax*Z0/Accel.rate)'].append(self._process_line(line))
+                    dict['KH (Hmax*Z0/Accel.rate)'].append(self._process_line(line, 'KH (Hmax*Z0/Accel.rate)'))
 
         return dict
 
@@ -150,13 +152,23 @@ class FileReader:
             else:
                 print(f'Expected header length of {len(list(df.columns))}, got {len(header)}.')
 
-        return df
+        try: # this is to try to return a dataframe of cavity variables if the json file is a shape space
+            t = df[:][:1].loc["IC"]
+            dd = t.apply(pd.Series)
+            dd = dd.set_axis(["A", "B", "ai", "bi", "Ri", "L", "Req", "alpha"], axis=1, inplace=False)
+
+            return dd # dd is a dataframe whose columns are the cavity geometry variables
+        except:
+            return df
 
     def pam_reader(self):
         pass
 
-    def _process_line(self, line):
-        line = line.strip().split(' ')
+    def _process_line(self, line, request):
+        # select substring from index
+        line = line[line.index(request):]
+        line = line.strip().split(" ")
+        # print(line)
         res = 0
         for val in line:
             try:
@@ -196,13 +208,13 @@ class FileReader:
 
 if __name__ == '__main__':
     fr = FileReader()
-    # txt = fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data/SLANS/Cavity382/cavity_mm.pam")
-    # fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data/SLANS/Cavity1/cavity_mm_7.af")
+    # txt = fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor/SLANS/Cavity382/cavity_mm.pam")
+    # fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor/SLANS/Cavity1/cavity_mm_7.af")
     # df = fr.excel_reader(r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Dataframe_full_data.xlsx')
-    # print([[x] for x in df["Midcell Data"].iloc[0][1:8]])
-    # print(len(df["Midcell Data"]))
-    # print([[x] for x in df["Midcell Data"].iloc[0][8:20]])
-    # print([[x] for x in df["Midcell Data"].iloc[0][10:11]])
+    # print([[x] for x in df["Midcell node_editor"].iloc[0][1:8]])
+    # print(len(df["Midcell node_editor"]))
+    # print([[x] for x in df["Midcell node_editor"].iloc[0][8:20]])
+    # print([[x] for x in df["Midcell node_editor"].iloc[0][10:11]])
 
     # # dataframe from json
     # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Cavity Population/pseudo_shape_space.json'
@@ -211,13 +223,17 @@ if __name__ == '__main__':
     #     print(value)
 
     # # svl reader
-    # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data\SLANS\Cavity_process_0/cavity_mm.svl'
+    # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor\SLANS\Cavity_process_0/cavity_mm.svl'
     # d = fr.svl_reader(dir)
     # print(d['FREQUENCY'])
 
     # txt reader
-    durr = r"D:\CST Studio\Comparisons_Hook_Coupler_Designs\Wakefield_Trans_C3794_Optimized_Coupler_4hooks_1km_short\Export\Mix 1D.txt"
+    durr = r"D:\Dropbox\CEMCodesHub\SampleProject\Cavities\test.json"
 
-    d = fr.txt_reader(durr, "\t")
+    d = fr.json_reader(durr)
     print(type(d))
     print(d)
+    # expand df.tags into its own dataframe
+    t = d[:][:1].loc["IC"]
+    dd = t.apply(pd.Series)
+    dd = dd.set_axis(["A", "B", "a", "b", "Ri", "L", "Req", "alpha"], axis=1, inplace=False)

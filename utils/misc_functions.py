@@ -1,6 +1,6 @@
 import json
 import os
-import  subprocess
+import subprocess
 from threading import Thread
 import pandas as pd
 import seaborn as sns
@@ -70,7 +70,7 @@ def get_point_fid(data_point):
         print(data_point)
 
     # load population
-    dict = json.load(open("Extracted Data/population.json", "r"))
+    dict = json.load(open("Extracted node_editor/population.json", "r"))
 
     if len(data_point) == 3:
         A = data_point[0]
@@ -164,7 +164,7 @@ def read_parameters(ui):
             return [A, B, a, b, Req, Ri, L]
 
         except:
-            print("Data not yet found")
+            print("node_editor not yet found")
             return [0, 0, 0, 0, 0, 0, 0]
 
 
@@ -179,7 +179,7 @@ def process_line(line):
 
 def updateDict(dict_dir):
     dict = json.load(open(dict_dir, 'r'))
-    population = json.load(open("Extracted Data/population.json", 'r'))
+    population = json.load(open("Extracted node_editor/population.json", 'r'))
     for key, val_set in dict.items():
 
         population[key] += (dict[key])

@@ -12,7 +12,7 @@ class GraphicsScene(QGraphicsScene):
         self.scene = scene
 
         # Settings
-        self.gridSize = 20
+        self.gridSize = 100
         self.gridSquares = 5
 
         self._color_background = QColor("#ffffff")
@@ -34,7 +34,7 @@ class GraphicsScene(QGraphicsScene):
 
     def drawBackground(self, painter, rect):
         super().drawBackground(painter, rect)
-        grid = False
+        grid = True
         if grid:
             # create grid
             left = int(math.floor(rect.left()))

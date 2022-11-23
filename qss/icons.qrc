@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/PNG/add.png</file>
     <file>icons/PNG/back.png</file>
     <file>icons/PNG/forward.png</file>
     <file>icons/PNG/home.png</file>
@@ -29,6 +30,7 @@
     <file>icons/PNG/settings.png</file>
   </qresource>
   <qresource prefix="imgs">
+    <file>images/stability_condition_wakefield.png</file>
     <file>images/end_same_cell.png</file>
     <file>images/end_cell.png</file>
     <file>images/mid_cell.png</file>

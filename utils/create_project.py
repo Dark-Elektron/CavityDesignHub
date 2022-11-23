@@ -4,7 +4,7 @@
 class CreateProject:
     def __init__(self):
         project_structure = {
-            "Data": {},
+            "node_editor": {},
             "Dictionaries": {
                 "Geometry": None,
                 "Mode_Properties": {

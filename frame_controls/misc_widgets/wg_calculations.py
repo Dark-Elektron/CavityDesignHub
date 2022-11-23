@@ -41,7 +41,7 @@ class WGCalcControl:
         # widget display signals
         # self.wgcalcUI.pb_Dataset_From_Simulation.clicked.connect(lambda: self.toggle_page('Dataset From Simulation'))
         # self.wgcalcUI.pb_Combine_Dataset.clicked.connect(lambda: self.toggle_page('Combine Datasets'))
-        # self.wgcalcUI.pb_Filter_Data.clicked.connect(lambda: self.toggle_page('Filter Data'))
+        # self.wgcalcUI.pb_Filter_Data.clicked.connect(lambda: self.toggle_page('Filter node_editor'))
 
         # # change code
         # self.wgcalcUI.cb_Run_Mode.currentIndexChanged.connect(lambda: self.show_hide_())

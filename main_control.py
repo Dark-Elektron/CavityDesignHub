@@ -3,7 +3,8 @@ import logging
 import os
 import shutil
 import sys
-
+# import pyautogui
+from PyQt5 import QtCore
 from utils.house_keeping import HouseKeeping
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
@@ -14,52 +15,75 @@ from ui_files.main_window import Ui_MainWindow
 from ui_files.run_tune import Ui_w_Tune
 from ui_files.wakefield import Ui_Wakefield
 from utils.file_reader import FileReader
+from frame_controls.multipacting_control import MultipactingControl
 from frame_controls.misc import MiscControl
 from frame_controls.plot_control import PlotControl
 from frame_controls.eigenmode import EigenmodeControl
 from frame_controls.postprocess import PostprocessControl
-from frame_controls.tune_control import TuneControl
+from frame_controls.tune_control import TuneControl, OptimizationControl
 from frame_controls.wakefield_control import WakefieldControl
+from node_editor.node_editor_widget import NodeEditorWidget
+import qtvscodestyle as qtvsc
+# sys.path.append(r"D:\Dropbox\CEMCodesHub\test_plugin") # to search inside this directory for imports
 
 
 # pyuic5 -x ui_files/main_window.ui -o ui_files/main_window.py
 # pyuic5 -x ui_files/eigenmode.ui -o ui_files/eigenmode.py
 # pyuic5 -x ui_files/postprocess.ui -o ui_files/postprocess.py
+# pyuic5 -x ui_files/multipacting.ui -o ui_files/multipacting.py
 # pyuic5 -x ui_files/run_tune.ui -o ui_files/run_tune.py
 # pyuic5 -x ui_files/plot.ui -o ui_files/plot.py
 # pyuic5 -x ui_files/wakefield.ui -o ui_files/wakefield.py
+# pyuic5 -x ui_files/geometry_input.ui -o ui_files/geometry_input.py
 # pyuic5 -x ui_files/misc.ui -o ui_files/misc.py
 # pyuic5 -x ui_files/wg_calculations.ui -o ui_files/wg_calculations.py
 # pyuic5 -x ui_files/mode_nomenclature.ui -o ui_files/mode_nomenclature.py
 # pyuic5 -x ui_files/pandas_table.ui -o ui_files/pandas_table.py
 # pyuic5 -x ui_files/pp_plot.ui -o ui_files/pp_plot.py
 # pyuic5 -x ui_files/plot_properties.ui -o ui_files/pprops.py
+# pyuic5 -x ui_files/edit_annotated_text.ui -o ui_files/edit_annotated_text.py
+# pyuic5 -x ui_files/edit_line2D.ui -o ui_files/edit_line2D.py
+# pyuic5 -x ui_files/plot_widget_header.ui -o ui_files/plot_widget_header.py
+# pyuic5 -x ui_files/abci_plot.ui -o ui_files/abci_plot.py
+# pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py
 # pyrcc5 qss/icons.qrc -o icons_rc.py
 
 fr = FileReader()
 
-myappid = u'll' # arbitrary string
+myappid = u'll'  # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
-AN_DURATION = 200
+DEBUG = True
+AN_DURATION = 250
 
 
 class MainWindow:
     def __init__(self):
+        self.tune_widget = None
+        self.frames_dict = None
+        self.last_frame = None
+        self.tray_buttons_dict = None
         self.main_win = QMainWindow()
+        self.main_win.closeEvent = self.closeEvent
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self.main_win)
 
-        self.global_state = 0
+        # set window height
+        # width, height = pyautogui.size()
+        # self.main_win.setFixedHeight(height)
 
-        # Add stylesheet
-        self.stylesheet_filename = 'qss/aqua.qss'
-        self.loadStylesheet(self.stylesheet_filename)
+        self.global_state = 0
+        self.last_saved_theme = 'Light VS'
 
         # self.initUI()
         self.parentDir = os.getcwd()
         self.projectDir = r'D:\Dropbox\CEMCodesHub\SampleProject'
+
+        # add node editor
+        # new = NodeEditorWidget()
+        # new.addNodes()
+        # self.ui.gl_Node_Editor.addWidget(new)
 
         # initialize logging
         self.logTextBox = QPlainTextEditLogger()
@@ -83,6 +107,41 @@ class MainWindow:
         # check if last state should be loaded
         self.load_last_state()
 
+        # Add stylesheet
+        # self.stylesheet_filename = 'qss/aqua.qss'
+        # self.loadStylesheet(self.stylesheet_filename)
+        self.theme_dict = {'Light VS': qtvsc.Theme.LIGHT_VS,
+                           'Quiet Light': qtvsc.Theme.QUIET_LIGHT,
+                           'Solarized Light': qtvsc.Theme.SOLARIZED_LIGHT,
+                           'Abyss': qtvsc.Theme.ABYSS,
+                           'Dark VS': qtvsc.Theme.DARK_VS,
+                           'Kimbie Dark': qtvsc.Theme.KIMBIE_DARK,
+                           'Monokai': qtvsc.Theme.MONOKAI,
+                           'Monokai Dimmed': qtvsc.Theme.MONOKAI_DIMMED,
+                           'Red': qtvsc.Theme.RED,
+                           'Solarized Dark': qtvsc.Theme.SOLARIZED_DARK,
+                           'Tomorrow Night Blue': qtvsc.Theme.TOMORROW_NIGHT_BLUE,
+                           'Dark High Contrast': qtvsc.Theme.DARK_HIGH_CONTRAST
+                           }
+        # Theme name             Symbol
+        # ___________            ______
+        #
+        # Light (Visual Studio): LIGHT_VS
+        # Quiet Light          : QUIET_LIGHT
+        # Solarized Light      : SOLARIZED_LIGHT
+        # Abyss                : ABYSS
+        # Dark (Visual Studio) : DARK_VS
+        # Kimbie Dark          : KIMBIE_DARK
+        # Monokai              : MONOKAI
+        # Monokai Dimmed       : MONOKAI_DIMMED
+        # Red                  : RED
+        # Solarized Dark       : SOLARIZED_DARK
+        # Tomorrow Night Blue  : TOMORROW_NIGHT_BLUE
+        # Dark High Contrast   : DARK_HIGH_CONTRAST
+        # stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
+        stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.last_saved_theme])
+        QApplication.instance().setStyleSheet(stylesheet)
+
         # self.ui.pb_rHome.enterEvent = self.tray_animation
         # self.ui.pb_rHome.leaveEvent = self.tray_animation
 
@@ -94,12 +153,22 @@ class MainWindow:
         self.ui.pb_rTune.installEventFilter(self.main_win)
         self.ui.pb_rEigenmode.installEventFilter(self.main_win)
         self.ui.pb_rWakefield.installEventFilter(self.main_win)
+        self.ui.pb_rMultipacting.installEventFilter(self.main_win)
         self.ui.pb_rPlot.installEventFilter(self.main_win)
         self.ui.pb_rPostprocess.installEventFilter(self.main_win)
         self.ui.pb_rMisc.installEventFilter(self.main_win)
 
         # ui effects
         self.ui_effects()
+
+        # window state before closing
+        self.settings = QSettings('MyQtApp', "CEMCodesHub")
+        print(self.settings.fileName())
+        # restore window state before closing
+        try:
+            self.readSettings()
+        except Exception as e:
+            print("Exception occured", e)
 
     def new_open_folder(self):
         # disable all buttons
@@ -117,10 +186,12 @@ class MainWindow:
 
         # hold last frame
         self.last_frame = None
+        if DEBUG: print("Check 2e_i: main_control.py")
 
         self.frames_dict = {'Home': [self.ui.pb_rHome],
                             'Tune': [self.ui.pb_Tune],
                             'Wakefield': [self.ui.pb_Wakefield_Analysis],
+                            'Multipacting': [self.ui.pb_Multipacting_Analysis],
                             'Eigenmode': [self.ui.pb_Eigenmode_Analysis],
                             'Postprocess': [self.ui.pb_Post_Process],
                             'Plot': [self.ui.pb_Plot],
@@ -130,14 +201,18 @@ class MainWindow:
         self.tray_buttons_dict = {'Home': [self.ui.pb_rHome],
                                   'Tune': [self.ui.pb_rTune],
                                   'Wakefield': [self.ui.pb_rWakefield],
+                                  'Multipacting': [self.ui.pb_rMultipacting],
                                   'Eigenmode': [self.ui.pb_rEigenmode],
                                   'Postprocess': [self.ui.pb_rPostprocess],
                                   'Plot': [self.ui.pb_rPlot],
                                   'Misc': [self.ui.pb_rMisc]
                                   }
 
+        if DEBUG: print("Check 2e_ii: main_control.py")
         self.create_frames_ui()
+        if DEBUG: print("Check 2e_iii: main_control.py")
         self.signals()
+        if DEBUG: print("Check 2e_iii: main_control.py")
 
         ###########################################
 
@@ -146,7 +221,8 @@ class MainWindow:
         # self.analysis = Analysis(self)
 
         # house keeping
-        self.hk = HouseKeeping(self)
+        # self.hk = HouseKeeping(self)
+        if DEBUG: print("Check 2e_iii: main_control.py")
 
         #############################################
         # set initial session log widget state to collapsed
@@ -158,10 +234,11 @@ class MainWindow:
         for key, button_widget_pair in self.frames_dict.items():
             button_widget_pair[0].clicked.connect(lambda _, b=key: self.change_frame(b))
 
-        # signal for butom panel
+        # signal for button panel
         self.ui.pb_rTune.clicked.connect(lambda: self.change_frame('Tune'))
         self.ui.pb_rEigenmode.clicked.connect(lambda: self.change_frame('Eigenmode'))
         self.ui.pb_rWakefield.clicked.connect(lambda: self.change_frame('Wakefield'))
+        self.ui.pb_rMultipacting.clicked.connect(lambda: self.change_frame('Multipacting'))
         self.ui.pb_rPostprocess.clicked.connect(lambda: self.change_frame('Postprocess'))
         self.ui.pb_rPlot.clicked.connect(lambda: self.change_frame('Plot'))
         self.ui.pb_rMisc.clicked.connect(lambda: self.change_frame('Misc'))
@@ -169,7 +246,7 @@ class MainWindow:
         self.ui.pb_rBack.clicked.connect(lambda: self.return_to_last_frame())
 
         # theme signal
-        self.ui.hs_Theme.valueChanged.connect(lambda: self.change_theme())
+        self.ui.pb_Apply_Theme.clicked.connect(lambda: self.change_theme())
 
         # save state
         self.ui.pb_Save_State.clicked.connect(lambda: self.serialize())
@@ -181,21 +258,32 @@ class MainWindow:
         self.ui.pb_Expand_Collapse_Log.clicked.connect(lambda: self.animate_width(self.ui.w_Log, 0, 375, True, 'min'))
 
     def create_frames_ui(self):
+        if DEBUG: print("Check 2e_i_1: main_control.py")
         # frame UIs
         self.tune_widget = TuneControl(self)
+        if DEBUG: print("Check 2e_i_1: main_control.py")
         self.wakefield_widget = WakefieldControl(self)
+        if DEBUG: print("Check 2e_i_1: main_control.py")
         self.eigenmode_widget = EigenmodeControl(self)
+        if DEBUG: print("Check 2e_i_1: main_control.py")
         self.postprocess_widget = PostprocessControl(self)
-        self.plot_widget = PlotControl(self)
+        if DEBUG: print("Check 2e_i_1: main_control.py")
         self.misc_widget = MiscControl(self)
+        if DEBUG: print("Check 2e_i_1: main_control.py")
+        self.plot_widget = PlotControl(self)
+        if DEBUG: print("Check 2e_i_1: main_control.py")
+        self.multipacting_widget = MultipactingControl(self)
+        if DEBUG: print("Check 2e_i_2: main_control.py")
 
         self.frames_dict['Home'].append(self.ui.sa_Home)
         self.frames_dict['Tune'].append(self.tune_widget.w_Tune)
         self.frames_dict['Wakefield'].append(self.wakefield_widget.w_Wakefield)
         self.frames_dict['Eigenmode'].append(self.eigenmode_widget.w_Eigenmode)
+        self.frames_dict['Multipacting'].append(self.multipacting_widget.w_Multipacting)
         self.frames_dict['Postprocess'].append(self.postprocess_widget.w_Postprocess)
         self.frames_dict['Plot'].append(self.plot_widget.w_Plot)
         self.frames_dict['Misc'].append(self.misc_widget.w_Misc)
+        if DEBUG: print("Check 2e_i_3: main_control.py")
 
     def change_frame(self, key):
         # remove existing widgets
@@ -239,9 +327,9 @@ class MainWindow:
 
     def animate_width(self, widget, min_width, standard, enable, option="max"):
         if enable:
-            #### GET WIDTH
+            # GET WIDTH
             width = widget.width()
-            #### SET MAX WIDTH
+            # SET MAX WIDTH
             if width > 0:
                 widthCollapsed = min_width
                 widget.setMinimumWidth(0)
@@ -249,16 +337,16 @@ class MainWindow:
                 widthCollapsed = standard
                 # widget.setMinimumWidth(standard)
 
-            #### ANIMATION
-            if option=='max':
+            # ANIMATION
+            if option == 'max':
                 self.animation = QPropertyAnimation(widget, b"maximumWidth")
             else:
                 self.animation = QPropertyAnimation(widget, b"minimumWidth")
 
             self.animation.setDuration(AN_DURATION)
             self.animation.setStartValue(width)
-            # print_(widthCollapsed)
             self.animation.setEndValue(widthCollapsed)
+            self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
             self.animation.start()
 
     def animate_height(self, widget, min_height, standard, enable, option="max"):
@@ -282,6 +370,7 @@ class MainWindow:
             self.animation.setDuration(AN_DURATION)
             self.animation.setStartValue(height)
             self.animation.setEndValue(heightCollapsed)
+            self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
             self.animation.start()
 
     def create_project(self):
@@ -312,14 +401,14 @@ class MainWindow:
                                           'SimulationData': {
                                              'SLANS': None,
                                              'ABCI': None
-                                         },
+                                          },
                                           'PostprocessingData': {
                                               'Plots': None,
                                               'Data': None,
                                               'CSTData': None
                                           }
+                                          }
                                          }
-                                     }
 
                 make_dirs_from_dict(project_dir_structure)
                 self.projectDir = self.f2b_slashes(fr"{project_dir}\{project_name}")
@@ -332,6 +421,7 @@ class MainWindow:
             print('Please enter a valid project name')
 
     def open_project(self, project_dir=None):
+        if DEBUG: print("Check 2a: main_control.py")
         if not project_dir:
             project_dir = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
             self.projectDir = self.f2b_slashes(project_dir)
@@ -347,18 +437,23 @@ class MainWindow:
                 self.global_state += 1
 
         elif project_dir != '':
+            if DEBUG: print("Check 2b: main_control.py")
             # check if it's a valid project folder
             sub_dirs = [a for a in os.listdir(project_dir) if os.path.isdir(os.path.join(project_dir, a))]
             compare_dirs = ['Cavities', 'PostprocessingData', 'SimulationData']
+            if DEBUG: print("Check 2c: main_control.py")
             if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
                 self.ui.l_Project_Name.setText(project_dir) #.split('/')[-1]
                 self.projectDir = self.f2b_slashes(project_dir)
+                if DEBUG: print("Check 2d: main_control.py")
 
                 # only initialize UI after successfully setting folder and initialise only once
                 self.ui.l_Project_Name.setText(self.projectDir)
                 if self.global_state == 0:
+                    if DEBUG: print("Check 2e: main_control.py")
                     self.initUI()
                     self.global_state += 1
+                if DEBUG: print("Check 2f: main_control.py")
 
 
             else:
@@ -367,12 +462,32 @@ class MainWindow:
             print('Please select a valid project directory')
 
     def change_theme(self):
-        if self.ui.hs_Theme.value() == 0:
-            self.stylesheet_filename = 'qss/aqua.qss'
-            self.loadStylesheet(self.stylesheet_filename)
-        else:
-            self.stylesheet_filename = 'qss/amoled.qss'
-            self.loadStylesheet(self.stylesheet_filename)
+        # Light (Visual Studio): LIGHT_VS
+        # Quiet Light          : QUIET_LIGHT
+        # Solarized Light      : SOLARIZED_LIGHT
+        # Abyss                : ABYSS
+        # Dark (Visual Studio) : DARK_VS
+        # Kimbie Dark          : KIMBIE_DARK
+        # Monokai              : MONOKAI
+        # Monokai Dimmed       : MONOKAI_DIMMED
+        # Red                  : RED
+        # Solarized Dark       : SOLARIZED_DARK
+        # Tomorrow Night Blue  : TOMORROW_NIGHT_BLUE
+        # Dark High Contrast   : DARK_HIGH_CONTRAST
+        # stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
+        stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.ui.cb_Theme.currentText()])
+        QApplication.instance().setStyleSheet(stylesheet)
+        self.last_saved_theme = self.ui.cb_Theme.currentText()
+
+        # change plot widget colors
+        self.plot_widget.plt.change_background('#586e75')
+
+        # if self.ui.hs_Theme.value() == 0:
+        #     self.stylesheet_filename = 'qss/aqua.qss'
+        #     self.loadStylesheet(self.stylesheet_filename)
+        # else:
+        #     self.stylesheet_filename = 'qss/amoled.qss'
+        #     self.loadStylesheet(self.stylesheet_filename)
 
     def serialize(self):
         # serialize home
@@ -385,6 +500,7 @@ class MainWindow:
         # update state file
         # serialize home
         state_dict["Project Directory"] = self.projectDir
+        state_dict['Theme'] = self.last_saved_theme
 
         # serialize tuneUI
         self.tune_widget.serialize(state_dict)
@@ -407,59 +523,73 @@ class MainWindow:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
 
     def deserialize(self, file):
+        if DEBUG: print("Check 1: main_control.py")
         # check if state file exists
         if os.path.exists(file):
-            try:
-                # open state file
-                with open(file, 'r') as f:
-                    state_dict = json.load(f)
-    
-                self.projectDir = state_dict['Project Directory']
-    
-                # open project
-                self.open_project(self.projectDir)
+            # open state file
+            with open(file, 'r') as f:
+                state_dict = json.load(f)
 
-                # deserialise tuneUI
-                try:
-                    self.tune_widget.deserialize(state_dict)
-                except:
-                    print("Could not deserialise tuneUI!")
+            # try:
+            self.projectDir = state_dict['Project Directory']
+            self.last_saved_theme = state_dict['Theme']
+            self.ui.cb_Theme.setCurrentText(self.last_saved_theme)
+            # except:
+            #     print("Could not deserialize theme and directory!")
 
-                # deserialise eigenmodeUI
-                try:
-                    self.eigenmode_widget.deserialize(state_dict)
-                except:
-                    print("Could not deserialise eigenmodeUI!")
+            # open project
+            if DEBUG: print("Check 2: main_control.py")
+            self.open_project(self.projectDir)
 
-                # deserialise wakefieldUI
-                try:
-                    self.wakefield_widget.deserialize(state_dict)
-                except:
-                    print("Could not deserialise wakefieldUI!")
+            if DEBUG: print("Check 2end: main_control.py")
 
-                # deserialise plotUI
-                try:
-                    self.plot_widget.deserialize(state_dict)
-                except:
-                    print("Could not deserialise plotUI!")
+            # deserialise tuneUI
+            # try:
+            if DEBUG: print("Check 3: main_control.py")
+            self.tune_widget.deserialize(state_dict)
+            # except:
+            #     print("Could not deserialize tuneUI!")
 
-            except:
-                print("Corrupt state file!")
+            # deserialise eigenmodeUI
+            # try:
+            if DEBUG: print("Check 4: main_control.py")
+            self.eigenmode_widget.deserialize(state_dict)
+            # except:
+            #     print("Could not deserialise eigenmodeUI!")
+
+            # deserialise wakefieldUI
+            # try:
+            if DEBUG: print("Check 5: main_control.py")
+            self.wakefield_widget.deserialize(state_dict)
+            # except:
+            #     print("Could not deserialise wakefieldUI!")
+
+            # deserialise plotUI
+            # try:
+            if DEBUG: print("Check 6: main_control.py")
+            self.plot_widget.deserialize(state_dict)
+            # except:
+            #     print("Could not deserialise plotUI!")
 
     def load_last_state(self):
-        msg = QMessageBox()
-        msg.setWindowTitle("Folder Exist")
-        msg.setText("Do you wish to load the last saved project?")
-        msg.setIcon(QMessageBox.Question)
-        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        msg.setDefaultButton(QMessageBox.Yes)
+        # msg = QMessageBox()
+        # msg.setWindowTitle("Folder Exist")
+        # msg.setText("Do you wish to load the last saved project?")
+        # msg.setIcon(QMessageBox.Question)
+        # msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        # msg.setDefaultButton(QMessageBox.Yes)
+        #
+        # msg.buttonClicked.connect(self.button_clicked)
+        #
+        # x = msg.exec_()
+        #
+        # if x == msg.Yes:
+        #     self.deserialize('ui_state_files/state_file.json')
 
-        msg.buttonClicked.connect(self.button_clicked)
-
-        x = msg.exec_()
-
-        if x == msg.Yes:
+        try:
             self.deserialize('ui_state_files/state_file.json')
+        except:
+            print("Could not deserialize last state")
 
     def checkIfPathExist(self, directory, folder):
         path = f"{directory}/{folder}"
@@ -535,7 +665,16 @@ class MainWindow:
         QApplication.instance().setStyleSheet(str(stylesheet, encoding="utf-8"))
 
     def show(self):
-        self.main_win.show()
+        self.main_win.showMaximized()
+        # self.main_win.show()
+
+    def readSettings(self):
+        self.main_win.restoreGeometry(self.settings.value("geometry"))
+        self.main_win.restoreState(self.settings.value("windowState"))
+
+    def closeEvent(self, event):
+        self.settings.setValue("geometry", self.main_win.saveGeometry())
+        self.settings.setValue("windowState", self.main_win.saveState(version=0))
 
 
 class QPlainTextEditLogger(logging.Handler):
@@ -574,7 +713,7 @@ class CustomFormatter(logging.Formatter):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     main_win = MainWindow()
-    main_win.show()
 
+    main_win.show()
     sys.exit(app.exec_())
 

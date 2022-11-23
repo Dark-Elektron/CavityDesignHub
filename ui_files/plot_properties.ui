@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>460</height>
+    <width>690</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -46,279 +46,8 @@
    <item row="1" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Axis</string>
-      </attribute>
-      <layout class="QGridLayout" name="gridLayout_3">
-       <item row="1" column="0">
-        <widget class="QWidget" name="widget_2" native="true">
-         <layout class="QGridLayout" name="gridLayout_9">
-          <item row="4" column="2">
-           <widget class="QLabel" name="label_21">
-            <property name="text">
-             <string>Label pad</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_19">
-            <property name="text">
-             <string>Axis grid</string>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0">
-           <widget class="QLabel" name="label_20">
-            <property name="text">
-             <string>Label size</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="label_18">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="0">
-           <widget class="QLabel" name="label_22">
-            <property name="text">
-             <string>Label weight</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_17">
-            <property name="text">
-             <string>Line width</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_15">
-            <property name="text">
-             <string>Face color</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_16">
-            <property name="text">
-             <string>Edge color</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="2">
-           <widget class="QLabel" name="label_23">
-            <property name="text">
-             <string>Label color</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QComboBox" name="comboBox_11"/>
-          </item>
-          <item row="0" column="3">
-           <widget class="QComboBox" name="comboBox_12"/>
-          </item>
-          <item row="3" column="1">
-           <widget class="QComboBox" name="comboBox_4">
-            <item>
-             <property name="text">
-              <string>False</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>x axis</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>y axis</string>
-             </property>
-            </item>
-            <item>
-             <property name="text">
-              <string>both</string>
-             </property>
-            </item>
-           </widget>
-          </item>
-          <item row="7" column="0" colspan="2">
-           <widget class="QWidget" name="widget_6" native="true">
-            <layout class="QGridLayout" name="gridLayout_10">
-             <item row="2" column="0">
-              <widget class="QCheckBox" name="checkBox_4">
-               <property name="text">
-                <string>Top</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QCheckBox" name="checkBox_2">
-               <property name="text">
-                <string>Bottom</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QCheckBox" name="checkBox_3">
-               <property name="text">
-                <string>Left</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_24">
-               <property name="text">
-                <string>Spines</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QCheckBox" name="checkBox">
-               <property name="text">
-                <string>Right</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <spacer name="verticalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="7" column="2" colspan="2">
-           <widget class="QWidget" name="widget_7" native="true">
-            <layout class="QGridLayout" name="gridLayout_11">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_25">
-               <property name="text">
-                <string>Margin</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_27">
-               <property name="text">
-                <string>y</string>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="0">
-              <widget class="QLabel" name="label_28">
-               <property name="text">
-                <string>z</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_26">
-               <property name="text">
-                <string>x</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
-               <property name="minimum">
-                <double>0.500000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_10">
-               <property name="minimum">
-                <double>0.500000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="4" column="1">
-              <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
-               <property name="minimum">
-                <double>0.500000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item row="5" column="0">
-              <spacer name="verticalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Vertical</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>20</width>
-                 <height>40</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="dsb_Line_Width">
-            <property name="minimum">
-             <double>0.500000000000000</double>
-            </property>
-            <property name="value">
-             <double>1.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="dsb_Label_Size">
-            <property name="minimum">
-             <double>0.500000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="1">
-           <widget class="QDoubleSpinBox" name="dsb_Label_Weight">
-            <property name="minimum">
-             <double>0.500000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="3">
-           <widget class="QComboBox" name="comboBox_13"/>
-          </item>
-          <item row="4" column="3">
-           <widget class="QDoubleSpinBox" name="dsb_Label_Pad"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>Lines</string>
@@ -328,12 +57,15 @@
         <widget class="QWidget" name="widget_3" native="true">
          <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox">
+           <widget class="QDoubleSpinBox" name="dsb_Line_Width_2">
             <property name="minimum">
              <double>0.500000000000000</double>
             </property>
             <property name="singleStep">
-             <double>0.500000000000000</double>
+             <double>1.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -366,7 +98,7 @@
            </widget>
           </item>
           <item row="0" column="3">
-           <widget class="QComboBox" name="comboBox_2">
+           <widget class="QComboBox" name="cb_Line_Style">
             <item>
              <property name="text">
               <string>-</string>
@@ -399,10 +131,10 @@
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QComboBox" name="comboBox_3"/>
+           <widget class="QComboBox" name="cb_Marker"/>
           </item>
           <item row="1" column="3">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_8"/>
+           <widget class="QDoubleSpinBox" name="db_Marker_Size"/>
           </item>
           <item row="1" column="2">
            <widget class="QLabel" name="label_14">
@@ -429,115 +161,221 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_4">
+      <attribute name="title">
+       <string>Scatter</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_9">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea_2">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents_2">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>630</width>
+            <height>458</height>
+           </rect>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="Labels">
       <attribute name="title">
        <string>Labels</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
        <item row="0" column="0">
-        <widget class="QWidget" name="widget" native="true">
-         <layout class="QGridLayout" name="gridLayout_8">
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_3">
-            <property name="text">
-             <string>xtick label size</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
-            <property name="minimum">
-             <double>10.000000000000000</double>
+        <widget class="QWidget" name="w_Label_Size" native="true">
+         <layout class="QGridLayout" name="gridLayout_13">
+          <item row="4" column="5">
+           <widget class="QSpinBox" name="sb_Legend_Tick">
+            <property name="singleStep">
+             <number>1</number>
             </property>
             <property name="value">
-             <double>18.000000000000000</double>
+             <number>18</number>
             </property>
            </widget>
           </item>
-          <item row="2" column="3">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_6">
-            <property name="minimum">
-             <double>10.000000000000000</double>
+          <item row="4" column="3">
+           <widget class="QSpinBox" name="sb_Legend">
+            <property name="singleStep">
+             <number>1</number>
             </property>
             <property name="value">
-             <double>18.000000000000000</double>
+             <number>18</number>
             </property>
            </widget>
           </item>
-          <item row="2" column="2">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>TextLabel</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_4">
-            <property name="minimum">
-             <double>10.000000000000000</double>
+          <item row="5" column="5">
+           <widget class="QSpinBox" name="sb_Marker">
+            <property name="singleStep">
+             <number>1</number>
             </property>
             <property name="value">
-             <double>18.000000000000000</double>
+             <number>18</number>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Label size</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_5">
-            <property name="minimum">
-             <double>10.000000000000000</double>
+          <item row="5" column="3">
+           <widget class="QSpinBox" name="sb_Title">
+            <property name="singleStep">
+             <number>1</number>
             </property>
             <property name="value">
-             <double>18.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>ytick label size</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_3">
-            <property name="minimum">
-             <double>10.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>18.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Title Size</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_2">
-            <property name="text">
-             <string>Marker size</string>
+             <number>18</number>
             </property>
            </widget>
           </item>
           <item row="3" column="3">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_7">
-            <property name="minimum">
-             <double>10.000000000000000</double>
+           <widget class="QSpinBox" name="sb_YLabel">
+            <property name="singleStep">
+             <number>1</number>
             </property>
             <property name="value">
-             <double>18.000000000000000</double>
+             <number>18</number>
             </property>
            </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QLabel" name="label_43">
+            <property name="text">
+             <string>Title</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="4">
+           <widget class="QLabel" name="label_24">
+            <property name="text">
+             <string>Marker</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="4">
+           <widget class="QLabel" name="label_38">
+            <property name="text">
+             <string>xtick</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="4">
+           <widget class="QLabel" name="label_42">
+            <property name="text">
+             <string>Legend tick</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="4">
+           <widget class="QLabel" name="label_40">
+            <property name="text">
+             <string>ytick</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="5">
+           <widget class="QSpinBox" name="sb_YTick">
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>18</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QLabel" name="label_41">
+            <property name="text">
+             <string>Legend</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QLabel" name="label_37">
+            <property name="text">
+             <string>xlabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QLabel" name="label_39">
+            <property name="text">
+             <string>ylabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="5">
+           <widget class="QSpinBox" name="sb_XTick">
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>18</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QSpinBox" name="sb_XLabel">
+            <property name="singleStep">
+             <number>1</number>
+            </property>
+            <property name="value">
+             <number>18</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>XLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>YLabel</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="le_XLabel">
+            <property name="text">
+             <string>$F_1$</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="le_YLabel">
+            <property name="text">
+             <string>$F_2$</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QLineEdit" name="le_Title"/>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Title</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Legend</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLineEdit" name="le_Legend"/>
           </item>
          </layout>
         </widget>
@@ -745,6 +583,545 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>Axis</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QScrollArea" name="scrollArea">
+         <property name="widgetResizable">
+          <bool>true</bool>
+         </property>
+         <widget class="QWidget" name="scrollAreaWidgetContents">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>604</width>
+            <height>928</height>
+           </rect>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_14">
+           <item row="0" column="0" colspan="2">
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Inset Axis</string>
+             </property>
+            </widget>
+           </item>
+           <item row="9" column="0" colspan="2">
+            <widget class="QWidget" name="w_Spines" native="true">
+             <layout class="QGridLayout" name="gridLayout_10">
+              <item row="1" column="0">
+               <widget class="QCheckBox" name="checkBox_4">
+                <property name="text">
+                 <string>Top</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QCheckBox" name="checkBox">
+                <property name="text">
+                 <string>Right</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QCheckBox" name="checkBox_2">
+                <property name="text">
+                 <string>Bottom</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="checkBox_3">
+                <property name="text">
+                 <string>Left</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <spacer name="verticalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="8" column="0" colspan="2">
+            <widget class="QPushButton" name="pb_Spines">
+             <property name="text">
+              <string>Spines</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="6" column="0" colspan="2">
+            <widget class="QPushButton" name="pb_Axis">
+             <property name="text">
+              <string>Axis</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="7" column="0" colspan="2">
+            <widget class="QWidget" name="w_Axis" native="true">
+             <layout class="QGridLayout" name="gridLayout_15">
+              <item row="3" column="1">
+               <widget class="QDoubleSpinBox" name="dsb_Label_Size">
+                <property name="minimum">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QComboBox" name="comboBox_4">
+                <item>
+                 <property name="text">
+                  <string>False</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>x axis</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>y axis</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>both</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+              <item row="3" column="2">
+               <widget class="QLabel" name="label_21">
+                <property name="text">
+                 <string>Label pad</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_20">
+                <property name="text">
+                 <string>Label size</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_17">
+                <property name="text">
+                 <string>Line width</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="comboBox_11"/>
+              </item>
+              <item row="0" column="2">
+               <widget class="QLabel" name="label_16">
+                <property name="text">
+                 <string>Edge color</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QDoubleSpinBox" name="dsb_Line_Width">
+                <property name="minimum">
+                 <double>0.500000000000000</double>
+                </property>
+                <property name="value">
+                 <double>1.000000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="2">
+               <widget class="QLabel" name="label_18">
+                <property name="text">
+                 <string>TextLabel</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="3">
+               <widget class="QComboBox" name="comboBox_12"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_15">
+                <property name="text">
+                 <string>Face color</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="label_19">
+                <property name="text">
+                 <string>Axis grid</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="3">
+               <widget class="QDoubleSpinBox" name="dsb_Label_Pad"/>
+              </item>
+              <item row="4" column="0">
+               <widget class="QLabel" name="label_22">
+                <property name="text">
+                 <string>Label weight</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="1">
+               <widget class="QDoubleSpinBox" name="dsb_Label_Weight">
+                <property name="minimum">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="2">
+               <widget class="QLabel" name="label_23">
+                <property name="text">
+                 <string>Label color</string>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="3">
+               <widget class="QComboBox" name="comboBox_13"/>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="4" column="0" colspan="2">
+            <widget class="QPushButton" name="pb_Margin">
+             <property name="text">
+              <string>Margin</string>
+             </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="5" column="0" colspan="2">
+            <widget class="QWidget" name="w_Margin" native="true">
+             <layout class="QGridLayout" name="gridLayout_11">
+              <item row="1" column="0">
+               <widget class="QLabel" name="label_27">
+                <property name="text">
+                 <string>y</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="label_28">
+                <property name="text">
+                 <string>z</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QLabel" name="label_26">
+                <property name="text">
+                 <string>x</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_9">
+                <property name="minimum">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_10">
+                <property name="minimum">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_11">
+                <property name="minimum">
+                 <double>0.500000000000000</double>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0">
+               <spacer name="verticalSpacer_6">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item row="10" column="0">
+            <spacer name="verticalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QWidget" name="widget" native="true">
+             <layout class="QGridLayout" name="gridLayout_8">
+              <item row="5" column="0">
+               <widget class="QWidget" name="widget_7" native="true">
+                <layout class="QGridLayout" name="gridLayout_18">
+                 <item row="1" column="1">
+                  <widget class="QComboBox" name="cb_X_Scale">
+                   <item>
+                    <property name="text">
+                     <string>linear</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>log</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_50">
+                   <property name="text">
+                    <string>x</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QComboBox" name="cb_Y_Scale">
+                   <item>
+                    <property name="text">
+                     <string>linear</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>log</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_51">
+                   <property name="text">
+                    <string>y</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="4">
+                  <widget class="QLabel" name="label_49">
+                   <property name="text">
+                    <string>Scale</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QWidget" name="widget_2" native="true">
+                <layout class="QGridLayout" name="gridLayout_16">
+                 <item row="2" column="2">
+                  <widget class="QLabel" name="label_47">
+                   <property name="text">
+                    <string>y</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QDoubleSpinBox" name="dsb_XPos">
+                   <property name="minimum">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.650000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_46">
+                   <property name="text">
+                    <string>x</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="4">
+                  <widget class="QLabel" name="label_45">
+                   <property name="text">
+                    <string>Axis Position</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="3">
+                  <widget class="QDoubleSpinBox" name="dsb_YPos">
+                   <property name="minimum">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.570000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QDoubleSpinBox" name="dsb_XWidth">
+                   <property name="minimum">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.340000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="3">
+                  <widget class="QDoubleSpinBox" name="dsb_YWidth">
+                   <property name="minimum">
+                    <double>0.100000000000000</double>
+                   </property>
+                   <property name="maximum">
+                    <double>1.000000000000000</double>
+                   </property>
+                   <property name="singleStep">
+                    <double>0.010000000000000</double>
+                   </property>
+                   <property name="value">
+                    <double>0.400000000000000</double>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_52">
+                   <property name="text">
+                    <string>x width</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="2">
+                  <widget class="QLabel" name="label_53">
+                   <property name="text">
+                    <string>y width</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QWidget" name="widget_6" native="true">
+                <layout class="QGridLayout" name="gridLayout_17">
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>x0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>x1</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="3">
+                  <widget class="QDoubleSpinBox" name="dsb_X1"/>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QDoubleSpinBox" name="dsb_X0"/>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_48">
+                   <property name="text">
+                    <string>Bounds</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_25">
+                   <property name="text">
+                    <string>y0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QDoubleSpinBox" name="dsb_Y0"/>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QLabel" name="label_44">
+                   <property name="text">
+                    <string>y1</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="3">
+                  <widget class="QDoubleSpinBox" name="dsb_Y1"/>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QCheckBox" name="cb_Show_Hide_Inset">
+                <property name="text">
+                 <string/>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item row="2" column="0">
@@ -791,5 +1168,54 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pb_Margin</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Margin</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>369</x>
+     <y>318</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>369</x>
+     <y>401</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Axis</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Axis</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>369</x>
+     <y>483</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>369</x>
+     <y>590</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Spines</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Spines</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>369</x>
+     <y>697</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>369</x>
+     <y>765</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
