@@ -579,9 +579,9 @@ class EigenmodeControl:
 
     def animate_width(self, cb, widget, min_width, standard, enable, reverse=False):
         if enable:
-            #### GET Height
+            # GET Height
             width = widget.width()
-            #### SET MAX WIDTH
+            # SET MAX WIDTH
 
             if not reverse:
                 if cb.checkState() != 2:
@@ -598,7 +598,7 @@ class EigenmodeControl:
                     widthCollapsed = standard
                     # widget.setMinimumWidth(standard)
 
-            #### ANIMATION
+            # ANIMATION
             self.animation = QPropertyAnimation(widget, b"maximumWidth")
             self.animation.setDuration(200)
             self.animation.setStartValue(width)

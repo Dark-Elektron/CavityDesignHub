@@ -34,6 +34,15 @@ class Cavity:
     def __init__(self, n_cells, l_cell_mid, freq, vrf, R_Q, Q, G, Epk_Eacc, Bpk_Eacc):
         # geometric parameters
         # input
+        self.p_wp = None
+        self.pstat = None
+        self.pdyn = None
+        self.p_cryo = None
+        self.p_in = None
+        self.Q0 = None
+        self.l_cavity = None
+        self.n_cav = None
+        self.E_acc = None
         self.n_cells = n_cells
         self.l_cell_mid = l_cell_mid  # m
         self.v_rf = vrf
@@ -62,7 +71,7 @@ class Cavity:
     def set_Eacc(self, Eacc):
         self.E_acc = Eacc
         self.n_cav = self.v_rf / (self.E_acc * self.l_active)
-        self.l_cavity = self.l_active + 8 * self.l_cell_mid  # Lcavity = Lactive + 2 λ0
+        self.l_cavity = self.l_active + 8 * self.l_cell_mid  # L_cavity = L_active + 2 λ0
 
         Rs_NbCu_2k_400Mhz = 0.57 * (Eacc * self.b) + 28.4  # nOhm
         Rs_NbCu_4_5k_400Mhz = 39.5 * np.exp(0.014 * (Eacc * self.b)) + 27  # nOhm
@@ -349,6 +358,7 @@ def plot_surface_resistance():
     plt.tight_layout()
     plt.yscale('log')
     plt.show()
+
 
 plot_surface_resistance()
 # we are working with two beams

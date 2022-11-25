@@ -6,6 +6,7 @@ from scipy.stats import qmc
 import numpy as np
 import pandas as pd
 from icecream import ic
+from sklearn import linear_model
 from sympy import symbols
 
 
@@ -20,6 +21,7 @@ class PCE:
                           "jacobi": "Ja"
                           }
         self.poly_type = poly_type_dict[poly_type.lower()]
+        self.pce = None
 
     def get_pce(self, p_order=1, truncation=1):
 
@@ -65,14 +67,12 @@ class PCE:
 
                 poly_list_sym[f'{a}'] = np.prod(ll)
 
-                poly_chaos_ex[f'{a}'] = [f"pce_model.{self.poly_type}({i}, DF['{list(x.keys())[j]}'])" for j, i in enumerate(a)]
+                poly_chaos_ex[f'{a}'] = [f"pce_model.{self.poly_type}({i}, DF['{list(x.keys())[j]}'])"
+                                         for j, i in enumerate(a)]
 
-        # print(symbols_dict)
-        # ic(poly_chaos_ex)
-        # ic(len(symbols_dict))
-        # ic(len(poly_chaos_ex))
+        # regeression
+        _, _ = self.regression(poly_list_sym, symbols_dict)
 
-        # obj = ['f_0']
         c = {}
         poly_sym_d = {}
 
@@ -91,44 +91,45 @@ class PCE:
             poly_sym_d[ob] = poly_sym
 
         # build polynomials
-        pp = {}
         obj_pce = {}
         for ob in self.obj_vars:
             obj_pce[ob] = ' + '.join(map(str, [f"{coeff}*{'*'.join(map(str, poly_chaos_ex[key]))}"
                                                for key, coeff in c[ob].items()]))
-            # obj[ob] = pp[ob]
 
-        # ic(c['f_0'])
-        # ic(poly_sym_d['f_0'])
+        self.pce = obj_pce
+
         return obj_pce, c
 
     def projection(self):
         return
 
-    def regression(self, df, poly_list_sym, obj, symbols_dict):
+    def regression(self, poly_list_sym, symbols_dict):
         reg = linear_model.LinearRegression(fit_intercept=True)
         # build matrix
         A = []
         # print(poly_list_sym)
-        for k, v in df.iterrows():
-            symbols_dict = update_symbols_dict(symbols_dict, v[r_v])
+        for k, v in self.df.iterrows():
+            symbols_dict = self.update_symbols_dict(symbols_dict, v[self.rand_vars])
             aa = [p.subs(symbols_dict) if not isinstance(p, np.int32) else 1 for p in poly_list_sym.values()]
             A.append(aa)
 
         poly, coef_dict = {}, {}
-        for ob in obj:
-            b = df[ob].to_numpy(dtype='float')
+        for ob in self.obj_vars:
+            b = self.df[ob].to_numpy(dtype='float')
             reg.fit(np.array(A, dtype='float'), b.reshape(-1, 1))
 
             coef_dict[ob] = reg.coef_.copy()[0]
             coef_dict[ob][0] = reg.intercept_[0]
             ic(reg.score(A, b))
-            ic(x)
+            # ic(x)
 
             poly[ob] = np.sum(np.array(list(poly_list_sym.values()))*coef_dict[ob])
 
-            symbols_dict = update_symbols_dict(symbols_dict, df.loc[1, r_v])
-            ic(poly[ob].subs(symbols_dict))
+            symbols_dict = self.update_symbols_dict(symbols_dict, self.df.loc[1, self.rand_vars])
+            # ic(poly[ob].subs(symbols_dict))
+
+        self.pce = poly
+        ic(poly)
 
         return poly, coef_dict
 
@@ -196,6 +197,38 @@ class PCE:
         if n == 4:
             x = (np.array(x) - shift) / scale
             return 16 * x ** 4 - 48 * x ** 2 + 12
+
+    def self_validation(self):
+        # find least squares error
+        pce_model = self
+        DF = pd.DataFrame()  # it is also important that the name is DF # change later
+        for key, vec in self.df.items():
+            DF[key] = vec.to_numpy()
+
+        # evaluate polynomial expansion on uq_model input dataframe
+        if self.pce is not None:
+            print(self.pce)
+            for key, ob in self.pce.items():
+                DF[key] = eval(ob)
+
+        # find difference
+        print(self.obj_vars)
+        for obj in self.obj_vars:
+            diff = self.df[obj] - DF[obj]
+            # print(diff)
+            print(f"error norm {obj}: ", np.linalg.norm(diff))
+
+    def cross_validation(self):
+        pass
+
+    @staticmethod
+    def update_symbols_dict(sym_dict, values):
+        assert len(sym_dict) == len(values)
+        new_sym_list = {}
+        for i, a in enumerate(sym_dict.keys()):
+            new_sym_list[a] = values[i]
+
+        return new_sym_list
 
 
 class UQModel:
@@ -328,7 +361,6 @@ class UQModel:
 
             df = pd.concat([df, pd.DataFrame(A_copy, columns=rand_vars)], ignore_index=True)
 
-        print(df.shape)
         return df
 
     def set_sample_size(self, n):
@@ -367,7 +399,8 @@ class UQModel:
         Y = pd.concat([df, pd.DataFrame(Y, columns=['Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9'])], axis=1)
         return Y
 
-    def generate_sobol_sequence(self, dim, index, columns, bounds):
+    @staticmethod
+    def generate_sobol_sequence(dim, index, columns, bounds):
         sampler = qmc.Sobol(d=dim, scramble=False)
         sample = sampler.random_base2(m=index)
         ic(qmc.discrepancy(sample))
@@ -385,14 +418,15 @@ class UQModel:
         #     f.write(dfAsString)
         return df
 
-    def sub_lists(self, l):
+    @staticmethod
+    def sub_lists(ll):
         # initializing empty list
         comb = []
 
         # Iterating till length of list
-        for i in range(len(l) + 1):
+        for i in range(len(ll) + 1):
             # Generating sub list
-            comb += [list(j) for j in combinations(l, i)]
+            comb += [list(j) for j in combinations(ll, i)]
         # Returning list
         return comb[1:-1]
 
@@ -497,7 +531,7 @@ class UQModel:
         ic(Sj)
         return Sj, STj
 
-    def plot_sobol(self, S, ylabel='Sobol', table=False):
+    def plot_sobol(self, S, ylabel='Sobol', table=False, plot_type="Stacked"):
         # plot
         fig, ax = plt.subplots()
         x = self.input_variable_names
@@ -511,41 +545,61 @@ class UQModel:
         for i, v in enumerate(x):
             rand_var_dict[i] = v
 
-        bottom, bottom1 = np.zeros(len(obj)), np.zeros(len(obj))
-        for key in x:
-            # for key in x.keys():
-            if key == 0:
-                ax.bar(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
+        if plot_type == "Stacked":
+            bottom, bottom1 = np.zeros(len(obj)), np.zeros(len(obj))
+            for key in x:
+                # for key in x.keys():
+                if key == 0:
+                    ax.bar(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
+                else:
+                    ax.bar(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$',
+                           bottom=bottom)
+
+                bottom += np.array([S[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
+                # bottom1 += np.array([STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
+
+            ticks_loc = ax.get_xticks()
+            ax.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+            ax.set_xticklabels(obj)
+            ax.set_ylabel(ylabel)
+
+            if table:
+                self.plot_table(S, x, ax)
+
+            lines, labels = ax.get_legend_handles_labels()
+
+            if int(len(rand_var_dict.keys())) > 5:
+                ncol = 5
             else:
-                ax.bar(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$',
-                       bottom=bottom)
+                ncol = int(len(rand_var_dict.keys()))
+            fig.legend(lines, labels, loc="upper center",
+                       ncol=ncol,
+                       fancybox=True, shadow=False,
+                       bbox_to_anchor=(0.5, 1.0))
 
-            bottom += np.array([S[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
-            # bottom1 += np.array([STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
-
-        ticks_loc = ax.get_xticks()
-        ax.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
-        ax.set_xticklabels(obj)
-        ax.set_ylabel(ylabel)
-
-        if table:
-            self.plot_table(S, x, ax)
-
-        lines, labels = ax.get_legend_handles_labels()
-
-        if int(len(rand_var_dict.keys())) > 5:
-            ncol = 5
+            # ax[0].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
+            #        fancybox=True, shadow=True)
+            # ax[1].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
+            #           fancybox=True, shadow=True)
         else:
-            ncol = int(len(rand_var_dict.keys()))
-        fig.legend(lines, labels, loc="upper center",
-                   ncol=ncol,
-                   fancybox=True, shadow=False,
-                   bbox_to_anchor=(0.5, 1.0))
+            data = []
+            X = np.arange(len(x))
+            width = 1/(len(x) + 10)
+            for i, ob in enumerate(obj):
+                data = list(S[ob].values())
+                ax.bar(X + i*width, data, width=width, label=ob)
 
-        # ax[0].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
-        #        fancybox=True, shadow=True)
-        # ax[1].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
-        #           fancybox=True, shadow=True)
+            plt.xticks([r + width*len(x) for r in range(len(x))], x)
+
+            lines, labels = ax.get_legend_handles_labels()
+            if len(x) > 5:
+                ncol = 5
+            else:
+                ncol = len(x)
+            fig.legend(lines, labels, loc="upper center",
+                       ncol=ncol,
+                       fancybox=True, shadow=False,
+                       bbox_to_anchor=(0.5, 1.0))
 
         plt.tight_layout()
         plt.show()
@@ -556,6 +610,7 @@ class UQModel:
         cellText = []
         rowLabels = []
         colLabels = []
+        temp_col = []
         n = 0
         for k, v in S.items():
             rowLabels.append(r"$\mathbf{" + k + '}$')
@@ -672,6 +727,7 @@ def dqw_pce_from_df(model_input, df):
 
     pce_model = PCE(df_data, x, obj, 'Legendre')  # it is important that the name is pce_model
     pce, pce_coeff = pce_model.get_pce(2, 2)
+    pce_model.self_validation()
 
     DF = pd.DataFrame()  # it is also important that the name is DF # change later
     for key, vec in df.items():
@@ -723,19 +779,15 @@ if __name__ == '__main__':
                          'Uniform', 'Uniform', 'Uniform']
     }
 
-    import time
-    start_time = time.time()
-
     m = UQModel()
-    m.set_input_variables(dd_ishigami)
+    m.set_input_variables(dd_dqw)
     m.set_sample_size(10000)
-    m.set_model(ishigami)
+    m.set_model(dqw_pce_from_df)
     m.run_analysis()
-    print("Runtime: ", time.time() - start_time)
     # Sj, STi = m.sobol_df()
     # Sj = m.sobol_satelli()
     Sj, STj = m.sobol_janon()
-    m.plot_sobol(Sj, 'Main indices')
+    m.plot_sobol(Sj, 'Main indices', plot_type="f")
     m.plot_sobol(STj, 'Total indices')
 
     print(Sj)
