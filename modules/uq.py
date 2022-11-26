@@ -584,12 +584,12 @@ class UQModel:
         else:
             data = []
             X = np.arange(len(x))
-            width = 1/(len(x) + 10)
+            width = 1/(len(x) + 2)
             for i, ob in enumerate(obj):
                 data = list(S[ob].values())
                 ax.bar(X + i*width, data, width=width, label=ob)
 
-            plt.xticks([r + width*len(x) for r in range(len(x))], x)
+            plt.xticks([r + width for r in range(len(x))], x)
 
             lines, labels = ax.get_legend_handles_labels()
             if len(x) > 5:
@@ -600,7 +600,8 @@ class UQModel:
                        ncol=ncol,
                        fancybox=True, shadow=False,
                        bbox_to_anchor=(0.5, 1.0))
-
+        # ax.set_xlim(left=0)
+        ax.set_ylim(bottom=0)
         plt.tight_layout()
         plt.show()
 
