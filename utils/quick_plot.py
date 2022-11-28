@@ -38,12 +38,12 @@ def plot_settings(mode):
 
     if mode.lower() == 'square':
         # plot settings
-        mpl.rcParams['xtick.labelsize'] = 20
-        mpl.rcParams['ytick.labelsize'] = 20
+        mpl.rcParams['xtick.labelsize'] = 16
+        mpl.rcParams['ytick.labelsize'] = 16
 
-        mpl.rcParams['axes.labelsize'] = 20
-        mpl.rcParams['axes.titlesize'] = 20
-        mpl.rcParams['legend.fontsize'] = 20
+        mpl.rcParams['axes.labelsize'] = 16
+        mpl.rcParams['axes.titlesize'] = 16
+        mpl.rcParams['legend.fontsize'] = 16
 
         mpl.rcParams['figure.figsize'] = [6, 6]
         mpl.rcParams['figure.dpi'] = 100
@@ -139,14 +139,14 @@ def plot_sey():
     plt.tight_layout()
 
 
-def plot_multipac_triplot(Eacc, Epk_Eacc):
+def plot_multipac_triplot(Eacc, Epk_Eacc, files_folder, fig, axs, label):
     mpl.rcParams['figure.figsize'] = [6, 7.5]
     # load_output_data
     # files
     fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
               "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
     data = {}
-    files_folder = "D:\Dropbox\multipacting\MPGUI21"
+    # files_folder = "D:\Dropbox\multipacting\MPGUI21"
     for f in fnames:
         if ".mat" in f:
             data[f] = spio.loadmat(fr"{files_folder}\\{f}")
@@ -185,15 +185,15 @@ def plot_multipac_triplot(Eacc, Epk_Eacc):
             # if ss > 0:
             #     cl = ic(np.array(['Plotting the triplot (counter, enhanced ', 'counter and impact energy).']))
 
-            fig, axs = plt.subplots(3)
-            axs[0].plot(Efl / 1e6, C / n)
+            # fig, axs = plt.subplots(3)
+            axs[0].plot(Efl / 1e6, C / n, lw=2, label=label)
             axs[0].set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
-            axs[0].set_xlabel('Peak electric field  [MV/m]')
-            axs[0].set_title(r'$\mathbf{MultiPac 2.1~~~~~~~~~~~Counter function~~~~~~~~~~~~~~~~~}$')
+            axs[0].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            # axs[0].set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
             axs[0].set_xlim(np.amin(Efl) / 1e6, np.amax(Efl) / 1e6)
             axs[0].set_ylim(0, np.max([0.1, axs[0].get_ylim()[1]]))
 
-            axs[1].semilogy(Efl / 1e6, Efq)
+            axs[1].semilogy(Efl / 1e6, Efq, lw=2)
 
             # axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
             e0 = sci.interp1d(secy1[0:e1, 1], secy1[0:e1, 0])(0)
@@ -202,28 +202,36 @@ def plot_multipac_triplot(Eacc, Epk_Eacc):
             axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e3, 0], secy1[e3, 0]], '--r')
 
             axs[1].set_ylabel("$Ef_" + "{" + f"{N}" + "}$")
-            axs[1].set_xlabel('Peak electric field  [MV/m]')
-            axs[1].set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
+            axs[1].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            # axs[1].set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
             axs[1].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
             axs[1].set_ylim(0, axs[1].get_ylim()[1])
 
-            axs[2].semilogy(Efl / 1e6, (A + 1) / n)
-            axs[2].set_xlabel('Voltage   [MV]')
+            axs[2].semilogy(Efl / 1e6, (A + 1) / n, lw=2)
+            axs[2].set_xlabel('$V$ [MV]')
             axs[2].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [1, 1], '-r')
             axs[2].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
             axs[2].set_ylim(np.min((A + 1) / n), axs[2].get_ylim()[1])
             axs[2].set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
-            axs[2].set_xlabel('Peak electric field   [MV/m]')
-            axs[2].set_title('$\mathbf{Enhanced~counter~function}$')
+            axs[2].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            # axs[2].set_title('$\mathbf{Enhanced~counter~function}$')
 
             # plot peak operating field
-            axs[0].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=3)
-            axs[1].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=3)
-            axs[2].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=3)
+            axs[0].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=2)
+            axs[0].text(np.round(Eacc*Epk_Eacc, 2) - 1.5, 0.1, f"{label[0]}: {np.round(Eacc*Epk_Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=axs[0].get_xaxis_transform())
 
-            axs[0].grid(True, which="both", ls=":")
-            axs[1].grid(True, which="both", ls=":")
-            axs[2].grid(True, which="both", ls=":")
+            axs[1].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=2)
+            axs[1].text(np.round(Eacc*Epk_Eacc, 2) - 1.5, 0.1, f"{label[0]}: {np.round(Eacc*Epk_Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=axs[1].get_xaxis_transform())
+
+            axs[2].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=2)
+            axs[2].text(np.round(Eacc*Epk_Eacc, 2) - 1, 0.1, f"{label[0]}: {np.round(Eacc*Epk_Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=axs[2].get_xaxis_transform())
+
             axs[0].minorticks_on()
             axs[1].minorticks_on()
             axs[2].minorticks_on()
@@ -348,7 +356,32 @@ plot_settings("presentation")
 
 # plot_electron_evolution_spark3d()
 # plot_sey()
-plot_multipac_triplot(25, 2.38)
+# folders = [r"D:\Dropbox\multipacting\MPGUI21\Mid_cell_C3795", r"D:\Dropbox\multipacting\MPGUI21\End_cell_C3795",
+#            r"D:\Dropbox\multipacting\MPGUI21\mid_FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\end_FCCUROS5",
+#            r"D:\Dropbox\multipacting\MPGUI21\mid_TESLA", r"D:\Dropbox\multipacting\MPGUI21\end_TESLA_L",
+#            r"D:\Dropbox\multipacting\MPGUI21\end_TESLA_R"]
+#
+# labels = ['C3595 (mid)', 'C3595 (end)', 'FCCUROS5 (mid)', 'FCCUROS5 (end)', 'TESLA (mid)',
+#           'TESLA (end1)', 'TESLA (end2)']
+folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"]#, r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+
+labels = ['C3795', 'FCCUROS5', 'TESLA']
+Epk_Eacc = [2.43, 2.05, 2.14]
+Eacc = [24.36, 24.36, 24.36]
+# fig, axs = plt.subplots(3)
+
+# create figure
+fig = plt.figure()
+gs = fig.add_gridspec(3, 1)
+ax1 = fig.add_subplot(gs[0, 0])
+ax2 = fig.add_subplot(gs[1, 0])
+ax3 = fig.add_subplot(gs[2, 0])
+axs = [ax1, ax2, ax3]
+
+for i, folder in enumerate(folders):
+    plot_multipac_triplot(Eacc[i], Epk_Eacc[i], folder, fig, axs, labels[i])
+
+ax1.legend(loc='upper left')
 # plot_trajectory()
 # sensitivity()
 # plot_cavity()

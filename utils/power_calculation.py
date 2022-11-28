@@ -77,6 +77,7 @@ class Cavities:
             r"$Q_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Q0[ind] * 1e-7)
         }
 
+        ic(qois)
         return qois
 
     def qois_hom(self):
@@ -87,7 +88,7 @@ class Cavities:
                 r"$|k_\perp| \mathrm{[V/pC/m]}$": cavity.k_kick,
                 r"$P_\mathrm{HOM} \mathrm{[kW]}$": cavity.phom
             })
-
+        ic(results)
         return results
 
     def plot_power_comparison(self, fig=None, ax_list=None):
@@ -605,6 +606,8 @@ if __name__ == '__main__':
     parent_dir_abci = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ABCI"
     wp = 'H'  # working point
     sigma = 'SR_2.5mm'
+    # wp = 'ttbar'  # working point
+    # sigma = 'SR_1.67mm'
 
     # slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5", fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
     # abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5", fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
