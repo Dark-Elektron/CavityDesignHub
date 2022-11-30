@@ -74,11 +74,24 @@ class Cavities:
             r"$P_\mathrm{dyn}$/cav [kW]": np.average((cavity.pdyn / cavity.n_cav)[ind]) * 1e-3,
             r"$P_\mathrm{wp}$/cav [kW]": np.average((cavity.p_wp / cavity.n_cav)[ind]) * 1e-3,
             r"$P_\mathrm{in}$ [kW]": np.average(cavity.p_in[ind]) * 1e-3,
-            r"$Q_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Q0[ind] * 1e-7)
+            r"$Q_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Q0[ind] * 1e-7),
+            r"$Rs_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Rs[ind])
         }
 
         ic(qois)
         return qois
+
+    def qois_fm(self):
+        results = []
+        for cavity in self.cavities_list:
+            results.append({
+                r"$Epk/Eacc []$": cavity.e,
+                r"$Bpk/Eacc \mathrm{[mT/MV/m]}$": cavity.b,
+                r"$G \mathrm{[10^{2}\Omega]}$": cavity.G*1e-2,
+                r"$G\cdot R/Q \mathrm{[10^{5}\Omega^2]}$": cavity.GR_Q*1e-5
+            })
+        ic(results)
+        return results
 
     def qois_hom(self):
         results = []
@@ -235,17 +248,91 @@ class Cavities:
 
         plt.show()
 
+    def plot_compare_fm_bar(self):
+        # plot barchart
+        self.hom_results = self.qois_fm()
+        data = [list(d.values()) for d in self.hom_results]
+        x = list(self.hom_results[0].keys())
+        X = np.arange(len(x))
+
+        fig, ax = plt.subplots()
+        width = 1 / (len(x)+10)
+        for i, cav in enumerate(self.cavities_list):
+            print(type(X), type(i), type(width), type(data[i]), data)
+            ax.bar(X + i * width, data[i], width=width, label=self.cavities_list[i].name)
+
+        ax.set_xticks([r+width for r in range(len(x))], x)
+        # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
+        # label = ["C3795_ttbar (5-Cell)", "FCCUROS5_ttbar (5-Cell)", "TELSA_ttbar (5-Cell)"]
+        # ax.legend(label, loc="upper left")
+        ax.legend(loc="upper right")
+
+        plt.show()
+
+    def make_latex_summary_tables(self):
+        try:
+            l1 = r"\begin{table}[!htb]"
+            l2 = r"\centering"
+            l3 = r"\caption{Geometric parameters and QoIs of optimized cavity C$_{3794}$, baseline cavity and LHC cavity.}"
+            l4 = r"\begin{tabular}{lccc}"
+            l5 = r"\toprule"
+            l6 = r" ".join([fr"& {cav.name} " for cav in self.cavities_list]) + r" \\"
+            l7 = r"\midrule"
+            l8 = r"\midrule"
+            l9 = r"$A$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][0], 2)}/{round(cav.d_geom_params['OC'][0], 2)} " for cav in self.cavities_list]) + r" \\"
+            l10 = r"$B$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][1], 2)}/{round(cav.d_geom_params['OC'][1], 2)} " for cav in self.cavities_list]) + r" \\"
+            l11 = r"$a$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][2], 2)}/{round(cav.d_geom_params['OC'][2], 2)} " for cav in self.cavities_list]) + r" \\"
+            l12 = r"$b$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][3], 2)}/{round(cav.d_geom_params['OC'][3], 2)} " for cav in self.cavities_list]) + r" \\"
+            l13 = r"$R_\mathrm{i}$ " + "".join([fr"& {round(cav.d_geom_params['IC'][4], 2)}/{round(cav.d_geom_params['OC'][4], 2)} " for cav in self.cavities_list]) + r" \\"
+            l14 = r"$L$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][5], 2)}/{round(cav.d_geom_params['OC'][5], 2)} " for cav in self.cavities_list]) + r" \\"
+            l15 = r"$R_\mathrm{eq}$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][6], 2)}/{round(cav.d_geom_params['OC'][6], 2)} " for cav in self.cavities_list]) + r" \\"
+            l16 = r"$ \alpha [^\circ]$" + "".join([fr"& {round(cav.d_geom_params['IC'][7], 2)}/{round(cav.d_geom_params['OC'][7], 2)} " for cav in self.cavities_list]) + r" \\"
+            l17 = r"\midrule"
+            l18 = r"\midrule"
+            l19 = r"$R/Q [\Omega$] " + "".join([fr"& {round(cav.R_Q, 2)} " for cav in self.cavities_list]) + r" \\"
+            l20 = r"$G [\Omega$] " + "".join([fr"& {round(cav.G, 2)} " for cav in self.cavities_list]) + r" \\"
+            l21 = r"$G.R/Q [10^4\Omega^2]$ " + "".join([fr"& {round(cav.GR_Q, 2)} " for cav in self.cavities_list]) + r" \\"
+            l22 = r"$E_{\mathrm{pk}}/E_{\mathrm{acc}}$ " + "".join([fr"& {round(cav.e, 2)} " for cav in self.cavities_list]) + r" \\"
+            l23 = r"$B_{\mathrm{pk}}/E_{\mathrm{acc}} [\mathrm{\frac{mT}{MV/m}}]$ " + "".join([fr"& {round(cav.b, 2)} " for cav in self.cavities_list]) + r" \\"
+            l24 = r"$|k_\mathrm{FM}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join([fr"& {round(cav.k_fm, 4)} " for cav in self.cavities_list]) + r" \\"
+            l25 = r"$|k_\mathrm{\parallel}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join([fr"& {round(cav.k_loss, 4)} " for cav in self.cavities_list]) + r" \\"
+            l26 = r"$k_\mathrm{\perp} \mathrm{[SR/BS]} [\mathrm{V/pC/m}]$ " + "".join([fr"& {round(cav.k_kick, 4)} " for cav in self.cavities_list]) + r" \\"
+            l27 = r"$P_\mathrm{HOM}\mathrm{/beam} \mathrm{[SR/BS]} [\mathrm{W}]$ " + "".join([fr"& {round(cav.phom, 2)} " for cav in self.cavities_list]) + r" \\"
+            l28 = r"\bottomrule"
+            l29 = r"\end{tabular}"
+            l30 = r"\label{tab: selected shape}"
+            l31 = r"\end{table}"
+
+            all_lines = (l1, l2, l3, l4, l5, l6, l7, l8, l9, l10,
+                         l11, l12, l13, l14, l15, l16, l17, l18, l19, l20,
+                         l21, l22, l23, l24, l25, l26, l27, l28, l29, l30,
+                         l31)
+
+            with open(r"D:\Dropbox\Quick presentation files\latex_test.txt", 'w') as f:
+                for ll in all_lines:
+                    f.write(ll + '\n')
+        except KeyError:
+            print("Either SLANS or ABCI results not available. Please use '<cav>.set_slans_qois(<folder>)' "
+                  "or '<cav>.set_abci_qois(<folder>)' to fix this.")
+
     def add_cavity(self, cav):
         self.cavities_list.append(cav)
 
     def remove_cavity(self, cav):
         self.cavities_list.remove(cav)
 
+    def __str__(self):
+        return fr"{self.cavities_list}"
+
 
 class Cavity:
     def __init__(self, n_cells, l_cell_mid, freq, vrf, R_Q, G, Epk_Eacc, Bpk_Eacc, inv_eta=219, name="Unnamed", op_field=1e6):
         # geometric parameters
         # input
+        self.k_fm = None
+        self.d_geom_params = {}
+        self.d_qois_slans = {}
+        self.GR_Q = None
         self.k_loss = None
         self.k_kick = None
         self.phom = None
@@ -301,9 +388,11 @@ class Cavity:
         Rs_bulkNb_4_5k_800Mhz = 4 * (62.7 + (Eacc * 1e-6 * self.b) ** 2 * 0.012)  # nOhm
 
         if np.isclose(self.op_freq, 801.58e6):
+            self.Rs = Rs_bulkNb_2k_800Mhz
             self.Q0 = self.G * 1e9 / Rs_bulkNb_2k_800Mhz  # c
             # ic("800 MHz")
         elif np.isclose(self.op_freq, 400.79e6):
+            self.Rs = Rs_bulkNb_2k_800Mhz
             self.Q0 = self.G * 1e9 / Rs_NbCu_4_5k_400Mhz  # c
             # ic("400 MHz")
 
@@ -343,24 +432,22 @@ class Cavity:
         qois = 'qois.json'
         geom_params = 'geometric_parameters.json'
 
-        d_qois = {}
         with open(fr"{folder_name}\{qois}") as json_file:
-            d_qois.update(json.load(json_file))
+            self.d_qois_slans.update(json.load(json_file))
 
-        d_geom_params = {}
         with open(fr"{folder_name}\{geom_params}") as json_file:
-            d_geom_params.update(json.load(json_file))
+            self.d_geom_params.update(json.load(json_file))
 
         # ic(d_qois)
-        self.l_cell_mid = d_geom_params['IC'][5] * 1e-3
-        self.op_freq = d_qois['freq [MHz]'] * 1e6
-        self.R_Q = d_qois['R/Q [Ohm]']
-        self.GR_Q = d_qois['GR/Q [Ohm^2]']
+        self.l_cell_mid = self.d_geom_params['IC'][5] * 1e-3
+        self.op_freq = self.d_qois_slans['freq [MHz]'] * 1e6
+        self.R_Q = self.d_qois_slans['R/Q [Ohm]']
+        self.GR_Q = self.d_qois_slans['GR/Q [Ohm^2]']
         self.G = self.GR_Q/self.R_Q
         # print(G)
         # self.Q = d_qois['Q []']
-        self.e = d_qois['Epk/Eacc []']
-        self.b = d_qois['Bpk/Eacc [mT/MV/m]']
+        self.e = self.d_qois_slans['Epk/Eacc []']
+        self.b = self.d_qois_slans['Bpk/Eacc [mT/MV/m]']
 
         vrf = 4.4e9  # per beam
         Vrf = 2 * vrf
@@ -381,6 +468,7 @@ class Cavity:
         # ic(d_geom_params)
 
         d_qois = d_qois[f'{working_point}_{bunch_length}']
+        self.k_fm = d_qois['k_FM [V/pC]']
         self.k_loss = d_qois['|k_loss| [V/pC]']
         self.k_kick = d_qois['|k_kick| [V/pC/m]']
         self.phom = d_qois['P_HOM [kW]']
@@ -389,6 +477,89 @@ class Cavity:
 
     def write_cavity_for_multipac(self):
         pass
+
+    def make_latex_summary_tables(self):
+        try:
+            l1m = r"\begin{table}[!htb]"
+            l2m = r"\centering"
+            l3m = r"\caption{Geometric parameters of optimized cavity" + f" {self.name}" + ".}"
+            l4m = r"\resizebox{\textwidth}{!}{\begin{tabular}{cccccccc}"
+            l5m = r"\toprule"
+            l6m = r"\multicolumn{8}{c}{" + fr"{self.name}" + r" (Mid-cell) -  Geometric Properties} \\"
+            l7m = r"\midrule"
+            l8m = r"\midrule"
+            l9m = r"$A_\mathrm{m}$ [mm] & $B_\mathrm{m}$ [mm] & $a_\mathrm{m}$ [mm] & $b_\mathrm{m}$ [mm] & " \
+                  r"$R_\mathrm{i, m}$ [mm] & $L_\mathrm{m}$ [mm] & $R_{eq, m}$ [mm] & $\alpha_\mathrm{m} [^\circ]$ \\"
+            l10m = r"\midrule"
+            l11m = fr"{round(self.d_geom_params['IC'][0], 2)}" + \
+                   r"".join([fr"& {round(x, 2)}" for i, x in enumerate(self.d_geom_params['IC']) if i > 0]) + r" \\"
+            l12m = r"\bottomrule"
+            l13m = r"\end{tabular}}"
+            l14m = r"\label{tab: geometric cavity end-cell}"
+            l15m = r"\end{table}"
+
+            l_break = "\n"*2
+
+            l1e = r"\begin{table}[!htb]"
+            l2e = r"\centering"
+            l3e = r"\caption{Geometric parameters of optimized cavity" + f" {self.name}" + ".}"
+            l4e = r"\resizebox{\textwidth}{!}{\begin{tabular}{cccccccc}"
+            l5e = r"\toprule"
+            l6e = r"\multicolumn{8}{c}{" + fr"{self.name}" + r" (End-cell) -  Geometric Properties} \\"
+            l7e = r"\midrule"
+            l8e = r"\midrule"
+            l9e = r"$A_\mathrm{e}$ [mm] & $B_\mathrm{e}$ [mm] & $a_\mathrm{e}$ [mm] & $b_\mathrm{e}$ [mm] & " \
+                  r"$R_\mathrm{i, e}$ [mm] & $L$ [mm] & $R_{eq, e}$ [mm] & $\alpha_\mathrm{e} [^\circ]$ \\"
+            l10e = r"\midrule"
+            l11e = fr"{round(self.d_geom_params['OC'][0], 2)}" + \
+                   r"".join([fr"& {round(x, 2)}" for i, x in enumerate(self.d_geom_params['OC']) if i > 0]) + r" \\"
+            l12e = r"\bottomrule"
+            l13e = r"\end{tabular}}"
+            l14e = r"\label{tab: geometric cavity end-cell}"
+            l15e = r"\end{table}"
+
+            l1_qois = r"\begin{table}[!htb]"
+            l2_qois = r"\centering"
+            l3_qois = r"\caption{QoIs of optimized cavity C$_{3795}$.}"
+            l4_qois = r"\resizebox{\textwidth}{!}{\begin{tabular}{cccccccc}"
+            l5_qois = r"\toprule"
+            l6_qois = r"\multicolumn{8}{c}{C$_{3795}$ - QOIs} \\"
+            l7_qois = r"\midrule"
+            l8_qois = r"\midrule"
+            l9_qois = r"No. of cells & $R/Q$  & $G$ & $G.R/Q$ & $E_{\mathrm{pk}}/E_{\mathrm{acc}}$  & " \
+                r"$B_{\mathrm{pk}}/E_{\mathrm{acc}}$  & $|k_\mathrm{\parallel}| \mathrm{[SR]}$ & " \
+                r"$k_\mathrm{\perp} \mathrm{[SR]}$ \\"
+            l10_qois = r"& [$\Omega$] &[$\Omega$] & $[10^5\Omega^2]$ & [-] & $[\mathrm{\frac{mT}{MV/m}}]$ & " \
+                r"$[\mathrm{V/pC}]^$& $[\mathrm{V/pC/m}]^$ \\"
+            l11_qois = r"\midrule"
+            l12_qois = fr"{int(self.n_cells)} & {round(self.R_Q, 2)} & {round(self.G, 2)} & " \
+                       fr"{round(self.GR_Q*1e-5, 2)} & {round(self.e, 2)} & " \
+                       fr"{round(self.b, 2)} & {round(self.k_loss, 2)} & {round(self.k_kick, 2)} \\"
+            l13_qois = r"\bottomrule"
+            l14_qois = r"\end{tabular}}"
+            l15_qois = r"\label{tab: qois designed cavity}"
+            l16_qois = r"\end{table}"
+
+            all_lines = (l1m, l2m, l3m, l4m, l5m, l6m, l7m, l8m, l9m, l10m,
+                         l11m, l12m, l13m, l14m, l15m, l_break,
+                         l1e, l2e, l3e, l4e, l5e, l6e, l7e, l8e, l9e, l10e,
+                         l11e, l12e, l13e, l14e, l15e, l_break,
+                         l1_qois, l2_qois, l3_qois, l4_qois, l5_qois, l6_qois, l7_qois, l8_qois, l9_qois, l10_qois,
+                         l11_qois, l12_qois, l13_qois, l14_qois, l15_qois, l16_qois
+                         )
+
+            with open(r"D:\Dropbox\Quick presentation files\latex_mid_end_table.txt", 'w') as f:
+                for ll in all_lines:
+                    f.write(ll + '\n')
+        except KeyError:
+            print("Either SLANS or ABCI results not available. Please use '<cav>.set_slans_qois(<folder>)' "
+                  "or '<cav>.set_abci_qois(<folder>)' to fix this.")
+
+    def __repr__(self):
+        return fr"{self.name}({self.n_cells} [], {self.op_freq*1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
+
+    def __str__(self):
+        return fr"{self.name}({self.n_cells} [], {self.op_freq*1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
 
 
 def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):
@@ -609,12 +780,12 @@ if __name__ == '__main__':
     # wp = 'ttbar'  # working point
     # sigma = 'SR_1.67mm'
 
-    # slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5", fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
-    # abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5", fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
-    slans_dirs = [fr"{parent_dir_slans}\Cavity3794", fr"{parent_dir_slans}\CavityC3795"]
-    abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
-    cavities = Cavities([c3794_H, c3795_H])
-    # cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA])
+    slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5", fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
+    abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5", fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
+    # slans_dirs = [fr"{parent_dir_slans}\Cavity3794", fr"{parent_dir_slans}\CavityC3795"]
+    # abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
+    # cavities = Cavities([c3794_H, c3795_H])
+    cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA])
     cavities.set_cavities_slans(slans_dirs)
     cavities.set_cavities_abci(abci_dirs)
 
@@ -624,4 +795,10 @@ if __name__ == '__main__':
     cavities.compare_power(E_acc=E_acc)
     cavities.plot_power_comparison()
     cavities.plot_compare_bar()
+    cavities.plot_compare_fm_bar()
     cavities.plot_compare_hom_bar()
+
+    print(cavities)
+    print(c3795_tt)
+    # cavities.make_latex_summary_tables()
+    c3795_tt.make_latex_summary_tables()

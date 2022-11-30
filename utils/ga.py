@@ -21,8 +21,8 @@ class GA:
         # self.ax4 = self.fig.add_subplot(gs[1, 0])
         self.ax3 = self.fig.add_subplot(gs[1, :])
 
-        # self.x_bounds, self.y_bounds = [0.01, 1.5], [0.45, 1.5]
-        self.x_bounds, self.y_bounds = [0.1, 1], [0, 5]
+        self.x_bounds, self.y_bounds = [0.01, 1.5], [0.45, 1.5]
+        # self.x_bounds, self.y_bounds = [0.1, 1], [0, 5]
         self.fm, self.fc, self.fch = 100, 100, 100
 
     def run(self, n, df_ng=None):
@@ -68,7 +68,7 @@ class GA:
         # get exact solution
         x = pareto_grp_avg['x']
         y = (1 / 6) * (np.sqrt(496 * x ** 2 + 232 * x + 1) - 22 * x + 1)
-        # self.ax3.scatter(x, y)
+        self.ax2.scatter(x, y)
         pareto_var_comb['y_analytic'] = y
         MSE_g = np.sum((pareto_grp_avg['y_analytic'] - pareto_grp_avg['y']) ** 2) / pareto_grp_avg.shape[0]
         self.ax3.scatter(n, MSE_g, facecolors="None", edgecolors='k', lw=2)
@@ -386,14 +386,14 @@ class GA:
 
     @staticmethod
     def f1(x, y):
-        # f1 = 4 * x ** 2 + y ** 2 + x * y
-        f1 = x
+        f1 = 4 * x ** 2 + y ** 2 + x * y
+        # f1 = x
         return f1
 
     @staticmethod
     def f2(x, y):
-        # f2 = (x - 1) ** 2 + 3 * (y - 1) ** 2
-        f2 = (1 + y)/x
+        f2 = (x - 1) ** 2 + 3 * (y - 1) ** 2
+        # f2 = (1 + y)/x
         return f2
 
     @staticmethod

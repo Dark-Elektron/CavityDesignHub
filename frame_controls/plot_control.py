@@ -1631,7 +1631,7 @@ class PlotControl:
             if self.ui.cb_Longitudinal_Threshold.checkState() == 2 or self.ui.cb_Transverse_Threshold.checkState() == 2:
                 E0 = [45.6, 80, 120, 182.5]  # [GeV] Energy
                 nu_s = [0.025, 0.0506, 0.036, 0.087]  # Synchrotron oscillation tune
-                I0 = [1280, 135, 29, 10.8]  # [mA] Beam current5.4 * 2
+                I0 = [1400, 135, 26.7, 5]  # [mA] Beam current5.4 * 2
                 alpha_c = [1.48, 1.48, 0.73, 0.73]  # [10−5] Momentum compaction factor
                 tau_z = [424.6, 78.7, 23.4, 6.8]  # [ms] Longitudinal damping time
                 tau_xy = [849.2, 157.4, 46.8, 13.6]  # [ms] Transverse damping time
@@ -1639,7 +1639,7 @@ class PlotControl:
                 beta_xy = 50
 
                 #     Ncav = [52, 52, 136, 584] # Number of cavities per beam
-                Ncav = [52, 100, 268, 584]  # 1_2_2_25
+                Ncav = [56, 112, 128, 140]  # 1_2_2_25
 
                 E0 = ast.literal_eval(self.ui.le_E0.text())
                 nu_s = ast.literal_eval(self.ui.le_Nu_S.text())

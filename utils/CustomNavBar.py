@@ -57,7 +57,7 @@ class MyCustomToolbar(NavigationToolbar):
                 self.addSeparator()
             elif text == 'Size':
                 # size definitions
-                plot_settings_options = ['Presentation', 'Square', 'Portrait', 'Landscape', 'Custom']
+                plot_settings_options = ['Presentation', 'Wakefield', 'Square', 'Portrait', 'Landscape', 'Custom']
                 self.cb_Save_Plot_Settings = QComboBox()
                 for a in plot_settings_options:
                     self.cb_Save_Plot_Settings.addItem(a)
@@ -99,14 +99,18 @@ class MyCustomToolbar(NavigationToolbar):
                     # get size of figure before change
                     fig_size = self.canvas.fig.get_size_inches()
                     self.canvas.fig.set_size_inches(8, 6)  # actual size = 8*dpi, 6*dpi; dpi = 100
+                elif self.cb_Save_Plot_Settings.currentText() == 'Wakefield':
+                    # get size of figure before change
+                    fig_size = self.canvas.fig.get_size_inches()
+                    self.canvas.fig.set_size_inches(10, 5)  # forward=False
                 elif self.cb_Save_Plot_Settings.currentText() == 'Square':
                     # get size of figure before change
                     fig_size = self.canvas.fig.get_size_inches()
-                    self.canvas.fig.set_size_inches(8, 8)  #, forward=False
+                    self.canvas.fig.set_size_inches(8, 8)  # forward=False
                 elif self.cb_Save_Plot_Settings.currentText() == 'Landscape':
                     # get size of figure before change
                     fig_size = self.canvas.fig.get_size_inches()
-                    self.canvas.fig.set_size_inches(12, 8)  #, forward=False
+                    self.canvas.fig.set_size_inches(12, 8)  # forward=False
                 else:
                     # get size of figure before change
                     fig_size = self.canvas.fig.get_size_inches()

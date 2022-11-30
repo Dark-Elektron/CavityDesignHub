@@ -2,15 +2,15 @@ import numpy as np
 from scipy.special import *
 import matplotlib.pyplot as plt
 
-Ri = 0.15
-L = 0.187
+Ri = 0.08038
+L = 4*0.0935
 c = 299792458
 
 # permutations up to 4
 p = []
 
-M = [0, 1, 2, 3]
-N = [1, 2, 3, 4]
+M = [0, 1, 2, 3, 4, 5, 6]
+N = [1, 2, 3, 4, 4, 5, 6]
 P = [0, 1, 2, 3, 4, 5, 6]
 mode_list = []
 mode_name_list = ['TM', 'TE']
@@ -47,5 +47,5 @@ for mode, f in zip(mode_list_sorted, f_list_sorted):
     plt.text(f-0.02, step[count%len(step)], f'{mode}', rotation=90, c=color[count%len(color)], clip_on=True)
     count += 1
 
-plt.xlim(min(f_list_sorted)-min(f_list_sorted)/5, 2)
+plt.xlim(min(f_list_sorted)-min(f_list_sorted)/5, 3)
 plt.show()
