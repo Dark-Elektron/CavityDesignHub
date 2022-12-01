@@ -34,12 +34,12 @@ class SLANS:
                                                            self.Jxy_all[2]))
 
         f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L, self.Rbp_L - self.c_L, self.c_L,
-                                                             -self.Jxy_all[5]))
+                                                             - self.Jxy_all[5]))
 
         f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[1][0], zr12_BPL[1][1],
-                                                         -self.Jxy_all[6]))
+                                                         - self.Jxy_all[6]))
 
-        f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L, -self.Jxy_all[7]))
+        f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L, - self.Jxy_all[7]))
 
         f.write(
             '7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L + self.bt_L, self.bt_L,
@@ -63,9 +63,9 @@ class SLANS:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + zr12_R[0][0], zr12_R[0][1],
                                                                self.Jxy_all[2]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L, self.Req_L - self.B_R, self.B_R,
-                                                                 -self.Jxy_all[5]))
+                                                                 - self.Jxy_all[5]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + zr12_R[1][0], zr12_R[1][1],
-                                                             -self.Jxy_all[6]))
+                                                             - self.Jxy_all[6]))
             f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R, -self.Jxy_all[7]))
             f.write(
                 '7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.b_R, self.b_R,
@@ -75,9 +75,9 @@ class SLANS:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + zr12_R[0][0],
                                                                zr12_R[0][1], self.Jxy_all[2]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M,
-                                                                 self.Req_R - self.B_R, self.B_R, -self.Jxy_all[5]))
+                                                                 self.Req_R - self.B_R, self.B_R, - self.Jxy_all[5]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + zr12_R[1][0],
-                                                             zr12_R[1][1], -self.Jxy_all[6]))
+                                                             zr12_R[1][1], - self.Jxy_all[6]))
             f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + self.L_R,
                                                                self.ri_R, -self.Jxy_all[7]))
             f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + self.L_R,
@@ -727,10 +727,10 @@ class SLANS_Multicell_full:
                 '6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M) + zr12_R[0][0],
                                                            zr12_R[0][1], self.Jxy_all[2]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M),
-                                                                 self.Req_R - self.B_R, self.B_R, -self.Jxy_all[5]))
+                                                                 self.Req_R - self.B_R, self.B_R, - self.Jxy_all[5]))
             f.write(
                 '1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M) + zr12_R[1][0],
-                                                         zr12_R[1][1], -self.Jxy_all[6]))
+                                                         zr12_R[1][1], - self.Jxy_all[6]))
             f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M) + self.L_R,
                                                                self.ri_R, -self.Jxy_all[7]))
             f.write(
@@ -775,7 +775,7 @@ class SLANS_Multicell_full:
         # First Half cell
 
         if i == 0 and end_type == 1:
-            print("It's in here: i == 0 and end_type == 1: ", i, end_type)
+            # print("It's in here: i == 0 and end_type == 1: ", i, end_type)
             zr12_LM, alpha_LM = self.rz_conjug('mid')  # zr12_R first column is z , second column is r
             f.write(
                 '6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M[0:2*i]) + zr12_LM[0][0],
@@ -791,23 +791,23 @@ class SLANS_Multicell_full:
                                                                  self.ri_M[i] + self.b_M[i], self.b_M[i], self.Jxy_all[3]))
 
         elif i == 0 and end_type != 1:
-            print("It's in here: i == 0 and end_type != 1: ", i, end_type)
+            # print("It's in here: i == 0 and end_type != 1: ", i, end_type)
             zr12_L, alpha_L = self.rz_conjug('left')  # zr12_R first column is z , second column is r
             f.write(
-                '6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + (2 * i) * self.L_L + zr12_L[0][0],
+                '6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + (2 * (i - 1)) * self.L_L + zr12_L[0][0],
                                                            zr12_L[0][1], self.Jxy_all[2]))
-            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + (2 * i) * self.L_L,
+            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + (2 * (i - 1)) * self.L_L,
                                                                  self.Req_L - self.B_L, self.B_L, -self.Jxy_all[5]))
             f.write(
-                '1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + (2 * i) * self.L_L + zr12_L[1][0],
+                '1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + (2 * (i - 1)) * self.L_L + zr12_L[1][0],
                                                          zr12_L[1][1], -self.Jxy_all[6]))
-            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + (2 * i + 1) * self.L_L, self.ri_M[i],
+            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + (2 * i - 1) * self.L_L, self.ri_M[i],
                                                                -self.Jxy_all[7]))
-            f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + (2 * i + 1) * self.L_L,
+            f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + (2 * i - 1) * self.L_L,
                                                                  self.ri_M[i] + self.b_L, self.b_L, self.Jxy_all[3]))
 
         if i != 0 and i % 2 == 0:
-            print("It's in here: i != 0: ", i, end_type)
+            # print("It's in here: i != 0: ", i, end_type)
             f.write(
                 '6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M[0:i]) + zr12_M[0][0],
                                                            zr12_M[0][1], self.Jxy_all[2]))
@@ -821,9 +821,9 @@ class SLANS_Multicell_full:
             f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M[0:i+1]),
                                                                  self.ri_M[i] + self.b_M[i], self.b_M[i], self.Jxy_all[3]))
 
-        # Second half cells
+        # Second half cells, in this part i is never equal to n
         if i == n and end_type == 1:
-            print("It's in here: i == n and end_type == 1: ", i, end_type)
+            # print("It's in here: i == n and end_type == 1: ", i, end_type)
 
             zr12_RM, alpha_RM = self.rz_conjug('mid')  # zr12_R first column is z , second column is r
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(
@@ -840,7 +840,7 @@ class SLANS_Multicell_full:
                                                                  self.Req_R - self.B_M[i], self.B_M[i], self.Jxy_all[2]))
 
         elif i == n and end_type != 1:
-            print("It's in here: i == n and end_type != 1: ", i, end_type)
+            # print("It's in here: i == n and end_type != 1: ", i, end_type)
 
             zr12_R, alpha_R = self.rz_conjug('right')  # zr12_R first column is z , second column is r
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(
@@ -855,8 +855,8 @@ class SLANS_Multicell_full:
                 '7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M[0:2*i+1]) + self.L_R,
                                                              self.Req_R - self.B_R, self.B_R, self.Jxy_all[2]))
 
-        if i != n and i % 2 == 1:
-            print("It's in here: i != n: ", i, end_type)
+        if i != n-1 and i % 2 == 1:
+            # print("It's in here: i != n: ", i, end_type)
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(
                 WG_L + self.L_L + sum(self.L_M[0:i+1]) - zr12_M[1][0], zr12_M[1][1], self.Jxy_all[3]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + sum(self.L_M[0:i]),

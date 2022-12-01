@@ -33,7 +33,7 @@ class SLANSGeometry(Geometry):
             self.slans = None
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
-               fid=None, bc=33, f_shift='default', beta=1, n_modes=None, beampipes=None,
+               fid=None, bc=33, f_shift='default', beta=1, n_modes=None, beampipes='None',
                parentDir=None, projectDir=None, subdir=''):
         # print_(mid_cells_par, l_end_cell_par)
         if not n_modes:
@@ -586,7 +586,7 @@ class SLANSGeometry(Geometry):
         no_of_cells = len(cells_par)  # no of half cells
 
         if not n_modes:
-            n_modes = no_of_cells + 1  # intentional because the accuracy of the last mode is always low
+            n_modes = no_of_cells/2 + 1  # intentional because the accuracy of the last mode is always low
 
         # perform geometric checks
         # length of cells_par must be even
@@ -664,7 +664,7 @@ class SLANSGeometry(Geometry):
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
-                self.Jxy * n + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
+                self.Jxy * n/2 + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
                 (1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh,
                 self.Jxy, unit))
 
@@ -681,15 +681,15 @@ class SLANSGeometry(Geometry):
                 else:
                     f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L, self.Rbp_L, self.WG_mesh))
 
-            if n > 1:
+            if n > 2:
                 if end_L == 2:
                     self.slans.slans_bp_L(n, zr12_BPL, self.WG_L, f)
 
                 self.slans.slans_n1_L(zr12_L, self.WG_L, f)
 
-                for i in range(1, n-1):
-                    zr12_M, alpha_M = self.slans.rz_conjug('mid', i-1)  # zr12_R first column is z , second column is r
-                    self.slans.slans_M(n, zr12_M, self.WG_L, f, i-1, end_type)
+                for i in range(0, n-2):
+                    zr12_M, alpha_M = self.slans.rz_conjug('mid', i)  # zr12_R first column is z , second column is r
+                    self.slans.slans_M(n, zr12_M, self.WG_L, f, i, end_type)
 
                 self.slans.slans_n1_R(n, zr12_R, self.WG_R, f)
 
@@ -734,7 +734,7 @@ class SLANSGeometry(Geometry):
 
                 # direct mesh decrease
                 f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(
-                    -(self.Jxy*n+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2) +
+                    -(self.Jxy*n/2+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2) +
                       (1 if self.WG_L > 0 else 0)*self.WG_mesh+(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
 
                 f.write('0 0 0 0 0 0 0 0 0')
@@ -763,7 +763,7 @@ class SLANSGeometry(Geometry):
         #     else:
         #         beta, f_shift, n_modes = 1, 0, 1
 
-        beta, f_shift, n_modes = 1, 0, no_of_cells + 1
+        beta, f_shift, n_modes = 1, 0, no_of_cells/2 + 1
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
@@ -919,24 +919,24 @@ class SLANSGeometry(Geometry):
 if __name__ == '__main__':
     slg = SLANSGeometry()
 
-    # cell_pars = [
-    #         [60, 60, 20, 20, 72, 97.9485, 172.041, 0],
-    #         [50, 58, 30, 30, 80, 93.5, 172.041, 0],
-    #         [30, 58, 30, 30, 80, 93.5, 172.041, 0],
-    #         [50, 58, 30, 30, 70, 93.5, 172.041, 0],
-    #         [50, 58, 30, 30, 70, 93.5, 172.041, 0],
-    #         [50, 58, 30, 30, 70, 93.5, 172.041, 0],
-    #         [30, 58, 30, 30, 70, 93.5, 172.041, 0],
-    #         [50, 30, 30, 30, 70, 93.5, 172.041, 0],
-    #         [70, 58, 30, 30, 70, 93.5, 172.041, 0],
-    #         [60, 60, 20, 20, 72, 97.9485, 172.041, 0]]
-
     cell_pars = [
-            [62, 66, 30, 23, 72, 93.5, 172.041, 0],
-            [62, 66, 30, 23, 72, 93.5, 172.041, 0],
-            [62, 66, 30, 23, 72, 93.5, 172.041, 0],
-            [62, 66, 30, 23, 72, 93.5, 172.041, 0]]
+            [60, 60, 20, 20, 72, 97.9485, 172.041, 0],
+            [50, 58, 30, 30, 80, 93.5, 172.041, 0],
+            [30, 58, 30, 30, 80, 93.5, 172.041, 0],
+            [50, 58, 30, 30, 70, 93.5, 172.041, 0],
+            [50, 58, 30, 30, 70, 93.5, 172.041, 0],
+            [50, 58, 30, 30, 70, 93.5, 172.041, 0],
+            [30, 58, 30, 30, 70, 93.5, 172.041, 0],
+            [50, 30, 30, 30, 70, 93.5, 172.041, 0],
+            [70, 58, 30, 30, 70, 93.5, 172.041, 0],
+            [60, 60, 20, 20, 72, 97.9485, 172.041, 0]]
+
+    # cell_pars = [
+    #         [62, 66, 30, 23, 72, 93.5, 172.041, 0],
+    #         [62, 66, 30, 23, 72, 93.5, 172.041, 0],
+    #         [62, 66, 30, 23, 72, 93.5, 172.041, 0],
+    #         [62, 66, 30, 23, 72, 93.5, 172.041, 0]]
 
     parentDir = r"D:\Dropbox\Files\Test_multicell"
-    projectDir = "SimulationData\SLANS"
+    projectDir = r"SimulationData\SLANS"
     slg.cavity_multicell_full(cells_par=cell_pars, parentDir=parentDir, projectDir=projectDir, fid='0')
