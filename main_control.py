@@ -24,6 +24,7 @@ from frame_controls.tune_control import TuneControl, OptimizationControl
 from frame_controls.wakefield_control import WakefieldControl
 from node_editor.node_editor_widget import NodeEditorWidget
 import qtvscodestyle as qtvsc
+
 # sys.path.append(r"D:\Dropbox\CEMCodesHub\test_plugin") # to search inside this directory for imports
 
 
@@ -47,6 +48,7 @@ import qtvscodestyle as qtvsc
 # pyuic5 -x ui_files/abci_plot.ui -o ui_files/abci_plot.py
 # pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py
 # pyrcc5 qss/icons.qrc -o icons_rc.py
+# git push -f  https://github.com/Dark-Elektron/CEMCodesHub.git master
 
 fr = FileReader()
 
@@ -59,6 +61,13 @@ AN_DURATION = 250
 
 class MainWindow:
     def __init__(self):
+        self.animation = None
+        self.wakefield_widget = None
+        self.eigenmode_widget = None
+        self.misc_widget = None
+        self.plot_widget = None
+        self.postprocess_widget = None
+        self.multipacting_widget = None
         self.tune_widget = None
         self.frames_dict = None
         self.last_frame = None
@@ -179,7 +188,8 @@ class MainWindow:
         # create new/open project
         # set size to zero
         self.ui.le_New_Project_Filename.setMaximumWidth(0)
-        self.ui.pb_New_Project.clicked.connect(lambda: self.animate_width(self.ui.le_New_Project_Filename, 0, 150, True))
+        self.ui.pb_New_Project.clicked.connect(lambda:
+                                               self.animate_width(self.ui.le_New_Project_Filename, 0, 150, True))
 
     def initUI(self):
         # hidden widgets
@@ -315,7 +325,7 @@ class MainWindow:
     def return_to_last_frame(self):
         if self.last_frame is not None:
             index = self.ui.g_Display.count() - 1
-            while (index >= 0):
+            while index >= 0:
                 widget = self.ui.g_Display.itemAt(index).widget()
                 self.ui.g_Display.removeWidget(widget)
                 widget.hide()
@@ -351,10 +361,10 @@ class MainWindow:
 
     def animate_height(self, widget, min_height, standard, enable, option="max"):
         if enable:
-            #### GET WIDTH
+            # GET WIDTH
             height = widget.height()
 
-            #### SET MAX WIDTH
+            # SET MAX WIDTH
             if height > 0:
                 heightCollapsed = min_height
                 widget.setMinimumHeight(0)
@@ -362,8 +372,8 @@ class MainWindow:
                 heightCollapsed = standard
                 # self.ui.w_Shape_Parameters.setMinimumSize(0, 250)
 
-            #### ANIMATION
-            if option=='max':
+            # ANIMATION
+            if option == 'max':
                 self.animation = QPropertyAnimation(widget, b"maximumHeight")
             else:
                 self.animation = QPropertyAnimation(widget, b"minimumHeight")
@@ -397,17 +407,17 @@ class MainWindow:
 
                 # create project structure in folders
                 project_dir_structure = {f'{project_name}':
-                                         {'Cavities': None,
-                                          'SimulationData': {
-                                             'SLANS': None,
-                                             'ABCI': None
-                                          },
-                                          'PostprocessingData': {
-                                              'Plots': None,
-                                              'Data': None,
-                                              'CSTData': None
-                                          }
-                                          }
+                                             {'Cavities': None,
+                                              'SimulationData': {
+                                                  'SLANS': None,
+                                                  'ABCI': None
+                                              },
+                                              'PostprocessingData': {
+                                                  'Plots': None,
+                                                  'Data': None,
+                                                  'CSTData': None
+                                              }
+                                              }
                                          }
 
                 make_dirs_from_dict(project_dir_structure)
@@ -427,8 +437,8 @@ class MainWindow:
             self.projectDir = self.f2b_slashes(project_dir)
             print('open project', self.projectDir)
 
-            if os.path.exists(f'{project_dir}\state_file.json'):
-                self.deserialize(f'{project_dir}\state_file.json')
+            if os.path.exists(fr'{project_dir}\state_file.json'):
+                self.deserialize(fr'{project_dir}\state_file.json')
 
             # only initialize UI after successfully setting folder and initialise only once
             self.ui.l_Project_Name.setText(self.projectDir)
@@ -443,7 +453,7 @@ class MainWindow:
             compare_dirs = ['Cavities', 'PostprocessingData', 'SimulationData']
             if DEBUG: print("Check 2c: main_control.py")
             if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
-                self.ui.l_Project_Name.setText(project_dir) #.split('/')[-1]
+                self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
                 self.projectDir = self.f2b_slashes(project_dir)
                 if DEBUG: print("Check 2d: main_control.py")
 
@@ -454,7 +464,6 @@ class MainWindow:
                     self.initUI()
                     self.global_state += 1
                 if DEBUG: print("Check 2f: main_control.py")
-
 
             else:
                 print('Please select a valid project directory')
@@ -494,7 +503,8 @@ class MainWindow:
         try:
             # open state file
             state_dict = fr.json_reader('ui_state_files/state_file.json')
-        except:
+        except FileNotFoundError:
+            print("state_file.json not found, initializing state_dict = {}")
             state_dict = {}
 
         # update state file
@@ -615,20 +625,20 @@ class MainWindow:
         else:
             return True
 
-    def eventFilter(self, object, event):
-        if not object.isChecked():
-            if event.type() == QEvent.Enter: # Enter
-                object.setMaximumWidth(75)
-                object.setMinimumWidth(75)
+    def eventFilter(self, obj, event):
+        if not obj.isChecked():
+            if event.type() == QEvent.Enter:  # Enter
+                obj.setMaximumWidth(75)
+                obj.setMinimumWidth(75)
 
                 return True
 
-            if event.type() == QEvent.Leave: # Enter
-                object.setMaximumSize(50,50)
-                object.setMinimumSize(50, 50)
+            if event.type() == QEvent.Leave:  # Enter
+                obj.setMaximumSize(50, 50)
+                obj.setMinimumSize(50, 50)
                 return True
 
-        return self.default_ef(object, event)
+        return self.default_ef(obj, event)
 
     def ui_effects(self):
         for push_buttons in self.frames_dict.values():
@@ -693,19 +703,19 @@ class QPlainTextEditLogger(logging.Handler):
 
 class CustomFormatter(logging.Formatter):
     FORMATS = {
-        logging.ERROR:   ("[%(levelname)-8s] %(message)s", QColor("red")),
-        logging.DEBUG:   ("[%(levelname)-8s] [%(filename)s:%(lineno)d] %(message)s", "green"),
-        logging.INFO:    ("[%(levelname)-8s] %(message)s", "#0000FF"),
+        logging.ERROR: ("[%(levelname)-8s] %(message)s", QColor("red")),
+        logging.DEBUG: ("[%(levelname)-8s] [%(filename)s:%(lineno)d] %(message)s", "green"),
+        logging.INFO: ("[%(levelname)-8s] %(message)s", "#0000FF"),
         logging.WARNING: ('%(asctime)s - %(name)s - %(levelname)s - %(message)s', QColor(100, 100, 0))
     }
 
-    def format( self, record ):
+    def format(self, record):
         last_fmt = self._style._fmt
         opt = CustomFormatter.FORMATS.get(record.levelno)
         if opt:
             fmt, color = opt
-            self._style._fmt = "<font color=\"{}\">{}</font>".format(QColor(color).name(),fmt)
-        res = logging.Formatter.format( self, record )
+            self._style._fmt = "<font color=\"{}\">{}</font>".format(QColor(color).name(), fmt)
+        res = logging.Formatter.format(self, record)
         self._style._fmt = last_fmt
         return res
 
@@ -716,4 +726,3 @@ if __name__ == '__main__':
 
     main_win.show()
     sys.exit(app.exec_())
-

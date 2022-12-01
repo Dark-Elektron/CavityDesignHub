@@ -1,5 +1,4 @@
 import ast
-
 import quadpy
 from icecream import ic
 from scipy.optimize import fsolve
@@ -264,3 +263,12 @@ def text_to_list_(ll):
             return [ll]
         else:
             return list(ll)
+
+
+if __name__ == '__main__':
+    nodes, weights, bpoly = quad_stroud3(5, 2)
+    ic(weights)
+    ic(nodes)
+
+    scheme = quadpy.cn.stroud_cn_5_2(5)
+    ic(scheme.points)
