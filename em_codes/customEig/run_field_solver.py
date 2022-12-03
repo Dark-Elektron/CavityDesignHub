@@ -11,8 +11,14 @@ import scipy.io as spio
 import pandas as pd
 from icecream import ic
 
+m0 = 9.1093879e-31
+q0 = 1.6021773e-19
+c0 = 2.99792458e8
+
 
 class FS:
+    # parameters for the MP analysis
+
     def __init__(self, folder):
         self.folder = folder
         pass
@@ -163,7 +169,8 @@ class FS:
 
         # start the mesh generator
         ic("It's here")
-        subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder, shell=True, stdout=sys.stdout, stderr=subprocess.STDOUT)
+        subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder,
+                        stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         ic("done done")
         print("Done done")
 
@@ -325,7 +332,7 @@ class FS:
             ic('                        ')
 
         err = (abs(freqn - self.freq) / self.freq) * 100
-        ic(err)
+        # ic(err)
         if err > 1:
             ic('Warning: Error in eigen frequency more than 1#.')
 
@@ -348,7 +355,8 @@ class FS:
         cwd = fr'{self.folder}'
         eigenCpath = fr'{self.folder}\eigenC_bin.exe'
         if os.path.exists(eigenCpath):
-            subprocess.call(eigenCpath, cwd=cwd)
+            subprocess.call(eigenCpath, cwd=cwd,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
         ic("Done with eigenmode analysis")
 
@@ -376,8 +384,9 @@ class FS:
 
         ic("Here here here here")
         d2, u2 = spsl.eigs(AA, M=BB, k=maara, sigma=0)
-        ic("It is now where")
+        ic("It is now where", u2)
         u2 = u2.real
+
         # ic(u2.shape)
         d2 = np.absolute(d2)
 
@@ -431,6 +440,7 @@ class FS:
         spio.savemat(f"{self.folder}/kama0.mat", kama0, format='4')
         ic("here now and here")
         # --------------------------
+        ic(freqn)
         return freqn
 
     def calculate_fields(self, s, gridcons, ss=1):
@@ -564,7 +574,8 @@ class FS:
             cwd = fr'{self.folder}'
             multipacPath = fr'{self.folder}\Multipac.exe'
             if os.path.exists(multipacPath):
-                subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
+                subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
+                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
             Er = spio.loadmat(fr"{self.folder}\Er.mat")['Er']
             Ez = spio.loadmat(fr"{self.folder}\Ez.mat")['Ez']
@@ -694,16 +705,27 @@ class FS:
             # ic(I2.shape, I1.shape, Er.shape)
             Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
             Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
+            ic(Ez)
             EE = np.sqrt(abs(Er)**2 + abs(Ez)**2).T
 
             # Calculate accelerating field
-            L_half_cell = 0.187  # length of cavity half cell
+            L_half_cell = 0.0935  # length of cavity half cell
             E_axis = EE[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
+            E_axis = np.sqrt(Ez**2).T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
+            plt.plot(E_axis)
+            plt.show()
             z_slice = zz[0, :]
             z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
-            Vacc = np.trapz(z_slice, E_axis)
-            Eacc = Vacc/(2*L_half_cell)
+
+            Vacc = np.trapz(E_axis * np.exp(1j * 2 * np.pi * 801.58e6 * z_slice / c0), z_slice)
+            Eacc = abs(Vacc)/(2*5*L_half_cell)
             Epk_Eacc = np.max(EE)/Eacc
+
+            Hmag = np.sqrt(H**2).T
+            Hpk_Eacc = np.max(Hmag)*1e-3/(Eacc*1e-6)
+
+            print(np.max(EE), Eacc, Epk_Eacc)
+            print(np.max(Hmag), Eacc, Hpk_Eacc)
 
             fig, axs = plt.subplots(2, 1)
             pcE = axs[0].pcolor(zz, rr, EE, cmap='RdBu')
@@ -727,6 +749,17 @@ class FS:
             axs[1].set_title('Magnetic field     B_\phi  [TESLA]')
             axs[1].set_xlabel('z axis [m]')
             axs[1].set_ylabel('r axis [m]')
+            plt.show()
+
+            print(Ez)
+            print(Ez.shape)
+            print(zz)
+            print(zz.shape)
+            plt.spy(zz)
+            plt.show()
+            plt.spy(Ez.T)
+            plt.show()
+            plt.spy(Er.T)
             plt.show()
 
         else:                                   # an arrow plot
@@ -917,7 +950,8 @@ class FS:
         cwd = fr'{self.folder}'
         multipacPath = fr'{self.folder}\Multipac.exe'
         if os.path.exists(multipacPath):
-            subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
+            subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
         Er = spio.loadmat(fr"{self.folder}\Er.mat")['Er']
         Ez = spio.loadmat(fr"{self.folder}\Ez.mat")['Ez']
@@ -1082,7 +1116,8 @@ class FS:
         ic('self.eee: started eigenmode analysis')
         eigenCpath = fr'{self.folder}\eigenC_bin.exe'
         if os.path.exists(eigenCpath):
-            subprocess.call(eigenCpath, cwd=self.folder)
+            subprocess.call(eigenCpath, cwd=self.folder,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         ic('self.eee: finised eigenmode analysis')
 
         # load o_eigen

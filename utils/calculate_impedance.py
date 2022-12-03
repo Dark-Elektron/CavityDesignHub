@@ -76,6 +76,11 @@ for a, assembly in enumerate(assemblies):
                 n += 1
 
         # change
+    ic(V_z)
+    ic(abs(Ez.iloc[:, 1] + 1j * Ez.iloc[:, 2]))
+    ic(Ez.iloc[:, 1], 1j * Ez.iloc[:, 2])
+
+    ic(abs(np.array(V_z))[4])
     R_Q = abs(np.array(V_z) ** 2) / (2 * np.pi * freq_all)
     R_Q_x = abs(np.array(VT_x) ** 2) / (2 * np.pi * freq_all)
     R_Q_y = abs(np.array(VT_y) ** 2) / (2 * np.pi * freq_all)
@@ -122,8 +127,8 @@ for a, assembly in enumerate(assemblies):
     po4 = plt.scatter(freq_all, ZT_CST, label=fr'$Z_\perp (CST)$ {names[a]}')
 
     # save to exvel
-    data = np.array([fs*1e-6, abs(Z), abs(ZT)]).T
-    # data = np.array([freq_all*1e-6, abs(Z_*1e-3), abs(Z_T*1e-3)]).T
+    # data = np.array([fs*1e-6, abs(Z), abs(ZT)]).T
+    data = np.array([freq_all*1e-6, abs(Z_*1e-3), abs(Z_T*1e-3)]).T
     df = pd.DataFrame(data, columns=['f [MHz]', 'Z [kOhm]', 'ZT [kOhm/m]'])
     # ic(df)
     df.to_excel(fr"D:\CST Studio\5. tt\Eigenmode\Z_ZT {names[a]}.xlsx")
