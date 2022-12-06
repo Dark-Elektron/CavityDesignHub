@@ -340,6 +340,10 @@ class Plot(FigureCanvasQTAgg):
 
             x_scale, y_scale = ax.get_xscale(), ax.get_yscale()
 
+            # get x_axis title
+            xlbl = self.ax.xaxis.get_label().get_text()
+            ylbl = self.ax.yaxis.get_label().get_text()
+
             if xlim[0] <= pos_x <= xlim[1]/2:
                 if x_scale == 'linear':
                     text_x = pos_x + (xlim[1] - xlim[0])/20
@@ -347,10 +351,10 @@ class Plot(FigureCanvasQTAgg):
                     text_x = pos_x + np.log((xlim[1] - xlim[0])/20)
             else:
                 if x_scale == 'linear':
-                    text_size = 30*len(f"x: {round(x_picked, 4)}")/self.fig_size[1]
+                    text_size = 30*len(f"{xlbl}: {round(x_picked, 4)}")/self.fig_size[1]
                     text_x = pos_x - (xlim[1] - xlim[0])/20 - (text_size - xlim[0])/(xlim[1] - xlim[0])
                 else:
-                    text_size = 30*len(f"x: {round(x_picked, 4)}")/self.fig_size[1]
+                    text_size = 30*len(f"{xlbl}: {round(x_picked, 4)}")/self.fig_size[1]
                     text_x = pos_x - np.log((xlim[1] - xlim[0])/20) - (text_size - xlim[0])/(xlim[1] - xlim[0])
 
             if ylim[0] <= pos_y <= ylim[1]/2:
@@ -364,7 +368,7 @@ class Plot(FigureCanvasQTAgg):
                 else:
                     text_y = pos_y
 
-            text = f"x: {round(x_picked, 4)}\n y: {round(y_picked, 4)}"
+            text = f"{xlbl}: {round(x_picked, 4)}\n {ylbl}: {round(y_picked, 4)}"
             annotext = self.add_text(text, "Round4", xy=(x_picked, y_picked), xycoords='data',
                                      xytext=(text_x, text_y), textcoords='data',
                                      size=14, rotation=0,

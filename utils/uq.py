@@ -1,11 +1,44 @@
 import json
+import subprocess
+import time
+import multiprocessing as mp
+from threading import Thread
+
+import pandas as pd
+
+from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
+from graphics.graphics_view import GraphicsView
+from graphics.scene import Scene
+from simulation_codes.SLANS.slans_geometry import SLANSGeometry
+from ui_files.eigenmode import Ui_Eigenmode
+from utils.file_reader import FileReader
+from ui_files.geometry_input import Ui_Geometry_Input
+from utils.shared_classes import *
+from utils.shared_functions import *
+import numpy as np
+from icecream import ic
+
+slans_geom = SLANSGeometry()
+fr = FileReader()
+
+file_color = 'green'
+DEBUG = True
+
+
+def print_(*arg):
+    if DEBUG:
+        print(colored(f'\t{arg}', file_color))
 
 
 class UQ:
     def __init__(self):
         pass
 
-    def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, projectDir):
+    def uq(self, key, shape, qois, f_shift=801.58e6, bc='mm', parentDir='', projectDir='', rand_vars=None):
+        if rand_vars is None:
+            rand_vars = ['A', 'B', 'a', 'b']
+            # rand_vars = ['A']
+
         err = False
         result_dict_slans = {}
         slans_obj_list = qois
@@ -13,7 +46,18 @@ class UQ:
             result_dict_slans[o] = {'expe': [], 'stdDev': []}
 
         # EXAMPLE: p_true = np.array([1, 2, 3, 4, 5]).T
-        p_true = shape['IC'][0:5]
+        p_true = shape['GEOM']
+        df = pd.DataFrame(p_true, columns=["A", "B", "a", 'b', 'Ri', 'L', 'Req', 'alpha'])
+        # print(df)
+        # get the reandon variables forom the list
+        df_rv = df[rand_vars]
+
+        # print(df_rv)
+        # print(df_rv.to_numpy())
+        # print(df_rv.to_numpy().flatten())
+        df_rv_shape = df_rv.shape
+        p_true = df_rv.to_numpy().flatten()
+
         # ic(p_true)
         rdim = len(p_true)  # How many variabels will be considered as random in our case 5
         degree = 1
@@ -30,37 +74,42 @@ class UQ:
             ic('flag_stroud==1 or flag_stroud==2')
 
         #  mean value of geometrical parameters
-        p_init = np.zeros(np.shape(p_true))
+        # p_init = np.zeros(np.shape(p_true))
 
         no_parm, no_sims = np.shape(nodes)
-        ic(nodes)
-        delta = 0.005  # or 0.1
+        # ic(nodes)
+        delta = 0.01  # or 0.1
 
         Ttab_val_f = []
-        print_('3')
+        # print_('3')
         sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
         for i in range(no_sims):
             skip = False
-            p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
-            p_init[1] = p_true[1] * (1 + delta * nodes[1, i])
-            p_init[2] = p_true[2] * (1 + delta * nodes[2, i])
-            p_init[3] = p_true[3] * (1 + delta * nodes[3, i])
-            p_init[4] = p_true[4] * (1 + delta * nodes[4, i])
+            p_init = p_true * (1 + delta * nodes[:, i])
+            # print(p_init)
 
-            par_mid = np.append(p_init, shape['IC'][5:]).tolist()
-            par_end = par_mid
-            print_(par_mid)
+            # reshape p_init
+            p_init = p_init.reshape(df_rv_shape)
+            # print(p_init)
+
+            # update df with new values
+            df[rand_vars] = p_init
+            # print(df)
+
+            cells_par = df.to_numpy()
 
             # perform checks on geometry
-            ok = perform_geometry_checks(par_mid, par_end)
-            print_("OK", ok)
+            for inds, row in df.iterrows():
+                ok = self.perform_geometry_checks(row)
+
+            # print_("OK", ok)
             if not ok:
                 err = True
                 break
             fid = fr'{key}_Q{i}'
 
             # check if folder exists and skip if it does
-            print_(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}')
+            # print_(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}')
             if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}'):
                 skip = True
                 # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\Cavity{key}\Cavity{fid}')
@@ -69,23 +118,27 @@ class UQ:
             if not skip:
                 #  run model using SLANS or CST
                 # # create folders for all keys
-                slans_geom.createFolder(fid, projectDir, subdir=sub_dir)
-                try:
-                    slans_geom.cavity(n_cells, n_modules, par_mid, par_end, par_end,
-                                      n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
-                except KeyError:
-                    slans_geom.cavity(n_cells, n_modules, par_mid, par_end, par_end,
-                                      n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+                slans_geom.createFolder(fid, parentDir, subdir=sub_dir)
 
-            filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\cavity_{bc}.svl'
+                slans_geom.cavity_multicell_full(no_of_modules=1, cells_par=cells_par, fid=fid, bc=33,
+                                                 f_shift='default', beta=1, n_modes=6, beampipes="both",
+                                                 parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+
+            filename = fr'{parentDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\qois.json'
+            # ic(filename)
             if os.path.exists(filename):
-                params = fr.svl_reader(filename)
-                norm_length = 2 * n_cells * shape['IC'][5]
-                ic(n_cells, norm_length)
-                qois_result = get_qoi_value(params, slans_obj_list, n_cells, norm_length)
-                print_(qois_result)
+                # n_cells = 5
+                # params = fr.svl_reader(filename)
+                # norm_length = 2 * n_cells * shape['IC'][5]
+                # ic(n_cells, norm_length)
+                # qois_result = self.get_qoi_value(params, slans_obj_list, n_cells, norm_length)
+
+                with open(fr'{parentDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\qois.json') as json_file:
+                    results = json.load(json_file)
+
+                # print(results)
+                qois_result = [results[x] for x in qois]
+                # print_(qois_result)
                 # sometimes some degenerate shapes are still generated and the solver returns zero
                 # for the objective functions, such shapes are considered invalid
                 for objr in qois_result:
@@ -97,6 +150,7 @@ class UQ:
                 tab_val_f = qois_result
 
                 Ttab_val_f.append(tab_val_f)
+                # ic(Ttab_val_f)
             else:
                 err = True
 
@@ -108,8 +162,8 @@ class UQ:
         # Ttab_val_f.append(tab_val_f)
 
         print_("Error: ", err)
-        ic(Ttab_val_f)
         # import matplotlib.pyplot as plt
+        ic(Ttab_val_f)
         if not err:
             v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)
             # ic(v_expe_fobj, v_stdDev_fobj)
@@ -124,11 +178,12 @@ class UQ:
 
             # plt.show()
 
-            with open(fr"{projectDir}\SimulationData\SLANS\Cavity{key}\uq.json", 'w') as file:
+            with open(fr"{parentDir}\SimulationData\SLANS\Cavity{key}\uq.json", 'w') as file:
                 file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
         else:
             print_(fr"There was a problem running UQ analysis for Cavity{key}")
 
+    @staticmethod
     def get_qoi_value(d, obj, n_cells, norm_length):
         Req = d['CAVITY RADIUS'][n_cells - 1] * 10  # convert to mm
         Freq = d['FREQUENCY'][n_cells - 1]
@@ -167,3 +222,56 @@ class UQ:
                 objective.append(d[o])
 
         return objective
+
+    @staticmethod
+    def perform_geometry_checks(par_half_cell):
+        # # check if Req is less than lower limit
+        # if par_mid[6] < par_mid[1] + par_mid[3] + par_mid[4] or par_end[6] < par_end[1] + par_end[3] + par_end[4]:
+        #     return False
+
+        # check if alpha is less than 90.5
+        alpha, error_msg = calculate_alpha(par_half_cell[0], par_half_cell[1], par_half_cell[2], par_half_cell[3],
+                                           par_half_cell[4], par_half_cell[5],
+                                           par_half_cell[6], 0)
+        if alpha < 90.0 or error_msg != 1:
+            print("1:", alpha, error_msg)
+            return False
+
+        # check if L is less than lower limit
+        if par_half_cell[5] < par_half_cell[0]:
+            print("4:", alpha, error_msg)
+            return False
+
+        return True
+
+
+if __name__ == '__main__':
+    uq = UQ()
+
+    key = "Multicell_UQ_test"
+    shape = {
+        "GEOM": [
+            [64, 58, 17, 12, 81, 96.45, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [62, 66, 30, 23, 72, 93.5, 171.36, 0],
+            [64, 58, 17, 12, 81, 96.45, 171.36, 0]
+        ],
+        "BP": "both",
+        "FREQ": 801.5796
+    }
+
+    with open(fr'D:\Dropbox\CEMCodesHub\Cavity800\Cavities\multicell.json') as json_file:
+        shapes = json.load(json_file)
+
+    parentDir = r"D:\Dropbox\Files\Test_multicell"
+    projectDir = r"SimulationData\SLANS"
+    qois = ['freq [MHz]', 'R/Q [Ohm]', "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]"]
+
+    for key, shape in shapes.items():
+        uq.uq(key, shape, qois, parentDir=r"D:\Dropbox\Files\Test_multicell", projectDir=r"SimulationData\SLANS")

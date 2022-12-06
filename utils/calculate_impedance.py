@@ -34,9 +34,14 @@ rf02hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_1493MHz\Export'
 rf03hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_1700MHz\Export'
 rf04hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_2005MHz\Export'
 
-names = ["C3795_4DQW", "C3795_4HC"]
-assemblies = [[rf0, rf1, rf2, rf3], [rf01hc, rf02hc, rf03hc, rf04hc]]
-n_modes_list = [[37, 100, 89, 100], [35, 100, 90, 100]]
+rf379401hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized\Export'
+# rf379402hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_1493MHz\Export'
+# rf379403hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_1700MHz\Export'
+# rf379404hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_2005MHz\Export'
+
+names = ["C3795_4DQW", "C3795_4HC", "C3794_4HC"]
+assemblies = [[rf0, rf1, rf2, rf3], [rf01hc, rf02hc, rf03hc, rf04hc], [rf379401hc]]
+n_modes_list = [[37, 100, 89, 100], [35, 100, 90, 100], [100]]
 for a, assembly in enumerate(assemblies):
     # assembly = [rf0]
     # result_folders = [rf0, rf1, rf2, rf3, rf4]
@@ -123,10 +128,12 @@ for a, assembly in enumerate(assemblies):
     Z_CST = get_var("Z_kOhm.txt", assembly).iloc[:, 1]
     ZT_CST = get_var("Z_T_kOhm_m.txt", assembly).iloc[:, 1]
     print(len(Z_CST), len(freq_all))
-    po3 = plt.scatter(freq_all, Z_CST, label=fr'$Z_\parallel (CST)$ {names[a]}')
-    po4 = plt.scatter(freq_all, ZT_CST, label=fr'$Z_\perp (CST)$ {names[a]}')
+    # po3 = plt.scatter(freq_all, Z_CST, label=fr'$Z_\parallel (CST)$ {names[a]}')
+    # po4 = plt.scatter(freq_all, ZT_CST, label=fr'$Z_\perp (CST)$ {names[a]}')
+    po3 = plt.scatter(freq_all, Z_*1e-3, label=fr'$Z_\parallel (CST)$ {names[a]}')
+    po4 = plt.scatter(freq_all, Z_T*1e-3, label=fr'$Z_\perp (CST)$ {names[a]}')
 
-    # save to exvel
+    # save to excel
     # data = np.array([fs*1e-6, abs(Z), abs(ZT)]).T
     data = np.array([freq_all*1e-6, abs(Z_*1e-3), abs(Z_T*1e-3)]).T
     df = pd.DataFrame(data, columns=['f [MHz]', 'Z [kOhm]', 'ZT [kOhm/m]'])
