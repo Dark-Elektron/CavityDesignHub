@@ -35,13 +35,28 @@ rf03hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_1700MHz\Export'
 rf04hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_2005MHz\Export'
 
 rf379401hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized\Export'
-# rf379402hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_1493MHz\Export'
-# rf379403hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_1700MHz\Export'
-# rf379404hc = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_4HC_from_2005MHz\Export'
+rf379402hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1000MHz\Export'
+rf379403hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1250MHz\Export'
+rf379404hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1425MHz\Export'
+rf379405hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_2000MHz\Export'
 
+ # plot all
 names = ["C3795_4DQW", "C3795_4HC", "C3794_4HC"]
-assemblies = [[rf0, rf1, rf2, rf3], [rf01hc, rf02hc, rf03hc, rf04hc], [rf379401hc]]
-n_modes_list = [[37, 100, 89, 100], [35, 100, 90, 100], [100]]
+assemblies = [[rf0, rf1, rf2, rf3], [rf01hc, rf02hc, rf03hc, rf04hc],
+              [rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc]]
+n_modes_list = [[37, 100, 89, 100], [35, 100, 90, 100], [100, 100, 100, 100, 100]]
+
+# Plot c3794
+names = ["C3794_4HC"]
+assemblies = [[rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc]]
+n_modes_list = [[100, 100, 100, 100, 100]]
+
+
+# rf04hc_mon_pass = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_long_passband\Export'
+# names = ['C3795']
+# assemblies = [[rf04hc_mon_pass]]
+# n_modes_list = [[46]]
+
 for a, assembly in enumerate(assemblies):
     # assembly = [rf0]
     # result_folders = [rf0, rf1, rf2, rf3, rf4]
@@ -103,7 +118,7 @@ for a, assembly in enumerate(assemblies):
     Z_x = Qext_all * R_Q_x * 0.5 * 2 * np.pi * freq_all / c0
     Z_y = Qext_all * R_Q_y * 0.5 * 2 * np.pi * freq_all / c0
 
-    fs = np.linspace(min(freq_all), max(freq_all), 10000)  # the frequency interval to calculate impedance from eigenmodes
+    fs = np.linspace(min(freq_all), max(freq_all), 100000)  # the frequency interval to calculate impedance from eigenmodes
     # fs = freq_all
 
     Z_sum_z, Z_sum_x, Z_sum_y = [], [], []

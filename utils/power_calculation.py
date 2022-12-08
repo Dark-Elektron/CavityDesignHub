@@ -223,7 +223,7 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 1 / len(x)
+        width = 0.15 # 1 / len(x)
         for i, cav in enumerate(self.cavities_list):
             print(cav.name)
             ax.bar(X + i * width, data[i], width=width, label=self.cavities_list[i].name)
@@ -243,7 +243,7 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 1 / (len(x)+10)
+        width = 0.15 #  1 / (len(x)+10)
         for i, cav in enumerate(self.cavities_list):
             print(type(X), type(i), type(width), type(data[i]), data)
             ax.bar(X + i * width, data[i], width=width, label=self.cavities_list[i].name)
@@ -265,7 +265,7 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 1 / (len(x)+10)
+        width = 0.15 #  1 / (len(x)+10)
         for i, cav in enumerate(self.cavities_list):
             print(type(X), type(i), type(width), type(data[i]), data)
             ax.bar(X + i * width, data[i], width=width, label=self.cavities_list[i].name)
