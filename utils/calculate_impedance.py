@@ -38,24 +38,42 @@ rf379401hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized\Export'
 rf379402hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1000MHz\Export'
 rf379403hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1250MHz\Export'
 rf379404hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1425MHz\Export'
-rf379405hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_2000MHz\Export'
+rf379405hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1597MHz\Export'
+rf379406hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1697MHz\Export'
+rf379407hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1834MHz\Export'
+rf379408hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_2000MHz\Export'
 
  # plot all
 names = ["C3795_4DQW", "C3795_4HC", "C3794_4HC"]
-assemblies = [[rf0, rf1, rf2, rf3], [rf01hc, rf02hc, rf03hc, rf04hc],
-              [rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc]]
-n_modes_list = [[37, 100, 89, 100], [35, 100, 90, 100], [100, 100, 100, 100, 100]]
+assemblies = [[rf0, rf1, rf2, rf3, rf4], [rf01hc, rf02hc, rf03hc, rf04hc],
+              [rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc, rf379406hc, rf379407hc, rf379408hc]]
+n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100], [100, 100, 100, 100, 100, 150, 150, 100]]
+
+ # plot all
+names = ["C3795_4DQW", "C3795_4HC"]
+assemblies = [[rf0, rf1, rf2, rf3, rf4], [rf01hc, rf02hc, rf03hc, rf04hc]]
+n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100]]
+
+#  # plot all
+# names = ["C3795_4DQW"]
+# assemblies = [[rf0, rf3]]
+# n_modes_list = [[37, 100]]
+
+ # plot all
+names = ["C3795_4HC"]
+assemblies = [[rf03hc]]
+n_modes_list = [[90]]
 
 # Plot c3794
-names = ["C3794_4HC"]
-assemblies = [[rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc]]
-n_modes_list = [[100, 100, 100, 100, 100]]
+# names = ["C3794_4HC"]
+# assemblies = [[rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc, rf379406hc, rf379407hc, rf379408hc]]
+# n_modes_list = [[100, 100, 100, 100, 100, 150, 150, 100]]
 
 
 # rf04hc_mon_pass = r'D:\CST Studio\5. tt\Eigenmode\E_C3795_long_passband\Export'
 # names = ['C3795']
 # assemblies = [[rf04hc_mon_pass]]
-# n_modes_list = [[46]]
+# n_modes_list = [[44]]
 
 for a, assembly in enumerate(assemblies):
     # assembly = [rf0]
@@ -118,7 +136,7 @@ for a, assembly in enumerate(assemblies):
     Z_x = Qext_all * R_Q_x * 0.5 * 2 * np.pi * freq_all / c0
     Z_y = Qext_all * R_Q_y * 0.5 * 2 * np.pi * freq_all / c0
 
-    fs = np.linspace(min(freq_all), max(freq_all), 100000)  # the frequency interval to calculate impedance from eigenmodes
+    fs = np.linspace(min(freq_all), max(freq_all), 10000)  # the frequency interval to calculate impedance from eigenmodes
     # fs = freq_all
 
     Z_sum_z, Z_sum_x, Z_sum_y = [], [], []
@@ -145,8 +163,8 @@ for a, assembly in enumerate(assemblies):
     print(len(Z_CST), len(freq_all))
     # po3 = plt.scatter(freq_all, Z_CST, label=fr'$Z_\parallel (CST)$ {names[a]}')
     # po4 = plt.scatter(freq_all, ZT_CST, label=fr'$Z_\perp (CST)$ {names[a]}')
-    po3 = plt.scatter(freq_all, Z_*1e-3, label=fr'$Z_\parallel (CST)$ {names[a]}')
-    po4 = plt.scatter(freq_all, Z_T*1e-3, label=fr'$Z_\perp (CST)$ {names[a]}')
+    po3 = plt.scatter(freq_all, Z_*1e-3, label=fr'$Z_\parallel (CST)$ {names[a]}', edgecolors='k')
+    po4 = plt.scatter(freq_all, Z_T*1e-3, label=fr'$Z_\perp (CST)$ {names[a]}', edgecolors='k')
 
     # save to excel
     # data = np.array([fs*1e-6, abs(Z), abs(ZT)]).T

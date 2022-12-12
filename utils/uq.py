@@ -34,10 +34,11 @@ class UQ:
     def __init__(self):
         pass
 
-    def uq(self, key, shape, qois, f_shift=801.58e6, bc='mm', parentDir='', projectDir='', rand_vars=None):
+    def uq(self, key, shape, qois, f_shift=801.58e6, bc='mm', parentDir='', projectDir='', rand_vars=None, constraint=None):
         if rand_vars is None:
             rand_vars = ['A', 'B', 'a', 'b']
-            # rand_vars = ['A']
+            rand_vars = ['A', 'Ri', "Req"]
+            rand_vars = ['A']
 
         err = False
         result_dict_slans = {}
@@ -49,7 +50,7 @@ class UQ:
         p_true = shape['GEOM']
         df = pd.DataFrame(p_true, columns=["A", "B", "a", 'b', 'Ri', 'L', 'Req', 'alpha'])
         # print(df)
-        # get the reandon variables forom the list
+        # get the random variables from the list
         df_rv = df[rand_vars]
 
         # print(df_rv)
@@ -57,9 +58,35 @@ class UQ:
         # print(df_rv.to_numpy().flatten())
         df_rv_shape = df_rv.shape
         p_true = df_rv.to_numpy().flatten()
+        init_len = len(p_true)
 
-        # ic(p_true)
-        rdim = len(p_true)  # How many variabels will be considered as random in our case 5
+        # apply constraint(s)
+        pop_indx, non_pop_indx = [], []
+        all_indxs = []
+        if constraint:
+            for k, val in constraint.items():
+                # print(k)
+                # get index from rand_vars
+                ind = rand_vars.index(k)
+                # print(ind)
+                # print(np.array(val).flatten()*len(rand_vars) + ind)
+                #
+                all_indx = np.array(val).flatten()*len(rand_vars) + ind
+                pop_indx.extend([p for p in all_indx if p % 2 != 0])
+                non_pop_indx.extend([p for p in all_indx if p % 2 == 0])
+                all_indxs.extend(all_indx)
+                # print(pop_indx)
+                # p_true.pop()
+            print(pop_indx)
+            print(non_pop_indx)
+
+        pop_indx.sort(), non_pop_indx.sort()
+        print(f'\t\t', pop_indx)
+        # remove constraint index from p_true
+        ic(p_true, len(p_true))
+        p_true = np.delete(p_true, pop_indx)
+        ic(p_true, len(p_true))
+        rdim = len(p_true)  # How many variables will be considered as random in our case 5
         degree = 1
 
         #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
@@ -78,7 +105,7 @@ class UQ:
 
         no_parm, no_sims = np.shape(nodes)
         # ic(nodes)
-        delta = 0.01  # or 0.1
+        delta = 0.03  # or 0.1
 
         Ttab_val_f = []
         # print_('3')
@@ -86,7 +113,25 @@ class UQ:
         for i in range(no_sims):
             skip = False
             p_init = p_true * (1 + delta * nodes[:, i])
-            # print(p_init)
+            # ic(p_init, len(p_init))
+
+            # reintroduce constraints
+            pp = []
+            inc = 0
+            # ic(pop_indx, non_pop_indx)
+            for nn in range(init_len):
+                if nn in pop_indx:
+                    pp.insert(pop_indx[inc], pp[non_pop_indx[inc]])
+                    # print("\t\t\t", pop_indx[inc], pp[non_pop_indx[inc]], inc)
+                    # print("\t\t\t", pp)
+                    inc += 1
+                else:
+                    pp.append(p_init[nn - inc])
+
+                # print(f'{len(pp)}', nn - inc)
+
+            # ic(pp, len(pp))
+            p_init = np.array(pp)
 
             # reshape p_init
             p_init = p_init.reshape(df_rv_shape)
@@ -94,7 +139,7 @@ class UQ:
 
             # update df with new values
             df[rand_vars] = p_init
-            # print(df)
+            ic(df)
 
             cells_par = df.to_numpy()
 
@@ -273,5 +318,16 @@ if __name__ == '__main__':
     projectDir = r"SimulationData\SLANS"
     qois = ['freq [MHz]', 'R/Q [Ohm]', "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]"]
 
+    no_of_cells = len(shape['GEOM'])/2
+    Req_pairs = [[2 * i, 2 * i + 1] for i in range(int(no_of_cells))]
+    Ri_pairs = [[2 * i - 1, 2 * i] for i in range(1, int(no_of_cells))]
+    print(Ri_pairs)
+    print(Req_pairs)
+    constraint = {
+        "Ri": Ri_pairs,
+        "Req": Req_pairs
+    }
+    constraint = None
     for key, shape in shapes.items():
-        uq.uq(key, shape, qois, parentDir=r"D:\Dropbox\Files\Test_multicell", projectDir=r"SimulationData\SLANS")
+        uq.uq(key, shape, qois, parentDir=r"D:\Dropbox\Files\Test_multicell", projectDir=r"SimulationData\SLANS",
+              constraint=constraint)

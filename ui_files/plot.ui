@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1656</width>
+    <width>1953</width>
     <height>1083</height>
    </rect>
   </property>
@@ -804,8 +804,8 @@
                                    <rect>
                                     <x>0</x>
                                     <y>0</y>
-                                    <width>893</width>
-                                    <height>312</height>
+                                    <width>1200</width>
+                                    <height>297</height>
                                    </rect>
                                   </property>
                                   <layout class="QGridLayout" name="gridLayout_27">
@@ -918,7 +918,7 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>517</width>
+                        <width>507</width>
                         <height>1074</height>
                        </rect>
                       </property>
@@ -1321,7 +1321,7 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>482</width>
+                                <width>472</width>
                                 <height>991</height>
                                </rect>
                               </property>
@@ -1492,18 +1492,11 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>480</width>
-                                          <height>449</height>
+                                          <width>452</width>
+                                          <height>511</height>
                                          </rect>
                                         </property>
                                         <layout class="QGridLayout" name="gridLayout_31">
-                                         <item row="0" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_20">
-                                           <property name="Text" stdset="0">
-                                            <string>$[\mathrm{GeV}]$</string>
-                                           </property>
-                                          </widget>
-                                         </item>
                                          <item row="1" column="0">
                                           <widget class="QLatexLabel" name="latexLabel_2">
                                            <property name="toolTip">
@@ -1514,6 +1507,13 @@
                                            </property>
                                           </widget>
                                          </item>
+                                         <item row="1" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_19">
+                                           <property name="Text" stdset="0">
+                                            <string>$[\mathrm{mA}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
                                          <item row="1" column="1">
                                           <widget class="QLineEdit" name="le_I0">
                                            <property name="text">
@@ -1521,10 +1521,10 @@
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="1" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_19">
+                                         <item row="0" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_20">
                                            <property name="Text" stdset="0">
-                                            <string>$[\mathrm{mA}]$</string>
+                                            <string>$[\mathrm{GeV}]$</string>
                                            </property>
                                           </widget>
                                          </item>
@@ -1538,17 +1538,24 @@
                                            </property>
                                           </widget>
                                          </item>
+                                         <item row="3" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_16">
+                                           <property name="Text" stdset="0">
+                                            <string>$[1e^{-5}]$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="5" column="1">
+                                          <widget class="QLineEdit" name="le_Tau_XY">
+                                           <property name="text">
+                                            <string>[849.2, 157.4, 46.8, 13.6]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
                                          <item row="4" column="2">
                                           <widget class="QLatexLabel" name="latexLabel_18">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{ms}]$</string>
-                                           </property>
-                                          </widget>
-                                         </item>
-                                         <item row="4" column="1">
-                                          <widget class="QLineEdit" name="le_Tau_Z">
-                                           <property name="text">
-                                            <string>[424.6, 78.7, 23.4, 6.8]</string>
                                            </property>
                                           </widget>
                                          </item>
@@ -1569,6 +1576,13 @@
                                            </property>
                                           </widget>
                                          </item>
+                                         <item row="3" column="1">
+                                          <widget class="QLineEdit" name="le_Alpha_S">
+                                           <property name="text">
+                                            <string>[1.48, 1.48, 0.73, 0.73]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
                                          <item row="3" column="0">
                                           <widget class="QLatexLabel" name="latexLabel_9">
                                            <property name="toolTip">
@@ -1579,24 +1593,37 @@
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="3" column="1">
-                                          <widget class="QLineEdit" name="le_Alpha_S">
+                                         <item row="4" column="1">
+                                          <widget class="QLineEdit" name="le_Tau_Z">
                                            <property name="text">
-                                            <string>[1.48, 1.48, 0.73, 0.73]</string>
+                                            <string>[424.6, 78.7, 23.4, 6.8]</string>
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="3" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_16">
+                                         <item row="10" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_21">
                                            <property name="Text" stdset="0">
-                                            <string>$[1e^{-5}]$</string>
+                                            <string>$[\mathrm{m}]$</string>
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="5" column="1">
-                                          <widget class="QLineEdit" name="le_Tau_XY">
-                                           <property name="text">
-                                            <string>[849.2, 157.4, 46.8, 13.6]</string>
+                                         <item row="12" column="1">
+                                          <widget class="QLineEdit" name="le_Zth_Trans"/>
+                                         </item>
+                                         <item row="11" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_7">
+                                           <property name="Text" stdset="0">
+                                            <string>$\mathrm{[k}\Omega\mathrm{]}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="10" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_5">
+                                           <property name="toolTip">
+                                            <string>Beta function</string>
+                                           </property>
+                                           <property name="Text" stdset="0">
+                                            <string>$\beta_{xy}$</string>
                                            </property>
                                           </widget>
                                          </item>
@@ -1610,45 +1637,24 @@
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="5" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_15">
-                                           <property name="Text" stdset="0">
-                                            <string>$[\mathrm{ms}]$</string>
-                                           </property>
-                                          </widget>
-                                         </item>
-                                         <item row="9" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_5">
-                                           <property name="toolTip">
-                                            <string>Beta function</string>
-                                           </property>
-                                           <property name="Text" stdset="0">
-                                            <string>$\beta_{xy}$</string>
-                                           </property>
-                                          </widget>
-                                         </item>
-                                         <item row="8" column="1">
-                                          <widget class="QLineEdit" name="le_N_Cav">
-                                           <property name="text">
-                                            <string>[52, 100, 268, 584]</string>
-                                           </property>
-                                          </widget>
-                                         </item>
-                                         <item row="6" column="1">
-                                          <widget class="QLineEdit" name="le_F_Rev">
-                                           <property name="text">
-                                            <string>[3.07, 3.07, 3.07, 3.07]</string>
-                                           </property>
-                                          </widget>
-                                         </item>
-                                         <item row="6" column="2">
+                                         <item row="7" column="2">
                                           <widget class="QLatexLabel" name="latexLabel_17">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{kHz}]$</string>
                                            </property>
                                           </widget>
                                          </item>
+                                         <item row="11" column="1">
+                                          <widget class="QLineEdit" name="le_Zth_Long"/>
+                                         </item>
                                          <item row="9" column="1">
+                                          <widget class="QLineEdit" name="le_N_Cav">
+                                           <property name="text">
+                                            <string>[52, 100, 268, 584]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="10" column="1">
                                           <widget class="QLineEdit" name="le_Beta_XY">
                                            <property name="minimumSize">
                                             <size>
@@ -1661,37 +1667,38 @@
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="9" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_21">
+                                         <item row="5" column="2">
+                                          <widget class="QLatexLabel" name="latexLabel_15">
                                            <property name="Text" stdset="0">
-                                            <string>$[\mathrm{m}]$</string>
+                                            <string>$[\mathrm{ms}]$</string>
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="10" column="1">
-                                          <widget class="QLineEdit" name="le_Zth_Long"/>
-                                         </item>
-                                         <item row="11" column="1">
-                                          <widget class="QLineEdit" name="le_Zth_Trans"/>
-                                         </item>
-                                         <item row="10" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_7">
-                                           <property name="Text" stdset="0">
-                                            <string>$\mathrm{[k}\Omega\mathrm{]}$</string>
+                                         <item row="7" column="1">
+                                          <widget class="QLineEdit" name="le_F_Rev">
+                                           <property name="text">
+                                            <string>[3.07, 3.07, 3.07, 3.07]</string>
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="6" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_4">
+                                         <item row="0" column="1">
+                                          <widget class="QLineEdit" name="le_E0">
+                                           <property name="text">
+                                            <string>[45.6, 80, 120, 182.5]</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="9" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_11">
                                            <property name="toolTip">
-                                            <string>Frequency revolution</string>
+                                            <string>Number of cavities per beam</string>
                                            </property>
                                            <property name="Text" stdset="0">
-                                            <string>$f_{\mathrm{rev}}$</string>
+                                            <string>$N_{\mathrm{cav}}$</string>
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="11" column="2">
+                                         <item row="12" column="2">
                                           <widget class="QLatexLabel" name="latexLabel_13">
                                            <property name="Text" stdset="0">
                                             <string>$\mathrm{[k}\Omega/\mathrm{m}]}$</string>
@@ -1699,12 +1706,12 @@
                                           </widget>
                                          </item>
                                          <item row="11" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_12">
+                                          <widget class="QLatexLabel" name="latexLabel_6">
                                            <property name="toolTip">
-                                            <string>Transverse impedance threshold</string>
+                                            <string>Longitudinal impedance threshold</string>
                                            </property>
                                            <property name="Text" stdset="0">
-                                            <string>$Z_{\perp, \mathrm{th}}$</string>
+                                            <string>$Z_{\parallel, \mathrm{th}}$</string>
                                            </property>
                                           </widget>
                                          </item>
@@ -1718,41 +1725,27 @@
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="8" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_11">
+                                         <item row="7" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_4">
                                            <property name="toolTip">
-                                            <string>Number of cavities per beam</string>
+                                            <string>Frequency revolution</string>
                                            </property>
                                            <property name="Text" stdset="0">
-                                            <string>$N_{\mathrm{cav}}$</string>
-                                           </property>
-                                          </widget>
-                                         </item>
-                                         <item row="0" column="1">
-                                          <widget class="QLineEdit" name="le_E0">
-                                           <property name="text">
-                                            <string>[45.6, 80, 120, 182.5]</string>
-                                           </property>
-                                          </widget>
-                                         </item>
-                                         <item row="10" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_6">
-                                           <property name="toolTip">
-                                            <string>Longitudinal impedance threshold</string>
-                                           </property>
-                                           <property name="Text" stdset="0">
-                                            <string>$Z_{\parallel, \mathrm{th}}$</string>
+                                            <string>$f_{\mathrm{rev}}$</string>
                                            </property>
                                           </widget>
                                          </item>
                                          <item row="12" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_14">
+                                          <widget class="QLatexLabel" name="latexLabel_12">
+                                           <property name="toolTip">
+                                            <string>Transverse impedance threshold</string>
+                                           </property>
                                            <property name="Text" stdset="0">
-                                            <string>$\mathrm{Label}$</string>
+                                            <string>$Z_{\perp, \mathrm{th}}$</string>
                                            </property>
                                           </widget>
                                          </item>
-                                         <item row="12" column="1">
+                                         <item row="13" column="1">
                                           <widget class="QLineEdit" name="le_Threshold_Label">
                                            <property name="minimumSize">
                                             <size>
@@ -1760,6 +1753,66 @@
                                              <height>0</height>
                                             </size>
                                            </property>
+                                          </widget>
+                                         </item>
+                                         <item row="13" column="0">
+                                          <widget class="QLatexLabel" name="latexLabel_14">
+                                           <property name="Text" stdset="0">
+                                            <string>$\mathrm{Label}$</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="6" column="0">
+                                          <widget class="QLabel" name="label_2">
+                                           <property name="text">
+                                            <string>frange</string>
+                                           </property>
+                                          </widget>
+                                         </item>
+                                         <item row="6" column="1" colspan="2">
+                                          <widget class="QWidget" name="widget_26" native="true">
+                                           <layout class="QGridLayout" name="gridLayout_32">
+                                            <item row="0" column="0">
+                                             <widget class="QDoubleSpinBox" name="dsb_Frange_Min">
+                                              <property name="decimals">
+                                               <number>4</number>
+                                              </property>
+                                              <property name="maximum">
+                                               <double>999999.000000000000000</double>
+                                              </property>
+                                             </widget>
+                                            </item>
+                                            <item row="0" column="1">
+                                             <widget class="QDoubleSpinBox" name="dsb_Frange_Max">
+                                              <property name="decimals">
+                                               <number>4</number>
+                                              </property>
+                                              <property name="minimum">
+                                               <double>1.000000000000000</double>
+                                              </property>
+                                              <property name="maximum">
+                                               <double>9999999.000000000000000</double>
+                                              </property>
+                                              <property name="value">
+                                               <double>4000.000000000000000</double>
+                                              </property>
+                                             </widget>
+                                            </item>
+                                            <item row="0" column="2">
+                                             <widget class="QComboBox" name="cb_Frange_Unit">
+                                              <item>
+                                               <property name="text">
+                                                <string>MHz</string>
+                                               </property>
+                                              </item>
+                                              <item>
+                                               <property name="text">
+                                                <string>GHz</string>
+                                               </property>
+                                              </item>
+                                             </widget>
+                                            </item>
+                                           </layout>
                                           </widget>
                                          </item>
                                         </layout>

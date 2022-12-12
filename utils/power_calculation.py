@@ -15,6 +15,23 @@ from utils import shared_functions
 
 fr = FileReader()
 
+WP = {
+    'Z': {'E [GeV]': 45.6,
+          'I0 [mA]': 1400
+          },
+    'W': {'E [GeV]': 80,
+          'I0 [mA]': 147
+          },
+    'H': {'E [GeV]': 120,
+          'I0 [mA]': 26.7
+          },
+    'ttbar': {'E [GeV]': 182.5,
+              'I0 [mA]': 5
+              }
+}
+
+MACHINE = {'rho [m]': 9937}
+
 
 def plot_settings():
     mpl.rcParams['xtick.labelsize'] = 16
@@ -78,7 +95,7 @@ class Cavities:
             r"$P_\mathrm{stat}$/cav [kW]": np.average((cavity.pstat / cavity.n_cav)[ind]) * 1e-3,
             r"$P_\mathrm{dyn}$/cav [kW]": np.average((cavity.pdyn / cavity.n_cav)[ind]) * 1e-3,
             r"$P_\mathrm{wp}$/cav [kW]": np.average((cavity.p_wp / cavity.n_cav)[ind]) * 1e-3,
-            r"$P_\mathrm{in}$ [kW]": np.average(cavity.p_in[ind]) * 1e-3,
+            r"$P_\mathrm{in}/\mathrm{beam}$ [kW]": np.average(cavity.p_in[ind]) * 1e-3,
             # r"$Q_\mathrm{0} \mathrm{[10^8]}$": np.average(cavity.Q0[ind] * 1e-8),
             # r"$Rs_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Rs[ind])
         }
@@ -92,9 +109,9 @@ class Cavities:
             results.append({
                 r"$E_\mathrm{pk}/E_\mathrm{acc} [\cdot]$": cavity.e,
                 r"$B_\mathrm{pk}/E_\mathrm{acc} \mathrm{[mT/MV/m]}$": cavity.b,
-                r"$R/Q \mathrm{[10^2\Omega]}$": cavity.R_Q*1e-2,
-                r"$G \mathrm{[10^{2}\Omega]}$": cavity.G*1e-2,
-                r"$G\cdot R/Q \mathrm{[10^{5}\Omega^2]}$": cavity.GR_Q*1e-5
+                r"$R/Q \mathrm{[10^2\Omega]}$": cavity.R_Q * 1e-2,
+                r"$G \mathrm{[10^{2}\Omega]}$": cavity.G * 1e-2,
+                r"$G\cdot R/Q \mathrm{[10^{5}\Omega^2]}$": cavity.GR_Q * 1e-5
             })
         ic(results)
         return results
@@ -121,7 +138,7 @@ class Cavities:
             ax1 = fig.add_subplot(gs[:, 0])
             ax2 = fig.add_subplot(gs[0, 1])
             ax3 = fig.add_subplot(gs[1, 1])
-    # def E_acc_Pin(self, cavity, E_acc, op_field, ls='-', ):
+        # def E_acc_Pin(self, cavity, E_acc, op_field, ls='-', ):
 
         # ax_right2._get_lines.prop_cycler = ax._get_lines.prop_cycler
         # ax_right2.spines["right"].set_position(("axes", 1.2))
@@ -131,10 +148,10 @@ class Cavities:
                      label=r"$P_\mathrm{static}$" + fr"{cavity.name}")
 
             ax1.plot(cavity.E_acc * 1e-6, cavity.pdyn / cavity.n_cav * 1e-3,
-                    ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dynamic}$" + fr"{cavity.name}")
+                     ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dynamic}$" + fr"{cavity.name}")
 
             p1, = ax1.plot(cavity.E_acc * 1e-6, cavity.p_wp / cavity.n_cav * 1e-3,
-                          ls=self.ls[i], lw=2, c='k', label=r"$P_\mathrm{wp}$" + fr"{cavity.name}")
+                           ls=self.ls[i], lw=2, c='k', label=r"$P_\mathrm{wp}$" + fr"{cavity.name}")
 
             p2, = ax2.plot(cavity.E_acc * 1e-6, cavity.n_cav / 2, ls=self.ls[i], lw=2, c='tab:red',
                            label=fr"{cavity.name}")
@@ -146,16 +163,16 @@ class Cavities:
             ax2.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
             ax2.set_ylabel(r"$N_\mathrm{cav}$/beam")
             ax3.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
-            ax3.set_ylabel(r"$P_\mathrm{in}$ [kW]")
+            ax3.set_ylabel(r"$P_\mathrm{in}$/beam [kW]")
 
-            ax1.axvline(cavity.op_field*1e-6, ls=':', c='k')
-            ax1.text(cavity.op_field*1e-6 - 1, 0.3, f"{cavity.op_field*1e-6} MV/m",
+            ax1.axvline(cavity.op_field * 1e-6, ls=':', c='k')
+            ax1.text(cavity.op_field * 1e-6 - 1, 0.3, f"{cavity.op_field * 1e-6} MV/m",
                      size=14, rotation=90, transform=ax1.get_xaxis_transform())
-            ax2.axvline(cavity.op_field*1e-6, ls=':', c='k')
-            ax2.text(cavity.op_field*1e-6 - 1, 0.5, f"{cavity.op_field*1e-6} MV/m",
+            ax2.axvline(cavity.op_field * 1e-6, ls=':', c='k')
+            ax2.text(cavity.op_field * 1e-6 - 1, 0.5, f"{cavity.op_field * 1e-6} MV/m",
                      size=14, rotation=90, transform=ax2.get_xaxis_transform())
-            ax3.axvline(cavity.op_field*1e-6, ls=':', c='k')
-            ax3.text(cavity.op_field*1e-6 - 1, 0.3, f"{cavity.op_field*1e-6} MV/m",
+            ax3.axvline(cavity.op_field * 1e-6, ls=':', c='k')
+            ax3.text(cavity.op_field * 1e-6 - 1, 0.3, f"{cavity.op_field * 1e-6} MV/m",
                      size=14, rotation=90,
                      transform=ax3.get_xaxis_transform())
 
@@ -173,9 +190,9 @@ class Cavities:
             # ax_right.yaxis.label.set_color(p2.get_color())
             # ax_right2.yaxis.label.set_color(p3.get_color())
 
-            ax1.set_xlim(min(E_acc)*1e-6, max(E_acc)*1e-6)
-            ax2.set_xlim(min(E_acc)*1e-6, max(E_acc)*1e-6)
-            ax3.set_xlim(min(E_acc)*1e-6, max(E_acc)*1e-6)
+            ax1.set_xlim(min(E_acc) * 1e-6, max(E_acc) * 1e-6)
+            ax2.set_xlim(min(E_acc) * 1e-6, max(E_acc) * 1e-6)
+            ax3.set_xlim(min(E_acc) * 1e-6, max(E_acc) * 1e-6)
             # # ax.set_ylim(0, 50)
             # ax_right.set_ylim(100, 400)f
             # ax_right2.set_ylim(0, 700)
@@ -203,7 +220,8 @@ class Cavities:
         lines = ax1.get_lines()
         legend1 = ax1.legend([lines[i] for i in range(3)],
                              [r"$P_\mathrm{stat}$", r"$P_\mathrm{dyn}$", r"$P_\mathrm{stat}+P_\mathrm{dyn}$"], loc=3)
-        legend2 = ax1.legend([dummy_lines[i] for i in range(len(self.cavities_list))], [cavity.name for cavity in self.cavities_list],
+        legend2 = ax1.legend([dummy_lines[i] for i in range(len(self.cavities_list))],
+                             [cavity.name for cavity in self.cavities_list],
                              loc=0)
         ax1.add_artist(legend1)
 
@@ -223,7 +241,7 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 0.15 # 1 / len(x)
+        width = 0.15  # 1 / len(x)
         for i, cav in enumerate(self.cavities_list):
             print(cav.name)
             ax.bar(X + i * width, data[i], width=width, label=self.cavities_list[i].name)
@@ -243,12 +261,12 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 0.15 #  1 / (len(x)+10)
+        width = 0.15  # 1 / (len(x)+10)
         for i, cav in enumerate(self.cavities_list):
             print(type(X), type(i), type(width), type(data[i]), data)
             ax.bar(X + i * width, data[i], width=width, label=self.cavities_list[i].name)
 
-        ax.set_xticks([r+width for r in range(len(x))], x)
+        ax.set_xticks([r + width for r in range(len(x))], x)
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
         # label = ["C3795_ttbar (5-Cell)", "FCCUROS5_ttbar (5-Cell)", "TELSA_ttbar (5-Cell)"]
         # ax.legend(label, loc="upper left")
@@ -265,18 +283,51 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 0.15 #  1 / (len(x)+10)
+        width = 0.15  # 1 / (len(x)+10)
         for i, cav in enumerate(self.cavities_list):
             print(type(X), type(i), type(width), type(data[i]), data)
             ax.bar(X + i * width, data[i], width=width, label=self.cavities_list[i].name)
 
-        ax.set_xticks([r+width for r in range(len(x))], x)
+        ax.set_xticks([r + width for r in range(len(x))], x)
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
         # label = ["C3795_ttbar (5-Cell)", "FCCUROS5_ttbar (5-Cell)", "TELSA_ttbar (5-Cell)"]
         # ax.legend(label, loc="upper left")
         ax.legend(loc="upper right")
         plt.tight_layout()
         plt.show()
+
+    def plot_ql_vs_pin(self):
+        label = [cav.name for cav in self.cavities_list]
+
+        # geometry
+        n_cells = [cav.n_cells for cav in self.cavities_list]  # 4
+        l_cell = [cav.l_cell_mid for cav in self.cavities_list]  # m
+        G = [cav.G for cav in self.cavities_list]  # 273.2 # 0.00948*Q_factor*(f/1300)**0.5
+        b = [cav.b for cav in self.cavities_list]
+        geometry = [n_cells, l_cell, G, b]
+
+        # QOI
+        R_Q = [cav.R_Q for cav in self.cavities_list]  # 411   # c Ohm linac definition
+        f0 = [cav.op_freq for cav in self.cavities_list]
+        QOI = [f0, R_Q]
+
+        # RF
+        # Vrf = [2*0.1e9, 2*0.1e9, 2*0.75e9]  #   #2*0.75e9
+        # Vrf = [2*0.12e9, 2*0.12e9, 2*1e9, 2*0.44e9]  #   #2*0.75e9 update
+        Vrf = [cav.v_rf for cav in self.cavities_list]  # #ttbar
+        # Eacc = [20e6, 20e6, 20e6]
+        Eacc = [cav.op_field for cav in self.cavities_list]  # update
+        RF = [Eacc, Vrf]
+
+        # MACHINE
+        # I0 = [1390e-3, 1390e-3, 147e-3, 147e-3]  # mA
+        I0 = [WP[cav.wp]['I0 [mA]'] * 1e-3 for cav in self.cavities_list]
+        # rho = [10.76e3, 10.76e3, 10.76e3, 10.76e3]  # bending radius
+        rho = [MACHINE['rho [m]'] for cav in self.cavities_list]  # bending radius
+        E0 = [WP[cav.wp]['E [GeV]'] for cav in self.cavities_list]  # Beam energy GeV
+        machine = [I0, rho, E0]
+
+        self.ql_pin(label, geometry, RF, QOI, machine)
 
     def plot_cavities_contour(self, opt='mid', n_cells=1):
         min_x, max_x, min_y, max_y = [], [], [], []
@@ -305,11 +356,11 @@ class Cavities:
             max_y.append(max(data[0]))
 
         if opt.lower() == 'mid' or opt.lower() == 'end':
-            plt.xlim(-0.1, max(max_x)*1e3 + 1)
-            plt.ylim(-0.1, max(max_y)*1e3 + 1)
+            plt.xlim(-0.1, max(max_x) * 1e3 + 1)
+            plt.ylim(-0.1, max(max_y) * 1e3 + 1)
         else:
-            plt.xlim(min(min_x)*1e3 - 1, max(max_x)*1e3 + 1)
-            plt.ylim(min(min_y)*1e3 - 1, max(max_y)*1e3 + 1)
+            plt.xlim(min(min_x) * 1e3 - 1, max(max_x) * 1e3 + 1)
+            plt.ylim(min(min_y) * 1e3 - 1, max(max_y) * 1e3 + 1)
 
         plt.tight_layout()
         plt.show()
@@ -317,9 +368,9 @@ class Cavities:
     def write_contour(self, cav, opt='mid', n_cells=1):
 
         if opt.lower() == 'mid':
-            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC'])*1e-3
-            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['IC'])*1e-3
-            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['IC'])*1e-3
+            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC']) * 1e-3
+            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['IC']) * 1e-3
+            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['IC']) * 1e-3
             n_cell = 1
             L_bp_l = 0.001
             L_bp_r = 0.001
@@ -328,9 +379,9 @@ class Cavities:
             shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
 
         elif opt.lower() == 'end':
-            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC'])*1e-3
-            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['IC'])*1e-3
-            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC'])*1e-3
+            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC']) * 1e-3
+            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['IC']) * 1e-3
+            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC']) * 1e-3
             L_bp_l = 0.001
             L_bp_r = 1 * L_m
 
@@ -339,12 +390,12 @@ class Cavities:
             # calculate shift
             shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m) / 2
         else:
-            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC'])*1e-3
-            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['OC'])*1e-3
+            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC']) * 1e-3
+            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['OC']) * 1e-3
             try:
-                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC_R'])*1e-3
+                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC_R']) * 1e-3
             except KeyError:
-                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC'])*1e-3
+                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC']) * 1e-3
 
             L_bp_l = 4 * L_m
             L_bp_r = 4 * L_m
@@ -371,7 +422,8 @@ class Cavities:
         # CALCULATE x1, y1, x2, y2
         data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
                 [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1, y1, x2, y2 = fsolve(self.f, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
+        x1, y1, x2, y2 = fsolve(self.f,
+                                np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
                                 args=data, xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
         # CALCULATE x1_er, y1_er, x2_er, y2_er
@@ -469,7 +521,7 @@ class Cavities:
                         # half of bounding box is required,
                         # start is the lower coordinate of the bounding box and end is the upper
                         pts = self.arcTo(L_el + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                                    [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                                         [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
                         pt = [L_el + L_m - x2 + 2 * L_bp_l - shift, y2]
                         for pp in pts:
                             if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -518,7 +570,8 @@ class Cavities:
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                    pts = self.arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                    pts = self.arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt,
+                                     [L_bp_l + L_m - shift, Req_m])
                     pt = [L_bp_l + L_m - shift, Req_m]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -531,7 +584,7 @@ class Cavities:
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = self.arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                                [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                                     [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m])
                     pt = [L_m + L_m - x2 + 2 * L_bp_l - shift, y2]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -549,7 +602,7 @@ class Cavities:
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = self.arcTo(L_m + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
-                                [L_bp_l + L_m + L_m - shift, y1])
+                                     [L_bp_l + L_m + L_m - shift, y1])
                     pt = [L_bp_l + L_m + L_m - shift, Ri_m]
                     ic(pt)
                     for pp in pts:
@@ -579,7 +632,8 @@ class Cavities:
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                    pts = self.arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                    pts = self.arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt,
+                                     [L_bp_l + L_m - shift, Req_m])
                     pt = [L_bp_l + L_m - shift, Req_m]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -592,7 +646,7 @@ class Cavities:
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = self.arcTo(L_m + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                                [L_m + L_er - x2er + 2 * L_bp_l - shift, Req_er])
+                                     [L_m + L_er - x2er + 2 * L_bp_l - shift, Req_er])
                     pt = [L_m + L_er - x2er + 2 * L_bp_l - shift, y2er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -610,7 +664,7 @@ class Cavities:
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = self.arcTo(L_m + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
-                                [L_bp_l + L_m + L_er - shift, y1er])
+                                     [L_bp_l + L_m + L_er - shift, y1er])
                     pt = [L_bp_l + L_m + L_er - shift, Ri_er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -641,6 +695,116 @@ class Cavities:
             fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
 
         # plt.show()
+
+    def ql_pin(self, labels, geometry, RF, QOI, Machine, p_data=None):
+        # check if entries are of same length
+
+        it = iter(geometry)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(RF)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(QOI)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(Machine)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        n_cells, l_cells, G, b = [np.array(x) for x in geometry]
+        E_acc, Vrf = [np.array(x) for x in RF]
+
+        fig, ax = plt.subplots()
+
+        # QOI
+        f0, R_Q = [np.array(x) for x in QOI]
+
+        # Machine
+        I0, rho, E0 = [np.array(x) for x in Machine]
+
+        l_active = 2 * n_cells * l_cells
+        l_cavity = l_active + 8 * l_cells
+
+        # CALCULATED
+        v_cav = E_acc * l_active
+
+        U_loss = 88.46 * E0 ** 4 / rho * 1e-6  # GeV # energy lost per turn per beam
+        v_loss = U_loss * 1e9  # V # v loss per beam
+
+        print(v_loss, Vrf, v_loss / Vrf)
+        phi = np.arccos(v_loss / Vrf)
+        delta_f = -R_Q * f0 * I0 * np.sin(phi) / (2 * v_cav)  # optimal df
+        QL_0_x = v_cav / (R_Q * I0 * np.cos(phi))  # optimal Q loaded
+
+        QL_0 = np.linspace(1e4, 1e9, 1000000)
+
+        xy_list = [(0.7, 0.65), (0.7, 0.3), (0.6, 0.6), (0.77, 0.25)]
+        for i in range(len(E_acc)):
+            f1_2 = f0[i] / (2 * QL_0)  # 380.6
+            ic(R_Q[i], v_cav[i], Vrf[i])
+            pin = v_cav[i] ** 2 / (4 * R_Q[i] * QL_0) * \
+                  ((1 + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.cos(phi[i])) ** 2 +
+                   ((delta_f[i] / f1_2) + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.sin(phi[i])) ** 2)
+
+            # p_cryo = 8 / (np.sqrt(f0[i] / 500e6))
+
+            # material/ wall power
+            e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
+
+            # Rs_NbCu_4_5k_400Mhz = 39.5 * np.exp(0.014 * (E_acc[i] * 1e-6 * b[i])) + 27
+
+            # eta = 1 / 219  # c
+            # Q0 = G[i] * 1e9 / Rs_NbCu_4_5k_400Mhz  # c
+            # print(E_acc[i])
+            # p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (
+            #         l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo
+
+            if "*" in labels[i]:
+                l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4,
+                            ls='--')
+            else:
+                l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4)
+
+            # add annotations
+            txt = f"{labels[i]}, " \
+                  f"{n_cells[i]}-Cell {int(f0[i]/1e6)} MHz \n {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
+                  f"cav/beam" + "\n V$_\mathrm{RF}\mathrm{/beam}$ =" + f"{round(Vrf[i] * 1e-9, 2)} GV " \
+                  + "\n V$_\mathrm{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
+                  "P$_{\mathrm{in}/\mathrm{beam}}$ = " + f"{round(min(pin) * 1e-3, 1)} kW \n" \
+                  "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(QL_0_x[i])
+
+            annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=12, rotation=0,
+                                   c=l[0].get_color(),
+                                   weight='bold')
+
+            dt = DraggableText(annotext)
+            dt.connect()
+
+        if p_data:
+            # plot QL with penetration
+            ax_2 = ax.twinx()
+            data = fr.excel_reader(p_data)
+            data_ = data[list(data.keys())[0]]
+            ax_2.plot(data_["QL"], data_["penetration"], lw=4)
+
+        # plot decorations
+        ax.set_xlabel(r"$Q_{L,0}$")
+        ax.set_ylabel(r"$P_\mathrm{in} ~[\mathrm{kW}]$")
+        ax.set_xscale('log')
+        ax.set_xlim(5e3, 1e9)
+        ax.set_ylim(100, 2000)
+        ax.legend(loc='lower left', title=r"$E_\mathrm{acc}$")  #
+        ax.minorticks_on()
+        # ax.grid(which='both')
+        fig.show()
 
     @staticmethod
     def f(z, *data):
@@ -783,25 +947,48 @@ class Cavities:
             l6 = r" ".join([fr"& {cav.name} " for cav in self.cavities_list]) + r" \\"
             l7 = r"\midrule"
             l8 = r"\midrule"
-            l9 = r"$A$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][0], 2)}/{round(cav.d_geom_params['OC'][0], 2)} " for cav in self.cavities_list]) + r" \\"
-            l10 = r"$B$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][1], 2)}/{round(cav.d_geom_params['OC'][1], 2)} " for cav in self.cavities_list]) + r" \\"
-            l11 = r"$a$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][2], 2)}/{round(cav.d_geom_params['OC'][2], 2)} " for cav in self.cavities_list]) + r" \\"
-            l12 = r"$b$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][3], 2)}/{round(cav.d_geom_params['OC'][3], 2)} " for cav in self.cavities_list]) + r" \\"
-            l13 = r"$R_\mathrm{i}$ " + "".join([fr"& {round(cav.d_geom_params['IC'][4], 2)}/{round(cav.d_geom_params['OC'][4], 2)} " for cav in self.cavities_list]) + r" \\"
-            l14 = r"$L$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][5], 2)}/{round(cav.d_geom_params['OC'][5], 2)} " for cav in self.cavities_list]) + r" \\"
-            l15 = r"$R_\mathrm{eq}$ [mm] " + "".join([fr"& {round(cav.d_geom_params['IC'][6], 2)}/{round(cav.d_geom_params['OC'][6], 2)} " for cav in self.cavities_list]) + r" \\"
-            l16 = r"$ \alpha [^\circ]$" + "".join([fr"& {round(cav.d_geom_params['IC'][7], 2)}/{round(cav.d_geom_params['OC'][7], 2)} " for cav in self.cavities_list]) + r" \\"
+            l9 = r"$A$ [mm] " + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][0], 2)}/{round(cav.d_geom_params['OC'][0], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
+            l10 = r"$B$ [mm] " + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][1], 2)}/{round(cav.d_geom_params['OC'][1], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
+            l11 = r"$a$ [mm] " + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][2], 2)}/{round(cav.d_geom_params['OC'][2], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
+            l12 = r"$b$ [mm] " + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][3], 2)}/{round(cav.d_geom_params['OC'][3], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
+            l13 = r"$R_\mathrm{i}$ " + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][4], 2)}/{round(cav.d_geom_params['OC'][4], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
+            l14 = r"$L$ [mm] " + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][5], 2)}/{round(cav.d_geom_params['OC'][5], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
+            l15 = r"$R_\mathrm{eq}$ [mm] " + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][6], 2)}/{round(cav.d_geom_params['OC'][6], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
+            l16 = r"$ \alpha [^\circ]$" + "".join(
+                [fr"& {round(cav.d_geom_params['IC'][7], 2)}/{round(cav.d_geom_params['OC'][7], 2)} " for cav in
+                 self.cavities_list]) + r" \\"
             l17 = r"\midrule"
             l18 = r"\midrule"
             l19 = r"$R/Q [\Omega$] " + "".join([fr"& {round(cav.R_Q, 2)} " for cav in self.cavities_list]) + r" \\"
             l20 = r"$G [\Omega$] " + "".join([fr"& {round(cav.G, 2)} " for cav in self.cavities_list]) + r" \\"
-            l21 = r"$G.R/Q [10^4\Omega^2]$ " + "".join([fr"& {round(cav.GR_Q, 2)} " for cav in self.cavities_list]) + r" \\"
-            l22 = r"$E_{\mathrm{pk}}/E_{\mathrm{acc}}$ " + "".join([fr"& {round(cav.e, 2)} " for cav in self.cavities_list]) + r" \\"
-            l23 = r"$B_{\mathrm{pk}}/E_{\mathrm{acc}} [\mathrm{\frac{mT}{MV/m}}]$ " + "".join([fr"& {round(cav.b, 2)} " for cav in self.cavities_list]) + r" \\"
-            l24 = r"$|k_\mathrm{FM}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join([fr"& {round(cav.k_fm, 4)} " for cav in self.cavities_list]) + r" \\"
-            l25 = r"$|k_\mathrm{\parallel}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join([fr"& {round(cav.k_loss, 4)} " for cav in self.cavities_list]) + r" \\"
-            l26 = r"$k_\mathrm{\perp} \mathrm{[SR/BS]} [\mathrm{V/pC/m}]$ " + "".join([fr"& {round(cav.k_kick, 4)} " for cav in self.cavities_list]) + r" \\"
-            l27 = r"$P_\mathrm{HOM}\mathrm{/beam} \mathrm{[SR/BS]} [\mathrm{W}]$ " + "".join([fr"& {round(cav.phom, 2)} " for cav in self.cavities_list]) + r" \\"
+            l21 = r"$G.R/Q [10^4\Omega^2]$ " + "".join(
+                [fr"& {round(cav.GR_Q, 2)} " for cav in self.cavities_list]) + r" \\"
+            l22 = r"$E_{\mathrm{pk}}/E_{\mathrm{acc}}$ " + "".join(
+                [fr"& {round(cav.e, 2)} " for cav in self.cavities_list]) + r" \\"
+            l23 = r"$B_{\mathrm{pk}}/E_{\mathrm{acc}} [\mathrm{\frac{mT}{MV/m}}]$ " + "".join(
+                [fr"& {round(cav.b, 2)} " for cav in self.cavities_list]) + r" \\"
+            l24 = r"$|k_\mathrm{FM}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join(
+                [fr"& {round(cav.k_fm, 4)} " for cav in self.cavities_list]) + r" \\"
+            l25 = r"$|k_\mathrm{\parallel}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join(
+                [fr"& {round(cav.k_loss, 4)} " for cav in self.cavities_list]) + r" \\"
+            l26 = r"$k_\mathrm{\perp} \mathrm{[SR/BS]} [\mathrm{V/pC/m}]$ " + "".join(
+                [fr"& {round(cav.k_kick, 4)} " for cav in self.cavities_list]) + r" \\"
+            l27 = r"$P_\mathrm{HOM}\mathrm{/beam} \mathrm{[SR/BS]} [\mathrm{W}]$ " + "".join(
+                [fr"& {round(cav.phom, 2)} " for cav in self.cavities_list]) + r" \\"
             l28 = r"\bottomrule"
             l29 = r"\end{tabular}"
             l30 = r"\label{tab: selected shape}"
@@ -830,14 +1017,13 @@ class Cavities:
 
 
 class Cavity:
-    def __init__(self, n_cells, l_cell_mid, freq, vrf, R_Q, G, Epk_Eacc, Bpk_Eacc, inv_eta=219, name="Unnamed", op_field=1e6):
+    def __init__(self, n_cells, l_cell_mid, freq, vrf, R_Q, G, Epk_Eacc, Bpk_Eacc, inv_eta=219, name="Unnamed",
+                 op_field=1e6, wp='Z'):
         # geometric parameters
         # input
         self.Rs = None
-        self.k_fm = None
         self.d_geom_params = {}
         self.d_qois_slans = {}
-        self.GR_Q = None
         self.k_loss = None
         self.k_kick = None
         self.phom = None
@@ -857,10 +1043,13 @@ class Cavity:
         self.l_cell_mid = l_cell_mid  # m
         self.v_rf = vrf
         self.R_Q = R_Q
+        self.k_fm = None
+        self.GR_Q = None
         self.op_freq = freq  # Hz
         self.e = Epk_Eacc
         self.b = Bpk_Eacc
         self.G = G
+        self.wp = wp  # working point
 
         # calculated
         self.l_active = 2 * self.n_cells * self.l_cell_mid  # m
@@ -911,7 +1100,7 @@ class Cavity:
 
     def set_inv_eta(self, inv_eta):
         self.inv_eta = inv_eta
-        self.eta = 1/inv_eta
+        self.eta = 1 / inv_eta
 
     def get_inv_eta(self):
         return self.inv_eta
@@ -923,7 +1112,7 @@ class Cavity:
         return self.v_rf
 
     def get_power(self):
-        self.p_in = 2 * self.p_sr / self.n_cav  # maximum synchrotron radiation per beam multipled by two for two beams
+        self.p_in = self.p_sr / self.n_cav  # maximum synchrotron radiation per beam
         self.p_cryo = 8 / (np.sqrt(self.op_freq / 500e6))  # W/m
 
         self.pdyn = (1 / self.eta) * self.v_rf * (self.E_acc * self.l_active / (self.R_Q * self.Q0))
@@ -948,7 +1137,7 @@ class Cavity:
         self.op_freq = self.d_qois_slans['freq [MHz]'] * 1e6
         self.R_Q = self.d_qois_slans['R/Q [Ohm]']
         self.GR_Q = self.d_qois_slans['GR/Q [Ohm^2]']
-        self.G = self.GR_Q/self.R_Q
+        self.G = self.GR_Q / self.R_Q
         # print(G)
         # self.Q = d_qois['Q []']
         self.e = self.d_qois_slans['Epk/Eacc []']
@@ -1004,7 +1193,7 @@ class Cavity:
             l14m = r"\label{tab: geometric cavity end-cell}"
             l15m = r"\end{table}"
 
-            l_break = "\n"*2
+            l_break = "\n" * 2
 
             l1e = r"\begin{table}[!htb]"
             l2e = r"\centering"
@@ -1033,13 +1222,13 @@ class Cavity:
             l7_qois = r"\midrule"
             l8_qois = r"\midrule"
             l9_qois = r"No. of cells & $R/Q$  & $G$ & $G.R/Q$ & $E_{\mathrm{pk}}/E_{\mathrm{acc}}$  & " \
-                r"$B_{\mathrm{pk}}/E_{\mathrm{acc}}$  & $|k_\mathrm{\parallel}| \mathrm{[SR]}$ & " \
-                r"$k_\mathrm{\perp} \mathrm{[SR]}$ \\"
+                      r"$B_{\mathrm{pk}}/E_{\mathrm{acc}}$  & $|k_\mathrm{\parallel}| \mathrm{[SR]}$ & " \
+                      r"$k_\mathrm{\perp} \mathrm{[SR]}$ \\"
             l10_qois = r"& [$\Omega$] &[$\Omega$] & $[10^5\Omega^2]$ & [-] & $[\mathrm{\frac{mT}{MV/m}}]$ & " \
-                r"$[\mathrm{V/pC}]^$& $[\mathrm{V/pC/m}]^$ \\"
+                       r"$[\mathrm{V/pC}]^$& $[\mathrm{V/pC/m}]^$ \\"
             l11_qois = r"\midrule"
             l12_qois = fr"{int(self.n_cells)} & {round(self.R_Q, 2)} & {round(self.G, 2)} & " \
-                       fr"{round(self.GR_Q*1e-5, 2)} & {round(self.e, 2)} & " \
+                       fr"{round(self.GR_Q * 1e-5, 2)} & {round(self.e, 2)} & " \
                        fr"{round(self.b, 2)} & {round(self.k_loss, 2)} & {round(self.k_kick, 2)} \\"
             l13_qois = r"\bottomrule"
             l14_qois = r"\end{tabular}}"
@@ -1062,10 +1251,10 @@ class Cavity:
                   "or '<cav>.set_abci_qois(<folder>)' to fix this.")
 
     def __repr__(self):
-        return fr"{self.name}({self.n_cells} [], {self.op_freq*1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
+        return fr"{self.name}({self.n_cells} [], {self.op_freq * 1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
 
     def __str__(self):
-        return fr"{self.name}({self.n_cells} [], {self.op_freq*1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
+        return fr"{self.name}({self.n_cells} [], {self.op_freq * 1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
 
 
 def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):
@@ -1263,20 +1452,19 @@ def plot_surface_resistance():
 
 
 if __name__ == '__main__':
-
-    c3794_H = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9, R_Q=152.8,G=198.42,
+    c3794_H = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9/2, R_Q=152.8, G=198.42,
                      Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_H", op_field=11.87e6)
 
-    c3795_H = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9, R_Q=448.12, G=261.63,
+    c3795_H = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9/2, R_Q=448.12, G=261.63,
                      Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795_H", op_field=24.72e6)
 
-    c3795_tt = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9, R_Q=448.12, G=261.63,
+    c3795_tt = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9/2, R_Q=448.12, G=261.63,
                       Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795_ttbar", op_field=24.72e6)
 
-    cFCCUROS5 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9, R_Q=521.06, G=272.93,
+    cFCCUROS5 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9/2, R_Q=521.06, G=272.93,
                        Epk_Eacc=2.05, Bpk_Eacc=4.33, inv_eta=745, name="FCCUROS5_ttbar", op_field=24.72e6)
 
-    cTESLA = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9, R_Q=558.684, G=271.72,
+    cTESLA = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9/2, R_Q=558.684, G=271.72,
                     Epk_Eacc=2.14, Bpk_Eacc=4.54, inv_eta=745, name="TESLA_ttbar", op_field=24.72e6)
 
     parent_dir_slans = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS"
@@ -1286,13 +1474,14 @@ if __name__ == '__main__':
     # wp = 'ttbar'  # working point
     # sigma = 'SR_1.67mm'
 
-    # slans_dirs = [fr"{parent_dir_slans}\Cavity3794", fr"{parent_dir_slans}\CavityC3795"]
-    # abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
-    # cavities = Cavities([c3794_H, c3795_H])
+    slans_dirs = [fr"{parent_dir_slans}\Cavity3794", fr"{parent_dir_slans}\CavityC3795"]
+    abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
+    cavities = Cavities([c3794_H, c3795_H])
 
-    slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5", fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
-    abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5", fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
-    cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA])
+    # slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5", fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
+    # abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5", fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
+    # cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA])
+
     cavities.set_cavities_slans(slans_dirs)
     cavities.set_cavities_abci(abci_dirs)
 
@@ -1305,9 +1494,50 @@ if __name__ == '__main__':
     cavities.plot_compare_fm_bar()
     cavities.plot_compare_hom_bar()
 
-    print(cavities)
-    print(c3795_tt)
-    # cavities.make_latex_summary_tables()
+    # print(cavities)
+    # print(c3795_tt)
+    cavities.make_latex_summary_tables()
     c3795_tt.make_latex_summary_tables()
+    # cavities.plot_cavities_contour('end')
 
-    cavities.plot_cavities_contour('end')
+    # ql
+    cavities.plot_ql_vs_pin()
+    # label = ["$\mathbf{Z^*}$", 'Z', "$\mathbf{W^*}$", 'W']
+
+    # geometry
+    # n_cells = [5, 5, 5]  # 4
+    # l_cell = [0.187, 0.187, 0.187]  # m
+    # G = [181.91, 215.47, 206.84]  # 273.2 # 0.00948*Q_factor*(f/1300)**0.5
+    # b = [5.32, 4.41, 4.76]
+    # geometry = [n_cells, l_cell, G, b]
+    #
+    # # QOI
+    # R_Q = [425.56, 519.26, 560.47]  # 411   # c Ohm linac definition
+    # f0 = [801.58e6, 801.58e6, 801.58e6]
+    # QOI = [f0, R_Q]
+    #
+    # # RF
+    # # Vrf = [2*0.1e9, 2*0.1e9, 2*0.75e9]  #   #2*0.75e9
+    # # Vrf = [2*0.12e9, 2*0.12e9, 2*1e9, 2*0.44e9]  #   #2*0.75e9 update
+    # Vrf = [9.19e9, 9.19e9, 9.19e9]  #   #ttbar
+    # # Eacc = [20e6, 20e6, 20e6]
+    # Eacc = [24.52e6, 24.52e6, 24.52e6]  # update
+    # RF = [Eacc, Vrf]
+    #
+    # # MACHINE
+    # # I0 = [1390e-3, 1390e-3, 147e-3, 147e-3]  # mA
+    # I0 = [0.01, 0.01, 0.01]  # mA parameter update
+    # # rho = [10.76e3, 10.76e3, 10.76e3, 10.76e3]  # bending radius
+    # rho = [9.937e3, 9.937e3, 9.937e3]  # bending radius
+    # E0 = [182.5, 182.5, 182.5]  # Beam energy GeV
+    # machine = [I0, rho, E0]
+    #
+    # QL_Pin(label, geometry, RF, QOI, machine)
+    # # QL_Pin([10e6], p_data=r"D:\Dropbox\penetration_QL.xlsx")
+    # # QL_Pin()
+    #
+    # freq = [801.58e6]
+    # # plot_beampipe_decay(freq, [765e6])
+    #
+    # plt.tight_layout()
+    plt.show()

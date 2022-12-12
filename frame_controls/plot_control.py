@@ -1650,31 +1650,44 @@ class PlotControl:
                 frev = ast.literal_eval(self.ui.le_F_Rev.text())
                 beta_xy = ast.literal_eval(self.ui.le_Beta_XY.text())
                 Ncav = ast.literal_eval(self.ui.le_N_Cav.text())
+                unit = {'MHz': 1e6,
+                        'GHz': 1e9}
 
                 Z_list = []
                 if mode == 'monopole':
                     # trim f
                     # f_list = f_list[0:len(f_list) - 100]
                     # f_list = self.freq_glob[0:len(self.freq_glob)]
-                    f_list = np.linspace(0, self.freq_glob[-1], num=1000)
+
+                    # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
+
+                    f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
+                                         self.ui.dsb_Frange_Max.value(),
+                                         num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
+                    print(f_list)
                     for i, n in enumerate(Ncav):
-                        Z = [(2 * E0[i] * nu_s[i]) * 1e8 / (n * I0[i] * alpha_c[i] * tau_z[i] * a) if a > 1e-8 else 1e5
-                             for a in
-                             f_list]
+                        Z = [(2 * E0[i] * 1e9 * nu_s[i]) / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3 * a)
+                             if a > 1e-8 else 1e5 for a in f_list]
                         Z_list.append(Z)
 
-                    self.plot_baselines(f_list, Z_list, mode)
+                    self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
+                                        np.array(Z_list)*1e-3, mode)  # to kOhm
 
                     return f_list, Z_list
 
                 elif mode == 'dipole':
                     # f_list = self.freq_glob[0:len(self.freq_glob)]
-                    f_list = np.linspace(0, self.freq_glob[-1], num=1000)
+                    # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
+                    print(self.ax.get_xlim()[1])
+                    f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
+                                         self.ui.dsb_Frange_Max.value(),
+                                         num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
                     for i, n in enumerate(Ncav):
-                        Z = (2 * E0[i]) * 1e9 / (n * I0[i] * beta_xy * tau_xy[i] * frev[i])
+                        Z = (2 * E0[i]) * 1e9 / (n * I0[i]*1e-3 * beta_xy * tau_xy[i]*1e-3 * frev[i]*1e3)
                         Z_list.append(Z)
 
-                    self.plot_baselines(f_list, Z_list, mode)
+                    self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
+                                        np.array(Z_list)*1e-3, mode)  # to kOhm
 
                     return Z_list
 

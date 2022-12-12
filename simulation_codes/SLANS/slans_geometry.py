@@ -600,7 +600,8 @@ class SLANSGeometry(Geometry):
 
         Req_check = np.all([a[:, 6][Req_pairs][i][0] == a[:, 6][Req_pairs][i][1] for i in range(len(a[:, 6][Req_pairs]))])
         Ri_check = np.all([a[:, 4][Ri_pairs][i][0] == a[:, 4][Ri_pairs][i][1] for i in range(len(a[:, 4][Ri_pairs]))])
-
+        # print(a)
+        # print(Ri_pairs)
         assert Ri_check
         assert Req_check
 
