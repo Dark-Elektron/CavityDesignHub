@@ -289,7 +289,9 @@ class Plot(FigureCanvasQTAgg):
 
         if isinstance(self.selected_object, matplotlib.text.Annotation):
             print('Text Annotation picked')
-            # self.text_dict[f"{id(self.selected_object)}"].connect()
+            print(self.text_dict)
+            print(id(self.selected_object))
+            self.text_dict[id(self.selected_object)].connect()
             pass
 
         if isinstance(event.artist, matplotlib.collections.PathCollection):
@@ -510,7 +512,7 @@ class Plot(FigureCanvasQTAgg):
                  size=14, rotation=0, arrowprops=None):
         if text.strip("") == "":
             return
-
+        print("it can call this")
         if self.parentUI.cb_Active_Axis.currentText() == "Left":
             ax = self.ax
         else:

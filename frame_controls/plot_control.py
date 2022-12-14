@@ -452,9 +452,11 @@ class PlotControl:
         self.ui.pb_Apply_Axis_Labels.clicked.connect(lambda: self.update_labels())
 
         # plot text
+        # x, y = self.plt.ax.get_xlim()[1]/2, self.plt.ax.get_ylim()[1]/2
         self.ui.pb_Add_Textt.clicked.connect(lambda: self.plt.add_text(
             text=self.ui.le_Plot_Text_2.text(), box=self.ui.cb_Text_Box.currentText(),
-            size=self.ui.sb_Annotation_Text_Size.value(), rotation=self.ui.sb_Rotation.value()))
+            size=self.ui.sb_Annotation_Text_Size.value(), rotation=self.ui.sb_Rotation.value(),
+            xycoords='axes fraction'))
 
         # plot axvline
         self.ui.pb_Add_Vline.clicked.connect(lambda: self.plt.add_axvline(self.ui.dsb_Axvline_X.value()))

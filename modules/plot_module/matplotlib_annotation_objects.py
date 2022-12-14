@@ -144,29 +144,46 @@ class DraggableText:
         canvas.blit(axes.bbox)
 
     def on_motion(self, event):
-
         """on motion, we will move the text if the mouse is over us"""
         if DraggableText.lock is not self:
             return
         if event.inaxes != self.text.axes:
             return
 
+        print(self.text.xycoords)
         # get text canvas and axes
         fig = self.text.figure
         canvas = self.text.figure.canvas
         axes = self.text.axes
 
-        # get size of figure
-        bbox = fig.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
-        width, height = bbox.width * fig.dpi, bbox.height * fig.dpi
+        if self.text.xycoords == 'data':
+            # get size of figure
+            bbox = fig.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+            width, height = bbox.width * fig.dpi, bbox.height * fig.dpi
 
-        # calculate relative position as fraction of figure
-        self.x = event.x  # / width
-        self.y = event.y  # / height
+            # calculate relative position as fraction of figure
+            self.x = event.x  # / width
+            self.y = event.y  # / height
 
-        # self.x, self.y = fig.transFigure.inversed().transform()
-        self.x, self.y = axes.transData.inverted().transform((self.x, self.y))
-        self.text.set_position((self.x, self.y))
+            # self.x, self.y = fig.transFigure.inversed().transform()
+            self.x, self.y = axes.transData.inverted().transform((self.x, self.y))
+            self.text.set_position((self.x, self.y))
+        elif self.text.xycoords == 'axes fraction':
+
+            # calculate relative position as fraction of figure
+            self.x = event.x  # / width
+            self.y = event.y  # / height
+
+            self.x, self.y = axes.transAxes.inverted().transform((self.x, self.y))
+            self.text.set_position((self.x, self.y))
+        elif self.text.xycoords == 'figure':
+
+            # calculate relative position as fraction of figure
+            self.x = event.x  # / width
+            self.y = event.y  # / height
+
+            self.x, self.y = fig.transFigure.inverted().transform((self.x, self.y))
+            self.text.set_position((self.x, self.y))
 
         # restore the background region
         canvas.restore_region(self.background)

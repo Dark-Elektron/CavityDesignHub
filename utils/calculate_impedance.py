@@ -59,10 +59,10 @@ n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100]]
 # assemblies = [[rf0, rf3]]
 # n_modes_list = [[37, 100]]
 
- # plot all
-names = ["C3795_4HC"]
-assemblies = [[rf03hc]]
-n_modes_list = [[90]]
+#  # plot all
+# names = ["C3795_4HC"]
+# assemblies = [[rf01hc]]
+# n_modes_list = [[35]]
 
 # Plot c3794
 # names = ["C3794_4HC"]
