@@ -61,6 +61,7 @@ AN_DURATION = 250
 
 class MainWindow:
     def __init__(self):
+
         self.animation = None
         self.wakefield_widget = None
         self.eigenmode_widget = None
@@ -721,7 +722,14 @@ class CustomFormatter(logging.Formatter):
 
 
 if __name__ == '__main__':
+    # Handle high resolution displays:
+    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+        QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+        QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+
     app = QApplication(sys.argv)
+
     main_win = MainWindow()
 
     main_win.show()

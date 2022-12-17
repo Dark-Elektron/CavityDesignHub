@@ -366,26 +366,32 @@ class Cavities:
         self.ql_pin(label, geometry, RF, QOI, machine)
 
     def plot_cryomodule_comparison(self):
+        plt.rcParams["figure.figsize"] = (9, 3)
+        fig, axs = plt.subplots(1, 2)
         n_cav_per_cryomodule = np.arange(1, 11)
-        ic(n_cav_per_cryomodule)
-        ic(self.cavities_list)
         for cav in self.cavities_list:
             n_cryomodules_list = []
             cryomodules_len_list = []
             for ncpc in n_cav_per_cryomodule:
-                ic(ncpc, cav.n_cav_op_field)
-                cryomodule_len = cav.n_cells*(2*cav.l_cell_mid)*cav.n_cav_op_field + (ncpc+1)*8*cav.l_cell_mid
+                cryomodule_len = cav.n_cells*(2*cav.l_cell_mid)*ncpc + (ncpc+1)*8*cav.l_cell_mid
                 cryomodules_len_list.append(cryomodule_len)
 
                 n_cryomodules = cav.n_cav_op_field/ncpc
-
                 n_cryomodules_list.append(n_cryomodules)
 
             # ic(cryomodules_len_list)
-            plt.plot(n_cav_per_cryomodule, cryomodules_len_list, marker='o', mec='k', label='cryo length')
-            plt.plot(n_cav_per_cryomodule, n_cryomodules_list, marker='P', mec='k', label='cryo modu')
+            axs[0].plot(n_cav_per_cryomodule, cryomodules_len_list, marker='o', mec='k', label=f'{cav.name}')
+            axs[1].plot(n_cav_per_cryomodule, n_cryomodules_list, marker='o', mec='k', label=f'{cav.name}')
 
-        plt.legend()
+        axs[0].set_xlabel("$N_\mathrm{cav}$/mod.")
+        axs[0].set_ylabel("$L_\mathrm{cryo}$ [m]")
+        axs[1].set_xlabel("$N_\mathrm{cav}$/mod.")
+        axs[1].set_ylabel("$N_\mathrm{cryo}$")
+        axs[0].legend()
+        axs[1].legend()
+        mplcursors.cursor(axs[0])
+        mplcursors.cursor(axs[1])
+        plt.tight_layout()
         plt.show()
 
     def plot_cavities_contour(self, opt='mid', n_cells=1):
@@ -421,6 +427,41 @@ class Cavities:
             plt.xlim(min(min_x) * 1e3 - 1, max(max_x) * 1e3 + 1)
             plt.ylim(min(min_y) * 1e3 - 1, max(max_y) * 1e3 + 1)
 
+        plt.tight_layout()
+        plt.show()
+
+    def plot_axis_fields(self):
+        for cav in self.cavities_list:
+            # normalize fields
+            e_axis = np.abs(cav.axis_field['1'])
+            e_axis_norm = e_axis/e_axis.max()
+
+            # shift to mid
+            z = cav.axis_field['0']
+            z_shift = z - z.max()/2
+            plt.plot(z_shift, e_axis_norm, label=cav.name)
+
+        plt.axhline(1.02, c='k')
+        plt.xlabel('$z$ [mm]')
+        plt.ylabel('$|E_\mathrm{axis}|/|E_\mathrm{axis}|_\mathrm{max}$')
+        plt.ylim(-0.01, 1.5)
+        plt.legend(loc='upper center', ncol=len(self.cavities_list))
+        plt.tight_layout()
+        plt.show()
+
+    def plot_surface_fields(self):
+        for cav in self.cavities_list:
+            # normalize fields
+            e_surf = np.abs(cav.surface_field['0'])
+            e_surf_norm = e_surf/e_surf.max()
+
+            plt.plot(e_surf_norm, label=cav.name)
+
+        plt.axhline(1.02, c='k')
+        plt.ylim(-0.01, 1.5)
+        plt.xlabel('$L_\mathrm{surf}$ [mm]')
+        plt.ylabel('$|E_\mathrm{surf}|/|E_\mathrm{surf}|_\mathrm{max}$')
+        plt.legend(loc='upper center', ncol=len(self.cavities_list))
         plt.tight_layout()
         plt.show()
 
@@ -1081,6 +1122,8 @@ class Cavity:
                  op_field=1e6, wp='Z'):
         # geometric parameters
         # input
+        self.axis_field = None
+        self.surface_field = None
         self.Rs = None
         self.d_geom_params = {}
         self.d_qois_slans = {}
@@ -1114,7 +1157,7 @@ class Cavity:
 
         # calculated
         self.l_active = 2 * self.n_cells * self.l_cell_mid  # m
-        self.n_cav_op_field = self.v_rf / (self.op_freq * self.l_active)
+        self.n_cav_op_field = int(np.ceil(self.v_rf / (self.op_field * self.l_active)))
         # self.l_cavity = self.n_cav * self.n_cells * self.l_active + (self.n_cav - 1) * 6 * self.l_active
 
         self.E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
@@ -1204,8 +1247,13 @@ class Cavity:
         self.e = self.d_qois_slans['Epk/Eacc []']
         self.b = self.d_qois_slans['Bpk/Eacc [mT/MV/m]']
 
-        vrf = 4.4e9  # per beam
-        Vrf = 2 * vrf
+        # get axis field
+        self.axis_field = fr.txt_reader(fr"{folder_name}\cavity_33_{self.n_cells}.af", ' ')
+        # print(self.axis_field)
+
+        # get surface field
+        self.surface_field = fr.txt_reader(fr"{folder_name}\cavity_33_{self.n_cells}.sf", ' ')
+        # print(self.surface_field)
 
     def set_abci_qois(self, folder_name, working_point='', bunch_length=''):
         self.abci_dir = folder_name
@@ -1531,19 +1579,19 @@ if __name__ == '__main__':
     parent_dir_slans = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS"
     parent_dir_abci = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ABCI"
 
-    # 2 and 5 cell cavities comparison for H
-    wp = 'H'  # working point
-    sigma = 'SR_2.5mm'
-    slans_dirs = [fr"{parent_dir_slans}\Cavity3794", fr"{parent_dir_slans}\CavityC3795"]
-    abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
-    cavities = Cavities([c3794_H, c3795_H])
+    # # 2 and 5 cell cavities comparison for H
+    # wp = 'H'  # working point
+    # sigma = 'SR_2.5mm'
+    # slans_dirs = [fr"{parent_dir_slans}\Cavity3794", fr"{parent_dir_slans}\CavityC3795"]
+    # abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
+    # cavities = Cavities([c3794_H, c3795_H])
 
-    # # 5 cell cavities comparison for ttbar
-    # wp = 'ttbar'  # working point
-    # sigma = 'SR_1.67mm'
-    # slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5", fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
-    # abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5", fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
-    # cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA])
+    # 5 cell cavities comparison for ttbar
+    wp = 'ttbar'  # working point
+    sigma = 'SR_1.67mm'
+    slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5", fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
+    abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5", fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
+    cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA])
 
     cavities.set_cavities_slans(slans_dirs)
     cavities.set_cavities_abci(abci_dirs)
@@ -1566,6 +1614,8 @@ if __name__ == '__main__':
     # ql
     # cavities.plot_ql_vs_pin()
     cavities.plot_cryomodule_comparison()
+    cavities.plot_axis_fields()
+    cavities.plot_surface_fields()
     # label = ["$\mathbf{Z^*}$", 'Z', "$\mathbf{W^*}$", 'W']
 
     # geometry

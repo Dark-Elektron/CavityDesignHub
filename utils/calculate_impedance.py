@@ -49,16 +49,20 @@ assemblies = [[rf0, rf1, rf2, rf3, rf4], [rf01hc, rf02hc, rf03hc, rf04hc],
               [rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc, rf379406hc, rf379407hc, rf379408hc]]
 n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100], [100, 100, 100, 100, 100, 150, 150, 100]]
 
- # plot all
-names = ["C3795_4DQW", "C3795_4HC"]
-assemblies = [[rf0, rf1, rf2, rf3, rf4], [rf01hc, rf02hc, rf03hc, rf04hc]]
-n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100]]
+#  # plot all
+# names = ["C3795_4DQW", "C3795_4HC"]
+# assemblies = [[rf0, rf1, rf2, rf3, rf4], [rf01hc, rf02hc, rf03hc, rf04hc]]
+# n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100]]
 
 #  # plot all
 # names = ["C3795_4DQW"]
 # assemblies = [[rf0, rf3]]
 # n_modes_list = [[37, 100]]
 
+#  # plot all
+# names = ["C3795_4HC"]
+# assemblies = [[rf02hc]]
+# n_modes_list = [[100]]
 #  # plot all
 # names = ["C3795_4HC"]
 # assemblies = [[rf01hc]]

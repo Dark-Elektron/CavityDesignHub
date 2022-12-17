@@ -1,4 +1,4 @@
-model bg 
+cpm bk
 10 1
 12 2
 14 3

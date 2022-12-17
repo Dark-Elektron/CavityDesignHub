@@ -12,12 +12,12 @@ class FileReader:
 
     def to_pd_dataframe(self):
         print("it works")
-        #### TAKES IN PYTHON DICTIONARY AS ARGUMENT AND RETURNS PANDAS DATAFRAME
+        # TAKES IN PYTHON DICTIONARY AS ARGUMENT AND RETURNS PANDAS DATAFRAME
         pass
 
     def txt_reader(self, filename, delimeter):
         lines_list = []
-        #### OPEN FILE AND UPDATE LINE LIST
+        # OPEN FILE AND UPDATE LINE LIST
         with open(filename, 'r') as f:
             for l in f.readlines():
                 line = []
@@ -29,7 +29,7 @@ class FileReader:
                     line.append(float(b))
                 lines_list.append(line)
 
-        #### CHECK FOR MISSING VALUES IN LIST
+        # CHECK FOR MISSING VALUES IN LIST
         mx_len = 0
         for val in lines_list:
             # GET MAXIMUM LIST LENGTH
@@ -43,12 +43,12 @@ class FileReader:
                     val.append(None)
             list_update.append(val)
 
-        #### CONVERT LIST TO PYTHON DICTIONARY
+        # CONVERT LIST TO PYTHON DICTIONARY
         data_dict = {}
         for key in range(0, len(line)):
             data_dict[f"{key}"] = [val[key] for val in list_update]
 
-        #### CONVERT DICTIONARY TO PANDAS DATAFRAME
+        # CONVERT DICTIONARY TO PANDAS DATAFRAME
         df = pd.DataFrame.from_dict(data_dict, orient='index').transpose()
         return df
 
