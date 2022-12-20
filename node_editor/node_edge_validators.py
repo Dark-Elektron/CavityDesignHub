@@ -28,15 +28,17 @@ def print_error(*args):
     """Helper method which prints to console if `DEBUG` is set to `True`"""
     if DEBUG: print("Edge Validation Error:", *args)
 
+
 def edge_validator_debug(input: 'Socket', output: 'Socket') -> bool:
     """This will consider edge always valid, however writes bunch of debug stuff into console"""
     print("VALIDATING:")
-    print(input, "input" if input.is_input else "output",  "of node", input.node)
-    for s in input.node.inputs+input.node.outputs: print("\t", s, "input" if s.is_input else "output")
+    print(input, "input" if input.is_input else "output", "of node", input.node)
+    for s in input.node.inputs + input.node.outputs: print("\t", s, "input" if s.is_input else "output")
     print(output, "input" if input.is_input else "output", "of node", output.node)
-    for s in output.node.inputs+output.node.outputs: print("\t", s, "input" if s.is_input else "output")
+    for s in output.node.inputs + output.node.outputs: print("\t", s, "input" if s.is_input else "output")
 
     return True
+
 
 def edge_cannot_connect_two_outputs_or_two_inputs(input: 'Socket', output: 'Socket') -> bool:
     """Edge is invalid if it connects 2 output sockets or 2 input sockets"""
@@ -50,13 +52,15 @@ def edge_cannot_connect_two_outputs_or_two_inputs(input: 'Socket', output: 'Sock
 
     return True
 
-def edge_cannot_connect_input_and_output_of_same_node(input: 'Socket', output:'Socket') -> bool:
+
+def edge_cannot_connect_input_and_output_of_same_node(input: 'Socket', output: 'Socket') -> bool:
     """Edge is invalid if it connects the same node"""
     if input.node == output.node:
         print_error("Connecting the same node")
         return False
 
     return True
+
 
 def edge_cannot_connect_input_and_output_of_different_type(input: 'Socket', output: 'Socket') -> bool:
     """Edge is invalid if it connects sockets with different colors"""

@@ -138,6 +138,11 @@ class Plot(FigureCanvasQTAgg):
         self.selected_points_list = []
 
     def toggle_ax(self, visible):
+        """
+
+        :param visible:
+        :return:
+        """
         n = int((len(self.plot_list)+1)/2)
         if visible:
             self.ax.set_position(self.gs2[0:-2, 2:].get_position(self.fig))
@@ -510,6 +515,19 @@ class Plot(FigureCanvasQTAgg):
 
     def add_text(self, text, box, xy=(0.5, 0.5), xycoords='data', xytext=None, textcoords='data',
                  size=14, rotation=0, arrowprops=None):
+        """
+
+        :param text:
+        :param box:
+        :param xy:
+        :param xycoords:
+        :param xytext:
+        :param textcoords:
+        :param size:
+        :param rotation:
+        :param arrowprops:
+        :return:
+        """
         if text.strip("") == "":
             return
         print("it can call this")

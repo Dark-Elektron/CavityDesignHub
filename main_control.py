@@ -1,3 +1,8 @@
+"""
+Created on 12 December 2022
+@author: Sosoho-Abasi Udongwo
+"""
+
 import ctypes
 import logging
 import os
@@ -241,6 +246,7 @@ class MainWindow:
         self.ui.w_Log.setMaximumWidth(0)
 
     def signals(self):
+
         # signal for home buttons
         for key, button_widget_pair in self.frames_dict.items():
             button_widget_pair[0].clicked.connect(lambda _, b=key: self.change_frame(b))
@@ -269,6 +275,11 @@ class MainWindow:
         self.ui.pb_Expand_Collapse_Log.clicked.connect(lambda: self.animate_width(self.ui.w_Log, 0, 375, True, 'min'))
 
     def create_frames_ui(self):
+        """
+
+        :return:
+        """
+
         if DEBUG: print("Check 2e_i_1: main_control.py")
         # frame UIs
         self.tune_widget = TuneControl(self)
@@ -385,6 +396,10 @@ class MainWindow:
             self.animation.start()
 
     def create_project(self):
+        """
+
+        :return:
+        """
         project_name = self.ui.le_New_Project_Filename.text()
 
         if project_name != '':
@@ -432,6 +447,11 @@ class MainWindow:
             print('Please enter a valid project name')
 
     def open_project(self, project_dir=None):
+        """
+
+        :param project_dir:
+        :return:
+        """
         if DEBUG: print("Check 2a: main_control.py")
         if not project_dir:
             project_dir = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
@@ -472,19 +492,25 @@ class MainWindow:
             print('Please select a valid project directory')
 
     def change_theme(self):
-        # Light (Visual Studio): LIGHT_VS
-        # Quiet Light          : QUIET_LIGHT
-        # Solarized Light      : SOLARIZED_LIGHT
-        # Abyss                : ABYSS
-        # Dark (Visual Studio) : DARK_VS
-        # Kimbie Dark          : KIMBIE_DARK
-        # Monokai              : MONOKAI
-        # Monokai Dimmed       : MONOKAI_DIMMED
-        # Red                  : RED
-        # Solarized Dark       : SOLARIZED_DARK
-        # Tomorrow Night Blue  : TOMORROW_NIGHT_BLUE
-        # Dark High Contrast   : DARK_HIGH_CONTRAST
-        # stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
+        """
+
+        :return: vjj
+        :desc:
+            Light (Visual Studio): LIGHT_VS
+            Quiet Light          : QUIET_LIGHT
+            Solarized Light      : SOLARIZED_LIGHT
+            Abyss                : ABYSS
+            Dark (Visual Studio) : DARK_VS
+            Kimbie Dark          : KIMBIE_DARK
+            Monokai              : MONOKAI
+            Monokai Dimmed       : MONOKAI_DIMMED
+            Red                  : RED
+            Solarized Dark       : SOLARIZED_DARK
+            Tomorrow Night Blue  : TOMORROW_NIGHT_BLUE
+            Dark High Contrast   : DARK_HIGH_CONTRAST
+            stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
+        """
+
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.ui.cb_Theme.currentText()])
         QApplication.instance().setStyleSheet(stylesheet)
         self.last_saved_theme = self.ui.cb_Theme.currentText()
@@ -500,6 +526,10 @@ class MainWindow:
         #     self.loadStylesheet(self.stylesheet_filename)
 
     def serialize(self):
+        """
+
+        :return:
+        """
         # serialize home
         try:
             # open state file

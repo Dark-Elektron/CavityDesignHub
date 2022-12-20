@@ -122,7 +122,12 @@ class PlotControl:
         self.plotID_count += 1
 
     def init_abci(self, PTS, plotID):
+        """
 
+        :param PTS:
+        :param plotID:
+        :return:
+        """
         # abci
         PTS.pb_Open_Folder_ABCI.clicked.connect(lambda: self.make_abci_data(PTS))
         request_dict_long = {0: 'Longitudinal Impedance Magnitude',
@@ -176,11 +181,23 @@ class PlotControl:
             else self.populate_combobox_list(PTS.cb_Style_ABCI, scatter_marker))
 
     def init_slans(self, PTS, plotID):
+        """
+
+        :param PTS:
+        :param plotID:
+        :return:
+        """
         # slans
         PTS.pb_Open_Folder_SLANS.clicked.connect(
             lambda: self.open_(PTS.le_Folder_SLANS, PTS.cb_Polarization_SLANS, PTS.ccb_Shape_ID_SLANS, mode='Folder'))
 
     def init_other(self, PTS, plotID):
+        """
+
+        :param PTS:
+        :param plotID:
+        :return:
+        """
         # other
         PTS.pb_Open_File_Other.clicked.connect(lambda: self.open_(PTS.le_Filename, mode='File'))
         PTS.le_Filename.textChanged.connect(
@@ -188,6 +205,11 @@ class PlotControl:
                                                PTS.le_Filename.text(), plotID))
 
     def make_abci_data(self, PTS):
+        """
+
+        :param PTS:
+        :return:
+        """
         self.open_(PTS.le_Folder_ABCI, PTS.cb_Polarization_ABCI, PTS.ccb_Id_ABCI, mode='Folder')
 
         # abci data is not made on opening because it would be memory consuming to load all simulation results
@@ -200,6 +222,12 @@ class PlotControl:
         pass
 
     def make_plot_object(self, PTS, plotID):
+        """
+
+        :param PTS:
+        :param plotID:
+        :return:
+        """
         if PTS.cb_code.currentText() == "abci":
             self.make_abci_plot_object(plotID)
         elif PTS.cb_code.currentText() == "slans":
@@ -611,6 +639,11 @@ class PlotControl:
         self.update_labels()
 
     def plot_impedance(self, plot_dict):  # , i, plot_count
+        """
+
+        :param plot_dict:
+        :return:
+        """
         args = plot_dict["plot inputs"]
         ids = [a.strip() for a in args['Id'].currentText().split(',')]  # get list
         pol = args['Polarization'].currentText()
@@ -782,6 +815,11 @@ class PlotControl:
             # plot_count += 1
 
     def make_abci_plot(self, pid):
+        """
+
+        :param pid:
+        :return:
+        """
         # check state of switch
         print_("It's here000")
         switch = self.plot_dict[pid]["plot inputs"]["Toggle"]
@@ -1308,7 +1346,12 @@ class PlotControl:
         self.create_new_row(0, self.ui.tableWidget)
 
     def create_new_row(self, row_ind, table):
+        """
 
+        :param row_ind:
+        :param table:
+        :return:
+        """
         # Toggle on/off
         w_Toggle_Close = QWidget()
         l_Toggle_Close_Widget = QHBoxLayout()
