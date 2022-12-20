@@ -766,7 +766,8 @@ def arcTo(x_center, y_center, a, b, step, start, end):
 
     return inbox
 
+if __name__ == '__main__':
 
-# drawCavity()
-drawCavity_flat_top()
-# drawCapacitor()
+    # drawCavity()
+    drawCavity_flat_top()
+    # drawCapacitor()

@@ -171,18 +171,19 @@ def ea(self, df, obj, constraints, n):
         return
 
 
-f1_arr, f2_arr = [], []
-for x in np.linspace(-0.5, 1.5, 1000):
-    for y in np.linspace(-0.5, 1.5, 100):
-        f1 = (x-1)**2 + 3*(y-1)**2
-        f2 = 4*x**2 + y**2 + x*y
+if __name__ == '__main__':
 
-        f1_arr.append(f1)
-        f2_arr.append(f2)
+    f1_arr, f2_arr = [], []
+    for x in np.linspace(-0.5, 1.5, 1000):
+        for y in np.linspace(-0.5, 1.5, 100):
+            f1 = (x-1)**2 + 3*(y-1)**2
+            f2 = 4*x**2 + y**2 + x*y
 
+            f1_arr.append(f1)
+            f2_arr.append(f2)
 
-f1_p, f2_p = pareto_front(f1_arr, f2_arr)
+    f1_p, f2_p = pareto_front(f1_arr, f2_arr)
 
-import matplotlib.pyplot as plt
-plt.scatter(f1_p, f2_p, s=5)
-plt.show()
+    import matplotlib.pyplot as plt
+    plt.scatter(f1_p, f2_p, s=5)
+    plt.show()

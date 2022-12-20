@@ -1,0 +1,161 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEMCodesHub.node_editor.node_graphics_socket &#8212; CavityHub 0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_graphics_socket</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CEMCodesHub.node_editor.node_graphics_socket</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing Graphics representation of a :class:`~node_editor.node_socket.Socket`</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QGraphicsItem</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="kn">import</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QBrush</span><span class="p">,</span> <span class="n">QPen</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QRectF</span>
+
+<span class="n">SOCKET_COLORS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FFFF7700&quot;</span><span class="p">),</span>
+    <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FF52e220&quot;</span><span class="p">),</span>
+    <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FF0056a6&quot;</span><span class="p">),</span>
+    <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FFa86db1&quot;</span><span class="p">),</span>
+    <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FFb54747&quot;</span><span class="p">),</span>
+    <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FFdbe220&quot;</span><span class="p">),</span>
+    <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FF888888&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+
+<div class="viewcode-block" id="QDMGraphicsSocket"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_socket.QDMGraphicsSocket">[docs]</a><span class="k">class</span> <span class="nc">QDMGraphicsSocket</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class representing Graphic `Socket` in ``QGraphicsScene``&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span><span class="s1">&#39;Socket&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param socket: reference to :class:`~node_editor.node_socket.Socket`</span>
+<span class="sd">        :type socket: :class:`~nodeeditor.node_socket.Socket`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">grNode</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">=</span> <span class="mf">6.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outline_width</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initAssets</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">socket_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">socket_type</span>
+
+<div class="viewcode-block" id="QDMGraphicsSocket.getSocketColor"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_socket.QDMGraphicsSocket.getSocketColor">[docs]</a>    <span class="k">def</span> <span class="nf">getSocketColor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the ``QColor`` for this ``key``&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span> <span class="k">return</span> <span class="n">SOCKET_COLORS</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span> <span class="k">return</span> <span class="n">QColor</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Qt</span><span class="o">.</span><span class="n">transparent</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsSocket.changeSocketType"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_socket.QDMGraphicsSocket.changeSocketType">[docs]</a>    <span class="k">def</span> <span class="nf">changeSocketType</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change the Socket Type&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSocketColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socket_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_brush</span> <span class="o">=</span> <span class="n">QBrush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span><span class="p">)</span>
+        <span class="c1"># print(&quot;Socket changed to:&quot;, self._color_background.getRgbF())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsSocket.initAssets"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_socket.QDMGraphicsSocket.initAssets">[docs]</a>    <span class="k">def</span> <span class="nf">initAssets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize ``QObjects`` like ``QColor``, ``QPen`` and ``QBrush``&quot;&quot;&quot;</span>
+
+        <span class="c1"># determine socket color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSocketColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socket_type</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_outline</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FF000000&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_highlight</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FF37A6FF&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_outline</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span><span class="o">.</span><span class="n">setWidthF</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outline_width</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_highlight</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_highlight</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_highlight</span><span class="o">.</span><span class="n">setWidthF</span><span class="p">(</span><span class="mf">2.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_brush</span> <span class="o">=</span> <span class="n">QBrush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_background</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsSocket.paint"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_socket.QDMGraphicsSocket.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">QStyleOptionGraphicsItem</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Painting a circle&quot;&quot;&quot;</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_brush</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pen</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pen_highlight</span><span class="p">)</span>
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawEllipse</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsSocket.boundingRect"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_socket.QDMGraphicsSocket.boundingRect">[docs]</a>    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QRectF</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Defining Qt&#39; bounding rectangle&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">QRectF</span><span class="p">(</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">outline_width</span><span class="p">,</span>
+            <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">outline_width</span><span class="p">,</span>
+            <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">outline_width</span><span class="p">),</span>
+            <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">radius</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">outline_width</span><span class="p">),</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_graphics_socket</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Sosoho-abasi Udongwo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

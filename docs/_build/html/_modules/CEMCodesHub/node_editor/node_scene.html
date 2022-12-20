@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEMCodesHub.node_editor.node_scene &#8212; CavityHub 0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_scene</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CEMCodesHub.node_editor.node_scene</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the representation of the NodeEditor&#39;s Scene</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">node_editor.utils</span> <span class="kn">import</span> <span class="n">dumpException</span><span class="p">,</span> <span class="n">pp</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_serializable</span> <span class="kn">import</span> <span class="n">Serializable</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_graphics_scene</span> <span class="kn">import</span> <span class="n">QDMGraphicsScene</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_node</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_edge</span> <span class="kn">import</span> <span class="n">Edge</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_scene_history</span> <span class="kn">import</span> <span class="n">SceneHistory</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_scene_clipboard</span> <span class="kn">import</span> <span class="n">SceneClipboard</span>
+
+
+<span class="n">DEBUG_REMOVE_WARNINGS</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="InvalidFile"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.InvalidFile">[docs]</a><span class="k">class</span> <span class="nc">InvalidFile</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span> <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="Scene"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene">[docs]</a><span class="k">class</span> <span class="nc">Scene</span><span class="p">(</span><span class="n">Serializable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class representing NodeEditor&#39;s `Scene`&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :Instance Attributes:</span>
+
+<span class="sd">            - **nodes** - list of `Nodes` in this `Scene`</span>
+<span class="sd">            - **edges** - list of `Edges` in this `Scene`</span>
+<span class="sd">            - **history** - Instance of :class:`~node_editor.node_scene_history.SceneHistory`</span>
+<span class="sd">            - **clipboard** - Instance of :class:`~node_editor.node_scene_clipboard.SceneClipboard`</span>
+<span class="sd">            - **scene_width** - width of this `Scene` in pixels</span>
+<span class="sd">            - **scene_height** - height of this `Scene` in pixels</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># current filename assigned to this scene</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene_width</span> <span class="o">=</span> <span class="mi">64000</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene_height</span> <span class="o">=</span> <span class="mi">64000</span>
+
+        <span class="c1"># custom flag used to suppress triggering onItemSelected which does a bunch of stuff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_silent_selection_events</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_items</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># initialize all listeners</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified_listeners</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_selected_listeners</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items_deselected_listeners</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># here we can store callback for retrieving the class for Nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_class_selector</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="n">SceneHistory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clipboard</span> <span class="o">=</span> <span class="n">SceneClipboard</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">itemSelected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onItemSelected</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">itemsDeselected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">onItemsDeselected</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">has_been_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Has this `Scene` been modified?</span>
+
+<span class="sd">        :getter: ``True`` if the `Scene` has been modified</span>
+<span class="sd">        :setter: set new state. Triggers `Has Been Modified` event</span>
+<span class="sd">        :type: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified</span>
+
+    <span class="nd">@has_been_modified</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">has_been_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified</span> <span class="ow">and</span> <span class="n">value</span><span class="p">:</span>
+            <span class="c1"># set it now, because we will be reading it soon</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified</span> <span class="o">=</span> <span class="n">value</span>
+
+            <span class="c1"># call all registered listeners</span>
+            <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified_listeners</span><span class="p">:</span> <span class="n">callback</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified</span> <span class="o">=</span> <span class="n">value</span>
+
+<div class="viewcode-block" id="Scene.initUI"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.initUI">[docs]</a>    <span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up Graphics Scene Instance&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span> <span class="o">=</span> <span class="n">QDMGraphicsScene</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">setGrScene</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_height</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.getNodeByID"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.getNodeByID">[docs]</a>    <span class="k">def</span> <span class="nf">getNodeByID</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find node in the scene according to provided `node_id`</span>
+
+<span class="sd">        :param node_id: ID of the node we are looking for</span>
+<span class="sd">        :type node_id: ``int``</span>
+<span class="sd">        :return: Found ``Node`` or ``None``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">node_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">node</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Scene.setSilentSelectionEvents"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.setSilentSelectionEvents">[docs]</a>    <span class="k">def</span> <span class="nf">setSilentSelectionEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calling this can suppress onItemSelected events to be triggered. This is useful when working with clipboard&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_silent_selection_events</span> <span class="o">=</span> <span class="n">value</span></div>
+
+<div class="viewcode-block" id="Scene.onItemSelected"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.onItemSelected">[docs]</a>    <span class="k">def</span> <span class="nf">onItemSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle Item selection and trigger event `Item Selected`</span>
+
+<span class="sd">        :param silent: If ``True`` scene&#39;s onItemSelected won&#39;t be called and history stamp not stored</span>
+<span class="sd">        :type silent: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_silent_selection_events</span><span class="p">:</span> <span class="k">return</span>
+
+        <span class="n">current_selected_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSelectedItems</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_selected_items</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_items</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_items</span> <span class="o">=</span> <span class="n">current_selected_items</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+                <span class="c1"># we could create some kind of UI which could be serialized,</span>
+                <span class="c1"># therefore first run all callbacks...</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_item_selected_listeners</span><span class="p">:</span> <span class="n">callback</span><span class="p">()</span>
+                <span class="c1"># and store history as a last step always</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">storeHistory</span><span class="p">(</span><span class="s2">&quot;Selection Changed&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.onItemsDeselected"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.onItemsDeselected">[docs]</a>    <span class="k">def</span> <span class="nf">onItemsDeselected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Handle Items deselection and trigger event `Items Deselected`</span>
+
+<span class="sd">        :param silent: If ``True`` scene&#39;s onItemsDeselected won&#39;t be called and history stamp not stored</span>
+<span class="sd">        :type silent: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># somehow this event is being triggered when we start dragging file outside of our application</span>
+        <span class="c1"># or we just loose focus on our app? -- which does not mean we&#39;ve deselected item in the scene!</span>
+        <span class="c1"># double check if the selection has actually changed, since</span>
+        <span class="n">current_selected_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSelectedItems</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_selected_items</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_items</span><span class="p">:</span>
+            <span class="c1"># print(&quot;Qt itemsDeselected Invalid Event! Ignoring&quot;)</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetLastSelectedStates</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">current_selected_items</span> <span class="o">==</span> <span class="p">[]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_items</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">storeHistory</span><span class="p">(</span><span class="s2">&quot;Deselected Everything&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items_deselected_listeners</span><span class="p">:</span> <span class="n">callback</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Scene.isModified"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.isModified">[docs]</a>    <span class="k">def</span> <span class="nf">isModified</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Is this `Scene` dirty aka `has been modified` ?</span>
+
+<span class="sd">        :return: ``True`` if `Scene` has been modified</span>
+<span class="sd">        :rtype: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_been_modified</span></div>
+
+<div class="viewcode-block" id="Scene.getSelectedItems"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.getSelectedItems">[docs]</a>    <span class="k">def</span> <span class="nf">getSelectedItems</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns currently selected Graphics Items</span>
+
+<span class="sd">        :return: list of ``QGraphicsItems``</span>
+<span class="sd">        :rtype: list[QGraphicsItem]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Scene.doDeselectItems"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.doDeselectItems">[docs]</a>    <span class="k">def</span> <span class="nf">doDeselectItems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deselects everything in scene</span>
+
+<span class="sd">        :param silent: If ``True`` scene&#39;s onItemsDeselected won&#39;t be called</span>
+<span class="sd">        :type silent: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSelectedItems</span><span class="p">():</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setSelected</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">silent</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onItemsDeselected</span><span class="p">()</span></div>
+
+    <span class="c1"># our helper listener functions</span>
+<div class="viewcode-block" id="Scene.addHasBeenModifiedListener"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.addHasBeenModifiedListener">[docs]</a>    <span class="k">def</span> <span class="nf">addHasBeenModifiedListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register callback for `Has Been Modified` event</span>
+
+<span class="sd">        :param callback: callback function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_has_been_modified_listeners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.addItemSelectedListener"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.addItemSelectedListener">[docs]</a>    <span class="k">def</span> <span class="nf">addItemSelectedListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register callback for `Item Selected` event</span>
+
+<span class="sd">        :param callback: callback function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_item_selected_listeners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.addItemsDeselectedListener"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.addItemsDeselectedListener">[docs]</a>    <span class="k">def</span> <span class="nf">addItemsDeselectedListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register callback for `Items Deselected` event</span>
+
+<span class="sd">        :param callback: callback function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items_deselected_listeners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.addDragEnterListener"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.addDragEnterListener">[docs]</a>    <span class="k">def</span> <span class="nf">addDragEnterListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register callback for `Drag Enter` event</span>
+
+<span class="sd">        :param callback: callback function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getView</span><span class="p">()</span><span class="o">.</span><span class="n">addDragEnterListener</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.addDropListener"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.addDropListener">[docs]</a>    <span class="k">def</span> <span class="nf">addDropListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register callback for `Drop` event</span>
+
+<span class="sd">        :param callback: callback function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">getView</span><span class="p">()</span><span class="o">.</span><span class="n">addDropListener</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+    <span class="c1"># custom flag to detect node or edge has been selected....</span>
+<div class="viewcode-block" id="Scene.resetLastSelectedStates"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.resetLastSelectedStates">[docs]</a>    <span class="k">def</span> <span class="nf">resetLastSelectedStates</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resets internal `selected flags` in all `Nodes` and `Edges` in the `Scene`&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">_last_selected_state</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">_last_selected_state</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Scene.getView"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.getView">[docs]</a>    <span class="k">def</span> <span class="nf">getView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;QGraphicsView&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Shortcut for returning `Scene` ``QGraphicsView``</span>
+
+<span class="sd">        :return: ``QGraphicsView`` attached to the `Scene`</span>
+<span class="sd">        :rtype: ``QGraphicsView``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">views</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Scene.getItemAt"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.getItemAt">[docs]</a>    <span class="k">def</span> <span class="nf">getItemAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">:</span> <span class="s1">&#39;QPointF&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shortcut for retrieving item at provided `Scene` position</span>
+
+<span class="sd">        :param pos: scene position</span>
+<span class="sd">        :type pos: ``QPointF``</span>
+<span class="sd">        :return: Qt Graphics Item at scene position</span>
+<span class="sd">        :rtype: ``QGraphicsItem``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getView</span><span class="p">()</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.addNode"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.addNode">[docs]</a>    <span class="k">def</span> <span class="nf">addNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add :class:`~node_editor.node_node.Node` to this `Scene`</span>
+
+<span class="sd">        :param node: :class:`~node_editor.node_node.Node` to be added to this `Scene`</span>
+<span class="sd">        :type node: :class:`~nodeeditor.node_node.Node`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.addEdge"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.addEdge">[docs]</a>    <span class="k">def</span> <span class="nf">addEdge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">Edge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add :class:`~node_editor.node_edge.Edge` to this `Scene`</span>
+
+<span class="sd">        :param edge: :class:`~node_editor.node_edge.Edge` to be added to this `Scene`</span>
+<span class="sd">        :return: :class:`~node_editor.node_edge.Edge`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.removeNode"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.removeNode">[docs]</a>    <span class="k">def</span> <span class="nf">removeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove :class:`~node_editor.node_node.Node` from this `Scene`</span>
+
+<span class="sd">        :param node: :class:`~node_editor.node_node.Node` to be removed from this `Scene`</span>
+<span class="sd">        :type node: :class:`~nodeeditor.node_node.Node`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">DEBUG_REMOVE_WARNINGS</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!W:&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene::removeNode&quot;</span><span class="p">,</span> <span class="s2">&quot;wanna remove node_editor&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span>
+                                            <span class="s2">&quot;from self.nodes but it&#39;s not in the list!&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.removeEdge"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.removeEdge">[docs]</a>    <span class="k">def</span> <span class="nf">removeEdge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">Edge</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove :class:`~node_editor.node_edge.Edge` from this `Scene`</span>
+
+<span class="sd">        :param edge: :class:`~node_editor.node_edge.Edge` to be remove from this `Scene`</span>
+<span class="sd">        :return: :class:`~node_editor.node_edge.Edge`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">DEBUG_REMOVE_WARNINGS</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;!W:&quot;</span><span class="p">,</span> <span class="s2">&quot;Scene::removeEdge&quot;</span><span class="p">,</span> <span class="s2">&quot;wanna remove edge&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span>
+                                            <span class="s2">&quot;from self.edges but it&#39;s not in the list!&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Scene.clear"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove all `Nodes` from this `Scene`. This causes also to remove all `Edges`&quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_been_modified</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Scene.saveToFile"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.saveToFile">[docs]</a>    <span class="k">def</span> <span class="nf">saveToFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save this `Scene` to the file on disk.</span>
+
+<span class="sd">        :param filename: where to save this scene</span>
+<span class="sd">        :type filename: ``str``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">serialize</span><span class="p">(),</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span> <span class="p">)</span> <span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;saving to&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;was successfull.&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">has_been_modified</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span></div>
+
+<div class="viewcode-block" id="Scene.loadFromFile"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.loadFromFile">[docs]</a>    <span class="k">def</span> <span class="nf">loadFromFile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load `Scene` from a file on disk</span>
+
+<span class="sd">        :param filename: from what file to load the `Scene`</span>
+<span class="sd">        :type filename: ``str``</span>
+<span class="sd">        :raises: :class:`~node_editor.node_scene.InvalidFile` if there was an error decoding JSON file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">has_been_modified</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">except</span> <span class="n">json</span><span class="o">.</span><span class="n">JSONDecodeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidFile</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not a valid JSON file&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">dumpException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.getEdgeClass"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.getEdgeClass">[docs]</a>    <span class="k">def</span> <span class="nf">getEdgeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the class representing Edge. Override me if needed&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Edge</span></div>
+
+<div class="viewcode-block" id="Scene.setNodeClassSelector"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.setNodeClassSelector">[docs]</a>    <span class="k">def</span> <span class="nf">setNodeClassSelector</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">class_selecting_function</span><span class="p">:</span> <span class="s1">&#39;functon&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Node class type&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the function which decides what `Node` class to instantiate when deserializing `Scene`.</span>
+<span class="sd">        If not set, we will always instantiate :class:`~node_editor.node_node.Node` for each `Node` in the `Scene`</span>
+
+<span class="sd">        :param class_selecting_function: function which returns `Node` class type (not instance) from `Node` serialized ``dict`` data</span>
+<span class="sd">        :type class_selecting_function: ``function``</span>
+<span class="sd">        :return: Class Type of `Node` to be instantiated during deserialization</span>
+<span class="sd">        :rtype: `Node` class type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_class_selector</span> <span class="o">=</span> <span class="n">class_selecting_function</span></div>
+
+<div class="viewcode-block" id="Scene.getNodeClassFromData"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.getNodeClassFromData">[docs]</a>    <span class="k">def</span> <span class="nf">getNodeClassFromData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;Node class instance&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes `Node` serialized data and determines which `Node Class` to instantiate according the description</span>
+<span class="sd">        in the serialized Node</span>
+
+<span class="sd">        :param data: serialized `Node` object data</span>
+<span class="sd">        :type data: ``dict``</span>
+<span class="sd">        :return: Instance of `Node` class to be used in this Scene</span>
+<span class="sd">        :rtype: `Node` class instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Node</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_class_selector</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_class_selector</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Scene.serialize"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+        <span class="n">nodes</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span> <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([</span>
+            <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;scene_width&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_width</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;scene_height&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_height</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;nodes&#39;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;edges&#39;</span><span class="p">,</span> <span class="n">edges</span><span class="p">),</span>
+        <span class="p">])</span></div>
+
+<div class="viewcode-block" id="Scene.deserialize"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_scene.Scene.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">restore_id</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">hashmap</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">if</span> <span class="n">restore_id</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+
+        <span class="c1"># -- deserialize NODES</span>
+
+        <span class="c1">## Instead of recreating all the nodes, reuse existing ones...</span>
+        <span class="c1"># get list of all current nodes:</span>
+        <span class="n">all_nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># go through deserialized nodes:</span>
+        <span class="k">for</span> <span class="n">node_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;nodes&#39;</span><span class="p">]:</span>
+            <span class="c1"># can we find this node in the scene?</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">all_nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">node_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="n">node</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">new_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeClassFromData</span><span class="p">(</span><span class="n">node_data</span><span class="p">)(</span><span class="bp">self</span><span class="p">)</span>
+                    <span class="n">new_node</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">node_data</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">,</span> <span class="n">restore_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">new_node</span><span class="o">.</span><span class="n">onDeserialized</span><span class="p">(</span><span class="n">node_data</span><span class="p">)</span>
+                    <span class="c1"># print(&quot;New node for&quot;, node_data[&#39;title&#39;])</span>
+                <span class="k">except</span><span class="p">:</span>
+                    <span class="n">dumpException</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">found</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">node_data</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">,</span> <span class="n">restore_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                    <span class="n">found</span><span class="o">.</span><span class="n">onDeserialized</span><span class="p">(</span><span class="n">node_data</span><span class="p">)</span>
+                    <span class="n">all_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">found</span><span class="p">)</span>
+                    <span class="c1"># print(&quot;Reused&quot;, node_data[&#39;title&#39;])</span>
+                <span class="k">except</span><span class="p">:</span> <span class="n">dumpException</span><span class="p">()</span>
+
+        <span class="c1"># remove nodes which are left in the scene and were NOT in the serialized data!</span>
+        <span class="c1"># that means they were not in the graph before...</span>
+        <span class="k">while</span> <span class="n">all_nodes</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="n">all_nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+
+        <span class="c1"># -- deserialize EDGES</span>
+
+
+        <span class="c1">## Instead of recreating all the edges, reuse existing ones...</span>
+        <span class="c1"># get list of all current edges:</span>
+        <span class="n">all_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># go through deserialized edges:</span>
+        <span class="k">for</span> <span class="n">edge_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;edges&#39;</span><span class="p">]:</span>
+            <span class="c1"># can we find this node in the scene?</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">all_edges</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">edge_data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]:</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="n">edge</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                <span class="n">new_edge</span> <span class="o">=</span> <span class="n">Edge</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">edge_data</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">,</span> <span class="n">restore_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="c1"># print(&quot;New edge for&quot;, edge_data)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">edge_data</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">,</span> <span class="n">restore_id</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="n">all_edges</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">found</span><span class="p">)</span>
+
+        <span class="c1"># remove nodes which are left in the scene and were NOT in the serialized data!</span>
+        <span class="c1"># that means they were not in the graph before...</span>
+        <span class="k">while</span> <span class="n">all_edges</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="n">all_edges</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_scene</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Sosoho-abasi Udongwo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

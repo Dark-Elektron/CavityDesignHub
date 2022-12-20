@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEMCodesHub.node_editor.node_graphics_edge &#8212; CavityHub 0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_graphics_edge</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CEMCodesHub.node_editor.node_graphics_edge</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the Graphics representation of an Edge</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QGraphicsPathItem</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> <span class="n">QGraphicsItem</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="kn">import</span> <span class="n">QColor</span><span class="p">,</span> <span class="n">QPen</span><span class="p">,</span> <span class="n">QPainterPath</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QRectF</span><span class="p">,</span> <span class="n">QPointF</span>
+
+<span class="kn">from</span> <span class="nn">node_editor.node_graphics_edge_path</span> <span class="kn">import</span> <span class="n">GraphicsEdgePathBezier</span><span class="p">,</span> <span class="n">GraphicsEdgePathDirect</span><span class="p">,</span> <span class="n">GraphicsEdgePathSquare</span>
+
+
+<div class="viewcode-block" id="QDMGraphicsEdge"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge">[docs]</a><span class="k">class</span> <span class="nc">QDMGraphicsEdge</span><span class="p">(</span><span class="n">QGraphicsPathItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for Graphics Edge&quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span><span class="s1">&#39;Edge&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span><span class="n">QWidget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param edge: reference to :class:`~node_editor.node_edge.Edge`</span>
+<span class="sd">        :type edge: :class:`~nodeeditor.node_edge.Edge`</span>
+<span class="sd">        :param parent: parent widget</span>
+<span class="sd">        :type parent: ``QWidget``</span>
+
+<span class="sd">        :Instance attributes:</span>
+
+<span class="sd">            - **edge** - reference to :class:`~node_editor.node_edge.Edge`</span>
+<span class="sd">            - **posSource** - ``[x, y]`` source position in the `Scene`</span>
+<span class="sd">            - **posDestination** - ``[x, y]`` destination position in the `Scene`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">=</span> <span class="n">edge</span>
+
+        <span class="c1"># create instance of our path class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathCalculator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">determineEdgePathClass</span><span class="p">()(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># init our flags</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_state</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hovered</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># init our variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posSource</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posDestination</span> <span class="o">=</span> <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initAssets</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.initUI"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.initUI">[docs]</a>    <span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up this ``QGraphicsPathItem``&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsSelectable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptHoverEvents</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setZValue</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.initAssets"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.initAssets">[docs]</a>    <span class="k">def</span> <span class="nf">initAssets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize ``QObjects`` like ``QColor``, ``QPen`` and ``QBrush``&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_default_color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#001000&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_selected</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#00ff00&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_hovered</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#FF37A6FF&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_selected</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_selected</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_dragging</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_hovered</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_hovered</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_dragging</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">DashLine</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span><span class="o">.</span><span class="n">setWidthF</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_selected</span><span class="o">.</span><span class="n">setWidthF</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_dragging</span><span class="o">.</span><span class="n">setWidthF</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen_hovered</span><span class="o">.</span><span class="n">setWidthF</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.createEdgePathCalculator"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.createEdgePathCalculator">[docs]</a>    <span class="k">def</span> <span class="nf">createEdgePathCalculator</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create instance of :class:`~node_editor.node_graphics_edge_path.GraphicsEdgePathBase`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pathCalculator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">determineEdgePathClass</span><span class="p">()(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathCalculator</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.determineEdgePathClass"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.determineEdgePathClass">[docs]</a>    <span class="k">def</span> <span class="nf">determineEdgePathClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Decide which GraphicsEdgePath class should be used to calculate path according to edge.edge_type value&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">node_editor.node_edge</span> <span class="kn">import</span> <span class="n">EDGE_TYPE_BEZIER</span><span class="p">,</span> <span class="n">EDGE_TYPE_DIRECT</span><span class="p">,</span> <span class="n">EDGE_TYPE_SQUARE</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">edge_type</span> <span class="o">==</span> <span class="n">EDGE_TYPE_BEZIER</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GraphicsEdgePathBezier</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">edge_type</span> <span class="o">==</span> <span class="n">EDGE_TYPE_DIRECT</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GraphicsEdgePathDirect</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">edge_type</span> <span class="o">==</span> <span class="n">EDGE_TYPE_SQUARE</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GraphicsEdgePathSquare</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">GraphicsEdgePathBezier</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.makeUnselectable"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.makeUnselectable">[docs]</a>    <span class="k">def</span> <span class="nf">makeUnselectable</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Used for drag edge to disable click detection over this graphics item&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFlag</span><span class="p">(</span><span class="n">QGraphicsItem</span><span class="o">.</span><span class="n">ItemIsSelectable</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptHoverEvents</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.changeColor"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.changeColor">[docs]</a>    <span class="k">def</span> <span class="nf">changeColor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change color of the edge from string hex value &#39;#00ff00&#39;&quot;&quot;&quot;</span>
+        <span class="c1"># print(&quot;^Called change color to:&quot;, color.red(), color.green(), color.blue(), &quot;on edge:&quot;, self.edge)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">color</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span> <span class="k">else</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span> <span class="o">=</span> <span class="n">QPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_pen</span><span class="o">.</span><span class="n">setWidthF</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.setColorFromSockets"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.setColorFromSockets">[docs]</a>    <span class="k">def</span> <span class="nf">setColorFromSockets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Change color according to connected sockets. Returns ``True`` if color can be determined&quot;&quot;&quot;</span>
+        <span class="n">socket_type_start</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">socket_type</span>
+        <span class="n">socket_type_end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span><span class="o">.</span><span class="n">socket_type</span>
+        <span class="k">if</span> <span class="n">socket_type_start</span> <span class="o">!=</span> <span class="n">socket_type_end</span><span class="p">:</span> <span class="k">return</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">changeColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">grSocket</span><span class="o">.</span><span class="n">getSocketColor</span><span class="p">(</span><span class="n">socket_type_start</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.onSelected"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.onSelected">[docs]</a>    <span class="k">def</span> <span class="nf">onSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Our event handling when the edge was selected&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">itemSelected</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.doSelect"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.doSelect">[docs]</a>    <span class="k">def</span> <span class="nf">doSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Safe version of selecting the `Graphics Node`. Takes care about the selection state flag used internally</span>
+
+<span class="sd">        :param new_state: ``True`` to select, ``False`` to deselect</span>
+<span class="sd">        :type new_state: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSelected</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_state</span> <span class="o">=</span> <span class="n">new_state</span>
+        <span class="k">if</span> <span class="n">new_state</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">onSelected</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.mouseReleaseEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.mouseReleaseEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseReleaseEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overridden Qt&#39;s method to handle selecting and deselecting this `Graphics Edge`&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_state</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSelected</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">resetLastSelectedStates</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_last_selected_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSelected</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">onSelected</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.hoverEnterEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.hoverEnterEvent">[docs]</a>    <span class="k">def</span> <span class="nf">hoverEnterEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="s1">&#39;QGraphicsSceneHoverEvent&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle hover effect&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hovered</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.hoverLeaveEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.hoverLeaveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">hoverLeaveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="s1">&#39;QGraphicsSceneHoverEvent&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Handle hover effect&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hovered</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.setSource"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.setSource">[docs]</a>    <span class="k">def</span> <span class="nf">setSource</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set source point</span>
+
+<span class="sd">        :param x: x position</span>
+<span class="sd">        :type x: ``float``</span>
+<span class="sd">        :param y: y position</span>
+<span class="sd">        :type y: ``float``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posSource</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.setDestination"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.setDestination">[docs]</a>    <span class="k">def</span> <span class="nf">setDestination</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Set destination point</span>
+
+<span class="sd">        :param x: x position</span>
+<span class="sd">        :type x: ``float``</span>
+<span class="sd">        :param y: y position</span>
+<span class="sd">        :type y: ``float``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">posDestination</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.boundingRect"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.boundingRect">[docs]</a>    <span class="k">def</span> <span class="nf">boundingRect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QRectF</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Defining Qt&#39; bounding rectangle&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">()</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.shape"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.shape">[docs]</a>    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QPainterPath</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns ``QPainterPath`` representation of this `Edge`</span>
+
+<span class="sd">        :return: path representation</span>
+<span class="sd">        :rtype: ``QPainterPath``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcPath</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.paint"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.paint">[docs]</a>    <span class="k">def</span> <span class="nf">paint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">QStyleOptionGraphicsItem</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Qt&#39;s overridden method to paint this Graphics Edge. Path calculated</span>
+<span class="sd">            in :func:`~node_editor.node_graphics_edge.QDMGraphicsEdge.calcPath` method&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">calcPath</span><span class="p">())</span>
+
+        <span class="n">painter</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoBrush</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hovered</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pen_hovered</span><span class="p">)</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">drawPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pen_dragging</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">painter</span><span class="o">.</span><span class="n">setPen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_pen</span> <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSelected</span><span class="p">()</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pen_selected</span><span class="p">)</span>
+
+        <span class="n">painter</span><span class="o">.</span><span class="n">drawPath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.intersectsWith"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.intersectsWith">[docs]</a>    <span class="k">def</span> <span class="nf">intersectsWith</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">:</span><span class="n">QPointF</span><span class="p">,</span> <span class="n">p2</span><span class="p">:</span><span class="n">QPointF</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Does this Graphics Edge intersect with the line between point A and point B ?</span>
+
+<span class="sd">        :param p1: point A</span>
+<span class="sd">        :type p1: ``QPointF``</span>
+<span class="sd">        :param p2: point B</span>
+<span class="sd">        :type p2: ``QPointF``</span>
+<span class="sd">        :return: ``True`` if this `Graphics Edge` intersects</span>
+<span class="sd">        :rtype: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cutpath</span> <span class="o">=</span> <span class="n">QPainterPath</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+        <span class="n">cutpath</span><span class="o">.</span><span class="n">lineTo</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calcPath</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">cutpath</span><span class="o">.</span><span class="n">intersects</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsEdge.calcPath"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_edge.QDMGraphicsEdge.calcPath">[docs]</a>    <span class="k">def</span> <span class="nf">calcPath</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QPainterPath</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Will handle drawing QPainterPath from Point A to B. Internally there exist self.pathCalculator which</span>
+<span class="sd">        is an instance of derived :class:`~node_editor.node_graphics_edge_path.GraphicsEdgePathBase` class</span>
+<span class="sd">        containing the actual `calcPath()` function - computing how the edge should look like.</span>
+
+<span class="sd">        :returns: ``QPainterPath`` of the edge connecting `source` and `destination`</span>
+<span class="sd">        :rtype: ``QPainterPath``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pathCalculator</span><span class="o">.</span><span class="n">calcPath</span><span class="p">()</span></div></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_graphics_edge</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Sosoho-abasi Udongwo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

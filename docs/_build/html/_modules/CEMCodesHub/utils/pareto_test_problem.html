@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEMCodesHub.utils.pareto_test_problem &#8212; CavityHub 0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.utils.pareto_test_problem</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CEMCodesHub.utils.pareto_test_problem</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">oapackage</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">icecream</span> <span class="kn">import</span> <span class="n">ic</span>
+
+
+<div class="viewcode-block" id="pareto_front"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.pareto_test_problem.pareto_front">[docs]</a><span class="k">def</span> <span class="nf">pareto_front</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">reverse_list</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">goal</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">goal</span> <span class="o">==</span> <span class="s1">&#39;max&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">l</span>  <span class="c1"># to find the pareto maxima</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">l</span><span class="p">]</span>  <span class="c1"># to find the pareto minima</span>
+
+    <span class="n">datapoints</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">reverse_list</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">),</span> <span class="n">reverse_list</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)])</span>
+
+    <span class="n">pareto</span> <span class="o">=</span> <span class="n">oapackage</span><span class="o">.</span><span class="n">ParetoDoubleLong</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">datapoints</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">oapackage</span><span class="o">.</span><span class="n">doubleVector</span><span class="p">((</span><span class="n">datapoints</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ii</span><span class="p">],</span> <span class="n">datapoints</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ii</span><span class="p">]))</span>
+        <span class="n">pareto</span><span class="o">.</span><span class="n">addvalue</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">ii</span><span class="p">)</span>
+    <span class="c1"># pareto.show(verbose=1)  # Prints out the results from pareto</span>
+
+    <span class="n">lst</span> <span class="o">=</span> <span class="n">pareto</span><span class="o">.</span><span class="n">allindices</span><span class="p">()</span>  <span class="c1"># the indices of the Pareto optimal designs</span>
+
+    <span class="n">optimal_datapoints</span> <span class="o">=</span> <span class="n">datapoints</span><span class="p">[:,</span> <span class="n">lst</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">reverse_list</span><span class="p">(</span><span class="n">optimal_datapoints</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="s1">&#39;min&#39;</span><span class="p">),</span> <span class="n">reverse_list</span><span class="p">(</span><span class="n">optimal_datapoints</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="s1">&#39;min&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="crossover"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.pareto_test_problem.crossover">[docs]</a><span class="k">def</span> <span class="nf">crossover</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">generation</span><span class="p">,</span> <span class="n">f</span><span class="p">):</span>  <span class="c1"># , rq, grq</span>
+    <span class="n">df_co</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+        <span class="c1"># (&lt;obj&gt;[&lt;rank&gt;][&lt;variable&gt;] -&gt; (b[c[1]][0]</span>
+
+        <span class="n">df_co</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;G</span><span class="si">{</span><span class="n">generation</span><span class="si">}</span><span class="s2">_C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_CO&quot;</span><span class="p">,</span>
+                     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">)][</span><span class="s2">&quot;x&quot;</span><span class="p">],</span>  <span class="c1"># A</span>
+                     <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">5</span><span class="p">)][</span><span class="s2">&quot;y&quot;</span><span class="p">]]</span>  <span class="c1"># B]</span>
+    <span class="k">return</span> <span class="n">df_co</span></div>
+
+
+<div class="viewcode-block" id="mutation"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.pareto_test_problem.mutation">[docs]</a><span class="k">def</span> <span class="nf">mutation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="n">df_ng_mut</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">,</span> <span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">])</span>
+    <span class="n">df_ng_mut</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;A&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;A&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+    <span class="n">df_ng_mut</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;B&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;B&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">)</span>
+
+    <span class="n">key1</span><span class="p">,</span> <span class="n">key2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">df_ng_mut</span><span class="p">)):</span>
+        <span class="n">key1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;G</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">_C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_M&quot;</span><span class="p">)</span>
+
+    <span class="n">df_ng_mut</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">key1</span>
+
+    <span class="k">return</span> <span class="n">df_ng_mut</span></div>
+
+
+<div class="viewcode-block" id="chaos"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.pareto_test_problem.chaos">[docs]</a><span class="k">def</span> <span class="nf">chaos</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;G</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">_C</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">_CH&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">f</span><span class="p">)],</span>
+                <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">f</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)),</span> <span class="n">f</span><span class="p">),</span>
+                <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">f</span> <span class="o">*</span> <span class="mi">10</span><span class="p">)),</span> <span class="n">f</span><span class="p">)}</span>
+
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="ea"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.pareto_test_problem.ea">[docs]</a><span class="k">def</span> <span class="nf">ea</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">constraints</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+    <span class="c1"># optimize by page rank</span>
+    <span class="c1"># remove the lowest ranking members</span>
+
+    <span class="c1"># compare with global dict and remove duplicates</span>
+    <span class="n">compared_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_global</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">compared_cols</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df_global</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">compared_cols</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>  <span class="c1"># this line of code removes duplicates</span>
+
+    <span class="c1"># replace Req with tuned Req</span>
+    <span class="n">df</span><span class="p">[[</span><span class="s1">&#39;f1&#39;</span><span class="p">,</span> <span class="s1">&#39;f2&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span><span class="p">]</span>
+
+    <span class="c1">######################################################</span>
+    <span class="c1"># filter by constraints</span>
+    <span class="k">for</span> <span class="n">const</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">constraints</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">const</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&gt;&#39;</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]))]</span>
+        <span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&lt;&#39;</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]))]</span>
+        <span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&lt;=&#39;</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]))]</span>
+        <span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;&gt;=&#39;</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]))]</span>
+        <span class="k">elif</span> <span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;==&#39;</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">[</span><span class="mi">2</span><span class="p">]))]</span>
+
+    <span class="c1"># update with global dataframe</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">df_global</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">df_global</span><span class="p">,</span> <span class="n">df</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># reset total rank</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;total_rank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="c1"># rank shapes by objectives</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">objectives</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;min&quot;</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;rank_</span><span class="si">{</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">rank</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;max&quot;</span><span class="p">:</span>
+            <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;rank_</span><span class="si">{</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">rank</span><span class="p">(</span><span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;equal&quot;</span><span class="p">:</span>  <span class="c1"># define properly later</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># if &#39;total_rank&#39; in df.columns:</span>
+        <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;total_rank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;total_rank&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;rank_</span><span class="si">{</span><span class="n">obj</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
+
+    <span class="c1"># reorder</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">tot</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;total_rank&#39;</span><span class="p">)</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">tot</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;total_rank&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tot</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weights</span><span class="p">)</span>  <span class="c1"># normalize by sum of weights</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="c1"># order shapes by rank</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;total_rank&#39;</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># pareto condition</span>
+    <span class="n">reorder_indx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pareto_front</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reorder_indx</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+
+    <span class="c1"># update global</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuneUI</span><span class="o">.</span><span class="n">sb_Max_Table_Size</span><span class="o">.</span><span class="n">value</span><span class="p">():</span>
+        <span class="c1"># self.df_global = df.loc[0:self.tuneUI.cb_Max_Table_Size.value(), :]</span>
+        <span class="n">df_global</span> <span class="o">=</span> <span class="n">df</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df_global</span> <span class="o">=</span> <span class="n">df</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">df_global</span><span class="p">)</span>
+
+    <span class="c1"># save dataframe</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span><span class="si">}</span><span class="s2">\SimulationData\SLANS\Generation</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">.xlsx&quot;</span>
+    <span class="n">recursive_save</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">df_global</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">reorder_indx</span><span class="p">)</span>
+
+    <span class="c1"># crossover</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Crossover&quot;</span><span class="p">)</span>
+    <span class="n">df_cross</span> <span class="o">=</span> <span class="n">crossover</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuneUI</span><span class="o">.</span><span class="n">sb_Crossover_Factor</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>  <span class="c1"># , elites[&quot;GR/Q</span>
+    <span class="c1"># ic(df_cross)</span>
+
+    <span class="c1"># mutation</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mutation&quot;</span><span class="p">)</span>
+    <span class="n">df_mutation</span> <span class="o">=</span> <span class="n">mutation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="c1"># ic(df_mutation)</span>
+
+    <span class="c1"># chaos</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Chaos&quot;</span><span class="p">)</span>
+    <span class="n">df_chaos</span> <span class="o">=</span> <span class="n">chaos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tuneUI</span><span class="o">.</span><span class="n">sb_Chaos_Factor</span><span class="o">.</span><span class="n">value</span><span class="p">(),</span> <span class="n">n</span><span class="p">)</span>
+    <span class="c1"># ic(df_chaos)</span>
+
+    <span class="c1"># take elites from previous generation over to next generation</span>
+    <span class="n">df_ng</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">df_cross</span><span class="p">,</span> <span class="n">df_mutation</span><span class="p">,</span> <span class="n">df_chaos</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># update dictionary</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df_ng</span>
+
+    <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;=&quot;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ng_max</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">ea</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span></div>
+
+
+<span class="n">f1_arr</span><span class="p">,</span> <span class="n">f2_arr</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">1000</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mi">100</span><span class="p">):</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="p">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="n">y</span>
+
+        <span class="n">f1_arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f1</span><span class="p">)</span>
+        <span class="n">f2_arr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f2</span><span class="p">)</span>
+
+
+<span class="n">f1_p</span><span class="p">,</span> <span class="n">f2_p</span> <span class="o">=</span> <span class="n">pareto_front</span><span class="p">(</span><span class="n">f1_arr</span><span class="p">,</span> <span class="n">f2_arr</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">f1_p</span><span class="p">,</span> <span class="n">f2_p</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.utils.pareto_test_problem</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Sosoho-abasi Udongwo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

@@ -460,5 +460,6 @@ def arcTo(x_center, y_center, a, b, step, start, end):
     return inbox
 
 
-drawCavity()
-# drawCapacitor()
+if __name__ == '__main__':
+    drawCavity()
+    # drawCapacitor()

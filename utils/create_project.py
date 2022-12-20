@@ -1,6 +1,5 @@
 
 
-
 class CreateProject:
     def __init__(self):
         project_structure = {

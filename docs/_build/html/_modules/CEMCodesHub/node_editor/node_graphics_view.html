@@ -1,0 +1,635 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEMCodesHub.node_editor.node_graphics_view &#8212; CavityHub 0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_graphics_view</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CEMCodesHub.node_editor.node_graphics_view</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing `Graphics View` for NodeEditor</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtWidgets</span> <span class="kn">import</span> <span class="n">QGraphicsView</span><span class="p">,</span> <span class="n">QApplication</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtCore</span> <span class="kn">import</span> <span class="n">Signal</span><span class="p">,</span> <span class="n">QPoint</span><span class="p">,</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QEvent</span><span class="p">,</span> <span class="n">QPointF</span><span class="p">,</span> <span class="n">QRectF</span>
+<span class="kn">from</span> <span class="nn">qtpy.QtGui</span> <span class="kn">import</span> <span class="n">QPainter</span><span class="p">,</span> <span class="n">QDragEnterEvent</span><span class="p">,</span> <span class="n">QDropEvent</span><span class="p">,</span> <span class="n">QMouseEvent</span><span class="p">,</span> <span class="n">QKeyEvent</span><span class="p">,</span> <span class="n">QWheelEvent</span>
+
+<span class="kn">from</span> <span class="nn">node_editor.node_graphics_socket</span> <span class="kn">import</span> <span class="n">QDMGraphicsSocket</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_graphics_edge</span> <span class="kn">import</span> <span class="n">QDMGraphicsEdge</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_edge_dragging</span> <span class="kn">import</span> <span class="n">EdgeDragging</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_edge_rerouting</span> <span class="kn">import</span> <span class="n">EdgeRerouting</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_edge_intersect</span> <span class="kn">import</span> <span class="n">EdgeIntersect</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_edge_snapping</span> <span class="kn">import</span> <span class="n">EdgeSnapping</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_graphics_cutline</span> <span class="kn">import</span> <span class="n">QDMCutLine</span>
+<span class="kn">from</span> <span class="nn">node_editor.utils</span> <span class="kn">import</span> <span class="n">dumpException</span><span class="p">,</span> <span class="n">pp</span>
+
+
+<span class="n">MODE_NOOP</span> <span class="o">=</span> <span class="mi">1</span>               <span class="c1">#: Mode representing ready state</span>
+<span class="n">MODE_EDGE_DRAG</span> <span class="o">=</span> <span class="mi">2</span>          <span class="c1">#: Mode representing when we drag edge state</span>
+<span class="n">MODE_EDGE_CUT</span> <span class="o">=</span> <span class="mi">3</span>           <span class="c1">#: Mode representing when we draw a cutting edge</span>
+<span class="n">MODE_EDGES_REROUTING</span> <span class="o">=</span> <span class="mi">4</span>    <span class="c1">#: Mode representing when we re-route existing edges</span>
+<span class="n">MODE_NODE_DRAG</span> <span class="o">=</span> <span class="mi">5</span>          <span class="c1">#: Mode representing when we drag a node to calculate dropping on intersecting edge</span>
+
+<span class="n">STATE_STRING</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;Noop&#39;</span><span class="p">,</span> <span class="s1">&#39;Edge Drag&#39;</span><span class="p">,</span> <span class="s1">&#39;Edge Cut&#39;</span><span class="p">,</span> <span class="s1">&#39;Edge Rerouting&#39;</span><span class="p">,</span> <span class="s1">&#39;Node Drag&#39;</span><span class="p">]</span>
+
+<span class="c1">#: Distance when click on socket to enable `Drag Edge`</span>
+<span class="n">EDGE_DRAG_START_THRESHOLD</span> <span class="o">=</span> <span class="mi">50</span>
+
+<span class="c1">#: Enable UnrealEngine style rerouting</span>
+<span class="n">EDGE_REROUTING_UE</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="c1">#: Socket snapping distance</span>
+<span class="n">EDGE_SNAPPING_RADIUS</span> <span class="o">=</span> <span class="mi">24</span>
+<span class="c1">#: Enable socket snapping feature</span>
+<span class="n">EDGE_SNAPPING</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">DEBUG_MMB_SCENE_ITEMS</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">DEBUG_MMB_LAST_SELECTIONS</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">DEBUG_EDGE_INTERSECT</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">DEBUG_STATE</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="QDMGraphicsView"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView">[docs]</a><span class="k">class</span> <span class="nc">QDMGraphicsView</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Class representing NodeEditor&#39;s `Graphics View`&quot;&quot;&quot;</span>
+    <span class="c1">#: pyqtSignal emitted when cursor position on the `Scene` has changed</span>
+    <span class="n">scenePosChanged</span> <span class="o">=</span> <span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grScene</span><span class="p">:</span> <span class="s1">&#39;QDMGraphicsScene&#39;</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="s1">&#39;QWidget&#39;</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param grScene: reference to the :class:`~node_editor.node_graphics_scene.QDMGraphicsScene`</span>
+<span class="sd">        :type grScene: :class:`~nodeeditor.node_graphics_scene.QDMGraphicsScene`</span>
+<span class="sd">        :param parent: parent widget</span>
+<span class="sd">        :type parent: ``QWidget``</span>
+
+<span class="sd">        :Instance Attributes:</span>
+
+<span class="sd">        - **grScene** - reference to the :class:`~node_editor.node_graphics_scene.QDMGraphicsScene`</span>
+<span class="sd">        - **mode** - state of the `Graphics View`</span>
+<span class="sd">        - **zoomInFactor**- ``float`` - zoom step scaling, default 1.25</span>
+<span class="sd">        - **zoomClamp** - ``bool`` - do we clamp zooming or is it infinite?</span>
+<span class="sd">        - **zoom** - current zoom step</span>
+<span class="sd">        - **zoomStep** - ``int`` - the relative zoom step when zooming in/out</span>
+<span class="sd">        - **zoomRange** - ``[min, max]``</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span> <span class="o">=</span> <span class="n">grScene</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setScene</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_NOOP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">editingFlag</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rubberBandDraggingRectangle</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># edge dragging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span> <span class="o">=</span> <span class="n">EdgeDragging</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># edges re-routing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rerouting</span> <span class="o">=</span> <span class="n">EdgeRerouting</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># drop a node on an existing edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgeIntersect</span> <span class="o">=</span> <span class="n">EdgeIntersect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># edge snapping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snapping</span> <span class="o">=</span> <span class="n">EdgeSnapping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">snapping_radius</span><span class="o">=</span><span class="n">EDGE_SNAPPING_RADIUS</span><span class="p">)</span>
+
+        <span class="c1"># cutline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span> <span class="o">=</span> <span class="n">QDMCutLine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_scene_mouse_position</span> <span class="o">=</span> <span class="n">QPoint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoomInFactor</span> <span class="o">=</span> <span class="mf">1.25</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoomClamp</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoomStep</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">zoomRange</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+
+        <span class="c1"># listeners</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drag_enter_listeners</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drop_listeners</span> <span class="o">=</span> <span class="p">[]</span>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.initUI"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.initUI">[docs]</a>    <span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set up this ``QGraphicsView``&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setRenderHints</span><span class="p">(</span><span class="n">QPainter</span><span class="o">.</span><span class="n">Antialiasing</span> <span class="o">|</span> <span class="n">QPainter</span><span class="o">.</span><span class="n">HighQualityAntialiasing</span> <span class="o">|</span> <span class="n">QPainter</span><span class="o">.</span><span class="n">TextAntialiasing</span> <span class="o">|</span> <span class="n">QPainter</span><span class="o">.</span><span class="n">SmoothPixmapTransform</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setViewportUpdateMode</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">FullViewportUpdate</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setHorizontalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setVerticalScrollBarPolicy</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ScrollBarAlwaysOff</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setTransformationAnchor</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">AnchorUnderMouse</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDragMode</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">RubberBandDrag</span><span class="p">)</span>
+
+        <span class="c1"># enable dropping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptDrops</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.isSnappingEnabled"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.isSnappingEnabled">[docs]</a>    <span class="k">def</span> <span class="nf">isSnappingEnabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="s1">&#39;QInputEvent&#39;</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns ``True`` if snapping is currently enabled&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">EDGE_SNAPPING</span> <span class="ow">and</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">CTRL</span><span class="p">)</span> <span class="k">if</span> <span class="n">event</span> <span class="k">else</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.resetMode"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.resetMode">[docs]</a>    <span class="k">def</span> <span class="nf">resetMode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to re-set the grView&#39;s State Machine state to the default&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_NOOP</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.dragEnterEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.dragEnterEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dragEnterEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QDragEnterEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Trigger our registered `Drag Enter` events&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drag_enter_listeners</span><span class="p">:</span> <span class="n">callback</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.dropEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QDropEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Trigger our registered `Drop` events&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_drop_listeners</span><span class="p">:</span> <span class="n">callback</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.addDragEnterListener"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.addDragEnterListener">[docs]</a>    <span class="k">def</span> <span class="nf">addDragEnterListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register callback for `Drag Enter` event</span>
+
+<span class="sd">        :param callback: callback function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drag_enter_listeners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.addDropListener"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.addDropListener">[docs]</a>    <span class="k">def</span> <span class="nf">addDropListener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="s1">&#39;function&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Register callback for `Drop` event</span>
+
+<span class="sd">        :param callback: callback function</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_drop_listeners</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">callback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.mousePressEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.mousePressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mousePressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dispatch Qt&#39;s mousePress event to corresponding function below&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">MiddleButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">middleMouseButtonPress</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">leftMouseButtonPress</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rightMouseButtonPress</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mousePressEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.mouseReleaseEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.mouseReleaseEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseReleaseEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Dispatch Qt&#39;s mouseRelease event to corresponding function below&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">MiddleButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">middleMouseButtonRelease</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">leftMouseButtonRelease</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">RightButton</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rightMouseButtonRelease</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.middleMouseButtonPress"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.middleMouseButtonPress">[docs]</a>    <span class="k">def</span> <span class="nf">middleMouseButtonPress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When Middle mouse button was pressed&quot;&quot;&quot;</span>
+
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getItemAtClick</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="c1"># debug printout</span>
+        <span class="k">if</span> <span class="n">DEBUG_MMB_SCENE_ITEMS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QDMGraphicsEdge</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MMB DEBUG:&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">edge</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QDMGraphicsSocket</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;MMB DEBUG:&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;socket_type:&quot;</span><span class="p">,</span> <span class="n">item</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">socket_type</span><span class="p">,</span>
+                      <span class="s2">&quot;has edges:&quot;</span><span class="p">,</span> <span class="s2">&quot;no&quot;</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">edges</span> <span class="o">==</span> <span class="p">[]</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">item</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">DEBUG_MMB_SCENE_ITEMS</span> <span class="ow">and</span> <span class="p">(</span><span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGES_REROUTING</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;SCENE:&quot;</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Nodes:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Edges:&quot;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n\t\t</span><span class="s2">grEdge:&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span> <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">CTRL</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;  Graphic Items in GraphicScene:&quot;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;    &#39;</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">DEBUG_MMB_LAST_SELECTIONS</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">SHIFT</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;scene _last_selected_items:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">_last_selected_items</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="c1"># faking events for enable MMB dragging the scene</span>
+        <span class="n">releaseEvent</span> <span class="o">=</span> <span class="n">QMouseEvent</span><span class="p">(</span><span class="n">QEvent</span><span class="o">.</span><span class="n">MouseButtonRelease</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localPos</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                   <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">NoButton</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">())</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">releaseEvent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDragMode</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">ScrollHandDrag</span><span class="p">)</span>
+        <span class="n">fakeEvent</span> <span class="o">=</span> <span class="n">QMouseEvent</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">localPos</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">()</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">())</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mousePressEvent</span><span class="p">(</span><span class="n">fakeEvent</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="QDMGraphicsView.middleMouseButtonRelease"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.middleMouseButtonRelease">[docs]</a>    <span class="k">def</span> <span class="nf">middleMouseButtonRelease</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When Middle mouse button was released&quot;&quot;&quot;</span>
+        <span class="n">fakeEvent</span> <span class="o">=</span> <span class="n">QMouseEvent</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">localPos</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">()</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">())</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">fakeEvent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDragMode</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="o">.</span><span class="n">RubberBandDrag</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.leftMouseButtonPress"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.leftMouseButtonPress">[docs]</a>    <span class="k">def</span> <span class="nf">leftMouseButtonPress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When Left  mouse button was pressed&quot;&quot;&quot;</span>
+
+        <span class="c1"># get the item we clicked on</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getItemAtClick</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="c1"># we store the position of last LMB click</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_lmb_click_scene_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+
+        <span class="c1"># if DEBUG: print(&quot;LMB Click on&quot;, item, self.debug_modifiers(event))</span>
+
+        <span class="c1"># logic</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QDMGraphicsEdge</span><span class="p">)</span> <span class="ow">or</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ShiftModifier</span><span class="p">:</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span>
+                <span class="n">fakeEvent</span> <span class="o">=</span> <span class="n">QMouseEvent</span><span class="p">(</span><span class="n">QEvent</span><span class="o">.</span><span class="n">MouseButtonPress</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localPos</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                        <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">buttons</span><span class="p">()</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span>
+                                        <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ControlModifier</span><span class="p">)</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mousePressEvent</span><span class="p">(</span><span class="n">fakeEvent</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">DEBUG_EDGE_INTERSECT</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;View::leftMouseButtonPress - Start dragging a node&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_NOOP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_NODE_DRAG</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edgeIntersect</span><span class="o">.</span><span class="n">enterState</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">DEBUG_EDGE_INTERSECT</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&gt;&gt; edgeIntersect start:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgeIntersect</span><span class="o">.</span><span class="n">draggedNode</span><span class="p">)</span>
+
+        <span class="c1"># support for snapping</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSnappingEnabled</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapping</span><span class="o">.</span><span class="n">getSnappedSocketItem</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QDMGraphicsSocket</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_NOOP</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">CTRL</span><span class="p">:</span>
+                <span class="n">socket</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">socket</span>
+                <span class="k">if</span> <span class="n">socket</span><span class="o">.</span><span class="n">hasAnyEdge</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_EDGES_REROUTING</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">rerouting</span><span class="o">.</span><span class="n">startRerouting</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_NOOP</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_EDGE_DRAG</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="o">.</span><span class="n">edgeDragStart</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGE_DRAG</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="o">.</span><span class="n">edgeDragEnd</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">res</span><span class="p">:</span> <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ControlModifier</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_EDGE_CUT</span>
+                <span class="n">fakeEvent</span> <span class="o">=</span> <span class="n">QMouseEvent</span><span class="p">(</span><span class="n">QEvent</span><span class="o">.</span><span class="n">MouseButtonRelease</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">localPos</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                        <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">NoButton</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">())</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">fakeEvent</span><span class="p">)</span>
+                <span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">CrossCursor</span><span class="p">)</span>
+                <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rubberBandDraggingRectangle</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mousePressEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.leftMouseButtonRelease"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.leftMouseButtonRelease">[docs]</a>    <span class="k">def</span> <span class="nf">leftMouseButtonRelease</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When Left  mouse button was released&quot;&quot;&quot;</span>
+
+        <span class="c1"># get the item on which we release the mouse button on</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getItemAtClick</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># logic</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s2">&quot;node&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QDMGraphicsEdge</span><span class="p">)</span> <span class="ow">or</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ShiftModifier</span><span class="p">:</span>
+                    <span class="n">event</span><span class="o">.</span><span class="n">ignore</span><span class="p">()</span>
+                    <span class="n">fakeEvent</span> <span class="o">=</span> <span class="n">QMouseEvent</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">localPos</span><span class="p">(),</span> <span class="n">event</span><span class="o">.</span><span class="n">screenPos</span><span class="p">(),</span>
+                                            <span class="n">Qt</span><span class="o">.</span><span class="n">LeftButton</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">NoButton</span><span class="p">,</span>
+                                            <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ControlModifier</span><span class="p">)</span>
+                    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">fakeEvent</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGE_DRAG</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">distanceBetweenClickAndReleaseIsOff</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSnappingEnabled</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+                        <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapping</span><span class="o">.</span><span class="n">getSnappedSocketItem</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+                    <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="o">.</span><span class="n">edgeDragEnd</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">res</span><span class="p">:</span> <span class="k">return</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGES_REROUTING</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSnappingEnabled</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+                    <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapping</span><span class="o">.</span><span class="n">getSnappedSocketItem</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">EDGE_REROUTING_UE</span><span class="p">:</span>
+                    <span class="c1"># version 2 -- more consistent with the node_editor?</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">rerouting</span><span class="o">.</span><span class="n">first_mb_release</span><span class="p">:</span>
+                        <span class="c1"># for confirmation of first MB release</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">rerouting</span><span class="o">.</span><span class="n">first_mb_release</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="c1"># skip any re-routing until first MB was released</span>
+                        <span class="k">return</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">rerouting</span><span class="o">.</span><span class="n">stopRerouting</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">socket</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QDMGraphicsSocket</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="c1"># don&#39;t forget to end the REROUTING MODE</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_NOOP</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGE_CUT</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cutIntersectingEdges</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="o">.</span><span class="n">line_points</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+                <span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ArrowCursor</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_NOOP</span>
+                <span class="k">return</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_NODE_DRAG</span><span class="p">:</span>
+                <span class="n">scenepos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edgeIntersect</span><span class="o">.</span><span class="n">leaveState</span><span class="p">(</span><span class="n">scenepos</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">scenepos</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">=</span> <span class="n">MODE_NOOP</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rubberBandDraggingRectangle</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rubberBandDraggingRectangle</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">current_selected_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">current_selected_items</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">_last_selected_items</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">current_selected_items</span> <span class="o">==</span> <span class="p">[]:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">itemsDeselected</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">itemSelected</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">_last_selected_items</span> <span class="o">=</span> <span class="n">current_selected_items</span>
+
+                <span class="c1"># the rubber band rectangle doesn&#39;t disappear without handling the event</span>
+                <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+                <span class="k">return</span>
+
+            <span class="c1"># otherwise deselect everything</span>
+            <span class="k">if</span> <span class="n">item</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">itemsDeselected</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="k">except</span><span class="p">:</span> <span class="n">dumpException</span><span class="p">()</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.rightMouseButtonPress"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.rightMouseButtonPress">[docs]</a>    <span class="k">def</span> <span class="nf">rightMouseButtonPress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When Right mouse button was pressed&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mousePressEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.rightMouseButtonRelease"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.rightMouseButtonRelease">[docs]</a>    <span class="k">def</span> <span class="nf">rightMouseButtonRelease</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;When Right mouse button was release&quot;&quot;&quot;</span>
+
+        <span class="c1">## cannot be because with dragging RMB we spawn Create New Node Context Menu</span>
+        <span class="c1">## However, you could use this if you want to cancel with RMB</span>
+        <span class="c1"># if self.mode == MODE_EDGE_DRAG:</span>
+        <span class="c1">#     self.dragging.edgeDragEnd(None)</span>
+        <span class="c1">#     return</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseReleaseEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.mouseMoveEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.mouseMoveEvent">[docs]</a>    <span class="k">def</span> <span class="nf">mouseMoveEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QMouseEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overriden Qt&#39;s ``mouseMoveEvent`` handling Scene/View logic&quot;&quot;&quot;</span>
+        <span class="n">scenepos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">modified</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setSocketHighlights</span><span class="p">(</span><span class="n">scenepos</span><span class="p">,</span> <span class="n">highlighted</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="n">EDGE_SNAPPING_RADIUS</span><span class="o">+</span><span class="mi">100</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isSnappingEnabled</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+                <span class="n">_</span><span class="p">,</span> <span class="n">scenepos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">snapping</span><span class="o">.</span><span class="n">getSnappedToSocketPosition</span><span class="p">(</span><span class="n">scenepos</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">modified</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGE_DRAG</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dragging</span><span class="o">.</span><span class="n">updateDestination</span><span class="p">(</span><span class="n">scenepos</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">scenepos</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_NODE_DRAG</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edgeIntersect</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scenepos</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">scenepos</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGES_REROUTING</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">rerouting</span><span class="o">.</span><span class="n">updateScenePos</span><span class="p">(</span><span class="n">scenepos</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">scenepos</span><span class="o">.</span><span class="n">y</span><span class="p">())</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">mode</span> <span class="o">==</span> <span class="n">MODE_EDGE_CUT</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="o">.</span><span class="n">line_points</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scenepos</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">dumpException</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_scene_mouse_position</span> <span class="o">=</span> <span class="n">scenepos</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scenePosChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="n">scenepos</span><span class="o">.</span><span class="n">x</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">scenepos</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">mouseMoveEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.keyPressEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.keyPressEvent">[docs]</a>    <span class="k">def</span> <span class="nf">keyPressEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QKeyEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. note::</span>
+<span class="sd">            This overridden Qt&#39;s method was used for handling key shortcuts, before we implemented proper</span>
+<span class="sd">            ``QWindow`` with Actions and Menu. Still the commented code serves as an example on how to handle</span>
+<span class="sd">            key presses without Qt&#39;s framework for Actions and shortcuts. There is also an example on</span>
+<span class="sd">            how to solve the problem when a Node contains Text/LineEdit and we press the `Delete`</span>
+<span class="sd">            key (also serving to delete `Node`)</span>
+
+<span class="sd">        :param event: Qt&#39;s Key event</span>
+<span class="sd">        :type event: ``QKeyEvent``</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use this code below if you wanna have shortcuts in this widget.</span>
+        <span class="c1"># You want to use this, when you don&#39;t have a window which handles these shortcuts for you</span>
+
+        <span class="c1"># if event.key() == Qt.Key_Delete:</span>
+        <span class="c1">#     if not self.editingFlag:</span>
+        <span class="c1">#         self.deleteSelected()</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         super().keyPressEvent(event)</span>
+        <span class="c1"># elif event.key() == Qt.Key_S and event.modifiers() &amp; Qt.ControlModifier:</span>
+        <span class="c1">#     self.grScene.scene.saveToFile(&quot;graph.json&quot;)</span>
+        <span class="c1"># elif event.key() == Qt.Key_L and event.modifiers() &amp; Qt.ControlModifier:</span>
+        <span class="c1">#     self.grScene.scene.loadFromFile(&quot;graph.json&quot;)</span>
+        <span class="c1"># elif event.key() == Qt.Key_Z and event.modifiers() &amp; Qt.ControlModifier and not event.modifiers() &amp; Qt.ShiftModifier:</span>
+        <span class="c1">#     self.grScene.scene.history.undo()</span>
+        <span class="c1"># elif event.key() == Qt.Key_Z and event.modifiers() &amp; Qt.ControlModifier and event.modifiers() &amp; Qt.ShiftModifier:</span>
+        <span class="c1">#     self.grScene.scene.history.redo()</span>
+        <span class="c1"># elif event.key() == Qt.Key_H:</span>
+        <span class="c1">#     print(&quot;HISTORY:     len(%d)&quot; % len(self.grScene.scene.history.history_stack),</span>
+        <span class="c1">#           &quot; -- current_step&quot;, self.grScene.scene.history.history_current_step)</span>
+        <span class="c1">#     ix = 0</span>
+        <span class="c1">#     for item in self.grScene.scene.history.history_stack:</span>
+        <span class="c1">#         print(&quot;#&quot;, ix, &quot;--&quot;, item[&#39;desc&#39;])</span>
+        <span class="c1">#         ix += 1</span>
+        <span class="c1"># else:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">keyPressEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.cutIntersectingEdges"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.cutIntersectingEdges">[docs]</a>    <span class="k">def</span> <span class="nf">cutIntersectingEdges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compare which `Edges` intersect with current `Cut line` and delete them safely&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="o">.</span><span class="n">line_points</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="o">.</span><span class="n">line_points</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span>
+            <span class="n">p2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cutline</span><span class="o">.</span><span class="n">line_points</span><span class="p">[</span><span class="n">ix</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># @TODO: we could collect all touched nodes, and notify them once after all edges removed</span>
+            <span class="c1"># we could cut 3 edges leading to a single node_editor this will notify it 3x</span>
+            <span class="c1"># maybe we could use some Notifier class with methods collect() and dispatch()</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">intersectsWith</span><span class="p">(</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">):</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">storeHistory</span><span class="p">(</span><span class="s2">&quot;Delete cutted edges&quot;</span><span class="p">,</span> <span class="n">setModified</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.setSocketHighlights"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.setSocketHighlights">[docs]</a>    <span class="k">def</span> <span class="nf">setSocketHighlights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scenepos</span><span class="p">:</span> <span class="n">QPointF</span><span class="p">,</span> <span class="n">highlighted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">50</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set/disable socket highlights in Scene area defined by `scenepos` and `radius`&quot;&quot;&quot;</span>
+        <span class="n">scanrect</span> <span class="o">=</span> <span class="n">QRectF</span><span class="p">(</span><span class="n">scenepos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">scenepos</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">-</span> <span class="n">radius</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">scanrect</span><span class="p">)</span>
+        <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">QDMGraphicsSocket</span><span class="p">),</span> <span class="n">items</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">grSocket</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span> <span class="n">grSocket</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="o">=</span> <span class="n">highlighted</span>
+        <span class="k">return</span> <span class="n">items</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.deleteSelected"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.deleteSelected">[docs]</a>    <span class="k">def</span> <span class="nf">deleteSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shortcut for safe deleting every object selected in the `Scene`.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">selectedItems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">QDMGraphicsEdge</span><span class="p">):</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+            <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;node&#39;</span><span class="p">):</span>
+                <span class="n">item</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">storeHistory</span><span class="p">(</span><span class="s2">&quot;Delete selected&quot;</span><span class="p">,</span> <span class="n">setModified</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="QDMGraphicsView.debug_modifiers"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.debug_modifiers">[docs]</a>    <span class="k">def</span> <span class="nf">debug_modifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function get string if we hold Ctrl, Shift or Alt modifier keys&quot;&quot;&quot;</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="s2">&quot;MODS: &quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ShiftModifier</span><span class="p">:</span> <span class="n">out</span> <span class="o">+=</span> <span class="s2">&quot;SHIFT &quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ControlModifier</span><span class="p">:</span> <span class="n">out</span> <span class="o">+=</span> <span class="s2">&quot;CTRL &quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">modifiers</span><span class="p">()</span> <span class="o">&amp;</span> <span class="n">Qt</span><span class="o">.</span><span class="n">AltModifier</span><span class="p">:</span> <span class="n">out</span> <span class="o">+=</span> <span class="s2">&quot;ALT &quot;</span>
+        <span class="k">return</span> <span class="n">out</span></div>
+
+<div class="viewcode-block" id="QDMGraphicsView.getItemAtClick"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.getItemAtClick">[docs]</a>    <span class="k">def</span> <span class="nf">getItemAtClick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;QGraphicsItem&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the object on which we&#39;ve clicked/release mouse button</span>
+
+<span class="sd">        :param event: Qt&#39;s mouse or key event</span>
+<span class="sd">        :type event: ``QEvent``</span>
+<span class="sd">        :return: ``QGraphicsItem`` which the mouse event happened or ``None``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">obj</span></div>
+
+
+<div class="viewcode-block" id="QDMGraphicsView.distanceBetweenClickAndReleaseIsOff"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.distanceBetweenClickAndReleaseIsOff">[docs]</a>    <span class="k">def</span> <span class="nf">distanceBetweenClickAndReleaseIsOff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span><span class="n">QMouseEvent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot; Measures if we are too far from the last Mouse button click scene position.</span>
+<span class="sd">        This is used for detection if we release too far after we clicked on a `Socket`</span>
+
+<span class="sd">        :param event: Qt&#39;s mouse event</span>
+<span class="sd">        :type event: ``QMouseEvent``</span>
+<span class="sd">        :return: ``True`` if we released too far from where we clicked before</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new_lmb_release_scene_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mapToScene</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+        <span class="n">dist_scene</span> <span class="o">=</span> <span class="n">new_lmb_release_scene_pos</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_lmb_click_scene_pos</span>
+        <span class="n">edge_drag_threshold_sq</span> <span class="o">=</span> <span class="n">EDGE_DRAG_START_THRESHOLD</span><span class="o">*</span><span class="n">EDGE_DRAG_START_THRESHOLD</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">dist_scene</span><span class="o">.</span><span class="n">x</span><span class="p">()</span><span class="o">*</span><span class="n">dist_scene</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">dist_scene</span><span class="o">.</span><span class="n">y</span><span class="p">()</span><span class="o">*</span><span class="n">dist_scene</span><span class="o">.</span><span class="n">y</span><span class="p">())</span> <span class="o">&gt;</span> <span class="n">edge_drag_threshold_sq</span></div>
+
+
+
+<div class="viewcode-block" id="QDMGraphicsView.wheelEvent"><a class="viewcode-back" href="../../../source/CEMCodesHub.node_editor.html#CEMCodesHub.node_editor.node_graphics_view.QDMGraphicsView.wheelEvent">[docs]</a>    <span class="k">def</span> <span class="nf">wheelEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">QWheelEvent</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;overridden Qt&#39;s ``wheelEvent``. This handles zooming&quot;&quot;&quot;</span>
+        <span class="c1"># calculate our zoom Factor</span>
+        <span class="n">zoomOutFactor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomInFactor</span>
+
+        <span class="c1"># calculate zoom</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">angleDelta</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">zoomFactor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomInFactor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomStep</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">zoomFactor</span> <span class="o">=</span> <span class="n">zoomOutFactor</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomStep</span>
+
+
+        <span class="n">clamped</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomRange</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">,</span> <span class="n">clamped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomRange</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomRange</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoom</span><span class="p">,</span> <span class="n">clamped</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomRange</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">True</span>
+
+        <span class="c1"># set scene scale</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">clamped</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">zoomClamp</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">zoomFactor</span><span class="p">,</span> <span class="n">zoomFactor</span><span class="p">)</span></div></div>
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.node_editor.node_graphics_view</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Sosoho-abasi Udongwo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

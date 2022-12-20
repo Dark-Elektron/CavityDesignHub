@@ -20,7 +20,6 @@ def plot_settings():
     mpl.rcParams['figure.dpi'] = 100
 
 
-plot_settings()
 
 # file = fr.excel_reader(r"D:\Dropbox\HC_FPC_Configs.xlsx")
 # print(file["2hc_2fpc"]["angle_corr"].to_list())
@@ -44,33 +43,36 @@ plot_settings()
 # plt.tight_layout()
 # plt.show()
 
-#####################
-from matplotlib import ticker, cm, colors
-# surface plot
-file = fr.excel_reader(r"D:\Dropbox\HC_FPC_Configs.xlsx")
-sheet = "4hc_1fpc_2angles"
-ang = (file[sheet]["angle"]).to_list()
-ang_fpc = file[sheet]["angle_fpc"].to_list()
 
-X = np.reshape(ang, (10, 14))
-Y = np.reshape(ang_fpc, (10, 14))
-Z = file[sheet]["ZT"].to_list()
-Z2 = np.reshape(Z, np.shape(X))
+if __name__ == '__main__':
+    plot_settings()
+    #####################
+    from matplotlib import ticker, cm, colors
+    # surface plot
+    file = fr.excel_reader(r"D:\Dropbox\HC_FPC_Configs.xlsx")
+    sheet = "4hc_1fpc_2angles"
+    ang = (file[sheet]["angle"]).to_list()
+    ang_fpc = file[sheet]["angle_fpc"].to_list()
 
-xnew, ynew, znew = X, Y, Z2
-print(xnew)
-print(ynew)
+    X = np.reshape(ang, (10, 14))
+    Y = np.reshape(ang_fpc, (10, 14))
+    Z = file[sheet]["ZT"].to_list()
+    Z2 = np.reshape(Z, np.shape(X))
 
-fig = plt.figure(figsize=(18, 4))
-ax = fig.gca()
-xticks, yticks = xnew[0], ynew.T[0]
-g = sns.heatmap(znew, cmap=cm.Pastel1, annot=True, norm=colors.LogNorm(vmin=10, vmax=25), linewidths=.5, ax=ax, xticklabels=xticks, yticklabels=yticks,
-                cbar_kws=dict(pad=0.01), annot_kws={"size": 14})
-ax.xaxis.set_ticks_position('top')
-ax.xaxis.set_label_position('top')
+    xnew, ynew, znew = X, Y, Z2
+    print(xnew)
+    print(ynew)
 
-plt.xlabel(r"$\beta [\mathrm{^\circ}]$")
-plt.ylabel(r"$\alpha [\mathrm{^\circ}]$")
-fig.tight_layout()
+    fig = plt.figure(figsize=(18, 4))
+    ax = fig.gca()
+    xticks, yticks = xnew[0], ynew.T[0]
+    g = sns.heatmap(znew, cmap=cm.Pastel1, annot=True, norm=colors.LogNorm(vmin=10, vmax=25), linewidths=.5, ax=ax, xticklabels=xticks, yticklabels=yticks,
+                    cbar_kws=dict(pad=0.01), annot_kws={"size": 14})
+    ax.xaxis.set_ticks_position('top')
+    ax.xaxis.set_label_position('top')
 
-plt.show()
+    plt.xlabel(r"$\beta [\mathrm{^\circ}]$")
+    plt.ylabel(r"$\alpha [\mathrm{^\circ}]$")
+    fig.tight_layout()
+
+    plt.show()

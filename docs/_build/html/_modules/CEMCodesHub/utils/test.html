@@ -1,0 +1,1324 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEMCodesHub.utils.test &#8212; CavityHub 0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.utils.test</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CEMCodesHub.utils.test</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># # convert matlab in folders to python</span>
+<span class="c1">#</span>
+<span class="c1"># #&quot;python matlab2python/matlab2python.py SSC_single_model.m -o SSC_single_model.py&quot;</span>
+<span class="c1"># import subprocess</span>
+<span class="c1">#</span>
+<span class="c1"># dirr = fr&#39;{os.getcwd()}\S_for_Sosoho&#39;</span>
+<span class="c1"># print(dirr)</span>
+<span class="c1">#</span>
+<span class="c1"># if os.path.exists(dirr):</span>
+<span class="c1">#     print(&quot;yeah&quot;)</span>
+<span class="c1">#</span>
+<span class="c1"># for path, subdirs, files in os.walk(dirr):</span>
+<span class="c1">#     for name in files:</span>
+<span class="c1">#         if name.split(&quot;.&quot;)[-1] == &#39;m&#39;:</span>
+<span class="c1">#             file_dirname = os.path.join(path, name).split(&#39;.&#39;)[0]</span>
+<span class="c1">#             print(file_dirname)</span>
+<span class="c1">#             command = fr&quot;python matlab2python/matlab2python.py {file_dirname}.m -o {file_dirname}.py&quot;</span>
+<span class="c1">#             p = subprocess.run(command)</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sps</span>
+<span class="kn">import</span> <span class="nn">scipy.sparse.linalg</span>
+<span class="kn">from</span> <span class="nn">icecream</span> <span class="kn">import</span> <span class="n">ic</span>
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="c1"># import pyvista as pv</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
+
+<span class="kn">from</span> <span class="nn">utils.file_reader</span> <span class="kn">import</span> <span class="n">FileReader</span>
+
+<span class="n">fr</span> <span class="o">=</span> <span class="n">FileReader</span><span class="p">()</span>
+
+<span class="c1"># print(sys.path)</span>
+
+<span class="c1"># filename = &quot;D:\SSC_for_Sosoho\Modes_vtk\\1_1_x.vtk&quot;</span>
+<span class="c1"># mesh = pv.read(filename)</span>
+<span class="c1"># cpos = mesh.plot()</span>
+<span class="c1"># import numba as nb</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># fig = plt.figure(figsize=(12, 6))</span>
+<span class="c1"># ax = fig.add_subplot(projection=&#39;3d&#39;)</span>
+
+<span class="c1"># @nb.njit(parallel=True)</span>
+<span class="c1"># def isin(a, b):</span>
+<span class="c1">#     out = np.empty(a.shape[0], dtype=nb.boolean)</span>
+<span class="c1">#     b = set(b)</span>
+<span class="c1">#     for i in nb.prange(a.shape[0]):</span>
+<span class="c1">#         if a[i] in b:</span>
+<span class="c1">#             out[i] = False</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             out[i] = True</span>
+<span class="c1">#     return out</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def remove_column_elements_csr_matrix(mat, indx):</span>
+<span class="c1">#     # t1 = time.time()</span>
+<span class="c1">#     mask = isin(mat.indices, indx)</span>
+<span class="c1">#     # t2 = time.time()</span>
+<span class="c1">#     # ic(t2-t1)</span>
+<span class="c1">#     mat.data = mat.data[mask]</span>
+<span class="c1">#     # t3 = time.time()</span>
+<span class="c1">#     # ic(t3-t2)</span>
+<span class="c1">#     mat.indices = mat.indices[mask]</span>
+<span class="c1">#     # t4 = time.time()</span>
+<span class="c1">#     # ic(t4-t3)</span>
+<span class="c1">#     parts = [np.sum(mask[mat.indptr[i]:mat.indptr[i + 1]]) for i in range(mat.indptr.shape[0] - 1)]</span>
+<span class="c1">#     # t5 = time.time()</span>
+<span class="c1">#     # ic(t5-t4)</span>
+<span class="c1">#     mat.indptr[1:] = np.cumsum(parts)</span>
+<span class="c1">#     # t6 = time.time()</span>
+<span class="c1">#     # ic(t6-t5)</span>
+<span class="c1">#</span>
+<span class="c1">#     return mat</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def ispm_iteration(A, s, num_simulations: int, q_k=None):</span>
+<span class="c1">#     # shift A</span>
+<span class="c1">#     A = A - s * np.identity(np.shape(A)[0])</span>
+<span class="c1">#</span>
+<span class="c1">#     if q_k is None:</span>
+<span class="c1">#         q_k = np.random.rand(A.shape[1])</span>
+<span class="c1">#</span>
+<span class="c1">#     for _ in range(num_simulations):</span>
+<span class="c1">#         # calculate z by solving Az = q_k</span>
+<span class="c1">#         z = sps.linalg.spsolve(A, q_k)</span>
+<span class="c1">#</span>
+<span class="c1">#         # calculate the norm of z</span>
+<span class="c1">#         z_norm = np.linalg.norm(z)</span>
+<span class="c1">#</span>
+<span class="c1">#         # re normalize the vector</span>
+<span class="c1">#         q_k = z / z_norm</span>
+<span class="c1">#</span>
+<span class="c1">#     # to calculate the corresponding eigenvalue</span>
+<span class="c1">#     # solve LLT y = q_k for y using forward and backward substitutions</span>
+<span class="c1">#     y = sps.linalg.spsolve(A, q_k)</span>
+<span class="c1">#</span>
+<span class="c1">#     # solve q_k^T y</span>
+<span class="c1">#     v = q_k.T @ y</span>
+<span class="c1">#</span>
+<span class="c1">#     # get eigenvalue by inverting v</span>
+<span class="c1">#     l = 1 / v + s</span>
+<span class="c1">#</span>
+<span class="c1">#     return l, q_k</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def arnoldi_iteration(A, b, n: int):</span>
+<span class="c1">#     &quot;&quot;&quot;Computes a basis of the (n + 1)-Krylov subspace of A: the space</span>
+<span class="c1">#     spanned by {b, Ab, ..., A^n b}.</span>
+<span class="c1">#</span>
+<span class="c1">#     Arguments</span>
+<span class="c1">#       A: m × m array</span>
+<span class="c1">#       b: initial vector (length m)</span>
+<span class="c1">#       n: dimension of Krylov subspace, must be &gt;= 1</span>
+<span class="c1">#</span>
+<span class="c1">#     Returns</span>
+<span class="c1">#       Q: m x (n + 1) array, the columns are an orthonormal basis of the</span>
+<span class="c1">#         Krylov subspace.</span>
+<span class="c1">#       h: (n + 1) x n array, A on basis Q. It is upper Hessenberg.</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     eps = 1e-12</span>
+<span class="c1">#     h = np.zeros((n + 1, n), dtype=np.complex_)</span>
+<span class="c1">#     Q = np.zeros((A.shape[0], n + 1), dtype=np.complex_)</span>
+<span class="c1">#     # Normalize the input vector</span>
+<span class="c1">#     Q[:, 0] = b / np.linalg.norm(b, 2)  # Use it as the first Krylov vector</span>
+<span class="c1">#     for k in range(1, n + 1):</span>
+<span class="c1">#         v = np.dot(A, Q[:, k - 1])  # Generate a new candidate vector</span>
+<span class="c1">#         for j in range(k):  # Subtract the projections on previous vectors</span>
+<span class="c1">#             h[j, k - 1] = np.dot(Q[:, j].T, v)</span>
+<span class="c1">#             v = v - h[j, k - 1] * Q[:, j]</span>
+<span class="c1">#         h[k, k - 1] = np.linalg.norm(v, 2)</span>
+<span class="c1">#         if h[k, k - 1] &gt; eps:  # Add the produced vector to the list, unless</span>
+<span class="c1">#             Q[:, k] = v / h[k, k - 1]</span>
+<span class="c1">#         else:  # If that happens, stop iterating.</span>
+<span class="c1">#             return Q, h</span>
+<span class="c1">#     return Q, h, k</span>
+
+
+<span class="c1"># [-1.1279152 +0.j         -0.04781313+0.j          5.58786416+2.42104632j 5.58786416-2.42104632j]</span>
+
+<span class="c1"># A = np.array([[1, 3, 4, -4, -7], [0, 3, 5, -2, 0], [1, 2, 1, 0, -6], [0, 3.0, 2, 5, -4], [5, -5, 3, 2, 0]], dtype=np.complex_)</span>
+<span class="c1"># A = np.random.rand(400, 400)</span>
+<span class="c1"># # np.savetxt(&#39;test_matrix.txt&#39;, A)</span>
+<span class="c1"># A = np.loadtxt(&#39;test_matrix.txt&#39;)</span>
+<span class="c1">#</span>
+<span class="c1"># As = sps.csr_matrix(A)</span>
+<span class="c1"># n = 20</span>
+<span class="c1"># d1, v1 = np.linalg.eig(A)</span>
+<span class="c1"># d, v = sps.linalg.eigs(As, k=n, sigma=1)</span>
+<span class="c1"># # l, q_k = ispm_iteration(As, s=4-2j, num_simulations=500)</span>
+<span class="c1"># ic(np.sort_complex(d1))</span>
+<span class="c1"># # print(d)</span>
+<span class="c1"># # print(l)</span>
+<span class="c1">#</span>
+<span class="c1"># Q, h, k = arnoldi_iteration(A, np.random.rand(A.shape[1]), n=n)</span>
+<span class="c1"># print()</span>
+<span class="c1"># ic(np.sort_complex(np.linalg.eigvals(h[0:n,0:n])))</span>
+
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1"># data1 = pd.read_excel(r&quot;D:\CST Studio\Multipacting\E_field_equator_offset_Efield.xlsx&quot;, &quot;E3794&quot;)</span>
+<span class="c1"># data2 = pd.read_excel(r&quot;D:\CST Studio\Multipacting\E_field_equator_offset_Efield.xlsx&quot;, &quot;E3794_HC&quot;)</span>
+<span class="c1"># data3 = pd.read_excel(r&quot;D:\CST Studio\Multipacting\E_field_equator_offset_Efield.xlsx&quot;, &quot;E3794_HC_W_PORTS&quot;)</span>
+<span class="c1">#</span>
+<span class="c1"># plt.scatter(data1[&quot;R&quot;], data1[&quot;E3794&quot;], marker=&quot;+&quot;, label=&quot;E3794&quot;)</span>
+<span class="c1"># plt.scatter(data2[&quot;R&quot;], data2[&quot;E3794_HC&quot;], marker=&quot;+&quot;, label=&quot;E3794_HC&quot;)</span>
+<span class="c1"># plt.scatter(data3[&quot;R&quot;], data3[&quot;E3794_HC_W_PORTS&quot;], marker=&quot;+&quot;, label=&quot;E3794_HC_W_PORTS&quot;)</span>
+<span class="c1"># plt.xlim([-50, 50])</span>
+<span class="c1"># plt.ylim([1.7e6, 1.725e6])</span>
+<span class="c1"># plt.axvline(0)</span>
+<span class="c1"># plt.legend()</span>
+<span class="c1"># plt.show()</span>
+
+<span class="c1"># import scipy.io as spio</span>
+<span class="c1"># import os</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># print(os.name)</span>
+<span class="c1"># matfile = &quot;D:\Dropbox\multipacting\MPGUI21\H.mat&quot;</span>
+<span class="c1"># matdata = spio.loadmat(matfile)</span>
+<span class="c1"># spio.savemat(r&quot;D:\Dropbox\multipacting\MPGUI21\multipac\texst.mat&quot;, matdata)</span>
+
+<span class="c1"># (b&#39;MATLAB 5.0 MAT-file Platform: nt, Created on: Tue Apr 26 20:05:47 2022&#39;, 0, 256, b&#39;IM&#39;) &lt;class &#39;numpy.ndarray&#39;&gt; &lt;class &#39;numpy.ndarray&#39;&gt;</span>
+<span class="c1"># b&#39;MATLAB 5.0 MAT-file Platform: nt, Created on: Tue Apr 26 20:05:47 2022\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01IM&#39;</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def create_pseudo_shape_space(var_list, lock_list):</span>
+<span class="c1">#     A, B, a, b, Ri, L, Req = var_list</span>
+<span class="c1">#     A_LOCKED, B_LOCKED, a_LOCKED, b_LOCKED, Ri_LOCKED, L_LOCKED, Req_LOCKED = lock_list</span>
+<span class="c1">#</span>
+<span class="c1">#     if Req[0] == 0:</span>
+<span class="c1">#         AA, BB, aa, bb, RiRi, LL = np.meshgrid(A, B, a, b, Ri, L)</span>
+<span class="c1">#</span>
+<span class="c1">#         space = []</span>
+<span class="c1">#         for j in range(len(A)):  # for some reason the first dimension of A is the dimension of B</span>
+<span class="c1">#             for i in range(len(B)):</span>
+<span class="c1">#                 for k in range(len(a)):</span>
+<span class="c1">#                     for m in range(len(b)):</span>
+<span class="c1">#                         for n in range(len(Ri)):</span>
+<span class="c1">#                             for o in range(len(L)):</span>
+<span class="c1">#                                 space.append([AA[i][j][k][m][n][o], BB[i][j][k][m][n][o], aa[i][j][k][m][n][o],</span>
+<span class="c1">#                                               bb[i][j][k][m][n][o], RiRi[i][j][k][m][n][o], LL[i][j][k][m][n][o],</span>
+<span class="c1">#                                               RiRi[i][j][k][m][n][o] + BB[i][j][k][m][n][o] + bb[i][j][k][m][n][o], 0])</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         AA, BB, aa, bb, RiRi, ReqReq = np.meshgrid(A, B, a, b, Ri, Req)</span>
+<span class="c1">#</span>
+<span class="c1">#         space = []</span>
+<span class="c1">#         for j in range(len(A)):  # for some reason the first dimension of A is the dimension of B</span>
+<span class="c1">#             for i in range(len(B)):</span>
+<span class="c1">#                 for k in range(len(a)):</span>
+<span class="c1">#                     for m in range(len(b)):</span>
+<span class="c1">#                         for n in range(len(Ri)):</span>
+<span class="c1">#                             for o in range(len(L)):</span>
+<span class="c1">#                                 space.append([AA[i][j][k][m][n][o], BB[i][j][k][m][n][o], aa[i][j][k][m][n][o],</span>
+<span class="c1">#                                               bb[i][j][k][m][n][o], RiRi[i][j][k][m][n][o],</span>
+<span class="c1">#                                               AA[i][j][k][m][n][o] + aa[i][j][k][m][n][o],</span>
+<span class="c1">#                                               ReqReq[i][j][k][m][n][o], 0])</span>
+<span class="c1">#</span>
+<span class="c1">#     space = np.array(space)</span>
+<span class="c1">#     # print(space)</span>
+<span class="c1">#     # create list of locked variables</span>
+<span class="c1">#     LOCKED_LIST = np.array([A_LOCKED, B_LOCKED, a_LOCKED, b_LOCKED, Ri_LOCKED, L_LOCKED])</span>
+<span class="c1">#     count = np.count_nonzero(LOCKED_LIST)</span>
+<span class="c1">#     print(count)</span>
+<span class="c1">#     if count &gt;= 2:</span>
+<span class="c1">#         # for ll in LOCKED_LIST:</span>
+<span class="c1">#         # check if length of all locked lists are same</span>
+<span class="c1">#         dummy_list = []</span>
+<span class="c1">#         for i in LOCKED_LIST.nonzero()[0]:</span>
+<span class="c1">#             dummy_list.append(len(var_list[i]))</span>
+<span class="c1">#             lock_len = len(var_list[i])</span>
+<span class="c1">#         dummy_list = np.array(dummy_list)</span>
+<span class="c1">#</span>
+<span class="c1">#         if np.all(dummy_list == dummy_list[0]):</span>
+<span class="c1">#             print(&quot;Perfect&quot;)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             print(&quot;Please make sure locked variables are of equal lengths.&quot;)</span>
+<span class="c1">#             return</span>
+<span class="c1">#</span>
+<span class="c1">#         if not A_LOCKED:</span>
+<span class="c1">#             A = np.ones(lock_len)*(-1)</span>
+<span class="c1">#         if not B_LOCKED:</span>
+<span class="c1">#             B = np.ones(lock_len)*(-1)</span>
+<span class="c1">#         if not a_LOCKED:</span>
+<span class="c1">#             a = np.ones(lock_len)*(-1)</span>
+<span class="c1">#         if not b_LOCKED:</span>
+<span class="c1">#             b = np.ones(lock_len)*(-1)</span>
+<span class="c1">#         if not Ri_LOCKED:</span>
+<span class="c1">#             Ri = np.ones(lock_len)*(-1)</span>
+<span class="c1">#         if not L_LOCKED:</span>
+<span class="c1">#             L = np.ones(lock_len)*(-1)</span>
+<span class="c1">#         if not Req_LOCKED:</span>
+<span class="c1">#             L = np.ones(lock_len)*(-1)</span>
+<span class="c1">#</span>
+<span class="c1">#         lock = list(zip(A, B, a, b, Ri, L))</span>
+<span class="c1">#         print(lock)</span>
+<span class="c1">#</span>
+<span class="c1">#         slice = []</span>
+<span class="c1">#         for s in space:</span>
+<span class="c1">#             ll = []</span>
+<span class="c1">#             for z in lock:</span>
+<span class="c1">#                 ll = [i for (i, j) in zip(s, z) if i == j]</span>
+<span class="c1">#</span>
+<span class="c1">#                 if len(ll) == count:</span>
+<span class="c1">#                     slice.append(s)</span>
+<span class="c1">#</span>
+<span class="c1">#         df = pd.DataFrame(slice, columns=[&quot;A&quot;, &quot;B&quot;, &quot;a&quot;, &quot;b&quot;, &quot;Ri&quot;, &quot;L&quot;, &quot;Req&quot;, &quot;alpha&quot;])</span>
+<span class="c1">#         print(df)</span>
+<span class="c1">#</span>
+<span class="c1">#     df = pd.DataFrame(space, columns=[&quot;A&quot;, &quot;B&quot;, &quot;a&quot;, &quot;b&quot;, &quot;Ri&quot;, &quot;L&quot;, &quot;Req&quot;, &quot;alpha&quot;])</span>
+<span class="c1">#     print(df)</span>
+<span class="c1">#</span>
+<span class="c1">#     return df</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def check_input(s):</span>
+<span class="c1">#     # s = &quot;range(16, 23, 10)&quot;</span>
+<span class="c1">#     # s = &quot;randrange(16, 23, 10)&quot;</span>
+<span class="c1">#     # s = &quot;[16, 23, 10]&quot;</span>
+<span class="c1">#     # s = 1, 2, 3</span>
+<span class="c1">#     # s = 2</span>
+<span class="c1">#</span>
+<span class="c1">#     if &quot;range&quot; in s and &quot;rand&quot; not in s:</span>
+<span class="c1">#         s = s.replace(&#39;range&#39;, &#39;&#39;)</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             l = ast.literal_eval(s)</span>
+<span class="c1">#             return np.linspace(l[0], l[1], l[2])</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             print(&quot;Please check inputs.&quot;)</span>
+<span class="c1">#     elif &quot;randrange&quot; in s:</span>
+<span class="c1">#         s = s.replace(&#39;randrange&#39;, &#39;&#39;)</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             l = ast.literal_eval(s)</span>
+<span class="c1">#             ll = np.random.uniform(l[0], l[1], l[2])</span>
+<span class="c1">#             return ll</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             print(&quot;Please check inputs.&quot;)</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         try:</span>
+<span class="c1">#             ll = ast.literal_eval(s)</span>
+<span class="c1">#             if isinstance(ll, int):</span>
+<span class="c1">#                 ll = [ll]</span>
+<span class="c1">#             return ll</span>
+<span class="c1">#         except:</span>
+<span class="c1">#             print(&quot;Please check inputs.&quot;)</span>
+<span class="c1">#</span>
+<span class="c1">#     return 1</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># iBP = &#39;left&#39;</span>
+<span class="c1"># BP = &#39;none&#39;</span>
+<span class="c1"># type = &quot;IO&quot;</span>
+<span class="c1"># freq = 400.79</span>
+<span class="c1"># pseudo_shape_space = {}</span>
+<span class="c1">#</span>
+<span class="c1"># A = [1]</span>
+<span class="c1"># B = [4, 6]</span>
+<span class="c1"># a = [7]</span>
+<span class="c1"># b = [9]</span>
+<span class="c1"># Ri = [2]</span>
+<span class="c1"># L = [0]</span>
+<span class="c1"># Req = [10]</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># A = check_input(&#39;range(3, 17, 4)&#39;)</span>
+<span class="c1"># A = np.around(A, decimals=2)</span>
+<span class="c1"># a = check_input(&#39;1&#39;)</span>
+<span class="c1"># a = np.around(a, decimals=2)</span>
+<span class="c1"># ic(a)</span>
+<span class="c1">#</span>
+<span class="c1"># var_list = [A, B, a, b, Ri, L, Req]</span>
+<span class="c1"># lock_list = [False, False, True, False, False, False, False]</span>
+<span class="c1"># ihc = create_pseudo_shape_space(var_list, lock_list)</span>
+<span class="c1"># # ihc = pd.DataFrame([[1, 2, 3, 4, 5, 6, 7, 7]], columns=[&quot;A&quot;, &quot;B&quot;, &quot;a&quot;, &quot;b&quot;, &quot;Ri&quot;, &quot;L&quot;, &quot;Req&quot;, &quot;alpha&quot;])</span>
+<span class="c1"># ohc = create_pseudo_shape_space(var_list, lock_list)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># if ihc is not None and ohc is not None:</span>
+<span class="c1">#     if type == &quot;IO&quot;:</span>
+<span class="c1">#         print(&quot;IO&quot;)</span>
+<span class="c1">#         key = 0</span>
+<span class="c1">#         for indx1, inner_cell in ihc.iterrows():</span>
+<span class="c1">#             inner_cell = inner_cell.tolist()</span>
+<span class="c1">#             for indx2, other_cell in ohc.iterrows():</span>
+<span class="c1">#                 # enforce Req_inner_cell == Req_outer_cell</span>
+<span class="c1">#                 other_cell = other_cell.tolist()</span>
+<span class="c1">#                 other_cell[-2] = inner_cell[-2]</span>
+<span class="c1">#</span>
+<span class="c1">#                 pseudo_shape_space[key] = {&#39;IC&#39;: inner_cell, &#39;OC&#39;: other_cell, &#39;BP&#39;: BP, &#39;FREQ&#39;: freq}</span>
+<span class="c1">#                 key += 1</span>
+<span class="c1">#</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         print(&quot;II&quot;)</span>
+<span class="c1">#         key = 0</span>
+<span class="c1">#         for indx, inner_cell in ihc.iterrows():</span>
+<span class="c1">#             pseudo_shape_space[key] = {&#39;IC&#39;: inner_cell.tolist(), &#39;OC&#39;: inner_cell.tolist(), &#39;BP&#39;: BP, &#39;FREQ&#39;: freq}</span>
+<span class="c1">#             key += 1</span>
+<span class="c1">#</span>
+<span class="c1">#     with open(&quot;test.json&quot;, &#39;w&#39;) as file:</span>
+<span class="c1">#         file.write(json.dumps(pseudo_shape_space, indent=4, separators=(&#39;,&#39;, &#39;: &#39;)))</span>
+<span class="c1"># else:</span>
+<span class="c1">#     print(&quot;Please check inputs.&quot;)</span>
+<span class="c1">#</span>
+<span class="c1"># print(eval(&#39;np.linspace(73.52-2.5, 73.52+2.5, 6)&#39;))</span>
+
+<span class="c1"># alpha = np.pi/2</span>
+<span class="c1">#</span>
+<span class="c1"># A = np.array([1, 0, 0])</span>
+<span class="c1"># B = np.array([-1, 0, 0])</span>
+<span class="c1"># a = np.array([0, 1, 0])</span>
+<span class="c1"># b = np.array([0, -1, 0])</span>
+<span class="c1"># Ri = np.array([0, 0, 1])</span>
+<span class="c1"># L = np.array([0, 0, -1])</span>
+<span class="c1"># Req = np.array([np.cos(alpha), np.cos(alpha), np.cos(alpha)])</span>
+<span class="c1">#</span>
+<span class="c1"># ll = [A, B, a, b, Ri, L, Req]</span>
+<span class="c1"># for l in ll:</span>
+<span class="c1">#     ax.plot([0, 1*l[0]], [0, 1*l[1]], [0, 1*l[2]])</span>
+<span class="c1"># # plt.show()</span>
+<span class="c1"># # df1 = fr.json_reader(r&quot;D:\Dropbox\CEMCodesHub\SampleProject_s\Cavities\C3794_1Cell.json&quot;)</span>
+<span class="c1"># # df2 = fr.json_reader(r&quot;D:\Dropbox\CEMCodesHub\C538\Cavities\C538_1Cell.json&quot;)</span>
+<span class="c1"># df2 = pd.ExcelFile(r&quot;D:\Dropbox\CEMCodesHub\C538\PostprocessingData\Data\C538_1Cell_ABCI_SLANS.xlsx&quot;)</span>
+<span class="c1"># df2 = df2.parse(&quot;Sheet1&quot;)</span>
+<span class="c1"># df_list = [df2]</span>
+<span class="c1"># for df in df_list:</span>
+<span class="c1">#     # print(df)</span>
+<span class="c1">#     df = df/df.max()</span>
+<span class="c1">#     # print(data)</span>
+<span class="c1">#</span>
+<span class="c1">#     x = []</span>
+<span class="c1">#     y = []</span>
+<span class="c1">#     z = []</span>
+<span class="c1">#     c = []  # color</span>
+<span class="c1">#     fmx = [1092, 865, 901, 1128, 1227, 867, 1155, 1200, 1083, 1104]</span>
+<span class="c1">#     for ind, val in df.iterrows():</span>
+<span class="c1">#         # print(val, type(val[&quot;A&quot;]))</span>
+<span class="c1">#         # p = val[&quot;A&quot;]*A + val[&quot;B&quot;]*B + val[&quot;ai&quot;]*a + val[&quot;bi&quot;]*b + val[&quot;Ri&quot;]*Ri + val[&quot;L&quot;]*L + val[&quot;Req&quot;]*Req</span>
+<span class="c1">#         p = val[&quot;A&quot;]*A + val[&quot;B&quot;]*B + val[&quot;a2&quot;]*a + val[&quot;b3&quot;]*b + val[&quot;Ri&quot;]*Ri + val[&quot;L&quot;]*L + val[&quot;Req&quot;]*Req</span>
+<span class="c1">#         x.append(p[0])</span>
+<span class="c1">#         y.append(p[1])</span>
+<span class="c1">#         z.append(p[2])</span>
+<span class="c1">#         c.append(val[&quot;fmax[max(0.7&lt;f&lt;0.77)]&quot;])</span>
+<span class="c1">#</span>
+<span class="c1">#         if ind in fmx:</span>
+<span class="c1">#             ax.scatter(p[0], p[1], p[2], c=&#39;k&#39;)</span>
+<span class="c1">#         if ind == 1093 or ind == 1094 or ind == 1095 or ind == 1096:</span>
+<span class="c1">#             ax.scatter(p[0], p[1], p[2], c=&#39;r&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     p = ax.scatter(x, y, z, c=c, alpha=.1, cmap=&#39;jet&#39;)</span>
+<span class="c1">#</span>
+<span class="c1"># plt.colorbar(p)</span>
+<span class="c1"># plt.show()</span>
+<span class="c1"># Zt = 109.98</span>
+<span class="c1"># # Yt = 1/Zt</span>
+<span class="c1"># # f = 519.1e6</span>
+<span class="c1"># # S21 = 0.22</span>
+<span class="c1"># # c = 3e8</span>
+<span class="c1"># #</span>
+<span class="c1"># # Y11 = (2*Yt*(np.exp(-1j*2*2*np.pi*f/c) - S21))/S21</span>
+<span class="c1"># # Y11_mag = abs(Y11)</span>
+<span class="c1"># # print(Y11_mag)</span>
+
+<span class="c1"># import numpy as np</span>
+<span class="c1"># from itertools import product</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def squiggle_xy(a, b, c, d, i=np.arange(0.0, 2*np.pi, 0.05)):</span>
+<span class="c1">#     return np.sin(i*a)*np.cos(i*b), np.sin(i*c)*np.cos(i*d)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># fig11 = plt.figure(figsize=(8, 8), constrained_layout=False)</span>
+<span class="c1">#</span>
+<span class="c1"># # gridspec inside gridspec</span>
+<span class="c1"># outer_grid = fig11.add_gridspec(4, 4, wspace=0.0, hspace=0.0)</span>
+<span class="c1">#</span>
+<span class="c1"># for i in range(16):</span>
+<span class="c1">#     inner_grid = outer_grid[i].subgridspec(3, 3, wspace=0.0, hspace=0.0)</span>
+<span class="c1">#     a, b = int(i/4)+1, i % 4+1</span>
+<span class="c1">#     for j, (c, d) in enumerate(product(range(1, 4), repeat=2)):</span>
+<span class="c1">#         ax = fig11.add_subplot(inner_grid[j])</span>
+<span class="c1">#         ax.plot(*squiggle_xy(a, b, c, d))</span>
+<span class="c1">#         ax.set_xticks([])</span>
+<span class="c1">#         ax.set_yticks([])</span>
+<span class="c1">#         fig11.add_subplot(ax)</span>
+
+<span class="c1"># all_axes = fig11.get_axes()</span>
+
+<span class="c1"># # show only the outside spines</span>
+<span class="c1"># for ax in all_axes:</span>
+<span class="c1">#     for sp in ax.spines.values():</span>
+<span class="c1">#         sp.set_visible(False)</span>
+<span class="c1">#     if ax.is_first_row():</span>
+<span class="c1">#         ax.spines[&#39;top&#39;].set_visible(True)</span>
+<span class="c1">#     if ax.is_last_row():</span>
+<span class="c1">#         ax.spines[&#39;bottom&#39;].set_visible(True)</span>
+<span class="c1">#     if ax.is_first_col():</span>
+<span class="c1">#         ax.spines[&#39;left&#39;].set_visible(True)</span>
+<span class="c1">#     if ax.is_last_col():</span>
+<span class="c1">#         ax.spines[&#39;right&#39;].set_visible(True)</span>
+
+<span class="c1"># plt.show()</span>
+
+<span class="c1"># folder = fr&quot;D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS&quot;</span>
+<span class="c1"># folders = os.listdir(folder)</span>
+<span class="c1"># for d in folders:</span>
+<span class="c1">#     # delete SLANS_EXE folder</span>
+<span class="c1">#     if os.path.exists(fr&#39;{folder}/{d}/SLANS_exe&#39;):</span>
+<span class="c1">#         shutil.rmtree(fr&#39;{folder}/{d}/SLANS_exe&#39;)</span>
+<span class="c1">#         print(fr&quot;Removed from {d}&quot;)</span>
+<span class="c1"># from PyQt5 import  QtWidgets</span>
+<span class="c1"># import os</span>
+<span class="c1"># import numpy as np</span>
+<span class="c1"># from numpy import cos</span>
+<span class="c1"># from mayavi.mlab import contour3d</span>
+<span class="c1">#</span>
+<span class="c1"># os.environ[&#39;ETS_TOOLKIT&#39;] = &#39;qt5&#39;</span>
+<span class="c1"># from pyface.qt import QtGui, QtCore</span>
+<span class="c1"># from traits.api import HasTraits, Instance, on_trait_change</span>
+<span class="c1"># from traitsui.api import View, Item</span>
+<span class="c1"># from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor</span>
+<span class="c1">#</span>
+<span class="c1"># ## create Mayavi Widget and show</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># class Visualization(HasTraits):</span>
+<span class="c1">#     scene = Instance(MlabSceneModel, ())</span>
+<span class="c1">#</span>
+<span class="c1">#     @on_trait_change(&#39;scene.activated&#39;)</span>
+<span class="c1">#     def update_plot(self):</span>
+<span class="c1">#     ## PLot to Show</span>
+<span class="c1">#         x, y, z = np.ogrid[-3:3:60j, -3:3:60j, -3:3:60j]</span>
+<span class="c1">#         t = 0</span>
+<span class="c1">#         Pf = 0.45+((x*cos(t))*(x*cos(t)) + (y*cos(t))*(y*cos(t))-(z*cos(t))*(z*cos(t)))</span>
+<span class="c1">#         obj = contour3d(Pf, contours=[0], transparent=False)</span>
+<span class="c1">#</span>
+<span class="c1">#     view = View(Item(&#39;scene&#39;, editor=SceneEditor(scene_class=MayaviScene),</span>
+<span class="c1">#                      height=250, width=300, show_label=False),</span>
+<span class="c1">#                 resizable=True )</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># class MayaviQWidget(QtGui.QWidget):</span>
+<span class="c1">#     def __init__(self, parent=None):</span>
+<span class="c1">#         QtGui.QWidget.__init__(self, parent)</span>
+<span class="c1">#         layout = QtGui.QVBoxLayout(self)</span>
+<span class="c1">#         layout.setContentsMargins(0,0,0,0)</span>
+<span class="c1">#         layout.setSpacing(0)</span>
+<span class="c1">#         self.visualization = Visualization()</span>
+<span class="c1">#</span>
+<span class="c1">#         self.ui = self.visualization.edit_traits(parent=self,</span>
+<span class="c1">#                                                  kind=&#39;subpanel&#39;).control</span>
+<span class="c1">#         layout.addWidget(self.ui)</span>
+<span class="c1">#         self.ui.setParent(self)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># #### PyQt5 GUI ####</span>
+<span class="c1"># class Ui_MainWindow(object):</span>
+<span class="c1">#     def setupUi(self, MainWindow):</span>
+<span class="c1">#</span>
+<span class="c1">#     ## MAIN WINDOW</span>
+<span class="c1">#         MainWindow.setObjectName(&quot;MainWindow&quot;)</span>
+<span class="c1">#         MainWindow.setGeometry(200,200,1100,700)</span>
+<span class="c1">#</span>
+<span class="c1">#     ## CENTRAL WIDGET</span>
+<span class="c1">#         self.centralwidget = QtWidgets.QWidget(MainWindow)</span>
+<span class="c1">#         self.centralwidget.setObjectName(&quot;centralwidget&quot;)</span>
+<span class="c1">#         MainWindow.setCentralWidget(self.centralwidget)</span>
+<span class="c1">#</span>
+<span class="c1">#     ## GRID LAYOUT</span>
+<span class="c1">#         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)</span>
+<span class="c1">#         self.gridLayout.setObjectName(&quot;gridLayout&quot;)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1">#     ## BUTTONS</span>
+<span class="c1">#         self.button_default = QtWidgets.QPushButton(self.centralwidget)</span>
+<span class="c1">#         self.button_default.setObjectName(&quot;button_default&quot;)</span>
+<span class="c1">#         self.gridLayout.addWidget(self.button_default, 0, 0, 1,1)</span>
+<span class="c1">#</span>
+<span class="c1">#         self.button_previous_data = QtWidgets.QPushButton(self.centralwidget)</span>
+<span class="c1">#         self.button_previous_data.setObjectName(&quot;button_previous_data&quot;)</span>
+<span class="c1">#         self.gridLayout.addWidget(self.button_previous_data, 1, 1, 1,1)</span>
+<span class="c1">#</span>
+<span class="c1">#     ## Mayavi Widget 1</span>
+<span class="c1">#         container = QtGui.QWidget()</span>
+<span class="c1">#         mayavi_widget = MayaviQWidget(container)</span>
+<span class="c1">#         self.gridLayout.addWidget(mayavi_widget, 1, 0,1,1)</span>
+<span class="c1">#     ## Mayavi Widget 2</span>
+<span class="c1">#         container1 = QtGui.QWidget()</span>
+<span class="c1">#         mayavi_widget = MayaviQWidget(container1)</span>
+<span class="c1">#         self.gridLayout.addWidget(mayavi_widget, 0, 1,1,1)</span>
+<span class="c1">#</span>
+<span class="c1">#     ## SET TEXT</span>
+<span class="c1">#         self.retranslateUi(MainWindow)</span>
+<span class="c1">#         QtCore.QMetaObject.connectSlotsByName(MainWindow)</span>
+<span class="c1">#</span>
+<span class="c1">#     def retranslateUi(self, MainWindow):</span>
+<span class="c1">#         _translate = QtCore.QCoreApplication.translate</span>
+<span class="c1">#         MainWindow.setWindowTitle(_translate(&quot;MainWindow&quot;, &quot;Simulator&quot;))</span>
+<span class="c1">#         self.button_default.setText(_translate(&quot;MainWindow&quot;,&quot;Default Values&quot;))</span>
+<span class="c1">#         self.button_previous_data.setText(_translate(&quot;MainWindow&quot;,&quot;Previous Values&quot;))</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># if __name__ == &quot;__main__&quot;:</span>
+<span class="c1">#     import sys</span>
+<span class="c1">#     app = QtWidgets.QApplication(sys.argv)</span>
+<span class="c1">#     app.setStyle(&#39;Fusion&#39;)</span>
+<span class="c1">#     MainWindow = QtWidgets.QMainWindow()</span>
+<span class="c1">#</span>
+<span class="c1">#     ui = Ui_MainWindow()</span>
+<span class="c1">#     ui.setupUi(MainWindow)</span>
+<span class="c1">#     MainWindow.show()</span>
+<span class="c1">#     sys.exit(app.exec_())</span>
+
+<span class="c1"># # # load data</span>
+<span class="c1"># # filename = fr&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ea_results\Run3\Generation9.xlsx&quot;</span>
+<span class="c1"># # filename1 = fr&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS\Generation13.xlsx&quot;</span>
+<span class="c1"># # filename2 = fr&#39;D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\ttt.xlsx&#39;</span>
+<span class="c1"># # df = pd.read_excel(filename, &#39;Sheet1&#39;)</span>
+<span class="c1"># # df1 = pd.read_excel(filename1, &#39;Sheet1&#39;)</span>
+<span class="c1"># # df2 = pd.read_excel(filename2, &#39;Sheet1&#39;)</span>
+<span class="c1"># # v = [&#39;A&#39;, &#39;B&#39;, &#39;a&#39;, &#39;b&#39;, &#39;Ri&#39;, &#39;Req&#39;, &#39;Epk/Eacc&#39;, &#39;Bpk/Eacc&#39;, &#39;R/Q&#39;]</span>
+<span class="c1"># # # v = [&#39;A&#39;, &#39;B&#39;, &#39;a&#39;, &#39;b&#39;, &#39;Ri&#39;, &#39;Req&#39;, &#39;Epk/Eacc_1&#39;, &#39;Bpk/Eacc_1&#39;, &#39;Rsh/Q_1&#39;]</span>
+<span class="c1"># # # v = [&#39;Epk/Eacc&#39;, &#39;Bpk/Eacc&#39;, &#39;R/Q&#39;]</span>
+<span class="c1"># #</span>
+<span class="c1"># # # for p in v:</span>
+<span class="c1"># # #     # df[p] = df[p] / df[p].abs().max()</span>
+<span class="c1"># # #     # print(df[&#39;B&#39;].describe())</span>
+<span class="c1"># # #     df[p].plot.density()</span>
+<span class="c1"># # sd = np.linspace(30, 80, 1000)</span>
+<span class="c1"># # dff = pd.DataFrame(sd, columns=[&#39;A&#39;])</span>
+<span class="c1"># # # print(dff)</span>
+<span class="c1"># # var = &#39;A&#39;</span>
+<span class="c1"># # df[var].plot.density()</span>
+<span class="c1"># # df1[var].plot.density()</span>
+<span class="c1"># # df2[var].plot.density()</span>
+<span class="c1"># # dff[var].plot.density()</span>
+<span class="c1"># # #</span>
+<span class="c1"># # plt.legend()</span>
+<span class="c1"># # plt.ylim(0, 0.15)</span>
+<span class="c1"># # plt.show()</span>
+
+<span class="c1"># df = pd.DataFrame(columns=[&#39;key&#39;, &#39;A&#39;, &#39;B&#39;, &#39;C&#39;])</span>
+<span class="c1"># df[[&#39;key&#39;, &#39;A&#39;, &#39;B&#39;, &#39;C&#39;]] = [[&#39;a&#39;, 1, 2, 3], [&#39;b&#39;, 4, 5, 6], [&#39;c&#39;, 7, 8, 9], [&#39;d&#39;, 10, 11, 12]]</span>
+<span class="c1"># df = df.set_index(&#39;key&#39;)</span>
+<span class="c1"># print(df)</span>
+<span class="c1">#</span>
+<span class="c1"># for index, row in df.iterrows():</span>
+<span class="c1">#     print(row.tolist())</span>
+
+<div class="viewcode-block" id="stroud"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.stroud">[docs]</a><span class="k">def</span> <span class="nf">stroud</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="c1"># Stroud-3 method</span>
+    <span class="c1">#</span>
+    <span class="c1"># Input parameters:</span>
+    <span class="c1">#  p   number of dimensions</span>
+    <span class="c1"># Output parameters:</span>
+    <span class="c1">#  nodes   nodes of quadrature rule in [0,1]^p (column-wise)</span>
+    <span class="c1">#</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">p</span><span class="p">))</span>
+    <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">p</span>
+    <span class="n">fac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">p</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="p">))):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">((</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">)</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="p">):</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># transform nodes from [-1,+1]^p to [0,1]^p</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">nodes</span> <span class="o">+</span> <span class="mf">0.5</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="quad_stroud3"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.quad_stroud3">[docs]</a><span class="k">def</span> <span class="nf">quad_stroud3</span><span class="p">(</span><span class="n">rdim</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="c1"># data for Stroud-3 quadrature in [0,1]^k</span>
+    <span class="c1"># nodes and weights</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">stroud</span><span class="p">(</span><span class="n">rdim</span><span class="p">)</span>
+    <span class="n">nodestr</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">nodes</span> <span class="o">-</span> <span class="mf">1.</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;weights: &quot;</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;nodes: &quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
+
+    <span class="c1"># evaluation of Legendre polynomials</span>
+    <span class="n">bpoly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rdim</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rdim</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">):</span>
+            <span class="n">bpoly</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">bpoly</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodestr</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+                <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nodestr</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># standardisation of Legendre polynomials</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bpoly</span></div>
+
+
+<div class="viewcode-block" id="weighted_mean_obj"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.weighted_mean_obj">[docs]</a><span class="k">def</span> <span class="nf">weighted_mean_obj</span><span class="p">(</span><span class="n">tab_var</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+    <span class="n">rows_sims_no</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tab_var</span><span class="p">)</span>
+    <span class="n">no_weights</span><span class="p">,</span> <span class="n">dummy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>  <span class="c1"># z funckji quadr_stroud wekt columnowy</span>
+
+    <span class="k">if</span> <span class="n">rows_sims_no</span> <span class="o">==</span> <span class="n">no_weights</span><span class="p">:</span>
+        <span class="n">expe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">outvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+            <span class="n">expe</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tab_var</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">weights</span><span class="p">)</span>
+            <span class="n">outvar</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tab_var</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+
+        <span class="n">stdDev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">outvar</span> <span class="o">-</span> <span class="n">expe</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">expe</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">stdDev</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ic</span><span class="p">(</span><span class="s1">&#39;Cols_sims_no!=No_weights&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">expe</span><span class="p">,</span> <span class="n">stdDev</span></div>
+
+<span class="c1">#</span>
+<span class="c1"># def uq():</span>
+<span class="c1">#     p_true = np.array([1, 2, 3, 4, 5])</span>
+<span class="c1">#     ic(p_true)</span>
+<span class="c1">#     rdim = len(p_true)  # How many variabels will be considered as random in our case 5</span>
+<span class="c1">#     degree = 1</span>
+<span class="c1">#</span>
+<span class="c1">#     #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)</span>
+<span class="c1">#     flag_stroud = 1</span>
+<span class="c1">#     if flag_stroud == 1:</span>
+<span class="c1">#         nodes, weights, bpoly = quad_stroud3(rdim, degree)</span>
+<span class="c1">#         nodes = 2. * nodes - 1.</span>
+<span class="c1">#     elif flag_stroud == 2:</span>
+<span class="c1">#         nodes, weights, bpoly = quad_stroud3(rdim, degree)  # change to stroud 5 later</span>
+<span class="c1">#         nodes = 2. * nodes - 1.</span>
+<span class="c1">#     else:</span>
+<span class="c1">#         ic(&#39;flag_stroud==1 or flag_stroud==2&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     #  mean value of geometrical parameters</span>
+<span class="c1">#     p_init = np.zeros(np.shape(p_true))</span>
+<span class="c1">#</span>
+<span class="c1">#     no_parm, no_sims = np.shape(nodes)</span>
+<span class="c1">#     delta = 0.05  # or 0.1</span>
+<span class="c1">#</span>
+<span class="c1">#     Ttab_val_f = []</span>
+<span class="c1">#</span>
+<span class="c1">#     for i in range(no_sims):</span>
+<span class="c1">#         p_init[0] = p_true[0] * (1 + delta * nodes[0, i])</span>
+<span class="c1">#         p_init[1] = p_true[1] * (1 + delta * nodes[1, i])</span>
+<span class="c1">#         p_init[2] = p_true[2] * (1 + delta * nodes[2, i])</span>
+<span class="c1">#         p_init[3] = p_true[3] * (1 + delta * nodes[3, i])</span>
+<span class="c1">#         p_init[4] = p_true[4] * (1 + delta * nodes[4, i])</span>
+<span class="c1">#</span>
+<span class="c1">#         tab_val_f = [np.random.randint(5), np.random.randint(5)]</span>
+<span class="c1">#</span>
+<span class="c1">#         Ttab_val_f.append(tab_val_f)</span>
+<span class="c1">#</span>
+<span class="c1">#     ic(np.array(Ttab_val_f).T)</span>
+<span class="c1">#     v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)</span>
+<span class="c1">#     ic(list(v_expe_fobj.T), list(v_stdDev_fobj.T[0]))</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># p = 5</span>
+<span class="c1"># degree = 1</span>
+<span class="c1"># # nodes, weights, bpoly = quad_stroud3(p, degree)</span>
+<span class="c1"># # ic(nodes, weights, bpoly[:, :, 1])</span>
+<span class="c1"># uq()</span>
+<span class="c1">#</span>
+<span class="c1"># uq_result_dict = {&#39;G0_C0_P&#39;: [801.62206,</span>
+<span class="c1">#                                  3.5669454055770395,</span>
+<span class="c1">#                                  2.2964732427293555,</span>
+<span class="c1">#                                  0.07218374831898976,</span>
+<span class="c1">#                                  5.081215159534722,</span>
+<span class="c1">#                                  0.05214187332623576,</span>
+<span class="c1">#                                  96.86471800000001,</span>
+<span class="c1">#                                  2.179102942247872],</span>
+<span class="c1">#                      &#39;G0_C1_P&#39;: [801.62692,</span>
+<span class="c1">#                                  4.159920815526951,</span>
+<span class="c1">#                                  2.036639874786366,</span>
+<span class="c1">#                                  0.043256932856938476,</span>
+<span class="c1">#                                  5.069242453781859,</span>
+<span class="c1">#                                  0.06063893309179642,</span>
+<span class="c1">#                                  95.755528,</span>
+<span class="c1">#                                  2.338346393864051],</span>
+<span class="c1">#                      &#39;G0_C2_P&#39;: [801.6367200000001,</span>
+<span class="c1">#                                  4.818308504389939,</span>
+<span class="c1">#                                  1.9911435243194302,</span>
+<span class="c1">#                                  0.03175986811962072,</span>
+<span class="c1">#                                  5.064680566274672,</span>
+<span class="c1">#                                  0.06920703401261843,</span>
+<span class="c1">#                                  94.275848,</span>
+<span class="c1">#                                  2.4871270745857412],</span>
+<span class="c1">#                      &#39;G0_C3_P&#39;: [801.63716,</span>
+<span class="c1">#                                  5.59864282593621,</span>
+<span class="c1">#                                  2.0182945504535574,</span>
+<span class="c1">#                                  0.02948287780113185,</span>
+<span class="c1">#                                  5.067588181231035,</span>
+<span class="c1">#                                  0.07709301994200095,</span>
+<span class="c1">#                                  92.46944,</span>
+<span class="c1">#                                  2.6174705920945804],</span>
+<span class="c1">#                      &#39;G0_C4_P&#39;: [801.61972,</span>
+<span class="c1">#                                  6.618941107281137,</span>
+<span class="c1">#                                  2.0818413581288855,</span>
+<span class="c1">#                                  0.035112410132603834,</span>
+<span class="c1">#                                  5.0838723764953055,</span>
+<span class="c1">#                                  0.08302605338203956,</span>
+<span class="c1">#                                  90.347102,</span>
+<span class="c1">#                                  2.7185604221121293],</span>
+<span class="c1">#                      &#39;G0_C5_P&#39;: [802.76827,</span>
+<span class="c1">#                                  5.029137168160952,</span>
+<span class="c1">#                                  2.1266994327525803,</span>
+<span class="c1">#                                  0.025972610635272203,</span>
+<span class="c1">#                                  5.160077537544655,</span>
+<span class="c1">#                                  0.07710495281859536,</span>
+<span class="c1">#                                  87.333348,</span>
+<span class="c1">#                                  2.6843850826020694]}</span>
+<span class="c1">#</span>
+<span class="c1"># df = pd.DataFrame.from_dict(uq_result_dict, orient=&#39;index&#39;)</span>
+<span class="c1"># df.columns = list(&#39;abcdefgh&#39;)</span>
+<span class="c1"># ic(df)</span>
+<span class="c1">#</span>
+<span class="c1"># df.index.name = &#39;key&#39;</span>
+<span class="c1"># df.reset_index(inplace=True)</span>
+<span class="c1"># ic(df)</span>
+<span class="c1"># df[[&#39;r&#39;, &#39;q&#39;]] = np.array([[1, 2, 3, 4, 5, 6], [1, 2, 3, 4, 5, 6]]).T</span>
+<span class="c1"># df[[&#39;r&#39;, &#39;q&#39;]] = np.array([[4, 5, 3, 4, 5, 6], [6, 7, 3, 4, 5, 6]]).T</span>
+<span class="c1"># # ic(df.to_numpy().T)</span>
+<span class="c1"># ic(tuple(df.iloc[0].values))</span>
+
+<span class="c1"># def color(row):</span>
+<span class="c1">#     # if row.isnull().values.any():</span>
+<span class="c1">#     if row[0] in df[&#39;key&#39;].tolist()[0:2]:</span>
+<span class="c1">#         return [&#39;background-color: #6bbcd1&#39;] * len(row)</span>
+<span class="c1">#     return [&#39;&#39;] * len(row)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># # df = pd.DataFrame([[7, 5, 6], [1, 2, 3], [4, 5, 6]], index=[list(&#39;abc&#39;)])</span>
+<span class="c1"># # Save Styler Object for Later</span>
+<span class="c1"># styler = df.style</span>
+<span class="c1"># # Apply Styles (This can be chained or on separate lines)</span>
+<span class="c1"># # styler.applymap(lambda x: &#39;background-color : yellow&#39; if x &gt; 1 else &#39;&#39;)</span>
+<span class="c1"># styler.apply(color, axis=1)</span>
+<span class="c1"># # Export the styler to excel</span>
+<span class="c1"># styler.to_excel(&#39;Output.xlsx&#39;)</span>
+
+<span class="c1"># conv = []</span>
+<span class="c1"># for n in np.arange(1):</span>
+<span class="c1">#     f = []</span>
+<span class="c1">#     for x in np.linspace(-1, 1, 100):</span>
+<span class="c1">#         for y in np.linspace(-1, 1, 100):</span>
+<span class="c1">#             f.append((1-x)**2 + 100*(y - x**2)**2)</span>
+<span class="c1">#</span>
+<span class="c1">#     ic(sum(f)/len(f))</span>
+<span class="c1">#     conv.append(sum(f)/len(f))</span>
+<span class="c1">#</span>
+<span class="c1"># plt.plot()</span>
+<span class="c1">#</span>
+<span class="c1"># print(2+-3)</span>
+
+<span class="c1"># import numpy as np</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1"># from matplotlib import colors as mcolors</span>
+<span class="c1"># from matplotlib import cm</span>
+<span class="c1">#</span>
+<span class="c1"># ## Figures config</span>
+<span class="c1"># colors = dict(mcolors.BASE_COLORS, **mcolors.CSS4_COLORS)</span>
+<span class="c1"># LEGEND_SIZE = 15</span>
+<span class="c1"># TITLE_SIZE = 25</span>
+<span class="c1"># AXIS_SIZE = 15</span>
+<span class="c1">#</span>
+<span class="c1"># from emukit.core.initial_designs import RandomDesign</span>
+<span class="c1"># from GPy.models import GPRegression</span>
+<span class="c1"># from emukit.model_wrappers import GPyModelWrapper</span>
+<span class="c1"># from emukit.sensitivity.monte_carlo import MonteCarloSensitivity</span>
+<span class="c1"># from emukit.core import ContinuousParameter, ParameterSpace</span>
+<span class="c1"># from emukit.test_functions.sensitivity import Ishigami ### change this one for the one in the library</span>
+<span class="c1"># from GPy.models import GPRegression</span>
+<span class="c1"># from emukit.model_wrappers import GPyModelWrapper</span>
+<span class="c1"># from emukit.sensitivity.monte_carlo import MonteCarloSensitivity</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># filename = fr&#39;D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx&#39;</span>
+<span class="c1"># df = pd.read_excel(filename, &#39;Sheet1&#39;)</span>
+<span class="c1">#</span>
+<span class="c1"># # ishigami = Ishigami(a=5, b=0.1)</span>
+<span class="c1"># # #</span>
+<span class="c1"># # variable_domain = (-np.pi, np.pi)</span>
+<span class="c1"># # space = ParameterSpace([ContinuousParameter(&#39;x1&#39;, variable_domain[0], variable_domain[1]),</span>
+<span class="c1"># #                         ContinuousParameter(&#39;x2&#39;, variable_domain[0], variable_domain[1]),</span>
+<span class="c1"># #                         ContinuousParameter(&#39;x3&#39;, variable_domain[0], variable_domain[1])])</span>
+<span class="c1">#</span>
+<span class="c1"># variable_domain = (-np.pi, np.pi)</span>
+<span class="c1"># space = ParameterSpace([ContinuousParameter(&#39;A&#39;, 30, 80),</span>
+<span class="c1">#                         ContinuousParameter(&#39;B&#39;, 30, 80),</span>
+<span class="c1">#                         ContinuousParameter(&#39;a2&#39;, 10, 60),</span>
+<span class="c1">#                         ContinuousParameter(&#39;b3&#39;, 10, 60),</span>
+<span class="c1">#                         ContinuousParameter(&#39;Ri&#39;, 60, 85)])</span>
+<span class="c1">#</span>
+<span class="c1"># # desing = RandomDesign(space)</span>
+<span class="c1"># # X = desing.get_samples(500)</span>
+<span class="c1"># # Y = ishigami.fidelity1(X)[:, None]</span>
+<span class="c1">#</span>
+<span class="c1"># ic(df[[&#39;A&#39;, &#39;B&#39;, &#39;a2&#39;, &#39;b3&#39;, &#39;Ri&#39;]].to_numpy())</span>
+<span class="c1"># # ic(X)</span>
+<span class="c1"># ic(np.atleast_2d(df[&#39;Epk/Eacc&#39;].to_numpy()).T)</span>
+<span class="c1"># # ic(Y)</span>
+<span class="c1">#</span>
+<span class="c1"># X = df[[&#39;A&#39;, &#39;B&#39;, &#39;a2&#39;, &#39;b3&#39;, &#39;Ri&#39;]].to_numpy()</span>
+<span class="c1"># Y = np.atleast_2d(df[&#39;Epk/Eacc&#39;].to_numpy()).T</span>
+<span class="c1">#</span>
+<span class="c1"># ic(&quot;Check 1&quot;)</span>
+<span class="c1"># model_gpy = GPRegression(X, Y)</span>
+<span class="c1"># ic(&quot;Check 2&quot;)</span>
+<span class="c1"># model_emukit = GPyModelWrapper(model_gpy)</span>
+<span class="c1"># ic(&quot;Check 3&quot;)</span>
+<span class="c1"># model_emukit.optimize()</span>
+<span class="c1"># ic(&quot;Check 4&quot;)</span>
+<span class="c1">#</span>
+<span class="c1"># senstivity_ishigami_gpbased = MonteCarloSensitivity(model = model_emukit, input_domain = space)</span>
+<span class="c1"># ic(&quot;Check 5&quot;)</span>
+<span class="c1"># main_effects_gp, total_effects_gp, _ = senstivity_ishigami_gpbased.compute_effects(num_monte_carlo_points = 10000)</span>
+<span class="c1"># ic(&quot;Check 6&quot;)</span>
+<span class="c1"># main_effects_gp = {ivar: main_effects_gp[ivar][0] for ivar in main_effects_gp}</span>
+<span class="c1"># ic(&quot;Check 7&quot;)</span>
+<span class="c1">#</span>
+<span class="c1"># d = {#&#39;Sobol True&#39;: ishigami.main_effects,</span>
+<span class="c1">#      &#39;GP Monte Carlo&#39;: main_effects_gp}</span>
+<span class="c1">#</span>
+<span class="c1"># pd.DataFrame(d).plot(kind=&#39;bar&#39;, figsize=(12, 5))</span>
+<span class="c1"># plt.title(&#39;First-order Sobol indexes - Ishigami&#39;, fontsize=TITLE_SIZE)</span>
+<span class="c1"># plt.ylabel(&#39;% of explained output variance&#39;, fontsize=AXIS_SIZE)</span>
+<span class="c1"># plt.show()</span>
+
+
+<div class="viewcode-block" id="create_cst_sweep_import_random"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.create_cst_sweep_import_random">[docs]</a><span class="k">def</span> <span class="nf">create_cst_sweep_import_random</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">v_int</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">math</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="c1"># p - polynomial order</span>
+    <span class="c1"># v - random variables</span>
+
+    <span class="c1"># calculate number of random points needed</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">n_rand</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">int</span><span class="p">((</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span> <span class="o">+</span> <span class="n">p</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="o">*</span><span class="n">math</span><span class="o">.</span><span class="n">factorial</span><span class="p">(</span><span class="n">p</span><span class="p">)))</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">n_rand</span><span class="p">)</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rand</span><span class="p">):</span>
+        <span class="n">d</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">vi</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vi</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">vi</span> <span class="ow">in</span> <span class="n">v_int</span><span class="p">]</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+    <span class="c1"># ic(df)</span>
+    <span class="n">writePath</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\hc_random_vector.txt&#39;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">writePath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">dfAsString</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dfAsString</span><span class="p">)</span></div>
+
+
+<span class="n">var</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;lh1&#39;</span><span class="p">,</span> <span class="s1">&#39;lh3&#39;</span><span class="p">,</span> <span class="s1">&#39;lh4&#39;</span><span class="p">,</span> <span class="s1">&#39;dh3&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha_h&#39;</span><span class="p">,</span> <span class="s1">&#39;ch2&#39;</span><span class="p">,</span> <span class="s1">&#39;r_cyl&#39;</span><span class="p">,</span> <span class="s1">&#39;offset_y&#39;</span><span class="p">]</span>
+
+<span class="n">var_int</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">150</span><span class="p">,</span> <span class="mi">190</span><span class="p">],</span> <span class="p">[</span><span class="mi">35</span><span class="p">,</span> <span class="mi">45</span><span class="p">],</span> <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">],</span> <span class="p">[</span><span class="mi">12</span><span class="p">,</span> <span class="mi">20</span><span class="p">],</span> <span class="p">[</span><span class="mi">90</span><span class="p">,</span> <span class="mi">120</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">18</span><span class="p">],</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">30</span><span class="p">]]</span> <span class="c1"># big interval</span>
+<span class="c1"># var_int = [[155, 175], [37.5, 42.5], [55, 65], [15, 18], [100, 115], [2, 4], [12, 16], [15, 25]]  # small interval</span>
+
+<span class="c1"># create_cst_sweep_import_random(1, var, var_int)</span>
+
+
+<div class="viewcode-block" id="create_cst_sweep_import_sobol_sequence"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.create_cst_sweep_import_sobol_sequence">[docs]</a><span class="k">def</span> <span class="nf">create_cst_sweep_import_sobol_sequence</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">l_bounds</span><span class="p">,</span> <span class="n">u_bounds</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">qmc</span>
+    <span class="n">sampler</span> <span class="o">=</span> <span class="n">qmc</span><span class="o">.</span><span class="n">Sobol</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="n">dim</span><span class="p">,</span> <span class="n">scramble</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">sampler</span><span class="o">.</span><span class="n">random_base2</span><span class="p">(</span><span class="n">m</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">qmc</span><span class="o">.</span><span class="n">discrepancy</span><span class="p">(</span><span class="n">sample</span><span class="p">))</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">qmc</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">l_bounds</span><span class="p">,</span> <span class="n">u_bounds</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">)</span>
+    <span class="c1"># ic(df)</span>
+    <span class="n">writePath</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\dqw_random_vector.txt&#39;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">writePath</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">dfAsString</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">dfAsString</span><span class="p">)</span></div>
+
+
+<span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;shaft_y&#39;</span><span class="p">,</span> <span class="s1">&#39;bend_out_sec_prob_length&#39;</span><span class="p">,</span> <span class="s1">&#39;bend_out_cap_gap&#39;</span><span class="p">,</span> <span class="s1">&#39;Window_margin&#39;</span><span class="p">,</span> <span class="s1">&#39;Shift_from_center&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;Cap_y&#39;</span><span class="p">,</span> <span class="s1">&#39;Cap_thickness&#39;</span><span class="p">,</span> <span class="s1">&#39;Cap_Height&#39;</span><span class="p">,</span> <span class="s1">&#39;Cap_Gap&#39;</span><span class="p">,</span> <span class="s1">&#39;Bend_out_chamber_Length&#39;</span><span class="p">,</span> <span class="s1">&#39;BP_HOM_Penetration&#39;</span><span class="p">]</span>
+<span class="n">nominal_values</span> <span class="o">=</span> <span class="p">[</span><span class="mi">215</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mf">5.1</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="o">-</span><span class="mi">15</span><span class="p">,</span> <span class="o">-</span><span class="mf">15.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">49.6</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mf">30.5</span><span class="p">,</span> <span class="mi">20</span><span class="p">]</span>
+<span class="n">variation</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">l_bounds</span><span class="p">,</span> <span class="n">u_bounds</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">nv</span> <span class="ow">in</span> <span class="n">nominal_values</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">nv</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">l_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nv</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">variation</span><span class="p">))</span>
+        <span class="n">u_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nv</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">variation</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">l_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nv</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">variation</span><span class="p">))</span>
+        <span class="n">u_bounds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nv</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">variation</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">l_bounds</span><span class="p">,</span> <span class="n">u_bounds</span><span class="p">)])</span>
+<span class="c1"># create_cst_sweep_import_sobol_sequence(11, 9, columns, l_bounds, u_bounds)</span>
+
+
+<div class="viewcode-block" id="plot_settings"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.plot_settings">[docs]</a><span class="k">def</span> <span class="nf">plot_settings</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;xtick.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;ytick.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">16</span>
+
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.titlesize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">18</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;legend.fontsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">12</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;legend.title_fontsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">14</span>
+
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">5.5</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+    <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.dpi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+
+<span class="n">plot_settings</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="plot_bar_single"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.plot_bar_single">[docs]</a><span class="k">def</span> <span class="nf">plot_bar_single</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">mticker</span>
+    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">product</span>
+    <span class="k">def</span> <span class="nf">pairs</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">lists</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">t</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">pair</span>
+
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\Angle_sweep_2hc_1fpc.xlsx&#39;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Sheet1&#39;</span><span class="p">)</span>
+
+    <span class="n">f_multi</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">56</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">Qext_multi</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Qext&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">56</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">RQT_multi</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;RQT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">56</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="n">ZT_multi</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ZT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">56</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+
+    <span class="n">alpha</span><span class="p">,</span> <span class="n">alpha_fpc</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">270</span><span class="p">,</span> <span class="mi">330</span><span class="p">],</span> <span class="p">[</span><span class="mi">60</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">135</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">225</span><span class="p">,</span> <span class="mi">270</span><span class="p">,</span> <span class="mi">300</span><span class="p">]</span>
+    <span class="n">angle_pair</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">(</span><span class="n">alpha_fpc</span><span class="p">,</span> <span class="n">alpha</span><span class="p">):</span>
+        <span class="n">angle_pair</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">angle_pair</span><span class="p">))</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">angle_pair</span><span class="p">)</span>
+    <span class="c1"># ic(f_multi)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">Qext_max</span><span class="p">,</span> <span class="n">RQT_max</span><span class="p">,</span> <span class="n">ZT_max</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f_multi</span><span class="p">):</span>
+        <span class="c1"># ax[0].scatter(f, Qext_multi[i], label=angle_pair[i], marker=&#39;o&#39;, ec=&#39;k&#39;)</span>
+        <span class="c1"># ax[0].scatter(f, RQT_multi[i], label=angle_pair[i], marker=&#39;o&#39;, ec=&#39;k&#39;)</span>
+        <span class="c1"># ax[0].scatter(f, ZT_multi[i], label=angle_pair[i], marker=&#39;o&#39;, ec=&#39;k&#39;)</span>
+
+        <span class="c1"># save maximum</span>
+        <span class="n">Qext_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Qext_multi</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">RQT_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">RQT_multi</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+        <span class="n">ZT_max</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">ZT_multi</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">angle_pair</span><span class="p">)</span>
+    <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">N</span><span class="p">)</span>
+    <span class="n">width</span> <span class="o">=</span> <span class="mf">0.25</span>
+
+
+    <span class="n">bars</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">Qext_max</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$Q_</span><span class="si">{ext}</span><span class="s1">$&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightcoral&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">Qext_max</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;max($Q_\mathrm</span><span class="si">{ext}</span><span class="s1">)$ $[\cdot]$&#39;</span><span class="p">)</span>
+    <span class="n">bars1</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">RQT_max</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$(R/Q)_T$&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span>  <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">RQT_max</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightcoral&#39;</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;max($(R/Q)_\mathrm</span><span class="si">{T}</span><span class="s1">$ $ ~\mathrm{[\Omega]}$&#39;</span><span class="p">)</span>
+    <span class="n">bars2</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ZT_max</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;$Z_T$&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ind</span><span class="p">,</span> <span class="n">ZT_max</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;max($Z_\mathrm</span><span class="si">{T}</span><span class="s1">$) $[\mathrm{[k \Omega/m]}$&#39;</span><span class="p">)</span>
+
+    <span class="c1"># ax[0].bar_label(bars, fmt=&#39;%.2e&#39;)##</span>
+    <span class="c1"># ax[1].bar_label(bars, fmt=&#39;%.2e&#39;)##</span>
+    <span class="c1"># ax[2].bar_label(bars, fmt=&#39;%.2e&#39;)##</span>
+
+    <span class="n">ticks_loc</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_xticks</span><span class="p">()</span>
+
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_major_locator</span><span class="p">(</span><span class="n">mticker</span><span class="o">.</span><span class="n">FixedLocator</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">angle_pair</span><span class="p">))))</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">angle_pair</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;($\alpha_\mathrm{HC, FPC}, \alpha_\mathrm</span><span class="si">{HC}</span><span class="s1">$)&#39;</span><span class="p">)</span>
+
+
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="c1"># ax[1].set_yscale(&#39;log&#39;)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+    <span class="c1"># ax.set_ylim(0, 3e6)</span>
+    <span class="c1"># ax.legend(loc=&quot;upper center&quot;, ncol=10, bbox_to_anchor=(0.5, 1.65))</span>
+    <span class="c1"># ax.legend(loc=&quot;upper right&quot;)</span>
+
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_bar_double"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.plot_bar_double">[docs]</a><span class="k">def</span> <span class="nf">plot_bar_double</span><span class="p">():</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.ticker</span> <span class="k">as</span> <span class="nn">mticker</span>
+    <span class="c1"># create_cst_sweep_import(2, var, var_int)</span>
+    <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">combinations</span><span class="p">,</span> <span class="n">product</span>
+
+    <span class="k">def</span> <span class="nf">pairs</span><span class="p">(</span><span class="o">*</span><span class="n">lists</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">combinations</span><span class="p">(</span><span class="n">lists</span><span class="p">,</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">t</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">pair</span>
+
+    <span class="n">aa</span> <span class="o">=</span> <span class="p">[</span><span class="mi">135</span><span class="p">,</span> <span class="mi">45</span><span class="p">]</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\Angle_sweep_2hc_1fpc.xlsx&#39;</span>
+    <span class="n">data_reference</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;ref&#39;</span><span class="p">)</span>
+    <span class="n">data_opt</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">_opt&#39;</span><span class="p">)</span>
+    <span class="n">data1</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">sheet_name</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">data_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_reference</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="n">data_opt</span><span class="p">]</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;(135, 225) (ref)&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)_opt&#39;</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data_list</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">Qext</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Qext&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">RQT</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;RQT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">ZT</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ZT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+            <span class="n">width</span> <span class="o">=</span> <span class="mf">0.25</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Qext</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$Q_\mathrm</span><span class="si">{ext}</span><span class="s1">$ $[\cdot]$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">RQT</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$(R/Q)_\mathrm</span><span class="si">{T}</span><span class="s1">$ $ ~\mathrm{[\Omega]}$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ZT</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$Z_\mathrm</span><span class="si">{T}</span><span class="s1">$ $\mathrm{[k \Omega/m]}$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\alpha_\mathrm{HC, FPC} = &#39;</span> <span class="o">+</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;^\circ, \alpha_\mathrm</span><span class="si">{HC}</span><span class="s1"> = &#39;</span> <span class="o">+</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;^\circ$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="c1"># ax.set_ylim(0, 3e6)</span>
+            <span class="c1"># ax.legend(loc=&quot;upper center&quot;, ncol=10, bbox_to_anchor=(0.5, 1.65))</span>
+            <span class="c1"># ax.le</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;f&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">Qext</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;Qext&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">RQT</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;RQT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">ZT</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;ZT&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+
+            <span class="n">width</span> <span class="o">=</span> <span class="mf">0.25</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Qext</span><span class="p">,</span> <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">Qext</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$Q_\mathrm</span><span class="si">{ext}</span><span class="s1">$ $[\cdot]$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">RQT</span><span class="p">,</span> <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">RQT</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$(R/Q)_\mathrm</span><span class="si">{T}</span><span class="s1">$ $ ~\mathrm{[\Omega]}$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">stem</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ZT</span><span class="p">,</span> <span class="n">linefmt</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ZT</span><span class="p">,</span>  <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;$Z_\mathrm</span><span class="si">{T}</span><span class="s1">$ $\mathrm{[k \Omega/m]}$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\alpha_\mathrm{HC, FPC} = &#39;</span> <span class="o">+</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="sa">r</span><span class="s1">&#39;^\circ, \alpha_\mathrm</span><span class="si">{HC}</span><span class="s1"> = &#39;</span> <span class="o">+</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">aa</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="s1">&#39;^\circ$&#39;</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
+            <span class="c1"># ax.set_ylim(0, 3e6)</span>
+            <span class="c1"># ax.legend(loc=&quot;upper center&quot;, ncol=10, bbox_to_anchor=(0.5, 1.65))</span>
+            <span class="c1"># ax.legend(loc=&quot;upper right&quot;)</span>
+
+    <span class="n">lines</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;upper center&quot;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="sa">r</span><span class="s1">&#39;($\alpha_\mathrm{HC, FPC}, \alpha_\mathrm</span><span class="si">{HC}</span><span class="s1">$)&#39;</span><span class="p">,</span>
+               <span class="n">ncol</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">),</span> <span class="n">fancybox</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">shadow</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">left</span><span class="o">=</span><span class="mf">0.176</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="mf">0.973</span><span class="p">,</span> <span class="n">top</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span> <span class="n">bottom</span><span class="o">=</span><span class="mf">0.112</span><span class="p">)</span>
+    <span class="c1"># plt.tight_layout()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<span class="c1"># # plot_bar_double()</span>
+<span class="c1">#</span>
+<span class="c1"># import matplotlib</span>
+<span class="c1"># matplotlib.use(&#39;qt5agg&#39;)</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1">#</span>
+<span class="c1"># L = 300e-3</span>
+<span class="c1"># b = 10e-3</span>
+<span class="c1"># Z0 = 377</span>
+<span class="c1"># c = 299792458</span>
+<span class="c1"># sigma = 15*1e-3</span>
+<span class="c1"># sigma_c = 3e3  # conductivity</span>
+<span class="c1"># df = pd.read_excel(fr&quot;D:\CST Studio\WAKE\compare.xlsx&quot;, &#39;Sheet1&#39;)</span>
+<span class="c1"># f = df[&#39;f&#39;]*1e9</span>
+<span class="c1"># ic(f)</span>
+<span class="c1"># a = (1-1j)*(L/(2*np.pi*b))*np.sqrt(Z0*2*np.pi*f/(2*c*sigma_c))</span>
+<span class="c1"># a = np.abs(a)</span>
+<span class="c1"># a.to_csv(fr&quot;D:\CST Studio\WAKE\analytic.txt&quot;, header=None, index=None)</span>
+<span class="c1">#</span>
+<span class="c1"># plt.plot(f, np.abs(a))</span>
+<span class="c1"># plt.tight_layout()</span>
+<span class="c1"># plt.show()</span>
+<span class="c1"># ############################################</span>
+<span class="c1"># import matplotlib.pyplot as plt</span>
+<span class="c1"># from matplotlib.lines import Line2D</span>
+<span class="c1"># from matplotlib.patches import Rectangle</span>
+<span class="c1"># from matplotlib.text import Text</span>
+<span class="c1"># from matplotlib.image import AxesImage</span>
+<span class="c1"># import numpy as np</span>
+<span class="c1"># from numpy.random import rand</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># # Fixing random state for reproducibility</span>
+<span class="c1"># np.random.seed(19680801)</span>
+<span class="c1">#</span>
+<span class="c1"># fig, (ax1, ax2) = plt.subplots(2, 1)</span>
+<span class="c1"># ax1.set_title(&#39;click on points, rectangles or text&#39;, picker=True)</span>
+<span class="c1"># ax1.set_ylabel(&#39;ylabel&#39;, picker=True, bbox=dict(facecolor=&#39;red&#39;))</span>
+<span class="c1"># line, = ax1.plot(rand(100), &#39;o&#39;, picker=True, pickradius=5)</span>
+<span class="c1">#</span>
+<span class="c1"># # Pick the rectangle.</span>
+<span class="c1"># ax2.bar(range(10), rand(10), picker=True)</span>
+<span class="c1"># for label in ax2.get_xticklabels():  # Make the xtick labels pickable.</span>
+<span class="c1">#     label.set_picker(True)</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def onpick1(event):</span>
+<span class="c1">#     if isinstance(event.artist, Line2D):</span>
+<span class="c1">#         thisline = event.artist</span>
+<span class="c1">#         xdata = thisline.get_xdata()</span>
+<span class="c1">#         ydata = thisline.get_ydata()</span>
+<span class="c1">#         ind = event.ind</span>
+<span class="c1">#         print(&#39;onpick1 line:&#39;, np.column_stack([xdata[ind], ydata[ind]]))</span>
+<span class="c1">#     elif isinstance(event.artist, Rectangle):</span>
+<span class="c1">#         patch = event.artist</span>
+<span class="c1">#         print(&#39;onpick1 patch:&#39;, patch.get_path())</span>
+<span class="c1">#     elif isinstance(event.artist, Text):</span>
+<span class="c1">#         text = event.artist</span>
+<span class="c1">#         print(&#39;onpick1 text:&#39;, text.get_text())</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># fig.canvas.mpl_connect(&#39;pick_event&#39;, onpick1)</span>
+<span class="c1"># plt.show()</span>
+<span class="c1"># #################################################</span>
+
+
+<span class="c1"># import quadpy</span>
+<span class="c1">#</span>
+<span class="c1"># rdim, degree = 5, 1</span>
+<span class="c1"># scheme = quadpy.cn.stroud_cn_5_2(5)</span>
+<span class="c1"># quad_stroud3(rdim, degree)</span>
+<span class="c1"># print()</span>
+<span class="c1"># print(scheme.weights)</span>
+<span class="c1"># print(scheme.points)</span>
+
+<span class="c1">#########################################</span>
+<div class="viewcode-block" id="func"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.func">[docs]</a><span class="k">def</span> <span class="nf">func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">x</span></div>
+
+
+<span class="c1"># def monte_carlo():</span>
+<span class="c1">#     # calculate volume</span>
+<span class="c1">#     V = 1</span>
+<span class="c1">#     N = 100</span>
+<span class="c1">#</span>
+<span class="c1">#     Integral = 0</span>
+<span class="c1">#     for n in range(1, N, 1):</span>
+<span class="c1">#         Integral = V*np.sum([func(x)/n for x in np.random.uniform(1, 2, n)])</span>
+<span class="c1">#</span>
+<span class="c1">#         plt.scatter(n, abs(0.693417 - Integral)/0.693417)</span>
+<span class="c1">#</span>
+<span class="c1">#     plt.yscale(&#39;log&#39;)</span>
+<span class="c1">#     plt.show()</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># monte_carlo()</span>
+
+
+<div class="viewcode-block" id="area_circ"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.test.area_circ">[docs]</a><span class="k">def</span> <span class="nf">area_circ</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span></div>
+
+<span class="n">area_circ</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.utils.test</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Sosoho-abasi Udongwo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

@@ -16,7 +16,6 @@ from sympy import *
 from sklearn import linear_model
 
 
-
 def plot_settings():
     import matplotlib as mpl
     mpl.rcParams['xtick.labelsize'] = 20
@@ -29,6 +28,7 @@ def plot_settings():
 
     mpl.rcParams['figure.figsize'] = [10, 6]
     mpl.rcParams['figure.dpi'] = 100
+
 
 plot_settings()
 
@@ -326,222 +326,224 @@ def simplySupportedBeam():
     return Y
 
 
-filename = fr'D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx'
-filename = fr'D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\HC_Smax_Fmax_Data_7var_2p.xlsx'
-filename = fr'D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\DQW_Smax_Fmax_Data_11var_2p.xlsx'
-df = pd.read_excel(filename, 'Sheet1')
-# ic(df)
+if __name__ == '__main__':
 
-# random_var_order = [5, 5, 5, 5, 5]
-# random_var_order = [7, 7, 7, 7, 7]
-p_order, truncation = 2, 1
+    filename = fr'D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx'
+    filename = fr'D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\HC_Smax_Fmax_Data_7var_2p.xlsx'
+    filename = fr'D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\DQW_Smax_Fmax_Data_11var_2p.xlsx'
+    df = pd.read_excel(filename, 'Sheet1')
+    # ic(df)
 
-# r_v = ['lh_1', 'lh_3', 'lh_4', 'dh_3', 'alpha_h', 'ch_2', 'r_{cyl}', 'offset_y']
-r_v = ['shaft_y', 'bend_out_sec_prob_length', 'bend_out_cap_gap', 'Window_margin', 'Shift_from_center',
-       'Cap_y', 'Cap_thickness', 'Cap_Height', 'Cap_Gap', 'Bend_out_chamber_Length', 'BP_HOM_Penetration']
+    # random_var_order = [5, 5, 5, 5, 5]
+    # random_var_order = [7, 7, 7, 7, 7]
+    p_order, truncation = 2, 1
 
-random_var_order = [p_order for v in r_v]
-# random_var_order = [1, 1, 1, 1]
-rvo = [[i for i in range(x+1)] for x in random_var_order]
-ic(rvo)
-alpha = list(itertools.product(*rvo))
-x = {}
-for r in r_v:
-    x[r] = df[r]
-# ic(x)
+    # r_v = ['lh_1', 'lh_3', 'lh_4', 'dh_3', 'alpha_h', 'ch_2', 'r_{cyl}', 'offset_y']
+    r_v = ['shaft_y', 'bend_out_sec_prob_length', 'bend_out_cap_gap', 'Window_margin', 'Shift_from_center',
+           'Cap_y', 'Cap_thickness', 'Cap_Height', 'Cap_Gap', 'Bend_out_chamber_Length', 'BP_HOM_Penetration']
 
-# x = {'A': df.A, 'B': df.B,
-#      'a2': df.a2, 'b3': df.b3,
-#      'Ri': df.Ri
-#      }
+    random_var_order = [p_order for v in r_v]
+    # random_var_order = [1, 1, 1, 1]
+    rvo = [[i for i in range(x+1)] for x in random_var_order]
+    ic(rvo)
+    alpha = list(itertools.product(*rvo))
+    x = {}
+    for r in r_v:
+        x[r] = df[r]
+    # ic(x)
 
-# check_distribution(df)
-# plt.legend()
-# plt.show()
+    # x = {'A': df.A, 'B': df.B,
+    #      'a2': df.a2, 'b3': df.b3,
+    #      'Ri': df.Ri
+    #      }
 
-# z = (1-x[0])**2 + 100*(x[1] - x[0]**2)**2
+    # check_distribution(df)
+    # plt.legend()
+    # plt.show()
 
-poly_list = {}
-poly_chaos_ex = {}
-ic(len(alpha))
-poly_list_sym = {}
-symbols_dict = {}
-for a in alpha:
-    # truncate
-    if sum(a) <= truncation:
-    # if np.linalg.norm(a) <= truncation:
-        poly_list[f'{a}'] = [P(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
+    # z = (1-x[0])**2 + 100*(x[1] - x[0]**2)**2
 
-        ll = []
-        for j, i in enumerate(a):
-            pc, sy = P(i, x[list(x.keys())[j]], r_v[j])
-            ll.append(pc)
+    poly_list = {}
+    poly_chaos_ex = {}
+    ic(len(alpha))
+    poly_list_sym = {}
+    symbols_dict = {}
+    for a in alpha:
+        # truncate
+        if sum(a) <= truncation:
+        # if np.linalg.norm(a) <= truncation:
+            poly_list[f'{a}'] = [P(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
 
-            if len(symbols_dict) <= len(a):
-                symbols_dict[sy] = 0
+            ll = []
+            for j, i in enumerate(a):
+                pc, sy = P(i, x[list(x.keys())[j]], r_v[j])
+                ll.append(pc)
 
-        poly_list_sym[f'{a}'] = np.prod(ll)
+                if len(symbols_dict) <= len(a):
+                    symbols_dict[sy] = 0
 
-        poly_chaos_ex[f'{a}'] = [f"P({i}, x['{list(x.keys())[j]}'])" for j, i in enumerate(a)]
+            poly_list_sym[f'{a}'] = np.prod(ll)
 
-print(symbols_dict)
-ic(poly_chaos_ex)
-ic(len(poly_chaos_ex))
-# ic(poly_list_sym)
+            poly_chaos_ex[f'{a}'] = [f"P({i}, x['{list(x.keys())[j]}'])" for j, i in enumerate(a)]
 
-# obj = ['Epk/Eacc', 'Bpk/Eacc', 'R/Q']
-obj = ['S_0', 'f_0', 'BW']
+    print(symbols_dict)
+    ic(poly_chaos_ex)
+    ic(len(poly_chaos_ex))
+    # ic(poly_list_sym)
 
-# update symbols_dict with values
-# ic(df)
-for i in range(len(df)):
-    symbols_dict = update_symbols_dict(symbols_dict, df.loc[i, r_v])
+    # obj = ['Epk/Eacc', 'Bpk/Eacc', 'R/Q']
+    obj = ['S_0', 'f_0', 'BW']
 
-poly, coef = regression(df, poly_list_sym, obj, symbols_dict)
+    # update symbols_dict with values
+    # ic(df)
+    for i in range(len(df)):
+        symbols_dict = update_symbols_dict(symbols_dict, df.loc[i, r_v])
 
-# obj = ['f_0']
-c = {}
-poly_sym_d = {}
-ic(len(poly_list), len(coef))
-for ob in obj:
-    c[ob] = {}
-    poly_sym = 0
-    ci = 0
-    for k, v in poly_list.items():
-        p = np.prod(np.vstack(v), axis=0)
+    poly, coef = regression(df, poly_list_sym, obj, symbols_dict)
 
-        c[ob][k] = np.dot(df[ob], p)/np.dot(p, p)
-        poly_sym += c[ob][k]*poly_list_sym[k]
-        # poly_sym += coef[ob][ci] * poly_list_sym[k]
-        ci += 1
+    # obj = ['f_0']
+    c = {}
+    poly_sym_d = {}
+    ic(len(poly_list), len(coef))
+    for ob in obj:
+        c[ob] = {}
+        poly_sym = 0
+        ci = 0
+        for k, v in poly_list.items():
+            p = np.prod(np.vstack(v), axis=0)
 
-    poly_sym_d[ob] = poly_sym
+            c[ob][k] = np.dot(df[ob], p)/np.dot(p, p)
+            poly_sym += c[ob][k]*poly_list_sym[k]
+            # poly_sym += coef[ob][ci] * poly_list_sym[k]
+            ci += 1
 
-ic(c['f_0'])
-ic(poly_sym_d['f_0'])
-# ic(np.mean(df['Epk/Eacc']))
+        poly_sym_d[ob] = poly_sym
 
-# free some memory
-poly_list = None
+    ic(c['f_0'])
+    ic(poly_sym_d['f_0'])
+    # ic(np.mean(df['Epk/Eacc']))
 
-# build polynomials
-pp = {}
-obj_pce = {}
-for ob in obj:
-    obj_pce[ob] = ' + '.join(map(str, [f"{coeff}*{'*'.join(map(str, poly_chaos_ex[key]))}" for key, coeff in c[ob].items()]))
-    # obj[ob] = pp[ob]
-# rand_var = ['x1', 'x2', 'x3', 'x4']
-# for o
-# obj = {'f1': pp['Epk/Eacc'], 'f2': pp['Bpk/Eacc'], 'f3': pp['R/Q']}
+    # free some memory
+    poly_list = None
 
-# check accuracy of polynomial
+    # build polynomials
+    pp = {}
+    obj_pce = {}
+    for ob in obj:
+        obj_pce[ob] = ' + '.join(map(str, [f"{coeff}*{'*'.join(map(str, poly_chaos_ex[key]))}" for key, coeff in c[ob].items()]))
+        # obj[ob] = pp[ob]
+    # rand_var = ['x1', 'x2', 'x3', 'x4']
+    # for o
+    # obj = {'f1': pp['Epk/Eacc'], 'f2': pp['Bpk/Eacc'], 'f3': pp['R/Q']}
 
-# df = simplySupportedBeam()
-# x = ['b', 'h', 'L', 'E', 'p']
-# obj = ['Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9']
-# r_v = x
-# ic(df)
-ic(obj_pce['f_0'])
-# Sj, STi = sobol_df(x, obj, df)
-Sj, STi = sobol(x, obj_pce, df)
+    # check accuracy of polynomial
 
-# save sobol indices
-with open(fr"D:\Dropbox\CEMCodesHub\utils\Sobol\Sj_p{p_order}_t{truncation}.json", 'w') as file:
-    file.write(json.dumps(Sj, indent=4, separators=(',', ': ')))
+    # df = simplySupportedBeam()
+    # x = ['b', 'h', 'L', 'E', 'p']
+    # obj = ['Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9']
+    # r_v = x
+    # ic(df)
+    ic(obj_pce['f_0'])
+    # Sj, STi = sobol_df(x, obj, df)
+    Sj, STi = sobol(x, obj_pce, df)
 
-with open(fr"D:\Dropbox\CEMCodesHub\utils\Sobol\STi_p{p_order}_t{truncation}.json", 'w') as file:
-    file.write(json.dumps(STi, indent=4, separators=(',', ': ')))
+    # save sobol indices
+    with open(fr"D:\Dropbox\CEMCodesHub\utils\Sobol\Sj_p{p_order}_t{truncation}.json", 'w') as file:
+        file.write(json.dumps(Sj, indent=4, separators=(',', ': ')))
 
-# ic(Sj)
+    with open(fr"D:\Dropbox\CEMCodesHub\utils\Sobol\STi_p{p_order}_t{truncation}.json", 'w') as file:
+        file.write(json.dumps(STi, indent=4, separators=(',', ': ')))
 
-for o in obj:
-    ic(sum(Sj[o].values()))
+    # ic(Sj)
 
-# plot
-fig, ax = plt.subplots(1, 2)
-width = 0.5
+    for o in obj:
+        ic(sum(Sj[o].values()))
 
-# for ob in obj:
-# rand_var_dict = {0: 'A', 1: 'B', 2: 'a', 3: 'b', 4: 'Ri'}
-# rand_var_dict = {0: 'lh1', 1: 'lh3', 2: 'lh4', 3: 'dh3', 4: 'alpha_h', 5: 'ch2', 6: 'r_cyl', 7: 'offset_y'}
-rand_var_dict = {}
-for i, v in enumerate(x):
-    rand_var_dict[i] = v
+    # plot
+    fig, ax = plt.subplots(1, 2)
+    width = 0.5
 
-bottom, bottom1 = np.zeros(len(obj)), np.zeros(len(obj))
-for key in x:
-# for key in x.keys():
-    if key == 0:
-        ax[0].bar(obj, [Sj[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
-        ax[1].bar(obj, [STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
-    else:
-        ax[0].bar(obj, [Sj[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$', bottom=bottom)
-        ax[1].bar(obj, [STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$', bottom=bottom1)
+    # for ob in obj:
+    # rand_var_dict = {0: 'A', 1: 'B', 2: 'a', 3: 'b', 4: 'Ri'}
+    # rand_var_dict = {0: 'lh1', 1: 'lh3', 2: 'lh4', 3: 'dh3', 4: 'alpha_h', 5: 'ch2', 6: 'r_cyl', 7: 'offset_y'}
+    rand_var_dict = {}
+    for i, v in enumerate(x):
+        rand_var_dict[i] = v
 
-    bottom += np.array([Sj[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
-    bottom1 += np.array([STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
+    bottom, bottom1 = np.zeros(len(obj)), np.zeros(len(obj))
+    for key in x:
+    # for key in x.keys():
+        if key == 0:
+            ax[0].bar(obj, [Sj[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
+            ax[1].bar(obj, [STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
+        else:
+            ax[0].bar(obj, [Sj[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$', bottom=bottom)
+            ax[1].bar(obj, [STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$', bottom=bottom1)
 
-# ylabel = ['$S_j$', '$ST_i$']
-ylabel = ['$S_j$', '$ST_i$']
-for i, a in enumerate(ax):
-    ticks_loc = a.get_xticks()
-    a.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
-    # a.set_xticklabels(['Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9'])
-    a.set_xticklabels(obj)
-    a.set_ylabel(ylabel[i])
+        bottom += np.array([Sj[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
+        bottom1 += np.array([STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
 
-# Add a table at the bottom of the axes
-S = [Sj, STi]
-for i, s in enumerate(S):
-    cellText = []
-    rowLabels = []
-    colLabels = []
-    n = 0
-    for k, v in s.items():
-        rowLabels.append(r"$\mathbf{" + k + '}$')
+    # ylabel = ['$S_j$', '$ST_i$']
+    ylabel = ['$S_j$', '$ST_i$']
+    for i, a in enumerate(ax):
+        ticks_loc = a.get_xticks()
+        a.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+        # a.set_xticklabels(['Y1', 'Y2', 'Y3', 'Y4', 'Y5', 'Y6', 'Y7', 'Y8', 'Y9'])
+        a.set_xticklabels(obj)
+        a.set_ylabel(ylabel[i])
 
-        temp_col, temp_cellText = [], []
-        for xx, xv in zip(list(v.keys()), list(v.values())):
-            if xx in [f'V[E[{k}|{p}]]' for p in r_v]:
-                temp_col.append(r"$\mathbf{" + f"{xx.replace(k, '.')}" + '}$')
-                temp_cellText.append(r"$\mathbf{" + f"{round(xv, 4)}" + '}$')
+    # Add a table at the bottom of the axes
+    S = [Sj, STi]
+    for i, s in enumerate(S):
+        cellText = []
+        rowLabels = []
+        colLabels = []
+        n = 0
+        for k, v in s.items():
+            rowLabels.append(r"$\mathbf{" + k + '}$')
 
-        if len(temp_col) != 0:
-            if n == 0:
-                colLabels = temp_col
-            cellText.append(temp_cellText)
+            temp_col, temp_cellText = [], []
+            for xx, xv in zip(list(v.keys()), list(v.values())):
+                if xx in [f'V[E[{k}|{p}]]' for p in r_v]:
+                    temp_col.append(r"$\mathbf{" + f"{xx.replace(k, '.')}" + '}$')
+                    temp_cellText.append(r"$\mathbf{" + f"{round(xv, 4)}" + '}$')
 
-        n += 1
+            if len(temp_col) != 0:
+                if n == 0:
+                    colLabels = temp_col
+                cellText.append(temp_cellText)
 
-    # vals = cellText
-    # print(cellText)
-    # # norm = plt.Normalize(np.min(vals) - 1, np.max(vals) + 1)
-    # # print(norm)
-    # colours = plt.cm.binary(normal(vals), 0.5)
-    rcolors = plt.cm.BuPu(np.full(len(rowLabels), 0.5))
-    ccolors = plt.cm.BuPu(np.full(len(temp_col), 0.5))
-    # print(rowLabels, colLabels)
-    the_table = ax[i].table(cellText=cellText,
-                               rowLabels=rowLabels,
-                               colLabels=colLabels,
-                               rowColours=rcolors,
-                               colColours=ccolors,
-                               # cellColours=colours,
-                               loc='bottom', bbox=[0.0, -0.35, 1, .28])
-    the_table.auto_set_font_size(False)
-    the_table.set_fontsize(8)
+            n += 1
 
-plt.subplots_adjust(bottom=0.3)
-plt.subplots_adjust(top=0.93)
+        # vals = cellText
+        # print(cellText)
+        # # norm = plt.Normalize(np.min(vals) - 1, np.max(vals) + 1)
+        # # print(norm)
+        # colours = plt.cm.binary(normal(vals), 0.5)
+        rcolors = plt.cm.BuPu(np.full(len(rowLabels), 0.5))
+        ccolors = plt.cm.BuPu(np.full(len(temp_col), 0.5))
+        # print(rowLabels, colLabels)
+        the_table = ax[i].table(cellText=cellText,
+                                   rowLabels=rowLabels,
+                                   colLabels=colLabels,
+                                   rowColours=rcolors,
+                                   colColours=ccolors,
+                                   # cellColours=colours,
+                                   loc='bottom', bbox=[0.0, -0.35, 1, .28])
+        the_table.auto_set_font_size(False)
+        the_table.set_fontsize(8)
 
-lines, labels = ax[0].get_legend_handles_labels()
+    plt.subplots_adjust(bottom=0.3)
+    plt.subplots_adjust(top=0.93)
 
-fig.legend(lines, labels, loc="upper center", ncol=int(len(rand_var_dict.keys())), fancybox=True, shadow=False, bbox_to_anchor=(0.5, 1.0))
+    lines, labels = ax[0].get_legend_handles_labels()
 
-# ax[0].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
-#        fancybox=True, shadow=True)
-# ax[1].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
-#           fancybox=True, shadow=True)
+    fig.legend(lines, labels, loc="upper center", ncol=int(len(rand_var_dict.keys())), fancybox=True, shadow=False, bbox_to_anchor=(0.5, 1.0))
 
-plt.tight_layout()
-plt.show()
+    # ax[0].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
+    #        fancybox=True, shadow=True)
+    # ax[1].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
+    #           fancybox=True, shadow=True)
+
+    plt.tight_layout()
+    plt.show()

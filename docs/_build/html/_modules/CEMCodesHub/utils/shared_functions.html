@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CEMCodesHub.utils.shared_functions &#8212; CavityHub 0.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.utils.shared_functions</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for CEMCodesHub.utils.shared_functions</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">import</span> <span class="nn">quadpy</span>
+<span class="kn">from</span> <span class="nn">icecream</span> <span class="kn">import</span> <span class="n">ic</span>
+<span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="update_alpha"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.update_alpha">[docs]</a><span class="k">def</span> <span class="nf">update_alpha</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span>
+    <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cell</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">calculate_alpha</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">cell</span></div>
+
+
+<div class="viewcode-block" id="calculate_alpha"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.calculate_alpha">[docs]</a><span class="k">def</span> <span class="nf">calculate_alpha</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="n">L_bp</span><span class="p">):</span>
+    <span class="c1"># data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],</span>
+    <span class="c1">#         [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])</span>
+    <span class="c1"># x1, y1, x2, y2 = fsolve(ellipse_tangent,</span>
+    <span class="c1">#                         np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),</span>
+    <span class="c1">#                         args=data)</span>
+    <span class="c1"># m = (y2 - y1) / (x2 - x1)</span>
+    <span class="c1"># alpha = 180 - np.arctan(m) * 180 / np.pi</span>
+    <span class="c1"># return alpha</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span> <span class="o">+</span> <span class="n">L_bp</span><span class="p">,</span> <span class="n">Ri</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">+</span> <span class="n">L_bp</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="n">B</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>  <span class="c1"># data = ([h, k, p, q], [a_m, b_m, A_m, B_m])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">ellipse_tangent</span><span class="p">,</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span> <span class="o">+</span> <span class="n">L_bp</span><span class="p">,</span> <span class="n">Ri</span> <span class="o">+</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span> <span class="o">+</span> <span class="n">L_bp</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
+                <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">error_msg</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+
+    <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">)</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+    <span class="k">return</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span></div>
+
+
+<div class="viewcode-block" id="ellipse_tangent"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.ellipse_tangent">[docs]</a><span class="k">def</span> <span class="nf">ellipse_tangent</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">):</span>
+    <span class="n">coord</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">coord</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">dim</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">z</span>
+
+    <span class="n">f1</span> <span class="o">=</span> <span class="n">A</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">B</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">f2</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">f3</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">A</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">B</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">f4</span> <span class="o">=</span> <span class="o">-</span><span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span><span class="p">,</span> <span class="n">f4</span></div>
+
+
+<div class="viewcode-block" id="perform_geometry_checks"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.perform_geometry_checks">[docs]</a><span class="k">def</span> <span class="nf">perform_geometry_checks</span><span class="p">(</span><span class="n">par_mid</span><span class="p">,</span> <span class="n">par_end</span><span class="p">):</span>
+    <span class="c1"># # check if Req is less than lower limit</span>
+    <span class="c1"># if par_mid[6] &lt; par_mid[1] + par_mid[3] + par_mid[4] or par_end[6] &lt; par_end[1] + par_end[3] + par_end[4]:</span>
+    <span class="c1">#     return False</span>
+
+    <span class="c1"># check if alpha is less than 90.5</span>
+    <span class="k">if</span> <span class="n">par_mid</span> <span class="o">==</span> <span class="n">par_end</span><span class="p">:</span>
+        <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span> <span class="o">=</span> <span class="n">calculate_alpha</span><span class="p">(</span><span class="n">par_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                           <span class="n">par_mid</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mf">90.0</span> <span class="ow">or</span> <span class="n">error_msg</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;1:&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span> <span class="o">=</span> <span class="n">calculate_alpha</span><span class="p">(</span><span class="n">par_end</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">par_end</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">par_end</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">par_end</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">par_end</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">par_end</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                           <span class="n">par_mid</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mf">90.0</span> <span class="ow">or</span> <span class="n">error_msg</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;2:&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span> <span class="o">=</span> <span class="n">calculate_alpha</span><span class="p">(</span><span class="n">par_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                           <span class="n">par_mid</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">alpha</span> <span class="o">&lt;</span> <span class="mf">90.0</span> <span class="ow">or</span> <span class="n">error_msg</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3:&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># check if L is less than lower limit</span>
+    <span class="k">if</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">par_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">par_end</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">par_end</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;4:&quot;</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">error_msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">return</span> <span class="kc">True</span></div>
+
+
+<div class="viewcode-block" id="write_cst_paramters"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.write_cst_paramters">[docs]</a><span class="k">def</span> <span class="nf">write_cst_paramters</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ic_</span><span class="p">,</span> <span class="n">oc</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">,</span> <span class="n">cell_type</span><span class="p">):</span>
+    <span class="n">ic_</span> <span class="o">=</span> <span class="n">update_alpha</span><span class="p">(</span><span class="n">ic_</span><span class="p">)</span>
+    <span class="n">oc</span> <span class="o">=</span> <span class="n">update_alpha</span><span class="p">(</span><span class="n">oc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">cell_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># print(&quot;Writing parameters to file&quot;)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">.txt&#39;</span>
+
+        <span class="c1"># print(path)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Aeq&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;Aeq_e&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq_e&#39;</span><span class="p">,</span> <span class="s1">&#39;ai_e&#39;</span><span class="p">,</span> <span class="s1">&#39;bi_e&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri_e&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;L_e&#39;</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha_e&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">]</span>
+
+            <span class="n">value_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ic_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                          <span class="n">oc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">key</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name_list</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> = &quot;</span><span class="si">{</span><span class="mi">0</span><span class="si">}</span><span class="s1">&quot; &quot;</span><span class="si">{</span><span class="n">value_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> = &quot;</span><span class="si">{</span><span class="n">value_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; &quot;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># print(&quot;Writing parameters to file&quot;)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">.txt&#39;</span>
+        <span class="n">path_mc</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">_Multicell.txt&#39;</span>
+
+        <span class="c1"># print(path)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Aeq&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="s1">&#39;Aeq_e&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq_e&#39;</span><span class="p">,</span> <span class="s1">&#39;ai_e&#39;</span><span class="p">,</span> <span class="s1">&#39;bi_e&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri_e&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;L_e&#39;</span><span class="p">,</span> <span class="s1">&#39;Req_e&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha_e&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">cell_type</span> <span class="o">==</span> <span class="s1">&#39;Mid Cell&#39;</span><span class="p">:</span>
+                <span class="n">value_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ic_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                              <span class="s1">&#39;Aeq&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span> <span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ic_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                              <span class="n">oc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">key</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name_list</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> = &quot;</span><span class="si">{</span><span class="mi">0</span><span class="si">}</span><span class="s1">&quot; &quot;</span><span class="si">{</span><span class="n">value_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> = &quot;</span><span class="si">{</span><span class="n">value_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; &quot;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path_mc</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">name_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Aeq&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;Aeq_er&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq_er&#39;</span><span class="p">,</span> <span class="s1">&#39;ai_er&#39;</span><span class="p">,</span> <span class="s1">&#39;bi_er&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri_er&#39;</span><span class="p">,</span> <span class="s1">&#39;L_er&#39;</span><span class="p">,</span> <span class="s1">&#39;Req_er&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha_er&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;Aeq_el&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq_el&#39;</span><span class="p">,</span> <span class="s1">&#39;ai_el&#39;</span><span class="p">,</span> <span class="s1">&#39;bi_el&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri_el&#39;</span><span class="p">,</span> <span class="s1">&#39;L_el&#39;</span><span class="p">,</span> <span class="s1">&#39;Req_el&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha_el&#39;</span><span class="p">,</span> <span class="s1">&#39;key&#39;</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">cell_type</span> <span class="o">==</span> <span class="s1">&#39;Mid Cell&#39;</span><span class="p">:</span>
+                <span class="n">value_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ic_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                              <span class="s1">&#39;Aeq&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span>
+                              <span class="s1">&#39;Aeq&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq&#39;</span><span class="p">,</span> <span class="s1">&#39;ai&#39;</span><span class="p">,</span> <span class="s1">&#39;bi&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha&#39;</span><span class="p">,</span>
+                              <span class="n">key</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">value_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ic_</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">ic_</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                              <span class="n">oc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">oc</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span>
+                              <span class="s1">&#39;Aeq_er&#39;</span><span class="p">,</span> <span class="s1">&#39;Beq_er&#39;</span><span class="p">,</span> <span class="s1">&#39;ai_er&#39;</span><span class="p">,</span> <span class="s1">&#39;bi_er&#39;</span><span class="p">,</span> <span class="s1">&#39;Ri_er&#39;</span><span class="p">,</span> <span class="s1">&#39;L_er&#39;</span><span class="p">,</span> <span class="s1">&#39;Req_er&#39;</span><span class="p">,</span> <span class="s1">&#39;alpha_er&#39;</span><span class="p">,</span>
+                              <span class="n">key</span><span class="p">]</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">name_list</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;key&#39;</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> = &quot;</span><span class="si">{</span><span class="mi">0</span><span class="si">}</span><span class="s1">&quot; &quot;</span><span class="si">{</span><span class="n">value_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1"> = &quot;</span><span class="si">{</span><span class="n">value_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; &quot;&quot;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+        <span class="c1"># print(&quot;Writing to file complete.&quot;)</span>
+
+
+<div class="viewcode-block" id="stroud"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.stroud">[docs]</a><span class="k">def</span> <span class="nf">stroud</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="c1"># Stroud-3 method</span>
+    <span class="c1">#</span>
+    <span class="c1"># Input parameters:</span>
+    <span class="c1">#  p   number of dimensions</span>
+    <span class="c1"># Output parameters:</span>
+    <span class="c1">#  nodes   nodes of quadrature rule in [0,1]**p (column-wise)</span>
+    <span class="c1">#</span>
+
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">p</span><span class="p">))</span>
+    <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">p</span>
+    <span class="n">fac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">p</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="p">))):</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">((</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">)</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="p">):</span>
+            <span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="c1"># transform nodes from [-1,+1]**p to [0,1]**p</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">nodes</span> <span class="o">+</span> <span class="mf">0.5</span>
+
+    <span class="k">return</span> <span class="n">nodes</span></div>
+
+
+<div class="viewcode-block" id="quad_stroud3"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.quad_stroud3">[docs]</a><span class="k">def</span> <span class="nf">quad_stroud3</span><span class="p">(</span><span class="n">rdim</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="c1"># data for Stroud-3 quadrature in [0,1]**k</span>
+    <span class="c1"># nodes and weights</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="n">stroud</span><span class="p">(</span><span class="n">rdim</span><span class="p">)</span>
+    <span class="n">nodestr</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">nodes</span> <span class="o">-</span> <span class="mf">1.</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># evaluation of Legendre polynomials</span>
+    <span class="n">bpoly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rdim</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">ll</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rdim</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">):</span>
+            <span class="n">bpoly</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="n">bpoly</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodestr</span><span class="p">[</span><span class="n">ll</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+                <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nodestr</span><span class="p">[</span><span class="n">ll</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="n">bpoly</span><span class="p">[</span>
+                    <span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ll</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># standardisation of Legendre polynomials</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bpoly</span></div>
+
+
+<div class="viewcode-block" id="quad_stroud5"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.quad_stroud5">[docs]</a><span class="k">def</span> <span class="nf">quad_stroud5</span><span class="p">(</span><span class="n">rdim</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="c1"># data for Stroud-5 quadrature in [0,1]**rdim</span>
+    <span class="c1"># nodes and weights</span>
+    <span class="n">o</span><span class="p">,</span> <span class="n">nodestr</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">quadpy</span><span class="o">.</span><span class="n">cn</span><span class="o">.</span><span class="n">stroud_cn_5_2</span><span class="p">(</span><span class="n">rdim</span><span class="p">)</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">nodestr</span> <span class="o">+</span> <span class="mf">0.5</span>
+    <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span><span class="o">/</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">rdim</span><span class="p">)</span>
+    <span class="n">dummy</span><span class="p">,</span> <span class="n">nnodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+    
+    <span class="c1"># evaluation of Legendre polynomials</span>
+    <span class="n">bpoly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">rdim</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rdim</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nnodes</span><span class="p">):</span>
+            <span class="n">bpoly</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+            <span class="n">bpoly</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodestr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">j</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+                <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">nodestr</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">j</span><span class="p">)</span><span class="o">*</span><span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">j</span><span class="p">]</span><span class="o">-</span><span class="p">(</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">l</span><span class="p">,</span><span class="n">j</span><span class="p">])</span><span class="o">/</span><span class="n">i</span>
+    
+    <span class="c1"># standardisation of Legendre polynomials</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bpoly</span></div>
+
+
+<div class="viewcode-block" id="weighted_mean_obj"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.weighted_mean_obj">[docs]</a><span class="k">def</span> <span class="nf">weighted_mean_obj</span><span class="p">(</span><span class="n">tab_var</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+    <span class="n">rows_sims_no</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tab_var</span><span class="p">)</span>
+    <span class="n">no_weights</span><span class="p">,</span> <span class="n">dummy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>  <span class="c1"># z funckji quadr_stroud wekt columnowy</span>
+
+    <span class="k">if</span> <span class="n">rows_sims_no</span> <span class="o">==</span> <span class="n">no_weights</span><span class="p">:</span>
+        <span class="n">expe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">outvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+            <span class="n">expe</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tab_var</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">weights</span><span class="p">)</span>
+            <span class="n">outvar</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tab_var</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+
+        <span class="n">stdDev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">outvar</span> <span class="o">-</span> <span class="n">expe</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">expe</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">stdDev</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">ic</span><span class="p">(</span><span class="s1">&#39;Cols_sims_no != No_weights&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">expe</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">list</span><span class="p">(</span><span class="n">stdDev</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="normal_dist"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.normal_dist">[docs]</a><span class="k">def</span> <span class="nf">normal_dist</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">sd</span><span class="p">):</span>
+    <span class="n">prob_density</span> <span class="o">=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">sd</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="o">*</span><span class="p">((</span><span class="n">x</span><span class="o">-</span><span class="n">mean</span><span class="p">)</span><span class="o">/</span><span class="n">sd</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">prob_density</span></div>
+
+
+<div class="viewcode-block" id="text_to_list"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.text_to_list">[docs]</a><span class="k">def</span> <span class="nf">text_to_list</span><span class="p">(</span><span class="n">ll</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ll</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ll</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">ll</span><span class="p">,</span> <span class="mf">2e10</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="text_to_list_"><a class="viewcode-back" href="../../../source/CEMCodesHub.utils.html#CEMCodesHub.utils.shared_functions.text_to_list_">[docs]</a><span class="k">def</span> <span class="nf">text_to_list_</span><span class="p">(</span><span class="n">ll</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">ll</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ll</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ll</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">ll</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">ll</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bpoly</span> <span class="o">=</span> <span class="n">quad_stroud3</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="n">scheme</span> <span class="o">=</span> <span class="n">quadpy</span><span class="o">.</span><span class="n">cn</span><span class="o">.</span><span class="n">stroud_cn_5_2</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">ic</span><span class="p">(</span><span class="n">scheme</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">CavityHub 0.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">CEMCodesHub.utils.shared_functions</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Sosoho-abasi Udongwo.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>
