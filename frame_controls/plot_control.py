@@ -1655,7 +1655,7 @@ class PlotControl:
                 unit = {'MHz': 1e6,
                         'GHz': 1e9}
 
-                Z_list = []
+                Z_list, ZT_le = [], []
                 if mode == 'monopole':
                     # trim f
                     # f_list = f_list[0:len(f_list) - 100]
@@ -1666,15 +1666,18 @@ class PlotControl:
                     f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
                                          self.ui.dsb_Frange_Max.value(),
                                          num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
-                    print(f_list)
+                    Z_le = []
                     for i, n in enumerate(Ncav):
-                        Z = [(2 * E0[i] * 1e9 * nu_s[i]) / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3 * a)
-                             if a > 1e-8 else 1e5 for a in f_list]
+                        Z = [(2 * E0[i] * 1e9 * nu_s[i]) / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3 * f)
+                             if f > 1e-8 else 1e5 for f in f_list]
+
+                        Z_le.append(round((2 * E0[i] * 1e9 * nu_s[i]) / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3)*1e-9*1e-3, 2))
                         Z_list.append(Z)
 
                     self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
                                         np.array(Z_list)*1e-3, mode)  # to kOhm
 
+                    self.ui.le_Zth_Long.setText(f"[{Z_le}]")
                     return f_list, Z_list
 
                 elif mode == 'dipole':
@@ -1685,9 +1688,10 @@ class PlotControl:
                                          self.ui.dsb_Frange_Max.value(),
                                          num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
                     for i, n in enumerate(Ncav):
-                        Z = (2 * E0[i]) * 1e9 / (n * I0[i]*1e-3 * beta_xy * tau_xy[i]*1e-3 * frev[i]*1e3)
-                        Z_list.append(Z)
-
+                        ZT = (2 * E0[i]) * 1e9 / (n * I0[i]*1e-3 * beta_xy * tau_xy[i]*1e-3 * frev[i]*1e3)
+                        ZT_le.append(ZT*1e-3)
+                        Z_list.append(ZT)
+                    self.ui.le_Zth_Trans.setText(f"[{ZT_le}]")
                     self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
                                         np.array(Z_list)*1e-3, mode)  # to kOhm
 

@@ -722,11 +722,11 @@ class CustomFormatter(logging.Formatter):
 
 
 if __name__ == '__main__':
-    # Handle high resolution displays:
-    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
-        QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
-    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
-        QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+    # # Handle high resolution displays:
+    # if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+    #     QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    # if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+    #     QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     app = QApplication(sys.argv)
 

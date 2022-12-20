@@ -5,6 +5,13 @@ from scipy.optimize import fsolve
 import numpy as np
 
 
+def update_alpha(cell):
+    A, B, a, b, Ri, L, Req, _ = cell
+    alpha = calculate_alpha(A, B, a, b, Ri, L, Req, 0)
+    cell = [A, B, a, b, Ri, L, Req, alpha[0]]
+    return cell
+
+
 def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
     # data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
     #         [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
@@ -76,6 +83,8 @@ def perform_geometry_checks(par_mid, par_end):
 
 
 def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
+    ic_ = update_alpha(ic_)
+    oc = update_alpha(oc)
     if cell_type is None:
         # print("Writing parameters to file")
         path = fr'{projectDir}/SimulationData/SLANS/Cavity{key}/{key}.txt'

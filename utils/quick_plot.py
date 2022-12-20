@@ -120,9 +120,10 @@ def plot_sey():
     fig, ax = plt.subplots()
     x_label = "Incident Energy [eV]"
     y_label = "SEY"
-    data = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy1.txt", sep='\s+', header=None)
-    data2 = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy2.txt", sep='\s+', header=None)
-    sey_list = [data, data2]
+    # data = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy1.txt", sep='\s+', header=None)
+    # data2 = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy2.txt", sep='\s+', header=None)
+    data = pd.read_csv("D:\Dropbox\multipacting\MPGUI21\secy1", sep='\s+', header=None)
+    sey_list = [data] #, data2]
     label = ["Nb", "Cu"]
 
     for i, sey in enumerate(sey_list):
@@ -132,109 +133,135 @@ def plot_sey():
     ax.set_xlabel(x_label)
     ax.set_ylabel(y_label)
     ax.set_xlim(0, 1000)
-    ax.set_ylim(0, 2.2)
+    # ax.set_ylim(0, 2.2)
     plt.legend()
-    ax.grid(True, which="both", ls=":")
+    # ax.grid(True, which="both", ls=":")
     ax.minorticks_on()
     plt.tight_layout()
+    plt.show()
 
 
-def plot_multipac_triplot(Eacc, Epk_Eacc, files_folder, fig, axs, label):
-    mpl.rcParams['figure.figsize'] = [6, 7.5]
-    # load_output_data
-    # files
-    fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
-              "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
-    data = {}
-    # files_folder = "D:\Dropbox\multipacting\MPGUI21"
-    for f in fnames:
-        if ".mat" in f:
-            data[f] = spio.loadmat(fr"{files_folder}\\{f}")
-        else:
-            data[f] = pd.read_csv(fr"{files_folder}\\{f}", sep='\s+', header=None)
+def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot'):
 
-    A = data["Acounter.mat"]["A"]
-    At = data["Atcounter.mat"]["At"]
-    C = data["Ccounter.mat"]["C"]
-    Ef = data["Efcounter.mat"]["Ef"]
-    flevel = data["counter_flevels.mat"]["flevel"]
-    initials = data["counter_initials.mat"]["initials"]
-    secy1 = data["secy1"].to_numpy()
-    Pow = flevel
-    n = len(initials[:, 0]) / 2  # number of initials in the bright set
-    N = int(data["param"].to_numpy()[4])  # number of impacts
-    U = flevel
-    Efl = flevel
-    q = 1.6021773e-19
-    Efq = Ef / q
+    if kind == 'triplot':
+        # create figure
+        fig = plt.figure()
+        gs = fig.add_gridspec(3, 1)
+        ax1 = fig.add_subplot(gs[0, 0])
+        ax2 = fig.add_subplot(gs[1, 0])
+        ax3 = fig.add_subplot(gs[2, 0])
+        axs = [ax1, ax2, ax3]
 
-    e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
-    e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
-    val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
+    else:
+        fig, axs = plt.subplots(1, 1)
 
-    cl = 0
-    ok, ok1, ok2 = 1, 1, 1
-    if ok > 0:
-        if n == 0:
-            ic('Unable to plot the counters. No initial points.')
-            return
+    mpl.rcParams['figure.figsize'] = [6, 10]
 
-        if ok1 * ok2 == 0:
-            cl = ic('Counter functions or impact energy missing.')
-        else:
-            # if ss > 0:
-            #     cl = ic(np.array(['Plotting the triplot (counter, enhanced ', 'counter and impact energy).']))
+    for Eacc, Epk_Eacc, folder, label in zip(Eacc_list, Epk_Eacc_list, folders, labels):
+        # load_output_data
+        # files
+        fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
+                  "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
+        data = {}
+        # files_folder = "D:\Dropbox\multipacting\MPGUI21"
+        for f in fnames:
+            if ".mat" in f:
+                data[f] = spio.loadmat(fr"{folder}\\{f}")
+            else:
+                data[f] = pd.read_csv(fr"{folder}\\{f}", sep='\s+', header=None)
 
-            # fig, axs = plt.subplots(3)
-            axs[0].plot(Efl / 1e6, C / n, lw=2, label=label)
-            axs[0].set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
-            axs[0].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
-            # axs[0].set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
-            axs[0].set_xlim(np.amin(Efl) / 1e6, np.amax(Efl) / 1e6)
-            axs[0].set_ylim(0, np.max([0.1, axs[0].get_ylim()[1]]))
+        A = data["Acounter.mat"]["A"]
+        At = data["Atcounter.mat"]["At"]
+        C = data["Ccounter.mat"]["C"]
+        Ef = data["Efcounter.mat"]["Ef"]
+        flevel = data["counter_flevels.mat"]["flevel"]
+        initials = data["counter_initials.mat"]["initials"]
+        secy1 = data["secy1"].to_numpy()
+        Pow = flevel
+        n = len(initials[:, 0]) / 2  # number of initials in the bright set
+        N = int(data["param"].to_numpy()[4])  # number of impacts
+        U = flevel
+        Efl = flevel
+        q = 1.6021773e-19
+        Efq = Ef / q
 
-            axs[1].semilogy(Efl / 1e6, Efq, lw=2)
+        e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
+        e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
+        val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
 
-            # axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
-            e0 = sci.interp1d(secy1[0:e1, 1], secy1[0:e1, 0])(0)
-            axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [e0, e0], '-r')
-            axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e2, 0], secy1[e2, 0]], '-r')
-            axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e3, 0], secy1[e3, 0]], '--r')
+        cl = 0
+        ok, ok1, ok2 = 1, 1, 1
+        if ok > 0:
+            if n == 0:
+                ic('Unable to plot the counters. No initial points.')
+                return
 
-            axs[1].set_ylabel("$Ef_" + "{" + f"{N}" + "}$")
-            axs[1].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
-            # axs[1].set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
-            axs[1].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
-            axs[1].set_ylim(0, axs[1].get_ylim()[1])
+            if ok1 * ok2 == 0:
+                cl = ic('Counter functions or impact energy missing.')
+            else:
+                # if ss > 0:
+                #     cl = ic(np.array(['Plotting the triplot (counter, enhanced ', 'counter and impact energy).']))
 
-            axs[2].semilogy(Efl / 1e6, (A + 1) / n, lw=2)
-            axs[2].set_xlabel('$V$ [MV]')
-            axs[2].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [1, 1], '-r')
-            axs[2].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
-            axs[2].set_ylim(np.min((A + 1) / n), axs[2].get_ylim()[1])
-            axs[2].set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
-            axs[2].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
-            # axs[2].set_title('$\mathbf{Enhanced~counter~function}$')
+                if kind =='counter function' or type == 'triplot':
+                    # fig, axs = plt.subplots(3)
+                    axs[0].plot(Efl / 1e6, C / n, lw=2, label=label)
+                    axs[0].set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
+                    axs[0].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                    # axs[0].set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
+                    axs[0].set_xlim(np.amin(Efl) / 1e6, np.amax(Efl) / 1e6)
+                    axs[0].set_ylim(0, np.max([0.1, axs[0].get_ylim()[1]]))
 
-            # plot peak operating field
-            axs[0].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=2)
-            axs[0].text(np.round(Eacc*Epk_Eacc, 2) - 1.5, 0.1, f"{label[0]}: {np.round(Eacc*Epk_Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=axs[0].get_xaxis_transform())
+                    # plot peak operating field
+                    axs[0].axvline(Eacc * Epk_Eacc, c='k', ls='--', lw=2)
+                    axs[0].text(np.round(Eacc * Epk_Eacc, 2) - 1.5, 0.1, f"{label[0]}: {np.round(Eacc * Epk_Eacc, 2)} MV/m",
+                                size=12, rotation=90,
+                                transform=axs[0].get_xaxis_transform())
 
-            axs[1].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=2)
-            axs[1].text(np.round(Eacc*Epk_Eacc, 2) - 1.5, 0.1, f"{label[0]}: {np.round(Eacc*Epk_Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=axs[1].get_xaxis_transform())
+                    axs[0].minorticks_on()
 
-            axs[2].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=2)
-            axs[2].text(np.round(Eacc*Epk_Eacc, 2) - 1, 0.1, f"{label[0]}: {np.round(Eacc*Epk_Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=axs[2].get_xaxis_transform())
+                if kind == 'final impact energy' or type == 'triplot':
+                    axs[1].semilogy(Efl / 1e6, Efq, lw=2)
 
-            axs[0].minorticks_on()
-            axs[1].minorticks_on()
-            axs[2].minorticks_on()
+                    # axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
+                    e0 = sci.interp1d(secy1[0:e1+1, 1], secy1[0:e1+1, 0])(1)
+                    axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [e0, e0], '-r')
+                    axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e2, 0], secy1[e2, 0]], '-r')
+                    axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e3, 0], secy1[e3, 0]], '--r')
+
+                    axs[1].set_ylabel("$Ef_" + "{" + f"{N}" + "}$")
+                    axs[1].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                    # axs[1].set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
+                    axs[1].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
+                    axs[1].set_ylim(0, axs[1].get_ylim()[1])
+
+                    axs[1].axvline(Eacc * Epk_Eacc, c='k', ls='--', lw=2)
+                    axs[1].text(np.round(Eacc * Epk_Eacc, 2) - 1.5, 0.1, f"{label[0]}: {np.round(Eacc * Epk_Eacc, 2)} MV/m",
+                                size=12, rotation=90,
+                                transform=axs[1].get_xaxis_transform())
+
+                    axs[1].minorticks_on()
+                if kind == 'enhanced counter function' or type == 'triplot':
+
+                    axs[2].semilogy(Efl / 1e6, (A + 1) / n, lw=2)
+                    axs[2].set_xlabel('$V$ [MV]')
+                    axs[2].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [1, 1], '-r')
+                    axs[2].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
+                    axs[2].set_ylim(np.min((A + 1) / n), axs[2].get_ylim()[1])
+                    axs[2].set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
+                    axs[2].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                    # axs[2].set_title('$\mathbf{Enhanced~counter~function}$')
+
+                    axs[2].axvline(Eacc*Epk_Eacc, c='k', ls='--', lw=2)
+                    axs[2].text(np.round(Eacc*Epk_Eacc, 2) - 1, 0.1, f"{label[0]}: {np.round(Eacc*Epk_Eacc, 2)} MV/m",
+                                size=12, rotation=90,
+                                transform=axs[2].get_xaxis_transform())
+
+                    axs[2].minorticks_on()
+
+    axs[0].legend(loc='upper left')
+
+    fig.tight_layout()
+    plt.show()
 
 
 def plot_trajectory():
@@ -355,7 +382,7 @@ def plot_cavity():
 plot_settings("presentation")
 
 # plot_electron_evolution_spark3d()
-# plot_sey()
+plot_sey()
 # folders = [r"D:\Dropbox\multipacting\MPGUI21\Mid_cell_C3795", r"D:\Dropbox\multipacting\MPGUI21\End_cell_C3795",
 #            r"D:\Dropbox\multipacting\MPGUI21\mid_FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\end_FCCUROS5",
 #            r"D:\Dropbox\multipacting\MPGUI21\mid_TESLA", r"D:\Dropbox\multipacting\MPGUI21\end_TESLA_L",
@@ -363,32 +390,19 @@ plot_settings("presentation")
 #
 # labels = ['C3595 (mid)', 'C3595 (end)', 'FCCUROS5 (mid)', 'FCCUROS5 (end)', 'TESLA (mid)',
 #           'TESLA (end1)', 'TESLA (end2)']
-folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"]#, r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795", r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
 
 labels = ['C3795', 'FCCUROS5', 'TESLA']
-Epk_Eacc = [2.43, 2.05, 2.14]
-Eacc = [24.36, 24.36, 24.36]
+Epk_Eacc_list = [2.43, 2.05, 2.14]
+Eacc_list = [24.36, 24.36, 24.36]
 # fig, axs = plt.subplots(3)
 
-# create figure
-fig = plt.figure()
-gs = fig.add_gridspec(3, 1)
-ax1 = fig.add_subplot(gs[0, 0])
-ax2 = fig.add_subplot(gs[1, 0])
-ax3 = fig.add_subplot(gs[2, 0])
-axs = [ax1, ax2, ax3]
+plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot')
 
-for i, folder in enumerate(folders):
-    plot_multipac_triplot(Eacc[i], Epk_Eacc[i], folder, fig, axs, labels[i])
-
-ax1.legend(loc='upper left')
 # plot_trajectory()
 # sensitivity()
 # plot_cavity()
 
-
-plt.tight_layout()
-plt.show()
 
 # folder = fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData"
 # folders = os.listdir(folder)

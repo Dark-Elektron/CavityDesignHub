@@ -11,6 +11,8 @@ from simulation_codes.SLANS.slans_code import SLANS, SLANS_Multicell, SLANS_Mult
 import numpy as np
 
 from utils.file_reader import FileReader
+from utils.shared_functions import *
+
 fr = FileReader()
 
 
@@ -253,9 +255,9 @@ class SLANSGeometry(Geometry):
         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
         # save json file
-        shape = {'IC': mid_cells_par,
-                 'OC': l_end_cell_par,
-                 'OC_R': r_end_cell_par}
+        shape = {'IC': update_alpha(mid_cells_par),
+                 'OC': update_alpha(l_end_cell_par),
+                 'OC_R': update_alpha(r_end_cell_par)}
 
         with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
@@ -311,6 +313,7 @@ class SLANSGeometry(Geometry):
             "Bpk [mT]": Bpk,
             "kcc [%]": kcc,
             "ff [%]": ff,
+            "Rsh [Ohm]": Rsh,
             "R/Q [Ohm]": 2 * r_Q,
             "Epk/Eacc []": Epk_Eacc,
             "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
