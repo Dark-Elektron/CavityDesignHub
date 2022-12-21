@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 
+
 def p3x1(v):
     pattern.append(int(v))
     if v == 1:
@@ -11,9 +12,12 @@ def p3x1(v):
         else:
             return p3x1(3*v + 1)
 
-for i in range(3, 150):
-    pattern = []
-    p3x1(i)
-    plt.plot(pattern, marker='o')
 
-plt.show()
+if __name__ == '__main__':
+
+    for i in range(3, 150):
+        pattern = []
+        p3x1(i)
+        plt.plot(pattern, marker='o')
+
+    plt.show()

@@ -140,22 +140,6 @@ CEMCodesHub.utils.pareto\_test\_problem module
    :undoc-members:
    :show-inheritance:
 
-CEMCodesHub.utils.pic\_code module
-----------------------------------
-
-.. automodule:: CEMCodesHub.utils.pic_code
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-CEMCodesHub.utils.pid module
-----------------------------
-
-.. automodule:: CEMCodesHub.utils.pid
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 CEMCodesHub.utils.plot\_objects module
 --------------------------------------
 
@@ -216,14 +200,6 @@ CEMCodesHub.utils.shared\_functions module
 ------------------------------------------
 
 .. automodule:: CEMCodesHub.utils.shared_functions
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-CEMCodesHub.utils.slider\_code module
--------------------------------------
-
-.. automodule:: CEMCodesHub.utils.slider_code
    :members:
    :undoc-members:
    :show-inheritance:

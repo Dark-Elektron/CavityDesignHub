@@ -8,8 +8,10 @@ Welcome to CavityHub's documentation!
 
 .. toctree::
    :maxdepth: 6
-   :caption: Contents:
+   :caption: Contents
 
+   CEMCodesHub/docs/source/CEMCodesHub.em_codes.rst
+   CEMCodesHub/docs/source/CEMCodesHub.frame_controls
 
 Indices and tables
 ==================

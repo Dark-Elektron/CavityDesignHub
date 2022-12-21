@@ -52,21 +52,23 @@ import numpy as np
 from scipy.spatial import Delaunay
 from mayavi import mlab
 
-X2 = np.array([0, 0, 1, 1])
-Y2 = np.array([0.5, 0.45, 1, 0.5])
-Z2 = np.array([0, 1, 0.5,0])
+if __name__ == '__main__':
 
-# use scipy for delaunay:
-p2d = np.vstack([X2,Y2]).T
-d2d = Delaunay(p2d)
+    X2 = np.array([0, 0, 1, 1])
+    Y2 = np.array([0.5, 0.45, 1, 0.5])
+    Z2 = np.array([0, 1, 0.5,0])
 
-fig = mlab.figure(1, bgcolor=(1, 0.7, 1), fgcolor=(0.5, 0.5, 0.5))
+    # use scipy for delaunay:
+    p2d = np.vstack([X2,Y2]).T
+    d2d = Delaunay(p2d)
 
-# Generate triangular Mesh:
-tmesh = mlab.triangular_mesh(X2, Y2, Z2, d2d.vertices,
-                             scalars=Y2, colormap='jet')
+    fig = mlab.figure(1, bgcolor=(1, 0.7, 1), fgcolor=(0.5, 0.5, 0.5))
 
-# Simple plot.
-mlab.outline(extent=(0,1,0,1,0,1))
-mlab.axes(extent=(0,1,0,1,0,1))
-mlab.show()
+    # Generate triangular Mesh:
+    tmesh = mlab.triangular_mesh(X2, Y2, Z2, d2d.vertices,
+                                 scalars=Y2, colormap='jet')
+
+    # Simple plot.
+    mlab.outline(extent=(0,1,0,1,0,1))
+    mlab.axes(extent=(0,1,0,1,0,1))
+    mlab.show()

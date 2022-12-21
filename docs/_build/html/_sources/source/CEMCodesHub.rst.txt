@@ -5,7 +5,7 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 4
 
    CEMCodesHub.em_codes
    CEMCodesHub.frame_controls
@@ -16,6 +16,7 @@ Subpackages
    CEMCodesHub.simulation_codes
    CEMCodesHub.ui_files
    CEMCodesHub.ui_state_files
+   CEMCodesHub.utils
 
 Submodules
 ----------

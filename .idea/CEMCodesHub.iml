@@ -11,6 +11,7 @@
       <excludeFolder url="file://$MODULE_DIR$/Cavity800" />
       <excludeFolder url="file://$MODULE_DIR$/SSC_for_Sosoho" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
+      <excludeFolder url="file://$MODULE_DIR$/MuCol_Study" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.10 (CEMCodesHub)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />

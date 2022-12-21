@@ -378,36 +378,38 @@ def plot_cavity():
         # plt.cla()
 
 
-# plt.style.use('fivethirtyeight')
-plot_settings("presentation")
+if __name__ == '__main__':
 
-# plot_electron_evolution_spark3d()
-plot_sey()
-# folders = [r"D:\Dropbox\multipacting\MPGUI21\Mid_cell_C3795", r"D:\Dropbox\multipacting\MPGUI21\End_cell_C3795",
-#            r"D:\Dropbox\multipacting\MPGUI21\mid_FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\end_FCCUROS5",
-#            r"D:\Dropbox\multipacting\MPGUI21\mid_TESLA", r"D:\Dropbox\multipacting\MPGUI21\end_TESLA_L",
-#            r"D:\Dropbox\multipacting\MPGUI21\end_TESLA_R"]
-#
-# labels = ['C3595 (mid)', 'C3595 (end)', 'FCCUROS5 (mid)', 'FCCUROS5 (end)', 'TESLA (mid)',
-#           'TESLA (end1)', 'TESLA (end2)']
-folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795", r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+    # plt.style.use('fivethirtyeight')
+    plot_settings("presentation")
 
-labels = ['C3795', 'FCCUROS5', 'TESLA']
-Epk_Eacc_list = [2.43, 2.05, 2.14]
-Eacc_list = [24.36, 24.36, 24.36]
-# fig, axs = plt.subplots(3)
+    # plot_electron_evolution_spark3d()
+    plot_sey()
+    # folders = [r"D:\Dropbox\multipacting\MPGUI21\Mid_cell_C3795", r"D:\Dropbox\multipacting\MPGUI21\End_cell_C3795",
+    #            r"D:\Dropbox\multipacting\MPGUI21\mid_FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\end_FCCUROS5",
+    #            r"D:\Dropbox\multipacting\MPGUI21\mid_TESLA", r"D:\Dropbox\multipacting\MPGUI21\end_TESLA_L",
+    #            r"D:\Dropbox\multipacting\MPGUI21\end_TESLA_R"]
+    #
+    # labels = ['C3595 (mid)', 'C3595 (end)', 'FCCUROS5 (mid)', 'FCCUROS5 (end)', 'TESLA (mid)',
+    #           'TESLA (end1)', 'TESLA (end2)']
+    folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795", r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
 
-plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot')
+    labels = ['C3795', 'FCCUROS5', 'TESLA']
+    Epk_Eacc_list = [2.43, 2.05, 2.14]
+    Eacc_list = [24.36, 24.36, 24.36]
+    # fig, axs = plt.subplots(3)
 
-# plot_trajectory()
-# sensitivity()
-# plot_cavity()
+    plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot')
+
+    # plot_trajectory()
+    # sensitivity()
+    # plot_cavity()
 
 
-# folder = fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData"
-# folders = os.listdir(folder)
-# for d in folders:
-#     # delete SLANS_EXE folder
-#     if os.path.exists(fr'{folder}/{d}/SLANS_exe'):
-#         shutil.rmtree(fr'{folder}/{d}/SLANS_exe')
-#         print(fr"Removed from {d}")
+    # folder = fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData"
+    # folders = os.listdir(folder)
+    # for d in folders:
+    #     # delete SLANS_EXE folder
+    #     if os.path.exists(fr'{folder}/{d}/SLANS_exe'):
+    #         shutil.rmtree(fr'{folder}/{d}/SLANS_exe')
+    #         print(fr"Removed from {d}")

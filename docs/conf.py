@@ -17,8 +17,6 @@ sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../'))
 sys.path.insert(0, os.path.abspath(r'D:\Dropbox'))
 
-import em_codes
-
 
 # -- Project information -----------------------------------------------------
 
@@ -38,8 +36,8 @@ release = '0.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
-    'numpydoc'
+    # 'sphinx.ext.viewcode',
+    # 'numpydoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -57,8 +55,8 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 # html_theme = 'alabaster'
-# html_theme = 'sphinx_rtd_theme'
-html_theme = 'sphinxdoc'
+html_theme = 'sphinx_rtd_theme'
+# html_theme = 'sphinxdoc'
 # html_theme = 'bootstrap'
 
 # Add any paths that contain custom static files (such as style sheets) here,

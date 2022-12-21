@@ -92,6 +92,7 @@ class Plotter:
         #             dpi=100,
         #             bbox_inches='tight')
 
+
 if __name__ == '__main__':
     plotter = Plotter()
     plotter.plot('Midcell node_editor', 'Ri', 'ZTM011', 'ZTM012', 'ZD1', 'ZD2')
