@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>utils.shared_classes &mdash; CavityHub 0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> CavityHub
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../main_control.html">main_control module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CavityHub</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">utils.shared_classes</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for utils.shared_classes</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">psutil</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_template</span> <span class="kn">import</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">termcolor</span> <span class="kn">import</span> <span class="n">colored</span>
+
+<span class="kn">from</span> <span class="nn">modules.data_module.slans_data</span> <span class="kn">import</span> <span class="n">SLANSDataExtraction</span>
+
+<span class="n">slans_data_extraction</span> <span class="o">=</span> <span class="n">SLANSDataExtraction</span><span class="p">()</span>
+
+<span class="n">file_color</span> <span class="o">=</span> <span class="s1">&#39;red&#39;</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="print_"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.print_">[docs]</a><span class="k">def</span> <span class="nf">print_</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file_color</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="QCheckableComboBox"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox">[docs]</a><span class="k">class</span> <span class="nc">QCheckableComboBox</span><span class="p">(</span><span class="n">QComboBox</span><span class="p">):</span>
+
+    <span class="c1"># Subclass Delegate to increase item height</span>
+<div class="viewcode-block" id="QCheckableComboBox.Delegate"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.Delegate">[docs]</a>    <span class="k">class</span> <span class="nc">Delegate</span><span class="p">(</span><span class="n">QStyledItemDelegate</span><span class="p">):</span>
+<div class="viewcode-block" id="QCheckableComboBox.Delegate.sizeHint"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.Delegate.sizeHint">[docs]</a>        <span class="k">def</span> <span class="nf">sizeHint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
+            <span class="n">size</span><span class="o">.</span><span class="n">setHeight</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">size</span></div></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># Make the combo editable to set a custom text, but readonly</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setEditable</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># self.lineEdit().setReadOnly(False)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit</span><span class="p">()</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># Make the lineedit the same color as QPushButton</span>
+        <span class="n">palette</span> <span class="o">=</span> <span class="n">qApp</span><span class="o">.</span><span class="n">palette</span><span class="p">()</span>
+        <span class="n">palette</span><span class="o">.</span><span class="n">setBrush</span><span class="p">(</span><span class="n">QPalette</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">palette</span><span class="o">.</span><span class="n">button</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit</span><span class="p">()</span><span class="o">.</span><span class="n">setPalette</span><span class="p">(</span><span class="n">palette</span><span class="p">)</span>
+
+        <span class="c1"># Use custom delegate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setItemDelegate</span><span class="p">(</span><span class="n">QCheckableComboBox</span><span class="o">.</span><span class="n">Delegate</span><span class="p">())</span>
+
+        <span class="c1"># Update the text when an item is toggled</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">dataChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">updateText</span><span class="p">)</span>
+
+        <span class="c1"># Hide and show popup when clicking the line edit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit</span><span class="p">()</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closeOnLineEditClick</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Prevent popup from closing when clicking on an item</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">()</span><span class="o">.</span><span class="n">viewport</span><span class="p">()</span><span class="o">.</span><span class="n">installEventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<div class="viewcode-block" id="QCheckableComboBox.resizeEvent"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.resizeEvent">[docs]</a>    <span class="k">def</span> <span class="nf">resizeEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># Recompute text to elide as needed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateText</span><span class="p">()</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">resizeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QCheckableComboBox.eventFilter"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QEvent</span><span class="o">.</span><span class="n">MouseButtonRelease</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">closeOnLineEditClick</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">hidePopup</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">showPopup</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">()</span><span class="o">.</span><span class="n">viewport</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QEvent</span><span class="o">.</span><span class="n">MouseButtonRelease</span><span class="p">:</span>
+                <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">view</span><span class="p">()</span><span class="o">.</span><span class="n">indexAt</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">())</span>
+
+                <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">:</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+                        <span class="c1"># deselect all items if item check a maximum of 25 elements</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+                            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                            <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">item</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="mi">0</span><span class="p">):</span>
+                        <span class="c1"># deselect all items if item check a maximum of 25 elements</span>
+                        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">):</span>
+                            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                            <span class="n">item</span><span class="o">.</span><span class="n">setCheckState</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="QCheckableComboBox.showPopup"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.showPopup">[docs]</a>    <span class="k">def</span> <span class="nf">showPopup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">showPopup</span><span class="p">()</span>
+        <span class="c1"># When the popup is displayed, a click on the lineedit should close it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closeOnLineEditClick</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="QCheckableComboBox.hidePopup"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.hidePopup">[docs]</a>    <span class="k">def</span> <span class="nf">hidePopup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">hidePopup</span><span class="p">()</span>
+        <span class="c1"># Used to prevent immediate reopening when clicking on the lineEdit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">startTimer</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+        <span class="c1"># Refresh the display text when closing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updateText</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="QCheckableComboBox.timerEvent"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.timerEvent">[docs]</a>    <span class="k">def</span> <span class="nf">timerEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># After timeout, kill timer, and reenable click on line edit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">killTimer</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">timerId</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">closeOnLineEditClick</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="QCheckableComboBox.updateText"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.updateText">[docs]</a>    <span class="k">def</span> <span class="nf">updateText</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">:</span>
+                <span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">texts</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit</span><span class="p">()</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+        <span class="c1"># # Compute elided text (with &quot;...&quot;)</span>
+        <span class="c1"># metrics = QFontMetrics(self.lineEdit().font())</span>
+        <span class="c1"># elidedText = metrics.elidedText(text, Qt.ElideRight, self.lineEdit().width())</span>
+        <span class="c1"># self.lineEdit().setText(elidedText)</span>
+
+<div class="viewcode-block" id="QCheckableComboBox.addItem"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.addItem">[docs]</a>    <span class="k">def</span> <span class="nf">addItem</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">QStandardItem</span><span class="p">()</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">item</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setFlags</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsEnabled</span> <span class="o">|</span> <span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsUserCheckable</span><span class="p">)</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">setData</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Unchecked</span><span class="p">,</span> <span class="n">Qt</span><span class="o">.</span><span class="n">CheckStateRole</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">appendRow</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QCheckableComboBox.addItems"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.addItems">[docs]</a>    <span class="k">def</span> <span class="nf">addItems</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">texts</span><span class="p">,</span> <span class="n">datalist</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">text</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">texts</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">datalist</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">IndexError</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="QCheckableComboBox.currentData"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.currentData">[docs]</a>    <span class="k">def</span> <span class="nf">currentData</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Return the list of selected items data</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">checkState</span><span class="p">()</span> <span class="o">==</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Checked</span><span class="p">:</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">res</span></div></div>
+
+
+<div class="viewcode-block" id="ProgressMonitor"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.ProgressMonitor">[docs]</a><span class="k">class</span> <span class="nc">ProgressMonitor</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QThread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_ids</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">processes_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress_bar</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">progress_bar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span> <span class="o">=</span> <span class="n">projectDir</span>
+
+<div class="viewcode-block" id="ProgressMonitor.run"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.ProgressMonitor.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">progress_monitor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_ids</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ProgressMonitor.progress_monitor"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.ProgressMonitor.progress_monitor">[docs]</a>    <span class="k">def</span> <span class="nf">progress_monitor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">proc_ids</span><span class="p">):</span>
+        <span class="n">proc_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">proc_ids</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">show_progress_bar</span><span class="p">:</span>
+            <span class="n">progress</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">progress_list</span><span class="p">)</span> <span class="o">/</span> <span class="n">proc_count</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sig</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">progress</span> <span class="o">*</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="EndRoutine"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.EndRoutine">[docs]</a><span class="k">class</span> <span class="nc">EndRoutine</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QThread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">proc_ids</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">processes_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">frame</span><span class="o">.</span><span class="n">filename</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span> <span class="o">=</span> <span class="n">projectDir</span>
+
+<div class="viewcode-block" id="EndRoutine.run"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.EndRoutine.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_routine</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EndRoutine.end_routine"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.EndRoutine.end_routine">[docs]</a>    <span class="k">def</span> <span class="nf">end_routine</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">proc_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">proc_ids</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pid</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">proc_ids</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">p</span> <span class="o">=</span> <span class="n">psutil</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">pid</span><span class="p">)</span>
+                <span class="k">while</span> <span class="n">p</span><span class="o">.</span><span class="n">is_running</span><span class="p">():</span>
+                    <span class="k">pass</span>
+
+            <span class="k">except</span> <span class="n">psutil</span><span class="o">.</span><span class="n">NoSuchProcess</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="c1"># combine dictionaries</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">combined_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">combine_dict</span><span class="p">(</span><span class="n">proc_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">delete_process_dict</span><span class="p">(</span><span class="n">proc_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span><span class="p">)</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">cb_Toggle_Postprocess</span><span class="o">.</span><span class="n">checkState</span><span class="p">())</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">cb_Toggle_Postprocess</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It&#39;s here. if it doesn&#39;t end it mean s that thre is a problem&quot;</span><span class="p">)</span>
+                <span class="c1"># postprocess results</span>
+                <span class="n">slans_data_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span><span class="si">}</span><span class="s2">/SimulationData/SLANS&quot;</span>
+                <span class="n">mode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">sb_Mode</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+                <span class="n">bc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">cb_BC</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">cb_Request</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">le_Postprocess_Filename</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+                <span class="c1"># filename = self.frame.proof_filename(filename)</span>
+                <span class="n">save_excel</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span><span class="si">}</span><span class="s2">/PostprocessingData/Data/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">proc_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">sb_No_Of_Processors_Tune</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+                <span class="n">temp_folder</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span><span class="si">}</span><span class="s2">/PostprocessingData/Data/_temp&quot;</span>
+
+                <span class="c1"># ic(slans_data_dir, proc_count, mode, bc, request, save_excel, temp_folder)</span>
+                <span class="c1"># print(combined_dict)</span>
+                <span class="n">slans_data_extraction</span><span class="o">.</span><span class="n">multiple_folders_data_parallel</span><span class="p">(</span><span class="n">combined_dict</span><span class="p">,</span> <span class="n">slans_data_dir</span><span class="p">,</span> <span class="n">proc_count</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span>
+                                                                     <span class="n">bc</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">save_excel</span><span class="p">,</span> <span class="n">temp_folder</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;It&#39;s ended&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some error occurred -&gt; </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EndRoutine.combine_dict"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.EndRoutine.combine_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">combine_dict</span><span class="p">(</span><span class="n">proc_count</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">):</span>
+        <span class="c1"># Combining dictionaries</span>
+        <span class="n">print_</span><span class="p">(</span><span class="s1">&#39;Combining dictionaries&#39;</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">proc_count</span><span class="p">):</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\Cavities\shape_space</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">.json&#39;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">infile</span><span class="p">))</span>
+
+        <span class="c1"># check if extension is included</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;json&#39;</span><span class="p">:</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">.json&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">result</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\Cavities\</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">outfile</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span>
+
+        <span class="n">print_</span><span class="p">(</span><span class="s1">&#39;Done combining dictionaries&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="EndRoutine.delete_process_dict"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.EndRoutine.delete_process_dict">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">delete_process_dict</span><span class="p">(</span><span class="n">proc_count</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">proc_count</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\Cavities\shape_space</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1">.json&#39;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MonitorConvergence"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.MonitorConvergence">[docs]</a><span class="k">class</span> <span class="nc">MonitorConvergence</span><span class="p">(</span><span class="n">QThread</span><span class="p">):</span>
+    <span class="n">sig</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QThread</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">frame</span> <span class="o">=</span> <span class="n">frame</span>
+
+<div class="viewcode-block" id="MonitorConvergence.run"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.MonitorConvergence.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">monitor_convergence</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MonitorConvergence.monitor_convergence"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.MonitorConvergence.monitor_convergence">[docs]</a>    <span class="k">def</span> <span class="nf">monitor_convergence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">tune_ended</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sig</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frame</span><span class="o">.</span><span class="n">convergence_list</span><span class="o">.</span><span class="n">_getvalue</span><span class="p">())</span></div></div>
+
+
+<div class="viewcode-block" id="MathTextLabel"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.MathTextLabel">[docs]</a><span class="k">class</span> <span class="nc">MathTextLabel</span><span class="p">(</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mathText</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">QWidget</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="n">ll</span> <span class="o">=</span> <span class="n">QVBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ll</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">()</span><span class="o">.</span><span class="n">base</span><span class="p">()</span><span class="o">.</span><span class="n">color</span><span class="p">()</span><span class="o">.</span><span class="n">getRgbF</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">edgecolor</span><span class="o">=</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">facecolor</span><span class="o">=</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span> <span class="o">=</span> <span class="n">FigureCanvas</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="p">)</span>
+        <span class="n">ll</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span>
+            <span class="n">mathText</span><span class="p">,</span>
+            <span class="n">x</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+            <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+            <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">QFont</span><span class="p">()</span><span class="o">.</span><span class="n">pointSize</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">get_points</span><span class="p">()</span>
+        <span class="n">w</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="n">x0</span>
+        <span class="n">h</span> <span class="o">=</span> <span class="n">y1</span> <span class="o">-</span> <span class="n">y0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_figure</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="n">w</span> <span class="o">/</span> <span class="mi">80</span><span class="p">,</span> <span class="n">h</span> <span class="o">/</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

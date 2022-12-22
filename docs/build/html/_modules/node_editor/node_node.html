@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>node_editor.node_node &mdash; CavityHub 0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> CavityHub
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../main_control.html">main_control module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CavityHub</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">node_editor.node_node</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for node_editor.node_node</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing NodeEditor&#39;s class for representing `Node`.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_graphics_node</span> <span class="kn">import</span> <span class="n">QDMGraphicsNode</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_content_widget</span> <span class="kn">import</span> <span class="n">QDMNodeContentWidget</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_serializable</span> <span class="kn">import</span> <span class="n">Serializable</span>
+<span class="kn">from</span> <span class="nn">node_editor.node_socket</span> <span class="kn">import</span> <span class="n">Socket</span><span class="p">,</span> <span class="n">LEFT_BOTTOM</span><span class="p">,</span> <span class="n">LEFT_CENTER</span><span class="p">,</span> <span class="n">LEFT_TOP</span><span class="p">,</span> <span class="n">RIGHT_BOTTOM</span><span class="p">,</span> <span class="n">RIGHT_CENTER</span><span class="p">,</span> <span class="n">RIGHT_TOP</span>
+<span class="kn">from</span> <span class="nn">node_editor.utils</span> <span class="kn">import</span> <span class="n">dumpException</span><span class="p">,</span> <span class="n">pp</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="n">Serializable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class representing `Node` in the `Scene`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">GraphicsNode_class</span> <span class="o">=</span> <span class="n">QDMGraphicsNode</span>
+    <span class="n">NodeContent_class</span> <span class="o">=</span> <span class="n">QDMNodeContentWidget</span>
+    <span class="n">Socket_class</span> <span class="o">=</span> <span class="n">Socket</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scene</span><span class="p">:</span> <span class="s1">&#39;Scene&#39;</span><span class="p">,</span> <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s2">&quot;Undefined Node&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="p">[],</span> <span class="n">outputs</span><span class="p">:</span> <span class="nb">list</span><span class="o">=</span><span class="p">[]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param scene: reference to the :class:`~node_editor.node_scene.Scene`</span>
+<span class="sd">        :type scene: :class:`~nodeeditor.node_scene.Scene`</span>
+<span class="sd">        :param title: Node Title shown in Scene</span>
+<span class="sd">        :type title: str</span>
+<span class="sd">        :param inputs: list of :class:`~node_editor.node_socket.Socket` types from which the `Sockets` will be auto created</span>
+<span class="sd">        :param outputs: list of :class:`~node_editor.node_socket.Socket` types from which the `Sockets` will be auto created</span>
+
+<span class="sd">        :Instance Attributes:</span>
+
+<span class="sd">            - **scene** - reference to the :class:`~node_editor.node_scene.Scene`</span>
+<span class="sd">            - **grNode** - Instance of :class:`~node_editor.node_graphics_node.QDMGraphicsNode` handling graphical representation in the ``QGraphicsScene``. Automatically created in the constructor</span>
+<span class="sd">            - **content** - Instance of :class:`~node_editor.node_graphics_content.QDMGraphicsContent` which is child of ``QWidget`` representing container for all inner widgets inside of the Node. Automatically created in the constructor</span>
+<span class="sd">            - **inputs** - list containin Input :class:`~node_editor.node_socket.Socket` instances</span>
+<span class="sd">            - **outputs** - list containin Output :class:`~node_editor.node_socket.Socket` instances</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span> <span class="o">=</span> <span class="n">title</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span> <span class="o">=</span> <span class="n">scene</span>
+
+        <span class="c1"># just to be sure, init these variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initInnerClasses</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initSettings</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">addNode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">addItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="p">)</span>
+
+        <span class="c1"># create socket for inputs and outputs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initSockets</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+
+        <span class="c1"># dirty and evaluation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_invalid</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">:</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">..</span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))[</span><span class="mi">2</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))[</span><span class="o">-</span><span class="mi">3</span><span class="p">:])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Title shown in the scene</span>
+
+<span class="sd">        :getter: return current Node title</span>
+<span class="sd">        :setter: sets Node title and passes it to Graphics Node class</span>
+<span class="sd">        :type: ``str``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_title</span>
+
+    <span class="nd">@title</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_title</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_title</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retrieve Node&#39;s position in the Scene</span>
+
+<span class="sd">        :return: Node position</span>
+<span class="sd">        :rtype: ``QPointF``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span>        <span class="c1"># QPointF</span>
+
+<div class="viewcode-block" id="Node.setPos"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.setPos">[docs]</a>    <span class="k">def</span> <span class="nf">setPos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets position of the Graphics Node</span>
+
+<span class="sd">        :param x: X `Scene` position</span>
+<span class="sd">        :param y: Y `Scene` position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.initInnerClasses"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.initInnerClasses">[docs]</a>    <span class="k">def</span> <span class="nf">initInnerClasses</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets up graphics Node (PyQt) and Content Widget&quot;&quot;&quot;</span>
+        <span class="n">node_content_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getNodeContentClass</span><span class="p">()</span>
+        <span class="n">graphics_node_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getGraphicsNodeClass</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">node_content_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span> <span class="o">=</span> <span class="n">node_content_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">graphics_node_class</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span> <span class="o">=</span> <span class="n">graphics_node_class</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.getNodeContentClass"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getNodeContentClass">[docs]</a>    <span class="k">def</span> <span class="nf">getNodeContentClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns class representing node_editor content&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">NodeContent_class</span></div>
+
+<div class="viewcode-block" id="Node.getGraphicsNodeClass"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getGraphicsNodeClass">[docs]</a>    <span class="k">def</span> <span class="nf">getGraphicsNodeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">GraphicsNode_class</span></div>
+
+<div class="viewcode-block" id="Node.initSettings"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.initSettings">[docs]</a>    <span class="k">def</span> <span class="nf">initSettings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize properties and socket information&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket_spacing</span> <span class="o">=</span> <span class="mi">22</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_socket_position</span> <span class="o">=</span> <span class="n">LEFT_BOTTOM</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_socket_position</span> <span class="o">=</span> <span class="n">RIGHT_TOP</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_multi_edged</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_multi_edged</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">socket_offsets</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">LEFT_BOTTOM</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">LEFT_CENTER</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">LEFT_TOP</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">RIGHT_BOTTOM</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">RIGHT_CENTER</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">RIGHT_TOP</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">}</span></div>
+
+<div class="viewcode-block" id="Node.initSockets"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.initSockets">[docs]</a>    <span class="k">def</span> <span class="nf">initSockets</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">outputs</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">reset</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create sockets for inputs and outputs</span>
+
+<span class="sd">        :param inputs: list of Socket Types (int)</span>
+<span class="sd">        :type inputs: ``list``</span>
+<span class="sd">        :param outputs: list of Socket Types (int)</span>
+<span class="sd">        :type outputs: ``list``</span>
+<span class="sd">        :param reset: if ``True`` destroys and removes old `Sockets`</span>
+<span class="sd">        :type reset: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="c1"># clear old sockets</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;inputs&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;outputs&#39;</span><span class="p">):</span>
+                <span class="c1"># remove grSockets from scene</span>
+                <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">grSocket</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># create new sockets</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">:</span>
+            <span class="n">socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">Socket_class</span><span class="p">(</span>
+                <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input_socket_position</span><span class="p">,</span>
+                <span class="n">socket_type</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">multi_edges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input_multi_edged</span><span class="p">,</span>
+                <span class="n">count_on_this_node_side</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">inputs</span><span class="p">),</span> <span class="n">is_input</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">:</span>
+            <span class="n">socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">Socket_class</span><span class="p">(</span>
+                <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">counter</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_socket_position</span><span class="p">,</span>
+                <span class="n">socket_type</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">multi_edges</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_multi_edged</span><span class="p">,</span>
+                <span class="n">count_on_this_node_side</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">),</span> <span class="n">is_input</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">socket</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Node.onEdgeConnectionChanged"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.onEdgeConnectionChanged">[docs]</a>    <span class="k">def</span> <span class="nf">onEdgeConnectionChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_edge</span><span class="p">:</span> <span class="s1">&#39;Edge&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Event handling that any connection (`Edge`) has changed. Currently not used...</span>
+
+<span class="sd">        :param new_edge: reference to the changed :class:`~node_editor.node_edge.Edge`</span>
+<span class="sd">        :type new_edge: :class:`~nodeeditor.node_edge.Edge`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Node.onInputChanged"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.onInputChanged">[docs]</a>    <span class="k">def</span> <span class="nf">onInputChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;Socket&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Event handling when Node&#39;s input Edge has changed. We auto-mark this `Node` to be `Dirty` with all it&#39;s</span>
+<span class="sd">        descendants</span>
+
+<span class="sd">        :param socket: reference to the changed :class:`~node_editor.node_socket.Socket`</span>
+<span class="sd">        :type socket: :class:`~nodeeditor.node_socket.Socket`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markDirty</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markDescendantsDirty</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Node.onDeserialized"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.onDeserialized">[docs]</a>    <span class="k">def</span> <span class="nf">onDeserialized</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Event manually called when this node was deserialized. Currently called when node is deserialized from scene</span>
+<span class="sd">        Passing `data` containing the data which have been deserialized &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Node.onDoubleClicked"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.onDoubleClicked">[docs]</a>    <span class="k">def</span> <span class="nf">onDoubleClicked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Event handling double click on Graphics Node in `Scene`&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Node.doSelect"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.doSelect">[docs]</a>    <span class="k">def</span> <span class="nf">doSelect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_state</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shortcut method for selecting/deselecting the `Node`</span>
+
+<span class="sd">        :param new_state: ``True`` if you want to select the `Node`. ``False`` if you want to deselect the `Node`</span>
+<span class="sd">        :type new_state: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">doSelect</span><span class="p">(</span><span class="n">new_state</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.isSelected"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.isSelected">[docs]</a>    <span class="k">def</span> <span class="nf">isSelected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns ``True`` if current `Node` is selected&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">isSelected</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Node.hasConnectedEdge"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.hasConnectedEdge">[docs]</a>    <span class="k">def</span> <span class="nf">hasConnectedEdge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="s1">&#39;Edge&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns ``True`` if edge is connected to any :class:`~node_editor.node_socket.Socket` of this `Node`&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">socket</span><span class="o">.</span><span class="n">isConnected</span><span class="p">(</span><span class="n">edge</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Node.getSocketPosition"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getSocketPosition">[docs]</a>    <span class="k">def</span> <span class="nf">getSocketPosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num_out_of</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;(x, y)&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the relative `x, y` position of a :class:`~node_editor.node_socket.Socket`. This is used for placing</span>
+<span class="sd">        the `Graphics Sockets` on `Graphics Node`.</span>
+
+<span class="sd">        :param index: Order number of the Socket. (0, 1, 2, ...)</span>
+<span class="sd">        :type index: ``int``</span>
+<span class="sd">        :param position: `Socket Position Constant` describing where the Socket is located. See :ref:`socket-position-constants`</span>
+<span class="sd">        :type position: ``int``</span>
+<span class="sd">        :param num_out_of: Total number of Sockets on this `Socket Position`</span>
+<span class="sd">        :type num_out_of: ``int``</span>
+<span class="sd">        :return: Position of described Socket on the `Node`</span>
+<span class="sd">        :rtype: ``x, y``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_offsets</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="k">if</span> <span class="p">(</span><span class="n">position</span> <span class="ow">in</span> <span class="p">(</span><span class="n">LEFT_TOP</span><span class="p">,</span> <span class="n">LEFT_CENTER</span><span class="p">,</span> <span class="n">LEFT_BOTTOM</span><span class="p">))</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">width</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_offsets</span><span class="p">[</span><span class="n">position</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">position</span> <span class="ow">in</span> <span class="p">(</span><span class="n">LEFT_BOTTOM</span><span class="p">,</span> <span class="n">RIGHT_BOTTOM</span><span class="p">):</span>
+            <span class="c1"># start from bottom</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">edge_roundness</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">title_vertical_padding</span> <span class="o">-</span> <span class="n">index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_spacing</span>
+        <span class="k">elif</span> <span class="n">position</span> <span class="ow">in</span> <span class="p">(</span><span class="n">LEFT_CENTER</span><span class="p">,</span> <span class="n">RIGHT_CENTER</span><span class="p">):</span>
+            <span class="n">num_sockets</span> <span class="o">=</span> <span class="n">num_out_of</span>
+            <span class="n">node_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">height</span>
+            <span class="n">top_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">title_height</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">title_vertical_padding</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">edge_padding</span>
+            <span class="n">available_height</span> <span class="o">=</span> <span class="n">node_height</span> <span class="o">-</span> <span class="n">top_offset</span>
+
+            <span class="n">total_height_of_all_sockets</span> <span class="o">=</span> <span class="n">num_sockets</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_spacing</span>
+            <span class="n">new_top</span> <span class="o">=</span> <span class="n">available_height</span> <span class="o">-</span> <span class="n">total_height_of_all_sockets</span>
+
+            <span class="c1"># y = top_offset + index * self.socket_spacing + new_top / 2</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">top_offset</span> <span class="o">+</span> <span class="n">available_height</span><span class="o">/</span><span class="mf">2.0</span> <span class="o">+</span> <span class="p">(</span><span class="n">index</span><span class="o">-</span><span class="mf">0.5</span><span class="p">)</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">socket_spacing</span>
+            <span class="k">if</span> <span class="n">num_sockets</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">y</span> <span class="o">-=</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_spacing</span> <span class="o">*</span> <span class="p">(</span><span class="n">num_sockets</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+        <span class="k">elif</span> <span class="n">position</span> <span class="ow">in</span> <span class="p">(</span><span class="n">LEFT_TOP</span><span class="p">,</span> <span class="n">RIGHT_TOP</span><span class="p">):</span>
+            <span class="c1"># start from top</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">title_height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">title_vertical_padding</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">edge_roundness</span> <span class="o">+</span> <span class="n">index</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket_spacing</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># this should never happen</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Node.getSocketScenePosition"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getSocketScenePosition">[docs]</a>    <span class="k">def</span> <span class="nf">getSocketScenePosition</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;Socket&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;(x, y)&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get absolute Socket position in the Scene</span>
+
+<span class="sd">        :param socket: `Socket` which position we want to know</span>
+<span class="sd">        :return: (x, y) Socket&#39;s scene position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodepos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">pos</span><span class="p">()</span>
+        <span class="n">socketpos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getSocketPosition</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">position</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">count_on_this_node_side</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">nodepos</span><span class="o">.</span><span class="n">x</span><span class="p">()</span> <span class="o">+</span> <span class="n">socketpos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">nodepos</span><span class="o">.</span><span class="n">y</span><span class="p">()</span> <span class="o">+</span> <span class="n">socketpos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="Node.updateConnectedEdges"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.updateConnectedEdges">[docs]</a>    <span class="k">def</span> <span class="nf">updateConnectedEdges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Recalculate (Refresh) positions of all connected `Edges`. Used for updating Graphics Edges&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+            <span class="c1"># if socket.hasEdge():</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">socket</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">updatePositions</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Node.remove"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Safely remove this Node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;&gt; Removing Node&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - remove all edges from sockets&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">):</span>
+            <span class="c1"># if socket.hasEdge():</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">socket</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">copy</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;    - removing from socket:&quot;</span><span class="p">,</span> <span class="n">socket</span><span class="p">,</span> <span class="s2">&quot;edge:&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - remove grNode&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - remove node from the scene&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">removeNode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot; - everything was done.&quot;</span><span class="p">)</span></div>
+
+
+    <span class="c1"># node evaluation stuff</span>
+
+<div class="viewcode-block" id="Node.isDirty"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.isDirty">[docs]</a>    <span class="k">def</span> <span class="nf">isDirty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Is this node marked as `Dirty`</span>
+
+<span class="sd">        :return: ``True`` if `Node` is marked as `Dirty`</span>
+<span class="sd">        :rtype: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span></div>
+
+<div class="viewcode-block" id="Node.markDirty"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.markDirty">[docs]</a>    <span class="k">def</span> <span class="nf">markDirty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark this `Node` as `Dirty`. See :ref:`evaluation` for more</span>
+
+<span class="sd">        :param new_value: ``True`` if this `Node` should be `Dirty`. ``False`` if you want to un-dirty this `Node`</span>
+<span class="sd">        :type new_value: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span> <span class="o">=</span> <span class="n">new_value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_dirty</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">onMarkedDirty</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Node.onMarkedDirty"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.onMarkedDirty">[docs]</a>    <span class="k">def</span> <span class="nf">onMarkedDirty</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when this `Node` has been marked as `Dirty`. This method is supposed to be overridden&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Node.markChildrenDirty"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.markChildrenDirty">[docs]</a>    <span class="k">def</span> <span class="nf">markChildrenDirty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark all first level children of this `Node` to be `Dirty`. Not this `Node` it self. Not other descendants</span>
+
+<span class="sd">        :param new_value: ``True`` if children should be `Dirty`. ``False`` if you want to un-dirty children</span>
+<span class="sd">        :type new_value: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">other_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChildrenNodes</span><span class="p">():</span>
+            <span class="n">other_node</span><span class="o">.</span><span class="n">markDirty</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.markDescendantsDirty"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.markDescendantsDirty">[docs]</a>    <span class="k">def</span> <span class="nf">markDescendantsDirty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark all children and descendants of this `Node` to be `Dirty`. Not this `Node` it self</span>
+
+<span class="sd">        :param new_value: ``True`` if children and descendants should be `Dirty`. ``False`` if you want to un-dirty children and descendants</span>
+<span class="sd">        :type new_value: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">other_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChildrenNodes</span><span class="p">():</span>
+            <span class="n">other_node</span><span class="o">.</span><span class="n">markDirty</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="n">other_node</span><span class="o">.</span><span class="n">markDescendantsDirty</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.isInvalid"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.isInvalid">[docs]</a>    <span class="k">def</span> <span class="nf">isInvalid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Is this node marked as `Invalid`?</span>
+
+<span class="sd">        :return: ``True`` if `Node` is marked as `Invalid`</span>
+<span class="sd">        :rtype: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_invalid</span></div>
+
+<div class="viewcode-block" id="Node.markInvalid"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.markInvalid">[docs]</a>    <span class="k">def</span> <span class="nf">markInvalid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark this `Node` as `Invalid`. See :ref:`evaluation` for more</span>
+
+<span class="sd">        :param new_value: ``True`` if this `Node` should be `Invalid`. ``False`` if you want to make this `Node` valid</span>
+<span class="sd">        :type new_value: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_invalid</span> <span class="o">=</span> <span class="n">new_value</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_invalid</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">onMarkedInvalid</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Node.onMarkedInvalid"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.onMarkedInvalid">[docs]</a>    <span class="k">def</span> <span class="nf">onMarkedInvalid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when this `Node` has been marked as `Invalid`. This method is supposed to be overridden&quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Node.markChildrenInvalid"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.markChildrenInvalid">[docs]</a>    <span class="k">def</span> <span class="nf">markChildrenInvalid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark all first level children of this `Node` to be `Invalid`. Not this `Node` it self. Not other descendants</span>
+
+<span class="sd">        :param new_value: ``True`` if children should be `Invalid`. ``False`` if you want to make children valid</span>
+<span class="sd">        :type new_value: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">other_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChildrenNodes</span><span class="p">():</span>
+            <span class="n">other_node</span><span class="o">.</span><span class="n">markInvalid</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.markDescendantsInvalid"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.markDescendantsInvalid">[docs]</a>    <span class="k">def</span> <span class="nf">markDescendantsInvalid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_value</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Mark all children and descendants of this `Node` to be `Invalid`. Not this `Node` it self</span>
+
+<span class="sd">        :param new_value: ``True`` if children and descendants should be `Invalid`. ``False`` if you want to make children and descendants valid</span>
+<span class="sd">        :type new_value: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">other_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChildrenNodes</span><span class="p">():</span>
+            <span class="n">other_node</span><span class="o">.</span><span class="n">markInvalid</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span>
+            <span class="n">other_node</span><span class="o">.</span><span class="n">markDescendantsInvalid</span><span class="p">(</span><span class="n">new_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Node.eval"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.eval">[docs]</a>    <span class="k">def</span> <span class="nf">eval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate this `Node`. This is supposed to be overridden. See :ref:`evaluation` for more&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markDirty</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">markInvalid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Node.evalChildren"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.evalChildren">[docs]</a>    <span class="k">def</span> <span class="nf">evalChildren</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Evaluate all children of this `Node`&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getChildrenNodes</span><span class="p">():</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span></div>
+
+
+    <span class="c1"># traversing nodes functions</span>
+
+<div class="viewcode-block" id="Node.getChildrenNodes"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getChildrenNodes">[docs]</a>    <span class="k">def</span> <span class="nf">getChildrenNodes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;List[Node]&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Retreive all first-level children connected to this `Node` `Outputs`</span>
+
+<span class="sd">        :return: list of `Nodes` connected to this `Node` from all `Outputs`</span>
+<span class="sd">        :rtype: List[:class:`~node_editor.node_node.Node`]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span> <span class="o">==</span> <span class="p">[]:</span> <span class="k">return</span> <span class="p">[]</span>
+        <span class="n">other_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ix</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">ix</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="n">other_node</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">ix</span><span class="p">])</span><span class="o">.</span><span class="n">node</span>
+                <span class="n">other_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other_node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">other_nodes</span></div>
+
+
+<div class="viewcode-block" id="Node.getInput"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getInput">[docs]</a>    <span class="k">def</span> <span class="nf">getInput</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="s1">&#39;Node&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the **first**  `Node` connected to the  Input specified by `index`</span>
+
+<span class="sd">        :param index: Order number of the `Input Socket`</span>
+<span class="sd">        :type index: ``int``</span>
+<span class="sd">        :return: :class:`~node_editor.node_node.Node` which is connected to the specified `Input` or ``None`` if</span>
+<span class="sd">            there is no connection or the index is out of range</span>
+<span class="sd">        :rtype: :class:`~nodeeditor.node_node.Node` or ``None``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">input_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_socket</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span>
+            <span class="n">connecting_edge</span> <span class="o">=</span> <span class="n">input_socket</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">other_socket</span> <span class="o">=</span> <span class="n">connecting_edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">other_socket</span><span class="o">.</span><span class="n">node</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">dumpException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Node.getInputWithSocket"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getInputWithSocket">[docs]</a>    <span class="k">def</span> <span class="nf">getInputWithSocket</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[(</span><span class="s1">&#39;Node&#39;</span><span class="p">,</span> <span class="s1">&#39;Socket&#39;</span><span class="p">),</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the **first**  `Node` connected to the Input specified by `index` and the connection `Socket`</span>
+
+<span class="sd">        :param index: Order number of the `Input Socket`</span>
+<span class="sd">        :type index: ``int``</span>
+<span class="sd">        :return: Tuple containing :class:`~node_editor.node_node.Node` and :class:`~node_editor.node_socket.Socket` which</span>
+<span class="sd">            is connected to the specified `Input` or ``None`` if there is no connection or the index is out of range</span>
+<span class="sd">        :rtype: (:class:`~nodeeditor.node_node.Node`, :class:`~nodeeditor.node_socket.Socket`)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">input_socket</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_socket</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">connecting_edge</span> <span class="o">=</span> <span class="n">input_socket</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">other_socket</span> <span class="o">=</span> <span class="n">connecting_edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">other_socket</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">other_socket</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">dumpException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Node.getInputWithSocketIndex"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getInputWithSocketIndex">[docs]</a>    <span class="k">def</span> <span class="nf">getInputWithSocketIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="s1">&#39;Node&#39;</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the **first**  `Node` connected to the Input specified by `index` and the connection `Socket`</span>
+
+<span class="sd">        :param index: Order number of the `Input Socket`</span>
+<span class="sd">        :type index: ``int``</span>
+<span class="sd">        :return: Tuple containing :class:`~node_editor.node_node.Node` and :class:`~node_editor.node_socket.Socket` which</span>
+<span class="sd">            is connected to the specified `Input` or ``None`` if there is no connection or the index is out of range</span>
+<span class="sd">        :rtype: (:class:`~nodeeditor.node_node.Node`, int)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">socket</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">socket</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c1"># print(&quot;EXC: Trying to get input with socket index %d, but none is attached to&quot; % index, self)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">dumpException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Node.getInputs"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getInputs">[docs]</a>    <span class="k">def</span> <span class="nf">getInputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;List[Node]&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get **all** `Nodes` connected to the Input specified by `index`</span>
+
+<span class="sd">        :param index: Order number of the `Input Socket`</span>
+<span class="sd">        :type index: ``int``</span>
+<span class="sd">        :return: all :class:`~node_editor.node_node.Node` instances which are connected to the</span>
+<span class="sd">            specified `Input` or ``[]`` if there is no connection or the index is out of range</span>
+<span class="sd">        :rtype: List[:class:`~node_editor.node_node.Node`]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ins</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">other_socket</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="n">ins</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other_socket</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ins</span></div>
+
+<div class="viewcode-block" id="Node.getOutputs"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.getOutputs">[docs]</a>    <span class="k">def</span> <span class="nf">getOutputs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s1">&#39;List[Node]&#39;</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get **all** `Nodes` connected to the Output specified by `index`</span>
+
+<span class="sd">        :param index: Order number of the `Output Socket`</span>
+<span class="sd">        :type index: ``int``</span>
+<span class="sd">        :return: all :class:`~node_editor.node_node.Node` instances which are connected to the</span>
+<span class="sd">            specified `Output` or ``[]`` if there is no connection or the index is out of range</span>
+<span class="sd">        :rtype: List[:class:`~node_editor.node_node.Node`]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">outs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">other_socket</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="n">outs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">other_socket</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">outs</span></div>
+
+
+    <span class="c1"># serialization functions</span>
+
+<div class="viewcode-block" id="Node.serialize"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">OrderedDict</span><span class="p">:</span>
+        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span> <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span> <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+        <span class="n">ser_content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">serialize</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([</span>
+            <span class="p">(</span><span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;pos_x&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span><span class="o">.</span><span class="n">x</span><span class="p">()),</span>
+            <span class="p">(</span><span class="s1">&#39;pos_y&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grNode</span><span class="o">.</span><span class="n">scenePos</span><span class="p">()</span><span class="o">.</span><span class="n">y</span><span class="p">()),</span>
+            <span class="p">(</span><span class="s1">&#39;inputs&#39;</span><span class="p">,</span> <span class="n">inputs</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;outputs&#39;</span><span class="p">,</span> <span class="n">outputs</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">,</span> <span class="n">ser_content</span><span class="p">),</span>
+        <span class="p">])</span></div>
+
+<div class="viewcode-block" id="Node.deserialize"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_node.Node.deserialize">[docs]</a>    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">:</span> <span class="nb">dict</span><span class="o">=</span><span class="p">{},</span> <span class="n">restore_id</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">restore_id</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
+            <span class="n">hashmap</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setPos</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;pos_x&#39;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;pos_y&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span>
+
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">socket</span><span class="p">:</span> <span class="n">socket</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">socket</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10000</span> <span class="p">)</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;outputs&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">socket</span><span class="p">:</span> <span class="n">socket</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">socket</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">10000</span> <span class="p">)</span>
+            <span class="n">num_inputs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]</span> <span class="p">)</span>
+            <span class="n">num_outputs</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;outputs&#39;</span><span class="p">]</span> <span class="p">)</span>
+
+            <span class="c1"># print(&quot;&gt; deserialize node,   num inputs:&quot;, num_inputs, &quot;num outputs:&quot;, num_outputs)</span>
+            <span class="c1"># pp(data)</span>
+
+            <span class="c1"># possible way to do it is reuse existing sockets...</span>
+            <span class="c1"># dont create new ones if not necessary</span>
+
+            <span class="k">for</span> <span class="n">socket_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;inputs&#39;</span><span class="p">]:</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+                    <span class="c1"># print(&quot;\t&quot;, socket, socket.index, &quot;=?&quot;, socket_data[&#39;index&#39;])</span>
+                    <span class="k">if</span> <span class="n">socket</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]:</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="n">socket</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="n">found</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># print(&quot;deserialization of socket data has not found input socket with index:&quot;, socket_data[&#39;index&#39;])</span>
+                    <span class="c1"># print(&quot;actual socket data:&quot;, socket_data)</span>
+                    <span class="c1"># we can create new socket for this</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">Socket_class</span><span class="p">(</span>
+                        <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="n">position</span><span class="o">=</span><span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span>
+                        <span class="n">socket_type</span><span class="o">=</span><span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;socket_type&#39;</span><span class="p">],</span> <span class="n">count_on_this_node_side</span><span class="o">=</span><span class="n">num_inputs</span><span class="p">,</span>
+                        <span class="n">is_input</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">found</span><span class="p">)</span>  <span class="c1"># append newly created input to the list</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">socket_data</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">,</span> <span class="n">restore_id</span><span class="p">)</span>
+
+
+            <span class="k">for</span> <span class="n">socket_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;outputs&#39;</span><span class="p">]:</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">socket</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
+                    <span class="c1"># print(&quot;\t&quot;, socket, socket.index, &quot;=?&quot;, socket_data[&#39;index&#39;])</span>
+                    <span class="k">if</span> <span class="n">socket</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">]:</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="n">socket</span>
+                        <span class="k">break</span>
+                <span class="k">if</span> <span class="n">found</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># print(&quot;deserialization of socket data has not found output socket with index:&quot;, socket_data[&#39;index&#39;])</span>
+                    <span class="c1"># print(&quot;actual socket data:&quot;, socket_data)</span>
+                    <span class="c1"># we can create new socket for this</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">Socket_class</span><span class="p">(</span>
+                        <span class="n">node</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;index&#39;</span><span class="p">],</span> <span class="n">position</span><span class="o">=</span><span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;position&#39;</span><span class="p">],</span>
+                        <span class="n">socket_type</span><span class="o">=</span><span class="n">socket_data</span><span class="p">[</span><span class="s1">&#39;socket_type&#39;</span><span class="p">],</span> <span class="n">count_on_this_node_side</span><span class="o">=</span><span class="n">num_outputs</span><span class="p">,</span>
+                        <span class="n">is_input</span><span class="o">=</span><span class="kc">False</span>
+                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">found</span><span class="p">)</span>  <span class="c1"># append newly created output to the list</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">socket_data</span><span class="p">,</span> <span class="n">hashmap</span><span class="p">,</span> <span class="n">restore_id</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="n">dumpException</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="c1"># also deserialize the content of the node</span>
+        <span class="c1"># so far the rest was ok, now as last step the content...</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">Serializable</span><span class="p">):</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">deserialize</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;content&#39;</span><span class="p">],</span> <span class="n">hashmap</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">res</span>
+
+
+        <span class="k">return</span> <span class="kc">True</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
