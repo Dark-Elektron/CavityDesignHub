@@ -1,11 +1,6 @@
 frame\_controls package
 =======================
 
-.. automodule:: frame_controls
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -85,6 +80,14 @@ frame\_controls.wakefield\_control module
 -----------------------------------------
 
 .. automodule:: frame_controls.wakefield_control
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: frame_controls
    :members:
    :undoc-members:
    :show-inheritance:

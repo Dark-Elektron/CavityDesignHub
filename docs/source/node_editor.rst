@@ -1,11 +1,6 @@
 node\_editor package
 ====================
 
-.. automodule:: node_editor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -189,6 +184,14 @@ node\_editor.utils module
 -------------------------
 
 .. automodule:: node_editor.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: node_editor
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,11 +1,6 @@
 modules.tune\_module package
 ============================
 
-.. automodule:: modules.tune_module
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Subpackages
 -----------
 
@@ -13,3 +8,11 @@ Subpackages
    :maxdepth: 4
 
    modules.tune_module.tuners
+
+Module contents
+---------------
+
+.. automodule:: modules.tune_module
+   :members:
+   :undoc-members:
+   :show-inheritance:

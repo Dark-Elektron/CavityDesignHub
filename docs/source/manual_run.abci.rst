@@ -1,11 +1,6 @@
 manual\_run.abci package
 ========================
 
-.. automodule:: manual_run.abci
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Subpackages
 -----------
 
@@ -37,6 +32,14 @@ manual\_run.abci.geometry module
 --------------------------------
 
 .. automodule:: manual_run.abci.geometry
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: manual_run.abci
    :members:
    :undoc-members:
    :show-inheritance:

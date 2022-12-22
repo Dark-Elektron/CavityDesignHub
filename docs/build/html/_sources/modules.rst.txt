@@ -4,4 +4,17 @@ CEMCodesHub
 .. toctree::
    :maxdepth: 4
 
-   CEMCodesHub
+   em_codes
+   frame_controls
+   graphics
+   icons_rc
+   main_control
+   manual_run
+   modules
+   node_editor
+   qss
+   setup
+   simulation_codes
+   ui_files
+   ui_state_files
+   utils

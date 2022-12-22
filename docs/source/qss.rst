@@ -1,11 +1,6 @@
 qss package
 ===========
 
-.. automodule:: qss
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Subpackages
 -----------
 
@@ -22,6 +17,14 @@ qss.icons\_rc module
 --------------------
 
 .. automodule:: qss.icons_rc
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: qss
    :members:
    :undoc-members:
    :show-inheritance:

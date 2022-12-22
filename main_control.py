@@ -10,7 +10,6 @@ import shutil
 import sys
 # import pyautogui
 from PyQt5 import QtCore
-from utils.house_keeping import HouseKeeping
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -65,8 +64,10 @@ AN_DURATION = 250
 
 
 class MainWindow:
+    """
+    The central control for the GUI.
+    """
     def __init__(self):
-
         self.animation = None
         self.wakefield_widget = None
         self.eigenmode_widget = None
@@ -186,6 +187,10 @@ class MainWindow:
             print("Exception occured", e)
 
     def new_open_folder(self):
+        """
+        Method to create new project or open old projects.
+        :return:
+        """
         # disable all buttons
         # signals to create folder
         self.ui.le_New_Project_Filename.returnPressed.connect(lambda: self.create_project())
@@ -198,6 +203,10 @@ class MainWindow:
                                                self.animate_width(self.ui.le_New_Project_Filename, 0, 150, True))
 
     def initUI(self):
+        """
+        Initialise class variables and initial GUI state
+        :return:
+        """
         # hidden widgets
 
         # hold last frame
@@ -246,7 +255,10 @@ class MainWindow:
         self.ui.w_Log.setMaximumWidth(0)
 
     def signals(self):
-
+        """
+        All the signals for the PyQt objects can be found here.
+        :return:
+        """
         # signal for home buttons
         for key, button_widget_pair in self.frames_dict.items():
             button_widget_pair[0].clicked.connect(lambda _, b=key: self.change_frame(b))
@@ -276,7 +288,7 @@ class MainWindow:
 
     def create_frames_ui(self):
         """
-
+        Create the GUI frames
         :return:
         """
 
@@ -308,6 +320,11 @@ class MainWindow:
         if DEBUG: print("Check 2e_i_3: main_control.py")
 
     def change_frame(self, key):
+        """
+        Switch between GUI frames
+        :param key:
+        :return:
+        """
         # remove existing widgets
         index = self.ui.g_Display.count() - 1
         # save last frame
@@ -335,6 +352,10 @@ class MainWindow:
                 pb[0].setMaximumWidth(50)
 
     def return_to_last_frame(self):
+        """
+        Is called when return button is clicked on the GUI
+        :return:
+        """
         if self.last_frame is not None:
             index = self.ui.g_Display.count() - 1
             while index >= 0:
@@ -348,6 +369,15 @@ class MainWindow:
             self.last_frame.show()
 
     def animate_width(self, widget, min_width, standard, enable, option="max"):
+        """
+        Animate width for GUI transition effect
+        :param widget: PyQt Widget
+        :param min_width: int or float
+        :param standard: int or float
+        :param enable:
+        :param option:
+        :return:
+        """
         if enable:
             # GET WIDTH
             width = widget.width()
@@ -372,6 +402,15 @@ class MainWindow:
             self.animation.start()
 
     def animate_height(self, widget, min_height, standard, enable, option="max"):
+        """
+        Animate height for GUI transition effect
+        :param widget: PyQt Widget
+        :param min_height: int or float
+        :param standard: int or float
+        :param enable:
+        :param option:
+        :return:
+        """
         if enable:
             # GET WIDTH
             height = widget.height()
@@ -397,7 +436,7 @@ class MainWindow:
 
     def create_project(self):
         """
-
+        Create project
         :return:
         """
         project_name = self.ui.le_New_Project_Filename.text()
@@ -448,7 +487,7 @@ class MainWindow:
 
     def open_project(self, project_dir=None):
         """
-
+        Open project
         :param project_dir:
         :return:
         """
@@ -493,8 +532,8 @@ class MainWindow:
 
     def change_theme(self):
         """
-
-        :return: vjj
+        Change GUI theme
+        :return:
         :desc:
             Light (Visual Studio): LIGHT_VS
             Quiet Light          : QUIET_LIGHT
@@ -527,7 +566,7 @@ class MainWindow:
 
     def serialize(self):
         """
-
+        Save GUI object states
         :return:
         """
         # serialize home
@@ -564,6 +603,11 @@ class MainWindow:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
 
     def deserialize(self, file):
+        """
+        Retrieve and update GUI object state from last saved GUI state
+        :param file:
+        :return:
+        """
         if DEBUG: print("Check 1: main_control.py")
         # check if state file exists
         if os.path.exists(file):
@@ -672,6 +716,10 @@ class MainWindow:
         return self.default_ef(obj, event)
 
     def ui_effects(self):
+        """
+        Control UI effects. Currently turned off.
+        :return:
+        """
         for push_buttons in self.frames_dict.values():
             shadow_effect = QGraphicsDropShadowEffect()
             shadow_effect.setOffset(5)

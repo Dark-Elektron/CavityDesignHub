@@ -1,11 +1,6 @@
 ui\_files package
 =================
 
-.. automodule:: ui_files
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -173,6 +168,14 @@ ui\_files.wg\_calculations module
 ---------------------------------
 
 .. automodule:: ui_files.wg_calculations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: ui_files
    :members:
    :undoc-members:
    :show-inheritance:

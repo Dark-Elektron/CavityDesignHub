@@ -20,6 +20,9 @@ def print_(*arg):
 
 
 class PlotControl:
+    """
+    Controls plotting
+    """
     def __init__(self, parent):
         print_("Check 1: plot_control.py")
         self.w_Plot = QWidget()

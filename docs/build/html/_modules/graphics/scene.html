@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>graphics.scene &mdash; CavityHub 0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> CavityHub
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../main_control.html">main_control module</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CavityHub</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">graphics.scene</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for graphics.scene</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">graphics.graphics_scene</span> <span class="kn">import</span> <span class="n">GraphicsScene</span>
+
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="Scene"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene">[docs]</a><span class="k">class</span> <span class="nc">Scene</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">main_win</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">main_win</span> <span class="o">=</span> <span class="n">main_win</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene_width</span> <span class="o">=</span> <span class="mi">6400</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scene_height</span> <span class="o">=</span> <span class="mi">6400</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># had to initialize</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cavityShape</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># self.line = Line(main_win)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Scene.initUI"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.initUI">[docs]</a>    <span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># DRAW BACKGROUND</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span> <span class="o">=</span> <span class="n">GraphicsScene</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">setGrScene</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scene_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scene_height</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.getItemAt"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.getItemAt">[docs]</a>    <span class="k">def</span> <span class="nf">getItemAt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">views</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.addLine"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.addLine">[docs]</a>    <span class="k">def</span> <span class="nf">addLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.removeLine"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.removeLine">[docs]</a>    <span class="k">def</span> <span class="nf">removeLine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Scene.displayItemsOnScene"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.displayItemsOnScene">[docs]</a>    <span class="k">def</span> <span class="nf">displayItemsOnScene</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Line </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Scene.resetIterationVariables"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.resetIterationVariables">[docs]</a>    <span class="k">def</span> <span class="nf">resetIterationVariables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">direct</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indirect</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hdp</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">excitatory</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inhibitory</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Scene.format"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_list</span><span class="p">):</span>
+        <span class="n">new_obj_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">obj_list</span><span class="p">:</span>
+            <span class="n">new_obj_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">..</span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">))[</span><span class="mi">2</span><span class="p">:</span><span class="mi">5</span><span class="p">],</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="n">obj</span><span class="p">))[</span><span class="o">-</span><span class="mi">3</span><span class="p">:]))</span>
+
+        <span class="k">return</span> <span class="n">new_obj_list</span></div>
+
+<div class="viewcode-block" id="Scene.clear"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

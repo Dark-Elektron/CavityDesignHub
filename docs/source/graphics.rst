@@ -1,11 +1,6 @@
 graphics package
 ================
 
-.. automodule:: graphics
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -45,6 +40,14 @@ graphics.scene module
 ---------------------
 
 .. automodule:: graphics.scene
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: graphics
    :members:
    :undoc-members:
    :show-inheritance:

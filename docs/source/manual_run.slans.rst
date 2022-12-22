@@ -1,11 +1,6 @@
 manual\_run.slans package
 =========================
 
-.. automodule:: manual_run.slans
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Subpackages
 -----------
 
@@ -45,6 +40,14 @@ manual\_run.slans.slans\_code module
 ------------------------------------
 
 .. automodule:: manual_run.slans.slans_code
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: manual_run.slans
    :members:
    :undoc-members:
    :show-inheritance:

@@ -1,11 +1,6 @@
 modules.plot\_module package
 ============================
 
-.. automodule:: modules.plot_module
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -21,6 +16,14 @@ modules.plot\_module.plotter module
 -----------------------------------
 
 .. automodule:: modules.plot_module.plotter
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: modules.plot_module
    :members:
    :undoc-members:
    :show-inheritance:

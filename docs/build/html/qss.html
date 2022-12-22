@@ -7,6 +7,7 @@
   <title>qss package &mdash; CavityHub 0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -16,9 +17,13 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="qss.icons package" href="qss.icons.html" />
+    <link rel="prev" title="node_editor package" href="node_editor.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -36,12 +41,34 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="setup.html">setup module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="em_codes.html">em_codes package</a></li>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">CEMCodesHub</a></li>
-<li class="toctree-l1"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
+              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CEMCodesHub</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="em_codes.html">em_codes package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icons_rc.html">icons_rc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main_control.html">main_control module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual_run.html">manual_run package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="node_editor.html">node_editor package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">qss package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="qss.icons.html">qss.icons package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qss.images.html">qss.images package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-qss.icons_rc">qss.icons_rc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-qss">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="simulation_codes.html">simulation_codes package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui_files.html">ui_files package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui_state_files.html">ui_state_files package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils package</a></li>
+</ul>
+</li>
 </ul>
 
         </div>
@@ -58,6 +85,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CEMCodesHub</a></li>
       <li class="breadcrumb-item active">qss package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/qss.rst.txt" rel="nofollow"> View page source</a>
@@ -75,11 +103,11 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="qss.icons.html">qss.icons package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="qss.icons.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qss.icons.html#module-qss.icons">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="qss.images.html">qss.images package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="qss.images.html#module-contents">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qss.images.html#module-qss.images">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -88,18 +116,31 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="qss-icons-rc-module">
-<h2>qss.icons_rc module<a class="headerlink" href="#qss-icons-rc-module" title="Permalink to this heading"></a></h2>
+<section id="module-qss.icons_rc">
+<span id="qss-icons-rc-module"></span><h2>qss.icons_rc module<a class="headerlink" href="#module-qss.icons_rc" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="qss.icons_rc.qCleanupResources">
+<span class="sig-prename descclassname"><span class="pre">qss.icons_rc.</span></span><span class="sig-name descname"><span class="pre">qCleanupResources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qss/icons_rc.html#qCleanupResources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qss.icons_rc.qCleanupResources" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="qss.icons_rc.qInitResources">
+<span class="sig-prename descclassname"><span class="pre">qss.icons_rc.</span></span><span class="sig-name descname"><span class="pre">qInitResources</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qss/icons_rc.html#qInitResources"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#qss.icons_rc.qInitResources" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
-<section id="module-contents">
-<h2>Module contents<a class="headerlink" href="#module-contents" title="Permalink to this heading"></a></h2>
+<section id="module-qss">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qss" title="Permalink to this heading"></a></h2>
 </section>
 </section>
 
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="node_editor.html" class="btn btn-neutral float-left" title="node_editor package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="qss.icons.html" class="btn btn-neutral float-right" title="qss.icons package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

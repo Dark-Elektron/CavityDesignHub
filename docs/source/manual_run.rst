@@ -1,11 +1,6 @@
 manual\_run package
 ===================
 
-.. automodule:: manual_run
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Subpackages
 -----------
 
@@ -15,3 +10,11 @@ Subpackages
    manual_run.abci
    manual_run.data
    manual_run.slans
+
+Module contents
+---------------
+
+.. automodule:: manual_run
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,11 +1,6 @@
 manual\_run.data package
 ========================
 
-.. automodule:: manual_run.data
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -29,6 +24,14 @@ manual\_run.data.slans\_data module
 -----------------------------------
 
 .. automodule:: manual_run.data.slans_data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: manual_run.data
    :members:
    :undoc-members:
    :show-inheritance:

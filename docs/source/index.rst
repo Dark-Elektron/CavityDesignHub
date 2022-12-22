@@ -7,13 +7,28 @@ Welcome to CavityDesignHub's documentation!
 ===========================================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 6
+   :caption: Intro:
 
-   setup
-   em_codes
+Welcome to the cavity design hub guide.
+**Who is this for??**
+
+It's so funy that I was trying to copy something that someone said
+
+If you want to learn, :ref:`install CavityHub first <settingup>` and
+then explore these pages.
+
+Creating subtitles
+Customizing subtitles
+
+Modules
+========
+
+.. toctree::
+   :maxdepth: 6
+   :caption: Modules:
+
    modules
-   frame_controls
 
 Indices and tables
 ==================

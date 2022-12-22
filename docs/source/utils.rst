@@ -1,11 +1,6 @@
 utils package
 =============
 
-.. automodule:: utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -261,6 +256,14 @@ utils.write\_geometry\_whole\_cell module
 -----------------------------------------
 
 .. automodule:: utils.write_geometry_whole_cell
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: utils
    :members:
    :undoc-members:
    :show-inheritance:

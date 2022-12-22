@@ -1,11 +1,6 @@
 modules.tune\_module.tuners package
 ===================================
 
-.. automodule:: modules.tune_module.tuners
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Submodules
 ----------
 
@@ -37,6 +32,14 @@ modules.tune\_module.tuners.tuner module
 ----------------------------------------
 
 .. automodule:: modules.tune_module.tuners.tuner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: modules.tune_module.tuners
    :members:
    :undoc-members:
    :show-inheritance:

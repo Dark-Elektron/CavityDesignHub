@@ -14,7 +14,7 @@ import os
 import sys
 import sphinx_bootstrap_theme
 # sys.path.insert(0, os.path.abspath('.'))
-sys.path.insert(0, os.path.abspath('..'))
+sys.path.insert(0, os.path.abspath('../..'))
 # sys.path.insert(0, os.path.abspath(r'D:\Dropbox'))
 # print(sys.path)
 
@@ -37,8 +37,11 @@ release = '0.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    # 'sphinx.ext.viewcode',
-    # 'numpydoc'
+    'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.coverage',
+    'sphinx_copybutton',
+    'numpydoc'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
