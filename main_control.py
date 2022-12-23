@@ -53,6 +53,9 @@ import qtvscodestyle as qtvsc
 # pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py
 # pyrcc5 qss/icons.qrc -o icons_rc.py
 # git push -f  https://github.com/Dark-Elektron/CEMCodesHub.git master
+# sphinx-autobuild ./source ./_build/html
+# sphinx-apidoc -o source .. -f
+
 
 fr = FileReader()
 
@@ -65,7 +68,19 @@ AN_DURATION = 250
 
 class MainWindow:
     """
-    The central control for the GUI.
+    This does good stuff.
+
+    Here are the details about the good stuff it does.
+
+    Parameters
+    ----------
+    x : int
+        An integer which has amazing things done to it
+
+    Returns
+    -------
+    y : int
+        Some other thing
     """
     def __init__(self):
         self.animation = None
@@ -189,7 +204,7 @@ class MainWindow:
     def new_open_folder(self):
         """
         Method to create new project or open old projects.
-        :return:
+
         """
         # disable all buttons
         # signals to create folder
@@ -205,7 +220,6 @@ class MainWindow:
     def initUI(self):
         """
         Initialise class variables and initial GUI state
-        :return:
         """
         # hidden widgets
 

@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>modules.data_module.abci_data &mdash; CavityHub 0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/clipboard.min.js"></script>
+        <script src="../../../_static/copybutton.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> CavityHub
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">CEMCodesHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CavityHub</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">modules.data_module.abci_data</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for modules.data_module.abci_data</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QMessageBox</span>
+
+<span class="kn">from</span> <span class="nn">utils.file_reader</span> <span class="kn">import</span> <span class="n">FileReader</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="c1"># mpl.rcParams[&#39;text.usetex&#39;] = True</span>
+<span class="c1"># mpl.rcParams[&#39;text.latex.preamble&#39;] = [r&#39;\usepackage{amsmath}&#39;]  # for \text command</span>
+<span class="c1"># from labellines import labelLine, labelLines</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="n">fr</span> <span class="o">=</span> <span class="n">FileReader</span><span class="p">()</span>
+
+<span class="kn">import</span> <span class="nn">scipy.signal</span> <span class="k">as</span> <span class="nn">sps</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">termcolor</span> <span class="kn">import</span> <span class="n">colored</span>
+
+<span class="n">file_color</span> <span class="o">=</span> <span class="s1">&#39;cyan&#39;</span>
+
+<span class="c1"># DEBUG = False</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="print_"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.print_">[docs]</a><span class="k">def</span> <span class="nf">print_</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t\t</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file_color</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="ABCIData"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIData">[docs]</a><span class="k">class</span> <span class="nc">ABCIData</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirc</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">MROT</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir</span> <span class="o">=</span> <span class="n">dirc</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fid</span> <span class="o">=</span> <span class="n">fid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MROT</span> <span class="o">=</span> <span class="n">MROT</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loss_factor</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">SIG</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wakelength</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">checks</span><span class="p">(</span><span class="n">dirc</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">MROT</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ABCIData.checks"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIData.checks">[docs]</a>    <span class="k">def</span> <span class="nf">checks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dirc</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">MROT</span><span class="p">):</span>
+        <span class="n">dirc</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">dirc</span><span class="si">}</span><span class="s1">\</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">\Cavity_MROT_</span><span class="si">{</span><span class="n">MROT</span><span class="si">}</span><span class="s1">.top&#39;</span>
+        <span class="c1"># print(dirc)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dirc</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_plot_data</span><span class="p">(</span><span class="n">dirc</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">print_</span><span class="p">(</span><span class="s2">&quot;Hey chief, there seems to be a problem with the file directory. Please check.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">dir</span><span class="p">):</span>
+        <span class="n">frame_objects</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">frame_titles_objects</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">frame_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">plot_decorations</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Cavity Shape Input&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Cavity Shape Used&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Wake Potentials&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Longitudinal Impedance&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;Frequency Spectrum of Loss Factor&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Loss Factor Spectrum Integrated upto F&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Real Part of Long. + Log Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Long. + Log Impedance&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Spectrum of Long. + Log Loss Factor&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Long. + Log Factor Integrated up to F&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Real Part of Azimuthal Impedance&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Azimuthal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Real Part of Transverse Impedance&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Transverse Impedance&#39;</span><span class="p">]</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">dir</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;NEW FRAME&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="c1"># add frame to frame_objects</span>
+                    <span class="k">if</span> <span class="n">frame_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">frame_titles_objects</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">frame_title</span>
+
+                        <span class="c1"># select suitable title</span>
+                        <span class="k">for</span> <span class="n">decor</span> <span class="ow">in</span> <span class="n">plot_decorations</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">decor</span> <span class="ow">in</span> <span class="n">frame_title</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">frame_title</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                                <span class="n">frame_objects</span><span class="p">[</span><span class="n">decor</span><span class="p">]</span> <span class="o">=</span> <span class="n">line_objects</span>
+                                <span class="k">break</span>
+
+                    <span class="c1"># reset lists</span>
+                    <span class="n">line_objects</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">frame_title</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">new_frame</span> <span class="o">=</span> <span class="kc">True</span>
+
+                    <span class="n">frame_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                <span class="k">if</span> <span class="n">new_frame</span><span class="p">:</span>
+                    <span class="n">new_frame</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="c1"># add titles to frame_title</span>
+                <span class="k">if</span> <span class="s1">&#39;TITLE&#39;</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">or</span> <span class="s1">&#39;MORE&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">frame_title</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                    <span class="c1"># print(line)</span>
+                    <span class="c1"># if &#39;Transverse Wake&#39; in line:</span>
+                    <span class="c1">#     key = &#39;Transverse&#39;</span>
+                    <span class="c1">#     print(&#39;True&#39;)</span>
+
+                    <span class="c1"># get other parameters from title</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="s1">&#39;Azimuthal Wake&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;Azimuthal&#39;</span>
+                        <span class="k">if</span> <span class="s1">&#39;Transverse Wake&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;Transverse&#39;</span>
+                        <span class="k">if</span> <span class="s1">&#39;Longitudinal Wake&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;Longitudinal&#39;</span>
+
+                        <span class="k">if</span> <span class="s1">&#39;Loss Factor&#39;</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="n">key</span><span class="p">:</span>
+                            <span class="n">indx_0</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;= &#39;</span><span class="p">)</span>
+                            <span class="n">indx_1</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;V/pC&#39;</span><span class="p">)</span>
+                            <span class="n">loss_factor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">indx_0</span> <span class="o">+</span> <span class="mi">2</span><span class="p">:</span><span class="n">indx_1</span><span class="p">])</span>
+
+                            <span class="bp">self</span><span class="o">.</span><span class="n">loss_factor</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">loss_factor</span>
+                            <span class="n">key</span> <span class="o">=</span> <span class="kc">None</span>
+
+                        <span class="c1"># get sigma</span>
+                        <span class="k">if</span> <span class="s1">&#39;SIG&#39;</span> <span class="ow">in</span> <span class="n">line</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">SIG</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">indx_0</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;SIG= &#39;</span><span class="p">)</span>
+                            <span class="n">indx_1</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39; cm&#39;</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">SIG</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">indx_0</span> <span class="o">+</span> <span class="mi">5</span><span class="p">:</span><span class="n">indx_1</span><span class="p">])</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">pass</span>
+
+                <span class="k">if</span> <span class="s1">&#39;SET LIMITS&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+                    <span class="c1"># get wakelength</span>
+                    <span class="k">if</span> <span class="s1">&#39;SET LIMITS X   0.00000E+00&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                        <span class="n">indx_0</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;SET LIMITS X   0.00000E+00&#39;</span><span class="p">)</span>
+                        <span class="n">indx_1</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">wakelength</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="n">indx_0</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="s1">&#39;SET LIMITS X   0.00000E+00&#39;</span><span class="p">):</span><span class="n">indx_1</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+
+                <span class="k">if</span> <span class="s1">&#39;JOIN&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">new_line_object</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">new_line_object</span> <span class="o">=</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="n">new_line_object</span><span class="p">:</span>
+                    <span class="c1"># add x and y to line objects</span>
+                    <span class="n">line_objects</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">])</span>
+
+                    <span class="c1"># reset x and y</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;NEW&#39;</span> <span class="ow">and</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span>
+                    <span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;JOIN&#39;</span><span class="p">:</span>
+                    <span class="n">new_line_object</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">ll</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()]</span>
+                    <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ll</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ll</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="c1"># EOF append last list</span>
+            <span class="n">frame_titles_objects</span><span class="p">[</span><span class="n">frame_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">frame_title</span>
+
+            <span class="c1"># select suitable title</span>
+            <span class="k">for</span> <span class="n">decor</span> <span class="ow">in</span> <span class="n">plot_decorations</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">decor</span> <span class="ow">in</span> <span class="n">frame_title</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">frame_title</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                    <span class="n">frame_objects</span><span class="p">[</span><span class="n">decor</span><span class="p">]</span> <span class="o">=</span> <span class="n">line_objects</span>
+                    <span class="k">break</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">data_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">lines</span> <span class="ow">in</span> <span class="n">frame_objects</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="n">x</span> <span class="o">+=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">y</span> <span class="o">+=</span> <span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Cavity Shape Input&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Cavity Shape Used&#39;</span><span class="p">]:</span>
+                    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+
+                    <span class="c1"># # insert values to complete shape</span>
+                    <span class="c1"># x = np.insert(x, 0, x[0])</span>
+                    <span class="c1"># y = np.insert(y, 0, 0)</span>
+                    <span class="c1"># x = np.insert(x, -1, x[-1]).tolist()</span>
+                    <span class="c1"># y = np.insert(y, -1, 0).tolist()</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">data_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ABCIData.get_data"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIData.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="n">plot_decorations</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Cavity Shape Input&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Cavity Shape Used&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Wake Potentials&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Longitudinal Impedance&#39;</span><span class="p">,</span>
+                            <span class="s1">&#39;Frequency Spectrum of Loss Factor&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Loss Factor Spectrum Integrated upto F&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Real Part of Long. + Log Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Long. + Log Impedance&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Spectrum of Long. + Log Loss Factor&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Long. + Log Factor Integrated up to F&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Real Part of Azimuthal Impedance&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Azimuthal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Real Part of Transverse Impedance&#39;</span><span class="p">,</span>
+                            <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Transverse Impedance&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="n">plot_decorations</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="c1"># print_(self.data_dict)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dict</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Process all needed data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_peaks</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.02</span><span class="p">)</span>
+
+        <span class="c1"># if key != &#39;Loss Factor Spectrum Integrated up to F&#39;:</span>
+        <span class="c1">#     self.bands = self._get_bands()</span>
+        <span class="c1">#     self.fl_list = self._interp_fl()</span>
+        <span class="c1">#     self.fr_list = self._interp_fr()</span>
+        <span class="c1">#     self.BW = self._get_BW()</span>
+        <span class="c1">#     self.Q = self._get_Q()</span>
+        <span class="c1">#     self.R_Q = self._get_RQ()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fid</span></div>
+
+    <span class="k">def</span> <span class="nf">_get_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">MROT</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">MROT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_decorations</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Cavity Shape Input&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Z-axis (m)&#39;</span><span class="p">,</span> <span class="s1">&#39;R-axis (m)&#39;</span><span class="p">],</span>
+                                     <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Cavity Shape Used&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Z-axis (m)&#39;</span><span class="p">,</span> <span class="s1">&#39;R-axis (m)&#39;</span><span class="p">],</span>
+                                     <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Wake Potentials&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Distance from Bunch Head S (m)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Scaled Wake Potential W (S)&#39;</span><span class="p">],</span>
+                                     <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Real $Z_L$ ($k\Omega$) &#39;</span><span class="p">],</span>
+                                     <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Imaginary Part of Longitudinal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imag $Z_L$ ($k\Omega$) &#39;</span><span class="p">],</span>
+                                     <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Frequency Spectrum of Loss Factor&#39;</span><span class="p">,</span> <span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$dk_L/df$ (V/pC/GHz) &#39;</span><span class="p">],</span>
+                                     <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Loss Factor Spectrum Integrated up to F&#39;</span><span class="p">,</span> <span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$k_L$(F) (V/pC)&#39;</span><span class="p">],</span>
+                                     <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Real Part of Long. + Log Impedance&#39;</span><span class="p">,</span> <span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Real $Z_{L+LOG}$ ($k\Omega$)&#39;</span><span class="p">],</span>
+                                     <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Imaginary Part of Long. + Log Impedance&#39;</span><span class="p">,</span> <span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imag $Z_{L+LOG}$ ($k\Omega$)&#39;</span><span class="p">],</span>
+                                     <span class="mi">9</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Spectrum of Long. + Log Loss Factor&#39;</span><span class="p">,</span> <span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$dk_L/df$ ($V/pC/GHz$)&#39;</span><span class="p">],</span>
+                                     <span class="mi">10</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Long. + Log Factor Integrated up to F&#39;</span><span class="p">,</span> <span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;$k_L$(F) (V/pC)&#39;</span><span class="p">]</span>
+                                     <span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">plot_decorations</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Cavity Shape Input&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Z-axis (m)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;R-axis (m)&#39;</span><span class="p">],</span>
+                                     <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Cavity Shape Used&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Z-axis (m)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;R-axis (m)&#39;</span><span class="p">],</span>
+                                     <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Wake Potentials&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Distance from Bunch Head S (m)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Scaled Wake Potential W (S)&#39;</span><span class="p">],</span>
+                                     <span class="mi">3</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Real Part of Azimuthal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Real $Z_A$ ($k\Omega/m$) &#39;</span><span class="p">],</span>
+                                     <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Imaginary Part of Azimuthal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imag $Z_A$ ($k\Omega/m$) &#39;</span><span class="p">],</span>
+                                     <span class="mi">5</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Real Part of Transverse Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Real $Z_T$ ($k\Omega/m$) &#39;</span><span class="p">],</span>
+                                     <span class="mi">6</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Imaginary Part of Transverse Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imag $Z_T$ ($k\Omega/m$) &#39;</span><span class="p">],</span>
+                                     <span class="mi">7</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Real $Z_L$ ($k\Omega/m^2$) &#39;</span><span class="p">],</span>
+                                     <span class="mi">8</span><span class="p">:</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;Imaginary Part of Longitudinal Impedance&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Frequency f (GHz)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;Imag $Z_L$ ($k\Omega/m^2$) &#39;</span><span class="p">]}</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_decorations</span>
+
+    <span class="k">def</span> <span class="nf">_nparray_to_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">array</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">result</span>
+
+<div class="viewcode-block" id="ABCIData.get_peaks"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIData.get_peaks">[docs]</a>    <span class="k">def</span> <span class="nf">get_peaks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+        <span class="c1"># Develop later</span>
+        <span class="n">peaks</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="n">xp</span><span class="p">,</span> <span class="n">yp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">)[</span><span class="n">peaks</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)[</span><span class="n">peaks</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">xp</span><span class="p">,</span> <span class="n">yp</span></div>
+        <span class="c1"># self.plot_beam_pipe_cutoffs()</span>
+
+    <span class="k">def</span> <span class="nf">_get_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># get band ranges</span>
+            <span class="n">group_dict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">gr_n</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">xl</span><span class="p">,</span> <span class="n">yl</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">xl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                    <span class="n">yl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># if val - xl[n] &lt; 0.2:</span>
+                    <span class="k">if</span> <span class="n">val</span> <span class="o">-</span> <span class="n">xl</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.1</span><span class="p">:</span>
+                        <span class="n">xl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                        <span class="n">yl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                        <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="c1"># save group</span>
+                        <span class="n">group_dict</span><span class="p">[</span><span class="n">gr_n</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;xb&#39;</span><span class="p">:</span> <span class="n">xl</span><span class="p">,</span> <span class="s1">&#39;yb&#39;</span><span class="p">:</span> <span class="n">yl</span><span class="p">}</span>
+
+                        <span class="c1"># next group</span>
+                        <span class="n">gr_n</span> <span class="o">+=</span> <span class="mi">1</span>
+
+                        <span class="c1"># reset lists</span>
+                        <span class="n">xl</span><span class="p">,</span> <span class="n">yl</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+                        <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+
+                        <span class="c1"># append current result</span>
+                        <span class="n">xl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                        <span class="n">yl</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+                    <span class="n">group_dict</span><span class="p">[</span><span class="n">gr_n</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;xb&#39;</span><span class="p">:</span> <span class="n">xl</span><span class="p">,</span> <span class="s1">&#39;yb&#39;</span><span class="p">:</span> <span class="n">yl</span><span class="p">}</span>  <span class="c1"># last group</span>
+
+            <span class="c1"># print_(group_dict)</span>
+            <span class="k">return</span> <span class="n">group_dict</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">print_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bands cannot be gotten without getting the peaks first. </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_interp_fl</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fl_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">wx</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">wz</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">f0</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">):</span>
+            <span class="n">z_0707</span> <span class="o">=</span> <span class="mf">0.707</span> <span class="o">*</span> <span class="n">z</span>
+            <span class="c1"># print_(z_0707)</span>
+
+            <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">):</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">l</span> <span class="o">&lt;</span> <span class="n">z_0707</span> <span class="o">&lt;</span> <span class="n">h</span><span class="p">):</span>
+
+                    <span class="k">if</span> <span class="p">(</span><span class="n">f0</span><span class="o">-</span><span class="mf">0.01</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">f0</span><span class="p">):</span>
+                        <span class="n">wz</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">h</span><span class="p">]</span>
+                        <span class="n">wx</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                        <span class="k">break</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">h</span>
+
+            <span class="c1"># print_(f&#39;\t{wx, wz}&#39;)</span>
+
+            <span class="c1"># interpolate</span>
+            <span class="n">fl</span> <span class="o">=</span> <span class="n">wx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">wx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">z_0707</span><span class="o">-</span><span class="n">wz</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">wz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">wz</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">fl_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fl</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fl_list</span>
+
+    <span class="k">def</span> <span class="nf">_interp_fr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fr_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">wx</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="n">wz</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">f0</span><span class="p">,</span> <span class="n">z</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">):</span>
+
+            <span class="n">z_0707</span> <span class="o">=</span> <span class="mf">0.707</span> <span class="o">*</span> <span class="n">z</span>
+            <span class="c1"># print_(z_0707)</span>
+
+            <span class="n">l</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">h</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">l</span> <span class="o">&gt;</span> <span class="n">z_0707</span> <span class="o">&gt;</span> <span class="n">h</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">f0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">f0</span> <span class="o">+</span> <span class="mf">0.05</span><span class="p">):</span>
+                        <span class="n">wz</span> <span class="o">=</span> <span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">h</span><span class="p">]</span>
+                        <span class="n">wx</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+                        <span class="k">break</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">h</span>
+
+            <span class="c1"># f0_old = f0</span>
+            <span class="c1"># print_(f&#39;\t{wx, wz}&#39;)</span>
+
+            <span class="c1"># interpolate</span>
+            <span class="n">fr</span> <span class="o">=</span> <span class="n">wx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">wx</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">wx</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">z_0707</span><span class="o">-</span><span class="n">wz</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">wz</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">wz</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">fr_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">fr</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fr_list</span>
+
+    <span class="k">def</span> <span class="nf">_get_Q</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">Q</span> <span class="o">=</span> <span class="p">[</span><span class="n">f0</span><span class="o">/</span><span class="n">bw</span> <span class="k">for</span> <span class="n">f0</span><span class="p">,</span> <span class="n">bw</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">BW</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">Q</span>
+
+    <span class="k">def</span> <span class="nf">_get_RQ</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">MROT</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">R_Q</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">zz</span><span class="o">*</span><span class="mf">1e3</span><span class="o">/</span><span class="n">q</span> <span class="k">for</span> <span class="n">zz</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">)]</span>
+            <span class="c1"># print_(f&#39;R/Q: {R_Q}&#39;)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="mi">299792458</span> <span class="c1"># m / s</span>
+            <span class="n">k</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">f0</span><span class="o">*</span><span class="mf">1e9</span><span class="o">/</span><span class="n">c</span> <span class="k">for</span> <span class="n">f0</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">]</span>
+            <span class="n">R_Q_m</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="o">*</span><span class="n">zz</span><span class="o">*</span><span class="mf">1e3</span><span class="o">/</span><span class="n">q</span> <span class="k">for</span> <span class="n">zz</span><span class="p">,</span> <span class="n">q</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q</span><span class="p">)]</span>
+            <span class="n">R_Q</span> <span class="o">=</span> <span class="p">[</span><span class="n">r_q_m</span><span class="o">/</span><span class="n">kk</span> <span class="k">for</span> <span class="n">r_q_m</span><span class="p">,</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">R_Q_m</span><span class="p">,</span> <span class="n">k</span><span class="p">)]</span>
+            <span class="c1"># print_(f&#39;R/Q: {R_Q}&#39;)</span>
+
+        <span class="k">return</span> <span class="n">R_Q</span>
+
+    <span class="k">def</span> <span class="nf">_get_BW</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">BW</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fr_list</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fl_list</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">BW</span>
+
+<div class="viewcode-block" id="ABCIData.plot_bands"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIData.plot_bands">[docs]</a>    <span class="k">def</span> <span class="nf">plot_bands</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Vertically stacked subplots&#39;</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_Q</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x_peaks</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;#008fd5&#39;</span><span class="p">,</span> <span class="s1">&#39;#fc4f30&#39;</span><span class="p">,</span> <span class="s1">&#39;#e5ae38&#39;</span><span class="p">,</span> <span class="s1">&#39;#6d904f&#39;</span><span class="p">,</span> <span class="s1">&#39;#8b8b8b&#39;</span><span class="p">,</span> <span class="s1">&#39;#810f7c&#39;</span><span class="p">,</span> <span class="s1">&#39;#ed718b&#39;</span><span class="p">,</span> <span class="s1">&#39;#2ccf8b&#39;</span><span class="p">,</span> <span class="s1">&#39;#fded21&#39;</span><span class="p">,</span> <span class="s1">&#39;#8248d2&#39;</span><span class="p">,</span> <span class="s1">&#39;#4c3a27&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;#008fd5&#39;</span><span class="p">,</span> <span class="s1">&#39;#fc4f30&#39;</span><span class="p">,</span> <span class="s1">&#39;#e5ae38&#39;</span><span class="p">,</span> <span class="s1">&#39;#6d904f&#39;</span><span class="p">,</span> <span class="s1">&#39;#8b8b8b&#39;</span><span class="p">,</span> <span class="s1">&#39;#810f7c&#39;</span><span class="p">,</span> <span class="s1">&#39;#ed718b&#39;</span><span class="p">,</span> <span class="s1">&#39;#2ccf8b&#39;</span><span class="p">,</span> <span class="s1">&#39;#fded21&#39;</span><span class="p">,</span> <span class="s1">&#39;#8248d2&#39;</span><span class="p">,</span> <span class="s1">&#39;#4c3a27&#39;</span><span class="p">,</span> <span class="s1">&#39;#000000&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">tol</span> <span class="o">=</span> <span class="mf">0.05</span>
+            <span class="n">lb</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;xb&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">tol</span>
+            <span class="n">rb</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;xb&#39;</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">tol</span>
+            <span class="n">axs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">rb</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+            <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">axvspan</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">rb</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">[</span><span class="n">key</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ABCIDataExtraction"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIDataExtraction">[docs]</a><span class="k">class</span> <span class="nc">ABCIDataExtraction</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+<div class="viewcode-block" id="ABCIDataExtraction.multiple_folders_data"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIDataExtraction.multiple_folders_data">[docs]</a>    <span class="k">def</span> <span class="nf">multiple_folders_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape_space</span><span class="p">,</span> <span class="n">abci_data_dir</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">save_excel</span><span class="p">,</span> <span class="n">mon_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dip_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># process interval</span>
+        <span class="c1"># Zmax</span>
+        <span class="k">if</span> <span class="n">mon_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">mon_interval</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2e10</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">mon_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_interval</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dip_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">dip_interval</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2e10</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">dip_interval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_interval</span><span class="p">(</span><span class="n">dip_interval</span><span class="p">)</span>
+
+        <span class="n">reply</span> <span class="o">=</span> <span class="s2">&quot;Yes&quot;</span>
+        <span class="k">def</span> <span class="nf">button_clicked</span><span class="p">(</span><span class="n">i</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">i</span><span class="o">.</span><span class="n">text</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_excel</span><span class="si">}</span><span class="s1">.xlsx&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">parallel</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="p">()</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;File Exist&quot;</span><span class="p">)</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Hey Chief, seems you&#39;ve already processed the data for this folder. Do you want to overwrite it?&quot;</span><span class="p">)</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">setIcon</span><span class="p">(</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Question</span><span class="p">)</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">setStandardButtons</span><span class="p">(</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span> <span class="o">|</span> <span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">)</span>
+            <span class="n">msg</span><span class="o">.</span><span class="n">setDefaultButton</span><span class="p">(</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">)</span>
+
+            <span class="n">msg</span><span class="o">.</span><span class="n">buttonClicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">button_clicked</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">msg</span><span class="o">.</span><span class="n">Yes</span><span class="p">:</span>
+                <span class="n">reply</span> <span class="o">=</span> <span class="s1">&#39;Yes&#39;</span>
+            <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">msg</span><span class="o">.</span><span class="n">No</span><span class="p">:</span>
+                <span class="n">reply</span> <span class="o">=</span> <span class="s1">&#39;No&#39;</span>
+
+        <span class="k">if</span> <span class="n">reply</span> <span class="o">==</span> <span class="s2">&quot;Yes&quot;</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">shape_space</span>
+
+            <span class="c1"># data arrays initialization</span>
+            <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="n">k_loss_array_transverse</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">k_loss_array_longitudinal</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">k_loss_M0</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">key_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># create list to hold Z</span>
+            <span class="n">Zmax_mon_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">Zmax_dip_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">xmax_mon_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">xmax_dip_list</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">)):</span>
+                <span class="n">Zmax_mon_list</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+                <span class="n">xmax_mon_list</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dip_interval</span><span class="p">)):</span>
+                <span class="n">Zmax_dip_list</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+                <span class="n">xmax_dip_list</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+
+            <span class="k">def</span> <span class="nf">append_geom_parameters</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+                <span class="n">A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">B</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">b</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="n">Ri</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span>
+                <span class="n">L</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
+                <span class="n">Req</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span>
+                <span class="n">alpha</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">values</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+
+            <span class="k">def</span> <span class="nf">calc_k_loss</span><span class="p">():</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing for Cavity </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">abci_data_long</span> <span class="o">=</span> <span class="n">ABCIData</span><span class="p">(</span><span class="n">abci_data_dir</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">abci_data_trans</span> <span class="o">=</span> <span class="n">ABCIData</span><span class="p">(</span><span class="n">abci_data_dir</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                    <span class="c1"># trans</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_trans</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Real Part of Transverse Impedance&#39;</span><span class="p">)</span>
+                    <span class="n">k_loss_trans</span> <span class="o">=</span> <span class="n">abci_data_trans</span><span class="o">.</span><span class="n">loss_factor</span><span class="p">[</span><span class="s1">&#39;Transverse&#39;</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">k_loss_trans</span><span class="p">):</span>
+                        <span class="n">print_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Encountered an exception: Check shape </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># long</span>
+                    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_long</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">)</span>
+                    <span class="n">abci_data_long</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Loss Factor Spectrum Integrated up to F&#39;</span><span class="p">)</span>
+
+                    <span class="n">k_M0</span> <span class="o">=</span> <span class="n">abci_data_long</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">k_loss_long</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">abci_data_long</span><span class="o">.</span><span class="n">loss_factor</span><span class="p">[</span><span class="s1">&#39;Longitudinal&#39;</span><span class="p">])</span>
+                    <span class="n">k_loss_HOM</span> <span class="o">=</span> <span class="n">k_loss_long</span> <span class="o">-</span> <span class="n">k_M0</span>
+
+                    <span class="c1"># append only after successful run</span>
+                    <span class="n">append_geom_parameters</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+                    <span class="n">key_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                    <span class="n">k_loss_M0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_M0</span><span class="p">)</span>
+                    <span class="n">k_loss_array_longitudinal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_loss_HOM</span><span class="p">)</span>
+                    <span class="n">k_loss_array_transverse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_loss_trans</span><span class="p">)</span>
+
+            <span class="k">def</span> <span class="nf">get_Zmax</span><span class="p">(</span><span class="n">mon_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dip_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">mon_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">mon_interval</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2e10</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">dip_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">dip_interval</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">2e10</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing for Cavity </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">abci_data_mon</span> <span class="o">=</span> <span class="n">ABCIData</span><span class="p">(</span><span class="n">abci_data_dir</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">abci_data_dip</span> <span class="o">=</span> <span class="n">ABCIData</span><span class="p">(</span><span class="n">abci_data_dir</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                    <span class="c1"># get longitudinal and transverse impedance plot data</span>
+                    <span class="n">xr_mon</span><span class="p">,</span> <span class="n">yr_mon</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_mon</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">)</span>
+                    <span class="n">xi_mon</span><span class="p">,</span> <span class="n">yi_mon</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_mon</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Imaginary Part of Longitudinal Impedance&#39;</span><span class="p">)</span>
+
+                    <span class="n">xr_dip</span><span class="p">,</span> <span class="n">yr_dip</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_dip</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Real Part of Transverse Impedance&#39;</span><span class="p">)</span>
+                    <span class="n">xi_dip</span><span class="p">,</span> <span class="n">yi_dip</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_dip</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Imaginary Part of Transverse Impedance&#39;</span><span class="p">)</span>
+
+                    <span class="c1"># Zmax</span>
+                    <span class="k">if</span> <span class="n">mon_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">mon_interval</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]]</span>
+                    <span class="k">if</span> <span class="n">dip_interval</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                        <span class="n">dip_interval</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">]]</span>
+
+                    <span class="c1"># calculate magnitude</span>
+                    <span class="n">ymag_mon</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">yr_mon</span><span class="p">,</span> <span class="n">yi_mon</span><span class="p">)]</span>
+                    <span class="n">ymag_dip</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">yr_dip</span><span class="p">,</span> <span class="n">yi_dip</span><span class="p">)]</span>
+
+                    <span class="c1"># get peaks</span>
+                    <span class="n">peaks_mon</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">ymag_mon</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">xp_mon</span><span class="p">,</span> <span class="n">yp_mon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xr_mon</span><span class="p">)[</span><span class="n">peaks_mon</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ymag_mon</span><span class="p">)[</span><span class="n">peaks_mon</span><span class="p">]</span>
+
+                    <span class="n">peaks_dip</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">ymag_dip</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">xp_dip</span><span class="p">,</span> <span class="n">yp_dip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xr_dip</span><span class="p">)[</span><span class="n">peaks_dip</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ymag_dip</span><span class="p">)[</span><span class="n">peaks_dip</span><span class="p">]</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">z_bound</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">):</span>
+                        <span class="c1"># get mask</span>
+                        <span class="n">msk_mon</span> <span class="o">=</span> <span class="p">[(</span><span class="n">z_bound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">z_bound</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xp_mon</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_mon</span><span class="p">[</span><span class="n">msk_mon</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_mon</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yp_mon</span><span class="p">[</span><span class="n">msk_mon</span><span class="p">])</span>
+
+                            <span class="n">Zmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Zmax_mon</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_mon</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">z_bound</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dip_interval</span><span class="p">):</span>
+                        <span class="c1"># get mask</span>
+                        <span class="n">msk_dip</span> <span class="o">=</span> <span class="p">[(</span><span class="n">z_bound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">z_bound</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xp_dip</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_dip</span><span class="p">[</span><span class="n">msk_dip</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_dip</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yp_dip</span><span class="p">[</span><span class="n">msk_dip</span><span class="p">])</span>
+
+                            <span class="n">Zmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Zmax_dip</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_dip</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                    <span class="n">append_geom_parameters</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;IC&quot;</span><span class="p">])</span>
+
+            <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">,</span> <span class="n">dip_interval</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Processing for Cavity </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">abci_data_long</span> <span class="o">=</span> <span class="n">ABCIData</span><span class="p">(</span><span class="n">abci_data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                    <span class="n">abci_data_trans</span> <span class="o">=</span> <span class="n">ABCIData</span><span class="p">(</span><span class="n">abci_data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">_&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+                    <span class="c1"># get longitudinal and transverse impedance plot data</span>
+                    <span class="n">xr_mon</span><span class="p">,</span> <span class="n">yr_mon</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_long</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">)</span>
+                    <span class="n">xi_mon</span><span class="p">,</span> <span class="n">yi_mon</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_long</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Imaginary Part of Longitudinal Impedance&#39;</span><span class="p">)</span>
+
+                    <span class="n">xr_dip</span><span class="p">,</span> <span class="n">yr_dip</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_trans</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Real Part of Transverse Impedance&#39;</span><span class="p">)</span>
+                    <span class="n">xi_dip</span><span class="p">,</span> <span class="n">yi_dip</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data_trans</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Imaginary Part of Transverse Impedance&#39;</span><span class="p">)</span>
+
+                    <span class="c1"># loss factors</span>
+                    <span class="c1"># trans</span>
+                    <span class="n">k_loss_trans</span> <span class="o">=</span> <span class="n">abci_data_trans</span><span class="o">.</span><span class="n">loss_factor</span><span class="p">[</span><span class="s1">&#39;Transverse&#39;</span><span class="p">]</span>
+
+                    <span class="k">if</span> <span class="n">math</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">k_loss_trans</span><span class="p">):</span>
+                        <span class="n">print_</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Encountered an exception: Check shape </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="k">continue</span>
+
+                    <span class="c1"># long</span>
+                    <span class="n">abci_data_long</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;Loss Factor Spectrum Integrated upto F&#39;</span><span class="p">)</span>
+
+                    <span class="n">k_M0</span> <span class="o">=</span> <span class="n">abci_data_long</span><span class="o">.</span><span class="n">y_peaks</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">k_loss_long</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">abci_data_long</span><span class="o">.</span><span class="n">loss_factor</span><span class="p">[</span><span class="s1">&#39;Longitudinal&#39;</span><span class="p">])</span>
+                    <span class="n">k_loss_HOM</span> <span class="o">=</span> <span class="n">k_loss_long</span> <span class="o">-</span> <span class="n">k_M0</span>
+
+                    <span class="c1"># calculate magnitude</span>
+                    <span class="n">ymag_mon</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">yr_mon</span><span class="p">,</span> <span class="n">yi_mon</span><span class="p">)]</span>
+                    <span class="n">ymag_dip</span> <span class="o">=</span> <span class="p">[(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span> <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">yr_dip</span><span class="p">,</span> <span class="n">yi_dip</span><span class="p">)]</span>
+
+                    <span class="c1"># get peaks</span>
+                    <span class="n">peaks_mon</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">ymag_mon</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">xp_mon</span><span class="p">,</span> <span class="n">yp_mon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xr_mon</span><span class="p">)[</span><span class="n">peaks_mon</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ymag_mon</span><span class="p">)[</span><span class="n">peaks_mon</span><span class="p">]</span>
+
+                    <span class="n">peaks_dip</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sps</span><span class="o">.</span><span class="n">find_peaks</span><span class="p">(</span><span class="n">ymag_dip</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+                    <span class="n">xp_dip</span><span class="p">,</span> <span class="n">yp_dip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">xr_dip</span><span class="p">)[</span><span class="n">peaks_dip</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ymag_dip</span><span class="p">)[</span><span class="n">peaks_dip</span><span class="p">]</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">z_bound</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">):</span>
+                        <span class="c1"># get mask</span>
+                        <span class="n">msk_mon</span> <span class="o">=</span> <span class="p">[(</span><span class="n">z_bound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">z_bound</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xp_mon</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_mon</span><span class="p">[</span><span class="n">msk_mon</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_mon</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yp_mon</span><span class="p">[</span><span class="n">msk_mon</span><span class="p">])</span>
+                            <span class="n">xmax_mon</span> <span class="o">=</span> <span class="n">xp_mon</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">yp_mon</span> <span class="o">==</span> <span class="n">Zmax_mon</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+
+                            <span class="n">Zmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Zmax_mon</span><span class="p">)</span>
+                            <span class="n">xmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xmax_mon</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_mon</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                            <span class="n">xmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">z_bound</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dip_interval</span><span class="p">):</span>
+                        <span class="c1"># get mask</span>
+                        <span class="n">msk_dip</span> <span class="o">=</span> <span class="p">[(</span><span class="n">z_bound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">z_bound</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xp_dip</span><span class="p">]</span>
+
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_dip</span><span class="p">[</span><span class="n">msk_dip</span><span class="p">])</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_dip</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">yp_dip</span><span class="p">[</span><span class="n">msk_dip</span><span class="p">])</span>
+                            <span class="n">xmax_dip</span> <span class="o">=</span> <span class="n">xp_dip</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">yp_dip</span> <span class="o">==</span> <span class="n">Zmax_dip</span><span class="p">)][</span><span class="mi">0</span><span class="p">]</span>
+
+                            <span class="n">Zmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Zmax_dip</span><span class="p">)</span>
+                            <span class="n">xmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xmax_dip</span><span class="p">)</span>
+                        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">yp_dip</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">Zmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                            <span class="n">xmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="k">continue</span>
+
+                    <span class="c1"># append only after successful run</span>
+                    <span class="n">append_geom_parameters</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s2">&quot;IC&quot;</span><span class="p">])</span>
+                    <span class="n">key_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+                    <span class="n">k_loss_M0</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_M0</span><span class="p">)</span>
+                    <span class="n">k_loss_array_longitudinal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_loss_HOM</span><span class="p">)</span>
+                    <span class="n">k_loss_array_transverse</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">k_loss_trans</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;k_loss&#39;</span><span class="p">:</span>
+                <span class="n">calc_k_loss</span><span class="p">()</span>
+                <span class="c1"># save excel</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">key_list</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">:</span> <span class="n">Ri</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">L</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">:</span> <span class="n">Req</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="n">alpha</span><span class="p">,</span>
+                            <span class="s1">&#39;k_loss_M0&#39;</span><span class="p">:</span> <span class="n">k_loss_M0</span><span class="p">,</span> <span class="s1">&#39;k_loss_long&#39;</span><span class="p">:</span> <span class="n">k_loss_array_longitudinal</span><span class="p">,</span> <span class="s1">&#39;k_loss_trans&#39;</span><span class="p">:</span> <span class="n">k_loss_array_transverse</span><span class="p">}</span>
+
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_excel</span><span class="si">}</span><span class="s1">.xlsx&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oops! Encountered some error trying to save file: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;zmax&#39;</span><span class="p">:</span>
+                <span class="n">get_Zmax</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">,</span> <span class="n">dip_interval</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Zmax_mon_list</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">Zmax_dip_list</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">))</span>
+
+                <span class="c1"># save excel</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">key_list</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">:</span> <span class="n">Ri</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">L</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">:</span> <span class="n">Req</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="n">alpha</span><span class="p">}</span>
+
+                    <span class="c1"># add impedance lists</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">):</span>
+                        <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Z_long[max(</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;f&lt;</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Zmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dip_interval</span><span class="p">):</span>
+                        <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Z_trans[max(</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;f&lt;</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Zmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_excel</span><span class="si">}</span><span class="s1">.xlsx&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oops! Encountered some error trying to save file: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+                <span class="nb">all</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">,</span> <span class="n">dip_interval</span><span class="p">)</span>
+
+                <span class="c1"># save excel</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">key_list</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="n">A</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="n">B</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="n">a</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">:</span> <span class="n">b</span><span class="p">,</span> <span class="s1">&#39;Ri&#39;</span><span class="p">:</span> <span class="n">Ri</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="n">L</span><span class="p">,</span> <span class="s1">&#39;Req&#39;</span><span class="p">:</span> <span class="n">Req</span><span class="p">,</span> <span class="s2">&quot;alpha&quot;</span><span class="p">:</span> <span class="n">alpha</span><span class="p">,</span>
+                            <span class="s1">&#39;k_loss_M0&#39;</span><span class="p">:</span> <span class="n">k_loss_M0</span><span class="p">,</span> <span class="s1">&#39;k_loss_long&#39;</span><span class="p">:</span> <span class="n">k_loss_array_longitudinal</span><span class="p">,</span> <span class="s1">&#39;k_loss_trans&#39;</span><span class="p">:</span> <span class="n">k_loss_array_transverse</span><span class="p">}</span>
+
+                    <span class="c1"># add impedance lists</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mon_interval</span><span class="p">):</span>
+                        <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Z_long[max(</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;f&lt;</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Zmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;fmax[max(</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;f&lt;</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax_mon_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">msk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dip_interval</span><span class="p">):</span>
+                        <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;Z_trans[max(</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;f&lt;</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Zmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">data</span><span class="p">[</span><span class="sa">f</span><span class="s1">&#39;fmax[max(</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&lt;f&lt;</span><span class="si">{</span><span class="n">msk</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">)]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">xmax_dip_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+                    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_excel</span><span class="si">}</span><span class="s1">.xlsx&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oops! Encountered some error trying to save file: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ABCIDataExtraction.multiple_folders_data_parallel"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIDataExtraction.multiple_folders_data_parallel">[docs]</a>    <span class="k">def</span> <span class="nf">multiple_folders_data_parallel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shape_space</span><span class="p">,</span> <span class="n">abci_data_folder</span><span class="p">,</span> <span class="n">proc_count</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">save_excel</span><span class="p">,</span> <span class="n">temp_folder</span><span class="p">,</span> <span class="n">mon_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dip_interval</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># create temporary folder</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">temp_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">processes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">shape_space</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">shape_space_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span>
+        <span class="n">share</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">shape_space_len</span> <span class="o">/</span> <span class="n">proc_count</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">proc_count</span><span class="p">):</span>
+            <span class="c1"># create temporary shape spaces</span>
+            <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">proc_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">proc_keys_list</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="n">p</span> <span class="o">*</span> <span class="n">share</span><span class="p">:</span><span class="n">p</span> <span class="o">*</span> <span class="n">share</span> <span class="o">+</span> <span class="n">share</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">proc_keys_list</span> <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="n">p</span> <span class="o">*</span> <span class="n">share</span><span class="p">:]</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="n">proc_keys_list</span><span class="p">)</span>
+            <span class="n">processor_shape_space</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">shape_space</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">proc_keys_list</span><span class="p">:</span>
+                    <span class="n">processor_shape_space</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+            <span class="n">service</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">multiple_folders_data</span><span class="p">,</span>
+                                 <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">processor_shape_space</span><span class="p">,</span> <span class="n">abci_data_folder</span><span class="p">,</span> <span class="n">request</span><span class="p">),</span>
+                                 <span class="c1"># keys[-1]]</span>
+                                 <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;save_excel&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">temp_folder</span><span class="si">}</span><span class="s1">\Proc_</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39;mon_interval&#39;</span><span class="p">:</span> <span class="n">mon_interval</span><span class="p">,</span>
+                                         <span class="s1">&#39;dip_interval&#39;</span><span class="p">:</span> <span class="n">dip_interval</span><span class="p">,</span> <span class="s1">&#39;parallel&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">})</span>
+            <span class="n">service</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+            <span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">processes</span><span class="p">:</span>
+            <span class="n">p</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+
+        <span class="c1"># join temporary files and delete</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">join_excel</span><span class="p">(</span><span class="s1">&#39;Proc&#39;</span><span class="p">,</span> <span class="n">proc_count</span><span class="p">,</span> <span class="n">save_excel</span><span class="p">,</span> <span class="n">temp_folder</span><span class="p">)</span>
+
+        <span class="c1"># delete temporary folder</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">temp_folder</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ABCIDataExtraction.process_interval"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIDataExtraction.process_interval">[docs]</a>    <span class="k">def</span> <span class="nf">process_interval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interval_list</span><span class="p">):</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">interval_list</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+            <span class="n">interval</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">interval_list</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]])</span>
+
+        <span class="k">return</span> <span class="n">interval</span></div>
+
+<div class="viewcode-block" id="ABCIDataExtraction.join_excel"><a class="viewcode-back" href="../../../modules.data_module.html#modules.data_module.abci_data.ABCIDataExtraction.join_excel">[docs]</a>    <span class="k">def</span> <span class="nf">join_excel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">generic_name</span><span class="p">,</span> <span class="n">proc_count</span><span class="p">,</span> <span class="n">save_excel</span><span class="p">,</span> <span class="n">temp_folder</span><span class="p">):</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">fr</span><span class="o">.</span><span class="n">excel_reader</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">temp_folder</span><span class="si">}</span><span class="s1">\</span><span class="si">{</span><span class="n">generic_name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="mi">0</span><span class="si">}</span><span class="s1">.xlsx&#39;</span><span class="p">)[</span><span class="s1">&#39;Sheet1&#39;</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">proc_count</span><span class="p">):</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">fr</span><span class="o">.</span><span class="n">excel_reader</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">temp_folder</span><span class="si">}</span><span class="s1">\</span><span class="si">{</span><span class="n">generic_name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s1">.xlsx&#39;</span><span class="p">)</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;Sheet1&#39;</span><span class="p">]</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;outer&#39;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">df</span><span class="o">.</span><span class="n">to_excel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">save_excel</span><span class="si">}</span><span class="s1">.xlsx&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oops! Encountered some error trying to save file: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">directory</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\Projects\NewFolder\SimulationData\ABCI&quot;</span>
+    <span class="n">fid</span> <span class="o">=</span> <span class="s2">&quot;Cavity0&quot;</span>  <span class="c1"># folder name</span>
+    <span class="n">MROT</span> <span class="o">=</span> <span class="s2">&quot;1&quot;</span>  <span class="c1"># 0 for monopole, 1 for dipole</span>
+
+    <span class="c1"># create ABCIData object</span>
+    <span class="n">abci_data</span> <span class="o">=</span> <span class="n">ABCIData</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">fid</span><span class="p">,</span> <span class="n">MROT</span><span class="p">)</span>
+
+    <span class="c1"># call get_data method and provide key</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Cavity Shape Input&#39;</span><span class="p">,</span>
+            <span class="mi">1</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Cavity Shape Used&#39;</span><span class="p">,</span>
+            <span class="mi">2</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Wake Potentials&#39;</span><span class="p">,</span>
+            <span class="mi">3</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Real Part of Longitudinal Impedance&#39;</span><span class="p">,</span>
+            <span class="mi">4</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Longitudinal Impedance&#39;</span><span class="p">,</span>
+            <span class="mi">5</span><span class="p">:</span> <span class="s1">&#39;Frequency Spectrum of Loss Factor&#39;</span><span class="p">,</span>
+            <span class="mi">6</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Loss Factor Spectrum Integrated upto F&#39;</span><span class="p">,</span>
+            <span class="mi">7</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Real Part of Long. + Log Impedance&#39;</span><span class="p">,</span>
+            <span class="mi">8</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Long. + Log Impedance&#39;</span><span class="p">,</span>
+            <span class="mi">9</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Spectrum of Long. + Log Loss Factor&#39;</span><span class="p">,</span>
+            <span class="mi">10</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Long. + Log Factor Integrated up to F&#39;</span><span class="p">,</span>
+            <span class="mi">11</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Real Part of Azimuthal Impedance&#39;</span><span class="p">,</span>
+            <span class="mi">12</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Azimuthal Impedance&#39;</span><span class="p">,</span>
+            <span class="mi">13</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Real Part of Transverse Impedance&#39;</span><span class="p">,</span>
+            <span class="mi">14</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Imaginary Part of Transverse Impedance&#39;</span><span class="p">}</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">abci_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>  <span class="c1"># For the key, either the title of the plot can be given as input or the index</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>node_editor.node_edge_rerouting &mdash; CavityHub 0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> CavityHub
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CEMCodesHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">CavityHub</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">node_editor.node_edge_rerouting</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for node_editor.node_edge_rerouting</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A module containing the Edge Rerouting functionality</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="n">DEBUG_REROUTING</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="EdgeRerouting"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting">[docs]</a><span class="k">class</span> <span class="nc">EdgeRerouting</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grView</span><span class="p">:</span> <span class="s1">&#39;QGraphicsView&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grView</span> <span class="o">=</span> <span class="n">grView</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span> <span class="o">=</span> <span class="kc">None</span>        <span class="c1"># store where we started re-routing the edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rerouting_edges</span> <span class="o">=</span> <span class="p">[]</span>       <span class="c1"># edges representing the re-routing (dashed edges)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_rerouting</span> <span class="o">=</span> <span class="kc">False</span>       <span class="c1"># are we currently re-routing?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_mb_release</span> <span class="o">=</span> <span class="kc">False</span>   <span class="c1"># flag for detecting if we already clicked with the rerouting LMB release</span>
+
+<div class="viewcode-block" id="EdgeRerouting.print"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.print">[docs]</a>    <span class="k">def</span> <span class="nf">print</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to better control debug printing to console for this feature&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">DEBUG_REROUTING</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;REROUTING:&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgeRerouting.getEdgeClass"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.getEdgeClass">[docs]</a>    <span class="k">def</span> <span class="nf">getEdgeClass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Helper function to get the Edge class. Using what the Scene class provides&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grView</span><span class="o">.</span><span class="n">grScene</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">getEdgeClass</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EdgeRerouting.getAffectedEdges"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.getAffectedEdges">[docs]</a>    <span class="k">def</span> <span class="nf">getAffectedEdges</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a list of all edges connected to the `self.start_socket` where we started the re-routing</span>
+
+<span class="sd">        :return: List of all edges affected by the rerouting started from this `self.start_socket` :class:`~node_editor.node_socket.Socket`</span>
+<span class="sd">        :rtype: ``list``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>       <span class="c1"># no starting socket assigned, so no edges for us</span>
+        <span class="c1"># return edges connected to the socket</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EdgeRerouting.setAffectedEdgesVisible"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.setAffectedEdgesVisible">[docs]</a>    <span class="k">def</span> <span class="nf">setAffectedEdgesVisible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visibility</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show/Hide all edges connected to the `self.start_socket` where we started the re-routing</span>
+
+<span class="sd">        :param visibility: ``True`` if all the affected :class:`~node_editor.node_edge.Edge` (s) should be shown or hidden</span>
+<span class="sd">        :type visibility: ``bool``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAffectedEdges</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">visibility</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span> <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EdgeRerouting.resetRerouting"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.resetRerouting">[docs]</a>    <span class="k">def</span> <span class="nf">resetRerouting</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Reset to default state. Init this feature internal variables&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_rerouting</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">first_mb_release</span> <span class="o">=</span> <span class="kc">False</span></div>
+        <span class="c1"># holding all rerouting edges should be empty at this point...</span>
+        <span class="c1"># self.rerouting_edges = []</span>
+
+<div class="viewcode-block" id="EdgeRerouting.clearReroutingEdges"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.clearReroutingEdges">[docs]</a>    <span class="k">def</span> <span class="nf">clearReroutingEdges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove the helping dashed edges from the :class:`~node_editor.node_scene.Scene`&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;clean called&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">rerouting_edges</span> <span class="o">!=</span> <span class="p">[]:</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rerouting_edges</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">want to clean:&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EdgeRerouting.updateScenePos"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.updateScenePos">[docs]</a>    <span class="k">def</span> <span class="nf">updateScenePos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update position of all the rerouting edges (dashed ones). Called from mouseMove event to update to new mouse position</span>
+
+<span class="sd">        :param x: new X position</span>
+<span class="sd">        :type x: ``float``</span>
+<span class="sd">        :param y: new Y position</span>
+<span class="sd">        :type y: ``float``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_rerouting</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rerouting_edges</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">edge</span> <span class="ow">and</span> <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span><span class="p">:</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">setDestination</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EdgeRerouting.startRerouting"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.startRerouting">[docs]</a>    <span class="k">def</span> <span class="nf">startRerouting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">socket</span><span class="p">:</span> <span class="s1">&#39;Socket&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to start the re-routing. Called from the grView&#39;s state machine.</span>
+
+<span class="sd">        :param socket: :class:`~node_editor.node_socket.Socket` where we started the re-routing</span>
+<span class="sd">        :type socket: :class:`~nodeeditor.node_socket.Socket`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;startRerouting&quot;</span><span class="p">,</span> <span class="n">socket</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_rerouting</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span> <span class="o">=</span> <span class="n">socket</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;numEdges:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getAffectedEdges</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAffectedEdgesVisible</span><span class="p">(</span><span class="n">visibility</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">start_position</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">getSocketScenePosition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAffectedEdges</span><span class="p">():</span>
+            <span class="n">other_socket</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="p">)</span>
+
+            <span class="n">new_edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getEdgeClass</span><span class="p">()(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">scene</span><span class="p">,</span> <span class="n">edge_type</span><span class="o">=</span><span class="n">edge</span><span class="o">.</span><span class="n">edge_type</span><span class="p">)</span>
+            <span class="n">new_edge</span><span class="o">.</span><span class="n">start_socket</span> <span class="o">=</span> <span class="n">other_socket</span>
+            <span class="n">new_edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">setSource</span><span class="p">(</span><span class="o">*</span><span class="n">other_socket</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">getSocketScenePosition</span><span class="p">(</span><span class="n">other_socket</span><span class="p">))</span>
+            <span class="n">new_edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">setDestination</span><span class="p">(</span><span class="o">*</span><span class="n">start_position</span><span class="p">)</span>
+            <span class="n">new_edge</span><span class="o">.</span><span class="n">grEdge</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rerouting_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_edge</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="EdgeRerouting.stopRerouting"><a class="viewcode-back" href="../../node_editor.html#node_editor.node_edge_rerouting.EdgeRerouting.stopRerouting">[docs]</a>    <span class="k">def</span> <span class="nf">stopRerouting</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">:</span> <span class="s1">&#39;Socket&#39;</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method for stopping the re-routing</span>
+
+<span class="sd">        :param target: Target where we ended the rerouting (usually released mouse button). Provide ``Socket`` or ``None`` to cancel</span>
+<span class="sd">        :type target: :class:`~nodeeditor.node_socket.Socket` or ``None``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;stopRerouting on:&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="s2">&quot;no change&quot;</span> <span class="k">if</span> <span class="n">target</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># reset start socket highlight</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">grSocket</span><span class="o">.</span><span class="n">isHighlighted</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># collect all affected (node, edge) tuples in the meantime.. if necessary</span>
+        <span class="n">affected_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">target</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">target</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="p">:</span>
+            <span class="c1"># canceling -&gt; no change</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setAffectedEdgesVisible</span><span class="p">(</span><span class="n">visibility</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># validate edges before doing anything else</span>
+            <span class="n">valid_edges</span><span class="p">,</span> <span class="n">invalid_edges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAffectedEdges</span><span class="p">(),</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">getAffectedEdges</span><span class="p">():</span>
+                <span class="n">start_sock</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">getOtherSocket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">edge</span><span class="o">.</span><span class="n">validateEdge</span><span class="p">(</span><span class="n">start_sock</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+                    <span class="c1"># not valid edge</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;This edge rerouting is not valid!&quot;</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                    <span class="n">invalid_edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+            <span class="c1"># remove the invalidated edges from the list</span>
+            <span class="k">for</span> <span class="n">invalid_edge</span> <span class="ow">in</span> <span class="n">invalid_edges</span><span class="p">:</span>
+                <span class="n">valid_edges</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">invalid_edge</span><span class="p">)</span>
+
+            <span class="c1"># reconnect to new socket</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="s2">&quot;should reconnect from:&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="p">,</span> <span class="s2">&quot;--&gt;&quot;</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">setAffectedEdgesVisible</span><span class="p">(</span><span class="n">visibility</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">valid_edges</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">node</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span><span class="o">.</span><span class="n">node</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">affected_nodes</span><span class="p">:</span>
+                        <span class="n">affected_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">node</span><span class="p">,</span> <span class="n">edge</span><span class="p">))</span>
+
+                <span class="k">if</span> <span class="n">target</span><span class="o">.</span><span class="n">is_input</span><span class="p">:</span>
+                    <span class="n">target</span><span class="o">.</span><span class="n">removeAllEdges</span><span class="p">(</span><span class="n">silent</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="p">:</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span> <span class="o">=</span> <span class="n">target</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">start_socket</span> <span class="o">=</span> <span class="n">target</span>
+
+                <span class="n">edge</span><span class="o">.</span><span class="n">updatePositions</span><span class="p">()</span>
+
+
+        <span class="c1"># hide rerouting edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clearReroutingEdges</span><span class="p">()</span>
+
+        <span class="c1"># Send notifications for all affected nodes</span>
+        <span class="k">for</span> <span class="n">affected_node</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">affected_nodes</span><span class="p">:</span>
+            <span class="n">affected_node</span><span class="o">.</span><span class="n">onEdgeConnectionChanged</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">start_socket</span> <span class="ow">in</span> <span class="n">affected_node</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+                <span class="n">affected_node</span><span class="o">.</span><span class="n">onInputChanged</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">start_socket</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span> <span class="ow">in</span> <span class="n">affected_node</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
+                <span class="n">affected_node</span><span class="o">.</span><span class="n">onInputChanged</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">end_socket</span><span class="p">)</span>
+
+        <span class="c1"># store history stamp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">start_socket</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">storeHistory</span><span class="p">(</span><span class="s2">&quot;Rerouted edges&quot;</span><span class="p">,</span> <span class="n">setModified</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># reset variables of this rerouting state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resetRerouting</span><span class="p">()</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -6,7 +6,9 @@
   <title>utils.cavity_analysis_module &mdash; CavityHub 0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -38,9 +40,14 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../main_control.html">main_control module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CEMCodesHub</a></li>
 </ul>
 
         </div>
@@ -123,7 +130,22 @@
 
 
 <div class="viewcode-block" id="Cavities"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities">[docs]</a><span class="k">class</span> <span class="nc">Cavities</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cavities object is an object containing several Cavity objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cavities_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">save_folder</span><span class="o">=</span><span class="s1">&#39;None&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructs all the necessary attributes of the Cavity object</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cavities_list: list, array like</span>
+<span class="sd">            List containing Cavity objects.</span>
+
+<span class="sd">        save_folder: str</span>
+<span class="sd">            Folder to save generated images, latex, excel, and text files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">fm_results</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hom_results</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_folder</span> <span class="o">=</span> <span class="n">save_folder</span>
@@ -140,15 +162,46 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_cavities_field</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Cavities.set_cavities_field"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.set_cavities_field">[docs]</a>    <span class="k">def</span> <span class="nf">set_cavities_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets cavities analysis field range.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">:</span>
             <span class="n">cav</span><span class="o">.</span><span class="n">set_Eacc</span><span class="p">(</span><span class="n">Eacc</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">E_acc</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Cavities.set_cavities_slans"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.set_cavities_slans">[docs]</a>    <span class="k">def</span> <span class="nf">set_cavities_slans</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set folders to read SLANS results from</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dir_list: list, array like</span>
+<span class="sd">            List of SLANS directories for the corresponding cavities</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dirc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dir_list</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="n">dirc</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_slans_qois</span><span class="p">(</span><span class="n">dirc</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Cavities.set_cavities_abci"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.set_cavities_abci">[docs]</a>    <span class="k">def</span> <span class="nf">set_cavities_abci</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dir_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set folders to read ABCI results from</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dir_list: list, array like</span>
+<span class="sd">            List of ABCI directories for the corresponding cavities</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">dirc</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dir_list</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">set_abci_qois</span><span class="p">(</span><span class="n">dirc</span><span class="p">,</span> <span class="n">working_point</span><span class="o">=</span><span class="n">wp</span><span class="p">,</span> <span class="n">bunch_length</span><span class="o">=</span><span class="n">sigma</span><span class="p">)</span></div>
 
@@ -166,19 +219,27 @@
 
 <div class="viewcode-block" id="Cavities.qois"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.qois">[docs]</a>    <span class="k">def</span> <span class="nf">qois</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cavity</span><span class="p">,</span> <span class="n">op_field</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Retrieves the power figures of merit of a Cavity object</span>
-<span class="sd">        :param cavity: Cavity object</span>
-<span class="sd">        :param op_field: Operating field</span>
-<span class="sd">        :return: dictionary containing the quantieis of interest</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cavity:</span>
+<span class="sd">            Cavity object</span>
+<span class="sd">        op_field:</span>
+<span class="sd">            Cavity operating field</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dictionary containing quantities of interest (normed optional).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">E_acc</span> <span class="o">&gt;=</span> <span class="mf">0.99</span> <span class="o">*</span> <span class="n">op_field</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">E_acc</span> <span class="o">&lt;=</span> <span class="mf">1.01</span> <span class="o">*</span> <span class="n">op_field</span> <span class="o">*</span> <span class="mf">1e6</span><span class="p">))</span>
         <span class="n">ic</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pdyn</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span>
         <span class="n">qois</span> <span class="o">=</span> <span class="p">{</span>
             <span class="sa">r</span><span class="s2">&quot;$N_\mathrm{cav/beam}$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
             <span class="sa">r</span><span class="s2">&quot;$Q_\mathrm</span><span class="si">{0}</span><span class="s2"> [10^8]$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">Q0</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-8</span><span class="p">),</span>
             <span class="sa">r</span><span class="s2">&quot;$R_\mathrm</span><span class="si">{s}</span><span class="s2"> [\mathrm{n\Omega}]$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">Rs</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
-            <span class="sa">r</span><span class="s2">&quot;$P_\mathrm{stat/cav}$ [W]&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pstat</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">/</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
-            <span class="sa">r</span><span class="s2">&quot;$P_\mathrm{dyn/cav}$ [W]&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pdyn</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">/</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
+            <span class="sa">r</span><span class="s2">&quot;$P_\mathrm{stat/cav}$ [W]&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pstat</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">/</span> <span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
+            <span class="sa">r</span><span class="s2">&quot;$P_\mathrm{dyn/cav}$ [W]&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pdyn</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">/</span> <span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
             <span class="c1"># r&quot;$P_\mathrm{wp/cav}$ [W]&quot;: np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),</span>
             <span class="sa">r</span><span class="s2">&quot;$P_\mathrm{in/beam}$ [kW]&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">p_in</span><span class="p">[</span><span class="n">ind</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span>
             <span class="c1"># r&quot;$Q_\mathrm{0} \mathrm{[10^8]}$&quot;: np.average(cavity.Q0[ind] * 1e-8),</span>
@@ -189,8 +250,8 @@
             <span class="sa">r</span><span class="s2">&quot;$n_\mathrm{cav/beam}$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
             <span class="c1"># r&quot;$q_\mathrm{0}$&quot;: np.average(cavity.Q0[ind]),</span>
             <span class="c1"># r&quot;$r_\mathrm{s}$&quot;: np.average(cavity.Rs[ind]),</span>
-            <span class="sa">r</span><span class="s2">&quot;$p_\mathrm{stat/cav}$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pstat</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">/</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
-            <span class="sa">r</span><span class="s2">&quot;$p_\mathrm{dyn/cav}$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pdyn</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span><span class="o">/</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
+            <span class="sa">r</span><span class="s2">&quot;$p_\mathrm{stat/cav}$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pstat</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">/</span> <span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
+            <span class="sa">r</span><span class="s2">&quot;$p_\mathrm{dyn/cav}$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">pdyn</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">/</span> <span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
             <span class="c1"># r&quot;$p_\mathrm{wp/cav}$&quot;: np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),</span>
             <span class="sa">r</span><span class="s2">&quot;$p_\mathrm{in/beam}$&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">p_in</span><span class="p">[</span><span class="n">ind</span><span class="p">]),</span>
             <span class="c1"># r&quot;$Q_\mathrm{0} \mathrm{[10^8]}$&quot;: np.average(cavity.Q0[ind] * 1e-8),</span>
@@ -203,7 +264,10 @@
 <div class="viewcode-block" id="Cavities.qois_fm"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.qois_fm">[docs]</a>    <span class="k">def</span> <span class="nf">qois_fm</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the fundamental mode quantities of interest</span>
-<span class="sd">        :return: dictionary containing the quantieis of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dictionary containing fundamental mode quantities of interest (normed optional).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">:</span>
@@ -232,8 +296,12 @@
 <div class="viewcode-block" id="Cavities.qois_hom"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.qois_hom">[docs]</a>    <span class="k">def</span> <span class="nf">qois_hom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the higher-order modes quantities of interest</span>
-<span class="sd">        :return: dictionary containing the quantieis of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Dictionary containing higher-order modes quantities of interest (normed optional).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">cavity</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">:</span>
             <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
@@ -253,6 +321,26 @@
         <span class="k">return</span> <span class="n">results_norm_units</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_power_comparison"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_power_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_power_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Can be called using ``cavities.plot_power_comparison()``</span>
+
+<span class="sd">        .. math::</span>
+
+<span class="sd">           W^{3 \\beta}_{\delta}</span>
+
+<span class="sd">        .. py:function:: self.plot_power_comparison(self, fig=None, ax_list=None)</span>
+
+<span class="sd">        .. inheritance-diagram::</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fig: matplotlib figure</span>
+<span class="sd">        ax_list: list of matplotlib axes object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">fig</span> <span class="o">=</span> <span class="n">fig</span>
             <span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">ax3</span> <span class="o">=</span> <span class="n">ax_list</span>
@@ -268,11 +356,11 @@
         <span class="c1"># ax_right2._get_lines.prop_cycler = ax._get_lines.prop_cycler</span>
         <span class="c1"># ax_right2.spines[&quot;right&quot;].set_position((&quot;axes&quot;, 1.2))</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">cavity</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">):</span>
-            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">cavity</span><span class="o">.</span><span class="n">pstat</span><span class="o">/</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">,</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">cavity</span><span class="o">.</span><span class="n">pstat</span> <span class="o">/</span> <span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">,</span>
                      <span class="n">ls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;tab:orange&#39;</span><span class="p">,</span>
                      <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$P_\mathrm{static/cav}$&quot;</span> <span class="o">+</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cavity</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">cavity</span><span class="o">.</span><span class="n">pdyn</span><span class="o">/</span><span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">,</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="n">cavity</span><span class="o">.</span><span class="n">pdyn</span> <span class="o">/</span> <span class="n">cavity</span><span class="o">.</span><span class="n">n_cav</span><span class="p">,</span>
                      <span class="n">ls</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ls</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;tab:blue&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;$P_\mathrm{dynamic/cav}$&quot;</span> <span class="o">+</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cavity</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
             <span class="c1"># p1, = ax1.plot(cavity.E_acc * 1e-6, cavity.p_wp/cavity.n_cav,</span>
@@ -367,6 +455,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_compare_bar"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_compare_bar">[docs]</a>    <span class="k">def</span> <span class="nf">plot_compare_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plots bar chart of power quantities of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
         <span class="c1"># plot barchart</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">returned_results</span><span class="p">])</span>
@@ -395,6 +490,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_compare_hom_bar"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_compare_hom_bar">[docs]</a>    <span class="k">def</span> <span class="nf">plot_compare_hom_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot bar chart of higher-order mode&#39;s quantities of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
         <span class="c1"># plot barchart</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hom_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qois_hom</span><span class="p">()</span>
@@ -425,6 +527,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_compare_fm_bar"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_compare_fm_bar">[docs]</a>    <span class="k">def</span> <span class="nf">plot_compare_fm_bar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot bar chart of fundamental mode quantities of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
         <span class="c1"># plot barchart</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fm_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">qois_fm</span><span class="p">()</span>
@@ -455,6 +564,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_ql_vs_pin"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_ql_vs_pin">[docs]</a>    <span class="k">def</span> <span class="nf">plot_ql_vs_pin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot loaded quality factor versus input power for fundamental power coupler (FPC)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="n">cav</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">]</span>
 
         <span class="c1"># geometry</span>
@@ -488,6 +604,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ql_pin</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">RF</span><span class="p">,</span> <span class="n">QOI</span><span class="p">,</span> <span class="n">machine</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_cryomodule_comparison"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_cryomodule_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_cryomodule_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot cryomodule power comparison</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
         <span class="n">n_cav_per_cryomodule</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)</span>
@@ -524,6 +647,19 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_cavities_contour"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_cavities_contour">[docs]</a>    <span class="k">def</span> <span class="nf">plot_cavities_contour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">n_cells</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Plot geometric contour of Cavity objects</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        opt: {&quot;mid&quot;, &quot;end&quot;, &quot;all&quot;}</span>
+<span class="sd">            Either plot contour for only mid cells or end cells or the entire cavity</span>
+<span class="sd">        n_cells: int</span>
+<span class="sd">            Option used only when opt is set to &quot;all&quot;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">min_x</span><span class="p">,</span> <span class="n">max_x</span><span class="p">,</span> <span class="n">min_y</span><span class="p">,</span> <span class="n">max_y</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
 
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;mid&#39;</span> <span class="ow">or</span> <span class="n">opt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;end&#39;</span><span class="p">:</span>
@@ -567,6 +703,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_axis_fields"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_axis_fields">[docs]</a>    <span class="k">def</span> <span class="nf">plot_axis_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot axis fields of cavities</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">:</span>
             <span class="c1"># normalize fields</span>
             <span class="n">e_axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cav</span><span class="o">.</span><span class="n">axis_field</span><span class="p">[</span><span class="s1">&#39;1&#39;</span><span class="p">])</span>
@@ -593,6 +736,13 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_surface_fields"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_surface_fields">[docs]</a>    <span class="k">def</span> <span class="nf">plot_surface_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot surface fields of cavities</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">:</span>
             <span class="c1"># normalize fields</span>
             <span class="n">e_surf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">cav</span><span class="o">.</span><span class="n">surface_field</span><span class="p">[</span><span class="s1">&#39;0&#39;</span><span class="p">])</span>
@@ -616,6 +766,24 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_multipac_triplot"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_multipac_triplot">[docs]</a>    <span class="k">def</span> <span class="nf">plot_multipac_triplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folders</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;triplot&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot Multipac triplot</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        folders: list, array like</span>
+<span class="sd">            List of folder to read multipacting results from</span>
+<span class="sd">        kind</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This will be changed later so that the multipac results will be in the same location as the SLANS and ABCI</span>
+<span class="sd">        results</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;triplot&#39;</span><span class="p">:</span>
             <span class="c1"># create figure</span>
@@ -633,7 +801,7 @@
 
         <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
 
-        <span class="n">Eacc_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cav</span><span class="o">.</span><span class="n">op_field</span><span class="o">*</span><span class="mf">1e-6</span> <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">]</span>
+        <span class="n">Eacc_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cav</span><span class="o">.</span><span class="n">op_field</span> <span class="o">*</span> <span class="mf">1e-6</span> <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">]</span>
         <span class="n">Epk_Eacc_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cav</span><span class="o">.</span><span class="n">e</span> <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">]</span>
         <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">cav</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">Eacc</span><span class="p">,</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">Eacc_list</span><span class="p">,</span> <span class="n">Epk_Eacc_list</span><span class="p">,</span> <span class="n">folders</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
@@ -704,49 +872,49 @@
                         <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;final impact energy&#39;</span><span class="p">:</span>
                             <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">Efl</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">Efq</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">Efl</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">Efq</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
 
                         <span class="c1"># axs[1-s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], &#39;-r&#39;)</span>
                         <span class="n">e0</span> <span class="o">=</span> <span class="n">sci</span><span class="o">.</span><span class="n">interp1d</span><span class="p">(</span><span class="n">secy1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">secy1</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">e1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])(</span><span class="mi">1</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="n">e0</span><span class="p">,</span> <span class="n">e0</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="n">secy1</span><span class="p">[</span><span class="n">e2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">secy1</span><span class="p">[</span><span class="n">e2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="n">secy1</span><span class="p">[</span><span class="n">e3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">secy1</span><span class="p">[</span><span class="n">e3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;--r&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="n">e0</span><span class="p">,</span> <span class="n">e0</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="n">secy1</span><span class="p">[</span><span class="n">e2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">secy1</span><span class="p">[</span><span class="n">e2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="n">secy1</span><span class="p">[</span><span class="n">e3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">secy1</span><span class="p">[</span><span class="n">e3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="s1">&#39;--r&#39;</span><span class="p">)</span>
 
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$Ef_&quot;</span> <span class="o">+</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;}$&quot;</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$E_\mathrm</span><span class="si">{pk}</span><span class="s1">$ [MV/m]&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$Ef_&quot;</span> <span class="o">+</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;}$&quot;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$E_\mathrm</span><span class="si">{pk}</span><span class="s1">$ [MV/m]&#39;</span><span class="p">)</span>
                         <span class="c1"># axs[1-s].set_title(&#39;$\mathbf{Final~Impact~Energy~in~eV}$&#39;)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
 
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span>
-                                      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> MV/m&quot;</span><span class="p">,</span>
-                                      <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
-                                      <span class="n">transform</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_xaxis_transform</span><span class="p">())</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span>
+                                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> MV/m&quot;</span><span class="p">,</span>
+                                        <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+                                        <span class="n">transform</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_xaxis_transform</span><span class="p">())</span>
 
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">1</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;enhanced counter function&#39;</span> <span class="ow">or</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;triplot&#39;</span><span class="p">:</span>
                         <span class="n">s</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;enhanced counter function&#39;</span><span class="p">:</span>
                             <span class="n">s</span> <span class="o">=</span> <span class="mi">2</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">Efl</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$V$ [MV]&#39;</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">A</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">),</span> <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$e_&quot;</span> <span class="o">+</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span> <span class="o">+</span> <span class="s2">&quot;/ c_0$&quot;</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$E_\mathrm</span><span class="si">{pk}</span><span class="s1">$ [MV/m]&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">semilogy</span><span class="p">(</span><span class="n">Efl</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="p">(</span><span class="n">A</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">label</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;$V$ [MV]&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;-r&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Efl</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">((</span><span class="n">A</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">n</span><span class="p">),</span> <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$e_&quot;</span> <span class="o">+</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">N</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span> <span class="o">+</span> <span class="s2">&quot;/ c_0$&quot;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$E_\mathrm</span><span class="si">{pk}</span><span class="s1">$ [MV/m]&#39;</span><span class="p">)</span>
                         <span class="c1"># axs[2-s].set_title(&#39;$\mathbf{Enhanced~counter~function}$&#39;)</span>
 
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span>
-                                      <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> MV/m&quot;</span><span class="p">,</span>
-                                      <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
-                                      <span class="n">transform</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_xaxis_transform</span><span class="p">())</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span>
+                                        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">Eacc</span> <span class="o">*</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> MV/m&quot;</span><span class="p">,</span>
+                                        <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
+                                        <span class="n">transform</span><span class="o">=</span><span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">get_xaxis_transform</span><span class="p">())</span>
 
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
-                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span><span class="o">-</span><span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
+                        <span class="n">axs</span><span class="p">[</span><span class="mi">2</span> <span class="o">-</span> <span class="n">s</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
 
         <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 
@@ -759,9 +927,16 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.plot_dispersion"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.plot_dispersion">[docs]</a>    <span class="k">def</span> <span class="nf">plot_dispersion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Plot dispersion curve for the cavities</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">cav</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cav</span><span class="o">.</span><span class="n">n_cells</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">cav</span><span class="o">.</span><span class="n">n_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">cav</span><span class="o">.</span><span class="n">d_slans_all_results</span><span class="p">[</span><span class="s1">&#39;FREQUENCY&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="n">cav</span><span class="o">.</span><span class="n">n_cells</span><span class="p">],</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span>
                     <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">cav</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> (kcc=</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">cav</span><span class="o">.</span><span class="n">k_cc</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s1"> %)&#39;</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Mode Number&#39;</span><span class="p">)</span>
@@ -778,6 +953,22 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Cavities.write_contour"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.write_contour">[docs]</a>    <span class="k">def</span> <span class="nf">write_contour</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cav</span><span class="p">,</span> <span class="n">opt</span><span class="o">=</span><span class="s1">&#39;mid&#39;</span><span class="p">,</span> <span class="n">n_cells</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write geometric contour for cavities</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cav: Cavity object</span>
+<span class="sd">            Cavity object</span>
+<span class="sd">        opt: str</span>
+
+<span class="sd">        n_cells: int</span>
+<span class="sd">            Number of cavity cells</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">if</span> <span class="n">opt</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;mid&#39;</span><span class="p">:</span>
             <span class="n">A_m</span><span class="p">,</span> <span class="n">B_m</span><span class="p">,</span> <span class="n">a_m</span><span class="p">,</span> <span class="n">b_m</span><span class="p">,</span> <span class="n">Ri_m</span><span class="p">,</span> <span class="n">L_m</span><span class="p">,</span> <span class="n">Req_m</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cav</span><span class="o">.</span><span class="n">d_geom_params</span><span class="p">[</span><span class="s1">&#39;IC&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
@@ -1109,6 +1300,28 @@
         <span class="c1"># plt.show()</span>
 
 <div class="viewcode-block" id="Cavities.ql_pin"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.ql_pin">[docs]</a>    <span class="k">def</span> <span class="nf">ql_pin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">RF</span><span class="p">,</span> <span class="n">QOI</span><span class="p">,</span> <span class="n">Machine</span><span class="p">,</span> <span class="n">p_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the value of input power as a function of loaded quality factor</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        labels: list, array like</span>
+<span class="sd">            Descriptive labels on matplotlib plot</span>
+<span class="sd">        geometry: list, array like</span>
+<span class="sd">            List of grouped geometric input parameters</span>
+<span class="sd">        RF: list, array like</span>
+<span class="sd">            List of grouped radio-frequency (RF) properties</span>
+<span class="sd">        QOI:</span>
+<span class="sd">            List of quantities of interest for cavities</span>
+<span class="sd">        Machine:</span>
+<span class="sd">            List of grouped machine related materials</span>
+<span class="sd">        p_data:</span>
+
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># check if entries are of same length</span>
 
         <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
@@ -1189,11 +1402,14 @@
             <span class="n">ic</span><span class="p">(</span><span class="n">l_active</span><span class="p">)</span>
             <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, &quot;</span> \
                   <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">n_cells</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">-Cell </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">f0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">)</span><span class="si">}</span><span class="s2"> MHz </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">l_active</span><span class="p">[</span><span class="n">i</span><span class="p">])))</span><span class="si">}</span><span class="s2"> &quot;</span> \
-                  <span class="sa">f</span><span class="s2">&quot;cav/beam&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> V$_\mathrm</span><span class="si">{RF}</span><span class="s2">\mathrm{/beam}$ =&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> GV &quot;</span> \
-                  <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> V$_\mathrm</span><span class="si">{cav}</span><span class="s2">$ =&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> MV </span><span class="se">\n</span><span class="s2"> &quot;</span> \
-                                              <span class="s2">&quot;P$_{\mathrm</span><span class="si">{in}</span><span class="s2">}/\mathrm</span><span class="si">{beam}</span><span class="s2">$ = &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> kW </span><span class="se">\n</span><span class="s2">&quot;</span> \
-                                                                                     <span class="s2">&quot;Q$_{\mathrm{L, 0}}^*$ = &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:.2e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">QL_0_x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+                  <span class="sa">f</span><span class="s2">&quot;cav/beam&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> V$_\mathrm</span><span class="si">{RF}</span><span class="s2">\mathrm{/beam}$ =&quot;</span> \
+                  <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> GV &quot;</span> \
+                  <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> V$_\mathrm</span><span class="si">{cav}</span><span class="s2">$ =&quot;</span> \
+                  <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> MV </span><span class="se">\n</span><span class="s2"> &quot;</span> \
+                    <span class="s2">&quot;P$_{\mathrm</span><span class="si">{in}</span><span class="s2">}/\mathrm</span><span class="si">{beam}</span><span class="s2">$ = &quot;</span> \
+                  <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> kW </span><span class="se">\n</span><span class="s2">&quot;</span> \
+                    <span class="s2">&quot;Q$_{\mathrm{L, 0}}^*$ = &quot;</span> \
+                  <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:.2e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">QL_0_x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
             <span class="n">annotext</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">xy_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xycoords</span><span class="o">=</span><span class="s1">&#39;figure fraction&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                    <span class="n">c</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span>
@@ -1487,12 +1703,45 @@
             <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Cavities.add_cavity"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.add_cavity">[docs]</a>    <span class="k">def</span> <span class="nf">add_cavity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cav</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds cavity to cavities</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cav: object</span>
+<span class="sd">            Cavity object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cav</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Cavities.remove_cavity"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.remove_cavity">[docs]</a>    <span class="k">def</span> <span class="nf">remove_cavity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cav</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes cavity from cavity list</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cav: object</span>
+<span class="sd">            Cavity object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">cav</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Cavities.save_all_plots"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.save_all_plots">[docs]</a>    <span class="k">def</span> <span class="nf">save_all_plots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plot_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save all plots</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        plot_name: str</span>
+<span class="sd">            Name of saved plot</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_folder</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
             <span class="c1"># check if folder exists</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\Quick presentation files\</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">save_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">):</span>
@@ -1508,8 +1757,46 @@
 
 
 <div class="viewcode-block" id="Cavity"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavity">[docs]</a><span class="k">class</span> <span class="nc">Cavity</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Cavity class defines cavity parameters and operation settings for several cavity analysis</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">,</span> <span class="n">l_cell_mid</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">vrf</span><span class="p">,</span> <span class="n">R_Q</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">Epk_Eacc</span><span class="p">,</span> <span class="n">Bpk_Eacc</span><span class="p">,</span> <span class="n">inv_eta</span><span class="o">=</span><span class="mi">219</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Unnamed&quot;</span><span class="p">,</span>
                  <span class="n">op_field</span><span class="o">=</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">wp</span><span class="o">=</span><span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="n">op_temp</span><span class="o">=</span><span class="s1">&#39;2K&#39;</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;bulkNb&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructs all the necessary attributes of the Cavity object</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_cells: int</span>
+<span class="sd">            Number of cells of the cavity</span>
+<span class="sd">        l_cell_mid: float</span>
+<span class="sd">            Length of the mid cell of the cavity</span>
+<span class="sd">        freq: float</span>
+<span class="sd">            Fundamental mode frequency of the cavity</span>
+<span class="sd">        vrf: float</span>
+<span class="sd">            Radio-frequency voltage at which the cavity is designed to operate at</span>
+<span class="sd">        R_Q: float</span>
+<span class="sd">            R/Q of the cavity. R/Q is the energy stored to power loss ratio of the cavity.</span>
+<span class="sd">        G: float</span>
+<span class="sd">            Geometric factor of the cavity.</span>
+<span class="sd">        Epk_Eacc: float</span>
+<span class="sd">            Peak electric field to accelerating electric field ratio for the fundamental mode</span>
+<span class="sd">        Bpk_Eacc</span>
+<span class="sd">            Peak magnetic field to accelerating electric field ratio for the fundamental mode</span>
+<span class="sd">        inv_eta: float</span>
+<span class="sd">            Inverse of eta which is the refrigerating efficiency of the cryomodule</span>
+<span class="sd">        name: str</span>
+<span class="sd">            Name given to the cavity. This is the name that will appear in plots.</span>
+<span class="sd">        op_field:</span>
+<span class="sd">            Electric field value at which the cavity is to operate.</span>
+<span class="sd">        wp: float</span>
+<span class="sd">            Working point of the cavity.</span>
+<span class="sd">        op_temp: str</span>
+<span class="sd">            Temperature at which the cavity is designed to operate</span>
+<span class="sd">        material: str</span>
+<span class="sd">            Cavity wall material</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># geometric parameters</span>
         <span class="c1"># input</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">d_slans_all_results</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1575,6 +1862,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">p_sr</span> <span class="o">=</span> <span class="mf">50e6</span>  <span class="c1"># W</span>
 
 <div class="viewcode-block" id="Cavity.set_Eacc"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavity.set_Eacc">[docs]</a>    <span class="k">def</span> <span class="nf">set_Eacc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Eacc</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the accelerating field range of analysis for the cavity</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        Eacc: list, array like</span>
+<span class="sd">            Accelerating field range of interest</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">E_acc</span> <span class="o">=</span> <span class="n">Eacc</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_cav</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">v_rf</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">E_acc</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_active</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">l_cavity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_active</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_cell_mid</span>  <span class="c1"># L_cavity = L_active + 2 λ0</span>
@@ -1603,10 +1901,38 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">get_power</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="Cavity.get_Eacc"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavity.get_Eacc">[docs]</a>    <span class="k">def</span> <span class="nf">get_Eacc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the accelerating field range of the Cavity object</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            Accelerating field range of cavity. To set the accelerating field range, use</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">E_acc</span></div>
+
 <div class="viewcode-block" id="Cavity.set_op_field"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavity.set_op_field">[docs]</a>    <span class="k">def</span> <span class="nf">set_op_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">op_field</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Sets the operating field of the cavity</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        op_field: float</span>
+<span class="sd">            Electric field value at which the cavity is to operate.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">op_field</span> <span class="o">=</span> <span class="n">op_field</span></div>
 
 <div class="viewcode-block" id="Cavity.get_op_field"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavity.get_op_field">[docs]</a>    <span class="k">def</span> <span class="nf">get_op_field</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets the operating field of the cavity</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">            returns operating field value</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">op_field</span></div>
 
 <div class="viewcode-block" id="Cavity.set_inv_eta"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavity.set_inv_eta">[docs]</a>    <span class="k">def</span> <span class="nf">set_inv_eta</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inv_eta</span><span class="p">):</span>
@@ -2049,111 +2375,112 @@
         <span class="k">return</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span><span class="si">}</span><span class="s2"> [], </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">op_freq</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="si">}</span><span class="s2"> MHz, </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">e</span><span class="si">}</span><span class="s2"> [], </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="si">}</span><span class="s2"> [mT/MV/m])&quot;</span></div>
 
 
-<div class="viewcode-block" id="QL_Pin"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.QL_Pin">[docs]</a><span class="k">def</span> <span class="nf">QL_Pin</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">RF</span><span class="p">,</span> <span class="n">QOI</span><span class="p">,</span> <span class="n">Machine</span><span class="p">,</span> <span class="n">p_data</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="c1"># check if entries are of same length</span>
-
-    <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">geometry</span><span class="p">)</span>
-    <span class="n">the_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">))</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="n">the_len</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">it</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;not all lists have same length!&#39;</span><span class="p">)</span>
-
-    <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">RF</span><span class="p">)</span>
-    <span class="n">the_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">))</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="n">the_len</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">it</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;not all lists have same length!&#39;</span><span class="p">)</span>
-
-    <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">QOI</span><span class="p">)</span>
-    <span class="n">the_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">))</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="n">the_len</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">it</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;not all lists have same length!&#39;</span><span class="p">)</span>
-
-    <span class="n">it</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">Machine</span><span class="p">)</span>
-    <span class="n">the_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">it</span><span class="p">))</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">l</span><span class="p">)</span> <span class="o">==</span> <span class="n">the_len</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">it</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;not all lists have same length!&#39;</span><span class="p">)</span>
-
-    <span class="n">n_cells</span><span class="p">,</span> <span class="n">l_cells</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">geometry</span><span class="p">]</span>
-    <span class="n">E_acc</span><span class="p">,</span> <span class="n">Vrf</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">RF</span><span class="p">]</span>
-
-    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
-
-    <span class="c1"># QOI</span>
-    <span class="n">f0</span><span class="p">,</span> <span class="n">R_Q</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">QOI</span><span class="p">]</span>
-
-    <span class="c1"># Machine</span>
-    <span class="n">I0</span><span class="p">,</span> <span class="n">rho</span><span class="p">,</span> <span class="n">E0</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Machine</span><span class="p">]</span>
-
-    <span class="n">l_active</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n_cells</span> <span class="o">*</span> <span class="n">l_cells</span>
-    <span class="n">l_cavity</span> <span class="o">=</span> <span class="n">l_active</span> <span class="o">+</span> <span class="mi">8</span> <span class="o">*</span> <span class="n">l_cells</span>
-
-    <span class="c1"># CALCULATED</span>
-    <span class="n">v_cav</span> <span class="o">=</span> <span class="n">E_acc</span> <span class="o">*</span> <span class="n">l_active</span>
-
-    <span class="n">U_loss</span> <span class="o">=</span> <span class="mf">88.46</span> <span class="o">*</span> <span class="n">E0</span> <span class="o">**</span> <span class="mi">4</span> <span class="o">/</span> <span class="n">rho</span> <span class="o">*</span> <span class="mf">1e-6</span>  <span class="c1"># GeV # energy lost per turn per beam</span>
-    <span class="n">v_loss</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">U_loss</span> <span class="o">*</span> <span class="mf">1e9</span>  <span class="c1"># V # v loss for two beams</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="n">v_loss</span><span class="p">,</span> <span class="n">Vrf</span><span class="p">,</span> <span class="n">v_loss</span> <span class="o">/</span> <span class="n">Vrf</span><span class="p">)</span>
-    <span class="n">phi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="n">v_loss</span> <span class="o">/</span> <span class="n">Vrf</span><span class="p">)</span>
-    <span class="n">delta_f</span> <span class="o">=</span> <span class="o">-</span><span class="n">R_Q</span> <span class="o">*</span> <span class="n">f0</span> <span class="o">*</span> <span class="n">I0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">v_cav</span><span class="p">)</span>  <span class="c1"># optimal df</span>
-    <span class="n">QL_0_x</span> <span class="o">=</span> <span class="n">v_cav</span> <span class="o">/</span> <span class="p">(</span><span class="n">R_Q</span> <span class="o">*</span> <span class="n">I0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">))</span>  <span class="c1"># optimal Q loaded</span>
-
-    <span class="n">QL_0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1e3</span><span class="p">,</span> <span class="mf">1e8</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">)</span>
-
-    <span class="n">xy_list</span> <span class="o">=</span> <span class="p">[(</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">),</span> <span class="p">(</span><span class="mf">0.77</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)):</span>
-        <span class="n">f1_2</span> <span class="o">=</span> <span class="n">f0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">QL_0</span><span class="p">)</span>  <span class="c1"># 380.6</span>
-        <span class="n">ic</span><span class="p">(</span><span class="n">R_Q</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">pin</span> <span class="o">=</span> <span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">R_Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">QL_0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">R_Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">QL_0</span> <span class="o">*</span> <span class="n">I0</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span>
-                <span class="p">(</span><span class="n">delta_f</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">f1_2</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">R_Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">QL_0</span> <span class="o">*</span> <span class="n">I0</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-
-        <span class="n">p_cryo</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">f0</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="mf">500e6</span><span class="p">))</span>
-
-        <span class="c1"># material/ wall power</span>
-        <span class="n">e_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e6</span>  <span class="c1"># MV/m</span>
-        <span class="n">Rs_NbCu_4_5k_400Mhz</span> <span class="o">=</span> <span class="mf">39.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mf">0.014</span> <span class="o">*</span> <span class="p">(</span><span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">27</span>
-        <span class="n">eta</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">219</span>  <span class="c1"># c</span>
-        <span class="n">Q0</span> <span class="o">=</span> <span class="n">G</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e9</span> <span class="o">/</span> <span class="n">Rs_NbCu_4_5k_400Mhz</span>  <span class="c1"># c</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-        <span class="n">p_wp</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">eta</span><span class="p">)</span> <span class="o">*</span> <span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">l_active</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">R_Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">Q0</span><span class="p">))</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">eta</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
-                <span class="n">l_cavity</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="n">l_active</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">*</span> <span class="n">p_cryo</span>
-
-        <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">label</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">QL_0</span><span class="p">,</span> <span class="n">pin</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; ~[\mathrm{MV/m}]$&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">QL_0</span><span class="p">,</span> <span class="n">pin</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;$</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot; ~[\mathrm{MV/m}]$&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-        <span class="c1"># add annotations</span>
-        <span class="n">txt</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">n_cells</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="si">}</span><span class="s2">-Cell 400 MHz </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">E_acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">l_active</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> cav/beam&quot;</span> \
-              <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> V$_\mathbf</span><span class="si">{RF}</span><span class="s2">\mathbf{/beam}$ =&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">Vrf</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">*</span> <span class="mf">1e-9</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2"> GV &quot;</span> \
-              <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> V$_\mathbf</span><span class="si">{cav}</span><span class="s2">$ =&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> MV </span><span class="se">\n</span><span class="s2"> &quot;</span> \
-                                          <span class="s2">&quot;P$_{\mathrm</span><span class="si">{in}</span><span class="s2">}$ = &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> kW </span><span class="se">\n</span><span class="s2">&quot;</span> \
-                                                                   <span class="s2">&quot;Q$_{\mathrm{L, 0}}^*$ = &quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">{:.2e}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">QL_0_x</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-        <span class="n">annotext</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">xy_list</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xycoords</span><span class="o">=</span><span class="s1">&#39;figure fraction&#39;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="n">l</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span>
-                               <span class="n">weight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
-
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">DraggableText</span><span class="p">(</span><span class="n">annotext</span><span class="p">)</span>
-        <span class="n">dt</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
-
-    <span class="k">if</span> <span class="n">p_data</span><span class="p">:</span>
-        <span class="c1"># plot QL with penetration</span>
-        <span class="n">ax_2</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">fr</span><span class="o">.</span><span class="n">excel_reader</span><span class="p">(</span><span class="n">p_data</span><span class="p">)</span>
-        <span class="n">data_</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]]</span>
-        <span class="n">ax_2</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data_</span><span class="p">[</span><span class="s2">&quot;QL&quot;</span><span class="p">],</span> <span class="n">data_</span><span class="p">[</span><span class="s2">&quot;penetration&quot;</span><span class="p">],</span> <span class="n">lw</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
-
-    <span class="c1"># plot decorations</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;$Q_{L,0}$&quot;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;$P_\mathrm</span><span class="si">{in}</span><span class="s2"> ~[\mathrm</span><span class="si">{kW}</span><span class="s2">]$&quot;</span><span class="p">)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">set_xscale</span><span class="p">(</span><span class="s1">&#39;log&#39;</span><span class="p">)</span>
-    <span class="c1"># ax.set_xlim(5e3, 5e7)</span>
-    <span class="c1"># ax.set_ylim(100, 2000)</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;lower left&#39;</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">&quot;$E_\mathrm</span><span class="si">{acc}</span><span class="s2">$&quot;</span><span class="p">)</span>  <span class="c1">#</span>
-    <span class="n">ax</span><span class="o">.</span><span class="n">minorticks_on</span><span class="p">()</span>
-    <span class="c1"># ax.grid(which=&#39;both&#39;)</span>
-    <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+<span class="c1">#</span>
+<span class="c1"># def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):</span>
+<span class="c1">#     # check if entries are of same length</span>
+<span class="c1">#</span>
+<span class="c1">#     it = iter(geometry)</span>
+<span class="c1">#     the_len = len(next(it))</span>
+<span class="c1">#     if not all(len(l) == the_len for l in it):</span>
+<span class="c1">#         raise ValueError(&#39;not all lists have same length!&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     it = iter(RF)</span>
+<span class="c1">#     the_len = len(next(it))</span>
+<span class="c1">#     if not all(len(l) == the_len for l in it):</span>
+<span class="c1">#         raise ValueError(&#39;not all lists have same length!&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     it = iter(QOI)</span>
+<span class="c1">#     the_len = len(next(it))</span>
+<span class="c1">#     if not all(len(l) == the_len for l in it):</span>
+<span class="c1">#         raise ValueError(&#39;not all lists have same length!&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     it = iter(Machine)</span>
+<span class="c1">#     the_len = len(next(it))</span>
+<span class="c1">#     if not all(len(l) == the_len for l in it):</span>
+<span class="c1">#         raise ValueError(&#39;not all lists have same length!&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#     n_cells, l_cells, G, b = [np.array(x) for x in geometry]</span>
+<span class="c1">#     E_acc, Vrf = [np.array(x) for x in RF]</span>
+<span class="c1">#</span>
+<span class="c1">#     fig, ax = plt.subplots()</span>
+<span class="c1">#</span>
+<span class="c1">#     # QOI</span>
+<span class="c1">#     f0, R_Q = [np.array(x) for x in QOI]</span>
+<span class="c1">#</span>
+<span class="c1">#     # Machine</span>
+<span class="c1">#     I0, rho, E0 = [np.array(x) for x in Machine]</span>
+<span class="c1">#</span>
+<span class="c1">#     l_active = 2 * n_cells * l_cells</span>
+<span class="c1">#     l_cavity = l_active + 8 * l_cells</span>
+<span class="c1">#</span>
+<span class="c1">#     # CALCULATED</span>
+<span class="c1">#     v_cav = E_acc * l_active</span>
+<span class="c1">#</span>
+<span class="c1">#     U_loss = 88.46 * E0 ** 4 / rho * 1e-6  # GeV # energy lost per turn per beam</span>
+<span class="c1">#     v_loss = 2 * U_loss * 1e9  # V # v loss for two beams</span>
+<span class="c1">#</span>
+<span class="c1">#     print(v_loss, Vrf, v_loss / Vrf)</span>
+<span class="c1">#     phi = np.arccos(v_loss / Vrf)</span>
+<span class="c1">#     delta_f = -R_Q * f0 * I0 * np.sin(phi) / (2 * v_cav)  # optimal df</span>
+<span class="c1">#     QL_0_x = v_cav / (R_Q * I0 * np.cos(phi))  # optimal Q loaded</span>
+<span class="c1">#</span>
+<span class="c1">#     QL_0 = np.linspace(1e3, 1e8, 1000000)</span>
+<span class="c1">#</span>
+<span class="c1">#     xy_list = [(0.3, 0.6), (0.35, 0.25), (0.6, 0.6), (0.77, 0.25)]</span>
+<span class="c1">#     for i in range(len(E_acc)):</span>
+<span class="c1">#         f1_2 = f0[i] / (2 * QL_0)  # 380.6</span>
+<span class="c1">#         ic(R_Q[i], v_cav[i], Vrf[i])</span>
+<span class="c1">#         pin = v_cav[i] ** 2 / (4 * R_Q[i] * QL_0) * (</span>
+<span class="c1">#                 (1 + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.cos(phi[i])) ** 2 + (</span>
+<span class="c1">#                 (delta_f[i] / f1_2) + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.sin(phi[i])) ** 2)</span>
+<span class="c1">#</span>
+<span class="c1">#         p_cryo = 8 / (np.sqrt(f0[i] / 500e6))</span>
+<span class="c1">#</span>
+<span class="c1">#         # material/ wall power</span>
+<span class="c1">#         e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m</span>
+<span class="c1">#         Rs_NbCu_4_5k_400Mhz = 39.5 * np.exp(0.014 * (E_acc[i] * 1e-6 * b[i])) + 27</span>
+<span class="c1">#         eta = 1 / 219  # c</span>
+<span class="c1">#         Q0 = G[i] * 1e9 / Rs_NbCu_4_5k_400Mhz  # c</span>
+<span class="c1">#         print(E_acc[i])</span>
+<span class="c1">#         p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (</span>
+<span class="c1">#                 l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo</span>
+<span class="c1">#</span>
+<span class="c1">#         if &quot;*&quot; in label[i]:</span>
+<span class="c1">#             l = ax.plot(QL_0, pin * 1e-3, label=f&quot;${round(E_acc[i] * 1e-6, 2)}&quot; + &quot; ~[\mathrm{MV/m}]$&quot;, lw=4, ls=&#39;--&#39;)</span>
+<span class="c1">#         else:</span>
+<span class="c1">#             l = ax.plot(QL_0, pin * 1e-3, label=f&quot;${round(E_acc[i] * 1e-6, 2)}&quot; + &quot; ~[\mathrm{MV/m}]$&quot;, lw=4)</span>
+<span class="c1">#</span>
+<span class="c1">#         # add annotations</span>
+<span class="c1">#         txt = f&quot;{labels[i]}, {n_cells[i]}-Cell 400 MHz \n {int(np.ceil(Vrf[i] / (2 * E_acc[i] * l_active[i]) / 2) * 2)} cav/beam&quot; \</span>
+<span class="c1">#               + &quot;\n V$_\mathbf{RF}\mathbf{/beam}$ =&quot; + f&quot;{round(Vrf[i] / 2 * 1e-9, 2)} GV &quot; \</span>
+<span class="c1">#               + &quot;\n V$_\mathbf{cav}$ =&quot; + f&quot;{round(v_cav[i] * 1e-6, 1)} MV \n &quot; \</span>
+<span class="c1">#                                           &quot;P$_{\mathrm{in}}$ = &quot; + f&quot;{round(min(pin) * 1e-3, 1)} kW \n&quot; \</span>
+<span class="c1">#                                                                    &quot;Q$_{\mathrm{L, 0}}^*$ = &quot; + &quot;{:.2e}&quot;.format(</span>
+<span class="c1">#             QL_0_x[i])</span>
+<span class="c1">#</span>
+<span class="c1">#         annotext = ax.annotate(txt, xy=xy_list[i], xycoords=&#39;figure fraction&#39;, size=12, rotation=0, c=l[0].get_color(),</span>
+<span class="c1">#                                weight=&#39;bold&#39;)</span>
+<span class="c1">#</span>
+<span class="c1">#         dt = DraggableText(annotext)</span>
+<span class="c1">#         dt.connect()</span>
+<span class="c1">#</span>
+<span class="c1">#     if p_data:</span>
+<span class="c1">#         # plot QL with penetration</span>
+<span class="c1">#         ax_2 = ax.twinx()</span>
+<span class="c1">#         data = fr.excel_reader(p_data)</span>
+<span class="c1">#         data_ = data[list(data.keys())[0]]</span>
+<span class="c1">#         ax_2.plot(data_[&quot;QL&quot;], data_[&quot;penetration&quot;], lw=4)</span>
+<span class="c1">#</span>
+<span class="c1">#     # plot decorations</span>
+<span class="c1">#     ax.set_xlabel(&quot;$Q_{L,0}$&quot;)</span>
+<span class="c1">#     ax.set_ylabel(&quot;$P_\mathrm{in} ~[\mathrm{kW}]$&quot;)</span>
+<span class="c1">#     ax.set_xscale(&#39;log&#39;)</span>
+<span class="c1">#     # ax.set_xlim(5e3, 5e7)</span>
+<span class="c1">#     # ax.set_ylim(100, 2000)</span>
+<span class="c1">#     ax.legend(loc=&#39;lower left&#39;, title=&quot;$E_\mathrm{acc}$&quot;)  #</span>
+<span class="c1">#     ax.minorticks_on()</span>
+<span class="c1">#     # ax.grid(which=&#39;both&#39;)</span>
+<span class="c1">#     fig.show()</span>
 
 
 <div class="viewcode-block" id="plot_beampipe_decay"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.plot_beampipe_decay">[docs]</a><span class="k">def</span> <span class="nf">plot_beampipe_decay</span><span class="p">(</span><span class="n">freq</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">fc_list</span><span class="p">):</span>
@@ -2194,6 +2521,8 @@
 
 
 <div class="viewcode-block" id="plot_surface_resistance"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.plot_surface_resistance">[docs]</a><span class="k">def</span> <span class="nf">plot_surface_resistance</span><span class="p">():</span>
+    <span class="kn">from</span> <span class="nn">labellines</span> <span class="kn">import</span> <span class="n">labelLines</span>
+
     <span class="n">Eacc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>  <span class="c1"># MV/m</span>
     <span class="n">b</span> <span class="o">=</span> <span class="mf">4.88</span>  <span class="c1"># mT/MV/m</span>
 
@@ -2233,9 +2562,10 @@
             <span class="n">c</span> <span class="o">=</span> <span class="s1">&#39;tab:blue&#39;</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">Eacc</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">Eacc</span><span class="p">))</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Eacc</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">sr_labels</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="n">c</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="n">ls</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="n">marker</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Eacc</span><span class="p">,</span> <span class="n">sr</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">sr_labels</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">labelLines</span><span class="p">(</span><span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span><span class="o">.</span><span class="n">get_lines</span><span class="p">(),</span> <span class="n">zorder</span><span class="o">=</span><span class="mf">2.5</span><span class="p">)</span>
+    <span class="c1"># plt.legend()</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;$E$ [MV/m]&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$R_s [\mathrm{n\Omega}]$&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
@@ -2244,6 +2574,22 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">c3794_H_400</span> <span class="o">=</span> <span class="n">Cavity</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_cell_mid</span><span class="o">=</span><span class="mf">187e-3</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mf">400.79e6</span><span class="p">,</span> <span class="n">vrf</span><span class="o">=</span><span class="mf">2.1e9</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">R_Q</span><span class="o">=</span><span class="mf">152.8</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">198.42</span><span class="p">,</span>
+                         <span class="n">Epk_Eacc</span><span class="o">=</span><span class="mf">2.05</span><span class="p">,</span> <span class="n">Bpk_Eacc</span><span class="o">=</span><span class="mf">6.39</span><span class="p">,</span> <span class="n">inv_eta</span><span class="o">=</span><span class="mi">219</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C3794_400&quot;</span><span class="p">,</span> <span class="n">op_field</span><span class="o">=</span><span class="mf">11.87e6</span><span class="p">,</span>
+                         <span class="n">op_temp</span><span class="o">=</span><span class="s1">&#39;4.5K&#39;</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;NbCu&#39;</span><span class="p">)</span>
+
+    <span class="n">c3794_H_800</span> <span class="o">=</span> <span class="n">Cavity</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_cell_mid</span><span class="o">=</span><span class="mf">93.5e-3</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mf">801.58e6</span><span class="p">,</span> <span class="n">vrf</span><span class="o">=</span><span class="mf">2.1e9</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">R_Q</span><span class="o">=</span><span class="mf">152.8</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">198.42</span><span class="p">,</span>
+                         <span class="n">Epk_Eacc</span><span class="o">=</span><span class="mf">2.05</span><span class="p">,</span> <span class="n">Bpk_Eacc</span><span class="o">=</span><span class="mf">6.39</span><span class="p">,</span> <span class="n">inv_eta</span><span class="o">=</span><span class="mi">219</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C3794_800&quot;</span><span class="p">,</span> <span class="n">op_field</span><span class="o">=</span><span class="mf">11.87e6</span><span class="p">,</span>
+                         <span class="n">op_temp</span><span class="o">=</span><span class="s1">&#39;2K&#39;</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;bulkNb&#39;</span><span class="p">)</span>
+
+    <span class="c1"># c3795_H_400 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,</span>
+    <span class="c1">#                      Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name=&quot;C3795&quot;, op_field=24.72e6,</span>
+    <span class="c1">#                      op_temp=&#39;4.5K&#39;, material=&#39;NbCu&#39;)</span>
+
+    <span class="n">c3795_H_800</span> <span class="o">=</span> <span class="n">Cavity</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="n">l_cell_mid</span><span class="o">=</span><span class="mf">93.5e-3</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mf">801.58e6</span><span class="p">,</span> <span class="n">vrf</span><span class="o">=</span><span class="mf">2.1e9</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">R_Q</span><span class="o">=</span><span class="mf">448.12</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">261.63</span><span class="p">,</span>
+                         <span class="n">Epk_Eacc</span><span class="o">=</span><span class="mf">2.43</span><span class="p">,</span> <span class="n">Bpk_Eacc</span><span class="o">=</span><span class="mf">4.88</span><span class="p">,</span> <span class="n">inv_eta</span><span class="o">=</span><span class="mi">745</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C3795_800&quot;</span><span class="p">,</span> <span class="n">op_field</span><span class="o">=</span><span class="mf">24.72e6</span><span class="p">,</span>
+                         <span class="n">op_temp</span><span class="o">=</span><span class="s1">&#39;2K&#39;</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;bulkNb&#39;</span><span class="p">)</span>
+
     <span class="n">c3794_H</span> <span class="o">=</span> <span class="n">Cavity</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">l_cell_mid</span><span class="o">=</span><span class="mf">187e-3</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mf">400.79e6</span><span class="p">,</span> <span class="n">vrf</span><span class="o">=</span><span class="mf">2.1e9</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">R_Q</span><span class="o">=</span><span class="mf">152.8</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="mf">198.42</span><span class="p">,</span>
                      <span class="n">Epk_Eacc</span><span class="o">=</span><span class="mf">2.05</span><span class="p">,</span> <span class="n">Bpk_Eacc</span><span class="o">=</span><span class="mf">6.39</span><span class="p">,</span> <span class="n">inv_eta</span><span class="o">=</span><span class="mi">219</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;C3794&quot;</span><span class="p">,</span> <span class="n">op_field</span><span class="o">=</span><span class="mf">11.87e6</span><span class="p">,</span>
                      <span class="n">op_temp</span><span class="o">=</span><span class="s1">&#39;4.5K&#39;</span><span class="p">,</span> <span class="n">material</span><span class="o">=</span><span class="s1">&#39;NbCu&#39;</span><span class="p">)</span>
@@ -2267,6 +2613,15 @@
     <span class="n">parent_dir_slans</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS&quot;</span>
     <span class="n">parent_dir_abci</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ABCI&quot;</span>
 
+    <span class="c1"># 2 and 5 cell, 400MHz, 800MHz cavities comparison for H</span>
+    <span class="n">wp</span> <span class="o">=</span> <span class="s1">&#39;H&#39;</span>  <span class="c1"># working point</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="s1">&#39;SR_2.5mm&#39;</span>
+    <span class="n">slans_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_slans</span><span class="si">}</span><span class="s2">\Cavity3794_400&quot;</span><span class="p">,</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_slans</span><span class="si">}</span><span class="s2">\Cavity3794_800&quot;</span><span class="p">,</span>
+                  <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_slans</span><span class="si">}</span><span class="s2">\CavityC3795_800&quot;</span><span class="p">]</span>
+    <span class="n">abci_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_abci</span><span class="si">}</span><span class="s2">\Cavity3794_400&quot;</span><span class="p">,</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_abci</span><span class="si">}</span><span class="s2">\Cavity3794_800&quot;</span><span class="p">,</span>
+                 <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_abci</span><span class="si">}</span><span class="s2">\CavityC3795_800&quot;</span><span class="p">]</span>
+    <span class="n">cavities</span> <span class="o">=</span> <span class="n">Cavities</span><span class="p">([</span><span class="n">c3794_H_400</span><span class="p">,</span> <span class="n">c3794_H_800</span><span class="p">,</span> <span class="n">c3795_H_800</span><span class="p">])</span>
+
     <span class="c1"># # 2 and 5 cell cavities comparison for H</span>
     <span class="c1"># wp = &#39;H&#39;  # working point</span>
     <span class="c1"># sigma = &#39;SR_2.5mm&#39;</span>
@@ -2274,19 +2629,17 @@
     <span class="c1"># abci_dirs = [fr&quot;{parent_dir_abci}\Cavity3794&quot;, fr&quot;{parent_dir_abci}\CavityC3795&quot;]</span>
     <span class="c1"># cavities = Cavities([c3794_H, c3795_H])</span>
 
-    <span class="c1"># 5 cell cavities comparison for ttbar</span>
-    <span class="n">wp</span> <span class="o">=</span> <span class="s1">&#39;ttbar&#39;</span>  <span class="c1"># working point</span>
-    <span class="n">sigma</span> <span class="o">=</span> <span class="s1">&#39;SR_1.67mm&#39;</span>
-    <span class="n">slans_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_slans</span><span class="si">}</span><span class="s2">\CavityC3795&quot;</span><span class="p">,</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_slans</span><span class="si">}</span><span class="s2">\CavityFCC_UROS5&quot;</span><span class="p">,</span>
-                  <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_slans</span><span class="si">}</span><span class="s2">\CavityTESLA_800MHZ&quot;</span><span class="p">]</span>
-    <span class="n">abci_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_abci</span><span class="si">}</span><span class="s2">\CavityC3795&quot;</span><span class="p">,</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_abci</span><span class="si">}</span><span class="s2">\CavityFCC_UROS5&quot;</span><span class="p">,</span>
-                 <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parent_dir_abci</span><span class="si">}</span><span class="s2">\CavityTESLA_800MHZ&quot;</span><span class="p">]</span>
-    <span class="n">cavities</span> <span class="o">=</span> <span class="n">Cavities</span><span class="p">([</span><span class="n">c3795_tt</span><span class="p">,</span> <span class="n">cFCCUROS5</span><span class="p">,</span> <span class="n">cTESLA</span><span class="p">],</span> <span class="s1">&#39;Cavities_C3795_FCCUROS5_TESLA&#39;</span><span class="p">)</span>
+    <span class="c1"># # 5 cell cavities comparison for ttbar</span>
+    <span class="c1"># wp = &#39;ttbar&#39;  # working point</span>
+    <span class="c1"># sigma = &#39;SR_1.67mm&#39;</span>
+    <span class="c1"># slans_dirs = [fr&quot;{parent_dir_slans}\CavityC3795&quot;, fr&quot;{parent_dir_slans}\CavityFCC_UROS5&quot;,</span>
+    <span class="c1">#               fr&quot;{parent_dir_slans}\CavityTESLA_800MHZ&quot;]</span>
+    <span class="c1"># abci_dirs = [fr&quot;{parent_dir_abci}\CavityC3795&quot;, fr&quot;{parent_dir_abci}\CavityFCC_UROS5&quot;,</span>
+    <span class="c1">#              fr&quot;{parent_dir_abci}\CavityTESLA_800MHZ&quot;]</span>
+    <span class="c1"># cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], &#39;Cavities_C3795_FCCUROS5_TESLA&#39;)</span>
 
     <span class="n">cavities</span><span class="o">.</span><span class="n">set_cavities_slans</span><span class="p">(</span><span class="n">slans_dirs</span><span class="p">)</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">set_cavities_abci</span><span class="p">(</span><span class="n">abci_dirs</span><span class="p">)</span>
-
-    <span class="c1"># op_field = [11.87, 24.72, 24.72]  # in MV/m</span>
 
     <span class="n">E_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e6</span>  <span class="c1"># V/m</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">compare_power</span><span class="p">(</span><span class="n">E_acc</span><span class="o">=</span><span class="n">E_acc</span><span class="p">)</span>
@@ -2308,12 +2661,12 @@
     <span class="n">cavities</span><span class="o">.</span><span class="n">make_excel_summary</span><span class="p">()</span>
 
     <span class="c1"># multipacting</span>
-    <span class="n">multipact_folders</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;D:\Dropbox\multipacting\MPGUI21\C3795&quot;</span><span class="p">]</span> <span class="c1">#, r&quot;D:\Dropbox\multipacting\MPGUI21\FCCUROS5&quot;,</span>
-                         <span class="c1">#r&quot;D:\Dropbox\multipacting\MPGUI21\TESLA&quot;]</span>
+    <span class="n">multipact_folders</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s2">&quot;D:\Dropbox\multipacting\MPGUI21\C3795&quot;</span><span class="p">]</span>  <span class="c1"># , r&quot;D:\Dropbox\multipacting\MPGUI21\FCCUROS5&quot;,</span>
+    <span class="c1"># r&quot;D:\Dropbox\multipacting\MPGUI21\TESLA&quot;]</span>
 
     <span class="n">to_plot</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;counter function&#39;</span><span class="p">,</span> <span class="s1">&#39;final impact energy&#39;</span><span class="p">,</span> <span class="s1">&#39;enhanced counter function&#39;</span><span class="p">]</span>
     <span class="c1"># for tp in to_plot:</span>
-    <span class="n">cavities</span><span class="o">.</span><span class="n">plot_multipac_triplot</span><span class="p">(</span><span class="n">multipact_folders</span><span class="p">,</span> <span class="s1">&#39;enhanced counter function&#39;</span><span class="p">)</span>
+    <span class="c1"># cavities.plot_multipac_triplot(multipact_folders, &#39;enhanced counter function&#39;)</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">plot_dispersion</span><span class="p">()</span>
     <span class="c1"># plt.show()</span>
     <span class="n">c3795_tt</span><span class="o">.</span><span class="n">plot_ql_vs_pin</span><span class="p">()</span>

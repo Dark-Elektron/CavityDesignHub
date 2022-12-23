@@ -53,7 +53,22 @@ plot_settings()
 
 
 class Cavities:
+    """
+    Cavities object is an object containing several Cavity objects.
+    """
+
     def __init__(self, cavities_list=None, save_folder='None'):
+        """Constructs all the necessary attributes of the Cavity object
+
+        Parameters
+        ----------
+        cavities_list: list, array like
+            List containing Cavity objects.
+
+        save_folder: str
+            Folder to save generated images, latex, excel, and text files.
+        """
+
         self.fm_results = None
         self.hom_results = None
         self.save_folder = save_folder
@@ -70,15 +85,46 @@ class Cavities:
         self.set_cavities_field()
 
     def set_cavities_field(self):
+        """
+        Sets cavities analysis field range.
+
+        Returns
+        -------
+
+        """
         for cav in self.cavities_list:
             cav.set_Eacc(Eacc=self.E_acc)
 
     def set_cavities_slans(self, dir_list):
+        """
+        Set folders to read SLANS results from
+
+        Parameters
+        ----------
+        dir_list: list, array like
+            List of SLANS directories for the corresponding cavities
+
+        Returns
+        -------
+
+        """
         for i, dirc in enumerate(dir_list):
             print(dirc)
             self.cavities_list[i].set_slans_qois(dirc)
 
     def set_cavities_abci(self, dir_list):
+        """
+        Set folders to read ABCI results from
+
+        Parameters
+        ----------
+        dir_list: list, array like
+            List of ABCI directories for the corresponding cavities
+
+        Returns
+        -------
+
+        """
         for i, dirc in enumerate(dir_list):
             self.cavities_list[i].set_abci_qois(dirc, working_point=wp, bunch_length=sigma)
 
@@ -96,19 +142,27 @@ class Cavities:
 
     def qois(self, cavity, op_field):
         """
-        Retrieves the power figures of merit of a Cavity object
-        :param cavity: Cavity object
-        :param op_field: Operating field
-        :return: dictionary containing the quantieis of interest
+
+        Parameters
+        ----------
+        cavity:
+            Cavity object
+        op_field:
+            Cavity operating field
+
+        Returns
+        -------
+        Dictionary containing quantities of interest (normed optional).
         """
+
         ind = np.where((E_acc >= 0.99 * op_field * 1e6) & (E_acc <= 1.01 * op_field * 1e6))
         ic(cavity.pdyn[ind])
         qois = {
             r"$N_\mathrm{cav/beam}$": np.average(cavity.n_cav[ind]),
             r"$Q_\mathrm{0} [10^8]$": np.average(cavity.Q0[ind] * 1e-8),
             r"$R_\mathrm{s} [\mathrm{n\Omega}]$": np.average(cavity.Rs[ind]),
-            r"$P_\mathrm{stat/cav}$ [W]": np.average(cavity.pstat[ind]/cavity.n_cav[ind]),
-            r"$P_\mathrm{dyn/cav}$ [W]": np.average(cavity.pdyn[ind]/cavity.n_cav[ind]),
+            r"$P_\mathrm{stat/cav}$ [W]": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
+            r"$P_\mathrm{dyn/cav}$ [W]": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
             # r"$P_\mathrm{wp/cav}$ [W]": np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),
             r"$P_\mathrm{in/beam}$ [kW]": np.average(cavity.p_in[ind]) * 1e-3,
             # r"$Q_\mathrm{0} \mathrm{[10^8]}$": np.average(cavity.Q0[ind] * 1e-8),
@@ -119,8 +173,8 @@ class Cavities:
             r"$n_\mathrm{cav/beam}$": np.average(cavity.n_cav[ind]),
             # r"$q_\mathrm{0}$": np.average(cavity.Q0[ind]),
             # r"$r_\mathrm{s}$": np.average(cavity.Rs[ind]),
-            r"$p_\mathrm{stat/cav}$": np.average(cavity.pstat[ind]/cavity.n_cav[ind]),
-            r"$p_\mathrm{dyn/cav}$": np.average(cavity.pdyn[ind]/cavity.n_cav[ind]),
+            r"$p_\mathrm{stat/cav}$": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
+            r"$p_\mathrm{dyn/cav}$": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
             # r"$p_\mathrm{wp/cav}$": np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),
             r"$p_\mathrm{in/beam}$": np.average(cavity.p_in[ind]),
             # r"$Q_\mathrm{0} \mathrm{[10^8]}$": np.average(cavity.Q0[ind] * 1e-8),
@@ -133,7 +187,10 @@ class Cavities:
     def qois_fm(self):
         """
         Retrieves the fundamental mode quantities of interest
-        :return: dictionary containing the quantieis of interest
+
+        Returns
+        -------
+        Dictionary containing fundamental mode quantities of interest (normed optional).
         """
         results = []
         for cav in self.cavities_list:
@@ -162,8 +219,12 @@ class Cavities:
     def qois_hom(self):
         """
         Retrieves the higher-order modes quantities of interest
-        :return: dictionary containing the quantieis of interest
+
+        Returns
+        -------
+        Dictionary containing higher-order modes quantities of interest (normed optional).
         """
+
         results = []
         for cavity in self.cavities_list:
             results.append({
@@ -183,6 +244,26 @@ class Cavities:
         return results_norm_units
 
     def plot_power_comparison(self, fig=None, ax_list=None):
+        """
+        Can be called using ``cavities.plot_power_comparison()``
+
+        .. math::
+
+           W^{3 \\beta}_{\delta}
+
+        .. py:function:: self.plot_power_comparison(self, fig=None, ax_list=None)
+
+        .. inheritance-diagram::
+
+        Parameters
+        ----------
+        fig: matplotlib figure
+        ax_list: list of matplotlib axes object
+
+        Returns
+        -------
+
+        """
         if fig is not None:
             fig = fig
             ax1, ax2, ax3 = ax_list
@@ -198,11 +279,11 @@ class Cavities:
         # ax_right2._get_lines.prop_cycler = ax._get_lines.prop_cycler
         # ax_right2.spines["right"].set_position(("axes", 1.2))
         for i, cavity in enumerate(self.cavities_list):
-            ax1.plot(cavity.E_acc * 1e-6, cavity.pstat/cavity.n_cav,
+            ax1.plot(cavity.E_acc * 1e-6, cavity.pstat / cavity.n_cav,
                      ls=self.ls[i], lw=2, c='tab:orange',
                      label=r"$P_\mathrm{static/cav}$" + fr"{cavity.name}")
 
-            ax1.plot(cavity.E_acc * 1e-6, cavity.pdyn/cavity.n_cav,
+            ax1.plot(cavity.E_acc * 1e-6, cavity.pdyn / cavity.n_cav,
                      ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dynamic/cav}$" + fr"{cavity.name}")
 
             # p1, = ax1.plot(cavity.E_acc * 1e-6, cavity.p_wp/cavity.n_cav,
@@ -297,6 +378,13 @@ class Cavities:
         plt.show()
 
     def plot_compare_bar(self):
+        """
+        Plots bar chart of power quantities of interest
+
+        Returns
+        -------
+
+        """
         plt.rcParams["figure.figsize"] = (12, 3)
         # plot barchart
         data = np.array([list(d.values()) for d in self.returned_results])
@@ -325,6 +413,13 @@ class Cavities:
         plt.show()
 
     def plot_compare_hom_bar(self):
+        """
+        Plot bar chart of higher-order mode's quantities of interest
+
+        Returns
+        -------
+
+        """
         plt.rcParams["figure.figsize"] = (12, 3)
         # plot barchart
         self.hom_results = self.qois_hom()
@@ -355,6 +450,13 @@ class Cavities:
         plt.show()
 
     def plot_compare_fm_bar(self):
+        """
+        Plot bar chart of fundamental mode quantities of interest
+
+        Returns
+        -------
+
+        """
         plt.rcParams["figure.figsize"] = (12, 3)
         # plot barchart
         self.fm_results = self.qois_fm()
@@ -385,6 +487,13 @@ class Cavities:
         plt.show()
 
     def plot_ql_vs_pin(self):
+        """
+        Plot loaded quality factor versus input power for fundamental power coupler (FPC)
+
+        Returns
+        -------
+
+        """
         label = [cav.name for cav in self.cavities_list]
 
         # geometry
@@ -418,6 +527,13 @@ class Cavities:
         self.ql_pin(label, geometry, RF, QOI, machine)
 
     def plot_cryomodule_comparison(self):
+        """
+        Plot cryomodule power comparison
+
+        Returns
+        -------
+
+        """
         plt.rcParams["figure.figsize"] = (9, 3)
         fig, axs = plt.subplots(1, 2)
         n_cav_per_cryomodule = np.arange(1, 11)
@@ -454,6 +570,19 @@ class Cavities:
         plt.show()
 
     def plot_cavities_contour(self, opt='mid', n_cells=1):
+        """Plot geometric contour of Cavity objects
+
+        Parameters
+        ----------
+        opt: {"mid", "end", "all"}
+            Either plot contour for only mid cells or end cells or the entire cavity
+        n_cells: int
+            Option used only when opt is set to "all"
+
+        Returns
+        -------
+
+        """
         min_x, max_x, min_y, max_y = [], [], [], []
 
         if opt.lower() == 'mid' or opt.lower() == 'end':
@@ -497,6 +626,13 @@ class Cavities:
         plt.show()
 
     def plot_axis_fields(self):
+        """
+        Plot axis fields of cavities
+
+        Returns
+        -------
+
+        """
         for cav in self.cavities_list:
             # normalize fields
             e_axis = np.abs(cav.axis_field['1'])
@@ -523,6 +659,13 @@ class Cavities:
         plt.show()
 
     def plot_surface_fields(self):
+        """
+        Plot surface fields of cavities
+
+        Returns
+        -------
+
+        """
         for cav in self.cavities_list:
             # normalize fields
             e_surf = np.abs(cav.surface_field['0'])
@@ -546,6 +689,24 @@ class Cavities:
         plt.show()
 
     def plot_multipac_triplot(self, folders, kind='triplot'):
+        """
+        Plot Multipac triplot
+
+        Parameters
+        ----------
+        folders: list, array like
+            List of folder to read multipacting results from
+        kind
+
+        Notes
+        -----
+        This will be changed later so that the multipac results will be in the same location as the SLANS and ABCI
+        results
+
+        Returns
+        -------
+
+        """
 
         if kind == 'triplot':
             # create figure
@@ -563,7 +724,7 @@ class Cavities:
 
         mpl.rcParams['figure.figsize'] = [6, 10]
 
-        Eacc_list = [cav.op_field*1e-6 for cav in self.cavities_list]
+        Eacc_list = [cav.op_field * 1e-6 for cav in self.cavities_list]
         Epk_Eacc_list = [cav.e for cav in self.cavities_list]
         labels = [cav.name for cav in self.cavities_list]
         for Eacc, Epk_Eacc, folder, label in zip(Eacc_list, Epk_Eacc_list, folders, labels):
@@ -634,49 +795,49 @@ class Cavities:
                         s = 0
                         if kind == 'final impact energy':
                             s = 1
-                        axs[1-s].semilogy(Efl / 1e6, Efq, lw=2, label=label)
+                        axs[1 - s].semilogy(Efl / 1e6, Efq, lw=2, label=label)
 
                         # axs[1-s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
                         e0 = sci.interp1d(secy1[0:e1 + 1, 1], secy1[0:e1 + 1, 0])(1)
-                        axs[1-s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [e0, e0], '-r')
-                        axs[1-s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e2, 0], secy1[e2, 0]], '-r')
-                        axs[1-s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e3, 0], secy1[e3, 0]], '--r')
+                        axs[1 - s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [e0, e0], '-r')
+                        axs[1 - s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e2, 0], secy1[e2, 0]], '-r')
+                        axs[1 - s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e3, 0], secy1[e3, 0]], '--r')
 
-                        axs[1-s].set_ylabel("$Ef_" + "{" + f"{N}" + "}$")
-                        axs[1-s].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                        axs[1 - s].set_ylabel("$Ef_" + "{" + f"{N}" + "}$")
+                        axs[1 - s].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
                         # axs[1-s].set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
-                        axs[1-s].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
-                        axs[1-s].set_ylim(0, axs[1-s].get_ylim()[1])
+                        axs[1 - s].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
+                        axs[1 - s].set_ylim(0, axs[1 - s].get_ylim()[1])
 
-                        axs[1-s].axvline(Eacc * Epk_Eacc, c='k', ls='--', lw=2)
-                        axs[1-s].text(np.round(Eacc * Epk_Eacc, 2) - 1.5, 0.1,
-                                      f"{label[0]}: {np.round(Eacc * Epk_Eacc, 2)} MV/m",
-                                      size=12, rotation=90,
-                                      transform=axs[1-s].get_xaxis_transform())
+                        axs[1 - s].axvline(Eacc * Epk_Eacc, c='k', ls='--', lw=2)
+                        axs[1 - s].text(np.round(Eacc * Epk_Eacc, 2) - 1.5, 0.1,
+                                        f"{label[0]}: {np.round(Eacc * Epk_Eacc, 2)} MV/m",
+                                        size=12, rotation=90,
+                                        transform=axs[1 - s].get_xaxis_transform())
 
-                        axs[1-s].minorticks_on()
-                        axs[1-s].legend(loc='upper left')
+                        axs[1 - s].minorticks_on()
+                        axs[1 - s].legend(loc='upper left')
                     if kind == 'enhanced counter function' or kind == 'triplot':
                         s = 0
                         if kind == 'enhanced counter function':
                             s = 2
-                        axs[2-s].semilogy(Efl / 1e6, (A + 1) / n, lw=2, label=label)
-                        axs[2-s].set_xlabel('$V$ [MV]')
-                        axs[2-s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [1, 1], '-r')
-                        axs[2-s].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
-                        axs[2-s].set_ylim(np.min((A + 1) / n), axs[2-s].get_ylim()[1])
-                        axs[2-s].set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
-                        axs[2-s].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                        axs[2 - s].semilogy(Efl / 1e6, (A + 1) / n, lw=2, label=label)
+                        axs[2 - s].set_xlabel('$V$ [MV]')
+                        axs[2 - s].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [1, 1], '-r')
+                        axs[2 - s].set_xlim(np.min(Efl) / 1e6, np.max(Efl) / 1e6)
+                        axs[2 - s].set_ylim(np.min((A + 1) / n), axs[2 - s].get_ylim()[1])
+                        axs[2 - s].set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
+                        axs[2 - s].set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
                         # axs[2-s].set_title('$\mathbf{Enhanced~counter~function}$')
 
-                        axs[2-s].axvline(Eacc * Epk_Eacc, c='k', ls='--', lw=2)
-                        axs[2-s].text(np.round(Eacc * Epk_Eacc, 2) - 1, 0.1,
-                                      f"{label[0]}: {np.round(Eacc * Epk_Eacc, 2)} MV/m",
-                                      size=12, rotation=90,
-                                      transform=axs[2-s].get_xaxis_transform())
+                        axs[2 - s].axvline(Eacc * Epk_Eacc, c='k', ls='--', lw=2)
+                        axs[2 - s].text(np.round(Eacc * Epk_Eacc, 2) - 1, 0.1,
+                                        f"{label[0]}: {np.round(Eacc * Epk_Eacc, 2)} MV/m",
+                                        size=12, rotation=90,
+                                        transform=axs[2 - s].get_xaxis_transform())
 
-                        axs[2-s].minorticks_on()
-                        axs[2-s].legend(loc='upper left')
+                        axs[2 - s].minorticks_on()
+                        axs[2 - s].legend(loc='upper left')
 
         fig.tight_layout()
 
@@ -689,9 +850,16 @@ class Cavities:
         plt.show()
 
     def plot_dispersion(self):
+        """
+        Plot dispersion curve for the cavities
+
+        Returns
+        -------
+
+        """
         fig, ax = plt.subplots()
         for cav in self.cavities_list:
-            x = range(1, cav.n_cells+1)
+            x = range(1, cav.n_cells + 1)
             ax.plot(x, cav.d_slans_all_results['FREQUENCY'][0:cav.n_cells], marker='o', mec='k',
                     label=f'{cav.name} (kcc={round(cav.k_cc, 2)} %)')
             ax.set_xlabel('Mode Number')
@@ -708,6 +876,22 @@ class Cavities:
         plt.show()
 
     def write_contour(self, cav, opt='mid', n_cells=1):
+        """
+        Write geometric contour for cavities
+
+        Parameters
+        ----------
+        cav: Cavity object
+            Cavity object
+        opt: str
+
+        n_cells: int
+            Number of cavity cells
+
+        Returns
+        -------
+
+        """
 
         if opt.lower() == 'mid':
             A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC']) * 1e-3
@@ -1039,6 +1223,28 @@ class Cavities:
         # plt.show()
 
     def ql_pin(self, labels, geometry, RF, QOI, Machine, p_data=None):
+        """
+        Calculate the value of input power as a function of loaded quality factor
+
+        Parameters
+        ----------
+        labels: list, array like
+            Descriptive labels on matplotlib plot
+        geometry: list, array like
+            List of grouped geometric input parameters
+        RF: list, array like
+            List of grouped radio-frequency (RF) properties
+        QOI:
+            List of quantities of interest for cavities
+        Machine:
+            List of grouped machine related materials
+        p_data:
+
+
+        Returns
+        -------
+
+        """
         # check if entries are of same length
 
         it = iter(geometry)
@@ -1119,11 +1325,14 @@ class Cavities:
             ic(l_active)
             txt = f"{labels[i]}, " \
                   f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz \n {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
-                  f"cav/beam" + "\n V$_\mathrm{RF}\mathrm{/beam}$ =" + f"{round(Vrf[i] * 1e-9, 2)} GV " \
-                  + "\n V$_\mathrm{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
-                                              "P$_{\mathrm{in}}/\mathrm{beam}$ = " + f"{round(min(pin) * 1e-3, 1)} kW \n" \
-                                                                                     "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
-                QL_0_x[i])
+                  f"cav/beam" + "\n V$_\mathrm{RF}\mathrm{/beam}$ =" \
+                  + f"{round(Vrf[i] * 1e-9, 2)} GV " \
+                  + "\n V$_\mathrm{cav}$ =" \
+                  + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
+                    "P$_{\mathrm{in}}/\mathrm{beam}$ = " \
+                  + f"{round(min(pin) * 1e-3, 1)} kW \n" \
+                    "Q$_{\mathrm{L, 0}}^*$ = " \
+                  + "{:.2e}".format(QL_0_x[i])
 
             annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=12, rotation=0,
                                    c=l[0].get_color(),
@@ -1417,12 +1626,45 @@ class Cavities:
             print(e)
 
     def add_cavity(self, cav):
+        """
+        Adds cavity to cavities
+        Parameters
+        ----------
+        cav: object
+            Cavity object
+
+        Returns
+        -------
+
+        """
         self.cavities_list.append(cav)
 
     def remove_cavity(self, cav):
+        """
+        Removes cavity from cavity list
+        Parameters
+        ----------
+        cav: object
+            Cavity object
+
+        Returns
+        -------
+
+        """
         self.cavities_list.remove(cav)
 
     def save_all_plots(self, plot_name):
+        """
+        Save all plots
+        Parameters
+        ----------
+        plot_name: str
+            Name of saved plot
+
+        Returns
+        -------
+
+        """
         if self.save_folder != '':
             # check if folder exists
             if os.path.exists(fr"D:\Dropbox\Quick presentation files\{self.save_folder}"):
@@ -1438,8 +1680,46 @@ class Cavities:
 
 
 class Cavity:
+    """
+    Cavity class defines cavity parameters and operation settings for several cavity analysis
+    """
+
     def __init__(self, n_cells, l_cell_mid, freq, vrf, R_Q, G, Epk_Eacc, Bpk_Eacc, inv_eta=219, name="Unnamed",
                  op_field=1e6, wp='Z', op_temp='2K', material='bulkNb'):
+        """Constructs all the necessary attributes of the Cavity object
+
+        Parameters
+        ----------
+        n_cells: int
+            Number of cells of the cavity
+        l_cell_mid: float
+            Length of the mid cell of the cavity
+        freq: float
+            Fundamental mode frequency of the cavity
+        vrf: float
+            Radio-frequency voltage at which the cavity is designed to operate at
+        R_Q: float
+            R/Q of the cavity. R/Q is the energy stored to power loss ratio of the cavity.
+        G: float
+            Geometric factor of the cavity.
+        Epk_Eacc: float
+            Peak electric field to accelerating electric field ratio for the fundamental mode
+        Bpk_Eacc
+            Peak magnetic field to accelerating electric field ratio for the fundamental mode
+        inv_eta: float
+            Inverse of eta which is the refrigerating efficiency of the cryomodule
+        name: str
+            Name given to the cavity. This is the name that will appear in plots.
+        op_field:
+            Electric field value at which the cavity is to operate.
+        wp: float
+            Working point of the cavity.
+        op_temp: str
+            Temperature at which the cavity is designed to operate
+        material: str
+            Cavity wall material
+        """
+
         # geometric parameters
         # input
         self.d_slans_all_results = None
@@ -1505,6 +1785,17 @@ class Cavity:
         self.p_sr = 50e6  # W
 
     def set_Eacc(self, Eacc):
+        """Sets the accelerating field range of analysis for the cavity
+
+        Parameters
+        ----------
+        Eacc: list, array like
+            Accelerating field range of interest
+
+        Returns
+        -------
+
+        """
         self.E_acc = Eacc
         self.n_cav = self.v_rf / (self.E_acc * self.l_active)
         self.l_cavity = self.l_active + 8 * self.l_cell_mid  # L_cavity = L_active + 2 λ0
@@ -1533,10 +1824,38 @@ class Cavity:
 
         self.get_power()
 
+    def get_Eacc(self):
+        """Gets the accelerating field range of the Cavity object
+
+        Returns
+        -------
+            Accelerating field range of cavity. To set the accelerating field range, use
+
+        """
+        return self.E_acc
+
     def set_op_field(self, op_field):
+        """Sets the operating field of the cavity
+
+        Parameters
+        ----------
+        op_field: float
+            Electric field value at which the cavity is to operate.
+
+        Returns
+        -------
+
+        """
         self.op_field = op_field
 
     def get_op_field(self):
+        """Gets the operating field of the cavity
+
+        Returns
+        -------
+            returns operating field value
+
+        """
         return self.op_field
 
     def set_inv_eta(self, inv_eta):
@@ -1979,111 +2298,112 @@ class Cavity:
         return fr"{self.name}({self.n_cells} [], {self.op_freq * 1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
 
 
-def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):
-    # check if entries are of same length
-
-    it = iter(geometry)
-    the_len = len(next(it))
-    if not all(len(l) == the_len for l in it):
-        raise ValueError('not all lists have same length!')
-
-    it = iter(RF)
-    the_len = len(next(it))
-    if not all(len(l) == the_len for l in it):
-        raise ValueError('not all lists have same length!')
-
-    it = iter(QOI)
-    the_len = len(next(it))
-    if not all(len(l) == the_len for l in it):
-        raise ValueError('not all lists have same length!')
-
-    it = iter(Machine)
-    the_len = len(next(it))
-    if not all(len(l) == the_len for l in it):
-        raise ValueError('not all lists have same length!')
-
-    n_cells, l_cells, G, b = [np.array(x) for x in geometry]
-    E_acc, Vrf = [np.array(x) for x in RF]
-
-    fig, ax = plt.subplots()
-
-    # QOI
-    f0, R_Q = [np.array(x) for x in QOI]
-
-    # Machine
-    I0, rho, E0 = [np.array(x) for x in Machine]
-
-    l_active = 2 * n_cells * l_cells
-    l_cavity = l_active + 8 * l_cells
-
-    # CALCULATED
-    v_cav = E_acc * l_active
-
-    U_loss = 88.46 * E0 ** 4 / rho * 1e-6  # GeV # energy lost per turn per beam
-    v_loss = 2 * U_loss * 1e9  # V # v loss for two beams
-
-    print(v_loss, Vrf, v_loss / Vrf)
-    phi = np.arccos(v_loss / Vrf)
-    delta_f = -R_Q * f0 * I0 * np.sin(phi) / (2 * v_cav)  # optimal df
-    QL_0_x = v_cav / (R_Q * I0 * np.cos(phi))  # optimal Q loaded
-
-    QL_0 = np.linspace(1e3, 1e8, 1000000)
-
-    xy_list = [(0.3, 0.6), (0.35, 0.25), (0.6, 0.6), (0.77, 0.25)]
-    for i in range(len(E_acc)):
-        f1_2 = f0[i] / (2 * QL_0)  # 380.6
-        ic(R_Q[i], v_cav[i], Vrf[i])
-        pin = v_cav[i] ** 2 / (4 * R_Q[i] * QL_0) * (
-                (1 + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.cos(phi[i])) ** 2 + (
-                (delta_f[i] / f1_2) + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.sin(phi[i])) ** 2)
-
-        p_cryo = 8 / (np.sqrt(f0[i] / 500e6))
-
-        # material/ wall power
-        e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
-        Rs_NbCu_4_5k_400Mhz = 39.5 * np.exp(0.014 * (E_acc[i] * 1e-6 * b[i])) + 27
-        eta = 1 / 219  # c
-        Q0 = G[i] * 1e9 / Rs_NbCu_4_5k_400Mhz  # c
-        print(E_acc[i])
-        p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (
-                l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo
-
-        if "*" in label[i]:
-            l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4, ls='--')
-        else:
-            l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4)
-
-        # add annotations
-        txt = f"{labels[i]}, {n_cells[i]}-Cell 400 MHz \n {int(np.ceil(Vrf[i] / (2 * E_acc[i] * l_active[i]) / 2) * 2)} cav/beam" \
-              + "\n V$_\mathbf{RF}\mathbf{/beam}$ =" + f"{round(Vrf[i] / 2 * 1e-9, 2)} GV " \
-              + "\n V$_\mathbf{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
-                                          "P$_{\mathrm{in}}$ = " + f"{round(min(pin) * 1e-3, 1)} kW \n" \
-                                                                   "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
-            QL_0_x[i])
-
-        annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=12, rotation=0, c=l[0].get_color(),
-                               weight='bold')
-
-        dt = DraggableText(annotext)
-        dt.connect()
-
-    if p_data:
-        # plot QL with penetration
-        ax_2 = ax.twinx()
-        data = fr.excel_reader(p_data)
-        data_ = data[list(data.keys())[0]]
-        ax_2.plot(data_["QL"], data_["penetration"], lw=4)
-
-    # plot decorations
-    ax.set_xlabel("$Q_{L,0}$")
-    ax.set_ylabel("$P_\mathrm{in} ~[\mathrm{kW}]$")
-    ax.set_xscale('log')
-    # ax.set_xlim(5e3, 5e7)
-    # ax.set_ylim(100, 2000)
-    ax.legend(loc='lower left', title="$E_\mathrm{acc}$")  #
-    ax.minorticks_on()
-    # ax.grid(which='both')
-    fig.show()
+#
+# def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):
+#     # check if entries are of same length
+#
+#     it = iter(geometry)
+#     the_len = len(next(it))
+#     if not all(len(l) == the_len for l in it):
+#         raise ValueError('not all lists have same length!')
+#
+#     it = iter(RF)
+#     the_len = len(next(it))
+#     if not all(len(l) == the_len for l in it):
+#         raise ValueError('not all lists have same length!')
+#
+#     it = iter(QOI)
+#     the_len = len(next(it))
+#     if not all(len(l) == the_len for l in it):
+#         raise ValueError('not all lists have same length!')
+#
+#     it = iter(Machine)
+#     the_len = len(next(it))
+#     if not all(len(l) == the_len for l in it):
+#         raise ValueError('not all lists have same length!')
+#
+#     n_cells, l_cells, G, b = [np.array(x) for x in geometry]
+#     E_acc, Vrf = [np.array(x) for x in RF]
+#
+#     fig, ax = plt.subplots()
+#
+#     # QOI
+#     f0, R_Q = [np.array(x) for x in QOI]
+#
+#     # Machine
+#     I0, rho, E0 = [np.array(x) for x in Machine]
+#
+#     l_active = 2 * n_cells * l_cells
+#     l_cavity = l_active + 8 * l_cells
+#
+#     # CALCULATED
+#     v_cav = E_acc * l_active
+#
+#     U_loss = 88.46 * E0 ** 4 / rho * 1e-6  # GeV # energy lost per turn per beam
+#     v_loss = 2 * U_loss * 1e9  # V # v loss for two beams
+#
+#     print(v_loss, Vrf, v_loss / Vrf)
+#     phi = np.arccos(v_loss / Vrf)
+#     delta_f = -R_Q * f0 * I0 * np.sin(phi) / (2 * v_cav)  # optimal df
+#     QL_0_x = v_cav / (R_Q * I0 * np.cos(phi))  # optimal Q loaded
+#
+#     QL_0 = np.linspace(1e3, 1e8, 1000000)
+#
+#     xy_list = [(0.3, 0.6), (0.35, 0.25), (0.6, 0.6), (0.77, 0.25)]
+#     for i in range(len(E_acc)):
+#         f1_2 = f0[i] / (2 * QL_0)  # 380.6
+#         ic(R_Q[i], v_cav[i], Vrf[i])
+#         pin = v_cav[i] ** 2 / (4 * R_Q[i] * QL_0) * (
+#                 (1 + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.cos(phi[i])) ** 2 + (
+#                 (delta_f[i] / f1_2) + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.sin(phi[i])) ** 2)
+#
+#         p_cryo = 8 / (np.sqrt(f0[i] / 500e6))
+#
+#         # material/ wall power
+#         e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
+#         Rs_NbCu_4_5k_400Mhz = 39.5 * np.exp(0.014 * (E_acc[i] * 1e-6 * b[i])) + 27
+#         eta = 1 / 219  # c
+#         Q0 = G[i] * 1e9 / Rs_NbCu_4_5k_400Mhz  # c
+#         print(E_acc[i])
+#         p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (
+#                 l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo
+#
+#         if "*" in label[i]:
+#             l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4, ls='--')
+#         else:
+#             l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4)
+#
+#         # add annotations
+#         txt = f"{labels[i]}, {n_cells[i]}-Cell 400 MHz \n {int(np.ceil(Vrf[i] / (2 * E_acc[i] * l_active[i]) / 2) * 2)} cav/beam" \
+#               + "\n V$_\mathbf{RF}\mathbf{/beam}$ =" + f"{round(Vrf[i] / 2 * 1e-9, 2)} GV " \
+#               + "\n V$_\mathbf{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
+#                                           "P$_{\mathrm{in}}$ = " + f"{round(min(pin) * 1e-3, 1)} kW \n" \
+#                                                                    "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
+#             QL_0_x[i])
+#
+#         annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=12, rotation=0, c=l[0].get_color(),
+#                                weight='bold')
+#
+#         dt = DraggableText(annotext)
+#         dt.connect()
+#
+#     if p_data:
+#         # plot QL with penetration
+#         ax_2 = ax.twinx()
+#         data = fr.excel_reader(p_data)
+#         data_ = data[list(data.keys())[0]]
+#         ax_2.plot(data_["QL"], data_["penetration"], lw=4)
+#
+#     # plot decorations
+#     ax.set_xlabel("$Q_{L,0}$")
+#     ax.set_ylabel("$P_\mathrm{in} ~[\mathrm{kW}]$")
+#     ax.set_xscale('log')
+#     # ax.set_xlim(5e3, 5e7)
+#     # ax.set_ylim(100, 2000)
+#     ax.legend(loc='lower left', title="$E_\mathrm{acc}$")  #
+#     ax.minorticks_on()
+#     # ax.grid(which='both')
+#     fig.show()
 
 
 def plot_beampipe_decay(freq: list, fc_list):
@@ -2124,6 +2444,8 @@ def plot_beampipe_decay(freq: list, fc_list):
 
 
 def plot_surface_resistance():
+    from labellines import labelLines
+
     Eacc = np.linspace(0.5, 30, 50)  # MV/m
     b = 4.88  # mT/MV/m
 
@@ -2163,9 +2485,10 @@ def plot_surface_resistance():
             c = 'tab:blue'
 
         plt.xlim(min(Eacc), max(Eacc))
-        plt.plot(Eacc, sr, label=sr_labels[i], c=c, ls=ls, marker=marker)
+        plt.plot(Eacc, sr, label=sr_labels[i])
 
-    plt.legend()
+    labelLines(plt.gca().get_lines(), zorder=2.5)
+    # plt.legend()
     plt.xlabel("$E$ [MV/m]")
     plt.ylabel(r"$R_s [\mathrm{n\Omega}]$")
     plt.tight_layout()
@@ -2174,6 +2497,22 @@ def plot_surface_resistance():
 
 
 if __name__ == '__main__':
+    c3794_H_400 = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
+                         Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_400", op_field=11.87e6,
+                         op_temp='4.5K', material='NbCu')
+
+    c3794_H_800 = Cavity(2, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
+                         Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_800", op_field=11.87e6,
+                         op_temp='2K', material='bulkNb')
+
+    # c3795_H_400 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
+    #                      Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795", op_field=24.72e6,
+    #                      op_temp='4.5K', material='NbCu')
+
+    c3795_H_800 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
+                         Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795_800", op_field=24.72e6,
+                         op_temp='2K', material='bulkNb')
+
     c3794_H = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
                      Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794", op_field=11.87e6,
                      op_temp='4.5K', material='NbCu')
@@ -2197,6 +2536,15 @@ if __name__ == '__main__':
     parent_dir_slans = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS"
     parent_dir_abci = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ABCI"
 
+    # 2 and 5 cell, 400MHz, 800MHz cavities comparison for H
+    wp = 'H'  # working point
+    sigma = 'SR_2.5mm'
+    slans_dirs = [fr"{parent_dir_slans}\Cavity3794_400", fr"{parent_dir_slans}\Cavity3794_800",
+                  fr"{parent_dir_slans}\CavityC3795_800"]
+    abci_dirs = [fr"{parent_dir_abci}\Cavity3794_400", fr"{parent_dir_abci}\Cavity3794_800",
+                 fr"{parent_dir_abci}\CavityC3795_800"]
+    cavities = Cavities([c3794_H_400, c3794_H_800, c3795_H_800])
+
     # # 2 and 5 cell cavities comparison for H
     # wp = 'H'  # working point
     # sigma = 'SR_2.5mm'
@@ -2204,19 +2552,17 @@ if __name__ == '__main__':
     # abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
     # cavities = Cavities([c3794_H, c3795_H])
 
-    # 5 cell cavities comparison for ttbar
-    wp = 'ttbar'  # working point
-    sigma = 'SR_1.67mm'
-    slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5",
-                  fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
-    abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5",
-                 fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
-    cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], 'Cavities_C3795_FCCUROS5_TESLA')
+    # # 5 cell cavities comparison for ttbar
+    # wp = 'ttbar'  # working point
+    # sigma = 'SR_1.67mm'
+    # slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5",
+    #               fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
+    # abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5",
+    #              fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
+    # cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], 'Cavities_C3795_FCCUROS5_TESLA')
 
     cavities.set_cavities_slans(slans_dirs)
     cavities.set_cavities_abci(abci_dirs)
-
-    # op_field = [11.87, 24.72, 24.72]  # in MV/m
 
     E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
     cavities.compare_power(E_acc=E_acc)
@@ -2238,12 +2584,12 @@ if __name__ == '__main__':
     cavities.make_excel_summary()
 
     # multipacting
-    multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"] #, r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
-                         #r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+    multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
 
     to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
     # for tp in to_plot:
-    cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
     cavities.plot_dispersion()
     # plt.show()
     c3795_tt.plot_ql_vs_pin()

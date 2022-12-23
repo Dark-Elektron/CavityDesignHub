@@ -7,7 +7,9 @@
   <title>utils package &mdash; CavityHub 0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -41,7 +43,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CEMCodesHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="em_codes.html">em_codes package</a></li>
@@ -2362,6 +2369,7 @@
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.cavity_analysis_module.</span></span><span class="sig-name descname"><span class="pre">Cavities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cavities_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Cavities object is an object containing several Cavity objects.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -2369,102 +2377,107 @@
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.f" title="utils.cavity_analysis_module.Cavities.f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f</span></code></a>(z, *data)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.add_cavity" title="utils.cavity_analysis_module.Cavities.add_cavity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_cavity</span></code></a>(cav)</p></td>
+<td><p>Adds cavity to cavities :param cav: Cavity object :type cav: object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.f" title="utils.cavity_analysis_module.Cavities.f"><code class="xref py py-obj docutils literal notranslate"><span class="pre">f</span></code></a>(z, *data)</p></td>
 <td><p>Calculates the coordinates of the tangent line connecting of two ellipses :param z: List containing an initial guess :param data: list containing center coordinate of the ellipses and their corresponding dimensions :return: returns the functions to be solved to calculate the coordinates</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.linspace" title="utils.cavity_analysis_module.Cavities.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(start, stop[, step])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.linspace" title="utils.cavity_analysis_module.Cavities.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(start, stop[, step])</p></td>
 <td><p>Like np.linspace but uses step instead of num This is inclusive to stop, so if start=1, stop=3, step=0.5 Output is: array([1., 1.5, 2., 2.5, 3.])</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.qois" title="utils.cavity_analysis_module.Cavities.qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois</span></code></a>(cavity, op_field)</p></td>
-<td><p>Retrieves the power figures of merit of a Cavity object :param cavity: Cavity object :param op_field: Operating field :return: dictionary containing the quantieis of interest</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_axis_fields" title="utils.cavity_analysis_module.Cavities.plot_axis_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_axis_fields</span></code></a>()</p></td>
+<td><p>Plot axis fields of cavities</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.qois_fm" title="utils.cavity_analysis_module.Cavities.qois_fm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois_fm</span></code></a>()</p></td>
-<td><p>Retrieves the fundamental mode quantities of interest :return: dictionary containing the quantieis of interest</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_cavities_contour" title="utils.cavity_analysis_module.Cavities.plot_cavities_contour"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_cavities_contour</span></code></a>([opt, n_cells])</p></td>
+<td><p>Plot geometric contour of Cavity objects</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.qois_hom" title="utils.cavity_analysis_module.Cavities.qois_hom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois_hom</span></code></a>()</p></td>
-<td><p>Retrieves the higher-order modes quantities of interest :return: dictionary containing the quantieis of interest</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_compare_bar" title="utils.cavity_analysis_module.Cavities.plot_compare_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_compare_bar</span></code></a>()</p></td>
+<td><p>Plots bar chart of power quantities of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_compare_fm_bar" title="utils.cavity_analysis_module.Cavities.plot_compare_fm_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_compare_fm_bar</span></code></a>()</p></td>
+<td><p>Plot bar chart of fundamental mode quantities of interest</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_compare_hom_bar" title="utils.cavity_analysis_module.Cavities.plot_compare_hom_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_compare_hom_bar</span></code></a>()</p></td>
+<td><p>Plot bar chart of higher-order mode's quantities of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_cryomodule_comparison" title="utils.cavity_analysis_module.Cavities.plot_cryomodule_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_cryomodule_comparison</span></code></a>()</p></td>
+<td><p>Plot cryomodule power comparison</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_dispersion" title="utils.cavity_analysis_module.Cavities.plot_dispersion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dispersion</span></code></a>()</p></td>
+<td><p>Plot dispersion curve for the cavities</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_multipac_triplot" title="utils.cavity_analysis_module.Cavities.plot_multipac_triplot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_multipac_triplot</span></code></a>(folders[, kind])</p></td>
+<td><p>Plot Multipac triplot</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_power_comparison" title="utils.cavity_analysis_module.Cavities.plot_power_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_power_comparison</span></code></a>([fig, ax_list])</p></td>
+<td><p>Can be called using <code class="docutils literal notranslate"><span class="pre">cavities.plot_power_comparison()</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_ql_vs_pin" title="utils.cavity_analysis_module.Cavities.plot_ql_vs_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_ql_vs_pin</span></code></a>()</p></td>
+<td><p>Plot loaded quality factor versus input power for fundamental power coupler (FPC)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.plot_surface_fields" title="utils.cavity_analysis_module.Cavities.plot_surface_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_surface_fields</span></code></a>()</p></td>
+<td><p>Plot surface fields of cavities</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.ql_pin" title="utils.cavity_analysis_module.Cavities.ql_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ql_pin</span></code></a>(labels, geometry, RF, QOI, Machine[, ...])</p></td>
+<td><p>Calculate the value of input power as a function of loaded quality factor</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.qois" title="utils.cavity_analysis_module.Cavities.qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois</span></code></a>(cavity, op_field)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param cavity</dt>
+<dd class="field-odd"><p>Cavity object</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.qois_fm" title="utils.cavity_analysis_module.Cavities.qois_fm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois_fm</span></code></a>()</p></td>
+<td><p>Retrieves the fundamental mode quantities of interest</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.qois_hom" title="utils.cavity_analysis_module.Cavities.qois_hom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois_hom</span></code></a>()</p></td>
+<td><p>Retrieves the higher-order modes quantities of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.remove_cavity" title="utils.cavity_analysis_module.Cavities.remove_cavity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_cavity</span></code></a>(cav)</p></td>
+<td><p>Removes cavity from cavity list :param cav: Cavity object :type cav: object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.save_all_plots" title="utils.cavity_analysis_module.Cavities.save_all_plots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all_plots</span></code></a>(plot_name)</p></td>
+<td><p>Save all plots :param plot_name: Name of saved plot :type plot_name: str</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.set_cavities_abci" title="utils.cavity_analysis_module.Cavities.set_cavities_abci"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cavities_abci</span></code></a>(dir_list)</p></td>
+<td><p>Set folders to read ABCI results from</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.set_cavities_field" title="utils.cavity_analysis_module.Cavities.set_cavities_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cavities_field</span></code></a>()</p></td>
+<td><p>Sets cavities analysis field range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.set_cavities_slans" title="utils.cavity_analysis_module.Cavities.set_cavities_slans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cavities_slans</span></code></a>(dir_list)</p></td>
+<td><p>Set folders to read SLANS results from</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavities.write_contour" title="utils.cavity_analysis_module.Cavities.write_contour"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_contour</span></code></a>(cav[, opt, n_cells])</p></td>
+<td><p>Write geometric contour for cavities</p></td>
 </tr>
 </tbody>
 </table>
 <table class="docutils align-default">
 <colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
+<col style="width: 74%" />
+<col style="width: 26%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><strong>add_cavity</strong></p></td>
+<tr class="row-odd"><td><p><strong>arcTo</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>arcTo</strong></p></td>
+<tr class="row-even"><td><p><strong>arcTo2</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>arcTo2</strong></p></td>
+<tr class="row-odd"><td><p><strong>compare_power</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>compare_power</strong></p></td>
+<tr class="row-even"><td><p><strong>lineTo</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>lineTo</strong></p></td>
+<tr class="row-odd"><td><p><strong>make_excel_summary</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>make_excel_summary</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>make_latex_summary_tables</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>plot_axis_fields</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>plot_cavities_contour</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>plot_compare_bar</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>plot_compare_fm_bar</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>plot_compare_hom_bar</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>plot_cryomodule_comparison</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>plot_dispersion</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>plot_multipac_triplot</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>plot_power_comparison</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>plot_ql_vs_pin</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>plot_surface_fields</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>ql_pin</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>remove_cavity</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>save_all_plots</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>set_cavities_abci</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>set_cavities_field</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>set_cavities_slans</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>write_contour</strong></p></td>
+<tr class="row-even"><td><p><strong>make_latex_summary_tables</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -2472,7 +2485,10 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.add_cavity">
 <span class="sig-name descname"><span class="pre">add_cavity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cav</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.add_cavity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.add_cavity" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Adds cavity to cavities
+:param cav: Cavity object
+:type cav: object</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.arcTo">
@@ -2524,115 +2540,217 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_axis_fields">
 <span class="sig-name descname"><span class="pre">plot_axis_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_axis_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_axis_fields" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot axis fields of cavities</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_cavities_contour">
 <span class="sig-name descname"><span class="pre">plot_cavities_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_cavities_contour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_cavities_contour" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot geometric contour of Cavity objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>opt</strong> (<em>{&quot;mid&quot;</em><em>, </em><em>&quot;end&quot;</em><em>, </em><em>&quot;all&quot;}</em>) – Either plot contour for only mid cells or end cells or the entire cavity</p></li>
+<li><p><strong>n_cells</strong> (<em>int</em>) – Option used only when opt is set to “all”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_compare_bar">
 <span class="sig-name descname"><span class="pre">plot_compare_bar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_compare_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_compare_bar" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plots bar chart of power quantities of interest</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_compare_fm_bar">
 <span class="sig-name descname"><span class="pre">plot_compare_fm_bar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_compare_fm_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_compare_fm_bar" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot bar chart of fundamental mode quantities of interest</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_compare_hom_bar">
 <span class="sig-name descname"><span class="pre">plot_compare_hom_bar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_compare_hom_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_compare_hom_bar" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot bar chart of higher-order mode’s quantities of interest</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_cryomodule_comparison">
 <span class="sig-name descname"><span class="pre">plot_cryomodule_comparison</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_cryomodule_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_cryomodule_comparison" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot cryomodule power comparison</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_dispersion">
 <span class="sig-name descname"><span class="pre">plot_dispersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_dispersion" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot dispersion curve for the cavities</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_multipac_triplot">
 <span class="sig-name descname"><span class="pre">plot_multipac_triplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folders</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'triplot'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_multipac_triplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_multipac_triplot" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot Multipac triplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folders</strong> (<em>list</em><em>, </em><em>array like</em>) – List of folder to read multipacting results from</p></li>
+<li><p><strong>kind</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will be changed later so that the multipac results will be in the same location as the SLANS and ABCI
+results</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_power_comparison">
 <span class="sig-name descname"><span class="pre">plot_power_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_power_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_power_comparison" title="Permalink to this definition"></a></dt>
+<dd><p>Can be called using <code class="docutils literal notranslate"><span class="pre">cavities.plot_power_comparison()</span></code></p>
+<div class="math notranslate nohighlight">
+\[W^{3 \beta}_{\delta}\]</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.self.plot_power_comparison">
+<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">plot_power_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.self.plot_power_comparison" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>) – </p></li>
+<li><p><strong>ax_list</strong> (<em>list of matplotlib axes object</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_ql_vs_pin">
 <span class="sig-name descname"><span class="pre">plot_ql_vs_pin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_ql_vs_pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_ql_vs_pin" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot loaded quality factor versus input power for fundamental power coupler (FPC)</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.plot_surface_fields">
 <span class="sig-name descname"><span class="pre">plot_surface_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.plot_surface_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.plot_surface_fields" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plot surface fields of cavities</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.ql_pin">
 <span class="sig-name descname"><span class="pre">ql_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QOI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Machine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.ql_pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.ql_pin" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the value of input power as a function of loaded quality factor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>list</em><em>, </em><em>array like</em>) – Descriptive labels on matplotlib plot</p></li>
+<li><p><strong>geometry</strong> (<em>list</em><em>, </em><em>array like</em>) – List of grouped geometric input parameters</p></li>
+<li><p><strong>RF</strong> (<em>list</em><em>, </em><em>array like</em>) – List of grouped radio-frequency (RF) properties</p></li>
+<li><p><strong>QOI</strong> – List of quantities of interest for cavities</p></li>
+<li><p><strong>Machine</strong> – List of grouped machine related materials</p></li>
+<li><p><strong>p_data</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.qois">
 <span class="sig-name descname"><span class="pre">qois</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cavity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.qois" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieves the power figures of merit of a Cavity object
-:param cavity: Cavity object
-:param op_field: Operating field
-:return: dictionary containing the quantieis of interest</p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cavity</strong> – Cavity object</p></li>
+<li><p><strong>op_field</strong> – Cavity operating field</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Dictionary containing quantities of interest (normed optional).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.qois_fm">
 <span class="sig-name descname"><span class="pre">qois_fm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.qois_fm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.qois_fm" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieves the fundamental mode quantities of interest
-:return: dictionary containing the quantieis of interest</p>
+<dd><p>Retrieves the fundamental mode quantities of interest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dictionary containing fundamental mode quantities of interest (normed optional).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.qois_hom">
 <span class="sig-name descname"><span class="pre">qois_hom</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.qois_hom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.qois_hom" title="Permalink to this definition"></a></dt>
-<dd><p>Retrieves the higher-order modes quantities of interest
-:return: dictionary containing the quantieis of interest</p>
+<dd><p>Retrieves the higher-order modes quantities of interest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Dictionary containing higher-order modes quantities of interest (normed optional).</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.remove_cavity">
 <span class="sig-name descname"><span class="pre">remove_cavity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cav</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.remove_cavity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.remove_cavity" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Removes cavity from cavity list
+:param cav: Cavity object
+:type cav: object</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.save_all_plots">
 <span class="sig-name descname"><span class="pre">save_all_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.save_all_plots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.save_all_plots" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Save all plots
+:param plot_name: Name of saved plot
+:type plot_name: str</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.set_cavities_abci">
 <span class="sig-name descname"><span class="pre">set_cavities_abci</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.set_cavities_abci"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.set_cavities_abci" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set folders to read ABCI results from</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dir_list</strong> (<em>list</em><em>, </em><em>array like</em>) – List of ABCI directories for the corresponding cavities</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.set_cavities_field">
 <span class="sig-name descname"><span class="pre">set_cavities_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.set_cavities_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.set_cavities_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Sets cavities analysis field range.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.set_cavities_slans">
 <span class="sig-name descname"><span class="pre">set_cavities_slans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.set_cavities_slans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.set_cavities_slans" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Set folders to read SLANS results from</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>dir_list</strong> (<em>list</em><em>, </em><em>array like</em>) – List of SLANS directories for the corresponding cavities</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavities.write_contour">
 <span class="sig-name descname"><span class="pre">write_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cav</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavities.write_contour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavities.write_contour" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Write geometric contour for cavities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cav</strong> (<em>Cavity object</em>) – Cavity object</p></li>
+<li><p><strong>opt</strong> (<em>str</em>) – </p></li>
+<li><p><strong>n_cells</strong> (<em>int</em>) – Number of cavity cells</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -2640,7 +2758,28 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.cavity_analysis_module.</span></span><span class="sig-name descname"><span class="pre">Cavity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_cell_mid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vrf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_Q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">G</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Epk_Eacc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Bpk_Eacc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inv_eta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">219</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Unnamed'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_field</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Z'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_temp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'2K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">material</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bulkNb'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavity" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Cavity class defines cavity parameters and operation settings for several cavity analysis</p>
 <p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavity.get_Eacc" title="utils.cavity_analysis_module.Cavity.get_Eacc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_Eacc</span></code></a>()</p></td>
+<td><p>Gets the accelerating field range of the Cavity object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavity.get_op_field" title="utils.cavity_analysis_module.Cavity.get_op_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_op_field</span></code></a>()</p></td>
+<td><p>Gets the operating field of the cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavity.set_Eacc" title="utils.cavity_analysis_module.Cavity.set_Eacc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_Eacc</span></code></a>(Eacc)</p></td>
+<td><p>Sets the accelerating field range of analysis for the cavity</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#utils.cavity_analysis_module.Cavity.set_op_field" title="utils.cavity_analysis_module.Cavity.set_op_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_op_field</span></code></a>(op_field)</p></td>
+<td><p>Sets the operating field of the cavity</p></td>
+</tr>
+</tbody>
+</table>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 74%" />
@@ -2650,28 +2789,22 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <tr class="row-odd"><td><p><strong>get_inv_eta</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>get_op_field</strong></p></td>
+<tr class="row-even"><td><p><strong>get_power</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>get_power</strong></p></td>
+<tr class="row-odd"><td><p><strong>get_vrf</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>get_vrf</strong></p></td>
+<tr class="row-even"><td><p><strong>make_latex_summary_tables</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>make_latex_summary_tables</strong></p></td>
+<tr class="row-odd"><td><p><strong>plot_multipac_triplot</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>plot_multipac_triplot</strong></p></td>
+<tr class="row-even"><td><p><strong>plot_ql_vs_pin</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>plot_ql_vs_pin</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>ql_pin</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>set_Eacc</strong></p></td>
+<tr class="row-odd"><td><p><strong>ql_pin</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p><strong>set_abci_qois</strong></p></td>
@@ -2680,20 +2813,28 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <tr class="row-odd"><td><p><strong>set_inv_eta</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>set_op_field</strong></p></td>
+<tr class="row-even"><td><p><strong>set_slans_qois</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>set_slans_qois</strong></p></td>
+<tr class="row-odd"><td><p><strong>set_vrf</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>set_vrf</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>write_cavity_for_multipac</strong></p></td>
+<tr class="row-even"><td><p><strong>write_cavity_for_multipac</strong></p></td>
 <td></td>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.get_Eacc">
+<span class="sig-name descname"><span class="pre">get_Eacc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavity.get_Eacc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavity.get_Eacc" title="Permalink to this definition"></a></dt>
+<dd><p>Gets the accelerating field range of the Cavity object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Accelerating field range of cavity. To set the accelerating field range, use</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.get_inv_eta">
 <span class="sig-name descname"><span class="pre">get_inv_eta</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavity.get_inv_eta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavity.get_inv_eta" title="Permalink to this definition"></a></dt>
@@ -2702,7 +2843,13 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.get_op_field">
 <span class="sig-name descname"><span class="pre">get_op_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavity.get_op_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavity.get_op_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Gets the operating field of the cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>returns operating field value</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.get_power">
@@ -2737,7 +2884,13 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.set_Eacc">
 <span class="sig-name descname"><span class="pre">set_Eacc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Eacc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavity.set_Eacc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavity.set_Eacc" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Sets the accelerating field range of analysis for the cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Eacc</strong> (<em>list</em><em>, </em><em>array like</em>) – Accelerating field range of interest</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.set_abci_qois">
@@ -2752,7 +2905,13 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.set_op_field">
 <span class="sig-name descname"><span class="pre">set_op_field</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">op_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#Cavity.set_op_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.Cavity.set_op_field" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Sets the operating field of the cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>op_field</strong> (<em>float</em>) – Electric field value at which the cavity is to operate.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.Cavity.set_slans_qois">
@@ -2770,11 +2929,6 @@ Output is: array([1., 1.5, 2., 2.5, 3.])</p>
 <dd></dd></dl>
 
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="utils.cavity_analysis_module.QL_Pin">
-<span class="sig-prename descclassname"><span class="pre">utils.cavity_analysis_module.</span></span><span class="sig-name descname"><span class="pre">QL_Pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QOI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Machine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/cavity_analysis_module.html#QL_Pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.cavity_analysis_module.QL_Pin" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.cavity_analysis_module.plot_beampipe_decay">

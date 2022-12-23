@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>simulation_codes.ABCI package &mdash; Cavity Design Hub (CaDH) 0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="simulation_codes.SLANS package" href="simulation_codes.SLANS.html" />
+    <link rel="prev" title="simulation_codes package" href="simulation_codes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Cavity Design Hub (CaDH)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CEMCodesHub</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="em_codes.html">em_codes package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icons_rc.html">icons_rc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main_control.html">main_control module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual_run.html">manual_run package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="node_editor.html">node_editor package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qss.html">qss package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="simulation_codes.html">simulation_codes package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="simulation_codes.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">simulation_codes.ABCI package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="simulation_codes.SLANS.html">simulation_codes.SLANS package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="simulation_codes.html#module-simulation_codes">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ui_files.html">ui_files package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui_state_files.html">ui_state_files package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Cavity Design Hub (CaDH)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CEMCodesHub</a></li>
+          <li class="breadcrumb-item"><a href="simulation_codes.html">simulation_codes package</a></li>
+      <li class="breadcrumb-item active">simulation_codes.ABCI package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/simulation_codes.ABCI.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="simulation-codes-abci-package">
+<h1>simulation_codes.ABCI package<a class="headerlink" href="#simulation-codes-abci-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-simulation_codes.ABCI.abci_MP">
+<span id="simulation-codes-abci-abci-mp-module"></span><h2>simulation_codes.ABCI.abci_MP module<a class="headerlink" href="#module-simulation_codes.ABCI.abci_MP" title="Permalink to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_MP.print_">
+<span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.abci_MP.</span></span><span class="sig-name descname"><span class="pre">print_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_MP.html#print_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_MP.print_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_MP.run_MP">
+<span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.abci_MP.</span></span><span class="sig-name descname"><span class="pre">run_MP</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_MP.html#run_MP"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_MP.run_MP" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_MP.run_sequential">
+<span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.abci_MP.</span></span><span class="sig-name descname"><span class="pre">run_sequential</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_modules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">processor_shape_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MROT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NFS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bunch_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DDR_SIG</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DDZ_SIG</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parentDir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projectDir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_MP.html#run_sequential"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_MP.run_sequential" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-simulation_codes.ABCI.abci_code">
+<span id="simulation-codes-abci-abci-code-module"></span><h2>simulation_codes.ABCI.abci_code module<a class="headerlink" href="#module-simulation_codes.ABCI.abci_code" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.abci_code.</span></span><span class="sig-name descname"><span class="pre">ABCI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left_beam_pipe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_end_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_end_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_beam_pipe</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 66%" />
+<col style="width: 34%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>abci_M</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>abci_bp_L</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>abci_bp_R</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>abci_n1_L</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>abci_n1_R</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>ellipse_tangent</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>rz_conjug</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI.abci_M">
+<span class="sig-name descname"><span class="pre">abci_M</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zr12_M</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">WG_L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI.abci_M"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI.abci_M" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI.abci_bp_L">
+<span class="sig-name descname"><span class="pre">abci_bp_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zr12_BPL</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">WG_L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI.abci_bp_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI.abci_bp_L" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI.abci_bp_R">
+<span class="sig-name descname"><span class="pre">abci_bp_R</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zr12_BPR</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">WG_L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI.abci_bp_R"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI.abci_bp_R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI.abci_n1_L">
+<span class="sig-name descname"><span class="pre">abci_n1_L</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zr12_L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">WG_L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI.abci_n1_L"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI.abci_n1_L" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI.abci_n1_R">
+<span class="sig-name descname"><span class="pre">abci_n1_R</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zr12_R</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">WG_L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI.abci_n1_R"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI.abci_n1_R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI.ellipse_tangent">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ellipse_tangent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI.ellipse_tangent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI.ellipse_tangent" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_code.ABCI.rz_conjug">
+<span class="sig-name descname"><span class="pre">rz_conjug</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_code.html#ABCI.rz_conjug"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_code.ABCI.rz_conjug" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="simulation-codes-abci-abci-geom-par-module">
+<h2>simulation_codes.ABCI.abci_geom_par module<a class="headerlink" href="#simulation-codes-abci-abci-geom-par-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-simulation_codes.ABCI.abci_geometry">
+<span id="simulation-codes-abci-abci-geometry-module"></span><h2>simulation_codes.ABCI.abci_geometry module<a class="headerlink" href="#module-simulation_codes.ABCI.abci_geometry" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_geometry.ABCIGeometry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.abci_geometry.</span></span><span class="sig-name descname"><span class="pre">ABCIGeometry</span></span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_geometry.html#ABCIGeometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_geometry.ABCIGeometry" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#simulation_codes.ABCI.geometry.Geometry" title="simulation_codes.ABCI.geometry.Geometry"><code class="xref py py-class docutils literal notranslate"><span class="pre">Geometry</span></code></a></p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 70%" />
+<col style="width: 30%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>button_clicked</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>cavity</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>createFolder</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>set_geom_parameters</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_geometry.ABCIGeometry.button_clicked">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">button_clicked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_geometry.html#ABCIGeometry.button_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_geometry.ABCIGeometry.button_clicked" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_geometry.ABCIGeometry.cavity">
+<span class="sig-name descname"><span class="pre">cavity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">no_of_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_of_modules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cells_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_end_cell_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_end_cell_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_0'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MROT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beampipes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bunch_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NFS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UBT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DDZ_SIG</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DDR_SIG</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parentDir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projectDir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">WG_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_geometry.html#ABCIGeometry.cavity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_geometry.ABCIGeometry.cavity" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_geometry.ABCIGeometry.createFolder">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">createFolder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projectDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_geometry.html#ABCIGeometry.createFolder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_geometry.ABCIGeometry.createFolder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="simulation-codes-abci-abci-mpi-module">
+<h2>simulation_codes.ABCI.abci_mpi module<a class="headerlink" href="#simulation-codes-abci-abci-mpi-module" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-simulation_codes.ABCI.abci_par_run">
+<span id="simulation-codes-abci-abci-par-run-module"></span><h2>simulation_codes.ABCI.abci_par_run module<a class="headerlink" href="#module-simulation_codes.ABCI.abci_par_run" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_par_run.ABCIPar">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.abci_par_run.</span></span><span class="sig-name descname"><span class="pre">ABCIPar</span></span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_par_run.html#ABCIPar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_par_run.ABCIPar" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 41%" />
+<col style="width: 59%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>run</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.abci_par_run.ABCIPar.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/abci_par_run.html#ABCIPar.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.abci_par_run.ABCIPar.run" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-simulation_codes.ABCI.geometry">
+<span id="simulation-codes-abci-geometry-module"></span><h2>simulation_codes.ABCI.geometry module<a class="headerlink" href="#module-simulation_codes.ABCI.geometry" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.geometry.Geometry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.geometry.</span></span><span class="sig-name descname"><span class="pre">Geometry</span></span><a class="reference internal" href="_modules/simulation_codes/ABCI/geometry.html#Geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.geometry.Geometry" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 70%" />
+<col style="width: 30%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>set_geom_parameters</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.geometry.Geometry.set_geom_parameters">
+<span class="sig-name descname"><span class="pre">set_geom_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cells_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_end_cell_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_end_cell_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/geometry.html#Geometry.set_geom_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.geometry.Geometry.set_geom_parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-simulation_codes.ABCI.geometry_manual">
+<span id="simulation-codes-abci-geometry-manual-module"></span><h2>simulation_codes.ABCI.geometry_manual module<a class="headerlink" href="#module-simulation_codes.ABCI.geometry_manual" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.geometry_manual.Geometry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.geometry_manual.</span></span><span class="sig-name descname"><span class="pre">Geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">win</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/geometry_manual.html#Geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.geometry_manual.Geometry" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p class="rubric">Methods</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 73%" />
+<col style="width: 27%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><strong>set_geom_parameters</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>write_cst_paramters</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>write_cst_paramters_mid</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.geometry_manual.Geometry.set_geom_parameters">
+<span class="sig-name descname"><span class="pre">set_geom_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cells_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_end_cell_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_end_cell_par</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beampipes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/geometry_manual.html#Geometry.set_geom_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.geometry_manual.Geometry.set_geom_parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.geometry_manual.Geometry.write_cst_paramters">
+<span class="sig-name descname"><span class="pre">write_cst_paramters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/geometry_manual.html#Geometry.write_cst_paramters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.geometry_manual.Geometry.write_cst_paramters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.geometry_manual.Geometry.write_cst_paramters_mid">
+<span class="sig-name descname"><span class="pre">write_cst_paramters_mid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fid</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/geometry_manual.html#Geometry.write_cst_paramters_mid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.geometry_manual.Geometry.write_cst_paramters_mid" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="simulation_codes.ABCI.geometry_manual.print_">
+<span class="sig-prename descclassname"><span class="pre">simulation_codes.ABCI.geometry_manual.</span></span><span class="sig-name descname"><span class="pre">print_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simulation_codes/ABCI/geometry_manual.html#print_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simulation_codes.ABCI.geometry_manual.print_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-simulation_codes.ABCI">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-simulation_codes.ABCI" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="simulation_codes.html" class="btn btn-neutral float-left" title="simulation_codes package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="simulation_codes.SLANS.html" class="btn btn-neutral float-right" title="simulation_codes.SLANS package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

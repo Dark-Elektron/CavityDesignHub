@@ -21,6 +21,16 @@ then explore these pages.
 Creating subtitles
 Customizing subtitles
 
+Introduction
+============
+.. toctree::
+   :maxdepth: 6
+   :caption: Introduction
+
+   introduction
+   quickstart
+   get_involved
+
 Modules
 ========
 

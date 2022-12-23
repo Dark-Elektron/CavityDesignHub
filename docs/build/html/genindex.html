@@ -6,7 +6,9 @@
   <title>Index &mdash; CavityHub 0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -38,7 +40,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">CEMCodesHub</a></li>
 </ul>
@@ -100,20 +107,48 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual_run.abci.html#manual_run.abci.abci_code.ABCI">ABCI (class in manual_run.abci.abci_code)</a>
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI">(class in simulation_codes.ABCI.abci_code)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.abci.html#manual_run.abci.abci_code.ABCI.abci_bp_L">abci_bp_L() (manual_run.abci.abci_code.ABCI method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI.abci_bp_L">(simulation_codes.ABCI.abci_code.ABCI method)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.abci.html#manual_run.abci.abci_code.ABCI.abci_bp_R">abci_bp_R() (manual_run.abci.abci_code.ABCI method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI.abci_bp_R">(simulation_codes.ABCI.abci_code.ABCI method)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.abci.html#manual_run.abci.abci_code.ABCI.abci_M">abci_M() (manual_run.abci.abci_code.ABCI method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI.abci_M">(simulation_codes.ABCI.abci_code.ABCI method)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.abci.html#manual_run.abci.abci_code.ABCI.abci_n1_L">abci_n1_L() (manual_run.abci.abci_code.ABCI method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI.abci_n1_L">(simulation_codes.ABCI.abci_code.ABCI method)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.abci.html#manual_run.abci.abci_code.ABCI.abci_n1_R">abci_n1_R() (manual_run.abci.abci_code.ABCI method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI.abci_n1_R">(simulation_codes.ABCI.abci_code.ABCI method)</a>
 </li>
+      </ul></li>
       <li><a href="modules.data_module.html#modules.data_module.abci_data.ABCIData">ABCIData (class in modules.data_module.abci_data)</a>
 </li>
       <li><a href="modules.data_module.html#modules.data_module.abci_data.ABCIDataExtraction">ABCIDataExtraction (class in modules.data_module.abci_data)</a>
+</li>
+      <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_geometry.ABCIGeometry">ABCIGeometry (class in simulation_codes.ABCI.abci_geometry)</a>
+</li>
+      <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_par_run.ABCIPar">ABCIPar (class in simulation_codes.ABCI.abci_par_run)</a>
 </li>
       <li><a href="frame_controls.html#frame_controls.postprocess.PostprocessControl.add_all">add_all() (frame_controls.postprocess.PostprocessControl method)</a>
 </li>
@@ -163,6 +198,8 @@
 </li>
       <li><a href="node_editor.html#node_editor.node_scene_history.SceneHistory.addHistoryRestoredListener">addHistoryRestoredListener() (node_editor.node_scene_history.SceneHistory method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="node_editor.html#node_editor.node_scene_history.SceneHistory.addHistoryStoredListener">addHistoryStoredListener() (node_editor.node_scene_history.SceneHistory method)</a>
 </li>
       <li><a href="utils.html#utils.shared_classes.QCheckableComboBox.addItem">addItem() (utils.shared_classes.QCheckableComboBox method)</a>
@@ -171,8 +208,6 @@
 </li>
       <li><a href="node_editor.html#node_editor.node_scene.Scene.addItemsDeselectedListener">addItemsDeselectedListener() (node_editor.node_scene.Scene method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="node_editor.html#node_editor.node_scene.Scene.addItemSelectedListener">addItemSelectedListener() (node_editor.node_scene.Scene method)</a>
 </li>
       <li><a href="graphics.html#graphics.scene.Scene.addLine">addLine() (graphics.scene.Scene method)</a>
@@ -267,8 +302,6 @@
         <li><a href="node_editor.html#node_editor.node_graphics_socket.QDMGraphicsSocket.boundingRect">(node_editor.node_graphics_socket.QDMGraphicsSocket method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="frame_controls.html#frame_controls.eigenmode.EigenmodeControl.button_clicked">button_clicked() (frame_controls.eigenmode.EigenmodeControl static method)</a>
 
       <ul>
@@ -280,7 +313,15 @@
 </li>
         <li><a href="main_control.html#main_control.MainWindow.button_clicked">(main_control.MainWindow static method)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_geometry.ABCIGeometry.button_clicked">(simulation_codes.ABCI.abci_geometry.ABCIGeometry static method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geom_par.SLANSGeometry.button_clicked">(simulation_codes.SLANS.slans_geom_par.SLANSGeometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry.button_clicked">(simulation_codes.SLANS.slans_geometry.SLANSGeometry static method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utils.html#utils.CustomNavBar.SizeInputDialog.button_press">button_press() (utils.CustomNavBar.SizeInputDialog method)</a>
 </li>
   </ul></td>
@@ -322,7 +363,11 @@
       <li><a href="frame_controls.html#frame_controls.multipacting_control.MultipactingControl.calculate_fields">calculate_fields() (frame_controls.multipacting_control.MultipactingControl method)</a>
 </li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.calculate_li">calculate_li() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.calculate_li">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="modules.analysis_module.html#modules.analysis_module.analysis_codes.Analysis.calculate_Ri">calculate_Ri() (modules.analysis_module.analysis_codes.Analysis method)</a>
 </li>
       <li><a href="frame_controls.html#frame_controls.eigenmode.EigenmodeControl.cancel">cancel() (frame_controls.eigenmode.EigenmodeControl method)</a>
@@ -351,7 +396,21 @@
 </li>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavities">Cavities (class in utils.cavity_analysis_module)</a>
 </li>
+      <li><a href="utils.html#utils.cavity_analysis_module.Cavities.self.plot_power_comparison">Cavities.self.plot_power_comparison() (in module utils.cavity_analysis_module)</a>
+</li>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavity">Cavity (class in utils.cavity_analysis_module)</a>
+</li>
+      <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_geometry.ABCIGeometry.cavity">cavity() (simulation_codes.ABCI.abci_geometry.ABCIGeometry method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geom_par.SLANSGeometry.cavity">(simulation_codes.SLANS.slans_geom_par.SLANSGeometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry.cavity">(simulation_codes.SLANS.slans_geometry.SLANSGeometry method)</a>
+</li>
+      </ul></li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry.cavity_multicell">cavity_multicell() (simulation_codes.SLANS.slans_geometry.SLANSGeometry method)</a>
+</li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry.cavity_multicell_full">cavity_multicell_full() (simulation_codes.SLANS.slans_geometry.SLANSGeometry method)</a>
 </li>
       <li><a href="frame_controls.html#frame_controls.tune_control.TuneControl.cb_show_hide">cb_show_hide() (frame_controls.tune_control.TuneControl static method)</a>
 </li>
@@ -529,6 +588,14 @@
 </li>
       <li><a href="node_editor.html#node_editor.node_editor_window.NodeEditorWindow.createFileMenu">createFileMenu() (node_editor.node_editor_window.NodeEditorWindow method)</a>
 </li>
+      <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_geometry.ABCIGeometry.createFolder">createFolder() (simulation_codes.ABCI.abci_geometry.ABCIGeometry static method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geom_par.SLANSGeometry.createFolder">(simulation_codes.SLANS.slans_geom_par.SLANSGeometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry.createFolder">(simulation_codes.SLANS.slans_geometry.SLANSGeometry static method)</a>
+</li>
+      </ul></li>
       <li><a href="node_editor.html#node_editor.node_scene_history.SceneHistory.createHistoryStamp">createHistoryStamp() (node_editor.node_scene_history.SceneHistory method)</a>
 </li>
       <li><a href="node_editor.html#node_editor.node_editor_window.NodeEditorWindow.createMenus">createMenus() (node_editor.node_editor_window.NodeEditorWindow method)</a>
@@ -782,6 +849,18 @@
 </li>
         <li><a href="modules.tune_module.tuners.html#modules.tune_module.tuners.pyTuner.PyTune.ellipse_tangent">(modules.tune_module.tuners.pyTuner.PyTune static method)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI.ellipse_tangent">(simulation_codes.ABCI.abci_code.ABCI static method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS.ellipse_tangent">(simulation_codes.SLANS.slans_code.SLANS static method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop.ellipse_tangent">(simulation_codes.SLANS.slans_code.SLANS_Flattop static method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell.ellipse_tangent">(simulation_codes.SLANS.slans_code.SLANS_Multicell static method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full.ellipse_tangent">(simulation_codes.SLANS.slans_code.SLANS_Multicell_full static method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.ellipse_tangent">(simulation_codes.SLANS.slansTuner.SLANSTune static method)</a>
+</li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -795,7 +874,11 @@
       <li><a href="main_control.html#main_control.QPlainTextEditLogger.emit">emit() (main_control.QPlainTextEditLogger method)</a>
 </li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.end_cell_tune">end_cell_tune() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.end_cell_tune">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="frame_controls.html#frame_controls.eigenmode.EigenmodeControl.end_routine">end_routine() (frame_controls.eigenmode.EigenmodeControl method)</a>
 
       <ul>
@@ -1020,6 +1103,14 @@
       <ul>
         <li><a href="manual_run.slans.html#manual_run.slans.geometry_manual.Geometry">(class in manual_run.slans.geometry_manual)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.geometry.Geometry">(class in simulation_codes.ABCI.geometry)</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.geometry_manual.Geometry">(class in simulation_codes.ABCI.geometry_manual)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry.Geometry">(class in simulation_codes.SLANS.geometry)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry_manual.Geometry">(class in simulation_codes.SLANS.geometry_manual)</a>
+</li>
       </ul></li>
       <li><a href="modules.data_module.html#modules.data_module.slans_data.SLANSData.get_0D_plot_data">get_0D_plot_data() (modules.data_module.slans_data.SLANSData method)</a>
 </li>
@@ -1032,10 +1123,16 @@
       <li><a href="modules.data_module.html#modules.data_module.slans_data.SLANSData.get_2D_plot_title">get_2D_plot_title() (modules.data_module.slans_data.SLANSData method)</a>
 </li>
       <li><a href="modules.data_module.html#modules.data_module.slans_data.SLANSData.get_axis_field_data">get_axis_field_data() (modules.data_module.slans_data.SLANSData method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry.get_axis_field_data">(simulation_codes.SLANS.slans_geometry.SLANSGeometry static method)</a>
 </li>
+      </ul></li>
       <li><a href="frame_controls.html#frame_controls.tune_control.OptimizationControl.get_constraints">get_constraints() (frame_controls.tune_control.OptimizationControl method)</a>
 </li>
       <li><a href="modules.data_module.html#modules.data_module.abci_data.ABCIData.get_data">get_data() (modules.data_module.abci_data.ABCIData method)</a>
+</li>
+      <li><a href="utils.html#utils.cavity_analysis_module.Cavity.get_Eacc">get_Eacc() (utils.cavity_analysis_module.Cavity method)</a>
 </li>
       <li><a href="utils.html#utils.misc_functions.get_fid">get_fid() (in module utils.misc_functions)</a>
 </li>
@@ -1105,6 +1202,8 @@
 </li>
       <li><a href="node_editor.html#node_editor.node_node.Node.getChildrenNodes">getChildrenNodes() (node_editor.node_node.Node method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="node_editor.html#node_editor.node_editor_window.NodeEditorWindow.getCurrentNodeEditorWidget">getCurrentNodeEditorWidget() (node_editor.node_editor_window.NodeEditorWindow method)</a>
 </li>
       <li><a href="node_editor.html#node_editor.node_edge_dragging.EdgeDragging.getEdgeClass">getEdgeClass() (node_editor.node_edge_dragging.EdgeDragging method)</a>
@@ -1115,8 +1214,6 @@
         <li><a href="node_editor.html#node_editor.node_scene.Scene.getEdgeClass">(node_editor.node_scene.Scene method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="node_editor.html#node_editor.node_edge.Edge.getEdgeValidators">getEdgeValidators() (node_editor.node_edge.Edge class method)</a>
 </li>
       <li><a href="node_editor.html#node_editor.node_editor_window.NodeEditorWindow.getFileDialogDirectory">getFileDialogDirectory() (node_editor.node_editor_window.NodeEditorWindow method)</a>
@@ -1706,7 +1803,11 @@
       <li><a href="frame_controls.html#frame_controls.multipacting_control.MultipactingControl.mesh_cavity">mesh_cavity() (frame_controls.multipacting_control.MultipactingControl method)</a>
 </li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.mid_cell_tune">mid_cell_tune() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.mid_cell_tune">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="graphics.html#graphics.graphics_view.GraphicsView.middleMouseButtonPress">middleMouseButtonPress() (graphics.graphics_view.GraphicsView method)</a>
 
       <ul>
@@ -1884,6 +1985,38 @@
         <li><a href="qss.images.html#module-qss.images">qss.images</a>
 </li>
         <li><a href="simulation_codes.html#module-simulation_codes">simulation_codes</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI">simulation_codes.ABCI</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_code">simulation_codes.ABCI.abci_code</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_geometry">simulation_codes.ABCI.abci_geometry</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_MP">simulation_codes.ABCI.abci_MP</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_par_run">simulation_codes.ABCI.abci_par_run</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.geometry">simulation_codes.ABCI.geometry</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.geometry_manual">simulation_codes.ABCI.geometry_manual</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS">simulation_codes.SLANS</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.geometry">simulation_codes.SLANS.geometry</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.geometry_manual">simulation_codes.SLANS.geometry_manual</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_code">simulation_codes.SLANS.slans_code</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_geom_par">simulation_codes.SLANS.slans_geom_par</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_geometry">simulation_codes.SLANS.slans_geometry</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_mpi_MP">simulation_codes.SLANS.slans_mpi_MP</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_par_run">simulation_codes.SLANS.slans_par_run</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slansTuner">simulation_codes.SLANS.slansTuner</a>
 </li>
         <li><a href="ui_files.html#module-ui_files">ui_files</a>
 </li>
@@ -2731,6 +2864,16 @@
 </li>
         <li><a href="modules.tune_module.tuners.html#modules.tune_module.tuners.pyTuner.print_">(in module modules.tune_module.tuners.pyTuner)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_MP.print_">(in module simulation_codes.ABCI.abci_MP)</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.geometry_manual.print_">(in module simulation_codes.ABCI.geometry_manual)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry_manual.print_">(in module simulation_codes.SLANS.geometry_manual)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.print_">(in module simulation_codes.SLANS.slans_geometry)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_mpi_MP.print_">(in module simulation_codes.SLANS.slans_mpi_MP)</a>
+</li>
         <li><a href="utils.html#utils.shared_classes.print_">(in module utils.shared_classes)</a>
 </li>
         <li><a href="utils.html#utils.uq.print_">(in module utils.uq)</a>
@@ -2840,16 +2983,14 @@
         <li><a href="qss.html#qss.icons_rc.qInitResources">(in module qss.icons_rc)</a>
 </li>
       </ul></li>
-      <li><a href="utils.html#utils.cavity_analysis_module.QL_Pin">QL_Pin() (in module utils.cavity_analysis_module)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavities.ql_pin">ql_pin() (utils.cavity_analysis_module.Cavities method)</a>
 
       <ul>
         <li><a href="utils.html#utils.cavity_analysis_module.Cavity.ql_pin">(utils.cavity_analysis_module.Cavity method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavities.qois">qois() (utils.cavity_analysis_module.Cavities method)</a>
 </li>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavities.qois_fm">qois_fm() (utils.cavity_analysis_module.Cavities method)</a>
@@ -2907,9 +3048,17 @@
       <li><a href="utils.html#utils.misc_functions.read_parameters">read_parameters() (in module utils.misc_functions)</a>
 </li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.read_tuned_data">read_tuned_data() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.read_tuned_data">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.read_tuned_data_end">read_tuned_data_end() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.read_tuned_data_end">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="main_control.html#main_control.MainWindow.readSettings">readSettings() (main_control.MainWindow method)</a>
 
       <ul>
@@ -3075,6 +3224,10 @@
       <ul>
         <li><a href="frame_controls.html#frame_controls.multipacting_control.ProgressMonitor.run">(frame_controls.multipacting_control.ProgressMonitor method)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_par_run.ABCIPar.run">(simulation_codes.ABCI.abci_par_run.ABCIPar method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_par_run.SLANSPar.run">(simulation_codes.SLANS.slans_par_run.SLANSPar method)</a>
+</li>
         <li><a href="utils.html#utils.ga.GA.run">(utils.ga.GA method)</a>
 </li>
         <li><a href="utils.html#utils.shared_classes.EndRoutine.run">(utils.shared_classes.EndRoutine method)</a>
@@ -3097,7 +3250,13 @@
       <li><a href="frame_controls.html#frame_controls.postprocess.PostprocessControl.run_mode_control">run_mode_control() (frame_controls.postprocess.PostprocessControl method)</a>
 </li>
       <li><a href="modules.tune_module.tuners.html#modules.tune_module.tuners.parallel_tune_script_MP.run_MP">run_MP() (in module modules.tune_module.tuners.parallel_tune_script_MP)</a>
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_MP.run_MP">(in module simulation_codes.ABCI.abci_MP)</a>
 </li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_mpi_MP.run_MP">(in module simulation_codes.SLANS.slans_mpi_MP)</a>
+</li>
+      </ul></li>
       <li><a href="frame_controls.html#frame_controls.multipacting_control.MultipactingControl.run_mpanalysis">run_mpanalysis() (frame_controls.multipacting_control.MultipactingControl method)</a>
 </li>
       <li><a href="frame_controls.html#frame_controls.multipacting_control.MultipactingControl.run_multipac">run_multipac() (frame_controls.multipacting_control.MultipactingControl method)</a>
@@ -3127,6 +3286,10 @@
 </li>
         <li><a href="modules.tune_module.tuners.html#modules.tune_module.tuners.parallel_tune_script_MP.run_sequential">(in module modules.tune_module.tuners.parallel_tune_script_MP)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_MP.run_sequential">(in module simulation_codes.ABCI.abci_MP)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_mpi_MP.run_sequential">(in module simulation_codes.SLANS.slans_mpi_MP)</a>
+</li>
       </ul></li>
       <li><a href="frame_controls.html#frame_controls.tune_control.run_sequential_wakefield">run_sequential_wakefield() (in module frame_controls.tune_control)</a>
 </li>
@@ -3150,6 +3313,16 @@
 
       <ul>
         <li><a href="manual_run.slans.html#manual_run.slans.slans_code.SLANS.rz_conjug">(manual_run.slans.slans_code.SLANS method)</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.abci_code.ABCI.rz_conjug">(simulation_codes.ABCI.abci_code.ABCI method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS.rz_conjug">(simulation_codes.SLANS.slans_code.SLANS method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop.rz_conjug">(simulation_codes.SLANS.slans_code.SLANS_Flattop method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell.rz_conjug">(simulation_codes.SLANS.slans_code.SLANS_Multicell method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full.rz_conjug">(simulation_codes.SLANS.slans_code.SLANS_Multicell_full method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -3233,7 +3406,17 @@
       <ul>
         <li><a href="manual_run.slans.html#manual_run.slans.geometry_manual.Geometry.set_geom_parameters">(manual_run.slans.geometry_manual.Geometry method)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.geometry.Geometry.set_geom_parameters">(simulation_codes.ABCI.geometry.Geometry method)</a>
+</li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.geometry_manual.Geometry.set_geom_parameters">(simulation_codes.ABCI.geometry_manual.Geometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry.Geometry.set_geom_parameters">(simulation_codes.SLANS.geometry.Geometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry_manual.Geometry.set_geom_parameters">(simulation_codes.SLANS.geometry_manual.Geometry method)</a>
+</li>
       </ul></li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry_manual.Geometry.set_geom_parameters_multicell">set_geom_parameters_multicell() (simulation_codes.SLANS.geometry_manual.Geometry method)</a>
+</li>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavity.set_inv_eta">set_inv_eta() (utils.cavity_analysis_module.Cavity method)</a>
 </li>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavity.set_op_field">set_op_field() (utils.cavity_analysis_module.Cavity method)</a>
@@ -3326,8 +3509,6 @@
         <li><a href="ui_files.html#ui_files.wg_calculations.Ui_WG_Calc.setupUi">(ui_files.wg_calculations.Ui_WG_Calc method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="graphics.html#graphics.graphics_line_2d.QGraphicsLine.shape">shape() (graphics.graphics_line_2d.QGraphicsLine method)</a>
 
       <ul>
@@ -3422,6 +3603,8 @@
         <li><a href="modules.plot_module.html#modules.plot_module.plotter.Plot.signals">(modules.plot_module.plotter.Plot method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utils.html#utils.sensitivity_analysis.simplySupportedBeam">simplySupportedBeam() (in module utils.sensitivity_analysis)</a>
 </li>
       <li>
@@ -3429,6 +3612,118 @@
 
       <ul>
         <li><a href="simulation_codes.html#module-simulation_codes">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.ABCI
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.ABCI.abci_code
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_code">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.ABCI.abci_geometry
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_geometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.ABCI.abci_MP
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_MP">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.ABCI.abci_par_run
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.abci_par_run">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.ABCI.geometry
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.geometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.ABCI.geometry_manual
+
+      <ul>
+        <li><a href="simulation_codes.ABCI.html#module-simulation_codes.ABCI.geometry_manual">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.geometry
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.geometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.geometry_manual
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.geometry_manual">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.slans_code
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_code">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.slans_geom_par
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_geom_par">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.slans_geometry
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_geometry">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.slans_mpi_MP
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_mpi_MP">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.slans_par_run
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slans_par_run">module</a>
+</li>
+      </ul></li>
+      <li>
+    simulation_codes.SLANS.slansTuner
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#module-simulation_codes.SLANS.slansTuner">module</a>
 </li>
       </ul></li>
       <li><a href="node_editor.html#node_editor.node_editor_window.NodeEditorWindow.sizeHint">sizeHint() (node_editor.node_editor_window.NodeEditorWindow method)</a>
@@ -3440,25 +3735,97 @@
       <li><a href="utils.html#utils.CustomNavBar.SizeInputDialog">SizeInputDialog (class in utils.CustomNavBar)</a>
 </li>
       <li><a href="manual_run.slans.html#manual_run.slans.slans_code.SLANS">SLANS (class in manual_run.slans.slans_code)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS">(class in simulation_codes.SLANS.slans_code)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slans_code.SLANS.slans_bp_L">slans_bp_L() (manual_run.slans.slans_code.SLANS method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS.slans_bp_L">(simulation_codes.SLANS.slans_code.SLANS method)</a>
 </li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop.slans_bp_L">(simulation_codes.SLANS.slans_code.SLANS_Flattop method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell.slans_bp_L">(simulation_codes.SLANS.slans_code.SLANS_Multicell method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full.slans_bp_L">(simulation_codes.SLANS.slans_code.SLANS_Multicell_full method)</a>
+</li>
+      </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slans_code.SLANS.slans_bp_R">slans_bp_R() (manual_run.slans.slans_code.SLANS method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS.slans_bp_R">(simulation_codes.SLANS.slans_code.SLANS method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop.slans_bp_R">(simulation_codes.SLANS.slans_code.SLANS_Flattop method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell.slans_bp_R">(simulation_codes.SLANS.slans_code.SLANS_Multicell method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full.slans_bp_R">(simulation_codes.SLANS.slans_code.SLANS_Multicell_full method)</a>
+</li>
+      </ul></li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop">SLANS_Flattop (class in simulation_codes.SLANS.slans_code)</a>
 </li>
       <li><a href="manual_run.slans.html#manual_run.slans.slans_code.SLANS.slans_M">slans_M() (manual_run.slans.slans_code.SLANS method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS.slans_M">(simulation_codes.SLANS.slans_code.SLANS method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop.slans_M">(simulation_codes.SLANS.slans_code.SLANS_Flattop method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell.slans_M">(simulation_codes.SLANS.slans_code.SLANS_Multicell method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full.slans_M">(simulation_codes.SLANS.slans_code.SLANS_Multicell_full method)</a>
+</li>
+      </ul></li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell">SLANS_Multicell (class in simulation_codes.SLANS.slans_code)</a>
+</li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full">SLANS_Multicell_full (class in simulation_codes.SLANS.slans_code)</a>
 </li>
       <li><a href="manual_run.slans.html#manual_run.slans.slans_code.SLANS.slans_n1_L">slans_n1_L() (manual_run.slans.slans_code.SLANS method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS.slans_n1_L">(simulation_codes.SLANS.slans_code.SLANS method)</a>
 </li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop.slans_n1_L">(simulation_codes.SLANS.slans_code.SLANS_Flattop method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell.slans_n1_L">(simulation_codes.SLANS.slans_code.SLANS_Multicell method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full.slans_n1_L">(simulation_codes.SLANS.slans_code.SLANS_Multicell_full method)</a>
+</li>
+      </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slans_code.SLANS.slans_n1_R">slans_n1_R() (manual_run.slans.slans_code.SLANS method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS.slans_n1_R">(simulation_codes.SLANS.slans_code.SLANS method)</a>
 </li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Flattop.slans_n1_R">(simulation_codes.SLANS.slans_code.SLANS_Flattop method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell.slans_n1_R">(simulation_codes.SLANS.slans_code.SLANS_Multicell method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_code.SLANS_Multicell_full.slans_n1_R">(simulation_codes.SLANS.slans_code.SLANS_Multicell_full method)</a>
+</li>
+      </ul></li>
       <li><a href="frame_controls.html#frame_controls.tune_control.TuneControl.slans_tuners_control">slans_tuners_control() (frame_controls.tune_control.TuneControl method)</a>
 </li>
       <li><a href="modules.data_module.html#modules.data_module.slans_data.SLANSData">SLANSData (class in modules.data_module.slans_data)</a>
 </li>
       <li><a href="modules.data_module.html#modules.data_module.slans_data.SLANSDataExtraction">SLANSDataExtraction (class in modules.data_module.slans_data)</a>
 </li>
-      <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune">SLANSTune (class in manual_run.slans.slansTuner)</a>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geom_par.SLANSGeometry">SLANSGeometry (class in simulation_codes.SLANS.slans_geom_par)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry">(class in simulation_codes.SLANS.slans_geometry)</a>
 </li>
+      </ul></li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_par_run.SLANSPar">SLANSPar (class in simulation_codes.SLANS.slans_par_run)</a>
+</li>
+      <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune">SLANSTune (class in manual_run.slans.slansTuner)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune">(class in simulation_codes.SLANS.slansTuner)</a>
+</li>
+      </ul></li>
       <li><a href="utils.html#utils.sensitivity_analysis.sobol">sobol() (in module utils.sensitivity_analysis)</a>
 </li>
       <li><a href="utils.html#utils.sensitivity_analysis.sobol_df">sobol_df() (in module utils.sensitivity_analysis)</a>
@@ -4147,13 +4514,19 @@
 </li>
       </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.write_beta_end_Tune">write_beta_end_Tune() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.write_beta_end_Tune">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.write_beta_mid_Tune">write_beta_mid_Tune() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.write_beta_mid_Tune">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavity.write_cavity_for_multipac">write_cavity_for_multipac() (utils.cavity_analysis_module.Cavity method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="utils.html#utils.cavity_analysis_module.Cavities.write_contour">write_contour() (utils.cavity_analysis_module.Cavities method)</a>
 </li>
       <li><a href="frame_controls.html#frame_controls.multipacting_control.MultipactingControl.write_cst_paramters">write_cst_paramters() (frame_controls.multipacting_control.MultipactingControl method)</a>
@@ -4167,19 +4540,47 @@
 </li>
         <li><a href="modules.data_module.html#modules.data_module.process_data.ProcessData.write_cst_paramters">(modules.data_module.process_data.ProcessData method)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.geometry_manual.Geometry.write_cst_paramters">(simulation_codes.ABCI.geometry_manual.Geometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry.Geometry.write_cst_paramters">(simulation_codes.SLANS.geometry.Geometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry_manual.Geometry.write_cst_paramters">(simulation_codes.SLANS.geometry_manual.Geometry method)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="manual_run.abci.html#manual_run.abci.geometry.Geometry.write_cst_paramters_mid">write_cst_paramters_mid() (manual_run.abci.geometry.Geometry method)</a>
 
       <ul>
         <li><a href="manual_run.slans.html#manual_run.slans.geometry_manual.Geometry.write_cst_paramters_mid">(manual_run.slans.geometry_manual.Geometry method)</a>
 </li>
+        <li><a href="simulation_codes.ABCI.html#simulation_codes.ABCI.geometry_manual.Geometry.write_cst_paramters_mid">(simulation_codes.ABCI.geometry_manual.Geometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry.Geometry.write_cst_paramters_mid">(simulation_codes.SLANS.geometry.Geometry method)</a>
+</li>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.geometry_manual.Geometry.write_cst_paramters_mid">(simulation_codes.SLANS.geometry_manual.Geometry method)</a>
+</li>
       </ul></li>
       <li><a href="modules.analysis_module.html#modules.analysis_module.analysis_codes.Analysis.write_dict">write_dict() (modules.analysis_module.analysis_codes.Analysis method)</a>
 </li>
+      <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geom_par.SLANSGeometry.write_dtr">write_dtr() (simulation_codes.SLANS.slans_geom_par.SLANSGeometry method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slans_geometry.SLANSGeometry.write_dtr">(simulation_codes.SLANS.slans_geometry.SLANSGeometry static method)</a>
+</li>
+      </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.write_geometry_parameters_end_tune">write_geometry_parameters_end_tune() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.write_geometry_parameters_end_tune">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="manual_run.slans.html#manual_run.slans.slansTuner.SLANSTune.write_geometry_parameters_mid_tune">write_geometry_parameters_mid_tune() (manual_run.slans.slansTuner.SLANSTune method)</a>
+
+      <ul>
+        <li><a href="simulation_codes.SLANS.html#simulation_codes.SLANS.slansTuner.SLANSTune.write_geometry_parameters_mid_tune">(simulation_codes.SLANS.slansTuner.SLANSTune method)</a>
 </li>
+      </ul></li>
       <li><a href="modules.tune_module.tuners.html#modules.tune_module.tuners.pyTuner.PyTune.write_output">write_output() (modules.tune_module.tuners.pyTuner.PyTune static method)</a>
 </li>
       <li><a href="frame_controls.html#frame_controls.wakefield_control.write_qtable_to_df">write_qtable_to_df() (in module frame_controls.wakefield_control)</a>

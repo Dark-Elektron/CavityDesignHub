@@ -6,7 +6,9 @@
   <title>main_control &mdash; CavityHub 0.0 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/plot_directive.css" type="text/css" />
       <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -38,7 +40,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">CEMCodesHub</a></li>
 </ul>
@@ -123,6 +130,9 @@
 <span class="c1"># pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py</span>
 <span class="c1"># pyrcc5 qss/icons.qrc -o icons_rc.py</span>
 <span class="c1"># git push -f  https://github.com/Dark-Elektron/CEMCodesHub.git master</span>
+<span class="c1"># sphinx-autobuild ./source ./_build/html</span>
+<span class="c1"># sphinx-apidoc -o source .. -f</span>
+
 
 <span class="n">fr</span> <span class="o">=</span> <span class="n">FileReader</span><span class="p">()</span>
 
@@ -135,7 +145,19 @@
 
 <div class="viewcode-block" id="MainWindow"><a class="viewcode-back" href="../main_control.html#main_control.MainWindow">[docs]</a><span class="k">class</span> <span class="nc">MainWindow</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    The central control for the GUI.</span>
+<span class="sd">    This does good stuff.</span>
+
+<span class="sd">    Here are the details about the good stuff it does.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : int</span>
+<span class="sd">        An integer which has amazing things done to it</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    y : int</span>
+<span class="sd">        Some other thing</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">animation</span> <span class="o">=</span> <span class="kc">None</span>
@@ -259,7 +281,7 @@
 <div class="viewcode-block" id="MainWindow.new_open_folder"><a class="viewcode-back" href="../main_control.html#main_control.MainWindow.new_open_folder">[docs]</a>    <span class="k">def</span> <span class="nf">new_open_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to create new project or open old projects.</span>
-<span class="sd">        :return:</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># disable all buttons</span>
         <span class="c1"># signals to create folder</span>
@@ -275,7 +297,6 @@
 <div class="viewcode-block" id="MainWindow.initUI"><a class="viewcode-back" href="../main_control.html#main_control.MainWindow.initUI">[docs]</a>    <span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialise class variables and initial GUI state</span>
-<span class="sd">        :return:</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># hidden widgets</span>
 

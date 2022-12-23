@@ -7,7 +7,9 @@
   <title>main_control module &mdash; CavityHub 0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
       <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -41,7 +43,12 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CEMCodesHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="em_codes.html">em_codes package</a></li>
@@ -157,7 +164,19 @@ it is formatted using formatException() and appended to the message.</p>
 <dt class="sig sig-object py" id="main_control.MainWindow">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main_control.</span></span><span class="sig-name descname"><span class="pre">MainWindow</span></span><a class="reference internal" href="_modules/main_control.html#MainWindow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_control.MainWindow" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>The central control for the GUI.</p>
+<p>This does good stuff.</p>
+<p>Here are the details about the good stuff it does.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>x</strong> (<em>int</em>) – An integer which has amazing things done to it</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>y</strong> – Some other thing</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <colgroup>
@@ -187,7 +206,7 @@ it is formatted using formatException() and appended to the message.</p>
 <td><p>Retrieve and update GUI object state from last saved GUI state :param file: :return:</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#main_control.MainWindow.initUI" title="main_control.MainWindow.initUI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initUI</span></code></a>()</p></td>
-<td><p>Initialise class variables and initial GUI state :return:</p></td>
+<td><p>Initialise class variables and initial GUI state</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#main_control.MainWindow.new_open_folder" title="main_control.MainWindow.new_open_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">new_open_folder</span></code></a>()</p></td>
 <td><p>Method to create new project or open old projects.</p></td>
@@ -349,8 +368,7 @@ stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="main_control.MainWindow.initUI">
 <span class="sig-name descname"><span class="pre">initUI</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_control.html#MainWindow.initUI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_control.MainWindow.initUI" title="Permalink to this definition"></a></dt>
-<dd><p>Initialise class variables and initial GUI state
-:return:</p>
+<dd><p>Initialise class variables and initial GUI state</p>
 </dd></dl>
 
 <dl class="py method">
@@ -366,8 +384,7 @@ stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="main_control.MainWindow.new_open_folder">
 <span class="sig-name descname"><span class="pre">new_open_folder</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main_control.html#MainWindow.new_open_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main_control.MainWindow.new_open_folder" title="Permalink to this definition"></a></dt>
-<dd><p>Method to create new project or open old projects.
-:return:</p>
+<dd><p>Method to create new project or open old projects.</p>
 </dd></dl>
 
 <dl class="py method">

@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'CavityHub'
+project = 'Cavity Design Hub (CaDH)'
 copyright = '2022, Sosoho-abasi Udongwo'
 author = 'Sosoho-abasi Udongwo'
 
@@ -35,13 +35,20 @@ release = '0.0'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'matplotlib.sphinxext.plot_directive',
+    'IPython.sphinxext.ipython_directive',
+    'IPython.sphinxext.ipython_console_highlighting',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
     'sphinx_copybutton',
-    'numpydoc'
+    'sphinx.ext.doctest',
+    'numpydoc',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.inheritance_diagram',
+    'matplotlib.sphinxext.mathmpl'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
