@@ -2533,8 +2533,8 @@ if __name__ == '__main__':
                     Epk_Eacc=2.14, Bpk_Eacc=4.54, inv_eta=745, name="TESLA", op_field=24.72e6,
                     op_temp='2K', material='bulkNb')
 
-    parent_dir_slans = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS"
-    parent_dir_abci = r"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ABCI"
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI"
 
     # 2 and 5 cell, 400MHz, 800MHz cavities comparison for H
     wp = 'H'  # working point

@@ -1,8 +1,8 @@
 Metadata-Version: 2.1
-Name: CEMCodesHub
+Name: CavityDesignHub
 Version: 0.1.0
 Summary: A GUI for accelerating cavity design.
-Home-page: https://github.com/Dark-Elektron/CEMCodesHub
+Home-page: https://github.com/Dark-Elektron/CavityDesignHub
 Author: Sosoho-Abasi Udongwo
 Author-email: numurho@gmail.com
 License: MIT License

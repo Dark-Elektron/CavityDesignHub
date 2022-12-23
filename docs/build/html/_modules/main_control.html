@@ -47,7 +47,7 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../modules.html">CEMCodesHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../modules.html">CavityDesignHub</a></li>
 </ul>
 
         </div>
@@ -106,7 +106,7 @@
 <span class="kn">from</span> <span class="nn">node_editor.node_editor_widget</span> <span class="kn">import</span> <span class="n">NodeEditorWidget</span>
 <span class="kn">import</span> <span class="nn">qtvscodestyle</span> <span class="k">as</span> <span class="nn">qtvsc</span>
 
-<span class="c1"># sys.path.append(r&quot;D:\Dropbox\CEMCodesHub\test_plugin&quot;) # to search inside this directory for imports</span>
+<span class="c1"># sys.path.append(r&quot;D:\Dropbox\CavityDesignHub\test_plugin&quot;) # to search inside this directory for imports</span>
 
 
 <span class="c1"># pyuic5 -x ui_files/main_window.ui -o ui_files/main_window.py</span>
@@ -129,7 +129,7 @@
 <span class="c1"># pyuic5 -x ui_files/abci_plot.ui -o ui_files/abci_plot.py</span>
 <span class="c1"># pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py</span>
 <span class="c1"># pyrcc5 qss/icons.qrc -o icons_rc.py</span>
-<span class="c1"># git push -f  https://github.com/Dark-Elektron/CEMCodesHub.git master</span>
+<span class="c1"># git push -f  https://github.com/Dark-Elektron/CavityDesignHub.git master</span>
 <span class="c1"># sphinx-autobuild ./source ./_build/html</span>
 <span class="c1"># sphinx-apidoc -o source .. -f</span>
 
@@ -186,7 +186,7 @@
 
         <span class="c1"># self.initUI()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parentDir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;D:\Dropbox\CEMCodesHub\SampleProject&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;D:\Dropbox\CavityDesignHub\SampleProject&#39;</span>
 
         <span class="c1"># add node editor</span>
         <span class="c1"># new = NodeEditorWidget()</span>
@@ -270,7 +270,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ui_effects</span><span class="p">()</span>
 
         <span class="c1"># window state before closing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">QSettings</span><span class="p">(</span><span class="s1">&#39;MyQtApp&#39;</span><span class="p">,</span> <span class="s2">&quot;CEMCodesHub&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">QSettings</span><span class="p">(</span><span class="s1">&#39;MyQtApp&#39;</span><span class="p">,</span> <span class="s2">&quot;CavityDesignHub&quot;</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">fileName</span><span class="p">())</span>
         <span class="c1"># restore window state before closing</span>
         <span class="k">try</span><span class="p">:</span>

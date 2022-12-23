@@ -40,7 +40,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CEMCodesHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CavityDesignHub</a></li>
 </ul>
 
         </div>
@@ -398,7 +398,7 @@
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
 
-    <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx&#39;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;D:\Dropbox\CavityDesignHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx&#39;</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\HC_Smax_Fmax_Data_7var_2p.xlsx&#39;</span>
     <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\DQW_Smax_Fmax_Data_11var_2p.xlsx&#39;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;Sheet1&#39;</span><span class="p">)</span>
@@ -518,10 +518,10 @@
     <span class="n">Sj</span><span class="p">,</span> <span class="n">STi</span> <span class="o">=</span> <span class="n">sobol</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">obj_pce</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
 
     <span class="c1"># save sobol indices</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\utils\Sobol\Sj_p</span><span class="si">{</span><span class="n">p_order</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">truncation</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub\utils\Sobol\Sj_p</span><span class="si">{</span><span class="n">p_order</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">truncation</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">Sj</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\utils\Sobol\STi_p</span><span class="si">{</span><span class="n">p_order</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">truncation</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub\utils\Sobol\STi_p</span><span class="si">{</span><span class="n">p_order</span><span class="si">}</span><span class="s2">_t</span><span class="si">{</span><span class="n">truncation</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">STi</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span>
 
     <span class="c1"># ic(Sj)</span>

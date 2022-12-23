@@ -328,7 +328,7 @@ def simplySupportedBeam():
 
 if __name__ == '__main__':
 
-    filename = fr'D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx'
+    filename = fr'D:\Dropbox\CavityDesignHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx'
     filename = fr'D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\HC_Smax_Fmax_Data_7var_2p.xlsx'
     filename = fr'D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\DQW_Smax_Fmax_Data_11var_2p.xlsx'
     df = pd.read_excel(filename, 'Sheet1')
@@ -448,10 +448,10 @@ if __name__ == '__main__':
     Sj, STi = sobol(x, obj_pce, df)
 
     # save sobol indices
-    with open(fr"D:\Dropbox\CEMCodesHub\utils\Sobol\Sj_p{p_order}_t{truncation}.json", 'w') as file:
+    with open(fr"D:\Dropbox\CavityDesignHub\utils\Sobol\Sj_p{p_order}_t{truncation}.json", 'w') as file:
         file.write(json.dumps(Sj, indent=4, separators=(',', ': ')))
 
-    with open(fr"D:\Dropbox\CEMCodesHub\utils\Sobol\STi_p{p_order}_t{truncation}.json", 'w') as file:
+    with open(fr"D:\Dropbox\CavityDesignHub\utils\Sobol\STi_p{p_order}_t{truncation}.json", 'w') as file:
         file.write(json.dumps(STi, indent=4, separators=(',', ': ')))
 
     # ic(Sj)

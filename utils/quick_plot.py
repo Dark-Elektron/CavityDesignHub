@@ -349,16 +349,16 @@ def sensitivity():
 
 
 def plot_cavity():
-    # data = pd.read_csv(r"D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\3794_geom.txt", sep='\s+', header=None)
-    # data1 = pd.read_csv(r"D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\2183_geom.txt", sep='\s+', header=None)
-    # data3 = pd.read_csv(r"D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\650_geom.txt", sep='\s+', header=None)
-    # data4 = pd.read_csv(r"D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\770_geom.txt", sep='\s+', header=None)
+    # data = pd.read_csv(r"D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\3794_geom.txt", sep='\s+', header=None)
+    # data1 = pd.read_csv(r"D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\2183_geom.txt", sep='\s+', header=None)
+    # data3 = pd.read_csv(r"D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\650_geom.txt", sep='\s+', header=None)
+    # data4 = pd.read_csv(r"D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\770_geom.txt", sep='\s+', header=None)
 
     # ll = [650, 770, 2183, 3345, 3794, 4123, 4250, 4618]
     ll = ['C40866_geom', 'C3794_800MHz_geom', "G6_C170_M_geom"]
     laf = ['C40866', 'C3794_800MHz', "G6_C170_M"]
     for i, x in enumerate(ll):
-        data = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\{x}.txt", sep='\s+', header=None)
+        data = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\C800MHz\PostprocessingData\Data\{x}.txt", sep='\s+', header=None)
         plt.rcParams["figure.figsize"] = (5, 5)
         plt.plot(data[1]*1000, data[0]*1000, lw=5, label=laf[i], ls='--')
         # plt.plot(data1[1]*1e3, data1[0]*1e3, lw=6, label="C2183", ls='--')
@@ -406,7 +406,7 @@ if __name__ == '__main__':
     # plot_cavity()
 
 
-    # folder = fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData"
+    # folder = fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData"
     # folders = os.listdir(folder)
     # for d in folders:
     #     # delete SLANS_EXE folder

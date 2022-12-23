@@ -1679,8 +1679,8 @@ class OptimizationControl:
         self.df = None
         self.sbd = {}  # shape bounds dictionary
         self.poc = 5  # pareto optimal count
-        self.parentDir = r"D:\Dropbox\CEMCodesHub"
-        self.projectDir = fr"D:\Dropbox\CEMCodesHub\Cavity800"
+        self.parentDir = r"D:\Dropbox\CavityDesignHub"
+        self.projectDir = fr"D:\Dropbox\CavityDesignHub\Cavity800"
 
         self.initUI()
         self.signals()
@@ -1731,10 +1731,10 @@ class OptimizationControl:
             self.df = self.generate_first_men()
 
             # clear folder to avoid reading from previous optimization attempt
-            folders = [fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS",
-                       fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ABCI"]
+            folders = [fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS",
+                       fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI"]
 
-            # folders = [fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS"]
+            # folders = [fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"]
             for folder in folders:
                 for filename in os.listdir(folder):
                     try:
@@ -2457,8 +2457,8 @@ class OptimizationControl:
 
                 tune_variable = self.tuneUI.cb_Tune_Variable.currentText()
                 service = mp.Process(target=self.run_sequential,
-                                     args=(processor_shape_space, "Yes", p, 33, r"D:\Dropbox\CEMCodesHub",
-                                           r"D:\Dropbox\CEMCodesHub\Cavity800", "EA.json", 'PyTuner',
+                                     args=(processor_shape_space, "Yes", p, 33, r"D:\Dropbox\CavityDesignHub",
+                                           r"D:\Dropbox\CavityDesignHub\Cavity800", "EA.json", 'PyTuner',
                                            tune_variable, ["Linear Interpolation", 1e-3, 10], cell_type, [],
                                            None, True, n_cells))
                 service.start()

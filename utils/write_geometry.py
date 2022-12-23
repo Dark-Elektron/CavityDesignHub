@@ -43,7 +43,7 @@ def writeCavity(key, mid_cell, lend_cell, rend_cell, beampipe):
                                     xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
     # with open(r'D:\Dropbox\multipacting\MPGUI21\geodata.n', 'w') as fil:
-    with open(fr'D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\{key}_geom.txt', 'w') as fil:
+    with open(fr'D:\Dropbox\CavityDesignHub\C800MHz\PostprocessingData\Data\{key}_geom.txt', 'w') as fil:
         # SHIFT POINT TO START POINT
         start_point = [-shift, 0]
         fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}\n")

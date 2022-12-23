@@ -40,7 +40,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CEMCodesHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CavityDesignHub</a></li>
 </ul>
 
         </div>
@@ -1749,8 +1749,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sbd</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># shape bounds dictionary</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">poc</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># pareto optimal count</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">parentDir</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span> <span class="o">=</span> <span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\Cavity800&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentDir</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">projectDir</span> <span class="o">=</span> <span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub\Cavity800&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
@@ -1801,10 +1801,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_first_men</span><span class="p">()</span>
 
             <span class="c1"># clear folder to avoid reading from previous optimization attempt</span>
-            <span class="n">folders</span> <span class="o">=</span> <span class="p">[</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS&quot;</span><span class="p">,</span>
-                       <span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ABCI&quot;</span><span class="p">]</span>
+            <span class="n">folders</span> <span class="o">=</span> <span class="p">[</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS&quot;</span><span class="p">,</span>
+                       <span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI&quot;</span><span class="p">]</span>
 
-            <span class="c1"># folders = [fr&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS&quot;]</span>
+            <span class="c1"># folders = [fr&quot;D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS&quot;]</span>
             <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">folders</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -2527,8 +2527,8 @@
 
                 <span class="n">tune_variable</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tuneUI</span><span class="o">.</span><span class="n">cb_Tune_Variable</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span>
                 <span class="n">service</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Process</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">run_sequential</span><span class="p">,</span>
-                                     <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">processor_shape_space</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub&quot;</span><span class="p">,</span>
-                                           <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\Cavity800&quot;</span><span class="p">,</span> <span class="s2">&quot;EA.json&quot;</span><span class="p">,</span> <span class="s1">&#39;PyTuner&#39;</span><span class="p">,</span>
+                                     <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">processor_shape_space</span><span class="p">,</span> <span class="s2">&quot;Yes&quot;</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub&quot;</span><span class="p">,</span>
+                                           <span class="sa">r</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub\Cavity800&quot;</span><span class="p">,</span> <span class="s2">&quot;EA.json&quot;</span><span class="p">,</span> <span class="s1">&#39;PyTuner&#39;</span><span class="p">,</span>
                                            <span class="n">tune_variable</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;Linear Interpolation&quot;</span><span class="p">,</span> <span class="mf">1e-3</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">cell_type</span><span class="p">,</span> <span class="p">[],</span>
                                            <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">))</span>
                 <span class="n">service</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>

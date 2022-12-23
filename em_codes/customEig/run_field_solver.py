@@ -1189,7 +1189,7 @@ class FS:
 
 
 if __name__ == '__main__':
-    folder = fr'D:\Dropbox\CEMCodesHub\em_codes\customEig\run_files'
+    folder = fr'D:\Dropbox\CavityDesignHub\em_codes\customEig\run_files'
     fs = FS(folder)
     fs.run_field_solver()
     plt.show()

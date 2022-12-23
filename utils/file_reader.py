@@ -228,7 +228,7 @@ if __name__ == '__main__':
     # print(d['FREQUENCY'])
 
     # txt reader
-    durr = r"D:\Dropbox\CEMCodesHub\SampleProject\Cavities\test.json"
+    durr = r"D:\Dropbox\CavityDesignHub\SampleProject\Cavities\test.json"
 
     d = fr.json_reader(durr)
     print(type(d))

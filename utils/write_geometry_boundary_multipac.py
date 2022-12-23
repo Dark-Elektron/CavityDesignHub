@@ -203,7 +203,7 @@ def drawCavity():
                                     xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
     with open(r'D:\Dropbox\multipacting\MPGUI21\geodata.n', 'w') as fil:
-    # with open(r'D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\TESLA_End_cell1.txt', 'w') as fil:
+    # with open(r'D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\TESLA_End_cell1.txt', 'w') as fil:
         fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
         fil.write("   1.25000000e-02   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")  # a point inside the structure
         fil.write("  -3.1415927e+00  -2.7182818e+00   0.0000000e+00   0.0000000e+00\n")  # a point outside the structure

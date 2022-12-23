@@ -40,7 +40,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CEMCodesHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">CavityDesignHub</a></li>
 </ul>
 
         </div>
@@ -419,16 +419,16 @@
 
 
 <div class="viewcode-block" id="plot_cavity"><a class="viewcode-back" href="../../utils.html#utils.quick_plot.plot_cavity">[docs]</a><span class="k">def</span> <span class="nf">plot_cavity</span><span class="p">():</span>
-    <span class="c1"># data = pd.read_csv(r&quot;D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\3794_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
-    <span class="c1"># data1 = pd.read_csv(r&quot;D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\2183_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
-    <span class="c1"># data3 = pd.read_csv(r&quot;D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\650_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
-    <span class="c1"># data4 = pd.read_csv(r&quot;D:\Dropbox\CEMCodesHub\C1092V\PostprocessingData\Data\770_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
+    <span class="c1"># data = pd.read_csv(r&quot;D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\3794_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
+    <span class="c1"># data1 = pd.read_csv(r&quot;D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\2183_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
+    <span class="c1"># data3 = pd.read_csv(r&quot;D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\650_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
+    <span class="c1"># data4 = pd.read_csv(r&quot;D:\Dropbox\CavityDesignHub\C1092V\PostprocessingData\Data\770_geom.txt&quot;, sep=&#39;\s+&#39;, header=None)</span>
 
     <span class="c1"># ll = [650, 770, 2183, 3345, 3794, 4123, 4250, 4618]</span>
     <span class="n">ll</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C40866_geom&#39;</span><span class="p">,</span> <span class="s1">&#39;C3794_800MHz_geom&#39;</span><span class="p">,</span> <span class="s2">&quot;G6_C170_M_geom&quot;</span><span class="p">]</span>
     <span class="n">laf</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;C40866&#39;</span><span class="p">,</span> <span class="s1">&#39;C3794_800MHz&#39;</span><span class="p">,</span> <span class="s2">&quot;G6_C170_M&quot;</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ll</span><span class="p">):</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;D:\Dropbox\CavityDesignHub\C800MHz\PostprocessingData\Data\</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;\s+&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.figsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">laf</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">)</span>
         <span class="c1"># plt.plot(data1[1]*1e3, data1[0]*1e3, lw=6, label=&quot;C2183&quot;, ls=&#39;--&#39;)</span>
@@ -476,7 +476,7 @@
     <span class="c1"># plot_cavity()</span>
 
 
-    <span class="c1"># folder = fr&quot;D:\Dropbox\CEMCodesHub\Cavity800\SimulationData&quot;</span>
+    <span class="c1"># folder = fr&quot;D:\Dropbox\CavityDesignHub\Cavity800\SimulationData&quot;</span>
     <span class="c1"># folders = os.listdir(folder)</span>
     <span class="c1"># for d in folders:</span>
     <span class="c1">#     # delete SLANS_EXE folder</span>

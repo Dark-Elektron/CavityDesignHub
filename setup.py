@@ -9,13 +9,13 @@ with open('LICENSE') as f:
     license = f.read()
 
 setup(
-    name='CEMCodesHub',
+    name='CavityDesignHub',
     version='0.1.0',
     description='A GUI for accelerating cavity design.',
     long_description=readme,
     author='Sosoho-Abasi Udongwo',
     author_email='numurho@gmail.com',
-    url=r'https://github.com/Dark-Elektron/CEMCodesHub',
+    url=r'https://github.com/Dark-Elektron/CavityDesignHub',
     license=license,
     python_requires='>=3.0, <4',
     install_requires=[

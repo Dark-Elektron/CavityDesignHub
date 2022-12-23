@@ -255,9 +255,9 @@ class SLANSTune:
 
 
 if __name__ == '__main__':
-    parentDir = "D:\Dropbox\CEMCodesHub" # '<parentDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
-    projectDir = "D:\Dropbox\CEMCodesHub\SampleProject" # '<projectDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
-    "D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe"
+    parentDir = "D:\Dropbox\CavityDesignHub" # '<parentDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
+    projectDir = "D:\Dropbox\CavityDesignHub\SampleProject" # '<projectDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
+    "D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe"
     # Create tuner object
     tune = SLANSTune(parentDir, projectDir)
 
@@ -274,5 +274,5 @@ if __name__ == '__main__':
     L, freq, alpha, h, e = tune.end_cell_tune(mid_cell_par, end_cell_par, target_freq, 0)
     print(L, freq, alpha, h, e)
 
-# D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
-# D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
+# D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
+# D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned

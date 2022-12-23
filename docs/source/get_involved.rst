@@ -29,15 +29,15 @@ Report a Bug
 ************
 
 .. image:: https://img.shields.io/github/issues/VLSI-EDA/PoC.svg
-   :target: https://github.com/Dark-Elektron/CEMCodesHub/issues
+   :target: https://github.com/Dark-Elektron/CavityDesignHub/issues
 .. image:: https://img.shields.io/github/issues-closed/VLSI-EDA/PoC.svg
-   :target: https://github.com/Dark-Elektron/CEMCodesHub/issues
+   :target: https://github.com/Dark-Elektron/CavityDesignHub/issues
 
 Please report issues of any kind in our Git provider's issue tracker. This allows
 us to categorize issues into groups and assign developers to them. You can track
 the issue's state and see how it's getting solved. All enhancements and feature
 requests are tracked on GitHub at
-`GitHub Issues <https://github.com/Dark-Elektron/CEMCodesHub/issues>`_.
+`GitHub Issues <https://github.com/Dark-Elektron/CavityDesignHub/issues>`_.
 
 
 Feature Request
@@ -47,17 +47,17 @@ Please report missing features of any kind. We are allways looking forward to
 provide a full feature set. Please use our Git provider's issue tracker to report
 enhancements and feature requests, so you can track the request's status and
 implementation. All enhancements and feature requests are tracked on GitHub at
-`GitHub Issues <https://github.com/VLSI-EDA/PoC/issues>`_.
+`GitHub Issues <https://github.com/Dark-Elektron/CavityDesignHub/issues>`_.
 
 
 Talk to us on Gitter
 ********************
 
 .. image:: https://badges.gitter.im/VLSI-EDA/PoC.svg
-   :target: https://gitter.im/VLSI-EDA/PoC
+   :target: https://github.com/Dark-Elektron/CavityDesignHub
 
 You can chat with us on `Gitter <https://gitter.im/>`_ in our Giiter Room
-`VLSI-EDA/PoC <https://gitter.im/VLSI-EDA/PoC>`_. You can use Gitter for free
+`Dark-Elektron/CaDH <https://github.com/Dark-Elektron/CavityDesignHub>`_. You can use Gitter for free
 with your existing GitHub or Twitter account.
 
 
@@ -70,7 +70,7 @@ sides, read `this short blog <https://www.clahub.com/pages/why_cla>`_ post. PoC
 uses the :doc:`Apache Contributor License Agreement </References/Licenses/ApacheLicense2.0_ICLA>`
 to match the :doc:`Apache License 2.0 </References/Licenses/ApacheLicense2.0>`.
 
-So to get started, `sign the Contributor License Agreement (CLA) <https://github.com/Dark-Elektron/CEMCodesHub>`_
+So to get started, `sign the Contributor License Agreement (CLA) <https://github.com/Dark-Elektron/CavityDesignHub>`_
 at `CLAHub.com <https://www.clahub.com/>`_. You can authenticate yourself with
 an existing GitHub account.
 
@@ -93,7 +93,7 @@ your proposed changes and integrate them into our repository.
 ==========================
 
 .. image:: https://img.shields.io/badge/contributors-1-green
-   :target: https://github.com/VLSI-EDA/PoC/network/members
+   :target: https://github.com/Dark-Elektron/CavityDesignHub/members
 
 Git repositories can be cloned on a Git provider's server. This procedure is
 called *forking*. This allows Git providers to track the repository's network,
@@ -117,10 +117,10 @@ as fetch target and the new fork ``<username>/PoC`` as push target.
 .. code-block:: PowerShell
 
    cd GitRoot
-   git clone --recursive "https://github.com/Dark-Elektron/CEMCodesHub.git" PoC
+   git clone --recursive "https://github.com/Dark-Elektron/CavityDesignHub.git" PoC
    cd PoC
    git remote rename origin github
-   git remote add upstream "https://github.com/Dark-Elektron/CEMCodesHub.git"
+   git remote add upstream "https://github.com/Dark-Elektron/CavityDesignHub.git"
    git fetch --prune --tags
 
 **Shell Commands for Editing an existing Clone:**
@@ -129,7 +129,7 @@ as fetch target and the new fork ``<username>/PoC`` as push target.
 
    cd PoCRoot
    git remote rename github upstream
-   git remote add github "https://github.com/Dark-Elektron/CEMCodesHub.git"
+   git remote add github "https://github.com/Dark-Elektron/CavityDesignHub.git"
    git fetch --prune --tags
 
 *These commands work for Git submodules too.*
@@ -196,7 +196,7 @@ branch names:
 7. Commit and Push Changes
 ==========================
 
-Commit your porposed changes onto your feature branch and push all changes to GitHub.
+Commit your proposed changes onto your feature branch and push all changes to GitHub.
 
 .. code-block:: PowerShell
 
@@ -209,12 +209,12 @@ Commit your porposed changes onto your feature branch and push all changes to Gi
 ========================
 
 .. image:: https://img.shields.io/github/issues-pr/VLSI-EDA/PoC.svg
-   :target: https://github.com/Dark-Elektron/CEMCodesHub/pulls
+   :target: https://github.com/Dark-Elektron/CavityDesignHub/pulls
 .. image:: https://img.shields.io/github/issues-pr-closed/VLSI-EDA/PoC.svg
-   :target: https://github.com/Dark-Elektron/CEMCodesHub/pulls
+   :target: https://github.com/Dark-Elektron/CavityDesignHub/pulls
 
 Go to your forked repository and klick on "Compare and Pull-Request" or go to
-our PoC repository and create a new `pull request <https://github.com/Dark-Elektron/CEMCodesHub/pulls>`_.
+our PoC repository and create a new `pull request <https://github.com/Dark-Elektron/CavityDesignHub/pulls>`_.
 
 If this is your first Pull-Request, you need to sign our Contributers License
 Agreement (CLA).

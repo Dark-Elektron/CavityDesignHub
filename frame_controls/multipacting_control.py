@@ -290,7 +290,7 @@ class MultipactingControl:
         if releps > 1:
             print('Relative permittivity > 1?')
 
-        geodata = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\geodata.n", sep='\s+', header=None).to_numpy()
+        geodata = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\geodata.n", sep='\s+', header=None).to_numpy()
         gridcons1 = geodata[0, 0]
           
         # generate the mesh
@@ -385,8 +385,8 @@ class MultipactingControl:
         #   s = 1
         
         cl = 0
-        ok1 = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\mesh.mat")
-        ok2 = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\fieldparam")
+        ok1 = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\mesh.mat")
+        ok2 = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\fieldparam")
         print(ok1, ok2)
         if not ok1:
             print(['The mesh does not exists. Choose Mesh Generator in menu Run.'])
@@ -405,7 +405,7 @@ class MultipactingControl:
 
             # plots 2-d mesh in mesh.mat, which includes coord and etopol -arrays
             # load mesh
-            mesh = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\mesh.mat")
+            mesh = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\mesh.mat")
             coord = mesh['coord']
             etopol = mesh['etopol']
             alue = mesh['alue']
@@ -476,17 +476,17 @@ class MultipactingControl:
         offset = 0
         # options.disp = 0
 
-        cwd = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes'
-        eigenCpath = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes\eigenC_bin.exe'
+        cwd = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes'
+        eigenCpath = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes\eigenC_bin.exe'
         if os.path.exists(eigenCpath):
             subprocess.call([eigenCpath, '-b'], cwd=cwd)
         # !eigenC_bin
 
-        cinfo = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\cinfo.mat")
+        cinfo = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\cinfo.mat")
         if cinfo != 0:
             print('Eigenvalue solver failed.')
 
-        o_eigen = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\o_eigen.mat")
+        o_eigen = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\o_eigen.mat")
         n = int(o_eigen['n'])
         ia = o_eigen['ia'].T[0] - 1  # mnatlab indices to python
         ja = o_eigen['ja'].T[0] - 1
@@ -522,13 +522,13 @@ class MultipactingControl:
         # new frequency
         freqn = k/(2*np.pi*np.sqrt(mu0*e0))
         ic(freqn)
-        param = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\param", sep='\s+', header=None).to_numpy().T[0]
+        param = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\param", sep='\s+', header=None).to_numpy().T[0]
         ic(param)
         # load param
         param[0] = freqn
         # save -ascii param param
 
-        fieldparam = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\fieldparam", sep='\s+', header=None).to_numpy().T[0]
+        fieldparam = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\fieldparam", sep='\s+', header=None).to_numpy().T[0]
         # load fieldparam
         fieldparam[1] = freqn
         ic(freqn)
@@ -547,9 +547,9 @@ class MultipactingControl:
         if nargin < 3:
             ss = 1
 
-        ok3 = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\fieldparam")
+        ok3 = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\fieldparam")
         if ok3:
-            fieldparam = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\fieldparam", sep='\s+', header=None).to_numpy().T[0]
+            fieldparam = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\fieldparam", sep='\s+', header=None).to_numpy().T[0]
             ic(fieldparam)
             gtype = fieldparam[0]
             ic(gtype)
@@ -563,24 +563,24 @@ class MultipactingControl:
             s = 0
         
         cl = 0
-        ok1 = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\mesh.mat")
+        ok1 = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\mesh.mat")
         if not ok1:
             ic(['The mesh does not exists. Choose Mesh Generator in menu Run.'])
 
         if s == 0:
-            ok2 = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\kama0.mat")
+            ok2 = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\kama0.mat")
             if ok2 == 0:
                 ic(['The fields do not exist. Choose Field Solver in menu Run.'])
 
             elif s == 1:
-                ok21 = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\kama1.mat")
-                ok22 = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\kama2.mat")
+                ok21 = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\kama1.mat")
+                ok22 = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\kama2.mat")
                 ok2 = ok21*ok22
                 if ok2 == 0:
                     ic(['The fields do not exist. Choose Field Solver in menu Run.'])
         
         if ok1*ok2*ok3 > 0:
-            ok = os.path.exists(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodata.n")
+            ok = os.path.exists(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodata.n")
             if ok:
                 ic('Computing the fields.')
                 #  error_message('                                  ')
@@ -588,15 +588,15 @@ class MultipactingControl:
                 # define the grid constant
                 if nargin < 2:
                     if gtype <= 2:
-                        geodata = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodata.n", sep='\s+', header=None).to_numpy()
+                        geodata = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodata.n", sep='\s+', header=None).to_numpy()
                         gridcons = geodata[0, 0]
                 else:
-                    geodata = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodatal.n", sep='\s+', header=None).to_numpy()
+                    geodata = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodatal.n", sep='\s+', header=None).to_numpy()
                     gridcons = geodata[0, 0]
         
         # load mesh
         ic(gtype)
-        mesh = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\mesh.mat")
+        mesh = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\mesh.mat")
         coord = mesh['coord']
         etopol = mesh['etopol']
         alue = mesh['alue']
@@ -605,20 +605,20 @@ class MultipactingControl:
         edges = mesh['edges']
 
         if gtype <= 2:
-            geodata = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodata.n", sep='\s+', header=None).to_numpy()
+            geodata = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodata.n", sep='\s+', header=None).to_numpy()
             n = len(geodata[:, 0])
             gr = geodata[3:n, 0]
             gz = geodata[3:n, 1]
         else:
-            geodatal = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodatal.n", sep='\s+', header=None).to_numpy()
+            geodatal = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodatal.n", sep='\s+', header=None).to_numpy()
             nl = len(geodatal[:, 0]) - 1
             grl = geodatal[3:nl, 0]
             gzl = geodatal[3:nl, 1]
-            geodataw = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodataw.n", sep='\s+', header=None).to_numpy()
+            geodataw = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodataw.n", sep='\s+', header=None).to_numpy()
             nw = len(geodataw[:, 0]) - 1
             grw = geodataw[3:nw, 0]
             gzw = geodataw[3:nw, 0]
-            geodatar = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodatar.n", sep='\s+', header=None).to_numpy()
+            geodatar = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodatar.n", sep='\s+', header=None).to_numpy()
             nr = len(geodatar[:, 0]) - 1
             grr = geodatar[3:nr, 0]
             gzr = geodatar[3:nr, 1]
@@ -675,14 +675,14 @@ class MultipactingControl:
             # !copy /y kama0.mat kama.mat
             # !Multipac fields
 
-            cwd = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes'
-            multipacPath = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Multipac.exe'
+            cwd = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes'
+            multipacPath = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Multipac.exe'
             if os.path.exists(multipacPath):
                 subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
 
-            Er = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Er.mat")
-            Ez = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Ez.mat")
-            H = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\H.mat")
+            Er = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Er.mat")
+            Ez = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Ez.mat")
+            H = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\H.mat")
 
             fields = {'I1': I1, 'I2': I2, 'rr': rr, 'zz': zz, 'r': r, 'z': z, 'Er': Er, 'Ez': Ez, 'H': H}
             spio.savemat('fields', fields)
@@ -693,14 +693,14 @@ class MultipactingControl:
             # save job job -v4
             # !copy /y kama1.mat kama.mat
             # !Multipac fields
-            cwd = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes'
-            multipacPath = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Multipac.exe'
+            cwd = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes'
+            multipacPath = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Multipac.exe'
             if os.path.exists(multipacPath):
                 subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
 
-            Er = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Er.mat")
-            Ez = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Ez.mat")
-            H = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\H.mat")
+            Er = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Er.mat")
+            Ez = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Ez.mat")
+            H = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\H.mat")
 
             fields = {'I1': I1, 'I2': I2, 'rr': rr, 'zz': zz, 'r': r, 'z': z, 'Er': Er, 'Ez': Ez, 'H': H}
             spio.savemat('fields', fields)
@@ -741,7 +741,7 @@ class MultipactingControl:
 
     def save_fields(self, wall, job):
 
-        fieldfile1 = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\fieldfile1.txt", sep='\s+',
+        fieldfile1 = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\fieldfile1.txt", sep='\s+',
                                header=None).to_numpy()
         file = fieldfile1
         
@@ -782,12 +782,12 @@ class MultipactingControl:
         # load mesh and field solution
         # load mesh
         # load kama0
-        mesh = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\mesh.mat")
-        kama0 = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\kama0.mat")
+        mesh = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\mesh.mat")
+        kama0 = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\kama0.mat")
         
         # compute the field on the boundary
         # load geodata.n
-        geodata = pd.read_csv(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\geodata.n", sep='\s+',
+        geodata = pd.read_csv(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\geodata.n", sep='\s+',
                                  header=None).to_numpy()
         
         n = len(geodata[:, 0])
@@ -820,13 +820,13 @@ class MultipactingControl:
         # !copy /y kama0.mat kama.mat
         # !Multipac fields
 
-        cwd = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes'
-        multipacPath = fr'D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Multipac.exe'
+        cwd = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes'
+        multipacPath = fr'D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Multipac.exe'
         if os.path.exists(multipacPath):
             subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
         
-        Er = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Er.mat")['Er']
-        Ez = spio.loadmat(fr"D:\Dropbox\CEMCodesHub\utils\multipacting_codes\Ez.mat")['Ez']
+        Er = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Er.mat")['Er']
+        Ez = spio.loadmat(fr"D:\Dropbox\CavityDesignHub\utils\multipacting_codes\Ez.mat")['Ez']
 
         ee = np.sqrt(abs(Er)**2+abs(Ez)**2)
         E0 = max(ee)

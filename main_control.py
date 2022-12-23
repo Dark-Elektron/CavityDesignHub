@@ -29,7 +29,7 @@ from frame_controls.wakefield_control import WakefieldControl
 from node_editor.node_editor_widget import NodeEditorWidget
 import qtvscodestyle as qtvsc
 
-# sys.path.append(r"D:\Dropbox\CEMCodesHub\test_plugin") # to search inside this directory for imports
+# sys.path.append(r"D:\Dropbox\CavityDesignHub\test_plugin") # to search inside this directory for imports
 
 
 # pyuic5 -x ui_files/main_window.ui -o ui_files/main_window.py
@@ -52,7 +52,7 @@ import qtvscodestyle as qtvsc
 # pyuic5 -x ui_files/abci_plot.ui -o ui_files/abci_plot.py
 # pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py
 # pyrcc5 qss/icons.qrc -o icons_rc.py
-# git push -f  https://github.com/Dark-Elektron/CEMCodesHub.git master
+# git push -f  https://github.com/Dark-Elektron/CavityDesignHub.git master
 # sphinx-autobuild ./source ./_build/html
 # sphinx-apidoc -o source .. -f
 
@@ -109,7 +109,7 @@ class MainWindow:
 
         # self.initUI()
         self.parentDir = os.getcwd()
-        self.projectDir = r'D:\Dropbox\CEMCodesHub\SampleProject'
+        self.projectDir = r'D:\Dropbox\CavityDesignHub\SampleProject'
 
         # add node editor
         # new = NodeEditorWidget()
@@ -193,7 +193,7 @@ class MainWindow:
         self.ui_effects()
 
         # window state before closing
-        self.settings = QSettings('MyQtApp', "CEMCodesHub")
+        self.settings = QSettings('MyQtApp', "CavityDesignHub")
         print(self.settings.fileName())
         # restore window state before closing
         try:

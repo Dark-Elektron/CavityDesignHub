@@ -365,13 +365,13 @@ if __name__ == '__main__':
 
 
 # #################################################
-#     dirc = r'D:\Dropbox\CEMCodesHub\C800MHz\Cavities\GridSpace.json'
+#     dirc = r'D:\Dropbox\CavityDesignHub\C800MHz\Cavities\GridSpace.json'
 #     # d = fr.json_reader(dir)
 #     f = open(dirc, "r")
 #     d = json.load(f)
 #     f.close()
 #     # print(d)
-#     wd, pd = pr.weed_maintain_key(d, bp="none", dirc=fr'D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS')
+#     wd, pd = pr.weed_maintain_key(d, bp="none", dirc=fr'D:\Dropbox\CavityDesignHub\C800MHz\SimulationData\SLANS')
 #     # wd, pd = pr.weed(d)
 #     # print(wd)
 #     # print()
@@ -379,15 +379,15 @@ if __name__ == '__main__':
 #     print(len(pd))
 #     # remove problematic folder
 #     # for key in pd:
-#     #     pf = fr'D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS\Cavity{key}'
+#     #     pf = fr'D:\Dropbox\CavityDesignHub\C800MHz\SimulationData\SLANS\Cavity{key}'
 #     #     if os.path.exists(pf):
 #     #         shutil.rmtree(pf)
 #
-#     with open(fr'D:\Dropbox\CEMCodesHub\C800MHz\Cavities\GridSpace_weed_Update.json', "w") as outfile:
+#     with open(fr'D:\Dropbox\CavityDesignHub\C800MHz\Cavities\GridSpace_weed_Update.json', "w") as outfile:
 #         json.dump(wd, outfile, indent=4, separators=(',', ': '))
 
 #################################################
-    # root = fr'D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS'
+    # root = fr'D:\Dropbox\CavityDesignHub\C800MHz\SimulationData\SLANS'
     # folders = list(os.walk(root))[1:]
     #
     # for folder in folders:

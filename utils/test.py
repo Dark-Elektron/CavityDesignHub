@@ -385,9 +385,9 @@ import pandas as pd
 # for l in ll:
 #     ax.plot([0, 1*l[0]], [0, 1*l[1]], [0, 1*l[2]])
 # # plt.show()
-# # df1 = fr.json_reader(r"D:\Dropbox\CEMCodesHub\SampleProject_s\Cavities\C3794_1Cell.json")
-# # df2 = fr.json_reader(r"D:\Dropbox\CEMCodesHub\C538\Cavities\C538_1Cell.json")
-# df2 = pd.ExcelFile(r"D:\Dropbox\CEMCodesHub\C538\PostprocessingData\Data\C538_1Cell_ABCI_SLANS.xlsx")
+# # df1 = fr.json_reader(r"D:\Dropbox\CavityDesignHub\SampleProject_s\Cavities\C3794_1Cell.json")
+# # df2 = fr.json_reader(r"D:\Dropbox\CavityDesignHub\C538\Cavities\C538_1Cell.json")
+# df2 = pd.ExcelFile(r"D:\Dropbox\CavityDesignHub\C538\PostprocessingData\Data\C538_1Cell_ABCI_SLANS.xlsx")
 # df2 = df2.parse("Sheet1")
 # df_list = [df2]
 # for df in df_list:
@@ -468,7 +468,7 @@ import pandas as pd
 
 # plt.show()
 
-# folder = fr"D:\Dropbox\CEMCodesHub\C800MHz\SimulationData\SLANS"
+# folder = fr"D:\Dropbox\CavityDesignHub\C800MHz\SimulationData\SLANS"
 # folders = os.listdir(folder)
 # for d in folders:
 #     # delete SLANS_EXE folder
@@ -579,9 +579,9 @@ import pandas as pd
 #     sys.exit(app.exec_())
 
 # # # load data
-# # filename = fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\ea_results\Run3\Generation9.xlsx"
-# # filename1 = fr"D:\Dropbox\CEMCodesHub\Cavity800\SimulationData\SLANS\Generation13.xlsx"
-# # filename2 = fr'D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\ttt.xlsx'
+# # filename = fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ea_results\Run3\Generation9.xlsx"
+# # filename1 = fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS\Generation13.xlsx"
+# # filename2 = fr'D:\Dropbox\CavityDesignHub\C800MHz\PostprocessingData\Data\ttt.xlsx'
 # # df = pd.read_excel(filename, 'Sheet1')
 # # df1 = pd.read_excel(filename1, 'Sheet1')
 # # df2 = pd.read_excel(filename2, 'Sheet1')
@@ -847,7 +847,7 @@ def weighted_mean_obj(tab_var, weights):
 # from emukit.sensitivity.monte_carlo import MonteCarloSensitivity
 #
 #
-# filename = fr'D:\Dropbox\CEMCodesHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx'
+# filename = fr'D:\Dropbox\CavityDesignHub\C800MHz\PostprocessingData\Data\GridSimulation_Data.xlsx'
 # df = pd.read_excel(filename, 'Sheet1')
 #
 # # ishigami = Ishigami(a=5, b=0.1)

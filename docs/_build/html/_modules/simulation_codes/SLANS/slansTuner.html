@@ -40,7 +40,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">CEMCodesHub</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">CavityDesignHub</a></li>
 </ul>
 
         </div>
@@ -325,9 +325,9 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">parentDir</span> <span class="o">=</span> <span class="s2">&quot;D:\Dropbox\CEMCodesHub&quot;</span> <span class="c1"># &#39;&lt;parentDir&gt;\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe&#39;</span>
-    <span class="n">projectDir</span> <span class="o">=</span> <span class="s2">&quot;D:\Dropbox\CEMCodesHub\SampleProject&quot;</span> <span class="c1"># &#39;&lt;projectDir&gt;\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files&#39;</span>
-    <span class="s2">&quot;D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe&quot;</span>
+    <span class="n">parentDir</span> <span class="o">=</span> <span class="s2">&quot;D:\Dropbox\CavityDesignHub&quot;</span> <span class="c1"># &#39;&lt;parentDir&gt;\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe&#39;</span>
+    <span class="n">projectDir</span> <span class="o">=</span> <span class="s2">&quot;D:\Dropbox\CavityDesignHub\SampleProject&quot;</span> <span class="c1"># &#39;&lt;projectDir&gt;\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files&#39;</span>
+    <span class="s2">&quot;D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe&quot;</span>
     <span class="c1"># Create tuner object</span>
     <span class="n">tune</span> <span class="o">=</span> <span class="n">SLANSTune</span><span class="p">(</span><span class="n">parentDir</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">)</span>
 
@@ -344,8 +344,8 @@
     <span class="n">L</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">e</span> <span class="o">=</span> <span class="n">tune</span><span class="o">.</span><span class="n">end_cell_tune</span><span class="p">(</span><span class="n">mid_cell_par</span><span class="p">,</span> <span class="n">end_cell_par</span><span class="p">,</span> <span class="n">target_freq</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
 
-<span class="c1"># D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned</span>
-<span class="c1"># D:\Dropbox\CEMCodesHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned</span>
+<span class="c1"># D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned</span>
+<span class="c1"># D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned</span>
 </pre></div>
 
            </div>

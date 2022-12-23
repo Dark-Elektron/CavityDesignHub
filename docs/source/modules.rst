@@ -1,5 +1,5 @@
-CEMCodesHub
-===========
+CavityDesignHub
+===============
 
 .. toctree::
    :maxdepth: 4

@@ -311,7 +311,7 @@ if __name__ == '__main__':
         "FREQ": 801.5796
     }
 
-    with open(fr'D:\Dropbox\CEMCodesHub\Cavity800\Cavities\multicell.json') as json_file:
+    with open(fr'D:\Dropbox\CavityDesignHub\Cavity800\Cavities\multicell.json') as json_file:
         shapes = json.load(json_file)
 
     parentDir = r"D:\Dropbox\Files\Test_multicell"
