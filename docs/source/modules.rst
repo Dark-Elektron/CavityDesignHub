@@ -8,7 +8,7 @@ CavityDesignHub
    frame_controls
    graphics
    icons_rc
-   main_control
+   main
    manual_run
    modules
    node_editor
