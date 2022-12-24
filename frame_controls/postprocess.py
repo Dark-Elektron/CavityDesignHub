@@ -15,10 +15,10 @@ import numpy as np
 from frame_controls.postprocess_widgets.pandas_widget import PandasModel
 import pandas as pd
 from ui_files.postprocess import Ui_Postprocess
-from modules.data_module.abci_data import ABCIData, ABCIDataExtraction
-from modules.data_module.slans_data import *
+from analysis_modules.data_module.abci_data import ABCIData, ABCIDataExtraction
+from analysis_modules.data_module.slans_data import *
 from utils.file_reader import FileReader
-from modules.plot_module.plotter import Plot
+from analysis_modules.plot_module.plotter import Plot
 from frame_controls.postprocess_widgets.pandas_widget import PandasTV
 from frame_controls.postprocess_widgets.ppplot import PPPlot
 from utils.write_geometry import writeCavity

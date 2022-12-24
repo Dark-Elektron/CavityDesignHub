@@ -11,7 +11,7 @@ class ABCIWakefield(Geometry):
 
         """
         :param no_of_cells: Number of cells in cavity <type: int>
-        :param no_of_modules: Number of cavity modules <type: int>
+        :param no_of_modules: Number of cavity analysis_modules <type: int>
         :param mid_cells_par: Mid cell parameters in the order [A, B, a, b
         :param l_end_cell_par: Left end cell parameters in the order [A, B
         :param r_end_cell_par: Right end cell parameters in the order [A,

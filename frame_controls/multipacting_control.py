@@ -17,11 +17,11 @@ from icecream import ic
 from scipy.optimize import fsolve
 from termcolor import colored
 from graphics.scene import Scene
-from modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
+from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.multipacting import Ui_Multipacting
 from utils.file_reader import FileReader
 import psutil
-from modules.plot_module.plotter import Plot
+from analysis_modules.plot_module.plotter import Plot
 
 # evol = Evolution()
 slans_geom = SLANSGeometry()

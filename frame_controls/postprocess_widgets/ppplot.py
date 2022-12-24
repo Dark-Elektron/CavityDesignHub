@@ -1,7 +1,7 @@
 from ui_files.pp_plot import Ui_PPPlot
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
-from modules.plot_module.plotter import Plot
+from analysis_modules.plot_module.plotter import Plot
 
 
 class PPPlot:

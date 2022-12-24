@@ -9,7 +9,7 @@ from matplotlib.backends.backend_template import FigureCanvas
 from matplotlib.figure import Figure
 from termcolor import colored
 
-from modules.data_module.slans_data import SLANSDataExtraction
+from analysis_modules.data_module.slans_data import SLANSDataExtraction
 
 slans_data_extraction = SLANSDataExtraction()
 

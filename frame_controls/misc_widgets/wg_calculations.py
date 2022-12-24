@@ -7,7 +7,7 @@ import scipy.signal as sps
 import numpy as np
 import pandas as pd
 from ui_files.wg_calculations import Ui_WG_Calc
-from modules.data_module.abci_data import ABCIData
+from analysis_modules.data_module.abci_data import ABCIData
 from utils.file_reader import FileReader
 
 fr = FileReader()

@@ -21,7 +21,7 @@ import sys
 import os
 # import module providing log handling
 import logging
-# import modules providing PyQt5 parameters, functions etc.
+# import analysis_modules providing PyQt5 parameters, functions etc.
 from PyQt5.QtWidgets import QApplication, QWidget, QMainWindow, QVBoxLayout, QSizePolicy
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
 # import module providing matplotlib parameters, functions etc.

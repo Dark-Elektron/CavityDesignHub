@@ -4,7 +4,7 @@ CavityDesignHub
 .. toctree::
    :maxdepth: 4
 
-   em_codes
+   exe
    frame_controls
    graphics
    icons_rc
@@ -14,7 +14,6 @@ CavityDesignHub
    node_editor
    qss
    setup
-   simulation_codes
    ui_files
    ui_state_files
    utils

@@ -22,8 +22,8 @@ from mayavi.scripts import mayavi2
 #
 #     # Now visualize it using mayavi2.
 #     from mayavi.sources.vtk_data_source import VTKDataSource
-#     from mayavi.modules.outline import Outline
-#     from mayavi.modules.surface import Surface
+#     from mayavi.analysis_modules.outline import Outline
+#     from mayavi.analysis_modules.surface import Surface
 #
 #     mayavi.new_scene()
 #     d = VTKDataSource()

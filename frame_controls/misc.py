@@ -12,7 +12,7 @@ from frame_controls.misc_widgets.wg_calculations import WGCalcControl
 from frame_controls.misc_widgets.mode_nomenclature import ModeNomControl
 
 from ui_files.misc import Ui_Misc
-from modules.data_module.abci_data import ABCIData
+from analysis_modules.data_module.abci_data import ABCIData
 from utils.file_reader import FileReader
 
 fr = FileReader()

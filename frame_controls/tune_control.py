@@ -6,9 +6,9 @@ from scipy.stats import qmc
 from math import floor
 import oapackage
 import pandas as pd
-from modules.data_module.abci_data import ABCIData
-# from modules.data_module.slans_data import SLANSDataExtraction
-from modules.wakefield.ABCI import ABCIGeometry
+from analysis_modules.data_module.abci_data import ABCIData
+# from analysis_modules.data_module.slans_data import SLANSDataExtraction
+from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from ui_files.run_tune import Ui_w_Tune
 import time
 import multiprocessing as mp
@@ -16,13 +16,13 @@ import random as r
 from utils.file_reader import FileReader
 import pyqtgraph as pg
 from distutils import dir_util
-from modules.tune.tuners.tuner import Tuner
+from analysis_modules.tune.tuners.tuner import Tuner
 from utils.shared_classes import *
 from utils.shared_functions import *
 
-from modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
+from analysis_modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 slans_geom = SLANSGeometry()  # parallel implementaion of code, consider making the two separate classes 1
-from modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
+from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 slans_geom_seq = SLANSGeometry()
 
 file_color = 'green'

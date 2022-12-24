@@ -8,7 +8,7 @@ import numpy as np
 
 import pandas as pd
 from ui_files.mode_nomenclature import Ui_Mode_Nom
-from modules.data_module.abci_data import ABCIData
+from analysis_modules.data_module.abci_data import ABCIData
 from utils.file_reader import FileReader
 
 fr = FileReader()

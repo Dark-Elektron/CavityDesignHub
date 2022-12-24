@@ -907,7 +907,7 @@ class Ui_Postprocess(object):
         self.label_86.setText(_translate("Postprocess", "Module"))
         self.tabWidget_2.setTabText(self.tabWidget_2.indexOf(self.tab_3), _translate("Postprocess", "Get Dataset"))
         self.label_5.setText(_translate("Postprocess", "Doc 2"))
-        self.le_Dir2.setText(_translate("Postprocess", "D:\\Dropbox\\2D_Codes\\ABCI_software\\Python_ABCI\\modules\\data_module\\Data_0D_Ri_155_L_187_m1.xlsx"))
+        self.le_Dir2.setText(_translate("Postprocess", "D:\\Dropbox\\2D_Codes\\ABCI_software\\Python_ABCI\\analysis_modules\\data_module\\Data_0D_Ri_155_L_187_m1.xlsx"))
         self.pb_Load_Doc2.setText(_translate("Postprocess", "..."))
         self.pb_Add_Doc2.setToolTip(_translate("Postprocess", "Add selected."))
         self.pb_Remove_Doc2.setToolTip(_translate("Postprocess", "Remove selected."))

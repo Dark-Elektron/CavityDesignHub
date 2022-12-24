@@ -6,8 +6,8 @@ from threading import Thread
 import pandas as pd
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
-from modules.data_module.abci_data import ABCIData
-from modules.wakefield.ABCI import ABCIGeometry
+from analysis_modules.data_module.abci_data import ABCIData
+from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from ui_files.wakefield import Ui_Wakefield
 from utils.file_reader import FileReader
 from utils.shared_classes import *

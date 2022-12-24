@@ -2,8 +2,8 @@ from PyQt5 import QtGui
 from scipy.special import jn_zeros, jnp_zeros
 from ui_files.plot import Ui_Plot
 from ui_files.plottypeselector import Ui_PlotTypeSelector
-from modules.plot_module.plotter import Plot
-from modules.data_module.abci_data import ABCIData
+from analysis_modules.plot_module.plotter import Plot
+from analysis_modules.data_module.abci_data import ABCIData
 import pandas as pd
 from utils.file_reader import FileReader
 from utils.shared_classes import *

@@ -4,7 +4,7 @@ import multiprocessing as mp
 from threading import Thread
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
-from modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
+from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.eigenmode import Ui_Eigenmode
 from utils.file_reader import FileReader
 from ui_files.geometry_input import Ui_Geometry_Input
