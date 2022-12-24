@@ -173,6 +173,7 @@ class PlotControl:
 
         line_style = ['-', '--', ':', '-.']
         scatter_marker = ['x', 'o', '+', 'P', 'X', 'd', '>', '^', 'v', 'H']
+
         # fill default
         for a in line_style:
             PTS.cb_Style_ABCI.addItem(a)
@@ -1351,9 +1352,14 @@ class PlotControl:
     def create_new_row(self, row_ind, table):
         """
 
-        :param row_ind:
-        :param table:
-        :return:
+        Parameters
+        ----------
+        row_ind
+        table
+
+        Returns
+        -------
+
         """
         # Toggle on/off
         w_Toggle_Close = QWidget()
@@ -1426,9 +1432,10 @@ class PlotControl:
         # push button signal
         pb_Open_Folder.clicked.connect(
             lambda: self.open_(le_Folder, cb_pol, ccb_Id, 'File',
-                               start_dir=f"{self.main_control.projectDir}") if cb_code.currentText() == 'Other'
-        else self.open_(le_Folder, cb_pol, ccb_Id, 'Folder',
-                        start_dir=f"{self.main_control.projectDir}/SimulationData/{cb_code.currentText()}"))
+                               start_dir=f"{self.main_control.projectDir}")
+            if cb_code.currentText() == 'Other' else
+            self.open_(le_Folder, cb_pol, ccb_Id, 'Folder',
+                       start_dir=f"{self.main_control.projectDir}/SimulationData/{cb_code.currentText()}"))
         # le_Folder.textChanged.connect(lambda: )
 
         cb_pol.currentIndexChanged.connect(
@@ -2028,8 +2035,8 @@ class PlotControl:
 
     @staticmethod
     def validating(le):
-        validation_rule = QDoubleValidator(1, 3840, 0)
-        if validation_rule.validate(le.text(), 20)[0] == QValidator.Acceptable:
+        validation_rule = QDoubleValidator(1e-12, 1e12, 10)
+        if validation_rule.validate(le.text(), 20.0)[0] == QValidator.Acceptable:
             le.setFocus()
         else:
             le.setText('')
