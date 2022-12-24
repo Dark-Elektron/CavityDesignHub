@@ -111,7 +111,7 @@ class GA:
 
         df = df.loc[reorder_indx, :]
         self.df_global = df
-        self.recursive_save(df, "ga_res.xlsx", reorder_indx, poc)
+        self.recursive_save(df, "../../utils/ga_res.xlsx", reorder_indx, poc)
 
         # crossover
         # print("Crossover")

@@ -9,7 +9,7 @@ from termcolor import colored
 from modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 import shutil
 from distutils.dir_util import copy_tree
-from modules.analysis_module.analysis_codes import Analysis
+from modules.cavity_analysis.analysis_codes import Analysis
 from utils.file_reader import FileReader
 
 analysis = Analysis()

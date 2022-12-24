@@ -1,5 +1,5 @@
 import time
-from modules.tune_module.tuners.pyTuner import PyTune
+from modules.tune.tuners.pyTuner import PyTune
 from modules.eigenmode.SLANS.slansTuner import SLANSTune
 from utils.shared_classes import *
 from utils.shared_functions import *

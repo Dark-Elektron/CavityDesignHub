@@ -16,7 +16,7 @@ import random as r
 from utils.file_reader import FileReader
 import pyqtgraph as pg
 from distutils import dir_util
-from modules.tune_module.tuners.tuner import Tuner
+from modules.tune.tuners.tuner import Tuner
 from utils.shared_classes import *
 from utils.shared_functions import *
 

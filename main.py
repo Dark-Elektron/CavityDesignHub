@@ -14,7 +14,7 @@ from utils.misc_functions import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from modules.analysis_module.analysis_codes import Analysis
+from modules.cavity_analysis.analysis_codes import Analysis
 from ui_files.main_window import Ui_MainWindow
 from ui_files.run_tune import Ui_w_Tune
 from ui_files.wakefield import Ui_Wakefield
