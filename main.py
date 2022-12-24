@@ -74,8 +74,7 @@ class MainWindow:
 
     Parameters
     ----------
-    x : int
-        An integer which has amazing things done to it
+
 
     Returns
     -------
