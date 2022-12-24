@@ -4,13 +4,13 @@ CavityDesignHub
 .. toctree::
    :maxdepth: 4
 
+   analysis_modules
    exe
    frame_controls
    graphics
    icons_rc
    main
    manual_run
-   modules
    node_editor
    qss
    setup
