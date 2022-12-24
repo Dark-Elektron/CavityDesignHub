@@ -3,11 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>utils.cavity_analysis_module &mdash; Cavity Design Hub (CaDH) 0.0 documentation</title>
+  <title>utils.cavity_analysis_module &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
@@ -18,8 +17,6 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -30,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> Cavity Design Hub (CaDH)
+            <a href="../../index.html" class="icon icon-home"> CavityDesignHub (CaDH)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -57,7 +54,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">Cavity Design Hub (CaDH)</a>
+          <a href="../../index.html">CavityDesignHub (CaDH)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -297,6 +294,16 @@
 <div class="viewcode-block" id="Cavities.qois_hom"><a class="viewcode-back" href="../../utils.html#utils.cavity_analysis_module.Cavities.qois_hom">[docs]</a>    <span class="k">def</span> <span class="nf">qois_hom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Retrieves the higher-order modes quantities of interest</span>
+
+<span class="sd">        .. plot::</span>
+
+<span class="sd">           import matplotlib.pyplot as plt</span>
+<span class="sd">           import numpy as np</span>
+<span class="sd">           x = np.random.randn(1000)</span>
+<span class="sd">           plt.hist( x, 20)</span>
+<span class="sd">           plt.grid()</span>
+<span class="sd">           plt.title(r&#39;Normal: $\mu=%.2f, \sigma=%.2f$&#39;%(x.mean(), x.std()))</span>
+<span class="sd">           plt.show()</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

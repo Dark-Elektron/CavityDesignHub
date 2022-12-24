@@ -221,6 +221,7 @@ class Cavities:
         Retrieves the higher-order modes quantities of interest
 
         .. plot::
+           :include-source:
 
            import matplotlib.pyplot as plt
            import numpy as np

@@ -35,6 +35,34 @@ class UQ:
         pass
 
     def uq(self, key, shape, qois, f_shift=801.58e6, bc='mm', parentDir='', projectDir='', rand_vars=None, constraint=None):
+        """
+
+        Parameters
+        ----------
+        key: str
+
+        shape: list, array like
+
+        qois: list, array like
+            Quantities of interest
+
+        f_shift: float
+            Frequency shift
+        bc: str
+            Bounday condition, 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        parentDir: str
+            Parent directory
+        projectDir: str
+            Project directory
+        rand_vars: list, array like
+            Random variables
+        constraint: list, array like
+            Constraints
+
+        Returns
+        -------
+
+        """
         if rand_vars is None:
             rand_vars = ['A', 'B', 'a', 'b']
             rand_vars = ['A', 'Ri', "Req"]
