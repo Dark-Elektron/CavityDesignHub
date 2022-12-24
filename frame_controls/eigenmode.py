@@ -2,10 +2,9 @@ import subprocess
 import time
 import multiprocessing as mp
 from threading import Thread
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
-from simulation_codes.SLANS.slans_geometry import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.eigenmode import Ui_Eigenmode
 from utils.file_reader import FileReader
 from ui_files.geometry_input import Ui_Geometry_Input

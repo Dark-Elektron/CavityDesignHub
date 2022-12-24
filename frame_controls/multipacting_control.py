@@ -2,36 +2,25 @@ import ast
 import json
 import os
 import subprocess
-import threading
 import time
 import numpy as np
 import scipy.sparse as sps
-import scipy as sp
-import scipy.linalg as spl
 import scipy.sparse.linalg as spsl
 import scipy.io as spio
 import pandas as pd
-import multiprocessing as mp
 from threading import Thread
 from PyQt5 import QtCore
-from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from icecream import ic
-import matplotlib.pyplot as plt
 from scipy.optimize import fsolve
 from termcolor import colored
-from ui_files.plot import Ui_Plot
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
-from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
-from simulation_codes.SLANS.slans_geometry import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.multipacting import Ui_Multipacting
 from utils.file_reader import FileReader
 import psutil
-import pyvista as pv
-from pyvistaqt import QtInteractor
 from modules.plot_module.plotter import Plot
 
 # evol = Evolution()

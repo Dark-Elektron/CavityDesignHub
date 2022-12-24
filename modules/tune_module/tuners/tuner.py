@@ -1,10 +1,10 @@
 import time
 from modules.tune_module.tuners.pyTuner import PyTune
-from simulation_codes.SLANS.slansTuner import SLANSTune
+from modules.eigenmode.SLANS.slansTuner import SLANSTune
 from utils.shared_classes import *
 from utils.shared_functions import *
 from utils.file_reader import FileReader
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 
 fr = FileReader()
 slans_geom = SLANSGeometry()

@@ -2,7 +2,7 @@ import json
 
 from scipy.optimize import fsolve
 from termcolor import colored
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 from utils.file_reader import FileReader
 import numpy as np
 from itertools import groupby

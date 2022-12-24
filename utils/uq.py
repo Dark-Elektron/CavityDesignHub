@@ -1,18 +1,6 @@
-import json
-import subprocess
-import time
-import multiprocessing as mp
-from threading import Thread
-
 import pandas as pd
-
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
-from graphics.graphics_view import GraphicsView
-from graphics.scene import Scene
-from simulation_codes.SLANS.slans_geometry import SLANSGeometry
-from ui_files.eigenmode import Ui_Eigenmode
+from modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from utils.file_reader import FileReader
-from ui_files.geometry_input import Ui_Geometry_Input
 from utils.shared_classes import *
 from utils.shared_functions import *
 import numpy as np
@@ -258,6 +246,23 @@ class UQ:
 
     @staticmethod
     def get_qoi_value(d, obj, n_cells, norm_length):
+        """Get SLANS quantities of itnerest
+
+        Parameters
+        ----------
+        d: dict
+
+        obj:
+
+        n_cells: int
+
+        norm_length: float
+            Normalisation length :math: `E_\\mathrm{acc} = \frac{V_{acc}}{L_{norm}`.
+
+        Returns
+        -------
+
+        """
         Req = d['CAVITY RADIUS'][n_cells - 1] * 10  # convert to mm
         Freq = d['FREQUENCY'][n_cells - 1]
         E_stored = d['STORED ENERGY'][n_cells - 1]
@@ -298,6 +303,17 @@ class UQ:
 
     @staticmethod
     def perform_geometry_checks(par_half_cell):
+        """
+
+        Parameters
+        ----------
+        par_half_cell: list, array like
+            Geometric parameters of half call of cavity: [A, B, a, b, Ri, L, Req, alpha]
+
+        Returns
+        -------
+
+        """
         # # check if Req is less than lower limit
         # if par_mid[6] < par_mid[1] + par_mid[3] + par_mid[4] or par_end[6] < par_end[1] + par_end[3] + par_end[4]:
         #     return False

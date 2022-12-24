@@ -1,41 +1,28 @@
 import math
-from datetime import datetime
 import random
 import shutil
-import sys
 import scipy.signal as sps
 from scipy.stats import qmc
 from math import floor
-import threading
-import numpy as np
 import oapackage
 import pandas as pd
-from PyQt5 import QtCore
-from PyQt5.QtCore import QPropertyAnimation, QThread, pyqtSignal
-from PyQt5.QtGui import QPixmap, QIcon, QColor
-from icecream import ic
 from modules.data_module.abci_data import ABCIData
 # from modules.data_module.slans_data import SLANSDataExtraction
-from simulation_codes.ABCI.abci_geometry import ABCIGeometry
+from modules.wakefield.ABCI import ABCIGeometry
 from ui_files.run_tune import Ui_w_Tune
-import json
-import os
 import time
 import multiprocessing as mp
-from termcolor import colored
-from PyQt5.QtWidgets import *
 import random as r
 from utils.file_reader import FileReader
 import pyqtgraph as pg
 from distutils import dir_util
-import psutil
 from modules.tune_module.tuners.tuner import Tuner
 from utils.shared_classes import *
 from utils.shared_functions import *
 
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 slans_geom = SLANSGeometry()  # parallel implementaion of code, consider making the two separate classes 1
-from simulation_codes.SLANS.slans_geometry import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 slans_geom_seq = SLANSGeometry()
 
 file_color = 'green'

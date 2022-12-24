@@ -1,8 +1,8 @@
 import json
 import os
 import subprocess
-from simulation_codes.ABCI.geometry import Geometry
-from simulation_codes.ABCI.abci_code import ABCI
+from modules.wakefield.ABCI.geometry import Geometry
+from modules.wakefield.ABCI.abci_code import ABCI
 
 
 class ABCIGeometry(Geometry):

@@ -6,7 +6,7 @@ import numpy as np
 
 class SLANSPar:
     def __init__(self):
-        os.chdir('..')
+        os.chdir('../../../simulation_codes')
         print(os.getcwd())
 
 

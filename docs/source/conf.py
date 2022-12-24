@@ -34,14 +34,11 @@ release = '0.0'
 # ones.
 extensions = [
     'matplotlib.sphinxext.plot_directive',
-    # 'IPython.sphinxext.ipython_directive',
-    # 'IPython.sphinxext.ipython_console_highlighting',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
-    # 'sphinx_copybutton',
     'sphinx.ext.doctest',
     'numpydoc',
     'sphinx.ext.mathjax',

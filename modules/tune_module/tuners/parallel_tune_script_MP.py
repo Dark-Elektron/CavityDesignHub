@@ -3,16 +3,13 @@ import multiprocessing as mp
 import os
 import stat
 # from subprocess import call
-from math import floor
 from sys import argv
 
-import numpy as np
 from termcolor import colored
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 import shutil
 from distutils.dir_util import copy_tree
 from modules.analysis_module.analysis_codes import Analysis
-import time as t
 from utils.file_reader import FileReader
 
 analysis = Analysis()

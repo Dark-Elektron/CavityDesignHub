@@ -6,9 +6,8 @@ from math import floor
 import pandas as pd
 from scipy.signal import find_peaks
 from termcolor import colored
-from simulation_codes.SLANS.geometry_manual import Geometry
-from simulation_codes.SLANS.slans_code import SLANS, SLANS_Multicell, SLANS_Multicell_full
-import numpy as np
+from modules.eigenmode.SLANS.geometry_manual import Geometry
+from modules.eigenmode.SLANS.slans_code import SLANS, SLANS_Multicell, SLANS_Multicell_full
 
 from utils.file_reader import FileReader
 from utils.shared_functions import *

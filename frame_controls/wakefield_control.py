@@ -7,7 +7,7 @@ import pandas as pd
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from modules.data_module.abci_data import ABCIData
-from simulation_codes.ABCI.abci_geometry import ABCIGeometry
+from modules.wakefield.ABCI import ABCIGeometry
 from ui_files.wakefield import Ui_Wakefield
 from utils.file_reader import FileReader
 from utils.shared_classes import *

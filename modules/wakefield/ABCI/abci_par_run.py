@@ -6,7 +6,7 @@ import sys
 DEBUG = True
 class ABCIPar:
     def __init__(self):
-        os.chdir('..')
+        os.chdir('../../../simulation_codes')
         print(os.getcwd())
         self.proc_count = 8
         mid_cell_key = 46

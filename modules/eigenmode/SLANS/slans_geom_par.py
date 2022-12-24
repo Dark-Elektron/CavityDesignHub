@@ -1,12 +1,10 @@
 import json
 import os
-import shutil
 import subprocess
 from math import floor
 
-from PyQt5.QtWidgets import QMessageBox
-from simulation_codes.SLANS.geometry_manual import Geometry
-from simulation_codes.SLANS.slans_code import SLANS
+from modules.eigenmode.SLANS.geometry_manual import Geometry
+from modules.eigenmode.SLANS.slans_code import SLANS
 import numpy as np
 
 from utils.file_reader import FileReader

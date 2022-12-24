@@ -3,12 +3,8 @@ import multiprocessing as mp
 import time
 from sys import argv
 from utils.file_reader import FileReader
-import numpy as np
 # from simulation_codes.ABCI.abci_geom_par import ABCIGeometry
-from simulation_codes.ABCI.abci_geometry import ABCIGeometry
-import shutil
-from distutils.dir_util import copy_tree
-import time as t
+from modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from termcolor import colored
 
 abci_geom = ABCIGeometry()

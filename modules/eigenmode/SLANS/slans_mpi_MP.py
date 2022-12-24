@@ -3,9 +3,8 @@ import multiprocessing as mp
 import time
 from sys import argv
 
-import numpy as np
 from termcolor import colored
-from simulation_codes.SLANS.slans_geom_par import SLANSGeometry
+from modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 from utils.file_reader import FileReader
 
 # evol = Evolution()

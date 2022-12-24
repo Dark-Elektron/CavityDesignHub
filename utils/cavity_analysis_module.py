@@ -1,6 +1,5 @@
 import json
 import os.path
-
 import scipy.io as spio
 import scipy.interpolate as sci
 import mplcursors
@@ -145,9 +144,9 @@ class Cavities:
 
         Parameters
         ----------
-        cavity:
+        cavity: object
             Cavity object
-        op_field:
+        op_field: float
             Cavity operating field
 
         Returns
