@@ -14,13 +14,12 @@ import os
 import sys
 # sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../..'))
-# sys.path.insert(0, os.path.abspath(r'D:\Dropbox'))
 # print(sys.path)
 
 
 # -- Project information -----------------------------------------------------
 
-project = 'Cavity Design Hub (CaDH)'
+project = 'CavityDesignHub (CaDH)'
 copyright = '2022, Sosoho-abasi Udongwo'
 author = 'Sosoho-abasi Udongwo'
 
@@ -35,14 +34,14 @@ release = '0.0'
 # ones.
 extensions = [
     'matplotlib.sphinxext.plot_directive',
-    'IPython.sphinxext.ipython_directive',
-    'IPython.sphinxext.ipython_console_highlighting',
+    # 'IPython.sphinxext.ipython_directive',
+    # 'IPython.sphinxext.ipython_console_highlighting',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
     'sphinx.ext.viewcode',
     'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
-    'sphinx_copybutton',
+    # 'sphinx_copybutton',
     'sphinx.ext.doctest',
     'numpydoc',
     'sphinx.ext.mathjax',
