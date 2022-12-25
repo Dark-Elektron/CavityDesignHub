@@ -150,10 +150,6 @@
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="c1"># print_(mid_cells_par, l_end_cell_par)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">n_modes</span><span class="p">:</span>
-            <span class="n">n_modes</span> <span class="o">=</span> <span class="n">no_of_cells</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># intentional because the accuracy of the last mode is always low</span>
-
         <span class="c1"># this checks whether input is from gui or from the optimisation</span>
         <span class="k">if</span> <span class="n">mid_cells_par</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_geom_parameters</span><span class="p">(</span><span class="n">no_of_cells</span><span class="p">,</span> <span class="n">mid_cells_par</span><span class="p">,</span> <span class="n">l_end_cell_par</span><span class="p">,</span> <span class="n">r_end_cell_par</span><span class="p">,</span> <span class="n">beampipes</span><span class="p">)</span>
@@ -342,15 +338,6 @@
 
         <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">([</span><span class="n">genmesh_path</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="s1">&#39;-b&#39;</span><span class="p">],</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">,</span> <span class="n">startupinfo</span><span class="o">=</span><span class="n">startupinfo</span><span class="p">)</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">run_save_directory</span>
-
-        <span class="c1"># if f_shift == &#39;default&#39;:</span>
-        <span class="c1">#     # parameters delete later</span>
-        <span class="c1">#     if self.ui.le_Beta.text() or self.ui.le_Freq_Shift.text() or self.ui.sb_No_Of_Modes.value():</span>
-        <span class="c1">#         beta, f_shift, n_modes = float(self.ui.le_Beta.text()), float(self.ui.le_Freq_Shift.text()),</span>
-        <span class="c1">#         self.ui.sb_No_Of_Modes.value()</span>
-        <span class="c1">#         # print(beta, f_shift, n_modes)</span>
-        <span class="c1">#     else:</span>
-        <span class="c1">#         beta, f_shift, n_modes = 1, 0, 1</span>
 
         <span class="n">beta</span><span class="p">,</span> <span class="n">f_shift</span><span class="p">,</span> <span class="n">n_modes</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">no_of_cells</span> <span class="o">+</span> <span class="mi">1</span>
 

@@ -40,7 +40,13 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
@@ -1166,70 +1172,64 @@
 <tr class="row-odd"><td><p><strong>dropEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>f</strong></p></td>
+<tr class="row-even"><td><p><strong>focusInEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>focusInEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>focusOutEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>focusOutEvent</strong></p></td>
+<tr class="row-even"><td><p><strong>hoverEnterEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>hoverEnterEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>hoverLeaveEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>hoverLeaveEvent</strong></p></td>
+<tr class="row-even"><td><p><strong>hoverMoveEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>hoverMoveEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>initUI</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>initUI</strong></p></td>
+<tr class="row-even"><td><p><strong>inputMethodEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>inputMethodEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>inputMethodQuery</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>inputMethodQuery</strong></p></td>
+<tr class="row-even"><td><p><strong>itemChange</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>itemChange</strong></p></td>
+<tr class="row-odd"><td><p><strong>keyPressEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>keyPressEvent</strong></p></td>
+<tr class="row-even"><td><p><strong>keyReleaseEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>keyReleaseEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>mouseDoubleClickEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>mouseDoubleClickEvent</strong></p></td>
+<tr class="row-even"><td><p><strong>mouseMoveEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>mouseMoveEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>mousePressEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>mousePressEvent</strong></p></td>
+<tr class="row-even"><td><p><strong>mouseReleaseEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>mouseReleaseEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>prepareGeometryChange</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>prepareGeometryChange</strong></p></td>
+<tr class="row-even"><td><p><strong>sceneEvent</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>sceneEvent</strong></p></td>
+<tr class="row-odd"><td><p><strong>sceneEventFilter</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>sceneEventFilter</strong></p></td>
+<tr class="row-even"><td><p><strong>setDestination</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>setDestination</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setSource</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>text_to_list</strong></p></td>
+<tr class="row-odd"><td><p><strong>setSource</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p><strong>updateMicroFocus</strong></p></td>
@@ -1245,16 +1245,6 @@
 <span class="sig-name descname"><span class="pre">calcPath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/graphics_line_2d.html#QGraphicsLineDirect.calcPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.graphics_line_2d.QGraphicsLineDirect.calcPath" title="Permalink to this definition"></a></dt>
 <dd><p>Will handle drawing QPainterPath from point A to B</p>
 </dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="graphics.graphics_line_2d.QGraphicsLineDirect.f">
-<span class="sig-name descname"><span class="pre">f</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/graphics_line_2d.html#QGraphicsLineDirect.f"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.graphics_line_2d.QGraphicsLineDirect.f" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="graphics.graphics_line_2d.QGraphicsLineDirect.text_to_list">
-<span class="sig-name descname"><span class="pre">text_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">txt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/graphics_line_2d.html#QGraphicsLineDirect.text_to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.graphics_line_2d.QGraphicsLineDirect.text_to_list" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 </dd></dl>
 

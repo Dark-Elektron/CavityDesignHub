@@ -40,7 +40,13 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
@@ -3737,6 +3743,52 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 <section id="module-utils.shared_functions">
 <span id="utils-shared-functions-module"></span><h2>utils.shared_functions module<a class="headerlink" href="#module-utils.shared_functions" title="Permalink to this heading"></a></h2>
 <dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.animate_height">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">animate_height</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_height</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#animate_height"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.animate_height" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>widget</strong> (<em>QWidget</em>) – QWidget</p></li>
+<li><p><strong>min_height</strong> (<em>float</em>) – Minimum width</p></li>
+<li><p><strong>standard</strong> (<em>float</em>) – Default size</p></li>
+<li><p><strong>enable</strong> – </p></li>
+<li><p><strong>option</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.animate_width">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">animate_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">widget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">standard</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#animate_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.animate_width" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>widget</strong> (<em>QWidget</em>) – QWidget</p></li>
+<li><p><strong>min_width</strong> (<em>float</em>) – Minimum width</p></li>
+<li><p><strong>standard</strong> (<em>float</em>) – Default size</p></li>
+<li><p><strong>enable</strong> – </p></li>
+<li><p><strong>option</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.button_clicked">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">button_clicked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#button_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.button_clicked" title="Permalink to this definition"></a></dt>
+<dd><p>Return text on button clicked</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>button</strong> (<em>QPushButton</em>) – PyQt object</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>String containing text on PyQt object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.calculate_alpha">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Req</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_bp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#calculate_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.calculate_alpha" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the largest angle the tangent line of two ellipses makes with the horizontal axis</p>
@@ -3767,14 +3819,14 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 <dt class="sig sig-object py" id="utils.shared_functions.ellipse_tangent">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">ellipse_tangent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#ellipse_tangent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.ellipse_tangent" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the coordinates of the tangent line that connects two ellipses</p>
-<figure class="align-center" id="target-to-image">
+<figure class="align-center" id="ellipse-tangent">
 <a class="reference internal image-reference" href="_images/ellipse_tangent.png"><img alt="ellipse tangent" src="_images/ellipse_tangent.png" style="width: 200px;" /></a>
 </figure>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>z</strong> (<em>list</em><em>, </em><em>array like</em>) – Contains list of tangent points coordinate’s variables <code class="docutils literal notranslate"><span class="pre">[x1,</span> <span class="pre">y1,</span> <span class="pre">x2,</span> <span class="pre">y2]</span></code>.
-See <code class="xref std std-numref docutils literal notranslate"><span class="pre">target</span> <span class="pre">to</span> <span class="pre">image</span></code></p></li>
+See <code class="xref std std-numref docutils literal notranslate"><span class="pre">ellipse</span> <span class="pre">tangent</span></code></p></li>
 <li><p><strong>data</strong> (<em>list</em><em>, </em><em>array like</em>) – Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
 data = <code class="docutils literal notranslate"><span class="pre">[coords,</span> <span class="pre">dim]</span></code>; <code class="docutils literal notranslate"><span class="pre">coords</span></code> = <code class="docutils literal notranslate"><span class="pre">[h,</span> <span class="pre">k,</span> <span class="pre">p,</span> <span class="pre">q]</span></code>, <code class="docutils literal notranslate"><span class="pre">dim</span></code> = <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">A,</span> <span class="pre">B]</span></code></p></li>
 </ul>
@@ -3792,8 +3844,44 @@ data = <code class="docutils literal notranslate"><span class="pre">[coords,</sp
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.f2b_slashes">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">f2b_slashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#f2b_slashes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.f2b_slashes" title="Permalink to this definition"></a></dt>
+<dd><p>Replaces forward slashes with backward slashes for windows OS</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Directory path</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.get_geometric_parameters">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">get_geometric_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#get_geometric_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.get_geometric_parameters" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.load_shape_space">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">load_shape_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#load_shape_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.load_shape_space" title="Permalink to this definition"></a></dt>
+<dd><p>Loads shape space file to Python dictionary object</p>
+<p>Appears to have no usage</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Absolute path of shape space file</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Python dictionary object of shape space</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.normal_dist">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">normal_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#normal_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.normal_dist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.open_file">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">open_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">le</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cb</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#open_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.open_file" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -3851,7 +3939,17 @@ data = <code class="docutils literal notranslate"><span class="pre">[coords,</sp
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.text_to_list">
-<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">text_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ll</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#text_to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.text_to_list" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">text_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">txt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#text_to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.text_to_list" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.text_to_list_">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">text_to_list_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ll</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#text_to_list_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.text_to_list_" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.text_to_list__">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">text_to_list__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ll</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#text_to_list__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.text_to_list__" title="Permalink to this definition"></a></dt>
 <dd><p>Convert text input to list</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -3862,11 +3960,6 @@ data = <code class="docutils literal notranslate"><span class="pre">[coords,</sp
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="utils.shared_functions.text_to_list_">
-<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">text_to_list_</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ll</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#text_to_list_"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.text_to_list_" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.update_alpha">

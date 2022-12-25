@@ -42,7 +42,11 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#eigenmode-analysis">Eigenmode Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wakefield-analysis">Wakefield Analysis</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
 </ul>
@@ -85,14 +89,51 @@ and general post-processing.</p>
 supported in this module are eigenmode analysis, wakefield analysis,
 and multipacting analysis.</p>
 <ul class="simple">
-<li><p>Eigenmode analysis - SLANS ref{}</p></li>
-<li><p>Wakefield analysis - ABCI</p></li>
-<li><p>Multipacting analysis - multipac</p></li>
+<li><p>Eigenmode analysis - SLANS <span id="id1">[<a class="reference internal" href="#id6" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span></p></li>
+<li><p>Wakefield analysis - ABCI <span id="id2">[<a class="reference internal" href="#id7" title="Yong Ho Chin. Abci. URL: https://abci.kek.jp/abci.htm.">Chi</a>]</span></p></li>
+<li><p>Multipacting analysis - Multipac</p></li>
 <li><p>Optimisation - Python</p></li>
 <li><p>Uncertainty quantification - Python</p></li>
 <li><p>Postprocessing - Python</p></li>
 </ul>
-<p>The codes are 2D codes</p>
+<section id="eigenmode-analysis">
+<h2>Eigenmode Analysis<a class="headerlink" href="#eigenmode-analysis" title="Permalink to this heading"></a></h2>
+<p>Eigenmode analysis is performed using the SLANS electromagnetic code. The code
+also calculates most of the figures of merit. Some postprocessing is, however,
+required to transform them to the form that is used in most papers related
+to accelerating cavities design.</p>
+<p>The SUPERLANS code is intended to calculate azimuthal-homogenous modes in
+axissymmetric cavities, periodical structure, and cut-off frequencies in
+long homogenous waveguides <span id="id3">[<a class="reference internal" href="#id6" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span>. SLANS is written by Sergey
+Belomestnykh and it consists of a set of executable files for differnt
+purposes. The first of these is the <code class="docutils literal notranslate"><span class="pre">genmesh.exe</span></code> which reads a geometry
+file <code class="docutils literal notranslate"><span class="pre">&lt;filename&gt;.geo</span></code> written using Python and generates the mesh file
+which is a .gem file and some other related files. <code class="docutils literal notranslate"><span class="pre">slansre.exe</span></code> is then
+called to run the eigenmode simulation and the results are output to specified folder.</p>
+<p>The files output by the SLANS codes are basically three types</p>
+<ul class="simple">
+<li><p>binary files:</p></li>
+<li><p>text files: which can be read by regular text editors</p></li>
+<li><p>meta files</p></li>
+</ul>
+<p>The inputs and output files of the various SLANS codes are given below:</p>
+</section>
+<section id="wakefield-analysis">
+<h2>Wakefield Analysis<a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h2>
+<div class="docutils container" id="id4">
+<dl class="citation">
+<dt class="label" id="id7"><span class="brackets">Chi</span></dt>
+<dd><p>Yong Ho Chin. Abci. URL: <a class="reference external" href="https://abci.kek.jp/abci.htm">https://abci.kek.jp/abci.htm</a>.</p>
+</dd>
+<dt class="label" id="id6"><span class="brackets">DM</span></dt>
+<dd><p>V. Yakovlev D. Myakishev. <em>SLANS</em>. URL: <a class="reference external" href="http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF">http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF</a>.</p>
+</dd>
+<dt class="label" id="id5"><span class="brackets">Nel87</span></dt>
+<dd><p>Edward Nelson. <em>Radically Elementary Probability Theory</em>. Princeton University Press, 1987.</p>
+</dd>
+</dl>
+</div>
+</section>
 </section>
 
 
