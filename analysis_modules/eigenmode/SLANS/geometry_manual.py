@@ -11,6 +11,7 @@ def print_(*arg):
 
 class Geometry:
     def __init__(self, win=None):
+        self.WG_mesh = None
         self.n = None
         self.u = None
         self.A_M, self.B_M, self.a_M, self.b_M, self.ri_M, self.L_M, self.Req_M = [None for _ in range(7)]
@@ -46,7 +47,6 @@ class Geometry:
 
         self.left_beam_pipe = [self.Rbp_L, self.at_L, self.bt_L, self.c_L, self.x_L]
         self.right_beam_pipe = [self.Rbp_R, self.at_R, self.bt_R, self.c_R, self.x_R]
-
 
         self.WG_L, self.WG_R = 0, 0
         if beampipes.lower() == 'both':

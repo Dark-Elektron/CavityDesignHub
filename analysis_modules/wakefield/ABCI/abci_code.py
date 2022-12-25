@@ -1,11 +1,38 @@
-import scipy as scp
 from scipy import optimize as scopt
-import numpy as np
-import sympy as sym
+from utils.shared_functions import *
 
 
 class ABCI:
+    """
+    This class contains functions for writing the cavity geometry in a format readable by ABCI
+    The type of cavity geometry it writes is regular elliptical cavity geometry with mid-cup dimensions equal
+    and end cups different. Geometry type shown in the figure below:
+
+    .. image:: ../images/Cavity_parametrised.png
+      :width: 800
+      :alt: Cavity parametrised model
+
+
+    Note
+    -----
+        Considering renaming to better reflect this purpose.
+    """
     def __init__(self, left_beam_pipe, left_end_cell, mid_cell, right_end_cell, right_beam_pipe):
+        """
+
+        Parameters
+        ----------
+        left_beam_pipe: list, array like
+
+        left_end_cell: list, array like
+
+        mid_cell: list, array like
+
+        right_end_cell: list, array like
+
+        right_beam_pipe: list, array like
+
+        """
         self.left_end_cell = left_end_cell
         self.mid_cell = mid_cell
         self.right_end_cell = right_end_cell
@@ -53,6 +80,30 @@ class ABCI:
         self.x_R = self.right_beam_pipe[4]
 
     def abci_bp_L(self, n, zr12_BPL, WG_L, f):
+        """Writes the left beam pipe dimensions to a geometry file
+
+        Parameters
+        ----------
+        n: int
+            Number of cavity cells
+
+        zr12_BPL: list, array like
+
+        WG_L: float
+            Length of left beam pipe
+
+        f: file
+            Geometry <filename>.geo file to be written to
+        Note
+        -----
+            Consider renaming zr12_BPL to reflect what the variable is.
+            Variable n is unused by the function. Consider removing
+
+        Returns
+        -------
+
+        """
+
         # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
         # print("\t\tABCI_BPL::It got here")
         f.write('-3., 0.000\n')
@@ -64,6 +115,29 @@ class ABCI:
         f.write('{} {}\n'.format(self.ri_L, WG_L - self.x_L + self.x_L))
 
     def abci_n1_L(self, n, zr12_L, WG_L, f):
+        """Writes the left end cup dimensions to a geometry file
+
+        Parameters
+        ----------
+        n: int
+            Number of cavity cells.
+
+        zr12_L: float
+
+        WG_L: float
+            Length of left beam pipe
+
+        f: file
+            Geometry <filename>.geo file to be written to
+        Note
+        -----
+            Consider renaming zr12_R to reflect what the variable is.
+            Variable n is unused by the function. Consider removing
+
+        Returns
+        -------
+
+        """
         # print("\t\tABCI_N1_L::It got here")
         f.write('-3., 0.000\n')
         f.write('{} {}\n'.format(self.ri_L + self.b_L, WG_L))
@@ -74,6 +148,29 @@ class ABCI:
         f.write('{} {}\n'.format(self.Req_L, WG_L + self.L_L))
 
     def abci_n1_R(self, n, zr12_R, WG_L, f):
+        """Writes the right end cup dimensions to a geometry file
+
+        Parameters
+        ----------
+        n: int
+            Number of cavity cells.
+
+        zr12_R: float
+
+        WG_L: float
+            Length of left beam pipe
+
+        f: file
+            Geometry <filename>.geo file to be written to
+        Note
+        -----
+            Consider renaming zr12_R to reflect what the variable is.
+
+        Returns
+        -------
+
+        """
+
         # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
         # print("\t\tABCI_N1_R::It got here")
         if n == 1:
@@ -95,6 +192,28 @@ class ABCI:
             f.write('{} {}\n'.format(self.ri_R, WG_L + self.L_L + 2 * (n - 1) * self.L_M + self.L_R))
 
     def abci_bp_R(self, n, zr12_BPR, WG_L, f):
+        """Writes the right beam pipe dimensions to a geometry file
+
+        Parameters
+        ----------
+        n: int
+            Number of cavity cells.
+
+        zr12_BPR: float
+
+        WG_L: float
+            Length of left beam pipe
+
+        f: file
+            Geometry <filename>.geo file to be written to
+        Note
+        -----
+            Consider renaming zr12_BPR to reflect what the variable is.
+
+        Returns
+        -------
+
+        """
         # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
         # print("\t\tABCI_BPR::It got here")
         if n == 1:
@@ -119,6 +238,35 @@ class ABCI:
             f.write('{} {}\n'.format(self.Rbp_R, WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M))
 
     def abci_M(self, n, zr12_M, WG_L, f, i, end_type):
+        """Writes the mid cup dimensions to a geometry file
+
+        Parameters
+        ----------
+        n: int
+            Number of cavity cells.
+
+        zr12_M: float
+
+        WG_L: float
+            Length of left beam pipe
+
+        f: file
+            Geometry <filename>.geo file to be written to
+        i: int
+            Cell index
+
+        end_type: int
+            if end_type = 1 the end HALF cell is changed for tuning.
+            I don't know what this means. Never had need for it.
+
+        Note
+        -----
+            Consider renaming zr12_R to reflect what the variable is.
+
+        Returns
+        -------
+
+        """
         # print("\t\tABCI_M::It got here")
         # Left and right Cell
         # First Half cell
@@ -191,6 +339,24 @@ class ABCI:
             f.write('{} {}\n'.format(self.Req_M, WG_L + self.L_L + (2 * i) * self.L_M))
 
     def rz_conjug(self, cell):
+        """Calculate shift in geoemetric values
+
+        Parameters
+        ----------
+        cell: {"left", "right", "mid"}
+            Specifies the cell cup type.
+
+        Returns
+        -------
+        zr12: list
+            Maybe it's a shift of some sort calculated from the coordinates of the tangent of the ellipses
+            comprising the cavity
+
+        alpha: float
+            Angle of the line tangent to the iris and equator ellipses.
+
+        """
+
         # global data
         if cell == 'left':
             data = [self.A_L, self.B_L, self.Req_L, self.ri_L, self.L_L, self.a_L, self.b_L]
@@ -246,10 +412,10 @@ class ABCI:
         # plot_cavity(xy_cross, data)
 
         data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        xy_cross = scopt.fsolve(ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
                                 args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
-        # xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),
+        # xy_cross = scopt.fsolve(ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),
         #                         args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
         # print("\tXY_CROSS2::", xy_cross)
 
@@ -290,18 +456,3 @@ class ABCI:
     #     f4 = (x_in[2] - x_in[0]) * (x_in[2] - x2) / (A ** 2) + (x_in[3] - x_in[1]) * (x_in[3] - y2) / B ** 2
     #
     #     return [f1, f2, f3, f4]
-
-    @staticmethod
-    def ellipse_tangent(z, *data):
-        # print(data)
-        coord, dim = data
-        h, k, p, q = coord
-        a, b, A, B = dim
-        x1, y1, x2, y2 = z
-
-        f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-        f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-        f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-
-        return [f1, f2, f3, f4]

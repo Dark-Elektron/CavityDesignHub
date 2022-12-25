@@ -5,7 +5,6 @@ Created on 12 December 2022
 
 import ctypes
 import logging
-import os
 import shutil
 import sys
 # import pyautogui
@@ -27,9 +26,9 @@ from frame_controls.tune_control import TuneControl, OptimizationControl
 from frame_controls.wakefield_control import WakefieldControl
 from node_editor.node_editor_widget import NodeEditorWidget
 import qtvscodestyle as qtvsc
+from utils.shared_functions import animate_width, f2b_slashes
 
 # sys.path.append(r"D:\Dropbox\CavityDesignHub\test_plugin") # to search inside this directory for imports
-
 
 # pyuic5 -x ui_files/main_window.ui -o ui_files/main_window.py
 # pyuic5 -x ui_files/eigenmode.ui -o ui_files/eigenmode.py
@@ -54,7 +53,7 @@ import qtvscodestyle as qtvsc
 # git push -f  https://github.com/Dark-Elektron/CavityDesignHub.git master
 # sphinx-autobuild ./source ./_build/html
 # sphinx-apidoc -o source .. -f
-
+# make html
 
 fr = FileReader()
 
@@ -66,19 +65,7 @@ AN_DURATION = 250
 
 
 class MainWindow:
-    """
-    This does good stuff.
-
-    Here are the details about the good stuff it does.
-
-    Parameters
-    ----------
-
-
-    Returns
-    -------
-    y : int
-        Some other thing
+    """Main GUI window
     """
     def __init__(self):
         self.animation = None
@@ -168,6 +155,7 @@ class MainWindow:
         # Tomorrow Night Blue  : TOMORROW_NIGHT_BLUE
         # Dark High Contrast   : DARK_HIGH_CONTRAST
         # stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
+
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.last_saved_theme])
         QApplication.instance().setStyleSheet(stylesheet)
 
@@ -213,7 +201,7 @@ class MainWindow:
         # set size to zero
         self.ui.le_New_Project_Filename.setMaximumWidth(0)
         self.ui.pb_New_Project.clicked.connect(lambda:
-                                               self.animate_width(self.ui.le_New_Project_Filename, 0, 150, True))
+                                               animate_width(self.ui.le_New_Project_Filename, 0, 150, True))
 
     def initUI(self):
         """
@@ -296,7 +284,7 @@ class MainWindow:
         # self.ui.pb_Load_State_File.clicked.connect(lambda: self.deserialize())
 
         # expand/collapse session log
-        self.ui.pb_Expand_Collapse_Log.clicked.connect(lambda: self.animate_width(self.ui.w_Log, 0, 375, True, 'min'))
+        self.ui.pb_Expand_Collapse_Log.clicked.connect(lambda: animate_width(self.ui.w_Log, 0, 375, True, 'min'))
 
     def create_frames_ui(self):
         """
@@ -307,17 +295,17 @@ class MainWindow:
         if DEBUG: print("Check 2e_i_1: main_control.py")
         # frame UIs
         self.tune_widget = TuneControl(self)
-        if DEBUG: print("Check 2e_i_1: main_control.py")
+        if DEBUG: print("Check 2e_i_11: main_control.py")
         self.wakefield_widget = WakefieldControl(self)
-        if DEBUG: print("Check 2e_i_1: main_control.py")
+        if DEBUG: print("Check 2e_i_111: main_control.py")
         self.eigenmode_widget = EigenmodeControl(self)
-        if DEBUG: print("Check 2e_i_1: main_control.py")
+        if DEBUG: print("Check 2e_i_1111: main_control.py")
         self.postprocess_widget = PostprocessControl(self)
-        if DEBUG: print("Check 2e_i_1: main_control.py")
+        if DEBUG: print("Check 2e_i_11111: main_control.py")
         self.misc_widget = MiscControl(self)
-        if DEBUG: print("Check 2e_i_1: main_control.py")
+        if DEBUG: print("Check 2e_i_111111: main_control.py")
         self.plot_widget = PlotControl(self)
-        if DEBUG: print("Check 2e_i_1: main_control.py")
+        if DEBUG: print("Check 2e_i_1111111: main_control.py")
         self.multipacting_widget = MultipactingControl(self)
         if DEBUG: print("Check 2e_i_2: main_control.py")
 
@@ -380,88 +368,22 @@ class MainWindow:
             self.ui.g_Display.addWidget(self.last_frame, 0, 1, 1, 1)
             self.last_frame.show()
 
-    def animate_width(self, widget, min_width, standard, enable, option="max"):
-        """
-        Animate width for GUI transition effect
-        :param widget: PyQt Widget
-        :param min_width: int or float
-        :param standard: int or float
-        :param enable:
-        :param option:
-        :return:
-        """
-        if enable:
-            # GET WIDTH
-            width = widget.width()
-            # SET MAX WIDTH
-            if width > 0:
-                widthCollapsed = min_width
-                widget.setMinimumWidth(0)
-            else:
-                widthCollapsed = standard
-                # widget.setMinimumWidth(standard)
-
-            # ANIMATION
-            if option == 'max':
-                self.animation = QPropertyAnimation(widget, b"maximumWidth")
-            else:
-                self.animation = QPropertyAnimation(widget, b"minimumWidth")
-
-            self.animation.setDuration(AN_DURATION)
-            self.animation.setStartValue(width)
-            self.animation.setEndValue(widthCollapsed)
-            self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
-            self.animation.start()
-
-    def animate_height(self, widget, min_height, standard, enable, option="max"):
-        """
-        Animate height for GUI transition effect
-        :param widget: PyQt Widget
-        :param min_height: int or float
-        :param standard: int or float
-        :param enable:
-        :param option:
-        :return:
-        """
-        if enable:
-            # GET WIDTH
-            height = widget.height()
-
-            # SET MAX WIDTH
-            if height > 0:
-                heightCollapsed = min_height
-                widget.setMinimumHeight(0)
-            else:
-                heightCollapsed = standard
-                # self.ui.w_Shape_Parameters.setMinimumSize(0, 250)
-
-            # ANIMATION
-            if option == 'max':
-                self.animation = QPropertyAnimation(widget, b"maximumHeight")
-            else:
-                self.animation = QPropertyAnimation(widget, b"minimumHeight")
-            self.animation.setDuration(AN_DURATION)
-            self.animation.setStartValue(height)
-            self.animation.setEndValue(heightCollapsed)
-            self.animation.setEasingCurve(QtCore.QEasingCurve.InOutQuart)
-            self.animation.start()
-
     def create_project(self):
         """
-        Create project
+        Create Cavity Design Hub project
         :return:
         """
         project_name = self.ui.le_New_Project_Filename.text()
 
         if project_name != '':
             project_dir = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
-            project_dir = self.f2b_slashes(project_dir)
+            project_dir = f2b_slashes(project_dir)
 
             # check if folder already exist
             e = self.checkIfPathExist(project_dir, project_name)
 
             if e:
-                # self.animate_width(self.ui.le_New_Project_Filename, 0, 150, True)
+                # animate_width(self.ui.le_New_Project_Filename, 0, 150, True)
                 self.ui.le_New_Project_Filename.setMinimumWidth(0)
                 self.ui.le_New_Project_Filename.setMaximumWidth(0)
                 self.ui.l_Project_Name.setText(fr'{project_dir}\{project_name}')
@@ -488,7 +410,7 @@ class MainWindow:
                                          }
 
                 make_dirs_from_dict(project_dir_structure)
-                self.projectDir = self.f2b_slashes(fr"{project_dir}\{project_name}")
+                self.projectDir = f2b_slashes(fr"{project_dir}\{project_name}")
 
                 # only initialize UI after successfully setting folder
                 if self.global_state == 0:
@@ -499,14 +421,20 @@ class MainWindow:
 
     def open_project(self, project_dir=None):
         """
-        Open project
-        :param project_dir:
-        :return:
+
+        Parameters
+        ----------
+        project_dir: str
+            Project directory
+
+        Returns
+        -------
+
         """
         if DEBUG: print("Check 2a: main_control.py")
         if not project_dir:
             project_dir = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
-            self.projectDir = self.f2b_slashes(project_dir)
+            self.projectDir = f2b_slashes(project_dir)
             print('open project', self.projectDir)
 
             if os.path.exists(fr'{project_dir}\state_file.json'):
@@ -526,7 +454,7 @@ class MainWindow:
             if DEBUG: print("Check 2c: main_control.py")
             if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
                 self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
-                self.projectDir = self.f2b_slashes(project_dir)
+                self.projectDir = f2b_slashes(project_dir)
                 if DEBUG: print("Check 2d: main_control.py")
 
                 # only initialize UI after successfully setting folder and initialise only once
@@ -545,21 +473,24 @@ class MainWindow:
     def change_theme(self):
         """
         Change GUI theme
-        :return:
-        :desc:
-            Light (Visual Studio): LIGHT_VS
-            Quiet Light          : QUIET_LIGHT
-            Solarized Light      : SOLARIZED_LIGHT
-            Abyss                : ABYSS
-            Dark (Visual Studio) : DARK_VS
-            Kimbie Dark          : KIMBIE_DARK
-            Monokai              : MONOKAI
-            Monokai Dimmed       : MONOKAI_DIMMED
-            Red                  : RED
-            Solarized Dark       : SOLARIZED_DARK
-            Tomorrow Night Blue  : TOMORROW_NIGHT_BLUE
-            Dark High Contrast   : DARK_HIGH_CONTRAST
-            stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
+
+        Options available are
+        Light (Visual Studio): LIGHT_VS
+        Quiet Light          : QUIET_LIGHT
+        Solarized Light      : SOLARIZED_LIGHT
+        Abyss                : ABYSS
+        Dark (Visual Studio) : DARK_VS
+        Kimbie Dark          : KIMBIE_DARK
+        Monokai              : MONOKAI
+        Monokai Dimmed       : MONOKAI_DIMMED
+        Red                  : RED
+        Solarized Dark       : SOLARIZED_DARK
+        Tomorrow Night Blue  : TOMORROW_NIGHT_BLUE
+        Dark High Contrast   : DARK_HIGH_CONTRAST
+
+        Returns
+        -------
+
         """
 
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.ui.cb_Theme.currentText()])
@@ -578,9 +509,12 @@ class MainWindow:
 
     def serialize(self):
         """
-        Save GUI object states
-        :return:
+        Save GUI objects state
+        Returns
+        -------
+
         """
+
         # serialize home
         try:
             # open state file
@@ -617,8 +551,14 @@ class MainWindow:
     def deserialize(self, file):
         """
         Retrieve and update GUI object state from last saved GUI state
-        :param file:
-        :return:
+
+        Parameters
+        ----------
+        file
+
+        Returns
+        -------
+
         """
         if DEBUG: print("Check 1: main_control.py")
         # check if state file exists
@@ -669,6 +609,13 @@ class MainWindow:
             #     print("Could not deserialise plotUI!")
 
     def load_last_state(self):
+        """
+        Load GUI last state
+
+        Returns
+        -------
+
+        """
         # msg = QMessageBox()
         # msg.setWindowTitle("Folder Exist")
         # msg.setText("Do you wish to load the last saved project?")
@@ -730,7 +677,10 @@ class MainWindow:
     def ui_effects(self):
         """
         Control UI effects. Currently turned off.
-        :return:
+
+        Returns
+        -------
+
         """
         for push_buttons in self.frames_dict.values():
             shadow_effect = QGraphicsDropShadowEffect()
@@ -751,12 +701,6 @@ class MainWindow:
     @staticmethod
     def button_clicked(i):
         return i.text()
-
-    @staticmethod
-    def f2b_slashes(path):
-        # replaces forward slashes with backward slashes for windows OS
-        path = path.replace(r"/", "\\")
-        return path
 
     @staticmethod
     def loadStylesheet(filename):

@@ -10,11 +10,14 @@ Each module performs a different operation. The analysis that are currently
 supported in this module are eigenmode analysis, wakefield analysis,
 and multipacting analysis.
 
-* Eigenmode analysis - SLANS \ref{}
-* Wakefield analysis - ABCI
-* Multipacting analysis - multipac
+* Eigenmode analysis - SLANS :cite:p:`SLANS`
+* Wakefield analysis - ABCI :cite:p:`ABCI`
+* Multipacting analysis - Multipac
 * Optimisation - Python
 * Uncertainty quantification - Python
 * Postprocessing - Python
 
 The codes are 2D codes
+
+.. bibliography::
+   :all:

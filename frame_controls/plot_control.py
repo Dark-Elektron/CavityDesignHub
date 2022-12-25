@@ -452,7 +452,7 @@ class PlotControl:
 
         # toggle plot menu
         self.ui.pb_Plot_Area_Menu.clicked.connect(
-            lambda: self.main_control.animate_width(self.ui.w_Plot_Menu, 0, 440, True))
+            lambda: animate_width(self.ui.w_Plot_Menu, 0, 440, True))
         self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: self.ui.w_Plot_Area_Buttons.setEnabled(
             True) if self.ui.w_Plot_Menu.maximumWidth() == 0 else self.ui.w_Plot_Area_Buttons.setDisabled(True))
 
@@ -461,7 +461,7 @@ class PlotControl:
         self.ui.pb_Plot_Decorations.clicked.connect(lambda: self.toggle_page('Plot Decorations'))
 
         # signal for plot argument entrmake widgets rey
-        # self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda: self.main_control.animate_height(self.ui.w_Plot_Args, 0, 200, True))
+        # self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda: animate_height(self.ui.w_Plot_Args, 0, 200, True))
 
         # signal for threshold
         self.ui.cb_Longitudinal_Threshold.stateChanged.connect(lambda: self.calc_limits('monopole'))
@@ -505,31 +505,32 @@ class PlotControl:
     def initUI(self):
         self.createPlotTypeWidget()
 
-        print_("Check 5: plot_control.py")
+        print_("Check 0: plot_control.py:initUI")
         # add row to table
         self.ui.tableWidget.setRowCount(1)  # and one row in the table
         self.table_control()
 
-        print_("Check 5: plot_control.py")
+        print_("Check 1: plot_control.py:initUI")
         # set plot menu initial size to zero and disable plot buttons
         self.ui.w_Plot_Menu.setFixedWidth(0)
         self.ui.w_Plot_Area_Buttons.setDisabled(True)
 
-        print_("Check 5: plot_control.py")
+        print_("Check 2: plot_control.py:initUI")
         # tableWidget initializations
         self.ui.tableWidget.mousePressEvent = self.mousePressEvent
         self.ui.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.tableWidget.customContextMenuRequested.connect(self.generateMenu)
         self.set_table_size()
 
-        print_("Check 5: plot_control.py")
+        print_("Check 3: plot_control.py:initUI")
         # add checkable combobox
         cutoff = QCheckableComboBox()
         cutoff.addItem("All")
         cutoff.setMinimumWidth(150)
         self.ui.gl_Cutoff.addWidget(cutoff, 2, 0, 1, 1)
+        print_("Check 4: plot_control.py:initUI")
         self.populate_cutoff_combobox(cutoff)
-        print_("Check 5: plot_control.py")
+        print_("Check 4: plot_control.py:initUI")
 
         self.ui.le_Ri_Cutoff_List.editingFinished.connect(lambda: self.populate_cutoff_combobox(cutoff))
 
@@ -1800,7 +1801,7 @@ class PlotControl:
         cutoff.clear()
         cutoff.addItem("All")
 
-        ll = text_to_list(self.ui.le_Ri_Cutoff_List.text())
+        ll = text_to_list__(self.ui.le_Ri_Cutoff_List.text())
         if ll is None:
             Ri_list = []
         else:

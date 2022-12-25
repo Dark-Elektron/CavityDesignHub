@@ -259,7 +259,7 @@ class ABCIGeometry(Geometry):
             abci_path = os.getcwd()
 
             # print(abci_path)
-            exe_path = os.path.join(abci_path, fr'{parentDir}\em_codes\ABCI_exe\ABCI_MP64+.exe')
+            exe_path = os.path.join(abci_path, fr'{parentDir}\exe\ABCI_exe\ABCI_MP64+.exe')
             # print(exe_path)
             subprocess.call([exe_path, fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

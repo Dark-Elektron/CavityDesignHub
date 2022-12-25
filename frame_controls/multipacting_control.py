@@ -24,6 +24,8 @@ import psutil
 from analysis_modules.plot_module.plotter import Plot
 
 # evol = Evolution()
+from utils.shared_functions import animate_height
+
 slans_geom = SLANSGeometry()
 fr = FileReader()
 
@@ -149,14 +151,11 @@ class MultipactingControl:
 
         # cell parameters control signals
         self.ui.cb_Outer_Cell_L.stateChanged.connect(
-            lambda: self.animate_height(self.ui.cb_Outer_Cell_L, self.ui.w_Outer_Cell_L, 0, 160,
-                                        True))
+            lambda: animate_height(self.ui.cb_Outer_Cell_L, self.ui.w_Outer_Cell_L, 0, 160, True))
         self.ui.cb_Outer_Cell_R.stateChanged.connect(
-            lambda: self.animate_height(self.ui.cb_Outer_Cell_R, self.ui.w_Outer_Cell_R, 0, 160,
-                                        True))
+            lambda: animate_height(self.ui.cb_Outer_Cell_R, self.ui.w_Outer_Cell_R, 0, 160, True))
         self.ui.cb_Expansion.stateChanged.connect(
-            lambda: self.animate_height(self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160,
-                                        True))
+            lambda: animate_height(self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160, True))
 
         # cancel
         # self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -176,7 +175,7 @@ class MultipactingControl:
 
     def shape_entry_widgets_control(self):
         if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-            self.main_control.animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
+            animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
 
             self.ui.w_Enter_Geometry_Manual.setMinimumHeight(0)
             self.ui.w_Enter_Geometry_Manual.setMaximumHeight(0)
@@ -184,7 +183,7 @@ class MultipactingControl:
             # clear cells from graphics view
             # self.graphicsView.removeCells()
         else:
-            self.main_control.animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
+            animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
 
             self.ui.w_Select_Shape_Space.setMinimumHeight(0)
             self.ui.w_Select_Shape_Space.setMaximumHeight(0)
@@ -1209,53 +1208,6 @@ class MultipactingControl:
         except Exception as e:
             print('Failed to open file:: ', e)
 
-    def animate_width(self, cb, widget, min_width, standard, enable, reverse=False):
-        if enable:
-            #### GET Height
-            width = widget.width()
-            #### SET MAX WIDTH
-
-            if not reverse:
-                if cb.checkState() != 2:
-                    widthCollapsed = min_width
-                    widget.setMinimumWidth(0)
-                else:
-                    widthCollapsed = standard
-                    # widget.setMinimumWidth(standard)
-            else:
-                if cb.checkState() == 2:
-                    widthCollapsed = min_width
-                    widget.setMinimumWidth(0)
-                else:
-                    widthCollapsed = standard
-                    # widget.setMinimumWidth(standard)
-
-            #### ANIMATION
-            self.animation = QPropertyAnimation(widget, b"maximumWidth")
-            self.animation.setDuration(200)
-            self.animation.setStartValue(width)
-            self.animation.setEndValue(widthCollapsed)
-            self.animation.start()
-
-    def animate_height(self, cb, widget, min_height, standard, enable):
-        if enable:
-            #### GET WIDTH
-            height = widget.width()
-            #### SET MAX WIDTH
-            if cb.checkState() != 2:
-                heightCollapsed = min_height
-                widget.setMinimumHeight(0)
-            else:
-                heightCollapsed = standard
-                # widget.setMinimumWidth(standard)
-
-            #### ANIMATION
-            self.animation = QPropertyAnimation(widget, b"maximumHeight")
-            self.animation.setDuration(200)
-            self.animation.setStartValue(height)
-            self.animation.setEndValue(heightCollapsed)
-            self.animation.start()
-
     # def exe_control(self):
     #     # Slans
     #     self.ui.pb_Genmsh.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\genmesh2.exe"))
@@ -1267,7 +1219,7 @@ class MultipactingControl:
     #     self.ui.pb_MTFView.clicked.connect(lambda: self.run_slans_exe("SLANS_exe\Mtfview\mtfview.exe"))
 
     def run_slans_exe(self, path, filename=None):
-        path = fr"{self.main_control.parentDir}\em_codes\{path}"
+        path = fr"{self.main_control.parentDir}\exe\{path}"
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
 

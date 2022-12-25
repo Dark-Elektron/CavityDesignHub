@@ -189,7 +189,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = fr'{parentDir}\em_codes\SLANS_exe\genmesh2.exe'
+        genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
         filepath = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}'
 
         # folder for exe to write to
@@ -214,10 +214,10 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = fr'{parentDir}\em_codes\SLANS_exe\slansc'
-        slansm_path = fr'{parentDir}\em_codes\SLANS_exe\slansm'
-        slanss_path = fr'{parentDir}\em_codes\SLANS_exe\slanss'
-        slansre_path = fr'{parentDir}\em_codes\SLANS_exe\slansre'
+        slansc_path = fr'{parentDir}\exe\SLANS_exe\slansc'
+        slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
+        slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
+        slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
 
         # check if corresponding file exists at before the executable is called
         if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.geo'):

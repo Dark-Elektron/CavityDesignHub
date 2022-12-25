@@ -14,7 +14,6 @@ from utils.shared_classes import *
 from utils.shared_functions import *
 import scipy.signal as sps
 
-fr = FileReader()
 abci_geom = ABCIGeometry()
 
 file_color = 'cyan'
@@ -74,8 +73,8 @@ class WakefieldControl:
 
         # shape space initialization
         self.shape_space = {}
-        self._shape_space = {}
-        self._selected_keys = []
+        self.loaded_shape_space = {}
+        self.selected_keys = []
         self.processes = []
         self.processes_id = []
         self.show_progress_bar = False
@@ -87,24 +86,29 @@ class WakefieldControl:
         print_("Check 5: wakefield.py")
 
     def signals(self):
+        # initial push button state
+        self.ui.w_Outer_Cell_L.hide()
+        self.ui.w_Outer_Cell_R.hide()
+        self.ui.w_Expansion.hide()
+        self.ui.pb_Expansion.setEnabled(False)
+
         # signals
-        self.ui.pb_Run.clicked.connect(lambda: self.run_ABCI())
+        self.ui.pb_Run.clicked.connect(lambda: self.run_abci())
 
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
-            lambda: self.open_file(self.ui.le_Shape_Space,
-                                   self.ui.cb_Shape_Space_Keys))
+            lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys))
 
         # control shape entry mode
         self.ui.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
 
-        # cell parameters control signals
-        self.ui.cb_Outer_Cell_L.stateChanged.connect(lambda: self.animate_height(
-            self.ui.cb_Outer_Cell_L, self.ui.w_Outer_Cell_L, 0, 160, True))
-        self.ui.cb_Outer_Cell_R.stateChanged.connect(lambda: self.animate_height(
-            self.ui.cb_Outer_Cell_R, self.ui.w_Outer_Cell_R, 0, 160, True))
-        self.ui.cb_Expansion.stateChanged.connect(lambda: self.animate_height(
-            self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160, True))
+        # # cell parameters control signals
+        # self.ui.cb_Outer_Cell_L.stateChanged.connect(lambda: animate_height(
+        #     self.ui.cb_Outer_Cell_L, self.ui.w_Outer_Cell_L, 0, 160, True))
+        # self.ui.cb_Outer_Cell_R.stateChanged.connect(lambda: animate_height(
+        #     self.ui.cb_Outer_Cell_R, self.ui.w_Outer_Cell_R, 0, 160, True))
+        # self.ui.cb_Expansion.stateChanged.connect(lambda: animate_height(
+        #     self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160, True))
 
         # cancel
         self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -134,24 +138,24 @@ class WakefieldControl:
         self.ui.cb_Inner_Cell.setCheckState(2)
         self.ui.cb_Inner_Cell.setEnabled(False)
 
-        # expand/collapse sections widgets
-        if self.ui.cb_Expansion.checkState() == 2:
-            self.ui.w_Expansion.setMinimumHeight(160)
-        else:
-            self.ui.w_Expansion.setMinimumHeight(0)
-            self.ui.w_Expansion.setMaximumHeight(0)
-
-        if self.ui.cb_Outer_Cell_L.checkState() == 2:
-            self.ui.w_Outer_Cell_L.setMinimumHeight(160)
-        else:
-            self.ui.w_Outer_Cell_L.setMinimumHeight(0)
-            self.ui.w_Outer_Cell_L.setMaximumHeight(0)
-
-        if self.ui.cb_Outer_Cell_R.checkState() == 2:
-            self.ui.w_Outer_Cell_R.setMinimumHeight(160)
-        else:
-            self.ui.w_Outer_Cell_R.setMinimumHeight(0)
-            self.ui.w_Outer_Cell_R.setMaximumHeight(0)
+        # # expand/collapse sections widgets
+        # if self.ui.cb_Expansion.checkState() == 2:
+        #     self.ui.w_Expansion.setMinimumHeight(160)
+        # else:
+        #     self.ui.w_Expansion.setMinimumHeight(0)
+        #     self.ui.w_Expansion.setMaximumHeight(0)
+        #
+        # if self.ui.cb_Outer_Cell_L.checkState() == 2:
+        #     self.ui.w_Outer_Cell_L.setMinimumHeight(160)
+        # else:
+        #     self.ui.w_Outer_Cell_L.setMinimumHeight(0)
+        #     self.ui.w_Outer_Cell_L.setMaximumHeight(0)
+        #
+        # if self.ui.cb_Outer_Cell_R.checkState() == 2:
+        #     self.ui.w_Outer_Cell_R.setMinimumHeight(160)
+        # else:
+        #     self.ui.w_Outer_Cell_R.setMinimumHeight(0)
+        #     self.ui.w_Outer_Cell_R.setMaximumHeight(0)
 
         # wakefield analysis always uses beam pipes
         self.ui.cb_LBP.setCheckState(2)
@@ -183,7 +187,7 @@ class WakefieldControl:
 
     def shape_entry_widgets_control(self):
         if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-            self.main_control.animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
+            animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
 
             self.ui.w_Enter_Geometry_Manual.setMinimumHeight(0)
             self.ui.w_Enter_Geometry_Manual.setMaximumHeight(0)
@@ -191,7 +195,7 @@ class WakefieldControl:
             # clear cells from graphics view
             self.graphicsView.removeCells()
         else:
-            self.main_control.animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
+            animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
 
             self.ui.w_Select_Shape_Space.setMinimumHeight(0)
             self.ui.w_Select_Shape_Space.setMaximumHeight(0)
@@ -202,7 +206,7 @@ class WakefieldControl:
             # draw new cell
             self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
 
-    def run_ABCI(self):
+    def run_abci(self):
         # get analysis parameters
         n_cells = self.ui.sb_N_Cells.value()
         n_modules = self.ui.sb_N_Modules.value()
@@ -234,7 +238,7 @@ class WakefieldControl:
             qoi_df = None
 
         # get geometric parameters
-        shape_space = self.get_geometric_parameters('ABCI')
+        shape_space = get_geometric_parameters(self, 'ABCI')
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(shape_space.keys())
@@ -381,21 +385,21 @@ class WakefieldControl:
         print_('Getting geometric parameters')
         if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
             try:
-                # # self._shape_space = self.load_shape_space(shape_space_name)
-                # print_(self._shape_space)
+                # # self.loaded_shape_space= load_shape_space(shape_space_name)
+                # print_(self.loaded_shape_space)
 
                 # get selected keys
-                self._selected_keys = self.ui.cb_Shape_Space_Keys.currentText()
-                # print("Selected keys: ", self._selected_keys, type(self._selected_keys[0]))
+                self.selected_keys = self.ui.cb_Shape_Space_Keys.currentText()
+                # print("Selected keys: ", self.selected_keys, type(self.selected_keys[0]))
 
                 # check keys of shape space if results already exist
                 toall = None
-                for key, val in self._shape_space.items():
+                for key, val in self.loaded_shape_space.items():
                     # process for only keys selected in combobox
                     if self.ui.cb_Shape_Space_Keys.currentText() == "":
                         pass
                     else:
-                        if key not in self._selected_keys:
+                        if key not in self.selected_keys:
                             continue
 
                     if not toall:
@@ -429,14 +433,14 @@ class WakefieldControl:
         else:
             if self.ui.cb_Inner_Cell.checkState() == 2:
                 # Middle Ellipse data
-                A_i_space = self.text_to_list(self.ui.le_A_i.text())
-                B_i_space = self.text_to_list(self.ui.le_B_i.text())
-                a_i_space = self.text_to_list(self.ui.le_a_i.text())
-                b_i_space = self.text_to_list(self.ui.le_b_i.text())
-                Ri_i_space = self.text_to_list(self.ui.le_Ri_i.text())
-                L_i_space = self.text_to_list(self.ui.le_L_i.text())
-                Req_i_space = self.text_to_list(self.ui.le_Req_i.text())
-                alpha_i_space = self.text_to_list(self.ui.le_Alpha.text())
+                A_i_space = text_to_list(self.ui.le_A_i.text())
+                B_i_space = text_to_list(self.ui.le_B_i.text())
+                a_i_space = text_to_list(self.ui.le_a_i.text())
+                b_i_space = text_to_list(self.ui.le_b_i.text())
+                Ri_i_space = text_to_list(self.ui.le_Ri_i.text())
+                L_i_space = text_to_list(self.ui.le_L_i.text())
+                Req_i_space = text_to_list(self.ui.le_Req_i.text())
+                alpha_i_space = text_to_list(self.ui.le_Alpha.text())
 
                 inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space,
                                     alpha_i_space]
@@ -445,14 +449,14 @@ class WakefieldControl:
 
             if self.ui.cb_Outer_Cell_L.checkState() == 2:
                 # Middle Ellipse data
-                A_ol_space = self.text_to_list(self.ui.le_A_ol.text())
-                B_ol_space = self.text_to_list(self.ui.le_B_ol.text())
-                a_ol_space = self.text_to_list(self.ui.le_a_ol.text())
-                b_ol_space = self.text_to_list(self.ui.le_b_ol.text())
-                Ri_ol_space = self.text_to_list(self.ui.le_Ri_ol.text())
-                L_ol_space = self.text_to_list(self.ui.le_L_ol.text())
-                Req_ol_space = self.text_to_list(self.ui.le_Req_ol.text())
-                alpha_ol_space = self.text_to_list(self.ui.le_Alpha_ol.text())
+                A_ol_space = text_to_list(self.ui.le_A_ol.text())
+                B_ol_space = text_to_list(self.ui.le_B_ol.text())
+                a_ol_space = text_to_list(self.ui.le_a_ol.text())
+                b_ol_space = text_to_list(self.ui.le_b_ol.text())
+                Ri_ol_space = text_to_list(self.ui.le_Ri_ol.text())
+                L_ol_space = text_to_list(self.ui.le_L_ol.text())
+                Req_ol_space = text_to_list(self.ui.le_Req_ol.text())
+                alpha_ol_space = text_to_list(self.ui.le_Alpha_ol.text())
 
                 outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space,
                                       Req_ol_space, alpha_ol_space]
@@ -461,14 +465,14 @@ class WakefieldControl:
 
             if self.ui.cb_Outer_Cell_R.checkState() == 2:
                 # Middle Ellipse data
-                A_or_space = self.text_to_list(self.ui.le_A_or.text())
-                B_or_space = self.text_to_list(self.ui.le_B_or.text())
-                a_or_space = self.text_to_list(self.ui.le_a_or.text())
-                b_or_space = self.text_to_list(self.ui.le_b_or.text())
-                Ri_or_space = self.text_to_list(self.ui.le_Ri_or.text())
-                L_or_space = self.text_to_list(self.ui.le_L_or.text())
-                Req_or_space = self.text_to_list(self.ui.le_Req_or.text())
-                alpha_or_space = self.text_to_list(self.ui.le_Alpha_or.text())
+                A_or_space = text_to_list(self.ui.le_A_or.text())
+                B_or_space = text_to_list(self.ui.le_B_or.text())
+                a_or_space = text_to_list(self.ui.le_a_or.text())
+                b_or_space = text_to_list(self.ui.le_b_or.text())
+                Ri_or_space = text_to_list(self.ui.le_Ri_or.text())
+                L_or_space = text_to_list(self.ui.le_L_or.text())
+                Req_or_space = text_to_list(self.ui.le_Req_or.text())
+                alpha_or_space = text_to_list(self.ui.le_Alpha_or.text())
 
                 outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space,
                                       Req_or_space, alpha_or_space]
@@ -610,18 +614,6 @@ class WakefieldControl:
                                                                                                 count += 1
             return self.shape_space
 
-    @staticmethod
-    def load_shape_space(filename):
-        dir_ = filename
-
-        # check if extension is included
-        if dir_.split('.')[-1] != 'json':
-            dir_ = f'{dir}.json'
-
-        df = fr.json_reader(dir)
-
-        return df.to_dict()
-
     def prompt(self, code, fid):
         # path = os.getcwd()
         # path = os.path.join(path, fr"File\{code}\Cavity{fid}")
@@ -635,7 +627,7 @@ class WakefieldControl:
             msg.setStandardButtons(QMessageBox.YesToAll | QMessageBox.Yes | QMessageBox.No | QMessageBox.NoToAll)
             msg.setDefaultButton(QMessageBox.Yes)
 
-            msg.buttonClicked.connect(self.button_clicked)
+            msg.buttonClicked.connect(button_clicked)
             # print_(f'msg: {msg.Yes}')
 
             x = msg.exec_()
@@ -651,22 +643,18 @@ class WakefieldControl:
         else:
             return 'YesToAll'
 
-    def show_hide_(self, wid1, wid2):
-        print('here')
+    @staticmethod
+    def show_hide_(wid1, wid2):
         if wid1.currentText().lower() == 'parallel':
             wid2.show()
         else:
             wid2.hide()
 
-    @staticmethod
-    def button_clicked(i):
-        return i.text()
-
     def open_file(self, le, cb):
         # clear combobox
         self.ui.cb_Shape_Space_Keys.clear()
         self.ui.cb_Shape_Space_Keys.addItem('All')
-        self._selected_keys = []
+        self.selected_keys = []
 
         filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Json Files (*.json)")
         try:
@@ -678,78 +666,15 @@ class WakefieldControl:
             for col in dd.keys():
                 cb.addItem(fr'{col}')
 
-            self._shape_space = dd
+            self.loaded_shape_space = dd
 
         except Exception as e:
             print('Failed to open file:: ', e)
 
-    @staticmethod
-    def text_to_list(txt):
-        if "range" in txt:
-            txt = txt.replace('range', '')
-            ll = ast.literal_eval(txt)
-            return range(ll[0], ll[1], ll[2])
-        elif 'linspace' in txt:
-            ll = eval(f'np.{txt}')
-            return ll
-        else:
-            ll = ast.literal_eval(txt)
-            if isinstance(ll, int) or isinstance(ll, float):
-                return [ll]
-            else:
-                return list(ll)
-
-    def animate_width(self, cb, widget, min_width, standard, enable, reverse=False):
-        if enable:
-            # GET WIDTH
-            width = widget.width()
-            # SET MAX WIDTH
-
-            if not reverse:
-                if cb.checkState() != 2:
-                    widthCollapsed = min_width
-                    widget.setMinimumWidth(0)
-                else:
-                    widthCollapsed = standard
-                    # widget.setMinimumWidth(standard)
-            else:
-                if cb.checkState() == 2:
-                    widthCollapsed = min_width
-                    widget.setMinimumWidth(0)
-                else:
-                    widthCollapsed = standard
-                    # widget.setMinimumWidth(standard)
-
-            # ANIMATION
-            self.animation = QPropertyAnimation(widget, b"maximumWidth")
-            self.animation.setDuration(200)
-            self.animation.setStartValue(width)
-            self.animation.setEndValue(widthCollapsed)
-            self.animation.start()
-
-    def animate_height(self, cb, widget, min_height, standard, enable):
-        if enable:
-            # GET WIDTH
-            height = widget.width()
-            # SET MAX WIDTH
-            if cb.checkState() != 2:
-                heightCollapsed = min_height
-                widget.setMinimumHeight(0)
-            else:
-                heightCollapsed = standard
-                # widget.setMinimumWidth(standard)
-
-            # ANIMATION
-            self.animation = QPropertyAnimation(widget, b"maximumHeight")
-            self.animation.setDuration(200)
-            self.animation.setStartValue(height)
-            self.animation.setEndValue(heightCollapsed)
-            self.animation.start()
-
     def exe_control(self):
         # Abci
         self.ui.pb_Top_Drawer.clicked.connect(lambda: self.run_abci_exe(
-            fr'{self.main_control.parentDir}\em_codes\ABCI_exe\TopDrawer for Windows\TopDrawW.exe'))
+            fr'{self.main_control.parentDir}\exe\ABCI_exe\TopDrawer for Windows\TopDrawW.exe'))
 
     def ui_effects(self):
         # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
@@ -900,11 +825,11 @@ class WakefieldControl:
 
         # remove existing cells
         self.graphicsView.removeCells()
-        for key in self._shape_space.keys():
+        for key in self.loaded_shape_space.keys():
             if key in self.ui.cb_Shape_Space_Keys.currentText():
-                IC = self._shape_space[key]["IC"]
-                OC = self._shape_space[key]["OC"]
-                BP = self._shape_space[key]["BP"]
+                IC = self.loaded_shape_space[key]["IC"]
+                OC = self.loaded_shape_space[key]["OC"]
+                BP = self.loaded_shape_space[key]["BP"]
                 self.graphicsView.drawCells(IC, OC, BP,
                                             QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
 

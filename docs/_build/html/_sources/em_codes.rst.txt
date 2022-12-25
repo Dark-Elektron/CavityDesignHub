@@ -4,7 +4,7 @@ em\_codes package
 Module contents
 ---------------
 
-.. automodule:: em_codes
+.. automodule:: exe
    :members:
    :undoc-members:
    :show-inheritance:

@@ -4,14 +4,6 @@ analysis\_modules.eigenmode.SLANS package
 Submodules
 ----------
 
-analysis\_modules.eigenmode.SLANS.geometry module
--------------------------------------------------
-
-.. automodule:: analysis_modules.eigenmode.SLANS.geometry
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 analysis\_modules.eigenmode.SLANS.geometry\_manual module
 ---------------------------------------------------------
 
@@ -80,14 +72,6 @@ analysis\_modules.eigenmode.SLANS.slans\_par\_run module
 --------------------------------------------------------
 
 .. automodule:: analysis_modules.eigenmode.SLANS.slans_par_run
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-analysis\_modules.eigenmode.SLANS.tune\_py\_Req module
-------------------------------------------------------
-
-.. automodule:: analysis_modules.eigenmode.SLANS.tune_py_Req
    :members:
    :undoc-members:
    :show-inheritance:

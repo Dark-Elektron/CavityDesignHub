@@ -29,6 +29,7 @@ Introduction
 
    introduction
    quickstart
+   get_involved
 
 Modules
 ========

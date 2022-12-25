@@ -14,8 +14,10 @@ fr = FileReader()
 
 file_color = 'cyan'
 
+
 def print_(*arg):
     print(colored(f'\t\t\t{arg}', file_color))
+
 
 def run_MP():
     print_("\t\tRUNNING MP")
@@ -60,6 +62,7 @@ def run_MP():
 
         except Exception as e:
             print_("Exception in run_MP::", e)
+
 
 def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, parentDir, projectDir):
     for key, shape in processor_shape_space.items():

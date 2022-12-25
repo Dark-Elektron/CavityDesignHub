@@ -20,24 +20,27 @@ DEBUG_CONTEXT = False
 
 class GraphicsView(QGraphicsView):
     def __init__(self, win, widg, parent=None):
+        print("Check 0: graphics_view.py")
         # self.scene = Scene()
         super().__init__(parent)
         self.win = win
 
-        if widg == 'Wakefield':
-            self.ui = win.ui
-            self.geom_in = win.ui
-        elif widg == "Eigenmode":
-            self.ui = win.ui
-            self.geom_in = win.geom_in
-        else:
-            self.ui = win.ui
-            self.geom_in = win.ui
+        # if widg == 'Wakefield':
+        #     self.ui = win.ui
+        #     self.geom_in = win.ui
+        # elif widg == "Eigenmode":
+        #     self.ui = win.ui
+        #     self.geom_in = win.geom_in
+        # else:
+        #     self.ui = win.ui
+        #     self.geom_in = win.ui
+        self.ui = win.ui
 
         self.scene = win.scene
         self.grScene = win.scene.grScene
 
         self.initUi()
+        print("Check 3: graphics_view.py")
 
         # This part ensures that the zoom of the viewport does not affect the scrollbar.
         # I still don't understand the logic but it works.... for now
@@ -56,6 +59,7 @@ class GraphicsView(QGraphicsView):
         self.edge_color = QColor("#001000")
         self.socket_type = 1
         self.editingFlag = False
+        print("Check 3: graphics_view.py")
 
         self.zoomInFactor = 1.25
         self.zoomClamp = False
@@ -87,39 +91,39 @@ class GraphicsView(QGraphicsView):
         self.scale(0.2, 0.2)
 
     def update_signal(self):
-        self.geom_in.le_A_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_B_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_a_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_b_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_Ri_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_L_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_Req_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_A_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_B_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_a_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_b_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_Ri_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_L_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_Req_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
-        self.geom_in.le_A_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_B_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_a_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_b_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_Ri_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_L_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_Req_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_A_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_B_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_a_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_b_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_Ri_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_L_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_Req_ol.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
-        self.geom_in.le_A_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_B_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_a_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_b_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_Ri_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_L_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.le_Req_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_A_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_B_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_a_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_b_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_Ri_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_L_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.le_Req_or.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
-        self.geom_in.sb_N_Cells.valueChanged.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.sb_N_Cells.valueChanged.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
         # beam pipe signals
-        self.geom_in.cb_LBP.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.cb_RBP.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.cb_LBP.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.cb_RBP.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
         # outer cells check box
-        self.geom_in.cb_Outer_Cell_L.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
-        self.geom_in.cb_Outer_Cell_R.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.cb_Outer_Cell_L.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
+        self.ui.cb_Outer_Cell_R.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
     def drawCells(self, IC=None, OC=None, BP=None, color="#ffffff"):
         line_T = Line(self, line_type='line', section="top", IC=IC, OC=OC, BP=BP, color=color)

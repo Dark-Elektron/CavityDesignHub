@@ -18,6 +18,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -39,13 +40,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
-</ul>
-<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
@@ -3744,12 +3739,57 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.calculate_alpha">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">calculate_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">B</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Ri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Req</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">L_bp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#calculate_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.calculate_alpha" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the largest angle the tangent line of two ellipses makes with the horizontal axis</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>A</strong> (<em>float</em>) – </p></li>
+<li><p><strong>B</strong> (<em>float</em>) – </p></li>
+<li><p><strong>a</strong> (<em>float</em>) – </p></li>
+<li><p><strong>b</strong> (<em>float</em>) – </p></li>
+<li><p><strong>Ri</strong> (<em>float</em>) – </p></li>
+<li><p><strong>L</strong> (<em>float</em>) – </p></li>
+<li><p><strong>Req</strong> (<em>float</em>) – </p></li>
+<li><p><strong>L_bp</strong> (<em>float</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>alpha</strong> (<em>float</em>) – Largest angle the tangent line of two ellipses makes with the horizontal axis</p></li>
+<li><p><strong>error_msg</strong> (<em>int</em>) – State of the iteration, failed or successful. Refer to</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.ellipse_tangent">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">ellipse_tangent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#ellipse_tangent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.ellipse_tangent" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the coordinates of the tangent line that connects two ellipses</p>
+<figure class="align-center" id="target-to-image">
+<a class="reference internal image-reference" href="_images/ellipse_tangent.png"><img alt="ellipse tangent" src="_images/ellipse_tangent.png" style="width: 200px;" /></a>
+</figure>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>z</strong> (<em>list</em><em>, </em><em>array like</em>) – Contains list of tangent points coordinate’s variables <code class="docutils literal notranslate"><span class="pre">[x1,</span> <span class="pre">y1,</span> <span class="pre">x2,</span> <span class="pre">y2]</span></code>.
+See <code class="xref std std-numref docutils literal notranslate"><span class="pre">target</span> <span class="pre">to</span> <span class="pre">image</span></code></p></li>
+<li><p><strong>data</strong> (<em>list</em><em>, </em><em>array like</em>) – Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+data = <code class="docutils literal notranslate"><span class="pre">[coords,</span> <span class="pre">dim]</span></code>; <code class="docutils literal notranslate"><span class="pre">coords</span></code> = <code class="docutils literal notranslate"><span class="pre">[h,</span> <span class="pre">k,</span> <span class="pre">p,</span> <span class="pre">q]</span></code>, <code class="docutils literal notranslate"><span class="pre">dim</span></code> = <code class="docutils literal notranslate"><span class="pre">[a,</span> <span class="pre">b,</span> <span class="pre">A,</span> <span class="pre">B]</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of four non-linear functions</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The four returned non-linear functions are</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}f_1 = \frac{A^2b^2(x_1 - h)(y_2-q)}{a^2B^2(x_2-p)(y_1-k)} - 1\\f_2 = \frac{(x_1 - h)^2}{a^2} + \frac{(y_1-k)^2}{b^2} - 1\\f_3 = \frac{(x_2 - p)^2}{A^2} + \frac{(y_2-q)^2}{B^2} - 1\\f_4 = \frac{-b^2(x_1-x_2)(x_1-h)}{a^2(y_1-y_2)(y_1-k)} - 1\end{aligned}\end{align} \]</div>
+</div>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.normal_dist">
@@ -3759,12 +3799,36 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.perform_geometry_checks">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">perform_geometry_checks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">par_mid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">par_end</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#perform_geometry_checks"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.perform_geometry_checks" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Checks geometry to filter out low loss cavity geometries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>par_mid</strong> (<em>list</em><em>, </em><em>array like</em>) – Mid cell parameters of cavity</p></li>
+<li><p><strong>par_end</strong> (<em>list</em><em>, </em><em>array like</em>) – End cell parameters of cavity</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.quad_stroud3">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">quad_stroud3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rdim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">degree</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#quad_stroud3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.quad_stroud3" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Stroud-3 quadrature in <span class="math notranslate nohighlight">\([0,1]^k\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rdim</strong> (<em>int</em>) – Dimension of variables</p></li>
+<li><p><strong>degree</strong> (<em>int</em>) – Degree</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Nodes and corresponding weights</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.quad_stroud5">
@@ -3774,12 +3838,30 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.stroud">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">stroud</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#stroud"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.stroud" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Stroud-3 method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>int</em>) – Dimension</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>Nodes of quadrature rule in [0,1]**p (column-wise)</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.text_to_list">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">text_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ll</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#text_to_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.text_to_list" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Convert text input to list</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ll</strong> (<em>str</em>) – Input text</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.text_to_list_">
@@ -3789,7 +3871,16 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.update_alpha">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">update_alpha</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#update_alpha"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.update_alpha" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Update geometry json file variables to include the value of alpha</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cell</strong> – Cavity geometry parameters</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List of cavity geometry parameters</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.weighted_mean_obj">
@@ -3799,7 +3890,19 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.write_cst_paramters">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">write_cst_paramters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ic_</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projectDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#write_cst_paramters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.write_cst_paramters" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Writes cavity geometric data that can be imported into CST Studio</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>key</strong> (<em>str</em><em>, </em><em>int</em>) – Cavity marker</p></li>
+<li><p><strong>ic</strong> (<em>list</em><em>, </em><em>array like</em>) – Inner cavity cell geometric variables</p></li>
+<li><p><strong>oc</strong> (<em>list</em><em>, </em><em>array like</em>) – Outer cavity cell geometric variables</p></li>
+<li><p><strong>projectDir</strong> (<em>str</em>) – Project directory</p></li>
+<li><p><strong>cell_type</strong> (<em>str</em>) – Single cell or multicell</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-utils.test">

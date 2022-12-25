@@ -4,11 +4,10 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ui_files package &mdash; CavityHub 0.0 documentation</title>
+  <title>ui_files package &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
       <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
-      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
       <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
@@ -19,13 +18,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/clipboard.min.js"></script>
-        <script src="_static/copybutton.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="ui_state_files package" href="ui_state_files.html" />
-    <link rel="prev" title="simulation_codes.SLANS package" href="simulation_codes.SLANS.html" /> 
+    <link rel="prev" title="setup module" href="setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -33,7 +30,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> CavityHub
+            <a href="index.html" class="icon icon-home"> CavityDesignHub (CaDH)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -47,42 +44,43 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="em_codes.html">em_codes package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="icons_rc.html">icons_rc module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="main_control.html">main_control module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="manual_run.html">manual_run package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="node_editor.html">node_editor package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qss.html">qss package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="simulation_codes.html">simulation_codes package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">ui_files package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.abci_plot">ui_files.abci_plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-abci-plot-module">ui_files.abci_plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.edit_annotated_text">ui_files.edit_annotated_text module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.edit_annotated_text_dialog">ui_files.edit_annotated_text_dialog module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.edit_line2D">ui_files.edit_line2D module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.eigenmode">ui_files.eigenmode module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.geometry_input">ui_files.geometry_input module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-eigenmode-module">ui_files.eigenmode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-geometry-input-module">ui_files.geometry_input module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.main_window">ui_files.main_window module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.misc">ui_files.misc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.mode_nomenclature">ui_files.mode_nomenclature module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.multipacting">ui_files.multipacting module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-multipacting-module">ui_files.multipacting module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.pandas_table">ui_files.pandas_table module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.plot">ui_files.plot module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-plot-module">ui_files.plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.plot_file_widget">ui_files.plot_file_widget module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.plot_widget_header">ui_files.plot_widget_header module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.plottypeselector">ui_files.plottypeselector module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.postprocess">ui_files.postprocess module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-plot-widget-header-module">ui_files.plot_widget_header module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-plottypeselector-module">ui_files.plottypeselector module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-postprocess-module">ui_files.postprocess module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.pp_plot">ui_files.pp_plot module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.pprops">ui_files.pprops module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.run_tune">ui_files.run_tune module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-ui_files.wakefield">ui_files.wakefield module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-run-tune-module">ui_files.run_tune module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#ui-files-wakefield-module">ui_files.wakefield module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files.wg_calculations">ui_files.wg_calculations module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-ui_files">Module contents</a></li>
 </ul>
@@ -99,7 +97,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">CavityHub</a>
+          <a href="index.html">CavityDesignHub (CaDH)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -123,39 +121,8 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-ui_files.abci_plot">
-<span id="ui-files-abci-plot-module"></span><h2>ui_files.abci_plot module<a class="headerlink" href="#module-ui_files.abci_plot" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.abci_plot.Ui_ABCI_Plot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.abci_plot.</span></span><span class="sig-name descname"><span class="pre">Ui_ABCI_Plot</span></span><a class="reference internal" href="_modules/ui_files/abci_plot.html#Ui_ABCI_Plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.abci_plot.Ui_ABCI_Plot" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.abci_plot.Ui_ABCI_Plot.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ABCI_Plot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/abci_plot.html#Ui_ABCI_Plot.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.abci_plot.Ui_ABCI_Plot.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.abci_plot.Ui_ABCI_Plot.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ABCI_Plot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/abci_plot.html#Ui_ABCI_Plot.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.abci_plot.Ui_ABCI_Plot.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-abci-plot-module">
+<h2>ui_files.abci_plot module<a class="headerlink" href="#ui-files-abci-plot-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-ui_files.edit_annotated_text">
 <span id="ui-files-edit-annotated-text-module"></span><h2>ui_files.edit_annotated_text module<a class="headerlink" href="#module-ui_files.edit_annotated_text" title="Permalink to this heading"></a></h2>
@@ -228,73 +195,11 @@
 </dd></dl>
 
 </section>
-<section id="module-ui_files.eigenmode">
-<span id="ui-files-eigenmode-module"></span><h2>ui_files.eigenmode module<a class="headerlink" href="#module-ui_files.eigenmode" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.eigenmode.Ui_Eigenmode">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.eigenmode.</span></span><span class="sig-name descname"><span class="pre">Ui_Eigenmode</span></span><a class="reference internal" href="_modules/ui_files/eigenmode.html#Ui_Eigenmode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.eigenmode.Ui_Eigenmode" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.eigenmode.Ui_Eigenmode.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Eigenmode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/eigenmode.html#Ui_Eigenmode.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.eigenmode.Ui_Eigenmode.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.eigenmode.Ui_Eigenmode.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Eigenmode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/eigenmode.html#Ui_Eigenmode.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.eigenmode.Ui_Eigenmode.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-eigenmode-module">
+<h2>ui_files.eigenmode module<a class="headerlink" href="#ui-files-eigenmode-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-ui_files.geometry_input">
-<span id="ui-files-geometry-input-module"></span><h2>ui_files.geometry_input module<a class="headerlink" href="#module-ui_files.geometry_input" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.geometry_input.Ui_Geometry_Input">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.geometry_input.</span></span><span class="sig-name descname"><span class="pre">Ui_Geometry_Input</span></span><a class="reference internal" href="_modules/ui_files/geometry_input.html#Ui_Geometry_Input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.geometry_input.Ui_Geometry_Input" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.geometry_input.Ui_Geometry_Input.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Geometry_Input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/geometry_input.html#Ui_Geometry_Input.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.geometry_input.Ui_Geometry_Input.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.geometry_input.Ui_Geometry_Input.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Geometry_Input</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/geometry_input.html#Ui_Geometry_Input.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.geometry_input.Ui_Geometry_Input.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-geometry-input-module">
+<h2>ui_files.geometry_input module<a class="headerlink" href="#ui-files-geometry-input-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-ui_files.main_window">
 <span id="ui-files-main-window-module"></span><h2>ui_files.main_window module<a class="headerlink" href="#module-ui_files.main_window" title="Permalink to this heading"></a></h2>
@@ -398,39 +303,8 @@
 </dd></dl>
 
 </section>
-<section id="module-ui_files.multipacting">
-<span id="ui-files-multipacting-module"></span><h2>ui_files.multipacting module<a class="headerlink" href="#module-ui_files.multipacting" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.multipacting.Ui_Multipacting">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.multipacting.</span></span><span class="sig-name descname"><span class="pre">Ui_Multipacting</span></span><a class="reference internal" href="_modules/ui_files/multipacting.html#Ui_Multipacting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.multipacting.Ui_Multipacting" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.multipacting.Ui_Multipacting.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Multipacting</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/multipacting.html#Ui_Multipacting.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.multipacting.Ui_Multipacting.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.multipacting.Ui_Multipacting.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Multipacting</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/multipacting.html#Ui_Multipacting.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.multipacting.Ui_Multipacting.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-multipacting-module">
+<h2>ui_files.multipacting module<a class="headerlink" href="#ui-files-multipacting-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-ui_files.pandas_table">
 <span id="ui-files-pandas-table-module"></span><h2>ui_files.pandas_table module<a class="headerlink" href="#module-ui_files.pandas_table" title="Permalink to this heading"></a></h2>
@@ -466,144 +340,20 @@
 </dd></dl>
 
 </section>
-<section id="module-ui_files.plot">
-<span id="ui-files-plot-module"></span><h2>ui_files.plot module<a class="headerlink" href="#module-ui_files.plot" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.plot.Ui_Plot">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.plot.</span></span><span class="sig-name descname"><span class="pre">Ui_Plot</span></span><a class="reference internal" href="_modules/ui_files/plot.html#Ui_Plot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plot.Ui_Plot" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.plot.Ui_Plot.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Plot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/plot.html#Ui_Plot.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plot.Ui_Plot.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.plot.Ui_Plot.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Plot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/plot.html#Ui_Plot.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plot.Ui_Plot.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-plot-module">
+<h2>ui_files.plot module<a class="headerlink" href="#ui-files-plot-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-ui_files.plot_file_widget">
 <span id="ui-files-plot-file-widget-module"></span><h2>ui_files.plot_file_widget module<a class="headerlink" href="#module-ui_files.plot_file_widget" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-ui_files.plot_widget_header">
-<span id="ui-files-plot-widget-header-module"></span><h2>ui_files.plot_widget_header module<a class="headerlink" href="#module-ui_files.plot_widget_header" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.plot_widget_header.Ui_Header">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.plot_widget_header.</span></span><span class="sig-name descname"><span class="pre">Ui_Header</span></span><a class="reference internal" href="_modules/ui_files/plot_widget_header.html#Ui_Header"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plot_widget_header.Ui_Header" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.plot_widget_header.Ui_Header.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Header</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/plot_widget_header.html#Ui_Header.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plot_widget_header.Ui_Header.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.plot_widget_header.Ui_Header.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Header</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/plot_widget_header.html#Ui_Header.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plot_widget_header.Ui_Header.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-plot-widget-header-module">
+<h2>ui_files.plot_widget_header module<a class="headerlink" href="#ui-files-plot-widget-header-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-ui_files.plottypeselector">
-<span id="ui-files-plottypeselector-module"></span><h2>ui_files.plottypeselector module<a class="headerlink" href="#module-ui_files.plottypeselector" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.plottypeselector.Ui_PlotTypeSelector">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.plottypeselector.</span></span><span class="sig-name descname"><span class="pre">Ui_PlotTypeSelector</span></span><a class="reference internal" href="_modules/ui_files/plottypeselector.html#Ui_PlotTypeSelector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plottypeselector.Ui_PlotTypeSelector" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.plottypeselector.Ui_PlotTypeSelector.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PlotTypeSelector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/plottypeselector.html#Ui_PlotTypeSelector.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plottypeselector.Ui_PlotTypeSelector.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.plottypeselector.Ui_PlotTypeSelector.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">PlotTypeSelector</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/plottypeselector.html#Ui_PlotTypeSelector.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.plottypeselector.Ui_PlotTypeSelector.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-plottypeselector-module">
+<h2>ui_files.plottypeselector module<a class="headerlink" href="#ui-files-plottypeselector-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-ui_files.postprocess">
-<span id="ui-files-postprocess-module"></span><h2>ui_files.postprocess module<a class="headerlink" href="#module-ui_files.postprocess" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.postprocess.Ui_Postprocess">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.postprocess.</span></span><span class="sig-name descname"><span class="pre">Ui_Postprocess</span></span><a class="reference internal" href="_modules/ui_files/postprocess.html#Ui_Postprocess"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.postprocess.Ui_Postprocess" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.postprocess.Ui_Postprocess.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Postprocess</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/postprocess.html#Ui_Postprocess.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.postprocess.Ui_Postprocess.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.postprocess.Ui_Postprocess.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Postprocess</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/postprocess.html#Ui_Postprocess.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.postprocess.Ui_Postprocess.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-postprocess-module">
+<h2>ui_files.postprocess module<a class="headerlink" href="#ui-files-postprocess-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-ui_files.pp_plot">
 <span id="ui-files-pp-plot-module"></span><h2>ui_files.pp_plot module<a class="headerlink" href="#module-ui_files.pp_plot" title="Permalink to this heading"></a></h2>
@@ -673,73 +423,11 @@
 </dd></dl>
 
 </section>
-<section id="module-ui_files.run_tune">
-<span id="ui-files-run-tune-module"></span><h2>ui_files.run_tune module<a class="headerlink" href="#module-ui_files.run_tune" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.run_tune.Ui_w_Tune">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.run_tune.</span></span><span class="sig-name descname"><span class="pre">Ui_w_Tune</span></span><a class="reference internal" href="_modules/ui_files/run_tune.html#Ui_w_Tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.run_tune.Ui_w_Tune" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.run_tune.Ui_w_Tune.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w_Tune</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/run_tune.html#Ui_w_Tune.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.run_tune.Ui_w_Tune.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.run_tune.Ui_w_Tune.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">w_Tune</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/run_tune.html#Ui_w_Tune.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.run_tune.Ui_w_Tune.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-run-tune-module">
+<h2>ui_files.run_tune module<a class="headerlink" href="#ui-files-run-tune-module" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-ui_files.wakefield">
-<span id="ui-files-wakefield-module"></span><h2>ui_files.wakefield module<a class="headerlink" href="#module-ui_files.wakefield" title="Permalink to this heading"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="ui_files.wakefield.Ui_Wakefield">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ui_files.wakefield.</span></span><span class="sig-name descname"><span class="pre">Ui_Wakefield</span></span><a class="reference internal" href="_modules/ui_files/wakefield.html#Ui_Wakefield"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.wakefield.Ui_Wakefield" title="Permalink to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p class="rubric">Methods</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 63%" />
-<col style="width: 37%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><strong>retranslateUi</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>setupUi</strong></p></td>
-<td></td>
-</tr>
-</tbody>
-</table>
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.wakefield.Ui_Wakefield.retranslateUi">
-<span class="sig-name descname"><span class="pre">retranslateUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Wakefield</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/wakefield.html#Ui_Wakefield.retranslateUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.wakefield.Ui_Wakefield.retranslateUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="ui_files.wakefield.Ui_Wakefield.setupUi">
-<span class="sig-name descname"><span class="pre">setupUi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Wakefield</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/ui_files/wakefield.html#Ui_Wakefield.setupUi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ui_files.wakefield.Ui_Wakefield.setupUi" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
+<section id="ui-files-wakefield-module">
+<h2>ui_files.wakefield module<a class="headerlink" href="#ui-files-wakefield-module" title="Permalink to this heading"></a></h2>
 </section>
 <section id="module-ui_files.wg_calculations">
 <span id="ui-files-wg-calculations-module"></span><h2>ui_files.wg_calculations module<a class="headerlink" href="#module-ui_files.wg_calculations" title="Permalink to this heading"></a></h2>
@@ -784,7 +472,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="simulation_codes.SLANS.html" class="btn btn-neutral float-left" title="simulation_codes.SLANS package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="setup.html" class="btn btn-neutral float-left" title="setup module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="ui_state_files.html" class="btn btn-neutral float-right" title="ui_state_files package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

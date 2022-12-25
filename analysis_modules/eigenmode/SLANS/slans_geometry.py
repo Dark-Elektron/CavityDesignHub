@@ -36,9 +36,44 @@ class SLANSGeometry(Geometry):
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, f_shift='default', beta=1, n_modes=None, beampipes='None',
                parentDir=None, projectDir=None, subdir=''):
-        # print_(mid_cells_par, l_end_cell_par)
-        if not n_modes:
-            n_modes = no_of_cells + 1  # intentional because the accuracy of the last mode is always low
+        """
+        Write geometry file and run eigenmode analysis with SLANS
+
+        Parameters
+        ----------
+        no_of_cells: int
+            Number of cells
+        no_of_modules: int
+            Number of modules
+        mid_cells_par: list, array like
+            Mid cell geometric parameters -> [A, B, a, b, Ri, L, Req, alpha]
+        l_end_cell_par: list, array like
+            Left end cell geometric parameters -> [A_el, B_el, a_el, b_el, Ri_el, L_el, Req, alpha_el]
+        r_end_cell_par: list, array like
+            Right end cell geometric parameters -> [A_er, B_er, a_er, b_er, Ri_er, L_er, Req, alpha_er]
+        fid: int, str
+            File id
+        bc: int
+            Boundary condition -> 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        f_shift: float
+            Eigenvalue frequency shift
+        beta: int, float
+            Velocity ratio :math: `\\beta = \frac{v}{c}`
+        n_modes: int
+            Number of modes
+        beampipes: {"left", "right", "both", "none"}
+            Specify if beam pipe is on one or both ends or at no end at all
+        parentDir: str
+            Parent directory
+        projectDir: str
+            Project directory
+        subdir: str
+            Sub directory to save simulation results to
+
+        Returns
+        -------
+
+        """
 
         # this checks whether input is from gui or from the optimisation
         if mid_cells_par is not None:
@@ -215,7 +250,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = fr'{parentDir}\em_codes\SLANS_exe\genmesh2.exe'
+        genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
         filepath = fr'{run_save_directory}\{filename}'
 
         # folder for exe to write to
@@ -229,23 +264,14 @@ class SLANSGeometry(Geometry):
         subprocess.call([genmesh_path, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
         path = run_save_directory
 
-        # if f_shift == 'default':
-        #     # parameters delete later
-        #     if self.ui.le_Beta.text() or self.ui.le_Freq_Shift.text() or self.ui.sb_No_Of_Modes.value():
-        #         beta, f_shift, n_modes = float(self.ui.le_Beta.text()), float(self.ui.le_Freq_Shift.text()),
-        #         self.ui.sb_No_Of_Modes.value()
-        #         # print(beta, f_shift, n_modes)
-        #     else:
-        #         beta, f_shift, n_modes = 1, 0, 1
-
         beta, f_shift, n_modes = 1, 0, no_of_cells + 1
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = fr'{parentDir}\em_codes\SLANS_exe\slansc'
-        slansm_path = fr'{parentDir}\em_codes\SLANS_exe\slansm'
-        slanss_path = fr'{parentDir}\em_codes\SLANS_exe\slanss'
-        slansre_path = fr'{parentDir}\em_codes\SLANS_exe\slansre'
+        slansc_path = fr'{parentDir}\exe\SLANS_exe\slansc'
+        slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
+        slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
+        slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
 
         # print(cwd)
         subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
@@ -474,7 +500,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = fr'{parentDir}\em_codes\SLANS_exe\genmesh2.exe'
+        genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
         filepath = fr'{run_save_directory}\{filename}'
 
         # folder for exe to write to
@@ -501,10 +527,10 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = fr'{parentDir}\em_codes\SLANS_exe\slansc'
-        slansm_path = fr'{parentDir}\em_codes\SLANS_exe\slansm'
-        slanss_path = fr'{parentDir}\em_codes\SLANS_exe\slanss'
-        slansre_path = fr'{parentDir}\em_codes\SLANS_exe\slansre'
+        slansc_path = fr'{parentDir}\exe\SLANS_exe\slansc'
+        slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
+        slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
+        slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
 
         # print(cwd)
         subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
@@ -745,7 +771,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = fr'{parentDir}\em_codes\SLANS_exe\genmesh2.exe'
+        genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
         filepath = fr'{run_save_directory}\{filename}'
 
         # folder for exe to write to
@@ -772,10 +798,10 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = fr'{parentDir}\em_codes\SLANS_exe\slansc'
-        slansm_path = fr'{parentDir}\em_codes\SLANS_exe\slansm'
-        slanss_path = fr'{parentDir}\em_codes\SLANS_exe\slanss'
-        slansre_path = fr'{parentDir}\em_codes\SLANS_exe\slansre'
+        slansc_path = fr'{parentDir}\exe\SLANS_exe\slansc'
+        slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
+        slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
+        slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
 
         # print(cwd)
         subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)

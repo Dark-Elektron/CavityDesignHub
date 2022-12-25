@@ -3,6 +3,8 @@ from scipy import optimize as scopt
 import numpy as np
 import sympy as sym
 
+from utils.shared_functions import ellipse_tangent
+
 
 class ABCI:
     def __init__(self, left_beam_pipe, left_end_cell, mid_cell, right_end_cell, right_beam_pipe):
@@ -245,7 +247,7 @@ class ABCI:
         # # plot_cavity(xy_cross, data)
 
         data = ([0, ri+b, L, Req-B], [a, b, A, B]) # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([a, ri+0.85*b, L - A, Req-0.85*B]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        xy_cross = scopt.fsolve(ellipse_tangent, np.array([a, ri+0.85*b, L - A, Req-0.85*B]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
         # print("\tXY_CROSS2::", xy_cross)
         # #
         xy_L_ell = np.zeros(shape=(4, 2))
@@ -284,20 +286,5 @@ class ABCI:
         f2 = (x_in[2]-x2)**2/(A**2)+(x_in[3] - y2)**2/B**2-1
         f3 = (x_in[2]-x_in[0])*(x_in[0]-x1)/(a**2)+(x_in[3]-x_in[1])*(x_in[1]-y1)/b**2
         f4 = (x_in[2]-x_in[0])*(x_in[2]-x2)/(A**2)+(x_in[3]-x_in[1])*(x_in[3]-y2)/B**2
-
-        return [f1, f2, f3, f4]
-
-
-    def ellipse_tangent(self, z, *data):
-        # print(data)
-        coord, dim = data
-        h, k, p, q = coord
-        a, b, A, B = dim
-        x1, y1, x2, y2 = z
-
-        f1 = A**2*b**2*(x1-h)*(y2-q)/(a**2*B**2*(x2-p)*(y1-k)) - 1
-        f2 = (x1-h)**2/a**2 + (y1-k)**2/b**2 - 1
-        f3 = (x2-p)**2/A**2 + (y2-q)**2/B**2 - 1
-        f4 = -b**2*(x1-x2)*(x1-h)/(a**2*(y1-y2)*(y1-k)) - 1
 
         return [f1, f2, f3, f4]

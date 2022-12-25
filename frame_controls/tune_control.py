@@ -110,7 +110,7 @@ class TuneControl:
         self.show_hide()
 
         # show/hide convergence plot
-        # self.animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True)
+        # animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True)
 
         # create pause and resume icons to avoid creating them over and over again
         self.pause_icon = QIcon()
@@ -150,9 +150,9 @@ class TuneControl:
 
         # cell parameters control
         self.tuneUI.cb_Outer_Cell.stateChanged.connect(
-            lambda: self.animate_height(self.tuneUI.cb_Outer_Cell, self.tuneUI.w_Outer_Cell, 0, 160, True))
+            lambda: animate_height(self.tuneUI.cb_Outer_Cell, self.tuneUI.w_Outer_Cell, 0, 160, True))
         self.tuneUI.cb_Expansion.stateChanged.connect(
-            lambda: self.animate_height(self.tuneUI.cb_Expansion, self.tuneUI.w_Expansion, 0, 160, True))
+            lambda: animate_height(self.tuneUI.cb_Expansion, self.tuneUI.w_Expansion, 0, 160, True))
         self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.tuner_routine())
         self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.tuner_routine())
         self.tuneUI.cb_Tune_Option.currentTextChanged.connect(lambda: self.tuner_routine())
@@ -165,7 +165,7 @@ class TuneControl:
 
         # collapse other settings
         self.tuneUI.pb_Tune_Settings.clicked.connect(
-            lambda: self.main_control.animate_height(self.tuneUI.w_Tune_Settings, 0, 200, True))
+            lambda: animate_height(self.tuneUI.w_Tune_Settings, 0, 200, True))
 
         # disable secondary settings if Tuner is SLANS
         self.tuneUI.cb_Tuner.currentTextChanged.connect(
@@ -178,7 +178,7 @@ class TuneControl:
 
         # expand/collapse convergence plot
         self.tuneUI.cb_Monitor_Convergence.stateChanged.connect(
-            lambda: self.animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True))
+            lambda: animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True))
 
         # cancel
         self.tuneUI.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -1098,44 +1098,6 @@ class TuneControl:
         else:
             self.tuneUI.w_BC.hide()
 
-    def animate_width(self, cb, widget, min_width, standard, enable):
-        if enable:
-            # GET WIDTH
-            width = widget.width()
-            # SET MAX WIDTH
-            if cb.checkState() != 2:
-                widthCollapsed = min_width
-                widget.setMinimumWidth(0)
-            else:
-                widthCollapsed = standard
-                # widget.setMinimumWidth(standard)
-
-            # ANIMATION
-            self.animation = QPropertyAnimation(widget, b"maximumWidth")
-            self.animation.setDuration(AN_DURATION)
-            self.animation.setStartValue(width)
-            self.animation.setEndValue(widthCollapsed)
-            self.animation.start()
-
-    def animate_height(self, cb, widget, min_height, standard, enable):
-        if enable:
-            # GET WIDTH
-            height = widget.width()
-            # SET MAX WIDTH
-            if cb.checkState() != 2:
-                heightCollapsed = min_height
-                widget.setMinimumHeight(0)
-            else:
-                heightCollapsed = standard
-                # widget.setMinimumWidth(standard)
-
-            # ANIMATION
-            self.animation = QPropertyAnimation(widget, b"maximumHeight")
-            self.animation.setDuration(AN_DURATION)
-            self.animation.setStartValue(height)
-            self.animation.setEndValue(heightCollapsed)
-            self.animation.start()
-
     def change_cavity_image(self):
         if self.tuneUI.cb_Cell_Type.currentText() == 'Mid Cell':
             self.tuneUI.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
@@ -1445,7 +1407,7 @@ class TuneControl:
 
     @staticmethod
     def copyFiles(invar, parentDir, projectDir):
-        src = fr"{parentDir}\em_codes\SLANS_exe"
+        src = fr"{parentDir}\exe\SLANS_exe"
         dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
 
         dir_util.copy_tree(src, dst)
@@ -3391,7 +3353,7 @@ class OptimizationControl:
 
     @staticmethod
     def copyFiles(invar, parentDir, projectDir):
-        src = fr"{parentDir}\em_codes\SLANS_exe"
+        src = fr"{parentDir}\exe\SLANS_exe"
         dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
 
         dir_util.copy_tree(src, dst)

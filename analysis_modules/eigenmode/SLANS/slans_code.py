@@ -1,5 +1,6 @@
 from scipy import optimize as scopt
 import numpy as np
+from utils.shared_functions import *
 
 
 class SLANS:
@@ -63,7 +64,7 @@ class SLANS:
         n: int
             Number of cavity cells
 
-        zr12_BPL: float
+        zr12_BPL: list, array like
 
         WG_L: float
             Length of left beam pipe
@@ -104,7 +105,7 @@ class SLANS:
         n: int
             Number of cavity cells.
 
-        zr12_L: float
+        zr12_L:
 
         WG_L: float
             Length of left beam pipe
@@ -138,7 +139,7 @@ class SLANS:
         n: int
             Number of cavity cells.
 
-        zr12_R: float
+        zr12_R: list, array like
 
         WG_L: float
             Length of left beam pipe
@@ -188,7 +189,7 @@ class SLANS:
         n: int
             Number of cavity cells.
 
-        zr12_BPR: float
+        zr12_BPR: list, array like
 
         WG_L: float
             Length of left beam pipe
@@ -240,7 +241,7 @@ class SLANS:
         n: int
             Number of cavity cells.
 
-        zr12_M: float
+        zr12_M: list, array like
 
         WG_L: float
             Length of left beam pipe
@@ -917,7 +918,7 @@ class SLANS_Flattop:
         # plot_cavity(xy_cross, data)
 
         data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        xy_cross = scopt.fsolve(ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
                                 args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
         # xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),
@@ -961,21 +962,6 @@ class SLANS_Flattop:
     #     f4 = (x_in[2] - x_in[0]) * (x_in[2] - x2) / (A ** 2) + (x_in[3] - x_in[1]) * (x_in[3] - y2) / B ** 2
     #
     #     return [f1, f2, f3, f4]
-
-    @staticmethod
-    def ellipse_tangent(z, *data):
-        # print(data)
-        coord, dim = data
-        h, k, p, q = coord
-        a, b, A, B = dim
-        x1, y1, x2, y2 = z
-
-        f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-        f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-        f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-
-        return [f1, f2, f3, f4]
 
 
 class SLANS_Multicell:
@@ -1249,7 +1235,7 @@ class SLANS_Multicell:
         # plot_cavity(xy_cross, data)
 
         data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        xy_cross = scopt.fsolve(ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
                                 args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
         # xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),
@@ -1294,21 +1280,6 @@ class SLANS_Multicell:
     #     f4 = (x_in[2] - x_in[0]) * (x_in[2] - x2) / (A ** 2) + (x_in[3] - x_in[1]) * (x_in[3] - y2) / B ** 2
     #
     #     return [f1, f2, f3, f4]
-
-    @staticmethod
-    def ellipse_tangent(z, *data):
-        # print(data)
-        coord, dim = data
-        h, k, p, q = coord
-        a, b, A, B = dim
-        x1, y1, x2, y2 = z
-
-        f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-        f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-        f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-
-        return [f1, f2, f3, f4]
 
 
 class SLANS_Multicell_full:
@@ -1595,7 +1566,7 @@ class SLANS_Multicell_full:
         # plot_cavity(xy_cross, data)
 
         data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        xy_cross = scopt.fsolve(ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
                                 args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
         # xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),
@@ -1640,18 +1611,3 @@ class SLANS_Multicell_full:
     #     f4 = (x_in[2] - x_in[0]) * (x_in[2] - x2) / (A ** 2) + (x_in[3] - x_in[1]) * (x_in[3] - y2) / B ** 2
     #
     #     return [f1, f2, f3, f4]
-
-    @staticmethod
-    def ellipse_tangent(z, *data):
-        # print(data)
-        coord, dim = data
-        h, k, p, q = coord
-        a, b, A, B = dim
-        x1, y1, x2, y2 = z
-
-        f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-        f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-        f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-
-        return [f1, f2, f3, f4]

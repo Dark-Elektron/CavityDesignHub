@@ -3,6 +3,8 @@ import subprocess
 import numpy as np
 from scipy.optimize import fsolve
 
+from utils.shared_functions import ellipse_tangent
+
 
 class SLANSTune:
     def __init__(self):
@@ -225,26 +227,12 @@ class SLANSTune:
     def calculate_li(self, A, B, a, b, Ri, L, Req, L_bp):
         data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
                 [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1, y1, x2, y2 = fsolve(self.ellipse_tangent,
+        x1, y1, x2, y2 = fsolve(ellipse_tangent,
                                 np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
                                 args=data)
 
         li = np.sqrt((x1-x2)**2 + (y1-y2)**2)
         return li
-
-    @staticmethod
-    def ellipse_tangent(z, *data):
-        coord, dim = data
-        h, k, p, q = coord
-        a, b, A, B = dim
-        x1, y1, x2, y2 = z
-
-        f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-        f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-        f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-
-        return f1, f2, f3, f4
 
 
 if __name__ == '__main__':

@@ -19,17 +19,6 @@ Subpackages
    analysis_modules.uq
    analysis_modules.wakefield
 
-Submodules
-----------
-
-analysis\_modules.uq module
----------------------------
-
-.. automodule:: analysis_modules.uq
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Module contents
 ---------------
 

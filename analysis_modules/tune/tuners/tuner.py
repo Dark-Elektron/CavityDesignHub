@@ -234,18 +234,6 @@ class Tuner:
     #     alpha = 180 - np.arctan(m) * 180 / np.pi
     #     return alpha, error_msg
 
-    # def ellipse_tangent(self, z, *data):
-    #     coord, dim = data
-    #     h, k, p, q = coord
-    #     a, b, A, B = dim
-    #     x1, y1, x2, y2 = z
-    #
-    #     f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-    #     f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-    #     f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-    #     f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-    #
-    #     return f1, f2, f3, f4
     # @staticmethod
     # def save_last(projectDir, key):
     #     # copy slans files from folder with key

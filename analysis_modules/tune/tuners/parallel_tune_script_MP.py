@@ -94,7 +94,7 @@ def overwriteFolder(invar, projectDir):
     os.makedirs(path)
 
 def copyFiles(invar, parentDir, projectDir):
-    src = fr"{parentDir}\em_codes\SLANS_exe"
+    src = fr"{parentDir}\exe\SLANS_exe"
     dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
     copy_tree(src, dst)
 

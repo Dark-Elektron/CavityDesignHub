@@ -43,11 +43,14 @@ extensions = [
     'numpydoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.inheritance_diagram',
-    'matplotlib.sphinxext.mathmpl'
+    'matplotlib.sphinxext.mathmpl',
+    'sphinx.ext.autosectionlabel',
+    'sphinxcontrib.bibtex'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+bibtex_bibfiles = ['../references/refs.bib']
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -70,3 +73,6 @@ html_theme = 'sphinx_rtd_theme'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 # html_static_path = sphinx_bootstrap_theme.get_html_theme_path()
+
+# Enable numref
+numfig = True

@@ -264,7 +264,7 @@ class PostprocessControl:
         else:
             self.ppUI.w_No_Of_Processors.setMinimumWidth(0)
             self.ppUI.w_No_Of_Processors.setMaximumWidth(0)
-            self.main_control.animate_width(self.ppUI.w_No_Of_Processors, 0, 300, True)
+            animate_width(self.ppUI.w_No_Of_Processors, 0, 300, True)
 
     def code_change_control(self):
         if self.ppUI.cb_Code.currentText() == 'ABCI':

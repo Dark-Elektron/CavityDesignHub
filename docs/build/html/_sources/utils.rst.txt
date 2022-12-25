@@ -12,22 +12,6 @@ utils.CustomNavBar module
    :undoc-members:
    :show-inheritance:
 
-utils.calculate\_impedance module
----------------------------------
-
-.. automodule:: utils.calculate_impedance
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-utils.cavity\_analysis\_module module
--------------------------------------
-
-.. automodule:: utils.cavity_analysis_module
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 utils.create\_project module
 ----------------------------
 
@@ -36,34 +20,10 @@ utils.create\_project module
    :undoc-members:
    :show-inheritance:
 
-utils.cst\_3d\_field\_export module
------------------------------------
-
-.. automodule:: utils.cst_3d_field_export
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-utils.cst\_result\_compile module
----------------------------------
-
-.. automodule:: utils.cst_result_compile
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 utils.file\_reader module
 -------------------------
 
 .. automodule:: utils.file_reader
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-utils.ga module
----------------
-
-.. automodule:: utils.ga
    :members:
    :undoc-members:
    :show-inheritance:
@@ -180,14 +140,6 @@ utils.readtop module
    :undoc-members:
    :show-inheritance:
 
-utils.sensitivity\_analysis module
-----------------------------------
-
-.. automodule:: utils.sensitivity_analysis
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 utils.shared\_classes module
 ----------------------------
 
@@ -208,14 +160,6 @@ utils.test module
 -----------------
 
 .. automodule:: utils.test
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-utils.uq module
----------------
-
-.. automodule:: utils.uq
    :members:
    :undoc-members:
    :show-inheritance:

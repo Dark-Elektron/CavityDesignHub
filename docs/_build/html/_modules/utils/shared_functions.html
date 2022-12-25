@@ -3,10 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>utils.shared_functions &mdash; CavityHub 0.0 documentation</title>
+  <title>utils.shared_functions &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
       <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -16,8 +17,6 @@
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/clipboard.min.js"></script>
-        <script src="../../_static/copybutton.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -28,7 +27,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="../../index.html" class="icon icon-home"> CavityHub
+            <a href="../../index.html" class="icon icon-home"> CavityDesignHub (CaDH)
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -49,7 +48,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">CavityHub</a>
+          <a href="../../index.html">CavityDesignHub (CaDH)</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -76,6 +75,19 @@
 
 
 <div class="viewcode-block" id="update_alpha"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.update_alpha">[docs]</a><span class="k">def</span> <span class="nf">update_alpha</span><span class="p">(</span><span class="n">cell</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Update geometry json file variables to include the value of alpha</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    cell:</span>
+<span class="sd">        Cavity geometry parameters</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List of cavity geometry parameters</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cell</span>
     <span class="n">alpha</span> <span class="o">=</span> <span class="n">calculate_alpha</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="n">cell</span> <span class="o">=</span> <span class="p">[</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="n">alpha</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
@@ -83,6 +95,29 @@
 
 
 <div class="viewcode-block" id="calculate_alpha"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.calculate_alpha">[docs]</a><span class="k">def</span> <span class="nf">calculate_alpha</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">Ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="n">L_bp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the largest angle the tangent line of two ellipses makes with the horizontal axis</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    A: float</span>
+
+<span class="sd">    B: float</span>
+<span class="sd">    a: float</span>
+<span class="sd">    b: float</span>
+<span class="sd">    Ri: float</span>
+<span class="sd">    L: float</span>
+<span class="sd">    Req: float</span>
+<span class="sd">    L_bp: float</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    alpha: float</span>
+<span class="sd">        Largest angle the tangent line of two ellipses makes with the horizontal axis</span>
+<span class="sd">    error_msg: int</span>
+<span class="sd">        State of the iteration, failed or successful. Refer to</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],</span>
     <span class="c1">#         [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])</span>
     <span class="c1"># x1, y1, x2, y2 = fsolve(ellipse_tangent,</span>
@@ -106,6 +141,45 @@
 
 
 <div class="viewcode-block" id="ellipse_tangent"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.ellipse_tangent">[docs]</a><span class="k">def</span> <span class="nf">ellipse_tangent</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the coordinates of the tangent line that connects two ellipses</span>
+
+<span class="sd">    .. _target to image:</span>
+
+<span class="sd">    .. figure:: ../images/ellipse_tangent.png</span>
+<span class="sd">       :alt: ellipse tangent</span>
+<span class="sd">       :align: center</span>
+<span class="sd">       :width: 200px</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z: list, array like</span>
+<span class="sd">        Contains list of tangent points coordinate&#39;s variables ``[x1, y1, x2, y2]``.</span>
+<span class="sd">        See :numref:`target to image`</span>
+<span class="sd">    data: list, array like</span>
+<span class="sd">        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses</span>
+<span class="sd">        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of four non-linear functions</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    -----</span>
+<span class="sd">    The four returned non-linear functions are</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       f_1 = \\frac{A^2b^2(x_1 - h)(y_2-q)}{a^2B^2(x_2-p)(y_1-k)} - 1</span>
+
+<span class="sd">       f_2 = \\frac{(x_1 - h)^2}{a^2} + \\frac{(y_1-k)^2}{b^2} - 1</span>
+
+<span class="sd">       f_3 = \\frac{(x_2 - p)^2}{A^2} + \\frac{(y_2-q)^2}{B^2} - 1</span>
+
+<span class="sd">       f_4 = \\frac{-b^2(x_1-x_2)(x_1-h)}{a^2(y_1-y_2)(y_1-k)} - 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">coord</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">data</span>
     <span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">coord</span>
     <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">dim</span>
@@ -120,6 +194,21 @@
 
 
 <div class="viewcode-block" id="perform_geometry_checks"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.perform_geometry_checks">[docs]</a><span class="k">def</span> <span class="nf">perform_geometry_checks</span><span class="p">(</span><span class="n">par_mid</span><span class="p">,</span> <span class="n">par_end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Checks geometry to filter out low loss cavity geometries</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    par_mid: list, array like</span>
+<span class="sd">        Mid cell parameters of cavity</span>
+<span class="sd">    par_end: list, array like</span>
+<span class="sd">        End cell parameters of cavity</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    bool</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># # check if Req is less than lower limit</span>
     <span class="c1"># if par_mid[6] &lt; par_mid[1] + par_mid[3] + par_mid[4] or par_end[6] &lt; par_end[1] + par_end[3] + par_end[4]:</span>
     <span class="c1">#     return False</span>
@@ -153,6 +242,26 @@
 
 
 <div class="viewcode-block" id="write_cst_paramters"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.write_cst_paramters">[docs]</a><span class="k">def</span> <span class="nf">write_cst_paramters</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">ic_</span><span class="p">,</span> <span class="n">oc</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">,</span> <span class="n">cell_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Writes cavity geometric data that can be imported into CST Studio</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    key: str, int</span>
+<span class="sd">        Cavity marker</span>
+<span class="sd">    ic_: list, array like</span>
+<span class="sd">        Inner cavity cell geometric variables</span>
+<span class="sd">    oc: list, array like</span>
+<span class="sd">        Outer cavity cell geometric variables</span>
+<span class="sd">    projectDir: str</span>
+<span class="sd">        Project directory</span>
+<span class="sd">    cell_type: str</span>
+<span class="sd">        Single cell or multicell</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ic_</span> <span class="o">=</span> <span class="n">update_alpha</span><span class="p">(</span><span class="n">ic_</span><span class="p">)</span>
     <span class="n">oc</span> <span class="o">=</span> <span class="n">update_alpha</span><span class="p">(</span><span class="n">oc</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">cell_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -222,6 +331,18 @@
 
 
 <div class="viewcode-block" id="stroud"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.stroud">[docs]</a><span class="k">def</span> <span class="nf">stroud</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stroud-3 method</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p: int</span>
+<span class="sd">        Dimension</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Nodes of quadrature rule in [0,1]**p (column-wise)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Stroud-3 method</span>
     <span class="c1">#</span>
     <span class="c1"># Input parameters:</span>
@@ -250,6 +371,20 @@
 
 
 <div class="viewcode-block" id="quad_stroud3"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.quad_stroud3">[docs]</a><span class="k">def</span> <span class="nf">quad_stroud3</span><span class="p">(</span><span class="n">rdim</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Stroud-3 quadrature in :math:`[0,1]^k`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    rdim: int</span>
+<span class="sd">        Dimension of variables</span>
+<span class="sd">    degree: int</span>
+<span class="sd">        Degree</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Nodes and corresponding weights</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># data for Stroud-3 quadrature in [0,1]**k</span>
     <span class="c1"># nodes and weights</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="n">stroud</span><span class="p">(</span><span class="n">rdim</span><span class="p">)</span>
@@ -323,6 +458,18 @@
 
 
 <div class="viewcode-block" id="text_to_list"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.text_to_list">[docs]</a><span class="k">def</span> <span class="nf">text_to_list</span><span class="p">(</span><span class="n">ll</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert text input to list</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ll: str</span>
+<span class="sd">        Input text</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    List</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">ll</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
