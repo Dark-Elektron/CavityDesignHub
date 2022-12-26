@@ -24,11 +24,7 @@ See :ref:`USING:Require` for further details.
 
 .. rubric:: CaDH requires:
 
-* The **Python 3** programming language and runtime, if you want to use PoC's infrastructure.
-* A shell to execute shell scripts:
-
-  * **Bash** on Linux and OS X
-  * **PowerShell** on Windows
+* The **Python 3** programming language and runtime.
 
 
 .. rubric:: CaDH optionally requires:
@@ -44,19 +40,19 @@ All dependencies are contained in requirements.txt
 Download
 ********
 
-The CaDH-Library can be downloaded as a `zip-file <https://github.com/VLSI-EDA/PoC/archive/master.zip>`_
+The CaDH-Library can be downloaded as a `zip-file <https://github.com/Dark-Elektron/CavityDesignHub/archive/refs/heads/master.zip>`_
 (latest 'master' branch), cloned with ``git clone`` or embedded with
 ``git submodule add`` from GitHub. GitHub offers HTTPS and SSH as transfer
 protocols. See the :ref:`Download <USING:Download>` page for further
 details. The installation directory is referred to as ``CaDHRoot``.
 
-+----------+---------------------------------------------------------------------+
-| Protocol | Git Clone Command                                                   |
-+==========+=====================================================================+
-| HTTPS    | |
-+----------+---------------------------------------------------------------------+
-| SSH      |  |
-+----------+---------------------------------------------------------------------+
++----------+----------------------------------------------------------------------------+
+| Protocol | Git Clone Command                                                          |
++==========+============================================================================+
+| HTTPS    | git clone --recursive https://github.com/Dark-Elektron/CavityDesignHub.git |
++----------+----------------------------------------------------------------------------+
+| SSH      | git clone git@github.com:Dark-Elektron/CavityDesignHub.git                 |
++----------+----------------------------------------------------------------------------+
 
 
 .. _QUICK:Configuration:
@@ -64,49 +60,46 @@ details. The installation directory is referred to as ``CaDHRoot``.
 Configuring CaDH  on a Local System
 *********************************
 
-To explore CaDH's full potential, it's required to configure some paths and
-synthesis or simulation tool chains. The following commands start a guided
-configuration process. Please follow the instructions on screen. It's possible
-to relaunch the process at any time, for example to register new tools or to
-update tool versions. See :ref:`Configuration <USING:PoCConfig>` for
-more details. Run the following command line instructions to configure PoC on
-your local system:
+CaDH currently makes use of other software for analysis. These software are not
+outrightly open source but could be obtained from the website of the author.
+
+For wakefield analysis, the ABCI code is required.
+
+.. rubric:: 1. Download ABCI code from `here <https://abci.kek.jp/abci.htm>`.
+ABCI version 12.5 is recommended.
+
+.. rubric:: 2. Copy files
+
+Copy the files from the downloaded zip file to ``<root>\CavityDesignHub\exe\ABCI_exe``
+This can be done directly on Windows by copying the files to the specified folder
+or from the command line using
+
+**On Windows**
+
+First extract the files from ``ABCI_MP_12_5.zip``
 
 .. code-block:: PowerShell
 
    cd CaDHRoot
-   .\poc.ps1 configure
+   unzip ABCI_MP_12_5.zip
 
-
-.. _QUICK:Integration:
-
-Integration
-***********
-
-The CaDH-Library is meant to be integrated into other HDL projects. Therefore
-it's recommended to create a library folder and add the CaDH-Library as a Git
-submodule. After the repository linking is done, some short configuration
-steps are required to setup paths, tool chains and the target platform. The
-following command line instructions show a short example on how to integrate
-PoC.
-
-.. rubric:: 1. Adding the Library as a Git submodule
-
-The following command line instructions will create the folder ``lib\PoC\`` and
-clone the PoC-Library as a Git `submodule <http://git-scm.com/book/en/v2/Git-Tools-Submodules>`_
-into that folder. ``ProjectRoot`` is the directory of the hosting Git. A detailed
-list of steps can be found at :doc:`Integration </UsingPoC/Integration>`.
+Copy all files in extracted folder to ``<root>\CavityDesignHub\exe\ABCI_exe``
 
 .. code-block:: PowerShell
 
-   cd ProjectRoot
-   mkdir lib | cd
-   git submodule add https://github.com/VLSI-EDA/PoC.git PoC
-   cd PoC
-   git remote rename origin github
-   cd ..\..
-   git add .gitmodules lib\PoC
-   git commit -m "Added new git submodule PoC in 'lib\PoC' (PoC-Library)."
+    robocopy ABCI_MP_12_5 <root>\CavityDesignHub\exe\ABCI_exe /COPYALL /E
+
+**On Linux**
+
+.. code-block:: PowerShell
+
+   cd <folder containing zip file>
+   unzip ABCI_MP_12_5.zip
+
+Copy all files in extracted folder to ``<root>\CavityDesignHub\exe\ABCI_exe``
+
+.. code-block:: PowerShell
+    cp -a /ABCI_MP_12_5/. /<root>\CavityDesignHub\exe\ABCI_exe/
 
 
 .. _QUICK:RunSimulation:
@@ -114,66 +107,168 @@ list of steps can be found at :doc:`Integration </UsingPoC/Integration>`.
 Run a Simulation
 ****************
 
-The following quick example uses the GHDL Simulator to analyze, elaborate and
-simulate a testbench for the module ``arith_prng`` (Pseudo Random Number
-Generator - PRNG). The VHDL file ``arith_prng.vhdl`` is located at
-``PoCRoot\src\arith`` and virtually a member in the `PoC.arith` namespace.
-So the module can be identified by an unique name: ``PoC.arith.prng``, which is
-passed to the frontend script.
+Once you're able to setup, you can launch the GUI by navigating to the
+folder containing the ``main.py`` file and running the following command from
+the Windows command line
 
-.. rubric:: Example:
+.. code-block:: python
 
-.. code-block:: PowerShell
+   python3 main.py
 
-   cd CaDHRoot
-   python main_control.py
+If you have an IDE, open and :guilabel:`run` ``main.py`` directly in the IDE. This
+open the GUI as shown in the following figure
 
-The CLI command ``ghdl`` chooses *GHDL Simulator* as the simulator and
-passes the fully qualified PoC entity name ``PoC.arith.prng`` as a parameter
-to the tool. All required source file are gathered and compiled to an
-executable. Afterwards this executable is launched in CLI mode and its outputs
-are displayed in console:
+.. _gui home page:
 
-.. image:: /_static/images/ghdl/arith_prng_tb.posh.png
-   :target: /_static/images/ghdl/arith_prng_tb.posh.png
-   :alt: PowerShell console output after running PoC.arith.prng with GHDL.
+.. figure:: ../images/ellipse_tangent.png
+   :alt: accelerator cavity
+   :align: center
+   :width: 200px
 
-Each testbench uses PoC's simulation helper packages to count asserts and to
-track active stimuli and checker processes. After a completed simulation run,
-an report is written to STDOUT or the simulator's console. Note the line
-``SIMULATION RESULT = PASSED``. For each simulated PoC entity, a line in the
-overall report is created. It lists the runtime per testbench and the simulation
-status (``... ERROR``, ``FAILED``, ``NO ASSERTS`` or ``PASSED``). See
-:doc:`Simulation </UsingPoC/Simulation>` for more details.
+The GUI shows a grid of buttons.
+
+**Eigenmode Analysis**
+
+First,we are going to run an eigenmode analysis.
+* **Click on :guilabel:`EIGENMODE ANALYSIS`. This takes you to another frame
+which contains different fields and buttons.
+
+There are four major categories on the left pane.
+These are :guilabel:`Cell Geometric Parameters`, :guilabel:`Cell Parameters`,
+:guilabel:`Analysis Settings` and :guilabel:`Uncertainty Quantification`.
+
+Let's say we wanted to run an eigenmode analysis on the mid cell TESLA cavity ref{}
+which has geometric dimensions [A, B, a, b, Ri, L, Req] = []
+for one eigenmode for single module single mid cell without beam pipes.
+
+For this, we set the boundary conditions of the left and right ends of the cavity
+to ``Magnetic Wall En=0`` in order to obtain the TM010:math:`-\pi` mode.
+
+* **Click on :guilabel:`Cell Geometric Parameters` to expand the input fields
+for the geometric parameters if not already expanded.
+
+To enter the geometry for simulation, we create a ``.json`` file which
+contains the dimensions. The structure of the ``.json`` file is shown below
+
+.. code-block:: json
+
+    {
+        "cavity_name":{
+            "IC": [
+                124.44, <- A
+                132.25, <- B
+                60.44, <- a
+                42.23, <- b
+                143.972, <- Ri
+                187, <- L
+                342.4, <- Req
+                94.50406852541953 <- alpha
+            ],
+            "OC": [
+                125.16,
+                115.08,
+                34.42,
+                24,
+                160.76,
+                191.6255,
+                342.4,
+                112.08716030100433
+            ],
+            "OC_R": [
+                125.16,
+                115.08,
+                34.42,
+                24,
+                160.76,
+                191.6255,
+                342.4,
+                112.08716030100433
+            ],
+            "BP": "both", <- beampipe
+            "FREQ": 400.79 <- fundamental mode frequency
+        }
+    }
+
+Multiple entries are also possible. An example of a `.json` file that contains
+two cavities is
+
+.. code-block:: json
+
+    {
+        "cavity_1":{
+            "IC": [
+                ...
+                ],
+            "OC": [
+                ...
+                ],
+            "OC_R": [
+                ...
+                ],
+            "BP": "both",
+            "FREQ": 400.79
+        },
+        "cavity_2":{
+            "IC": [
+                ...
+                ],
+            "OC": [
+                ...
+                ],
+            "OC_R": [
+                ...
+                ],
+            "BP": "both",
+            "FREQ": 400.79
+        }
+    }
+
+This file can be saved to ``Cavities`` folder in the project directory. To load
+the file, click on :guilabel:`...`.
+
+Click on :guilabel:`Cell Parameters` to expand the widget if not already expanded.
+You should see the fields ``No. of Cells`` and ``No. of Modules``. Set both of them
+to ``1``.
+
+Click on :guilabel:`Analysis Settings` to show the analysis settings widgets.
+You should see the following in your GUI
+
+Leave the ``Freq. Shift`` as ``0``, ``No. of Modes`` should be left as `1` since
+we are only interested in one mode. Leave the polarity as `Monopole` and if the
+``Left BC`` and ``Right BC`` should be set to ``Magnetic Wall En=0``. The number
+of ``Processors`` should be set to ``1``.
+
+The analysis is now ready to be run. Click on the play button at the bottom right
+of the panel to run.
+
+The results are written to ``<root>/<project_name>/SimulationData/SLANS/<filename>``
+If no name was given, the results are saved to
+``<root>/<project_name>/SimulationData/SLANS/Cavity0. The quantities that
+we are interested in could be found in ``qois.json``. This file is writen by
+Python. The SLANS written files can be viewed using the corresponding executatble
+file in ``<root>/CavityDesignHub/exe/SLANS_exe. The table below shows the
+files and corresponding executable files to open them.
 
 
-.. _QUICK:RunSynthesis:
++--------------------------+--------------------+----------------------------------------------+
+| Executable               | File               | Remark                                       |
++==========================+====================+==============================================+
+| :guilabel:`genmesh2.exe` | ``<filename>.geo`` | Used to view the geometry and mesh           |
++--------------------------+--------------------+----------------------------------------------+
+| :guilabel:`slansc.exe`   | ``<filename>.geo`` |                                              |
++--------------------------+--------------------+----------------------------------------------+
+| :guilabel:`slansd.exe`   | ``<filename>.geo`` |                                              |
++--------------------------+--------------------+----------------------------------------------+
+| :guilabel:`slansm.exe`   | ``<filename>.geo`` |                                              |
++--------------------------+--------------------+----------------------------------------------+
+| :guilabel:`slanss.exe`   | ``<filename>.geo`` |                                              |
++--------------------------+--------------------+----------------------------------------------+
+| :guilabel:`slansre.exe`  | ``<filename>.res`` | For most cases, only this executable is used |
++--------------------------+--------------------+----------------------------------------------+
 
-Run a Synthesis
-***************
 
-The following quick example uses the Xilinx Systesis Tool (XST) to synthesize a
-netlist for IP core ``arith_prng`` (Pseudo Random Number Generator - PRNG). The
-VHDL file ``arith_prng.vhdl`` is located at ``PoCRoot\src\arith`` and virtually
-a member in the `PoC.arith` namespace. So the module can be identified by an
-unique name: ``PoC.arith.prng``, which is passed to the frontend script.
-
-.. rubric:: Example:
-
-.. code-block:: PowerShell
-
-   cd PoCRoot
-   .\poc.ps1 xst PoC.arith.prng --board=KC705
-
-The CLI command ``xst`` chooses *Xilinx Synthesis Tool* as the synthesizer and
-passes the fully qualified PoC entity name ``PoC.arith.prng`` as a parameter
-to the tool. Additionally, the development board name is required to load the
-correct ``my_config.vhdl`` file. All required source file are gathered and
-synthesized to a netlist.
-
-.. image:: /_static/images/xst/arith_prng.posh.png
-   :target: /_static/images/xst/arith_prng.posh.png
-   :alt: PowerShell console output after running PoC.arith.prng with XST.
+The geometry could also be entered manually by filling in the values in the field
+with the corresponding geometric parameter values.
 
 
 .. _QUICK:Updating:
