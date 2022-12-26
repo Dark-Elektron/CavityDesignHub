@@ -25,7 +25,6 @@ def print_(*arg):
 class EigenmodeControl:
     def __init__(self, parent):
 
-        print_("Check 0: eigenmode.py")
         self.animation = None
         self.progress_bar = None
         self.pause_icon = None
@@ -37,7 +36,6 @@ class EigenmodeControl:
         self.end_routine_thread = None
         self.w_Eigenmode = QWidget()
 
-        print_("Check 1: eigenmode.py")
         self.ui = Ui_Eigenmode()
         self.ui.setupUi(self.w_Eigenmode)
 
@@ -45,7 +43,7 @@ class EigenmodeControl:
         self.win = parent
         self.main_control = parent
         self.main_ui = parent.ui
-        print_("Check 2: eigenmode.py")
+
         # get logger
         self.log = self.main_control.log
 
@@ -53,10 +51,8 @@ class EigenmodeControl:
         # Create Scene
         self.scene = Scene(self)
 
-        print_("Check 3: eigenmode.py")
         # QGraphicsView
         self.graphicsView = GraphicsView(self, 'Eigenmode')
-        print_("Check 3a: eigenmode.py")
 
         self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
         # ##########################
@@ -65,7 +61,7 @@ class EigenmodeControl:
         self.signals()
         self.exe_control()
         self.filename = None  # placeholder, made a booboo copying the end routine
-        print_("Check 4: eigenmode.py")
+
         # instantiate geometry
         self.slans_geom = SLANSGeometry()
 
@@ -75,11 +71,9 @@ class EigenmodeControl:
         self.processes = []
         self.processes_id = []
         self.show_progress_bar = False
-        print_("Check 5: eigenmode.py")
 
         # ui effects
         self.ui_effects()
-        print_("Check 6: eigenmode.py")
 
     def initUI(self):
 
@@ -212,36 +206,30 @@ class EigenmodeControl:
         self.progress_list.append(0)
 
         for p in range(proc_count):
-            try:
-                if p < proc_count - 1:
-                    proc_keys_list = keys[p * share:p * share + share]
-                else:
-                    proc_keys_list = keys[p * share:]
+            # try:
+            if p < proc_count - 1:
+                proc_keys_list = keys[p * share:p * share + share]
+            else:
+                proc_keys_list = keys[p * share:]
 
-                processor_shape_space = {}
-                for key, val in self.shape_space.items():
-                    if key in proc_keys_list:
-                        processor_shape_space[key] = val
-                # print(f'Processor {p}: {processor_shape_space}')
-                print_("it's here")
-                print_(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
-                       self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text())
+            processor_shape_space = {}
+            for key, val in self.shape_space.items():
+                if key in proc_keys_list:
+                    processor_shape_space[key] = val
+            # print(f'Processor {p}: {processor_shape_space}')
 
-                service = mp.Process(target=self.run_sequential, args=(
-                    n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
-                    self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(), UQ))
+            service = mp.Process(target=self.run_sequential, args=(
+                n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
+                self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(), UQ))
 
-                print_("it's now hersssse")
-                service.start()
-                print_("it's now here")
+            service.start()
 
-                self.processes.append(psutil.Process(service.pid))
-                print_(self.processes_id)
-                self.processes_id.append(service.pid)
+            self.processes.append(psutil.Process(service.pid))
+            self.processes_id.append(service.pid)
 
-            except Exception as e:
-                self.log.error(fr"Exception in run_MP:: {e}")
-                # print_("Exception in run_MP::", e)
+            # except Exception as e:
+            #     self.log.error(fr"Exception in run_MP:: {e}")
+            #     # print_("Exception in run_MP::", e)
 
         # display progress bar
         self.show_progress_bar = True
@@ -308,11 +296,11 @@ class EigenmodeControl:
         # signal to progress bar
         self.show_progress_bar = False
 
-        try:
-            for p in self.processes:
-                p.terminate()
-        except:
-            pass
+        # try:
+        for p in self.processes:
+            p.terminate()
+        # except:
+        #     pass
 
         self.processes.clear()
         self.processes_id.clear()
@@ -322,16 +310,13 @@ class EigenmodeControl:
         self.log.info("Process terminated.")
 
     def end_routine(self, proc_ids):
-        print(proc_ids, type(proc_ids))
         for pid in proc_ids:
-            try:
-                p = psutil.Process(pid)
-                while p.is_running():
-                    pass
-
-                print(fr"process {p} ended")
-            except:
+            # try:
+            p = psutil.Process(pid)
+            while p.is_running():
                 pass
+            # except:
+            #     pass
 
         self.cancel()
 
@@ -342,175 +327,6 @@ class EigenmodeControl:
             # reset progress bar
             self.progress_bar.setValue(0)
             self.progress_bar.hide()
-    #
-    # def get_geometric_parameters(self, code):
-    #     self.shape_space = {}
-    #     print_('Getting geometric parameters')
-    #     if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-    #         print_("Test worked")
-    #         try:
-    #             # self.loaded_shape_space = load_shape_space(shape_space_name)
-    #             # print_(self.loaded_shape_space)
-    #
-    #             # get selected keys
-    #             self.selected_keys = self.ui.cb_Shape_Space_Keys.currentText()
-    #             print("selected keys: ", self.ui.cb_Shape_Space_Keys.currentText())
-    #             # print("Selected keys: ", self.selected_keys, type(self.selected_keys[0]))
-    #
-    #             # check keys of shape space if results already exist
-    #             toall = None
-    #             for key, val in self.loaded_shape_space.items():
-    #                 # process for only keys selected in combobox
-    #                 if self.ui.cb_Shape_Space_Keys.currentText() == "" \
-    #                         or self.ui.cb_Shape_Space_Keys.currentText() == "All":
-    #                     pass
-    #                 else:
-    #                     if key not in self.selected_keys:
-    #                         continue
-    #
-    #                 if not toall:
-    #                     ans = self.prompt(code, key)
-    #                     if ans == 'Yes':
-    #                         self.shape_space[key] = val
-    #
-    #                     if ans == 'No':
-    #                         continue
-    #
-    #                     if ans == 'YesToAll':
-    #                         self.shape_space[key] = val
-    #                         toall = 'YesToAll'
-    #
-    #                     if ans == 'NoToAll':
-    #                         toall = 'NoToAll'
-    #
-    #                     if ans == "Does not exist":
-    #                         self.shape_space[key] = val
-    #                         toall = None
-    #                 else:
-    #                     if toall == 'YesToAll':
-    #                         self.shape_space[key] = val
-    #                     else:
-    #                         path = f'{self.main_control.projectDir}/SimulationData/{code}/Cavity{key}'
-    #                         if os.path.exists(path):
-    #                             continue
-    #                         else:
-    #                             self.shape_space[key] = val
-    #
-    #             # print_(self.shape_space)
-    #             return self.shape_space
-    #         except Exception as e:
-    #             print_(f"File not found, check path:: {e}")
-    #     else:
-    #         if self.ui.cb_Inner_Cell.checkState() == 2:
-    #             # Middle Ellipse data
-    #             A_i_space = text_to_list(self.ui.le_A_i.text())
-    #             B_i_space = text_to_list(self.ui.le_B_i.text())
-    #             a_i_space = text_to_list(self.ui.le_a_i.text())
-    #             b_i_space = text_to_list(self.ui.le_b_i.text())
-    #             Ri_i_space = text_to_list(self.ui.le_Ri_i.text())
-    #             L_i_space = text_to_list(self.ui.le_L_i.text())
-    #             Req_i_space = text_to_list(self.ui.le_Req_i.text())
-    #             alpha_i_space = text_to_list(self.ui.le_Alpha.text())
-    #
-    #             inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, alpha_i_space]
-    #         else:
-    #             inner_cell_space = [[0], [0], [0], [0], [0], [0], [0], [0]]
-    #
-    #         if self.ui.cb_Outer_Cell_L.checkState() == 2:
-    #             # Middle Ellipse data
-    #             A_ol_space = text_to_list(self.ui.le_A_ol.text())
-    #             B_ol_space = text_to_list(self.ui.le_B_ol.text())
-    #             a_ol_space = text_to_list(self.ui.le_a_ol.text())
-    #             b_ol_space = text_to_list(self.ui.le_b_ol.text())
-    #             Ri_ol_space = text_to_list(self.ui.le_Ri_ol.text())
-    #             L_ol_space = text_to_list(self.ui.le_L_ol.text())
-    #             Req_ol_space = text_to_list(self.ui.le_Req_ol.text())
-    #             alpha_ol_space = text_to_list(self.ui.le_Alpha_ol.text())
-    #
-    #             outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space, Req_ol_space, alpha_ol_space]
-    #         else:
-    #             outer_cell_L_space = inner_cell_space
-    #
-    #         if self.ui.cb_Outer_Cell_R.checkState() == 2:
-    #             # Middle Ellipse data
-    #             A_or_space = text_to_list(self.ui.le_A_or.text())
-    #             B_or_space = text_to_list(self.ui.le_B_or.text())
-    #             a_or_space = text_to_list(self.ui.le_a_or.text())
-    #             b_or_space = text_to_list(self.ui.le_b_or.text())
-    #             Ri_or_space = text_to_list(self.ui.le_Ri_or.text())
-    #             L_or_space = text_to_list(self.ui.le_L_or.text())
-    #             Req_or_space = text_to_list(self.ui.le_Req_or.text())
-    #             alpha_or_space = text_to_list(self.ui.le_Alpha_or.text())
-    #
-    #             outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space, Req_or_space, alpha_or_space]
-    #         else:
-    #             outer_cell_R_space = inner_cell_space
-    #         count = 0
-    #         for A_i in inner_cell_space[0]:
-    #             for B_i in inner_cell_space[1]:
-    #                 for a_i in inner_cell_space[2]:
-    #                     for b_i in inner_cell_space[3]:
-    #                         for Ri_i in inner_cell_space[4]:
-    #                             for L_i in inner_cell_space[5]:
-    #                                 for Req_i in inner_cell_space[6]:
-    #                                     if outer_cell_L_space == inner_cell_space:
-    #                                         inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-    #                                         outer_cell_L = inner_cell
-    #
-    #                                         if self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
-    #                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'both', 'FREQ': None}
-    #                                         elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 0:
-    #                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'left', 'FREQ': None}
-    #                                         elif self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 2:
-    #                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'right', 'FREQ': None}
-    #                                         else:
-    #                                             self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'none', 'FREQ': None}
-    #
-    #                                         count += 1
-    #                                     else:
-    #                                         for A_ol in outer_cell_L_space[0]:
-    #                                             for B_ol in outer_cell_L_space[1]:
-    #                                                 for a_ol in outer_cell_L_space[2]:
-    #                                                     for b_ol in outer_cell_L_space[3]:
-    #                                                         for Ri_ol in outer_cell_L_space[4]:
-    #                                                             for L_ol in outer_cell_L_space[5]:
-    #                                                                 # for Req_ol in outer_cell_L_space[6]:
-    #                                                                 if outer_cell_L_space == outer_cell_R_space:
-    #                                                                     inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-    #                                                                     outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
-    #                                                                     outer_cell_R = outer_cell_L
-    #                                                                     if self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 0:
-    #                                                                         self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
-    #                                                                     elif self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 2:
-    #                                                                         self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
-    #                                                                     elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
-    #                                                                         self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
-    #                                                                     else:
-    #                                                                         self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
-    #
-    #                                                                     count += 1
-    #                                                                 else:
-    #                                                                     for A_or in outer_cell_R_space[0]:
-    #                                                                         for B_or in outer_cell_R_space[1]:
-    #                                                                             for a_or in outer_cell_R_space[2]:
-    #                                                                                 for b_or in outer_cell_R_space[3]:
-    #                                                                                     for Ri_or in outer_cell_R_space[4]:
-    #                                                                                         for L_or in outer_cell_R_space[5]:
-    #                                                                                             # for Req_or in outer_cell_R_space[6]:
-    #                                                                                             inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-    #                                                                                             outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
-    #                                                                                             outer_cell_R = [A_or, B_or, a_or, b_or, Ri_or, L_or, Req_i, 0]
-    #                                                                                             if self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 0:
-    #                                                                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
-    #                                                                                             elif self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 2:
-    #                                                                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
-    #                                                                                             elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
-    #                                                                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
-    #                                                                                             else:
-    #                                                                                                 self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
-    #
-    #                                                                                             count += 1
-    #         return self.shape_space
 
     def prompt(self, code, fid):
         path = fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity{fid}'
@@ -540,27 +356,6 @@ class EigenmodeControl:
                 return 'NoToAll'
         else:
             return "Does not exist"
-
-    # def open_file(self, le, cb):
-    #     # clear combobox
-    #     self.ui.cb_Shape_Space_Keys.clear()
-    #     self.ui.cb_Shape_Space_Keys.addItem('All')
-    #     # self.selected_keys.clear()
-    #
-    #     filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Json Files (*.json)")
-    #     try:
-    #         le.setText(filename)
-    #         with open(filename, 'r') as file:
-    #             dd = json.load(file)
-    #
-    #         # populate checkboxes with key
-    #         for col in dd.keys():
-    #             cb.addItem(fr'{col}')
-    #
-    #         self.loaded_shape_space = dd
-    #
-    #     except Exception as e:
-    #         print('Failed to open file:: ', e)
 
     def exe_control(self):
         # Slans
@@ -728,7 +523,6 @@ class EigenmodeControl:
 
     @staticmethod
     def show_hide_(wid1, wid2):
-        print('here')
         if wid1.currentText().lower() == 'parallel':
             wid2.show()
         else:
@@ -760,7 +554,6 @@ class EigenmodeControl:
 
             # run UQ
             if UQ:
-                print_("UQ")
                 uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
                    n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
                    f_shift=f_shift, bc=bc, parentDir=parentDir, projectDir=projectDir)
@@ -779,11 +572,11 @@ class EigenmodeControl:
         L_i_space = text_to_list(self.ui.le_L_i.text())[0]
         Req_i_space = text_to_list(self.ui.le_Req_i.text())[0]
 
-        try:
-            alpha_i_space = calculate_alpha(A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, 0)
-            self.ui.le_Alpha.setText(f"{round(alpha_i_space, 2)}")
-        except:
-            pass
+        # try:
+        alpha_i_space = calculate_alpha(A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, 0)
+        self.ui.le_Alpha.setText(f"{round(alpha_i_space, 2)}")
+        # except:
+        #     pass
 
 
 def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, projectDir):
@@ -795,7 +588,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
     # EXAMPLE: p_true = np.array([1, 2, 3, 4, 5]).T
     p_true = shape['IC'][0:5]
-    # ic(p_true)
+
     rdim = len(p_true)  # How many variabels will be considered as random in our case 5
     degree = 1
 
@@ -814,11 +607,10 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
     p_init = np.zeros(np.shape(p_true))
 
     no_parm, no_sims = np.shape(nodes)
-    ic(nodes)
     delta = 0.005  # or 0.1
 
     Ttab_val_f = []
-    print_('3')
+
     sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
     for i in range(no_sims):
         skip = False
@@ -830,21 +622,17 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
         par_mid = np.append(p_init, shape['IC'][5:]).tolist()
         par_end = par_mid
-        print_(par_mid)
 
         # perform checks on geometry
         ok = perform_geometry_checks(par_mid, par_end)
-        print_("OK", ok)
         if not ok:
             err = True
             break
         fid = fr'{key}_Q{i}'
 
         # check if folder exists and skip if it does
-        print_(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}')
         if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}'):
             skip = True
-            # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\Cavity{key}\Cavity{fid}')
 
         # skip analysis if folder already exists.
         if not skip:
@@ -864,7 +652,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
         if os.path.exists(filename):
             params = fr.svl_reader(filename)
             norm_length = 2*n_cells*shape['IC'][5]
-            ic(n_cells, norm_length)
+
             qois_result = get_qoi_value(params, slans_obj_list, n_cells, norm_length)
             print_(qois_result)
             # sometimes some degenerate shapes are still generated and the solver returns zero
@@ -888,14 +676,11 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
     # tab_val_f = obj_result
         # Ttab_val_f.append(tab_val_f)
 
-    print_("Error: ", err)
-    ic(Ttab_val_f)
     # import matplotlib.pyplot as plt
     if not err:
         v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)
-        # ic(v_expe_fobj, v_stdDev_fobj)
+
         # append results to dict
-        ic(v_expe_fobj, v_stdDev_fobj)
         for i, o in enumerate(slans_obj_list):
             result_dict_slans[o]['expe'].append(v_expe_fobj[i])
             result_dict_slans[o]['stdDev'].append(v_stdDev_fobj[i])

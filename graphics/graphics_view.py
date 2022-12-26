@@ -20,7 +20,6 @@ DEBUG_CONTEXT = False
 
 class GraphicsView(QGraphicsView):
     def __init__(self, win, widg, parent=None):
-        print("Check 0: graphics_view.py")
         # self.scene = Scene()
         super().__init__(parent)
         self.win = win
@@ -40,7 +39,6 @@ class GraphicsView(QGraphicsView):
         self.grScene = win.scene.grScene
 
         self.initUi()
-        print("Check 3: graphics_view.py")
 
         # This part ensures that the zoom of the viewport does not affect the scrollbar.
         # I still don't understand the logic but it works.... for now
@@ -59,7 +57,6 @@ class GraphicsView(QGraphicsView):
         self.edge_color = QColor("#001000")
         self.socket_type = 1
         self.editingFlag = False
-        print("Check 3: graphics_view.py")
 
         self.zoomInFactor = 1.25
         self.zoomClamp = False

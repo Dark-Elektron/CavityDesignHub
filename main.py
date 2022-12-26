@@ -180,10 +180,10 @@ class MainWindow:
 
         # window state before closing
         self.settings = QSettings('MyQtApp', "CavityDesignHub")
-        print(self.settings.fileName())
+
         # restore window state before closing
         try:
-            self.readSettings()
+            self.read_settings()
         except Exception as e:
             print("Exception occured", e)
 
@@ -211,7 +211,6 @@ class MainWindow:
 
         # hold last frame
         self.last_frame = None
-        if DEBUG: print("Check 2e_i: main_control.py")
 
         self.frames_dict = {'Home': [self.ui.pb_rHome],
                             'Tune': [self.ui.pb_Tune],
@@ -233,11 +232,8 @@ class MainWindow:
                                   'Misc': [self.ui.pb_rMisc]
                                   }
 
-        if DEBUG: print("Check 2e_ii: main_control.py")
         self.create_frames_ui()
-        if DEBUG: print("Check 2e_iii: main_control.py")
         self.signals()
-        if DEBUG: print("Check 2e_iii: main_control.py")
 
         ###########################################
 
@@ -247,7 +243,6 @@ class MainWindow:
 
         # house keeping
         # self.hk = HouseKeeping(self)
-        if DEBUG: print("Check 2e_iii: main_control.py")
 
         #############################################
         # set initial session log widget state to collapsed
@@ -292,22 +287,14 @@ class MainWindow:
         :return:
         """
 
-        if DEBUG: print("Check 2e_i_1: main_control.py")
         # frame UIs
         self.tune_widget = TuneControl(self)
-        if DEBUG: print("Check 2e_i_11: main_control.py")
         self.wakefield_widget = WakefieldControl(self)
-        if DEBUG: print("Check 2e_i_111: main_control.py")
         self.eigenmode_widget = EigenmodeControl(self)
-        if DEBUG: print("Check 2e_i_1111: main_control.py")
         self.postprocess_widget = PostprocessControl(self)
-        if DEBUG: print("Check 2e_i_11111: main_control.py")
         self.misc_widget = MiscControl(self)
-        if DEBUG: print("Check 2e_i_111111: main_control.py")
         self.plot_widget = PlotControl(self)
-        if DEBUG: print("Check 2e_i_1111111: main_control.py")
         self.multipacting_widget = MultipactingControl(self)
-        if DEBUG: print("Check 2e_i_2: main_control.py")
 
         self.frames_dict['Home'].append(self.ui.sa_Home)
         self.frames_dict['Tune'].append(self.tune_widget.w_Tune)
@@ -317,7 +304,6 @@ class MainWindow:
         self.frames_dict['Postprocess'].append(self.postprocess_widget.w_Postprocess)
         self.frames_dict['Plot'].append(self.plot_widget.w_Plot)
         self.frames_dict['Misc'].append(self.misc_widget.w_Misc)
-        if DEBUG: print("Check 2e_i_3: main_control.py")
 
     def change_frame(self, key):
         """
@@ -431,11 +417,10 @@ class MainWindow:
         -------
 
         """
-        if DEBUG: print("Check 2a: main_control.py")
+
         if not project_dir:
             project_dir = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
             self.projectDir = f2b_slashes(project_dir)
-            print('open project', self.projectDir)
 
             if os.path.exists(fr'{project_dir}\state_file.json'):
                 self.deserialize(fr'{project_dir}\state_file.json')
@@ -447,23 +432,19 @@ class MainWindow:
                 self.global_state += 1
 
         elif project_dir != '':
-            if DEBUG: print("Check 2b: main_control.py")
             # check if it's a valid project folder
             sub_dirs = [a for a in os.listdir(project_dir) if os.path.isdir(os.path.join(project_dir, a))]
             compare_dirs = ['Cavities', 'PostprocessingData', 'SimulationData']
-            if DEBUG: print("Check 2c: main_control.py")
+
             if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
                 self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
                 self.projectDir = f2b_slashes(project_dir)
-                if DEBUG: print("Check 2d: main_control.py")
 
                 # only initialize UI after successfully setting folder and initialise only once
                 self.ui.l_Project_Name.setText(self.projectDir)
                 if self.global_state == 0:
-                    if DEBUG: print("Check 2e: main_control.py")
                     self.initUI()
                     self.global_state += 1
-                if DEBUG: print("Check 2f: main_control.py")
 
             else:
                 print('Please select a valid project directory')
@@ -560,53 +541,24 @@ class MainWindow:
         -------
 
         """
-        if DEBUG: print("Check 1: main_control.py")
+
         # check if state file exists
         if os.path.exists(file):
             # open state file
             with open(file, 'r') as f:
                 state_dict = json.load(f)
 
-            # try:
             self.projectDir = state_dict['Project Directory']
             self.last_saved_theme = state_dict['Theme']
             self.ui.cb_Theme.setCurrentText(self.last_saved_theme)
-            # except:
-            #     print("Could not deserialize theme and directory!")
 
             # open project
-            if DEBUG: print("Check 2: main_control.py")
             self.open_project(self.projectDir)
 
-            if DEBUG: print("Check 2end: main_control.py")
-
-            # deserialise tuneUI
-            # try:
-            if DEBUG: print("Check 3: main_control.py")
             self.tune_widget.deserialize(state_dict)
-            # except:
-            #     print("Could not deserialize tuneUI!")
-
-            # deserialise eigenmodeUI
-            # try:
-            if DEBUG: print("Check 4: main_control.py")
             self.eigenmode_widget.deserialize(state_dict)
-            # except:
-            #     print("Could not deserialise eigenmodeUI!")
-
-            # deserialise wakefieldUI
-            # try:
-            if DEBUG: print("Check 5: main_control.py")
             self.wakefield_widget.deserialize(state_dict)
-            # except:
-            #     print("Could not deserialise wakefieldUI!")
-
-            # deserialise plotUI
-            # try:
-            if DEBUG: print("Check 6: main_control.py")
             self.plot_widget.deserialize(state_dict)
-            # except:
-            #     print("Could not deserialise plotUI!")
 
     def load_last_state(self):
         """
@@ -630,10 +582,7 @@ class MainWindow:
         # if x == msg.Yes:
         #     self.deserialize('ui_state_files/state_file.json')
 
-        try:
-            self.deserialize('ui_state_files/state_file.json')
-        except:
-            print("Could not deserialize last state")
+        self.deserialize('ui_state_files/state_file.json')
 
     def checkIfPathExist(self, directory, folder):
         path = f"{directory}/{folder}"
@@ -713,7 +662,7 @@ class MainWindow:
         self.main_win.showMaximized()
         # self.main_win.show()
 
-    def readSettings(self):
+    def read_settings(self):
         self.main_win.restoreGeometry(self.settings.value("geometry"))
         self.main_win.restoreState(self.settings.value("windowState"))
 
@@ -750,6 +699,7 @@ class CustomFormatter(logging.Formatter):
         if opt:
             fmt, color = opt
             self._style._fmt = "<font color=\"{}\">{}</font>".format(QColor(color).name(), fmt)
+
         res = logging.Formatter.format(self, record)
         self._style._fmt = last_fmt
         return res

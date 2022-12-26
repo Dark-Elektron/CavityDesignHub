@@ -1281,7 +1281,6 @@ class TuneControl:
         state_dict["LBP"] = self.tuneUI.cb_LBP.checkState()
 
     def deserialize(self, state_dict):
-        print("here at deserializin")
         # update state file
         self.tuneUI.le_Freq.setText(state_dict["Frequency"])
         self.tuneUI.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
@@ -1325,7 +1324,6 @@ class TuneControl:
         self.tuneUI.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
         self.tuneUI.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
         self.tuneUI.cb_UQ.setCheckState(state_dict["UQ_Check"])
-        print("here at deserializin optimization")
 
         # mid cell parameters
         self.tuneUI.le_A_i_opt.setText(state_dict["A_i_opt"])

@@ -39,18 +39,15 @@ def print_(*arg):
 
 class MultipactingControl:
     def __init__(self, parent):
-        print("Check 1: multipacting_control.py")
         self.w_Multipacting = QWidget()
 
         self.ui = Ui_Multipacting()
         self.ui.setupUi(self.w_Multipacting)
-        print("Check 2: multipacting_control.py")
 
         # Create main window object
         self.win = parent
         self.main_control = parent
         self.main_ui = parent.ui
-        print("Check 3: multipacting_control.py")
 
         # get logger
         self.log = self.main_control.log
@@ -65,13 +62,11 @@ class MultipactingControl:
         self.fig = self.plt.fig
         self.ax = self.plt.ax
         self.ui.gl_Plot_Area.addWidget(self.plt)
-        print("Check 4: multipacting_control.py")
 
         # add 3D
         # self.plotter = QtInteractor()
         # self.ui.gl_Display_3D.addWidget(self.plotter.interactor)
         # self.plotter.show_grid()
-        print("Check 5: multipacting_control.py")
 
         self.initUI()
         self.signals()

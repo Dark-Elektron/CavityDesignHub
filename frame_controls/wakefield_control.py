@@ -33,7 +33,7 @@ class WakefieldControl:
         self.resume_icon = None
         self.pause_icon = None
         self.w_Wakefield = QWidget()
-        print_("Check 1: wakefield.py")
+
         self.ui = Ui_Wakefield()
         self.ui.setupUi(self.w_Wakefield)
 
@@ -42,31 +42,22 @@ class WakefieldControl:
         self.main_control = parent
         self.main_ui = parent.ui
         # ###########################
-        print_("Check 2: wakefield.py")
 
         # get logger
         self.log = self.main_control.log
 
-        print_("Check 3: wakefield.py")
         # Create Scene
         self.scene = Scene(self)
 
-        print_("Check 3: wakefield.py")
         # QGraphicsView
         self.graphicsView = GraphicsView(self, 'Wakefield')
-        print_("Check 3: wakefield.py")
         self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
-        print_("Check 3: wakefield.py")
 
         # ##########################
-
-        print_("Check 3: wakefield.py")
         self.initUI()
         self.signals()
         self.exe_control()
         self.filename = None  # place holder, made a booboo copying the end routine
-        # self.parentDir = self.main_control.parentDir
-        # self.projectDir = self.main_control.projectDir
 
         # instantiate geometry
         self.abci_geom = ABCIGeometry()
@@ -79,11 +70,9 @@ class WakefieldControl:
         self.processes_id = []
         self.show_progress_bar = False
         self.animation = None
-        print_("Check 4: wakefield.py")
 
         # ui effects
         self.ui_effects()
-        print_("Check 5: wakefield.py")
 
     def signals(self):
         # initial push button state
@@ -126,8 +115,6 @@ class WakefieldControl:
 
     def initUI(self):
         df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
-        print(df.loc[0]['I0 [mA]'], type(df.loc[0, 'I0 [mA]']))
-        print(df.loc[0, 'sigma_z (SR/BS) [mm]'], type(df.loc[0, 'sigma_z (SR/BS) [mm]']))
         # init shape entry mode
         self.shape_entry_widgets_control()
 
@@ -218,7 +205,7 @@ class WakefieldControl:
         else:
             try:
                 WG_M = ast.literal_eval(WG_M) * 0.001
-            except:
+            except ValueError:
                 WG_M = ['']
 
         MROT = self.ui.cb_Polarization_ABCI.currentIndex()
@@ -255,31 +242,31 @@ class WakefieldControl:
 
         self.processes = []
         for p in range(proc_count):
-            try:
-                if p < proc_count - 1:
-                    proc_keys_list = keys[p * share:p * share + share]
-                else:
-                    proc_keys_list = keys[p * share:]
+            # try:
+            if p < proc_count - 1:
+                proc_keys_list = keys[p * share:p * share + share]
+            else:
+                proc_keys_list = keys[p * share:]
 
-                processor_shape_space = {}
-                for key, val in shape_space.items():
-                    if key in proc_keys_list:
-                        processor_shape_space[key] = val
+            processor_shape_space = {}
+            for key, val in shape_space.items():
+                if key in proc_keys_list:
+                    processor_shape_space[key] = val
 
-                service = mp.Process(target=self.run_sequential, args=(n_cells, n_modules, processor_shape_space,
-                                                                       MROT, MT, NFS, UBT, bunch_length,
-                                                                       DDR_SIG, DDZ_SIG,
-                                                                       self.main_control.parentDir,
-                                                                       self.main_control.projectDir, self.progress_list,
-                                                                       WG_M, marker, qoi_df
-                                                                       ))
+            service = mp.Process(target=self.run_sequential, args=(n_cells, n_modules, processor_shape_space,
+                                                                   MROT, MT, NFS, UBT, bunch_length,
+                                                                   DDR_SIG, DDZ_SIG,
+                                                                   self.main_control.parentDir,
+                                                                   self.main_control.projectDir, self.progress_list,
+                                                                   WG_M, marker, qoi_df
+                                                                   ))
 
-                service.start()
-                self.processes.append(psutil.Process(service.pid))
-                self.processes_id.append(service.pid)
+            service.start()
+            self.processes.append(psutil.Process(service.pid))
+            self.processes_id.append(service.pid)
 
-            except Exception as e:
-                self.log.error(f"Exception in run_MP:: {e}")
+            # except Exception as e:
+            #     self.log.error(f"Exception in run_MP:: {e}")
 
         # display progress bar
         self.show_progress_bar = True
@@ -346,11 +333,11 @@ class WakefieldControl:
         # signal to progress bar
         self.show_progress_bar = False
 
-        try:
-            for p in self.processes:
-                p.terminate()
-        except:
-            pass
+        # try:
+        for p in self.processes:
+            p.terminate()
+        # except:
+        #     pass
 
         self.processes.clear()
         self.processes_id.clear()
@@ -360,15 +347,14 @@ class WakefieldControl:
         self.log.info("Process terminated.")
 
     def end_routine(self, proc_ids):
-        print(proc_ids, type(proc_ids))
         for pid in proc_ids:
-            try:
-                p = psutil.Process(pid)
-                while p.is_running():
-                    pass
-                print(fr"process {p} ended")
-            except Exception as e:
-                print_("Exception:: ", e)
+            # try:
+            p = psutil.Process(pid)
+            while p.is_running():
+                pass
+            print(fr"process {p} ended")
+            # except Exception as e:
+            #     print_("Exception:: ", e)
 
         self.cancel()
 
@@ -379,240 +365,6 @@ class WakefieldControl:
             # reset progress bar
             self.progress_bar.setValue(0)
             self.progress_bar.hide()
-
-    def get_geometric_parameters(self, code):
-        self.shape_space = {}
-        print_('Getting geometric parameters')
-        if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-            try:
-                # # self.loaded_shape_space= load_shape_space(shape_space_name)
-                # print_(self.loaded_shape_space)
-
-                # get selected keys
-                self.selected_keys = self.ui.cb_Shape_Space_Keys.currentText()
-                # print("Selected keys: ", self.selected_keys, type(self.selected_keys[0]))
-
-                # check keys of shape space if results already exist
-                toall = None
-                for key, val in self.loaded_shape_space.items():
-                    # process for only keys selected in combobox
-                    if self.ui.cb_Shape_Space_Keys.currentText() == "":
-                        pass
-                    else:
-                        if key not in self.selected_keys:
-                            continue
-
-                    if not toall:
-                        ans = self.prompt(code, key)
-                        if ans == 'Yes':
-                            self.shape_space[key] = val
-
-                        if ans == 'No':
-                            continue
-
-                        if ans == 'YesToAll':
-                            self.shape_space[key] = val
-                            toall = 'YesToAll'
-
-                        if ans == 'NoToAll':
-                            toall = 'NoToAll'
-                    else:
-                        if toall == 'YesToAll':
-                            self.shape_space[key] = val
-                        else:
-                            path = f'{self.main_control.projectDir}/SimulationData/{code}/Cavity{key}'
-                            if os.path.exists(path):
-                                continue
-                            else:
-                                self.shape_space[key] = val
-
-                print_(self.shape_space)
-                return self.shape_space
-            except Exception as e:
-                print_(f"File not found, check path:: {e}")
-        else:
-            if self.ui.cb_Inner_Cell.checkState() == 2:
-                # Middle Ellipse data
-                A_i_space = text_to_list(self.ui.le_A_i.text())
-                B_i_space = text_to_list(self.ui.le_B_i.text())
-                a_i_space = text_to_list(self.ui.le_a_i.text())
-                b_i_space = text_to_list(self.ui.le_b_i.text())
-                Ri_i_space = text_to_list(self.ui.le_Ri_i.text())
-                L_i_space = text_to_list(self.ui.le_L_i.text())
-                Req_i_space = text_to_list(self.ui.le_Req_i.text())
-                alpha_i_space = text_to_list(self.ui.le_Alpha.text())
-
-                inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space,
-                                    alpha_i_space]
-            else:
-                inner_cell_space = [[0], [0], [0], [0], [0], [0], [0], [0]]
-
-            if self.ui.cb_Outer_Cell_L.checkState() == 2:
-                # Middle Ellipse data
-                A_ol_space = text_to_list(self.ui.le_A_ol.text())
-                B_ol_space = text_to_list(self.ui.le_B_ol.text())
-                a_ol_space = text_to_list(self.ui.le_a_ol.text())
-                b_ol_space = text_to_list(self.ui.le_b_ol.text())
-                Ri_ol_space = text_to_list(self.ui.le_Ri_ol.text())
-                L_ol_space = text_to_list(self.ui.le_L_ol.text())
-                Req_ol_space = text_to_list(self.ui.le_Req_ol.text())
-                alpha_ol_space = text_to_list(self.ui.le_Alpha_ol.text())
-
-                outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space,
-                                      Req_ol_space, alpha_ol_space]
-            else:
-                outer_cell_L_space = inner_cell_space
-
-            if self.ui.cb_Outer_Cell_R.checkState() == 2:
-                # Middle Ellipse data
-                A_or_space = text_to_list(self.ui.le_A_or.text())
-                B_or_space = text_to_list(self.ui.le_B_or.text())
-                a_or_space = text_to_list(self.ui.le_a_or.text())
-                b_or_space = text_to_list(self.ui.le_b_or.text())
-                Ri_or_space = text_to_list(self.ui.le_Ri_or.text())
-                L_or_space = text_to_list(self.ui.le_L_or.text())
-                Req_or_space = text_to_list(self.ui.le_Req_or.text())
-                alpha_or_space = text_to_list(self.ui.le_Alpha_or.text())
-
-                outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space,
-                                      Req_or_space, alpha_or_space]
-            else:
-                outer_cell_R_space = inner_cell_space
-            count = 0
-            for A_i in inner_cell_space[0]:
-                for B_i in inner_cell_space[1]:
-                    for a_i in inner_cell_space[2]:
-                        for b_i in inner_cell_space[3]:
-                            for Ri_i in inner_cell_space[4]:
-                                for L_i in inner_cell_space[5]:
-                                    for Req_i in inner_cell_space[6]:
-                                        if outer_cell_L_space == inner_cell_space:
-                                            inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                                            outer_cell_L = inner_cell
-
-                                            if self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
-                                                self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
-                                                                           'OC_R': outer_cell_L, 'BP': 'both',
-                                                                           'FREQ': None}
-                                            elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 0:
-                                                self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
-                                                                           'OC_R': outer_cell_L, 'BP': 'left',
-                                                                           'FREQ': None}
-                                            elif self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 2:
-                                                self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
-                                                                           'OC_R': outer_cell_L, 'BP': 'right',
-                                                                           'FREQ': None}
-                                            else:
-                                                self.shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
-                                                                           'OC_R': outer_cell_L, 'BP': 'none',
-                                                                           'FREQ': None}
-
-                                            count += 1
-                                        else:
-                                            for A_ol in outer_cell_L_space[0]:
-                                                for B_ol in outer_cell_L_space[1]:
-                                                    for a_ol in outer_cell_L_space[2]:
-                                                        for b_ol in outer_cell_L_space[3]:
-                                                            for Ri_ol in outer_cell_L_space[4]:
-                                                                for L_ol in outer_cell_L_space[5]:
-                                                                    # for Req_ol in outer_cell_L_space[6]:
-                                                                    if outer_cell_L_space == outer_cell_R_space:
-                                                                        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i,
-                                                                                      Req_i, 0]
-                                                                        outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol,
-                                                                                        L_ol, Req_i, 0]
-                                                                        outer_cell_R = outer_cell_L
-                                                                        if self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 0:
-                                                                            self.shape_space[count] = {'IC': inner_cell,
-                                                                                                       'OC': outer_cell_L,
-                                                                                                       'OC_R': outer_cell_R,
-                                                                                                       'BP': 'left',
-                                                                                                       'FREQ': None}
-                                                                        elif self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 2:
-                                                                            self.shape_space[count] = {'IC': inner_cell,
-                                                                                                       'OC': outer_cell_L,
-                                                                                                       'OC_R': outer_cell_R,
-                                                                                                       'BP': 'right',
-                                                                                                       'FREQ': None}
-                                                                        elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
-                                                                            self.shape_space[count] = {'IC': inner_cell,
-                                                                                                       'OC': outer_cell_L,
-                                                                                                       'OC_R': outer_cell_R,
-                                                                                                       'BP': 'both',
-                                                                                                       'FREQ': None}
-                                                                        else:
-                                                                            self.shape_space[count] = {'IC': inner_cell,
-                                                                                                       'OC': outer_cell_L,
-                                                                                                       'OC_R': outer_cell_R,
-                                                                                                       'BP': 'none',
-                                                                                                       'FREQ': None}
-
-                                                                        count += 1
-                                                                    else:
-                                                                        for A_or in outer_cell_R_space[0]:
-                                                                            for B_or in outer_cell_R_space[1]:
-                                                                                for a_or in outer_cell_R_space[2]:
-                                                                                    for b_or in outer_cell_R_space[3]:
-                                                                                        for Ri_or in outer_cell_R_space[4]:
-                                                                                            for L_or in \
-                                                                                                    outer_cell_R_space[
-                                                                                                        5]:
-                                                                                                # for Req_or in outer_cell_R_space[6]:
-                                                                                                inner_cell = [A_i, B_i,
-                                                                                                              a_i, b_i,
-                                                                                                              Ri_i, L_i,
-                                                                                                              Req_i, 0]
-                                                                                                outer_cell_L = [A_ol,
-                                                                                                                B_ol,
-                                                                                                                a_ol,
-                                                                                                                b_ol,
-                                                                                                                Ri_ol,
-                                                                                                                L_ol,
-                                                                                                                Req_i,
-                                                                                                                0]
-                                                                                                outer_cell_R = [A_or,
-                                                                                                                B_or,
-                                                                                                                a_or,
-                                                                                                                b_or,
-                                                                                                                Ri_or,
-                                                                                                                L_or,
-                                                                                                                Req_i,
-                                                                                                                0]
-                                                                                                if self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 0:
-                                                                                                    self.shape_space[
-                                                                                                        count] = {
-                                                                                                        'IC': inner_cell,
-                                                                                                        'OC': outer_cell_L,
-                                                                                                        'OC_R': outer_cell_R,
-                                                                                                        'BP': 'left',
-                                                                                                        'FREQ': None}
-                                                                                                elif self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 2:
-                                                                                                    self.shape_space[
-                                                                                                        count] = {
-                                                                                                        'IC': inner_cell,
-                                                                                                        'OC': outer_cell_L,
-                                                                                                        'OC_R': outer_cell_R,
-                                                                                                        'BP': 'right',
-                                                                                                        'FREQ': None}
-                                                                                                elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
-                                                                                                    self.shape_space[
-                                                                                                        count] = {
-                                                                                                        'IC': inner_cell,
-                                                                                                        'OC': outer_cell_L,
-                                                                                                        'OC_R': outer_cell_R,
-                                                                                                        'BP': 'both',
-                                                                                                        'FREQ': None}
-                                                                                                else:
-                                                                                                    self.shape_space[
-                                                                                                        count] = {
-                                                                                                        'IC': inner_cell,
-                                                                                                        'OC': outer_cell_L,
-                                                                                                        'OC_R': outer_cell_R,
-                                                                                                        'BP': 'none',
-                                                                                                        'FREQ': None}
-
-                                                                                                count += 1
-            return self.shape_space
 
     def prompt(self, code, fid):
         # path = os.getcwd()
@@ -628,7 +380,6 @@ class WakefieldControl:
             msg.setDefaultButton(QMessageBox.Yes)
 
             msg.buttonClicked.connect(button_clicked)
-            # print_(f'msg: {msg.Yes}')
 
             x = msg.exec_()
 
@@ -649,27 +400,6 @@ class WakefieldControl:
             wid2.show()
         else:
             wid2.hide()
-
-    def open_file(self, le, cb):
-        # clear combobox
-        self.ui.cb_Shape_Space_Keys.clear()
-        self.ui.cb_Shape_Space_Keys.addItem('All')
-        self.selected_keys = []
-
-        filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Json Files (*.json)")
-        try:
-            le.setText(filename)
-            with open(filename, 'r') as file:
-                dd = json.load(file)
-
-            # populate checkboxes with key
-            for col in dd.keys():
-                cb.addItem(fr'{col}')
-
-            self.loaded_shape_space = dd
-
-        except Exception as e:
-            print('Failed to open file:: ', e)
 
     def exe_control(self):
         # Abci
@@ -884,7 +614,6 @@ class WakefieldControl:
             # update progress
             progress_list.append((progress + 1) / total_no_of_shapes)
 
-            print("It's here now", qoi_df)
             if qoi_df is not None:
                 d = {}
                 # # save qois
@@ -901,7 +630,6 @@ class WakefieldControl:
                     for i, s in enumerate(sigma_z):
                         for ii in WG_M:
                             fid = f"{WP}_{bl_diff[i]}_{s}mm{ii}"
-                            print_(f"Running for {fid}")
                             try:
                                 for m in range(2):
                                     abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
@@ -918,14 +646,12 @@ class WakefieldControl:
                                                      WG_M=ii, marker=ii, sub_dir=f"Cavity{key}")
 
                             dirc = fr'{projectDir}\SimulationData\ABCI\Cavity{key}{marker}'
-                            print_(dirc, f'Cavity{fid}')
-                            try:
-                                k_loss = abs(ABCIData(dirc, f'Cavity{fid}', 0).loss_factor['Longitudinal'])
-                                k_kick = abs(ABCIData(dirc, f'Cavity{fid}', 1).loss_factor['Transverse'])
-                            except:
-                                print_("Could not get loss and kick factors")
-                                k_loss = 0
-                                k_kick = 0
+                            # try:
+                            k_loss = abs(ABCIData(dirc, f'Cavity{fid}', 0).loss_factor['Longitudinal'])
+                            k_kick = abs(ABCIData(dirc, f'Cavity{fid}', 1).loss_factor['Transverse'])
+                            # except:
+                            #     k_loss = 0
+                            #     k_kick = 0
 
                             d[fid] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, n_cell)
 
@@ -1134,7 +860,6 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
         return [k_loss_M0, k_loss_longitudinal, k_loss_transverse]
 
     def get_Zmax_L(mon_interval=None):
-        # print("2a")
         if mon_interval is None:
             mon_interval = [0.0, 2e10]
 
@@ -1146,7 +871,6 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
             xr_mon, yr_mon, _ = abci_data_mon.get_data('Real Part of Longitudinal Impedance')
             xi_mon, yi_mon, _ = abci_data_mon.get_data('Imaginary Part of Longitudinal Impedance')
 
-            # print("2d")
             # Zmax
             if mon_interval is None:
                 mon_interval = [[0.0, 10]]
@@ -1154,12 +878,10 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
             # calculate magnitude
             ymag_mon = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_mon, yi_mon)]
 
-            # print("2e")
             # get peaks
             peaks_mon, _ = sps.find_peaks(ymag_mon, height=0)
             xp_mon, yp_mon = np.array(xr_mon)[peaks_mon], np.array(ymag_mon)[peaks_mon]
 
-            # print("2f", mon_interval)
             for i, z_bound in enumerate(mon_interval):
                 # get mask
                 msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
@@ -1176,8 +898,6 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
             processed_keys.append(key)
         except:
             return ['error']
-
-        # print("2g", Zmax_mon_list)
 
         return Zmax_mon_list
 
@@ -1300,9 +1020,9 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
     ZL, ZT = [], []
     freq_range_ZL, freq_range_ZT = [], []
-    # print("here here here")
+
     for i, o in enumerate(obj):
-        # print("print ptint pting")
+
         if o[1].split(' ')[0] == 'ZL':
             freq_range_ZL.append(o[2])
         elif o[1].split(' ')[0] == 'ZT':

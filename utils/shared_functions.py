@@ -13,6 +13,7 @@ from utils.file_reader import FileReader
 fr = FileReader()
 
 AN_DURATION = 250
+global animation
 
 
 def update_alpha(cell):
@@ -442,6 +443,7 @@ def animate_width(widget, min_width, standard, enable, option="max"):
     -------
 
     """
+    global animation
     if enable:
         # GET WIDTH
         width = widget.width()
@@ -578,6 +580,8 @@ def text_to_list(txt):
     elif 'linspace' in txt:
         ll = eval(f'np.{txt}')
         return ll
+    elif txt == '':
+        return [1]
     else:
         ll = ast.literal_eval(txt)
         if isinstance(ll, int) or isinstance(ll, float):

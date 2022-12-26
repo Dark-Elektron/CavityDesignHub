@@ -15,11 +15,12 @@ import matplotlib as mpl
 # mpl.rcParams['text.latex.preamble'] = [r'\usepackage{amsmath}']  # for \text command
 # from labellines import labelLine, labelLines
 import multiprocessing as mp
-fr = FileReader()
 
 import scipy.signal as sps
 import numpy as np
 from termcolor import colored
+
+fr = FileReader()
 
 file_color = 'cyan'
 
@@ -28,7 +29,8 @@ DEBUG = True
 
 
 def print_(*arg):
-    if DEBUG: print(colored(f'\t\t{arg}', file_color))
+    if DEBUG:
+        print(colored(f'\t\t{arg}', file_color))
 
 
 class ABCIData:
@@ -49,9 +51,9 @@ class ABCIData:
         if os.path.exists(dirc):
             self._get_plot_data(dirc)
         else:
-            print_("Hey chief, there seems to be a problem with the file directory. Please check.")
+            print_("Hey chief, there seems to be a problem with the ABCI file directory. Please check.")
 
-    def _get_plot_data(self, dir):
+    def _get_plot_data(self, dirc):
         frame_objects = {}
         frame_titles_objects = {}
         frame_count = 0
@@ -65,7 +67,7 @@ class ABCIData:
                             r'Imaginary Part of Azimuthal Impedance', r'Real Part of Transverse Impedance',
                             r'Imaginary Part of Transverse Impedance']
 
-        with open(dir, 'r') as f:
+        with open(dirc, 'r') as f:
             for line in f:
                 if 'NEW FRAME' in line:
                     # add frame to frame_objects
@@ -97,29 +99,29 @@ class ABCIData:
                     #     print('True')
 
                     # get other parameters from title
-                    try:
-                        if 'Azimuthal Wake' in line:
-                            key = 'Azimuthal'
-                        if 'Transverse Wake' in line:
-                            key = 'Transverse'
-                        if 'Longitudinal Wake' in line:
-                            key = 'Longitudinal'
+                    # try:
+                    if 'Azimuthal Wake' in line:
+                        key = 'Azimuthal'
+                    if 'Transverse Wake' in line:
+                        key = 'Transverse'
+                    if 'Longitudinal Wake' in line:
+                        key = 'Longitudinal'
 
-                        if 'Loss Factor' in line and key:
-                            indx_0 = line.index('= ')
-                            indx_1 = line.index('V/pC')
-                            loss_factor = float(line[indx_0 + 2:indx_1])
+                    if 'Loss Factor' in line and key:
+                        indx_0 = line.index('= ')
+                        indx_1 = line.index('V/pC')
+                        loss_factor = float(line[indx_0 + 2:indx_1])
 
-                            self.loss_factor[key] = loss_factor
-                            key = None
+                        self.loss_factor[key] = loss_factor
+                        key = None
 
-                        # get sigma
-                        if 'SIG' in line and self.SIG is None:
-                            indx_0 = line.index('SIG= ')
-                            indx_1 = line.index(' cm')
-                            self.SIG = float(line[indx_0 + 5:indx_1])
-                    except:
-                        pass
+                    # get sigma
+                    if 'SIG' in line and self.SIG is None:
+                        indx_0 = line.index('SIG= ')
+                        indx_1 = line.index(' cm')
+                        self.SIG = float(line[indx_0 + 5:indx_1])
+                    # except:
+                    #     pass
 
                 if 'SET LIMITS' in line:
                     x, y = [], []

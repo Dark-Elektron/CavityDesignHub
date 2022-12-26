@@ -29,7 +29,8 @@ DEBUG = True
 
 
 def print_(*arg):
-    if DEBUG: print(colored(f'\t{arg}', file_color))
+    if DEBUG:
+        print(colored(f'\t{arg}', file_color))
 
 
 class Plot(FigureCanvasQTAgg):
@@ -45,7 +46,6 @@ class Plot(FigureCanvasQTAgg):
 
         self.parentUI = parent
 
-        if DEBUG: print("Check 1: plotter.py")
         # new feature
         # add gridspec
         self.plot_list = []
@@ -53,7 +53,6 @@ class Plot(FigureCanvasQTAgg):
         n = self.n
         self.gs = gridspec.GridSpec(1, 1, figure=self.fig)
         self.gs2 = gridspec.GridSpec(n, n, height_ratios=np.ones(n), width_ratios=np.ones(n), figure=self.fig)
-        if DEBUG: print("Check 2: plotter.py")
 
         for i in range(n):
             if i < n-1:
@@ -67,7 +66,6 @@ class Plot(FigureCanvasQTAgg):
                 self.plot_list.append(ax)
 
         self.ax = self.fig.add_subplot(self.gs[0])
-        if DEBUG: print("Check 3: plotter.py")
         self.toggle_ax(False)
         # self.ax = self.fig.add_subplot(111)
         self.ax.set_label("Left axis Default")
@@ -101,10 +99,6 @@ class Plot(FigureCanvasQTAgg):
                                  arrowprops=dict(arrowstyle="->"))
         annot.set_visible(False)
 
-        if DEBUG: print("Check 4: plotter.py")
-        # make plot interactive
-        # self.cid_pick = self.ppplot.fig.canvas.mpl_connect("motion_notify_event", self.hover)
-
         # zoom and pan
         scale = 1.1
         zp = ZoomPan()
@@ -132,7 +126,6 @@ class Plot(FigureCanvasQTAgg):
         self.axvline_dict = {}
 
         self.selected_object = None
-        if DEBUG: print("Check 5: plotter.py")
 
         self.picked_points_annotext_id_dict = {}
         self.selected_points_list = []
@@ -227,9 +220,6 @@ class Plot(FigureCanvasQTAgg):
         # self.cid_axes_leave = self.fig.canvas.mpl_connect('axes_leave_event', self.leave_axes)
 
     def on_press(self, event):
-        # print('%s pressed: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-        #       ('double' if event.dblclick else 'single', event.button,
-        #        event.x, event.y, event.xdata, event.ydata))
         # get event position in fig size
         self.event_x, self.event_y = event.x, event.y
 
@@ -238,16 +228,12 @@ class Plot(FigureCanvasQTAgg):
 
         # handle identifying objects
         if event.button == 1:
-            # print("Left click")
             pass
 
         if event.button == 2:
-            # print("MMB click")
             pass
         if event.button == 3:
-            # print("Right click")
             # selecting objects right click
-            # print(type(self.selected_object))
             if isinstance(self.selected_object, matplotlib.text.Annotation):
                 self.draggableTextContextMenuEvent(event)
             elif isinstance(self.selected_object, matplotlib.lines.Line2D):
@@ -256,26 +242,20 @@ class Plot(FigureCanvasQTAgg):
                 self.contextMenuEvent(event)
 
     def on_release(self, event):
-        # print("Release: PRESS: ", self.PRESS)
         # reset selected object to none
         self.selected_object = None
         self.PRESS = False
         # set press to false
-        # print("Release: PRESS: ", self.PRESS)
 
     def on_pick(self, event):
-        print("\t\t\t\t\t", event.artist)
-        # print('%s pick: button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
-        #       ('double' if event.dblclick else 'single', event.button,
-        #        event.x, event.y, event.xdata, event.ydata))
         ########################################################
         # # legend toggle
         # # on the pick event, find the orig line corresponding to the
         # # legend proxy line, and toggle the visibility
         # legline = event.artist
-        # print("legline: ", legline)
+
         # origline = self.lined[legline]
-        # print("origline: ", origline)
+
         # vis = not origline.get_visible()
         # origline.set_visible(vis)
         # # Change the alpha on the line in the legend so we can see what lines
@@ -286,16 +266,11 @@ class Plot(FigureCanvasQTAgg):
         #     legline.set_alpha(0.2)
         #############################################################
         self.selected_object = event.artist
-        # print(self.selected_object)
-        # print(event.ind)
 
         if isinstance(event.artist, matplotlib.legend.Legend):
-            print('Legend picked')
+            pass
 
         if isinstance(self.selected_object, matplotlib.text.Annotation):
-            print('Text Annotation picked')
-            print(self.text_dict)
-            print(id(self.selected_object))
             self.text_dict[id(self.selected_object)].connect()
             pass
 
@@ -318,7 +293,6 @@ class Plot(FigureCanvasQTAgg):
                 # return
         elif isinstance(self.selected_object, matplotlib.lines.Line2D):
             ind = event.ind
-            # print('Line2D picked')
             x_picked = self.selected_object.get_xdata()[min(ind)]
             y_picked = self.selected_object.get_ydata()[min(ind)]
 
@@ -389,17 +363,11 @@ class Plot(FigureCanvasQTAgg):
             # xmouse, ymouse = event.mouseevent.xdata, event.mouseevent.ydata
             # x, y = artist.get_xdata(), artist.get_ydata()
             # ind = event.ind
-            # print('Artist picked:', event.artist)
-            # print('{} vertices picked'.format(len(ind)))
-            # print('Pick between vertices {} and {}'.format(min(ind), max(ind) + 1))
-            # print('x, y of mouse: {:.2f},{:.2f}'.format(xmouse, ymouse))
-            # print('node_editor point:', x[ind[0]], y[ind[0]])
 
         self.draw()
 
     def on_motion(self, event):
         # vis = self.annot.get_visible()
-        # # print(type(event.inaxes), type(self.ppplot.ax))
         # if isinstance(self.ax, event.inaxes):  # not so good fix
         #     cont, ind = self.plot_object.contains(event)
         #     if cont:
@@ -414,20 +382,16 @@ class Plot(FigureCanvasQTAgg):
         self.MOTION = True
 
         # if self.PRESS and self.MOTION:
-        #     print("Pressed and moving")
 
     def enter_axes(self, event):
-        print('enter_axes', event.inaxes)
         event.inaxes.patch.set_facecolor('white')
         event.canvas.draw()
 
     def leave_axes(self, event):
-        print('leave_axes', event.inaxes)
         event.inaxes.patch.set_facecolor('white')
         event.canvas.draw()
 
     def enter_figure(self, event):
-        print('enter_figure', event.canvas.figure)
         fig = event.canvas.figure
         fig.patch.set_facecolor('white')
 
@@ -437,7 +401,6 @@ class Plot(FigureCanvasQTAgg):
         event.canvas.draw()
 
     def leave_figure(self, event):
-        print('leave_figure', event.canvas.figure)
         event.canvas.figure.patch.set_facecolor('white')
         event.canvas.draw()
 
@@ -458,8 +421,6 @@ class Plot(FigureCanvasQTAgg):
         arrowAct = contextMenu.addAction("Add Arrow")
         arrowAct = contextMenu.addAction("Move axis marker to minimum")
         arrowAct = contextMenu.addAction("Move axis marker to maximum")
-        # print("\t", QtCore.QPoint(event.x, event.y))
-        # print(self.mapToGlobal(QtCore.QPoint(event.x, -event.y)))
 
         # get figure size and subtract from event.y because event.y counts bottom up.
         action = contextMenu.exec_(
@@ -530,7 +491,7 @@ class Plot(FigureCanvasQTAgg):
         """
         if text.strip("") == "":
             return
-        print("it can call this")
+
         if self.parentUI.cb_Active_Axis.currentText() == "Left":
             ax = self.ax
         else:
@@ -588,15 +549,15 @@ class Plot(FigureCanvasQTAgg):
         for key, val in self.text_dict.items():
             try:
                 val.remove()
-            except Exception as e:
-                print_("Exception:: ", e)
+            except ValueError as e:
+                print_("plotter.py: Exception:: ", e)
 
         # remove all lines
         for key, val in self.axvline_dict.items():
             try:
                 val.remove()
-            except Exception as e:
-                print_("Exception:: ", e)
+            except ValueError as e:
+                print_("plotter.py: Exception:: ", e)
 
         # reset dictionaries
         self.text_dict = {}
@@ -641,7 +602,6 @@ class ZoomPan:
             else:
                 # deal with something that should never happen
                 scale_factor = 1
-                # print(event.button)
 
             new_width = (cur_xlim[1] - cur_xlim[0]) * scale_factor
             new_height = (cur_ylim[1] - cur_ylim[0]) * scale_factor

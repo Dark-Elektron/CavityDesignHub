@@ -40,7 +40,7 @@ class ABCIData:
         if os.path.exists(dirc):
             self._get_plot_data(dirc)
         else:
-            print_("Hey chief, there seems to be a problem with the file directory. Please check.")
+            print_("Hey chief, there seems to be a problem with ABCI the file directory. Please check.")
 
     def _get_plot_data(self, dir):
         frame_objects = {}

@@ -24,26 +24,21 @@ class PlotControl:
     Controls plotting
     """
     def __init__(self, parent):
-        print_("Check 1: plot_control.py")
         self.w_Plot = QWidget()
 
         self.ui = Ui_Plot()
-        print_("Check 2: plot_control.py")
         self.ui.setupUi(self.w_Plot)
-        print_("Check 3: plot_control.py")
 
         # Create main window object
         self.win = parent
         self.main_control = parent
         self.main_ui = parent.ui
-        print_("Check 4: plot_control.py")
 
         # get logger
         self.log = self.main_control.log
 
         # Plot objects and variables
         self.plt = Plot(self.ui)
-        print_("Check 5: plot_control.py")
         self.ui.gl_Plot_Area.addWidget(self.plt)
         self.fig = self.plt.fig
         self.ax = self.plt.ax
@@ -52,15 +47,12 @@ class PlotControl:
         self.indicate_inset = None
         self.leg = None
 
-        print_("Check 6: plot_control.py")
-
         # class variables
         self.plotID_count = 0
 
         # class lists
         self.freq_glob = []
         self.baseline_line_objects = []
-        print_("Check 7: plot_control.py")
 
         # class dictionaries
         self.pts_dict = {}  # holds the plot information and plot
@@ -93,8 +85,6 @@ class PlotControl:
 
         self.initUI()
         self.signals()
-
-        print_("Check 3: plot_control.py")
 
     def createPlotTypeWidget(self):
         # plottypeselector
@@ -320,7 +310,7 @@ class PlotControl:
         try:
             scaleX = float(inputs.le_ScaleY.text())
             scaleY = float(inputs.le_ScaleY.text())
-        except:
+        except ValueError:
             scaleX = 1
             scaleY = 1
 
@@ -390,12 +380,12 @@ class PlotControl:
             else:
                 abci_data_trans = ABCIData(abci_data_dir, id_, 1)
                 if request == 'Transverse Impedance Magnitude':
-                    try:
-                        xr, yr, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-                        xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
-                    except:
-                        xr, yr, _ = abci_data_trans.get_data('Real Part of Azimuthal Impedance')
-                        xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Azimuthal Impedance')
+                    # try:
+                    xr, yr, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
+                    xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
+                    # except:
+                    #     xr, yr, _ = abci_data_trans.get_data('Real Part of Azimuthal Impedance')
+                    #     xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Azimuthal Impedance')
 
                     y = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr, yi)]
 
@@ -451,8 +441,7 @@ class PlotControl:
         self.ui.pb_Refresh.clicked.connect(lambda: self.plot())
 
         # toggle plot menu
-        self.ui.pb_Plot_Area_Menu.clicked.connect(
-            lambda: animate_width(self.ui.w_Plot_Menu, 0, 440, True))
+        self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: animate_width(self.ui.w_Plot_Menu, 0, 440, True))
         self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: self.ui.w_Plot_Area_Buttons.setEnabled(
             True) if self.ui.w_Plot_Menu.maximumWidth() == 0 else self.ui.w_Plot_Area_Buttons.setDisabled(True))
 
@@ -505,32 +494,26 @@ class PlotControl:
     def initUI(self):
         self.createPlotTypeWidget()
 
-        print_("Check 0: plot_control.py:initUI")
         # add row to table
         self.ui.tableWidget.setRowCount(1)  # and one row in the table
         self.table_control()
 
-        print_("Check 1: plot_control.py:initUI")
         # set plot menu initial size to zero and disable plot buttons
         self.ui.w_Plot_Menu.setFixedWidth(0)
         self.ui.w_Plot_Area_Buttons.setDisabled(True)
 
-        print_("Check 2: plot_control.py:initUI")
         # tableWidget initializations
         self.ui.tableWidget.mousePressEvent = self.mousePressEvent
         self.ui.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
         self.ui.tableWidget.customContextMenuRequested.connect(self.generateMenu)
         self.set_table_size()
 
-        print_("Check 3: plot_control.py:initUI")
         # add checkable combobox
         cutoff = QCheckableComboBox()
         cutoff.addItem("All")
         cutoff.setMinimumWidth(150)
         self.ui.gl_Cutoff.addWidget(cutoff, 2, 0, 1, 1)
-        print_("Check 4: plot_control.py:initUI")
         self.populate_cutoff_combobox(cutoff)
-        print_("Check 4: plot_control.py:initUI")
 
         self.ui.le_Ri_Cutoff_List.editingFinished.connect(lambda: self.populate_cutoff_combobox(cutoff))
 
@@ -538,66 +521,67 @@ class PlotControl:
         cutoff.currentTextChanged.connect(lambda: self.plot_cutoff(cutoff))
 
     def plot(self):
-        try:
-            # args = list(self.args_dict.values())
+        # try:
+        # args = list(self.args_dict.values())
 
-            # use same color cycler for both axes
-            self.ax_right._get_lines.prop_cycler = self.ax._get_lines.prop_cycler
-            plot_count = 1
-            for key, val in self.plot_dict.items():
-                code = self.plot_dict[key]['plot inputs']['Code'].currentText()
-                # check plot type
-                if code == 'ABCI':
+        # use same color cycler for both axes
+        self.ax_right._get_lines.prop_cycler = self.ax._get_lines.prop_cycler
+        plot_count = 1
+        for key, val in self.plot_dict.items():
+            code = self.plot_dict[key]['plot inputs']['Code'].currentText()
+            # check plot type
+            if code == 'ABCI':
+                try:
                     self.make_abci_plot(key)
-                    # self.plot_impedance(self.args_dict, i, plot_count)
-                elif code == 'SLANS':
-                    pass
-                else:
-                    self.make_other_plot(key)
-
-            # toggle axis labels
-            self.toggle_axis_labels()
-
-            self.ax.autoscale(True, axis='y')
-            self.ax_right.autoscale(True, axis='y')
-
-            # recompute the ax.datalim
-            self.ax.relim()
-            self.ax_right.relim()
-
-            # show legend
-            lines, labels = self.ax.get_legend_handles_labels()
-            lines2, labels2 = self.ax_right.get_legend_handles_labels()
-
-            if self.ui.cb_Active_Axis.currentText() == 'Left':
-                print_("\tInside here to plot legend on left axis")
-                self.leg = self.ax.legend(lines + lines2, labels + labels2, loc='lower left', prop={'size': 18})
-
-                if self.ax_right.get_legend() is not None:
-                    self.ax_right.get_legend().remove()
+                except KeyError:
+                    print_("A key error occured. Please make sure that a directory containing valid ABCI output"
+                           "files is loaded.")
+                    return
+                # self.plot_impedance(self.args_dict, i, plot_count)
+            elif code == 'SLANS':
+                pass
             else:
-                self.leg = self.ax_right.legend(lines + lines2, labels + labels2, loc='lower left', prop={'size': 18})
-                if self.ax.get_legend() is not None:
-                    self.ax.get_legend().remove()
+                self.make_other_plot(key)
 
-            self.leg.set_zorder(10)
-            self.leg.set_draggable(state=True, use_blit=True)
+        # toggle axis labels
+        self.toggle_axis_labels()
 
-            # plot inset if check box is checked
-            self.plot_inset()
-            # self.fig.canvas.draw_idle()
+        self.ax.autoscale(True, axis='y')
+        self.ax_right.autoscale(True, axis='y')
 
-            # plot thresholds if threshold is checked
-            if self.ui.cb_Longitudinal_Threshold.checkState() == 2:
-                self.calc_limits('monopole')
-            if self.ui.cb_Transverse_Threshold.checkState() == 2:
-                self.calc_limits('dipole')
+        # recompute the ax.datalim
+        self.ax.relim()
+        self.ax_right.relim()
 
-            print_("it at the very very least got herer")
-            # self.switch_axis()
+        # show legend
+        lines, labels = self.ax.get_legend_handles_labels()
+        lines2, labels2 = self.ax_right.get_legend_handles_labels()
 
-        except Exception as e:
-            self.log.error("Please enter a valid argument: Exception: ", e)
+        if self.ui.cb_Active_Axis.currentText() == 'Left':
+            self.leg = self.ax.legend(lines + lines2, labels + labels2, loc='lower left', prop={'size': 18})
+
+            if self.ax_right.get_legend() is not None:
+                self.ax_right.get_legend().remove()
+        else:
+            self.leg = self.ax_right.legend(lines + lines2, labels + labels2, loc='lower left', prop={'size': 18})
+            if self.ax.get_legend() is not None:
+                self.ax.get_legend().remove()
+
+        self.leg.set_zorder(10)
+        self.leg.set_draggable(state=True, use_blit=True)
+
+        # plot inset if check box is checked
+        self.plot_inset()
+        # self.fig.canvas.draw_idle()
+
+        # plot thresholds if threshold is checked
+        if self.ui.cb_Longitudinal_Threshold.checkState() == 2:
+            self.calc_limits('monopole')
+        if self.ui.cb_Transverse_Threshold.checkState() == 2:
+            self.calc_limits('dipole')
+
+        # except Exception as e:
+        #     self.log.error("Please enter a valid argument: Exception: ", e)
 
     def clear_plots(self):
         self.ax.cla()
@@ -673,7 +657,6 @@ class PlotControl:
         #     scaleX = 1
         #     scaleY = 1
 
-        print_("hwere 333wwsdfwerwe")
         if folder == '':
             abci_data_dir = fr'{self.main_control.projectDir}/SimulationData/ABCI'
         else:
@@ -755,12 +738,12 @@ class PlotControl:
             else:
                 abci_data_trans = ABCIData(abci_data_dir, id_, 1)
                 if request == 'Transverse Impedance Magnitude':
-                    try:
-                        xr, yr, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-                        xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
-                    except:
-                        xr, yr, _ = abci_data_trans.get_data('Real Part of Azimuthal Impedance')
-                        xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Azimuthal Impedance')
+                    # try:
+                    xr, yr, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
+                    xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
+                    # except:
+                    #     xr, yr, _ = abci_data_trans.get_data('Real Part of Azimuthal Impedance')
+                    #     xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Azimuthal Impedance')
 
                     y = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr, yi)]
 
@@ -826,15 +809,11 @@ class PlotControl:
         :return:
         """
         # check state of switch
-        print_("It's here000")
         switch = self.plot_dict[pid]["plot inputs"]["Toggle"]
         plottype = self.plot_dict[pid]["plot inputs"]["Code"].currentText()
         if switch.checkState() == 2:
-            print_("It's herel")
             # check if plot already exist
-            # print_(self.plot_dict[pid]['plot data'])
             if self.plot_dict[pid]['plot data'] != {}:
-                print_("It's here3")
                 # compare plot input with current input
                 args = self.plot_dict[pid]["plot inputs"]
                 ids = [a.strip() for a in args['Id'].currentText().split(',')]  # get list
@@ -858,7 +837,7 @@ class PlotControl:
                 try:
                     scaleX = float(args['ScaleX'].text())
                     scaleY = float(args['ScaleY'].text())
-                except:
+                except ValueError:
                     scaleX = 1
                     scaleY = 1
 
@@ -889,9 +868,7 @@ class PlotControl:
             else:
                 # self.ax.clear()
                 # make plot
-                print_("Here to make plot")
                 self.plot_impedance(self.plot_dict[pid])
-                print_("Here to make plot dfgf")
 
         else:
             for line2D in self.plot_dict[pid]['plot object'].values():
@@ -909,37 +886,26 @@ class PlotControl:
 
     def make_other_plot(self, pid):
         # check state of switch
-        print_("It's here000")
         switch = self.plot_dict[pid]["plot inputs"]["Toggle"]
         plottype = self.plot_dict[pid]["plot inputs"]["Code"].currentText()
         if switch.checkState() == 2:
-            print_("It's herel")
             # check if plot already exist
-            # print_(self.plot_dict[pid]['plot data'])
             if self.plot_dict[pid]['plot data'] != {}:
-                print_("It's here3")
                 # compare plot input with current input
                 args = self.plot_dict[pid]["plot inputs"]
                 ids = [a.strip() for a in args['Id'].currentText().split(',')]  # get list
                 filename = args['Folder'][0].text()
-                # pol = args['Polarization'].currentText()
-                # request = args['Request'][0].currentText()
-                print_("Now hwere wsdfad")
-                # folder = args['Folder'][0].text()
                 state = args['Toggle'].checkState()
                 axis = args['Axis'].currentText()
 
-                print_("Now hwere wsdfad")
                 requestX = args['Request'][1].currentText()
                 requestY = args['Request'][2].currentText().split(', ')
 
-                print_("Now hwere wsdfad")
                 type_ = []
                 filter_ = []
                 t = args['Type']
                 type_.append(t[0].currentText())
                 type_.append(t[1].currentText())
-                print_("Now hwere wsdfad")
 
                 f = args['Filter']
                 filter_.append(f[0].currentText())
@@ -948,11 +914,9 @@ class PlotControl:
                 try:
                     scaleX = float(args['ScaleX'].text())
                     scaleY = float(args['ScaleY'].text())
-                except:
+                except ValueError:
                     scaleX = 1
                     scaleY = 1
-
-                print_("Now hwere wsdfad")
 
                 inputs_compare = {"Ids": ids, "RequestX": requestX, "RequestY": requestY, "Folder": filename,
                                   "Axis": axis, "ScaleX": scaleX, "ScaleY": scaleY, "Type": type_, "Filter": filter_}
@@ -960,7 +924,6 @@ class PlotControl:
                 plot_data_inputs = self.plot_dict[pid]["plot data inputs"]
 
                 if plot_data_inputs == inputs_compare:
-                    print_("It's nowhere")
                     if self.plot_dict[pid]["plot object"] != {}:
                         for line2D in self.plot_dict[pid]['plot object'].values():
                             line2D[0].set(alpha=1)
@@ -970,7 +933,6 @@ class PlotControl:
                         self.plot_other(self.plot_dict[pid], pid)
                 else:
                     # pop previous entry from plot and dictionary
-                    print_("It's her ein alternative")
                     for vals in self.plot_dict[pid]['plot object'].values():
                         for line2D in vals.values():
                             line2D[0].remove()
@@ -979,15 +941,13 @@ class PlotControl:
                     self.plot_dict[pid]["plot data"] = {}
                     self.plot_dict[pid]["plot object"] = {}
                     self.plot_dict[pid]["plot data inputs"] = {}
-                    print_("Alternative here here")
+
                     self.plot_other(self.plot_dict[pid], pid)
 
             else:
                 # self.ax.clear()
                 # make plot
-                print_("Here to make plot")
                 self.plot_other(self.plot_dict[pid], pid)
-                print_("Here to make plot dfgf")
 
         else:
             for vals in self.plot_dict[pid]['plot object'].values():
@@ -1028,7 +988,7 @@ class PlotControl:
             # get values from line edit
             try:
                 x0, x1, y0, y1 = ast.literal_eval(self.ui.le_Inset_Window.text())
-            except:
+            except ValueError:
                 x0, x1, y0, y1 = 0.385, 0.415, 5e-1, 3e1  # default
 
             self.axins.set_xlim(x0, x1)
@@ -1056,8 +1016,6 @@ class PlotControl:
         self.fig.canvas.draw_idle()
 
     def plot_other_new(self, pid):
-        # print_(self.other_data)
-        # print_(i)
 
         requestX = self.pts_dict[pid]["plot inputs"].cb_X.currentText()
         requestY = self.pts_dict[pid]["plot inputs"].cb_Y.currentText().split(', ')
@@ -1071,8 +1029,7 @@ class PlotControl:
         try:
             scaleX = float(self.pts_dict[pid]["plot inputs"].le_ScaleX_Other.text())
             scaleY = float(self.pts_dict[pid]["plot inputs"].cb_ScaleY.text())
-        except Exception as e:
-            print_(e)
+        except ValueError:
             scaleX = 1
             scaleY = 1
 
@@ -1087,38 +1044,27 @@ class PlotControl:
 
         if requestY != [] and requestX != []:
             if filename.split('.')[-1] == 'xlsx':
-                print_("xlsx", filename)
                 # get sheets
                 sheets = [a.strip() for a in self.pts_dict[pid]["plot inputs"].ccb_Id_Other.currentText().split(',')]
-                print_("1")
                 for sh in sheets:
-                    print_("2", sh)
-
-                    print_("3")
                     filter_ = self.pts_dict[pid]["plot inputs"].ccb_Filter_Other.currentText()
                     value = self.pts_dict[pid]["plot inputs"].le_Filter_Value_Other.text()
 
                     if filter_ == "None" or value == "":
-                        print_("3a")
                         self.other_data_filtered = self.pts_dict[pid]["plot data"][sh]
-                        print_("4")
                     else:
-                        print_("4a")
                         self.other_data_filtered = self.pts_dict[pid]["plot data"][sh][
                             self.pts_dict[pid]["plot data"][sh][filter_] == value]
-                        print_("4b")
 
                     x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                     self.freq_glob = x_data
 
                     for j in range(len(requestY)):
                         y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
-                        print_("xlxx: ", x_data, y)
 
                         if axis == 'Left':
                             if type_ == 'Line':
                                 self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)
-                                print_("done plotting xlsx")
                             else:
                                 self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
                                              markeredgecolor="black", label="Legend")
@@ -1133,42 +1079,27 @@ class PlotControl:
                                                    label="Legend")
                             self.ax_right.set_ylabel('$Y$ [dB]')
             else:
-                print_("txt", filename)
                 # try to filter self.other_data
                 try:
-                    print_("1a")
                     filter_ = self.pts_dict[pid]["plot inputs"].ccb_Filter_Other.currentText()
                     value = self.pts_dict[pid]["plot inputs"].le_Filter_Value_Other.text()
                     if filter_ == "None" or value == "":
-                        print_("4a")
                         self.other_data_filtered = self.pts_dict[pid]["plot data"]
-                        print_("5a")
                     else:
-                        print_("2a")
                         self.other_data_filtered = self.pts_dict[pid]["plot data"][
                             self.pts_dict[pid]["plot data"][filter_] == value]
-                        print_("3a")
-
-                except:
-                    print_("6a")
+                except Exception as e:
+                    print_("plot_control.py:: Exception:: ", e)
                     self.other_data_filtered = self.pts_dict[pid]["plot data"]
-                    print_("7a")
 
-                print_("8a")
                 x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                 self.freq_glob = x_data
-                print_("9a")
 
                 for j in range(len(requestY)):
-                    print_("10a")
                     y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
-                    print_("11a")
-
-                    print_("txt: ", x_data, y)
                     if axis == 'Left':
                         if type_ == 'Line':
                             self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)
-                            print_("Done plotting txt")
                         else:
                             self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
                                          markeredgecolor="black",
@@ -1183,14 +1114,11 @@ class PlotControl:
                                                markeredgecolor="black",
                                                label="Legend")
                         self.ax_right.set_ylabel('$Y$ [dB]')
-            print_("#" * 50)
         else:
             print_("Please specify columns to plot")
 
     def plot_other(self, plot_dict, key):
         args = plot_dict
-        # print_(self.other_data)
-        # print_(i)
         requestX = args["plot inputs"]['Request'][1].currentText()
         requestY = args["plot inputs"]['Request'][2].currentText().split(', ')
         ids = [a.strip() for a in args["plot inputs"]['Id'].currentText().split(',')]  # get list
@@ -1205,8 +1133,7 @@ class PlotControl:
         try:
             scaleX = float(args["plot inputs"]['ScaleX'].text())
             scaleY = float(args["plot inputs"]['ScaleY'].text())
-        except Exception as e:
-            print_(e)
+        except ValueError:
             scaleX = 1
             scaleY = 1
 
@@ -1230,42 +1157,29 @@ class PlotControl:
                 args["plot object"][id_] = {}
                 if requestY != [] and requestX != []:
                     if filename.split('.')[-1] == 'xlsx':
-                        print_("xlsx", filename)
                         # get sheets
-                        print_("1")
-                        print_("2", sh)
                         if filter_ == "None" or value == "":
-                            print_("3a", self.other_data[key][sh])
                             self.other_data_filtered = self.other_data[key][sh]
-                            print_("4")
                         else:
-                            print_("4a")
                             self.other_data_filtered = self.other_data[key][sh][
                                 self.other_data[key][sh][filter_] == value]
-                            print_("4b")
 
                         x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                         self.freq_glob = x_data
 
                         for j in range(len(requestY)):
                             y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
-                            print_("xlxx: ", x_data, y)
-                            print_(args["plot data"])
                             args["plot data"][id_].update({j: {"x": x_data, "y": y}})
 
                             if axis == 'Left':
                                 if type_ == 'Line':
-                                    print_("hsdadf")
                                     args["plot object"][id_].update(
                                         {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
-                                    print_("done plotting xlsx")
                                 else:
-                                    print_("y: ", y)
                                     args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
                                                                                      marker=style, markersize=10.0,
                                                                                      markeredgecolor="black",
                                                                                      label=requestY[j], picker=True)})
-                                    print_("done plotting xlsx 2")
                                 # mplcursors.cursor(args["plot object"][id_][j])
                                 self.ax.set_ylabel('$Y$ []')
                                 self.ax.set_xlabel('$X$ []')
@@ -1285,43 +1199,29 @@ class PlotControl:
                                 # mplcursors.cursor(args["plot object"][id_][j])
                                 self.ax_right.set_ylabel('$Y$ [dB]')
                 else:
-                    print_("txt", filename)
                     # try to filter self.other_data
-                    try:
-                        print_("1a")
-                        filter_ = args["plot inputs"]['Filter'][0].currentText()
-                        value = args["plot inputs"]['Filter'][1].text()
-                        if filter_ == "None" or value == "":
-                            print_("4a")
-                            self.other_data_filtered = self.other_data[key]
-                            print_("5a")
-                        else:
-                            print_("2a")
-                            self.other_data_filtered = self.other_data[key][self.other_data[key][filter_] == value]
-                            print_("3a")
-
-                    except:
-                        print_("6a")
+                    # try:
+                    filter_ = args["plot inputs"]['Filter'][0].currentText()
+                    value = args["plot inputs"]['Filter'][1].text()
+                    if filter_ == "None" or value == "":
                         self.other_data_filtered = self.other_data[key]
-                        print_("7a")
+                    else:
+                        self.other_data_filtered = self.other_data[key][self.other_data[key][filter_] == value]
+                    # except Exception as e:
+                    #     print_("plot_control: Exception::", e)
+                    #     self.other_data_filtered = self.other_data[key]
 
-                    print_("8a")
                     x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                     self.freq_glob = x_data
-                    print_("9a")
 
                     for j in range(len(requestY)):
-                        print_("10a")
                         y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
-                        print_("11a")
                         args["plot data"][id_].update({j: {"x": x_data, "y": y}})
 
-                        print_("txt: ", x_data, y)
                         if axis == 'Left':
                             if type_ == 'Line':
                                 args["plot object"][id_].update(
                                     {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
-                                print_("Done plotting txt")
                             else:
                                 args["plot object"][id_].update(
                                     {j: self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
@@ -1341,7 +1241,6 @@ class PlotControl:
                                                            label="Legend", picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
                             self.ax_right.set_ylabel('$Y$ [dB]')
-                print_("#" * 50)
                 pass
             else:
                 print_("Please specify columns to plot")
@@ -1622,13 +1521,11 @@ class PlotControl:
 
         # remove from table
         n = self.ui.tableWidget.rowCount()
-        # print_("\t\t\t\t\trow", row)
         row = 0
         key = 0
         code = "ABCI"
         for i, (k, val) in enumerate(self.plot_dict.items()):
             if val["plot inputs"]['Remove'] == pb_Remove:
-                print_("Matched remove button to row")
                 row = i
                 key = k
                 code = val["plot inputs"]['Code'].currentText()
@@ -1642,7 +1539,6 @@ class PlotControl:
                 line2D[0].remove()
         else:
             for vals in self.plot_dict[key]['plot object'].values():
-                print_(vals)
                 for line2D in vals.values():
                     line2D[0].remove()
 
@@ -1653,7 +1549,6 @@ class PlotControl:
 
         self.plot_dict[key] = {}
         del self.plot_dict[key]
-        print_("Here after matched remove button to row")
 
         self.plot()
 
@@ -1661,7 +1556,6 @@ class PlotControl:
     def switchRequest(cb_Request, request_dict_long, request_dict_trans, cb_Code):
         # clear combo box
         cb_Request.clear()
-        print_('here')
         # add new items
         if cb_Code.currentText().lower() == 'long':
             for req in request_dict_long.values():
@@ -1737,7 +1631,7 @@ class PlotControl:
                 elif mode == 'dipole':
                     # f_list = self.freq_glob[0:len(self.freq_glob)]
                     # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
-                    print(self.ax.get_xlim()[1])
+
                     f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
                                          self.ui.dsb_Frange_Max.value(),
                                          num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
@@ -1839,9 +1733,6 @@ class PlotControl:
             self.f_list_sorted[f'{Ri}'] = sorted(f_list[f'{Ri}'])
             self.mode_list_sorted[f'{Ri}'] = [x for _, x in sorted(zip(f_list[f'{Ri}'], mode_list[f'{Ri}']))]
 
-        print(self.mode_list_sorted)
-        print(self.f_list_sorted)
-
         if len(Ri_list) != 0:
             cutoff.addItems(self.mode_list_sorted[f"{Ri_list[0]}"])
 
@@ -1903,7 +1794,6 @@ class PlotControl:
         if mode == 'TM01':
             freq = (c * p_TM01) / (2 * np.pi * Ri * 1e9) * 1e3
         else:
-            print_("here")
             freq = (c * p_TE11) / (2 * np.pi * Ri * 1e9) * 1e3
 
         return freq
@@ -2036,8 +1926,8 @@ class PlotControl:
 
     @staticmethod
     def validating(le):
-        validation_rule = QDoubleValidator(1e-12, 1e12, 10)
-        if validation_rule.validate(le.text(), 20.0)[0] == QValidator.Acceptable:
+        validation_rule = QDoubleValidator(0, 1e12, 10)
+        if validation_rule.validate(le.text(), 20)[0] == QValidator.Acceptable:
             le.setFocus()
         else:
             le.setText('')
@@ -2157,7 +2047,6 @@ class PlotControl:
 
     def update_labels(self):
         # select axes to update
-        print_("update labesl", self.ui.cb_Active_Axis.currentText())
         if self.ui.cb_Active_Axis.currentText() == 'Left':
             ax_current = self.ax
             ax_other = self.ax_right
