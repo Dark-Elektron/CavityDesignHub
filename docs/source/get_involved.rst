@@ -28,9 +28,9 @@ as a third-party components, please contact us.
 Report a Bug
 ************
 
-.. image:: https://img.shields.io/github/issues/VLSI-EDA/PoC.svg
+.. image:: https://img.shields.io/github/issues-raw/Dark-Elektron/CavityDesignHub?logo=Github
    :target: https://github.com/Dark-Elektron/CavityDesignHub/issues
-.. image:: https://img.shields.io/github/issues-closed/VLSI-EDA/PoC.svg
+.. image:: https://img.shields.io/github/issues-closed-raw/Dark-Elektron/CavityDesignHub?logo=Github
    :target: https://github.com/Dark-Elektron/CavityDesignHub/issues
 
 Please report issues of any kind in our Git provider's issue tracker. This allows
@@ -52,9 +52,6 @@ implementation. All enhancements and feature requests are tracked on GitHub at
 
 Talk to us on Gitter
 ********************
-
-.. image:: https://badges.gitter.im/VLSI-EDA/PoC.svg
-   :target: https://github.com/Dark-Elektron/CavityDesignHub
 
 You can chat with us on `Gitter <https://gitter.im/>`_ in our Giiter Room
 `Dark-Elektron/CaDH <https://github.com/Dark-Elektron/CavityDesignHub>`_. You can use Gitter for free

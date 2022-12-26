@@ -95,7 +95,6 @@
 
 <div class="viewcode-block" id="GraphicsView"><a class="viewcode-back" href="../../graphics.html#graphics.graphics_view.GraphicsView">[docs]</a><span class="k">class</span> <span class="nc">GraphicsView</span><span class="p">(</span><span class="n">QGraphicsView</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">win</span><span class="p">,</span> <span class="n">widg</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Check 0: graphics_view.py&quot;</span><span class="p">)</span>
         <span class="c1"># self.scene = Scene()</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">win</span> <span class="o">=</span> <span class="n">win</span>
@@ -115,7 +114,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span> <span class="o">=</span> <span class="n">win</span><span class="o">.</span><span class="n">scene</span><span class="o">.</span><span class="n">grScene</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initUi</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Check 3: graphics_view.py&quot;</span><span class="p">)</span>
 
         <span class="c1"># This part ensures that the zoom of the viewport does not affect the scrollbar.</span>
         <span class="c1"># I still don&#39;t understand the logic but it works.... for now</span>
@@ -134,7 +132,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">edge_color</span> <span class="o">=</span> <span class="n">QColor</span><span class="p">(</span><span class="s2">&quot;#001000&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">socket_type</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">editingFlag</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Check 3: graphics_view.py&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">zoomInFactor</span> <span class="o">=</span> <span class="mf">1.25</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">zoomClamp</span> <span class="o">=</span> <span class="kc">False</span>

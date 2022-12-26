@@ -1,0 +1,87 @@
+########
+Theory
+########
+
+In this section the theory governing the various analysis in this program are
+introduces. Note that this would not be exhaustive as that would require several
+semester's worth of instruction. What is attempted here is to give the fundamental
+equations, some basic descriptions and method in which the code was written so that
+one can understand the different line of codes. This is done so that the user can
+better understand and interpret exactly what results the program outputs and perhaps
+point out inconsistencies in the theory and code or even ways in which a routine can
+be optimised for speed and accuracy.
+
+.. contents:: Contents of this Page
+   :local:
+
+
+.. _QUICK:Accelerator cavity basics:
+
+Aceclerator cavity basics
+**************************
+Particle accelerators are devices used for the acceleration of charged particles to high
+velocities to serve for various purposes. This is achieved using electromagnetic fields.
+They are specially used for fundamental science research in areas cutting across physics,
+medicine, material science, and so on. Typical applications today include high energy
+physics research, biomedical research, radiotherapy, and ion implantation for the manu-
+facturing of semiconductors. Particle accelerators are comprised of several components
+which include the particle or beam source, a radiofrequency (RF) source, electromagnets,
+waveguides, resonant cavities, etc.
+
+.. _ellipse tangent:
+
+.. figure:: ../images/ellipse_tangent.png
+   :alt: accelerator cavity
+   :align: center
+   :width: 200px
+
+Resonant cavities are particularly responsible for particle acceleration. Over the last
+decade, there has been a great deal of advancement in the design and fabrication of
+resonant cavities. Cavity shapes have evolved from being totally cylindrical in shape,
+the so-called pillbox cavities, to the widely used (standard) elliptical cavities nowadays.
+Cavity geometric parameters are selected based on certain desired properties. The so-
+called cavity figures of merit are used to quantify these desired properties.
+
+.. _QUICK:Electromagnetic field theory:
+
+Electromagnetic field theory
+*********************
+
+
+.. _QUICK:Maxwell eigenvalue problem:
+
+Maxwell eigenvalue problem
+*********************
+
+
+.. _QUICK:Wakefield equations:
+
+Wakefield equations
+*********************
+
+
+.. _QUICK:Theory of multipacting:
+
+Theory of multipacting
+**********************
+
+
+.. _QUICK:Sensitivity analysis and UQ:
+
+Sensitivity analysis and uncertainty quantification
+*********************
+
+
+.. _QUICK:Cavity optimization:
+
+Elliptical Cavity optimization
+*********************
+
+Accelerator cavities consists of cells joined together at either the equator
+or the iris. Figure {} shows a typical elliptical accelerator cavity.
+The geometry could be divided into two groups: the mid-cells and the end-cells
+group. For optimisation purposes, it is computationally cheaper to optimise the
+groups independently than optimising the entire cavity geometry. Figure {} shows
+a typical parametrisation of an accelerator cavity. It is important to note that
+several designers may parametrise the cavity in different ways ref{} and also
+use different notations.

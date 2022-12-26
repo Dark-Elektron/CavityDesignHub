@@ -29,6 +29,7 @@ Introduction
 
    introduction
    quickstart
+   theory
    get_involved
 
 Modules

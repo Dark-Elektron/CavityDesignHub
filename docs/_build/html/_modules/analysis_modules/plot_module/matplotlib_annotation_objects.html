@@ -87,7 +87,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="DraggableRectangle.connect"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableRectangle.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s1">&#39;connect to all the events we need&#39;</span>
+        <span class="sd">&quot;&quot;&quot;connect to all the events we need&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cidpress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span>
             <span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_press</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cidrelease</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span>
@@ -96,7 +96,7 @@
             <span class="s1">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_motion</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DraggableRectangle.on_press"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableRectangle.on_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="s1">&#39;on button press we will see if the mouse is over us and store some data&#39;</span>
+        <span class="sd">&quot;&quot;&quot;on button press we will see if the mouse is over us and store some data&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span> <span class="k">return</span>
         <span class="k">if</span> <span class="n">DraggableRectangle</span><span class="o">.</span><span class="n">lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span> <span class="k">return</span>
         <span class="n">contains</span><span class="p">,</span> <span class="n">attrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
@@ -120,7 +120,7 @@
         <span class="n">canvas</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">bbox</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DraggableRectangle.on_motion"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableRectangle.on_motion">[docs]</a>    <span class="k">def</span> <span class="nf">on_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="s1">&#39;on motion we will move the rect if the mouse is over us&#39;</span>
+        <span class="sd">&quot;&quot;&quot;on motion we will move the rect if the mouse is over us&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">DraggableRectangle</span><span class="o">.</span><span class="n">lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span> <span class="k">return</span>
@@ -142,7 +142,7 @@
         <span class="n">canvas</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">bbox</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DraggableRectangle.on_release"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableRectangle.on_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-        <span class="s1">&#39;on release we reset the press data&#39;</span>
+        <span class="sd">&quot;&quot;&quot;on release we reset the press data&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">DraggableRectangle</span><span class="o">.</span><span class="n">lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -157,7 +157,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DraggableRectangle.disconnect"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableRectangle.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s1">&#39;disconnect all the stored connection ids&#39;</span>
+        <span class="sd">&quot;&quot;&quot;disconnect all the stored connection ids&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cidpress</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cidrelease</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cidmotion</span><span class="p">)</span></div></div>
@@ -225,7 +225,6 @@
         <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span>
             <span class="k">return</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">xycoords</span><span class="p">)</span>
         <span class="c1"># get text canvas and axes</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span>
         <span class="n">canvas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span>
@@ -322,7 +321,7 @@
         <span class="n">contains</span><span class="p">,</span> <span class="n">attrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">contains</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;event contains&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">xy</span><span class="p">)</span>
+
         <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">xy</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span>
         <span class="n">DraggableRectangle</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="bp">self</span>

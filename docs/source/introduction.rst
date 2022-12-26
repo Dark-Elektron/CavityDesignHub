@@ -44,11 +44,51 @@ The files output by the SLANS codes are basically three types
 The inputs and output files of the various SLANS codes are given below:
 
 
+.. Note::
+
+    It is planned that in future releases, all analysis codes will be custom
+    codes written in Python.
 
 Wakefield Analysis
 ******************
 
+Wakefield analysis is performed using the ABCI
+(Azimuthal Beam Cavity Interaction) code written by Yang Ho Chin
+:cite:p:`ABCI`. It solves the Maxwell equations directly in the tiem domain
+when a bunched beam goes through an axi-symmetric structure on or off axis.
+It can be found `here <https://abci.kek.jp/abci.htm>`_.
 
+.. Note::
+
+    It is planned that in future releases, all analysis codes will be custom
+    codes written in Python.
+
+Multipacting Analysis
+********************
+
+Multipacting simulations are performed using Multipac code by . The software
+can be obtained as described
+`here <https://accelconf.web.cern.ch/e08/papers/mopp137.pdf>`_.
+Multipac is a set of executable files and MATLAB codes.
+
+.. Note::
+
+    It is planned that in future releases, all analysis codes will be custom
+    codes written in Python.
+
+Optimisation
+***********
+
+Optimisation is done using self-written Python codes which call to the previously
+mentioned analysis codes. Currently, brute force and Genetic Algorithm (GA)
+optimisations are supported. More should be included in future releases.
+
+Uncertainty Quantification
+***********
+
+Uncertainty quantificaion (UQ) is done using self-written Python codes
+which call to the previously mentioned analysis codes. The procedure followed
+is described in here. The mathematics can be found in the theory section.
 
 .. bibliography::
    :all:

@@ -45,6 +45,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#eigenmode-analysis">Eigenmode Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#wakefield-analysis">Wakefield Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#multipacting-analysis">Multipacting Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#optimisation">Optimisation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uncertainty-quantification">Uncertainty Quantification</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
@@ -89,8 +92,8 @@ and general post-processing.</p>
 supported in this module are eigenmode analysis, wakefield analysis,
 and multipacting analysis.</p>
 <ul class="simple">
-<li><p>Eigenmode analysis - SLANS <span id="id1">[<a class="reference internal" href="#id6" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span></p></li>
-<li><p>Wakefield analysis - ABCI <span id="id2">[<a class="reference internal" href="#id7" title="Yong Ho Chin. Abci. URL: https://abci.kek.jp/abci.htm.">Chi</a>]</span></p></li>
+<li><p>Eigenmode analysis - SLANS <span id="id1">[<a class="reference internal" href="#id8" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span></p></li>
+<li><p>Wakefield analysis - ABCI <span id="id2">[<a class="reference internal" href="#id9" title="Yong Ho Chin. Abci. URL: https://abci.kek.jp/abci.htm.">Chi</a>]</span></p></li>
 <li><p>Multipacting analysis - Multipac</p></li>
 <li><p>Optimisation - Python</p></li>
 <li><p>Uncertainty quantification - Python</p></li>
@@ -104,7 +107,7 @@ required to transform them to the form that is used in most papers related
 to accelerating cavities design.</p>
 <p>The SUPERLANS code is intended to calculate azimuthal-homogenous modes in
 axissymmetric cavities, periodical structure, and cut-off frequencies in
-long homogenous waveguides <span id="id3">[<a class="reference internal" href="#id6" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span>. SLANS is written by Sergey
+long homogenous waveguides <span id="id3">[<a class="reference internal" href="#id8" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span>. SLANS is written by Sergey
 Belomestnykh and it consists of a set of executable files for differnt
 purposes. The first of these is the <code class="docutils literal notranslate"><span class="pre">genmesh.exe</span></code> which reads a geometry
 file <code class="docutils literal notranslate"><span class="pre">&lt;filename&gt;.geo</span></code> written using Python and generates the mesh file
@@ -117,19 +120,61 @@ called to run the eigenmode simulation and the results are output to specified f
 <li><p>meta files</p></li>
 </ul>
 <p>The inputs and output files of the various SLANS codes are given below:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is planned that in future releases, all analysis codes will be custom
+codes written in Python.</p>
+</div>
 </section>
 <section id="wakefield-analysis">
 <h2>Wakefield Analysis<a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h2>
-<div class="docutils container" id="id4">
+<p>Wakefield analysis is performed using the ABCI
+(Azimuthal Beam Cavity Interaction) code written by Yang Ho Chin
+<span id="id4">[<a class="reference internal" href="#id9" title="Yong Ho Chin. Abci. URL: https://abci.kek.jp/abci.htm.">Chi</a>]</span>. It solves the Maxwell equations directly in the tiem domain
+when a bunched beam goes through an axi-symmetric structure on or off axis.
+It can be found <a class="reference external" href="https://abci.kek.jp/abci.htm">here</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is planned that in future releases, all analysis codes will be custom
+codes written in Python.</p>
+</div>
+</section>
+<section id="multipacting-analysis">
+<h2>Multipacting Analysis<a class="headerlink" href="#multipacting-analysis" title="Permalink to this heading"></a></h2>
+<p>Multipacting simulations are performed using Multipac code by . The software
+can be obtained as described
+<a class="reference external" href="https://accelconf.web.cern.ch/e08/papers/mopp137.pdf">here</a>.
+Multipac is a set of executable files and MATLAB codes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It is planned that in future releases, all analysis codes will be custom
+codes written in Python.</p>
+</div>
+</section>
+<section id="optimisation">
+<h2>Optimisation<a class="headerlink" href="#optimisation" title="Permalink to this heading"></a></h2>
+<p>Optimisation is done using self-written Python codes which call to the previously
+mentioned analysis codes. Currently, brute force and Genetic Algorithm (GA)
+optimisations are supported. More should be included in future releases.</p>
+</section>
+<section id="uncertainty-quantification">
+<h2>Uncertainty Quantification<a class="headerlink" href="#uncertainty-quantification" title="Permalink to this heading"></a></h2>
+<p>Uncertainty quantificaion (UQ) is done using self-written Python codes
+which call to the previously mentioned analysis codes. The procedure followed
+is described in here. The mathematics can be found in the theory section.</p>
+<div class="docutils container" id="id6">
 <dl class="citation">
-<dt class="label" id="id7"><span class="brackets">Chi</span></dt>
+<dt class="label" id="id9"><span class="brackets">Chi</span></dt>
 <dd><p>Yong Ho Chin. Abci. URL: <a class="reference external" href="https://abci.kek.jp/abci.htm">https://abci.kek.jp/abci.htm</a>.</p>
 </dd>
-<dt class="label" id="id6"><span class="brackets">DM</span></dt>
+<dt class="label" id="id8"><span class="brackets">DM</span></dt>
 <dd><p>V. Yakovlev D. Myakishev. <em>SLANS</em>. URL: <a class="reference external" href="http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF">http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF</a>.</p>
 </dd>
-<dt class="label" id="id5"><span class="brackets">Nel87</span></dt>
+<dt class="label" id="id7"><span class="brackets">Nel87</span></dt>
 <dd><p>Edward Nelson. <em>Radically Elementary Probability Theory</em>. Princeton University Press, 1987.</p>
+</dd>
+<dt class="label" id="id10"><span class="brackets">PYOU01</span></dt>
+<dd><p>S. Järvenpää P. Ylä-Oijala, J. Lukkarinen and M. Ukkola. <em>User's manual</em>. Rolf Nevanlinna Institute, Helsinki, 2001. URL: <a class="reference external" href="https://accelconf.web.cern.ch/e08/papers/mopp137.pdf">https://accelconf.web.cern.ch/e08/papers/mopp137.pdf</a>.</p>
 </dd>
 </dl>
 </div>

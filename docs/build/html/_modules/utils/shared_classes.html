@@ -41,6 +41,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
@@ -137,7 +138,6 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">resizeEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="QCheckableComboBox.eventFilter"><a class="viewcode-back" href="../../utils.html#utils.shared_classes.QCheckableComboBox.eventFilter">[docs]</a>    <span class="k">def</span> <span class="nf">eventFilter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="n">obj</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEdit</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">()</span> <span class="o">==</span> <span class="n">QEvent</span><span class="o">.</span><span class="n">MouseButtonRelease</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">closeOnLineEditClick</span><span class="p">:</span>
