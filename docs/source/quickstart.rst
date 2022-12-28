@@ -127,10 +127,24 @@ open the GUI as shown in the following figure
 
 The GUI shows a grid of buttons.
 
+Create New Project
+^^^^^^^^^^^^^^^^
+
+To create a new project,
+
+* Click on :guilabel:`New` on the top toolbar.
+
+* Enter the name of the project and click :guilabel:`Enter` on your keyboard.
+
+* Specify the folder to save the project to.
+
+* Now we are ready for our first analysis.
+
+
 **Eigenmode Analysis**
 
 First,we are going to run an eigenmode analysis.
-* **Click on :guilabel:`EIGENMODE ANALYSIS`. This takes you to another frame
+* Click on :guilabel:`EIGENMODE ANALYSIS`. This takes you to another frame
 which contains different fields and buttons.
 
 There are four major categories on the left pane.
@@ -144,7 +158,7 @@ for one eigenmode for single module single mid cell without beam pipes.
 For this, we set the boundary conditions of the left and right ends of the cavity
 to ``Magnetic Wall En=0`` in order to obtain the TM010:math:`-\pi` mode.
 
-* **Click on :guilabel:`Cell Geometric Parameters` to expand the input fields
+* Click on :guilabel:`Cell Geometric Parameters` to expand the input fields
 for the geometric parameters if not already expanded.
 
 To enter the geometry for simulation, we create a ``.json`` file which
@@ -230,7 +244,7 @@ Click on :guilabel:`Cell Parameters` to expand the widget if not already expande
 You should see the fields ``No. of Cells`` and ``No. of Modules``. Set both of them
 to ``1``.
 
-Click on :guilabel:`Analysis Settings` to show the analysis settings widgets.
+* Click on :guilabel:`Analysis Settings` to show the analysis settings widgets.
 You should see the following in your GUI
 
 Leave the ``Freq. Shift`` as ``0``, ``No. of Modes`` should be left as `1` since
@@ -270,6 +284,51 @@ files and corresponding executable files to open them.
 The geometry could also be entered manually by filling in the values in the field
 with the corresponding geometric parameter values.
 
+
+**Tune**
+
+In the design of accelerator cavities, we usually want the cavity to operate at a particular
+frequency. We have 6 variables to play around with and one variable is reserved for tuning
+to the desired frequency. In most cases, the equator radius ``Req`` is the preferred
+variable for tuning for mid cell cavities. For the end cells, L is the tune variable.
+There are several other variations to this. For example, in a single or 2 cell cavity,
+L or Req could be selected as the tune variable. For cavities with flat-tops, like
+the Jlab cavities \ref{}, ``l``, the length of the flat top section is the tune
+variable.
+
+In the following example, we will tune Req of the mid cell of a TESLA   cavity to
+operate at a fundamental mode frequency of 1300~MHz. The description of the fields are
+given in \ref{}.
+
+* On the homepage of the application, click on :guilabel:`TUNE` or the side button :guilabel:`T`. This will navigate
+to the `Tune` frame.
+
+* Select ``Mid Cell`` as the ``Cell Type``, ``Variable`` as ``Req``. Leave ``Method``,
+``Tuner`` as ``PyTune``, ``Left BC`` and ``Right BC`` as ``Magnetic Wall En=0``,
+``N Cells`` as ``1`` and ``Frequency`` to ``1300``.
+
+
+
+
+**Wakefield Analysis**
+
+The process to run wakefield analysis using ABCI is similar to that for eigenmode
+analysis. The geometry is loaded exactly the same.
+
+* Click on :guilabel:`...` to open the file dialog box and select the `.json` file
+containing the geometric parameters
+
+* Click on :guilabel:`Cell Parameters` to set the number of cells, modules, length of the
+left beam pipe, polarity and number of processor. Set ``Polarity`` to ``monopole`` to
+calculate for the longitudinal wakefield analysis, ``Dipole`` for transverse wakefield analysis
+and ``Both`` for both longitudinal and transverse wakefield analysis. Select ``Both``.
+
+The results are written to ``<root>/<project_name>/SimulationData/ABCI/<filename>``
+If no name was given, the results are saved to
+``<root>/<project_name>/SimulationData/ABCI/Cavity0. The quantities that
+we are interested in could be found in ``qois.json``. This file is writen by
+Python. The ABCI written files can be viewed using the corresponding executatble
+file in ``<root>/CavityDesignHub/exe/ABCI_exe/TopDrawer for Windows``.
 
 .. _QUICK:Updating:
 

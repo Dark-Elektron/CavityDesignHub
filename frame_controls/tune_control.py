@@ -44,6 +44,7 @@ AN_DURATION = 200
 
 class TuneControl:
     def __init__(self, parent):
+        self.process_state = None
         self.pseudo_shape_space = None
         self.w_Tune = QWidget()
 
@@ -68,8 +69,12 @@ class TuneControl:
         self.processes_id = []
         self.show_progress_bar = False
 
+        # initial loaded shape spaces
+        self.loaded_inner_dict = {}
+        self.loaded_outer_dict = {}
+
         # ui effects
-        self.ui_effects()
+        # self.ui_effects()
 
         # evolution algorithm
         self.opt_control = OptimizationControl(self.tuneUI)
@@ -77,34 +82,21 @@ class TuneControl:
     def initUI(self):
         self.tuneUI.cb_Inner_Cell.setCheckState(2)
         self.tuneUI.cb_Inner_Cell.setEnabled(False)
+        self.tuneUI.w_Tune_Multiple.setVisible(False)
+        self.tuneUI.w_Outer_Cell.setVisible(False)
+        self.tuneUI.w_Expansion.setVisible(False)
+        self.tuneUI.pb_Expansion.setEnabled(False)
+        self.tuneUI.w_Tune_Settings.setVisible(False)
+        self.tuneUI.w_Postprocess.setVisible(False)
 
-        # expand/collapse sections widgets
-        if self.tuneUI.cb_Expansion.checkState() == 2:
-            self.tuneUI.w_Expansion.setMinimumHeight(150)
-        else:
-            self.tuneUI.w_Expansion.setMinimumHeight(0)
-            self.tuneUI.w_Expansion.setMaximumHeight(0)
-
-        if self.tuneUI.cb_Outer_Cell.checkState() == 2:
-            self.tuneUI.w_Outer_Cell.setMinimumHeight(150)
-        else:
-            self.tuneUI.w_Outer_Cell.setMinimumHeight(0)
-            self.tuneUI.w_Outer_Cell.setMaximumHeight(0)
-
-        self.tuneUI.w_Tune_Settings.setMinimumHeight(0)
-        self.tuneUI.w_Tune_Settings.setMaximumHeight(0)
+        self.tuneUI.l_Cavity_Image.pixmap().scaled(self.tuneUI.l_Cavity_Image.size(),
+                                                   Qt.KeepAspectRatio, transformMode=Qt.SmoothTransformation)
 
         # disable expansion section for now. Feature to come later
         self.tuneUI.cb_Expansion.setEnabled(False)
 
         # tuner initial state
         self.tuner_routine()
-        if self.tuneUI.cb_Tuner.currentText() == 'SLANS':
-            self.tuneUI.w_Iteration_Settings.setEnabled(False)
-
-        # initial loaded shape spaces
-        self.loaded_inner_dict = {}
-        self.loaded_outer_dict = {}
 
         # initial show/hide
         self.show_hide()
@@ -145,27 +137,15 @@ class TuneControl:
         self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentIndexChanged.connect(lambda: self.show_hide())
         self.tuneUI.pb_Run.clicked.connect(lambda: self.generate_shape_space())
 
-        # tune variable
-        # self.tuneUI.cb_Tune_Option.currentTextChanged.connect(lambda: self.change_tune_option(self.tuneUI.cb_Tune_Option.currentText()))
-
-        # cell parameters control
-        self.tuneUI.cb_Outer_Cell.stateChanged.connect(
-            lambda: animate_height(self.tuneUI.cb_Outer_Cell, self.tuneUI.w_Outer_Cell, 0, 160, True))
-        self.tuneUI.cb_Expansion.stateChanged.connect(
-            lambda: animate_height(self.tuneUI.cb_Expansion, self.tuneUI.w_Expansion, 0, 160, True))
-        self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.tuner_routine())
-        self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.tuner_routine())
-        self.tuneUI.cb_Tune_Option.currentTextChanged.connect(lambda: self.tuner_routine())
-
         # change cavity display image
         self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.change_cavity_image())
         self.tuneUI.cb_LBP.stateChanged.connect(lambda: self.change_cavity_image())
         self.tuneUI.cb_RBP.stateChanged.connect(lambda: self.change_cavity_image())
         self.tuneUI.cb_Outer_Cell.stateChanged.connect(lambda: self.change_cavity_image())
 
-        # collapse other settings
-        self.tuneUI.pb_Tune_Settings.clicked.connect(
-            lambda: animate_height(self.tuneUI.w_Tune_Settings, 0, 200, True))
+        # # collapse other settings
+        # self.tuneUI.pb_Tune_Settings.clicked.connect(
+        #     lambda: animate_height(self.tuneUI.w_Tune_Settings, 0, 200, True))
 
         # disable secondary settings if Tuner is SLANS
         self.tuneUI.cb_Tuner.currentTextChanged.connect(
@@ -176,9 +156,9 @@ class TuneControl:
         self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.slans_tuners_control())
         self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.slans_tuners_control())
 
-        # expand/collapse convergence plot
-        self.tuneUI.cb_Monitor_Convergence.stateChanged.connect(
-            lambda: animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True))
+        # # expand/collapse convergence plot
+        # self.tuneUI.cb_Monitor_Convergence.stateChanged.connect(
+        #     lambda: animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True))
 
         # cancel
         self.tuneUI.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -946,7 +926,7 @@ class TuneControl:
             else:
                 print('Please check input parameters.')
         else:
-            ########## UPDATE CODE TO CHECK FOR ALL THE ITEMS IN THE SHAPE SPACE FOR SHAPES WITH A + a > L
+            # UPDATE CODE TO CHECK FOR ALL THE ITEMS IN THE SHAPE SPACE FOR SHAPES WITH A + a > L
             check = self.check_input()
 
             A_o_space = ohc[0]
@@ -1356,33 +1336,31 @@ class TuneControl:
 
         self.tuneUI.cb_Expansion.setCheckState(state_dict["Expansion"])
         self.tuneUI.cb_LBP.setCheckState(state_dict["LBP"])
-
-    def ui_effects(self):
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Tune_Input.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Simulation_Controls.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Inner_Cell.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Outer_Cell.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-
-        self.tuneUI.w_Cell_Component_Control.setGraphicsEffect(shadow)
+    #
+    # def ui_effects(self):
+    #
+    #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+    #     shadow.setColor(QColor(0, 0, 0, 77))
+    #
+    #     self.tuneUI.w_Tune_Input.setGraphicsEffect(shadow)
+    #
+    #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+    #     shadow.setColor(QColor(0, 0, 0, 77))
+    #
+    #     self.tuneUI.w_Simulation_Controls.setGraphicsEffect(shadow)
+    #
+    #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+    #     shadow.setColor(QColor(0, 0, 0, 77))
+    #
+    #     self.tuneUI.w_Inner_Cell.setGraphicsEffect(shadow)
+    #
+    #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+    #     shadow.setColor(QColor(0, 0, 0, 77))
+    #
+    #     self.tuneUI.w_Outer_Cell.setGraphicsEffect(shadow)
+    #
+    #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+    #     shadow.setColor(QColor(0, 0, 0, 77))
 
     @staticmethod
     def run_sequential(pseudo_shape_space_proc, resume, p, bc, parentDir, projectDir, filename, tuner_option,

@@ -174,24 +174,30 @@ class WakefieldControl:
 
     def shape_entry_widgets_control(self):
         if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-            animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
-
-            self.ui.w_Enter_Geometry_Manual.setMinimumHeight(0)
-            self.ui.w_Enter_Geometry_Manual.setMaximumHeight(0)
+            # animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
+            #
+            # self.ui.w_Enter_Geometry_Manual.setMinimumHeight(0)
+            # self.ui.w_Enter_Geometry_Manual.setMaximumHeight(0)
+            self.ui.w_Enter_Geometry_Manual.setEnabled(False)
+            self.ui.w_Select_Shape_Space.show()
 
             # clear cells from graphics view
             self.graphicsView.removeCells()
         else:
-            animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
+            # animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
+            #
+            # self.ui.w_Select_Shape_Space.setMinimumHeight(0)
+            # self.ui.w_Select_Shape_Space.setMaximumHeight(0)
 
-            self.ui.w_Select_Shape_Space.setMinimumHeight(0)
-            self.ui.w_Select_Shape_Space.setMaximumHeight(0)
+            self.ui.w_Enter_Geometry_Manual.setEnabled(True)
+            self.ui.w_Select_Shape_Space.hide()
 
-            # clear cells from graphics view
-            self.graphicsView.removeCells()
-
-            # draw new cell
-            self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
+            # uncomment following lines to draw
+            # # clear cells from graphics view
+            # self.graphicsView.removeCells()
+            #
+            # # draw new cell
+            # self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
 
     def run_abci(self):
         # get analysis parameters

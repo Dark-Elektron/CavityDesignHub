@@ -600,7 +600,7 @@ def get_geometric_parameters(frame_control, code):
             # print("Selected keys: ", frame_control.selected_keys, type(frame_control.selected_keys[0]))
 
             # check keys of shape space if results already exist
-            toall = None
+            to_all = None
             for key, val in frame_control.loaded_shape_space.items():
                 # process for only keys selected in combobox
                 if frame_control.ui.cb_Shape_Space_Keys.currentText() == "" \
@@ -610,7 +610,7 @@ def get_geometric_parameters(frame_control, code):
                     if key not in frame_control.selected_keys:
                         continue
 
-                if not toall:
+                if not to_all:
                     ans = frame_control.prompt(code, key)
                     if ans == 'Yes':
                         shape_space[key] = val
@@ -620,16 +620,16 @@ def get_geometric_parameters(frame_control, code):
 
                     if ans == 'YesToAll':
                         shape_space[key] = val
-                        toall = 'YesToAll'
+                        to_all = 'YesToAll'
 
                     if ans == 'NoToAll':
-                        toall = 'NoToAll'
+                        to_all = 'NoToAll'
 
                     if ans == "Does not exist":
                         shape_space[key] = val
-                        toall = None
+                        to_all = None
                 else:
-                    if toall == 'YesToAll':
+                    if to_all == 'YesToAll':
                         shape_space[key] = val
                     else:
                         path = f'{frame_control.main_control.projectDir}/SimulationData/{code}/Cavity{key}'
@@ -688,6 +688,7 @@ def get_geometric_parameters(frame_control, code):
         else:
             outer_cell_R_space = inner_cell_space
         count = 0
+
         for A_i in inner_cell_space[0]:
             for B_i in inner_cell_space[1]:
                 for a_i in inner_cell_space[2]:
@@ -753,6 +754,20 @@ def get_geometric_parameters(frame_control, code):
 
                                                                                             count += 1
         return shape_space
+
+# def mid_only():
+#
+#     return inner_cell, inner_cell, inner_cell
+#
+#
+# def mid_left():
+#
+#     return inner_cell, outer_cell_left, outer_cell_left
+#
+#
+# def mid_left_right():
+#
+#     return inner_cell, outer_cell_left, outer_cell_right
 
 
 def open_file(frame_control, le, cb):

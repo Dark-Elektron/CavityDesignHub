@@ -41,6 +41,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
@@ -675,7 +676,7 @@
             <span class="c1"># print(&quot;Selected keys: &quot;, frame_control.selected_keys, type(frame_control.selected_keys[0]))</span>
 
             <span class="c1"># check keys of shape space if results already exist</span>
-            <span class="n">toall</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">to_all</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">frame_control</span><span class="o">.</span><span class="n">loaded_shape_space</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
                 <span class="c1"># process for only keys selected in combobox</span>
                 <span class="k">if</span> <span class="n">frame_control</span><span class="o">.</span><span class="n">ui</span><span class="o">.</span><span class="n">cb_Shape_Space_Keys</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span> \
@@ -685,7 +686,7 @@
                     <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">frame_control</span><span class="o">.</span><span class="n">selected_keys</span><span class="p">:</span>
                         <span class="k">continue</span>
 
-                <span class="k">if</span> <span class="ow">not</span> <span class="n">toall</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">to_all</span><span class="p">:</span>
                     <span class="n">ans</span> <span class="o">=</span> <span class="n">frame_control</span><span class="o">.</span><span class="n">prompt</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">ans</span> <span class="o">==</span> <span class="s1">&#39;Yes&#39;</span><span class="p">:</span>
                         <span class="n">shape_space</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
@@ -695,16 +696,16 @@
 
                     <span class="k">if</span> <span class="n">ans</span> <span class="o">==</span> <span class="s1">&#39;YesToAll&#39;</span><span class="p">:</span>
                         <span class="n">shape_space</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-                        <span class="n">toall</span> <span class="o">=</span> <span class="s1">&#39;YesToAll&#39;</span>
+                        <span class="n">to_all</span> <span class="o">=</span> <span class="s1">&#39;YesToAll&#39;</span>
 
                     <span class="k">if</span> <span class="n">ans</span> <span class="o">==</span> <span class="s1">&#39;NoToAll&#39;</span><span class="p">:</span>
-                        <span class="n">toall</span> <span class="o">=</span> <span class="s1">&#39;NoToAll&#39;</span>
+                        <span class="n">to_all</span> <span class="o">=</span> <span class="s1">&#39;NoToAll&#39;</span>
 
                     <span class="k">if</span> <span class="n">ans</span> <span class="o">==</span> <span class="s2">&quot;Does not exist&quot;</span><span class="p">:</span>
                         <span class="n">shape_space</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
-                        <span class="n">toall</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="n">to_all</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">toall</span> <span class="o">==</span> <span class="s1">&#39;YesToAll&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">to_all</span> <span class="o">==</span> <span class="s1">&#39;YesToAll&#39;</span><span class="p">:</span>
                         <span class="n">shape_space</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">frame_control</span><span class="o">.</span><span class="n">main_control</span><span class="o">.</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s1">/Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span>
@@ -763,6 +764,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">outer_cell_R_space</span> <span class="o">=</span> <span class="n">inner_cell_space</span>
         <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
         <span class="k">for</span> <span class="n">A_i</span> <span class="ow">in</span> <span class="n">inner_cell_space</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
             <span class="k">for</span> <span class="n">B_i</span> <span class="ow">in</span> <span class="n">inner_cell_space</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
                 <span class="k">for</span> <span class="n">a_i</span> <span class="ow">in</span> <span class="n">inner_cell_space</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
@@ -828,6 +830,20 @@
 
                                                                                             <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
         <span class="k">return</span> <span class="n">shape_space</span></div>
+
+<span class="c1"># def mid_only():</span>
+<span class="c1">#</span>
+<span class="c1">#     return inner_cell, inner_cell, inner_cell</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def mid_left():</span>
+<span class="c1">#</span>
+<span class="c1">#     return inner_cell, outer_cell_left, outer_cell_left</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="c1"># def mid_left_right():</span>
+<span class="c1">#</span>
+<span class="c1">#     return inner_cell, outer_cell_left, outer_cell_right</span>
 
 
 <div class="viewcode-block" id="open_file"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.open_file">[docs]</a><span class="k">def</span> <span class="nf">open_file</span><span class="p">(</span><span class="n">frame_control</span><span class="p">,</span> <span class="n">le</span><span class="p">,</span> <span class="n">cb</span><span class="p">):</span>
