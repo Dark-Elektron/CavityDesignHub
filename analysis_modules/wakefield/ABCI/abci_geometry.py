@@ -106,9 +106,9 @@ class ABCIGeometry(Geometry):
 
             # change save directory
             if sub_dir == '':
-                run_save_directory = fr'{projectDir}\SimulationData\ABCI\Cavity{fid}'
+                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{fid}'
             else:
-                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{sub_dir}\Cavity{fid}'
+                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{sub_dir}\{fid}'
 
             fname = fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'
             # print('filename:: ', fname)
@@ -282,13 +282,13 @@ class ABCIGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            path = fr'{projectDir}\SimulationData\ABCI\Cavity{fid}{marker}'
+            path = fr'{projectDir}\SimulationData\ABCI\{fid}{marker}'
             if os.path.exists(path):
                 pass
             else:
                 os.mkdir(path)
         else:
-            new_path = fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}\Cavity{fid}'
+            new_path = fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}\{fid}'
             if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}'):
                 if os.path.exists(new_path):
                     pass
@@ -297,7 +297,3 @@ class ABCIGeometry(Geometry):
             else:
                 os.mkdir(fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}')
                 os.mkdir(new_path)
-
-    @staticmethod
-    def button_clicked(i):
-        return i.text()

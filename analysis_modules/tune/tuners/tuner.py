@@ -58,9 +58,9 @@ class Tuner:
             freq = 0
             alpha_i = 0
             alpha_o = 0
-            if resume == "Yes" and os.path.exists(fr'{projectDir}/SimulationData/SLANS/Cavity{key}'):
+            if resume == "Yes" and os.path.exists(fr'{projectDir}/SimulationData/SLANS/{key}'):
                 # if folder exist, read value
-                filename = fr'{projectDir}/SimulationData/SLANS/Cavity{key}/cavity_{bc}.svl'
+                filename = fr'{projectDir}/SimulationData/SLANS/{key}/cavity_{bc}.svl'
                 try:
                     data_dict = fr.svl_reader(filename)
                     # print(data_dict)
@@ -135,7 +135,7 @@ class Tuner:
                             except FileNotFoundError:
                                 Req, freq = 0, 0
                             # round
-                            Req, freq = round(Req, 4), round(freq, 2)
+                            Req, freq = Req, freq
                         else:
                             try:
                                 L, freq = pytune.tuneL(inner_cell, outer_cell, target_freq, beampipes, bc,
@@ -197,7 +197,7 @@ class Tuner:
 
             # clear folder after every run. This is to avoid copying of wrong values to save folder
             # processor folder
-            proc_fold = fr'{projectDir}/SimulationData/SLANS/Cavity_process_{proc}'
+            proc_fold = fr'{projectDir}/SimulationData/SLANS/_process_{proc}'
             keep = ['SLANS_exe']
             for item in os.listdir(proc_fold):
                 if item not in keep:  # If it isn't in the list for retaining
@@ -220,39 +220,9 @@ class Tuner:
         runtime = end - start
         print(f'Processor {proc} runtime: {runtime}')
 
-    # def calculate_alpha(self, A, B, a, b, Ri, L, Req, L_bp):
-    #
-    #     data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
-    #             [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-    #     df = fsolve(self.ellipse_tangent,
-    #                             np.array([0.5*a + L_bp, Ri + 0.5 * b, L - A + L_bp, Req - 0.5 * B]),
-    #                             args=data, full_output=True)
-    #     x1, y1, x2, y2 = df[0]
-    #     error_msg = df[-2]
-    #
-    #     m = (y2 - y1) / (x2 - x1)
-    #     alpha = 180 - np.arctan(m) * 180 / np.pi
-    #     return alpha, error_msg
-
-    # @staticmethod
-    # def save_last(projectDir, key):
-    #     # copy slans files from folder with key
-    #     # Source path
-    #     # src = fr'{projectDir}/SimulationData/SLANS/Cavity_process_{process_num}'
-    #     # Destination path
-    #     dest = fr'{projectDir}/SimulationData/SLANS/Cavity{key}'
-    #     if os.path.exists(dest):
-    #         shutil.rmtree(dest)
-    #     # Copy the content of source to destination
-    #     # destination = shutil.copytree(src, dest)
-    #
-    #     # delete SLANS_EXE folder
-    #     if os.path.exists(fr'{projectDir}/SimulationData/SLANS/Cavity{key}/SLANS_exe'):
-    #         shutil.rmtree(fr'{projectDir}/SimulationData/SLANS/Cavity{key}/SLANS_exe')
-
     @staticmethod
     def save_tune_result(d, projectDir, key):
-        with open(fr"{projectDir}\SimulationData\SLANS\Cavity{key}\tune_res.json", 'w') as file:
+        with open(fr"{projectDir}\SimulationData\SLANS\{key}\tune_res.json", 'w') as file:
             file.write(json.dumps(d, indent=4, separators=(',', ': ')))
 
     # if __name__ == '__main__':

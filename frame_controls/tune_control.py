@@ -89,8 +89,9 @@ class TuneControl:
         self.tuneUI.w_Tune_Settings.setVisible(False)
         self.tuneUI.w_Postprocess.setVisible(False)
 
-        self.tuneUI.l_Cavity_Image.pixmap().scaled(self.tuneUI.l_Cavity_Image.size(),
-                                                   Qt.KeepAspectRatio, transformMode=Qt.SmoothTransformation)
+        self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.tuner_routine())
+        self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.tuner_routine())
+        self.tuneUI.cb_Tune_Option.currentTextChanged.connect(lambda: self.tuner_routine())
 
         # disable expansion section for now. Feature to come later
         self.tuneUI.cb_Expansion.setEnabled(False)
@@ -152,7 +153,8 @@ class TuneControl:
             lambda: self.tuneUI.w_Iteration_Settings.setEnabled(False) if self.tuneUI.cb_Tuner.currentText() == 'SLANS'
             else self.tuneUI.w_Iteration_Settings.setEnabled(True))
 
-        # control to ensure that SLANS mid cell tuner is always set to tune for Req and end cell tuner is always set to L
+        # control to ensure that SLANS mid cell tuner is always set to tune for Req
+        # and end cell tuner is always set to L
         self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.slans_tuners_control())
         self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.slans_tuners_control())
 
@@ -164,11 +166,6 @@ class TuneControl:
         self.tuneUI.pb_Cancel.clicked.connect(lambda: self.cancel())
         self.tuneUI.pb_Pause_Resume.clicked.connect(
             lambda: self.pause() if self.process_state == 'running' else self.resume())
-
-        # change variable value
-        # self.tuneUI.le_Tune_Variable.textChanged.connect(lambda: self.tuneUI.le_Tune_Variable_End_Cell.setText(self.tuneUI.le_Tune_Variable.text())
-        #                                                  if self.tuneUI.cb_Tune_Option.currentIndex() == 1
-        #                                                  else None)
 
     def tuner_routine(self):
         if self.tuneUI.cb_Cell_Type.currentText() == 'Mid Cell':
@@ -207,7 +204,7 @@ class TuneControl:
             self.pseudo_shape_space = {}
             if resume == "Yes":
                 # check if value set is already written. This is to enable continuation in case of break in program
-                if os.path.exists(f'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}'):
+                if os.path.exists(fr'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}'):
                     self.pseudo_shape_space = json.load(
                         open(fr'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}', 'r'))
 
@@ -217,6 +214,8 @@ class TuneControl:
                 return
 
         self.freq = float(self.tuneUI.le_Freq.text())
+        marker = self.tuneUI.le_Generated_Shape_Space_Name.text()
+
         # get variables from ui or from pseudo shape space
         A_i = self.check_input(self.tuneUI.le_A_i.text())
         B_i = self.check_input(self.tuneUI.le_B_i.text())
@@ -248,85 +247,89 @@ class TuneControl:
         # print(outer_half_cell_parameters)
         lock_list = [False, False, False, False, False, False, False]
 
-        ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
-        ohc = self.create_pseudo_shape_space(outer_half_cell_parameters, lock_list, "End Cell")
+        if self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == "Grid":
+            ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
+            ohc = self.create_pseudo_shape_space(outer_half_cell_parameters, lock_list, "End Cell")
 
-        pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
-
-        if pseudo_shape_space:
-            self.run_tune(pseudo_shape_space, resume)
-
-    def generate_shape_space_old(self):
-        # check if filename is entered or not
-        if self.tuneUI.le_Generated_Shape_Space_Name.text() == '':
-            self.log.error("Hey chief, seems you forgot to give a name to the shape_space file.")
-            # print_("Hey chief, seems you forgot to give a name to the shape_space file.")
-            return
-        else:
-            self.filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
-            # check if shape space already generated
-            resume = self.continue_check()
-
-            # check if pseudo_shape_space is to be updated
-            self.existing_keys = []
-            self.pseudo_shape_space = {}
-            if resume == "Yes":
-                # check if value set is already written. This is to enable continuation in case of break in program
-                if os.path.exists(f'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}'):
-                    self.pseudo_shape_space = json.load(
-                        open(fr'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}', 'r'))
-
-                    self.existing_keys = list(self.pseudo_shape_space.keys())
-                    # self.log(f'last saved key: {self.existing_keys}')
-            elif resume == "Cancel":
-                return
-
-        self.freq = float(self.tuneUI.le_Freq.text())
-        # get variables from ui or from pseudo shape space
-        A_i = self.text_to_list(self.tuneUI.le_A_i.text())
-        B_i = self.text_to_list(self.tuneUI.le_B_i.text())
-        a_i = self.text_to_list(self.tuneUI.le_a_i.text())
-        b_i = self.text_to_list(self.tuneUI.le_b_i.text())
-        Ri_i = self.text_to_list(self.tuneUI.le_Ri_i.text())
-
-        # check tune type
-        if self.tuneUI.cb_Tune_Option.currentText() == "L":
-            Req_i = self.text_to_list(self.tuneUI.le_Tune_Variable.text())
-            L_i = None
-            inner_half_cell_parameters = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i]
-        else:
-            L_i = self.text_to_list(self.tuneUI.le_Tune_Variable.text())
-            Req_i = None
-            inner_half_cell_parameters = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i]
-
-        if self.tuneUI.cb_Outer_Cell.checkState() == 2:
-            A_o = self.text_to_list(self.tuneUI.le_A_o.text())
-            B_o = self.text_to_list(self.tuneUI.le_B_o.text())
-            a_o = self.text_to_list(self.tuneUI.le_a_o.text())
-            b_o = self.text_to_list(self.tuneUI.le_b_o.text())
-            Ri_o = self.text_to_list(self.tuneUI.le_Ri_o.text())
-
-            if self.tuneUI.cb_Tune_Option.currentText() == 'L':
-                # update mid cell L_i
-                inner_half_cell_parameters[5] = self.text_to_list(self.tuneUI.le_L_Mid_Cell.text())
-                L_o = None
-            else:
-                L_o = self.text_to_list(self.tuneUI.le_Tune_Variable_End_Cell.text())
-
-            Req_o = Req_i
-            outer_half_cell_parameters = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o]
-        else:
-            outer_half_cell_parameters = inner_half_cell_parameters
-
-        pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, inner_half_cell_parameters,
-                                                              outer_half_cell_parameters)
+            pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
+        elif self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == "Monte Carlo":
+            pseudo_shape_space = self.create_shape_space_mc(self.freq, inner_half_cell_parameters,
+                                                            outer_half_cell_parameters, marker)
 
         if pseudo_shape_space:
             self.run_tune(pseudo_shape_space, resume)
+    #
+    # def generate_shape_space_old(self):
+    #     # check if filename is entered or not
+    #     if self.tuneUI.le_Generated_Shape_Space_Name.text() == '':
+    #         self.log.error("Hey chief, seems you forgot to give a name to the shape_space file.")
+    #         # print_("Hey chief, seems you forgot to give a name to the shape_space file.")
+    #         return
+    #     else:
+    #         self.filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+    #         # check if shape space already generated
+    #         resume = self.continue_check()
+    #
+    #         # check if pseudo_shape_space is to be updated
+    #         self.existing_keys = []
+    #         self.pseudo_shape_space = {}
+    #         if resume == "Yes":
+    #             # check if value set is already written. This is to enable continuation in case of break in program
+    #             if os.path.exists(fr'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}'):
+    #                 self.pseudo_shape_space = json.load(
+    #                     open(fr'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}', 'r'))
+    #
+    #                 self.existing_keys = list(self.pseudo_shape_space.keys())
+    #                 # self.log(f'last saved key: {self.existing_keys}')
+    #         elif resume == "Cancel":
+    #             return
+    #
+    #     self.freq = float(self.tuneUI.le_Freq.text())
+    #     # get variables from ui or from pseudo shape space
+    #     A_i = self.text_to_list(self.tuneUI.le_A_i.text())
+    #     B_i = self.text_to_list(self.tuneUI.le_B_i.text())
+    #     a_i = self.text_to_list(self.tuneUI.le_a_i.text())
+    #     b_i = self.text_to_list(self.tuneUI.le_b_i.text())
+    #     Ri_i = self.text_to_list(self.tuneUI.le_Ri_i.text())
+    #
+    #     # check tune type
+    #     if self.tuneUI.cb_Tune_Option.currentText() == "L":
+    #         Req_i = self.text_to_list(self.tuneUI.le_Tune_Variable.text())
+    #         L_i = None
+    #         inner_half_cell_parameters = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i]
+    #     else:
+    #         L_i = self.text_to_list(self.tuneUI.le_Tune_Variable.text())
+    #         Req_i = None
+    #         inner_half_cell_parameters = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i]
+    #
+    #     if self.tuneUI.cb_Outer_Cell.checkState() == 2:
+    #         A_o = self.text_to_list(self.tuneUI.le_A_o.text())
+    #         B_o = self.text_to_list(self.tuneUI.le_B_o.text())
+    #         a_o = self.text_to_list(self.tuneUI.le_a_o.text())
+    #         b_o = self.text_to_list(self.tuneUI.le_b_o.text())
+    #         Ri_o = self.text_to_list(self.tuneUI.le_Ri_o.text())
+    #
+    #         if self.tuneUI.cb_Tune_Option.currentText() == 'L':
+    #             # update mid cell L_i
+    #             inner_half_cell_parameters[5] = self.text_to_list(self.tuneUI.le_L_Mid_Cell.text())
+    #             L_o = None
+    #         else:
+    #             L_o = self.text_to_list(self.tuneUI.le_Tune_Variable_End_Cell.text())
+    #
+    #         Req_o = Req_i
+    #         outer_half_cell_parameters = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o]
+    #     else:
+    #         outer_half_cell_parameters = inner_half_cell_parameters
+    #
+    #     pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, inner_half_cell_parameters,
+    #                                                           outer_half_cell_parameters)
+    #
+    #     if pseudo_shape_space:
+    #         self.run_tune(pseudo_shape_space, resume)
 
     def run_tune(self, pseudo_shape_space, resume):
         # set tuner
-        self.tuner_option = self.tuneUI.cb_Tuner.currentText()
+        tuner_option = self.tuneUI.cb_Tuner.currentText()
         proc_count = self.tuneUI.sb_No_Of_Processors_Tune.value()
         tune_variable = self.tuneUI.cb_Tune_Option.currentText().split(' ')[-1]
 
@@ -368,7 +371,11 @@ class TuneControl:
             # # insert graphs for convergence monitor
             # self.pg_list = []
             # self.pygraph_list = []
-            # graph_order = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (3, 0), (3, 1), (4, 0), (4, 1), (5, 0), (5, 1), (0, 2), (1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 0), (6, 1), (6, 2), (7, 0), (7, 1), (7, 2), (8, 0), (8, 1), (8, 2), (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3), (8, 3)]
+            # graph_order = [(0, 0), (1, 0), (2, 0), (0, 1), (1, 1), (2, 1), (3, 0),
+            # (3, 1), (4, 0), (4, 1), (5, 0), (5, 1), (0, 2), (1, 2), (2, 2),
+            # (3, 2), (4, 2), (5, 2), (6, 0), (6, 1), (6, 2), (7, 0), (7, 1),
+            # (7, 2), (8, 0), (8, 1), (8, 2), (0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3),
+            # (6, 3), (7, 3), (8, 3)]
             # # print("pglist before ", self.pg_list)
             # # print("pygraph before ", self.pygraph_list)
             #
@@ -409,7 +416,7 @@ class TuneControl:
 
                     service = mp.Process(target=self.run_sequential,
                                          args=(processor_shape_space, resume, p, bc, self.main_control.parentDir,
-                                               self.main_control.projectDir, self.filename, self.tuner_option,
+                                               self.main_control.projectDir, self.filename, tuner_option,
                                                tune_variable, iter_set, cell_type, self.progress_list,
                                                self.convergence_list, save_last, n_cells))
                     service.start()
@@ -454,15 +461,15 @@ class TuneControl:
         self.pygraph_list.append(pygraph)
 
     def monitor_convergence(self, conv):
-        l = len(self.convergence_list)
-        self.plot_list = [None for i in range(l)]
+        n = len(self.convergence_list)
+        self.plot_list = [None for i in range(n)]
 
         for p in self.pygraph_list:
             if p:
                 p.clear()
 
         if self.tuneUI.cb_Monitor_Convergence.checkState() == 2:
-            for i in range(l):
+            for i in range(n):
                 self.pygraph_list[i].addLine(x=None, y=self.freq, pen=pg.mkPen('r', width=1))
 
                 if not self.plot_list[i]:
@@ -580,9 +587,9 @@ class TuneControl:
                 progress = 0
                 for i in range(len(proc_ids)):
                     if os.path.exists(
-                            fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt'):
+                            fr'{self.main_control.projectDir}\SimulationData\SLANS\_process_{i}\progress_file.txt'):
                         with open(
-                                fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity_process_{i}\progress_file.txt',
+                                fr'{self.main_control.projectDir}\SimulationData\SLANS\_process_{i}\progress_file.txt',
                                 "r") as f:
                             a = f.readline()
                             progress += eval(a)
@@ -622,6 +629,7 @@ class TuneControl:
             print('Exception: ', e)
 
     def generate_pseudo_shape_space(self, freq, ihc, ohc):
+        marker = self.tuneUI.le_Generated_Shape_Space_Name.text()
 
         BP = 'none'
         if self.tuneUI.cb_LBP.checkState() == 2:
@@ -631,7 +639,6 @@ class TuneControl:
             BP = 'both'
 
         if self.tuneUI.cb_Inner_Cell.isChecked() and self.tuneUI.cb_Outer_Cell.isChecked():
-            print("IO")
             key = 0
             for indx1, inner_cell in ihc.iterrows():
                 inner_cell = inner_cell.tolist()
@@ -640,21 +647,123 @@ class TuneControl:
                     other_cell = other_cell.tolist()
                     other_cell[-2] = inner_cell[-2]
 
-                    self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': other_cell, 'BP': BP, 'FREQ': freq}
+                    self.pseudo_shape_space[f'{marker}_{key}'] = {'IC': inner_cell, 'OC': other_cell, 'BP': BP, 'FREQ': freq}
                     key += 1
 
         elif self.tuneUI.cb_Inner_Cell.isChecked() and not self.tuneUI.cb_Outer_Cell.isChecked():
-            print("II")
             key = 0
             for indx, inner_cell in ihc.iterrows():
-                self.pseudo_shape_space[key] = {'IC': inner_cell.tolist(), 'OC': inner_cell.tolist(), 'BP': BP,
-                                                'FREQ': freq}
+                self.pseudo_shape_space[f'{marker}_{key}'] = {'IC': inner_cell.tolist(),
+                                                              'OC': inner_cell.tolist(),
+                                                              'BP': BP, 'FREQ': freq}
                 key += 1
 
         # remove duplicates from generated space
         self.pseudo_shape_space = self.remove_duplicate_values(self.pseudo_shape_space)
 
-        pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
+        filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+        pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
+        with open(pseudo_shape_space_name, 'w') as file:
+            file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
+
+        return self.pseudo_shape_space
+
+    def create_shape_space_mc(self, freq, ihc, ohc, marker):
+        n_shapes = self.tuneUI.sb_No_Of_Shapes_Monte_Carlo.value()
+        # pseudo_shape_space = {}
+
+        # check input to avoid an infinite loop
+        # check = self.check_input()
+        #
+        # if check:
+
+        count = 0
+        loop_escape = 0
+        while count < n_shapes and loop_escape < 15:
+            # mid cell
+            A_i = self.process_range(ihc[0])
+            if ihc[1] == "A":
+                B_i = A_i
+            else:
+                B_i = self.process_range(ihc[1])
+            a_i = self.process_range(ihc[2])
+            if ihc[3] == "a":
+                b_i = a_i
+            else:
+                b_i = self.process_range(ihc[3])
+            Ri_i = self.process_range(ihc[4])
+
+            if self.tuneUI.cb_Tune_Option.currentText() == 'L':
+                if self.tuneUI.cb_Outer_Cell.checkState() == 2:
+                    L_i = self.process_range(ihc[5])
+                else:
+                    L_i = A_i + a_i
+
+                Req_i = self.process_range(ihc[6])
+
+            else:
+                L_i = self.process_range(ihc[5])
+                Req_i = B_i + b_i + Ri_i
+
+            inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0, 0]
+
+            if self.tuneUI.cb_Outer_Cell.checkState() == 2:
+                # This also checks if the right and left bounds are equal in which case it returns a single value
+                A_o = self.process_range(ohc[0])
+                if ohc[1] == "A":
+                    B_o = A_o
+                else:
+                    B_o = self.process_range(ohc[1])
+                a_o = self.process_range(ohc[2])
+
+                if ohc[3] == "a":
+                    b_o = a_o
+                else:
+                    b_o = self.process_range(ohc[3])
+
+                Ri_o = self.process_range(ohc[4])
+
+                if self.tuneUI.cb_Tune_Option.currentText() == 'L':
+                    L_o = A_o + a_o
+                else:
+                    L_o = self.process_range(ohc[5])
+
+                Req_o = Req_i
+
+                # update L_i
+                # L_i = self.process_range(self.text_to_list(self.tuneUI.le_Tune_Variable_End_Cell.text()))
+                # inner_cell[5] = L_i
+
+                other_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0, 0]
+            else:
+                other_cell = inner_cell
+
+            # if other_cell[0] + other_cell[2] > other_cell[5]:
+            #     loop_escape += 1
+            #     print_("Encountered a shape with A + a > L")
+            #     continue
+
+            # if other_cell[3] + other_cell[4] > other_cell[6] or inner_cell[3] + inner_cell[4] > inner_cell[6]:
+            #     loop_escape += 1
+            #     print_("Encountered a shape with B + b > Req")
+            #     continue
+
+            # print_('6e')
+            if self.tuneUI.cb_LBP.checkState() == 2:
+                key = f"{marker}_{count}"
+                if key not in self.existing_keys:
+                    self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': other_cell, 'BP': 'left',
+                                                    'FREQ': freq}
+            else:
+                key = f"{marker}_{count}"
+                if key not in self.existing_keys:
+                    self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': other_cell, 'BP': 'none',
+                                                    'FREQ': freq}
+            count += 1
+            loop_escape = 0  # reset loop escape
+
+        filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+        pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
         with open(pseudo_shape_space_name, 'w') as file:
             file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
 
@@ -682,8 +791,7 @@ class TuneControl:
                                                  bb[i][j][k][m][n][o], RiRi[i][j][k][m][n][o],
                                                  LL[i][j][k][m][n][o],
                                                  RiRi[i][j][k][m][n][o] + BB[i][j][k][m][n][o] + bb[i][j][k][m][n][
-                                                     o],
-                                                 0,0])
+                                                     o], 0, 0])
             else:
                 AA, BB, aa, bb, RiRi, LL, ReqReq = np.meshgrid(A, B, a, b, Ri, L, Req)
                 space = []
@@ -747,15 +855,16 @@ class TuneControl:
             return 1
 
         space = np.array(space)
-        # print(space)
+
         # create list of locked variables
         LOCKED_LIST = np.array([A_LOCKED, B_LOCKED, a_LOCKED, b_LOCKED, Ri_LOCKED, L_LOCKED])
         count = np.count_nonzero(LOCKED_LIST)
-        print(count)
+
         if count >= 2:
             # for ll in LOCKED_LIST:
             # check if length of all locked lists are same
             dummy_list = []
+            lock_len = []
             for i in LOCKED_LIST.nonzero()[0]:
                 dummy_list.append(len(var_list[i]))
                 lock_len = len(var_list[i])
@@ -783,22 +892,19 @@ class TuneControl:
                 L = np.ones(lock_len) * (-1)
 
             lock = list(zip(A, B, a, b, Ri, L))
-            print(lock)
 
-            slice = []
+            slice_ = []
             for s in space:
                 ll = []
                 for z in lock:
                     ll = [i for (i, j) in zip(s, z) if i == j]
 
                     if len(ll) == count:
-                        slice.append(s)
+                        slice_.append(s)
 
-            df = pd.DataFrame(slice, columns=["A", "B", "a", "b", "Ri", "L", "Req", "alpha_i", "alpha_o"])
-            # print(df)
+            df = pd.DataFrame(slice_, columns=["A", "B", "a", "b", "Ri", "L", "Req", "alpha_i", "alpha_o"])
 
         df = pd.DataFrame(space, columns=["A", "B", "a", "b", "Ri", "L", "Req", "alpha_i", "alpha_o"])
-        # print(df)
 
         return df
 
@@ -810,15 +916,15 @@ class TuneControl:
         if "range" in s and "rand" not in s:
             s = s.replace('range', '')
             try:
-                l = ast.literal_eval(s)
-                return np.linspace(l[0], l[1], l[2])
+                ll = ast.literal_eval(s)
+                return np.linspace(ll[0], ll[1], ll[2])
             except:
                 print("Please check inputs.")
         elif "randrange" in s:
             s = s.replace('randrange', '')
             try:
-                l = ast.literal_eval(s)
-                ll = np.random.uniform(l[0], l[1], l[2])
+                ll = ast.literal_eval(s)
+                ll = np.random.uniform(ll[0], ll[1], ll[2])
                 return ll
             except:
                 print("Please check inputs.")
@@ -830,233 +936,6 @@ class TuneControl:
                 print("Please check inputs.")
 
         return 1
-
-    def generate_pseudo_shape_space_old(self, freq, ihc, ohc):
-        if self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == 'Monte Carlo':
-            n_shapes = self.tuneUI.sb_No_Of_Shapes_Monte_Carlo.value()
-            # pseudo_shape_space = {}
-
-            # check input to avoid an infinite loop
-            check = self.check_input()
-            if check:
-                count = 0
-                loop_escape = 0
-                while count < n_shapes and loop_escape < 15:
-                    # mid cell
-                    A_i = self.process_range(ihc[0])
-                    if ihc[1] == "A":
-                        B_i = A_i
-                    else:
-                        B_i = self.process_range(ihc[1])
-                    a_i = self.process_range(ihc[2])
-                    if ihc[3] == "a":
-                        b_i = a_i
-                    else:
-                        b_i = self.process_range(ihc[3])
-                    Ri_i = self.process_range(ihc[4])
-
-                    if self.tuneUI.cb_Tune_Option.currentText() == 'L':
-                        if self.tuneUI.cb_Outer_Cell.checkState() == 2:
-                            L_i = self.process_range(ihc[5])
-                        else:
-                            L_i = A_i + a_i
-
-                        Req_i = self.process_range(ihc[6])
-
-                    else:
-                        L_i = self.process_range(ihc[5])
-                        Req_i = B_i + b_i + Ri_i
-
-                    inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-
-                    if self.tuneUI.cb_Outer_Cell.checkState() == 2:
-                        # This also checks if the right and left bounds are equal in which case it returns a single value
-                        A_o = self.process_range(ohc[0])
-                        if ohc[1] == "A":
-                            B_o = A_o
-                        else:
-                            B_o = self.process_range(ohc[1])
-                        a_o = self.process_range(ohc[2])
-
-                        if ohc[3] == "a":
-                            b_o = a_o
-                        else:
-                            b_o = self.process_range(ohc[3])
-
-                        Ri_o = self.process_range(ohc[4])
-
-                        if self.tuneUI.cb_Tune_Option.currentText() == 'L':
-                            L_o = A_o + a_o
-                        else:
-                            L_o = self.process_range(ohc[5])
-
-                        Req_o = Req_i
-
-                        # update L_i
-                        # L_i = self.process_range(self.text_to_list(self.tuneUI.le_Tune_Variable_End_Cell.text()))
-                        # inner_cell[5] = L_i
-
-                        other_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0]
-                    else:
-                        other_cell = inner_cell
-
-                    if other_cell[0] + other_cell[2] > other_cell[5]:
-                        loop_escape += 1
-                        print_("Encountered a shape with A + a > L")
-                        continue
-
-                    if other_cell[3] + other_cell[4] > other_cell[6] or inner_cell[3] + inner_cell[4] > inner_cell[6]:
-                        loop_escape += 1
-                        print_("Encountered a shape with B + b > Req")
-                        continue
-
-                    # print_('6e')
-                    if self.tuneUI.cb_LBP.checkState() == 2:
-                        key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                        if key not in self.existing_keys:
-                            self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': other_cell, 'BP': 'left',
-                                                            'FREQ': freq}
-                    else:
-                        key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                        if key not in self.existing_keys:
-                            self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': other_cell, 'BP': 'none',
-                                                            'FREQ': freq}
-                    count += 1
-                    loop_escape = 0  # reset loop escape
-            else:
-                print('Please check input parameters.')
-        else:
-            # UPDATE CODE TO CHECK FOR ALL THE ITEMS IN THE SHAPE SPACE FOR SHAPES WITH A + a > L
-            check = self.check_input()
-
-            A_o_space = ohc[0]
-            B_o_space = ohc[1]
-            a_o_space = ohc[2]
-            b_o_space = ohc[3]
-            Ri_o_space = ohc[4]
-
-            count = 0
-            for A_o in A_o_space:
-                for B_o in B_o_space:
-                    for a_o in a_o_space:
-                        for b_o in b_o_space:
-                            for Ri_o in Ri_o_space:
-
-                                if self.tuneUI.cb_Tune_Option.currentText() == 'Req':
-                                    L_o_space = ohc[5]
-                                    for L_o in L_o_space:
-                                        Req_o = B_o + b_o + Ri_o
-                                        outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0]
-
-                                        if self.tuneUI.cb_Outer_Cell.checkState() == 2:
-                                            # This also checks if the right and left bounds are equal in which case it returns a single value
-                                            A_i_space = ihc[0]
-                                            B_i_space = ihc[1]
-                                            a_i_space = ihc[2]
-                                            b_i_space = ihc[3]
-                                            Ri_i_space = ihc[4]
-                                            L_i_space = ihc[5]
-                                            Req_i = Req_o
-
-                                            for A_i in A_i_space:
-                                                for B_i in B_i_space:
-                                                    for a_i in a_i_space:
-                                                        for b_i in b_i_space:
-                                                            for Ri_i in Ri_i_space:
-                                                                for L_i in L_i_space:
-                                                                    inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i,
-                                                                                  0]
-                                                                    if self.tuneUI.cb_LBP.checkState() == 2:
-                                                                        key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                                        if key not in self.existing_keys:
-                                                                            self.pseudo_shape_space[key] = {
-                                                                                'IC': inner_cell, 'OC': outer_cell,
-                                                                                'BP': 'left', 'FREQ': freq}
-                                                                    else:
-                                                                        key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                                        if key not in self.existing_keys:
-                                                                            self.pseudo_shape_space[key] = {
-                                                                                'IC': inner_cell, 'OC': outer_cell,
-                                                                                'BP': 'none', 'FREQ': freq}
-                                                                    count += 1
-                                        else:
-                                            inner_cell = outer_cell
-
-                                            if self.tuneUI.cb_LBP.checkState() == 2:
-                                                key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                if key not in self.existing_keys:
-                                                    self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': outer_cell,
-                                                                                    'BP': 'left', 'FREQ': freq}
-                                            else:
-                                                key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                if key not in self.existing_keys:
-                                                    self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': outer_cell,
-                                                                                    'BP': 'none', 'FREQ': freq}
-                                            count += 1
-
-                                else:
-                                    Req_o_space = ohc[6]
-                                    for Req_o in Req_o_space:
-                                        L_o = A_o + a_o
-                                        outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0]
-
-                                        if self.tuneUI.cb_Outer_Cell.checkState() == 2:
-                                            A_i_space = ihc[0]
-                                            B_i_space = ihc[1]
-                                            a_i_space = ihc[2]
-                                            b_i_space = ihc[3]
-                                            Ri_i_space = ihc[4]
-                                            L_i_space = ihc[5]
-                                            Req_i = Req_o
-
-                                            for A_i in A_i_space:
-                                                for B_i in B_i_space:
-                                                    for a_i in a_i_space:
-                                                        for b_i in b_i_space:
-                                                            for Ri_i in Ri_i_space:
-                                                                for L_i in L_i_space:
-                                                                    inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i,
-                                                                                  0]
-
-                                                                    if self.tuneUI.cb_LBP.checkState() == 2:
-                                                                        key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                                        if key not in self.existing_keys:
-                                                                            self.pseudo_shape_space[key] = {
-                                                                                'IC': inner_cell, 'OC': outer_cell,
-                                                                                'BP': 'left', 'FREQ': freq}
-                                                                    else:
-                                                                        key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                                        if key not in self.existing_keys:
-                                                                            self.pseudo_shape_space[key] = {
-                                                                                'IC': inner_cell, 'OC': outer_cell,
-                                                                                'BP': 'none', 'FREQ': freq}
-                                                                    count += 1
-                                        else:
-                                            inner_cell = outer_cell
-
-                                            if self.tuneUI.cb_LBP.checkState() == 2:
-                                                key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                if key not in self.existing_keys:
-                                                    self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': outer_cell,
-                                                                                    'BP': 'left', 'FREQ': freq}
-                                            else:
-                                                key = f"{self.tuneUI.le_Marker.text()}_{count}"
-                                                if key not in self.existing_keys:
-                                                    self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': outer_cell,
-                                                                                    'BP': 'none', 'FREQ': freq}
-                                            count += 1
-
-        # remove duplicates from generated space
-        self.pseudo_shape_space = self.remove_duplicate_values(self.pseudo_shape_space)
-
-        if check:
-            pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
-            with open(pseudo_shape_space_name, 'w') as file:
-                file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
-
-            return self.pseudo_shape_space
-        else:
-            return check
 
     def remove_duplicate_values(self, d):
         temp = []
@@ -1183,6 +1062,7 @@ class TuneControl:
             self.tuneUI.w_BC.show()
 
     def serialize(self, state_dict):
+        state_dict['Filename'] = self.tuneUI.le_Generated_Shape_Space_Name.text()
         # update state file
         state_dict["Frequency"] = self.tuneUI.le_Freq.text()
         state_dict["Cell_Type"] = self.tuneUI.cb_Cell_Type.currentIndex()
@@ -1222,7 +1102,7 @@ class TuneControl:
         state_dict["Tolerance"] = self.tuneUI.le_Tolerance.text()
         state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
 
-        ## Optimization control
+        # Optimization control
         state_dict["Optimization_Algorithm"] = self.tuneUI.cb_Optimization_Algorithm.currentText()
         state_dict["Cell_Type_Optimization"] = self.tuneUI.cb_Cell_Type_Optimization.currentText()
         state_dict["UQ_Check"] = self.tuneUI.cb_UQ.checkState()
@@ -1261,81 +1141,86 @@ class TuneControl:
         state_dict["LBP"] = self.tuneUI.cb_LBP.checkState()
 
     def deserialize(self, state_dict):
-        # update state file
-        self.tuneUI.le_Freq.setText(state_dict["Frequency"])
-        self.tuneUI.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
-        self.tuneUI.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
-        self.tuneUI.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
+        try:
+            self.tuneUI.le_Generated_Shape_Space_Name.setText(state_dict['Filename'])
+            # update state file
+            self.tuneUI.le_Freq.setText(state_dict["Frequency"])
+            self.tuneUI.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
+            self.tuneUI.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
+            self.tuneUI.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
 
-        self.tuneUI.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
+            self.tuneUI.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
 
-        self.tuneUI.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
-        self.tuneUI.cb_LBC.setCurrentIndex(state_dict["LBC"])
-        self.tuneUI.cb_RBC.setCurrentIndex(state_dict["RBC"])
+            self.tuneUI.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
+            self.tuneUI.cb_LBC.setCurrentIndex(state_dict["LBC"])
+            self.tuneUI.cb_RBC.setCurrentIndex(state_dict["RBC"])
 
-        self.tuneUI.cb_Inner_Cell.setCheckState(state_dict["Inner_Cell"])
-        self.tuneUI.cb_Outer_Cell.setCheckState(state_dict["Outer_Cell"])
-        self.tuneUI.cb_Expansion.setCheckState(state_dict["Expansion"])
-        self.tuneUI.cb_LBP.setCheckState(state_dict["LBP"])
+            self.tuneUI.cb_Inner_Cell.setCheckState(state_dict["Inner_Cell"])
+            self.tuneUI.cb_Outer_Cell.setCheckState(state_dict["Outer_Cell"])
+            self.tuneUI.cb_Expansion.setCheckState(state_dict["Expansion"])
+            self.tuneUI.cb_LBP.setCheckState(state_dict["LBP"])
 
-        # cell parameters
-        self.tuneUI.le_A_i.setText(state_dict["A_i"])
-        self.tuneUI.le_B_i.setText(state_dict["B_i"])
-        self.tuneUI.le_a_i.setText(state_dict["a_i"])
-        self.tuneUI.le_b_i.setText(state_dict["b_i"])
-        self.tuneUI.le_Ri_i.setText(state_dict["Ri_i"])
-        self.tuneUI.le_L_i.setText(state_dict["L_i"])
-        self.tuneUI.le_Req_i.setText(state_dict["Req_i"])
+            # cell parameters
+            self.tuneUI.le_A_i.setText(state_dict["A_i"])
+            self.tuneUI.le_B_i.setText(state_dict["B_i"])
+            self.tuneUI.le_a_i.setText(state_dict["a_i"])
+            self.tuneUI.le_b_i.setText(state_dict["b_i"])
+            self.tuneUI.le_Ri_i.setText(state_dict["Ri_i"])
+            self.tuneUI.le_L_i.setText(state_dict["L_i"])
+            self.tuneUI.le_Req_i.setText(state_dict["Req_i"])
 
-        self.tuneUI.le_A_o.setText(state_dict["A_o"])
-        self.tuneUI.le_B_o.setText(state_dict["B_o"])
-        self.tuneUI.le_a_o.setText(state_dict["a_o"])
-        self.tuneUI.le_b_o.setText(state_dict["b_o"])
-        self.tuneUI.le_Ri_o.setText(state_dict["Ri_o"])
-        self.tuneUI.le_L_o.setText(state_dict["L_i"])
+            self.tuneUI.le_A_o.setText(state_dict["A_o"])
+            self.tuneUI.le_B_o.setText(state_dict["B_o"])
+            self.tuneUI.le_a_o.setText(state_dict["a_o"])
+            self.tuneUI.le_b_o.setText(state_dict["b_o"])
+            self.tuneUI.le_Ri_o.setText(state_dict["Ri_o"])
+            self.tuneUI.le_L_o.setText(state_dict["L_i"])
 
-        # settings
-        self.tuneUI.sb_No_Of_Processors_Tune.setValue(state_dict["No_Of_Processors"])
-        self.tuneUI.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
-        self.tuneUI.le_Tolerance.setText(state_dict["Tolerance"])
-        self.tuneUI.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
+            # settings
+            self.tuneUI.sb_No_Of_Processors_Tune.setValue(state_dict["No_Of_Processors"])
+            self.tuneUI.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
+            self.tuneUI.le_Tolerance.setText(state_dict["Tolerance"])
+            self.tuneUI.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
 
-        ## Optimization control
-        self.tuneUI.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
-        self.tuneUI.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
-        self.tuneUI.cb_UQ.setCheckState(state_dict["UQ_Check"])
+            # Optimization control
+            self.tuneUI.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
+            self.tuneUI.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
+            self.tuneUI.cb_UQ.setCheckState(state_dict["UQ_Check"])
 
-        # mid cell parameters
-        self.tuneUI.le_A_i_opt.setText(state_dict["A_i_opt"])
-        self.tuneUI.le_B_i_opt.setText(state_dict["B_i_opt"])
-        self.tuneUI.le_a_i_opt.setText(state_dict["a_i_opt"])
-        self.tuneUI.le_b_i_opt.setText(state_dict["b_i_opt"])
-        self.tuneUI.le_Ri_i_opt.setText(state_dict["Ri_i_opt"])
-        self.tuneUI.le_L_i_opt.setText(state_dict["L_i_opt"])
-        self.tuneUI.le_Req_i_opt.setText(state_dict["Req_i_opt"])
+            # mid cell parameters
+            self.tuneUI.le_A_i_opt.setText(state_dict["A_i_opt"])
+            self.tuneUI.le_B_i_opt.setText(state_dict["B_i_opt"])
+            self.tuneUI.le_a_i_opt.setText(state_dict["a_i_opt"])
+            self.tuneUI.le_b_i_opt.setText(state_dict["b_i_opt"])
+            self.tuneUI.le_Ri_i_opt.setText(state_dict["Ri_i_opt"])
+            self.tuneUI.le_L_i_opt.setText(state_dict["L_i_opt"])
+            self.tuneUI.le_Req_i_opt.setText(state_dict["Req_i_opt"])
 
-        self.tuneUI.cb_Tune_Variable.setCurrentText(state_dict["Tune_Variable"])
-        self.tuneUI.dsb_Tune_Frequency.setValue(state_dict["Tune_Frequency"])
-        self.tuneUI.db_Norm_Length.setValue(state_dict["Norm_Length"])
-        self.tuneUI.sb_Norm_Length_N_Cells.setValue(state_dict["N_Cells"])
-        self.tuneUI.sb_Processors_Count.setValue(state_dict["Processors_Count"])
+            self.tuneUI.cb_Tune_Variable.setCurrentText(state_dict["Tune_Variable"])
+            self.tuneUI.dsb_Tune_Frequency.setValue(state_dict["Tune_Frequency"])
+            self.tuneUI.db_Norm_Length.setValue(state_dict["Norm_Length"])
+            self.tuneUI.sb_Norm_Length_N_Cells.setValue(state_dict["N_Cells"])
+            self.tuneUI.sb_Processors_Count.setValue(state_dict["Processors_Count"])
 
-        self.tuneUI.sb_Initial_Points.setValue(state_dict["Initial_Points"])
-        self.tuneUI.sb_Max_Table_Size.setValue(state_dict["Max_Table_Size"])
-        self.tuneUI.sb_N_Generation.setValue(state_dict["N_Generation"])
-        self.tuneUI.cb_Init_Generation_Method.setCurrentText(state_dict["Init_Generation_Method"])
-        self.tuneUI.sb_Sobol_Sequence_Index.setValue(state_dict["Sobol_Sequence_Index"])
-        self.tuneUI.cb_Optimize_By.setCurrentText(state_dict["Optimize_By"])
-        self.tuneUI.sb_Crossover_Factor.setValue(state_dict["Crossover_Factor"])
-        self.tuneUI.sb_N_Elites_To_Cross.setValue(state_dict["N_Elites_To_Cross"])
-        self.tuneUI.sb_Mutation_Factor.setValue(state_dict["Mutation_Factor"])
-        self.tuneUI.sb_Chaos_Factor.setValue(state_dict["Chaos_Factor"])
+            self.tuneUI.sb_Initial_Points.setValue(state_dict["Initial_Points"])
+            self.tuneUI.sb_Max_Table_Size.setValue(state_dict["Max_Table_Size"])
+            self.tuneUI.sb_N_Generation.setValue(state_dict["N_Generation"])
+            self.tuneUI.cb_Init_Generation_Method.setCurrentText(state_dict["Init_Generation_Method"])
+            self.tuneUI.sb_Sobol_Sequence_Index.setValue(state_dict["Sobol_Sequence_Index"])
+            self.tuneUI.cb_Optimize_By.setCurrentText(state_dict["Optimize_By"])
+            self.tuneUI.sb_Crossover_Factor.setValue(state_dict["Crossover_Factor"])
+            self.tuneUI.sb_N_Elites_To_Cross.setValue(state_dict["N_Elites_To_Cross"])
+            self.tuneUI.sb_Mutation_Factor.setValue(state_dict["Mutation_Factor"])
+            self.tuneUI.sb_Chaos_Factor.setValue(state_dict["Chaos_Factor"])
 
-        self.tuneUI.ccb_Populate_Objectives.setCurrentText(state_dict["Populate_Objectives"])
-        self.tuneUI.ccb_Populate_Constraints.setCurrentText(state_dict["Populate_Constraints"])
+            self.tuneUI.ccb_Populate_Objectives.setCurrentText(state_dict["Populate_Objectives"])
+            self.tuneUI.ccb_Populate_Constraints.setCurrentText(state_dict["Populate_Constraints"])
 
-        self.tuneUI.cb_Expansion.setCheckState(state_dict["Expansion"])
-        self.tuneUI.cb_LBP.setCheckState(state_dict["LBP"])
+            self.tuneUI.cb_Expansion.setCheckState(state_dict["Expansion"])
+            self.tuneUI.cb_LBP.setCheckState(state_dict["LBP"])
+
+        except KeyError:
+            print("Could not deserialize tune_control.py")
     #
     # def ui_effects(self):
     #
@@ -1373,7 +1258,7 @@ class TuneControl:
 
     @staticmethod
     def overwriteFolder(invar, projectDir):
-        path = f"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}"
+        path = fr"{projectDir}\SimulationData\SLANS\_process_{invar}"
 
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -1384,7 +1269,7 @@ class TuneControl:
     @staticmethod
     def copyFiles(invar, parentDir, projectDir):
         src = fr"{parentDir}\exe\SLANS_exe"
-        dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
+        dst = fr"{projectDir}\SimulationData\SLANS\_process_{invar}\SLANS_exe"
 
         dir_util.copy_tree(src, dst)
 
@@ -1408,24 +1293,24 @@ class TuneControl:
     def text_to_list_old(txt):
         if "range" in txt:
             txt = txt.replace('range', '')
-            l = ast.literal_eval(txt)
-            return range(l[0], l[1], l[2])
+            ll = ast.literal_eval(txt)
+            return range(ll[0], ll[1], ll[2])
         elif 'linspace' in txt:
-            l = eval(f'np.{txt}')
-            return l
+            ll = eval(f'np.{txt}')
+            return ll
         elif txt in "ABabRiLReq":
             return txt
         else:
-            l = ast.literal_eval(txt)
-            if isinstance(l, int) or isinstance(l, float):
-                return [l]
+            ll = ast.literal_eval(txt)
+            if isinstance(ll, int) or isinstance(ll, float):
+                return [ll]
             else:
-                print('here', list(l))
-                return list(l)
+                return list(ll)
 
     def continue_check(self):
-        path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
-        print(path)
+        filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+        path = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
+
         if os.path.exists(path):
             msg = QMessageBox()
             msg.setWindowTitle("Resume Simulation")
@@ -1440,7 +1325,7 @@ class TuneControl:
 
             msg.setDefaultButton(buttonY)
 
-            msg.buttonClicked.connect(self.button_clicked)
+            msg.buttonClicked.connect(button_clicked)
 
             x = msg.exec_()
 
@@ -1456,10 +1341,6 @@ class TuneControl:
         else:
             print("Path does not yet exist. Creating...")
             return "Yes"
-
-    @staticmethod
-    def button_clicked(i):
-        return i.text()
 
     @staticmethod
     def load_shape_space(filename, arg=None):
@@ -1735,14 +1616,14 @@ class OptimizationControl:
                 tune_result = []
                 processed_keys = []
                 for key in pseudo_shape_space.keys():
-                    filename = fr'{self.projectDir}\SimulationData\SLANS\Cavity{key}\cavity_33.svl'
+                    filename = fr'{self.projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
                     try:
                         params = fr.svl_reader(filename)
                         obj = self.get_objectives_value(params, self.objectives, norm_length, n_cells)
                         # print(obj, tr)
                         # read tune results
                         d_tune_res = {'Req': 0, 'L': 0, 'freq': 0}
-                        with open(fr'{self.projectDir}\SimulationData\SLANS\Cavity{key}\tune_res.json', "r") as infile:
+                        with open(fr'{self.projectDir}\SimulationData\SLANS\{key}\tune_res.json', "r") as infile:
                             d_tune_res = json.load(infile)
 
                         obj_result.append(obj)
@@ -1812,8 +1693,8 @@ class OptimizationControl:
             # get uq_parameters
             uq_result_dict = {}
             for key in shape_space.keys():
-                filename_slans = fr'{self.projectDir}\SimulationData\SLANS\Cavity{key}\uq.json'
-                filename_abci = fr'{self.projectDir}\SimulationData\ABCI\Cavity{key}\uq.json'
+                filename_slans = fr'{self.projectDir}\SimulationData\SLANS\{key}\uq.json'
+                filename_abci = fr'{self.projectDir}\SimulationData\ABCI\{key}\uq.json'
                 if os.path.exists(filename_slans):# and os.path.exists(filename_abci):
                     uq_result_dict[key] = []
                     with open(filename_slans, "r") as infile:
@@ -1832,7 +1713,7 @@ class OptimizationControl:
 
                                 # ic(uq_result_dict)
 
-                # filename = fr'{self.projectDir}\SimulationData\ABCI\Cavity{key}\uq.json'
+                # filename = fr'{self.projectDir}\SimulationData\ABCI\{key}\uq.json'
                 if os.path.exists(filename_abci):
                     if key not in uq_result_dict:
                         uq_result_dict[key] = []
@@ -1964,7 +1845,8 @@ class OptimizationControl:
         
         # check if df_global is empty
         if self.df_global.shape[0] == 0:
-            ic("Unfortunately, none survived the constraints and the program has to end. I can't even say that this was a good run.")
+            ic("Unfortunately, none survived the constraints and the program has to end. "
+               "I can't even say that this was a good run.")
             return
 
         # save dataframe
@@ -2004,7 +1886,6 @@ class OptimizationControl:
 
     def uq_parallel(self, df, objectives, solver_dict, solver_args_dict):
         proc_count = self.tuneUI.sb_Processors_Count.value()
-        # marker = self.wakefieldUI.le_Marker.text()
 
         # get geometric parameters
         df = df.loc[:, ['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req', "alpha_i", "alpha_o"]]
@@ -2117,7 +1998,7 @@ class OptimizationControl:
                 proc = solver_args['proc']
                 parentDir = solver_args['parentDir']
                 projectDir = solver_args['projectDir']
-                sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points are saved to the key of the mean value run
+                sub_dir = fr'{key}'  # the simulation runs at the quadrature points are saved to the key of the mean value run
                 for i in range(no_sims):
                     skip = False
                     p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
@@ -2138,9 +2019,9 @@ class OptimizationControl:
                     fid = fr'{key}_Q{i}'
 
                     # check if folder exists and skip if it does
-                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}'):
+                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{key}\{fid}'):
                         skip = True
-                        # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\Cavity{key}\Cavity{fid}')
+                        # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\{key}\{fid}')
 
                     # skip analysis if folder already exists.
                     if not skip:
@@ -2150,7 +2031,7 @@ class OptimizationControl:
 
                         solver.cavity(n_cells, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, fid=fid,
                                       parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
-                    filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\cavity_33.svl'
+                    filename = fr'{projectDir}\SimulationData\SLANS\{key}\{fid}\cavity_33.svl'
 
                     if os.path.exists(filename):
                         params = fr.svl_reader(filename)
@@ -2189,7 +2070,7 @@ class OptimizationControl:
                     result_dict_slans[o[1]]['expe'].append(v_expe_fobj[i])
                     result_dict_slans[o[1]]['stdDev'].append(v_stdDev_fobj[i])
 
-                with open(fr"{projectDir}\SimulationData\SLANS\Cavity{key}\uq.json", 'w') as file:
+                with open(fr"{projectDir}\SimulationData\SLANS\{key}\uq.json", 'w') as file:
                     file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
 
             if run_abci:
@@ -2212,7 +2093,7 @@ class OptimizationControl:
                 marker = solver_args['marker']
 
                 proc = solver_args['proc']
-                sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points are saved to the key of the mean value run
+                sub_dir = fr'{key}'  # the simulation runs at the quadrature points are saved to the key of the mean value run
                 no_error = True
                 for i in range(no_sims):
                     skip = False
@@ -2233,7 +2114,7 @@ class OptimizationControl:
                     fid = fr'{key}_Q{i}'
 
                     # check if folder exists and skip if it does
-                    if os.path.exists(fr'{projectDir}\SimulationData\ABCI\Cavity{key}\Cavity{fid}'):
+                    if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{key}\{fid}'):
                         skip = True
 
                     if not skip:
@@ -2249,7 +2130,7 @@ class OptimizationControl:
                                           )
 
                     # get objective function values
-                    abci_folder = fr'{projectDir}\SimulationData\ABCI\Cavity{key}'
+                    abci_folder = fr'{projectDir}\SimulationData\ABCI\{key}'
                     if os.path.exists(abci_folder):
                         # ic(abci_obj_list)
                         obj_result = get_wakefield_objectives_value(fid, abci_obj_list, abci_folder)
@@ -2273,7 +2154,7 @@ class OptimizationControl:
                         result_dict_abci[o[1]]['expe'].append(v_expe_fobj[i])
                         result_dict_abci[o[1]]['stdDev'].append(v_stdDev_fobj[i])
 
-                    with open(fr"{projectDir}\SimulationData\ABCI\Cavity{key}\uq.json", 'w') as file:
+                    with open(fr"{projectDir}\SimulationData\ABCI\{key}\uq.json", 'w') as file:
                         file.write(json.dumps(result_dict_abci, indent=4, separators=(',', ': ')))
 
     def stroud(self, p):
@@ -2372,7 +2253,7 @@ class OptimizationControl:
                 for key, val in pseudo_shape_space.items():
                     if key in proc_keys_list:
                         # check if folder alsready exists
-                        if not os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\Cavity{key}\cavity_33.svl'):
+                        if not os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'):
                             processor_shape_space[key] = val
 
                 if 'End' in self.tuneUI.cb_Cell_Type_Optimization.currentText():
@@ -2412,7 +2293,6 @@ class OptimizationControl:
         DDZ_SIG = 0.1
         DDR_SIG = 0.1
         proc_count = self.tuneUI.sb_Processors_Count.value()
-        # marker = self.wakefieldUI.le_Marker.text()
 
         # get geometric parameters
         df = df.loc[:, ['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req', "alpha_i", "alpha_o"]]
@@ -2720,7 +2600,7 @@ class OptimizationControl:
                 # print("2c")
                 print(f"Processing for Cavity {key}")
                 try:
-                    abci_data_mon = ABCIData(abci_data_dir, f"Cavity{key}", 0)
+                    abci_data_mon = ABCIData(abci_data_dir, f"{key}", 0)
 
                     # get longitudinal and transverse impedance plot data
                     xr_mon, yr_mon, _ = abci_data_mon.get_data('Real Part of Longitudinal Impedance')
@@ -2771,7 +2651,7 @@ class OptimizationControl:
             for key, value in d.items():
                 try:
                     print(f"Processing for Cavity {key}")
-                    abci_data_dip = ABCIData(abci_data_dir, f"Cavity{key}", 1)
+                    abci_data_dip = ABCIData(abci_data_dir, f"{key}", 1)
 
                     xr_dip, yr_dip, _ = abci_data_dip.get_data('Real Part of Transverse Impedance')
                     xi_dip, yi_dip, _ = abci_data_dip.get_data('Imaginary Part of Transverse Impedance')
@@ -2812,8 +2692,8 @@ class OptimizationControl:
         def all(mon_interval, dip_interval):
             for key, value in d.items():
                 print(f"Processing for Cavity {key}")
-                abci_data_long = ABCIData(abci_data_dir, f"Cavity{key}_", 0)
-                abci_data_trans = ABCIData(abci_data_dir, f"Cavity{key}_", 1)
+                abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
+                abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
 
                 # get longitudinal and transverse impedance plot data
                 xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
@@ -3319,7 +3199,7 @@ class OptimizationControl:
 
     @staticmethod
     def overwriteFolder(invar, projectDir):
-        path = f"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}"
+        path = f"{projectDir}\SimulationData\SLANS\_process_{invar}"
 
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -3330,7 +3210,7 @@ class OptimizationControl:
     @staticmethod
     def copyFiles(invar, parentDir, projectDir):
         src = fr"{parentDir}\exe\SLANS_exe"
-        dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
+        dst = fr"{projectDir}\SimulationData\SLANS\_process_{invar}\SLANS_exe"
 
         dir_util.copy_tree(src, dst)
 
@@ -3428,7 +3308,7 @@ def run_sequential_wakefield(n_cells, n_modules, processor_shape_space,
     total_no_of_shapes = len(list(processor_shape_space.keys()))
     for key, shape in processor_shape_space.items():
         skip = False
-        if os.path.exists(fr'{projectDir}\SimulationData\ABCI\Cavity{key}'):
+        if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{key}'):
             skip = True
 
         start_time = time.time()
@@ -3634,7 +3514,7 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
         print(f"Processing for Cavity {key}")
         try:
-            abci_data_mon = ABCIData(abci_data_dir, f"Cavity{key}", 0)
+            abci_data_mon = ABCIData(abci_data_dir, f"{key}", 0)
 
             # get longitudinal and transverse impedance plot data
             xr_mon, yr_mon, _ = abci_data_mon.get_data('Real Part of Longitudinal Impedance')
@@ -3681,7 +3561,7 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
         try:
             print(f"Processing for Cavity {key}")
-            abci_data_dip = ABCIData(abci_data_dir, f"Cavity{key}", 1)
+            abci_data_dip = ABCIData(abci_data_dir, f"{key}", 1)
 
             xr_dip, yr_dip, _ = abci_data_dip.get_data('Real Part of Transverse Impedance')
             xi_dip, yi_dip, _ = abci_data_dip.get_data('Imaginary Part of Transverse Impedance')
@@ -3718,8 +3598,8 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
     def all(mon_interval, dip_interval):
         print(f"Processing for Cavity {key}")
-        abci_data_long = ABCIData(abci_data_dir, f"Cavity{key}_", 0)
-        abci_data_trans = ABCIData(abci_data_dir, f"Cavity{key}_", 1)
+        abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
+        abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
 
         # get longitudinal and transverse impedance plot data
         xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')

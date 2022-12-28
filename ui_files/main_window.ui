@@ -144,13 +144,7 @@
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">
-QPushButton{
-background-color: rgb(255, 69, 119);
-}
-QPushButton:hover{
-background-color: rgb(230,62, 107);
-}</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string>W A K E F I E L D
@@ -188,12 +182,7 @@ A N A L Y S I S</string>
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">QPushButton{
-background-color: rgb(255, 181, 76);
-}
-QPushButton:hover{
-background-color: rgb(230,163, 76);
-}</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string>T U N E</string>
@@ -230,13 +219,7 @@ background-color: rgb(230,163, 76);
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">
-QPushButton{
-background-color: rgb(216, 74, 255);
-}
-QPushButton:hover{
-background-color: rgb(195, 67, 230);
-}</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string>E I G E N M O D E
@@ -274,13 +257,7 @@ A N A L Y S I S</string>
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">
-QPushButton{
-background-color: rgb(167, 255, 151);
-}
-QPushButton:hover{
-background-color: rgb(151, 230, 136);
-}</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string>P L O T</string>
@@ -317,13 +294,7 @@ background-color: rgb(151, 230, 136);
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">
-QPushButton{
-background-color: rgb(167, 222, 255);
-}
-QPushButton:hover{
-background-color: rgb(151, 200, 230);
-}</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string>P O S T
@@ -386,13 +357,7 @@ P R O C E S S</string>
                          </font>
                         </property>
                         <property name="styleSheet">
-                         <string notr="true">
-QPushButton{
-background-color: rgb(255, 235, 188);
-}
-QPushButton:hover{
-background-color: rgb(230, 212, 170);
-}</string>
+                         <string notr="true"/>
                         </property>
                         <property name="text">
                          <string>M I S C</string>
@@ -945,7 +910,7 @@ border-radius: 15px;</string>
            <item row="0" column="0">
             <widget class="QPushButton" name="pb_New_Project">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(120, 190, 255);</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>New</string>
@@ -955,7 +920,7 @@ border-radius: 15px;</string>
            <item row="0" column="3">
             <widget class="QPushButton" name="pb_Save_State">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(146, 234, 114);</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Save</string>
@@ -1047,7 +1012,7 @@ border-radius: 15px;</string>
            <item row="0" column="2">
             <widget class="QPushButton" name="pb_Open_Project">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(226, 255, 129);</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Open</string>
@@ -1067,7 +1032,7 @@ border-radius: 15px;</string>
            <item row="0" column="4">
             <widget class="QPushButton" name="pb_Load_State_File">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(130, 222, 255);</string>
+              <string notr="true"/>
              </property>
              <property name="text">
               <string>Load</string>

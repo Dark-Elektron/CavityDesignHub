@@ -142,8 +142,10 @@ class FileReader:
     def top_reader(self):
         pass
 
-    def json_reader(self, dir, header=None):
-        df = pd.read_json(dir)
+    @staticmethod
+    def json_reader(filename, header=None):
+
+        df = pd.read_json(filename)
 
         if header:
             # check if length of header list is same as column length
@@ -157,7 +159,7 @@ class FileReader:
             dd = t.apply(pd.Series)
             dd = dd.set_axis(["A", "B", "ai", "bi", "Ri", "L", "Req", "alpha"], axis=1, inplace=False)
 
-            return dd # dd is a dataframe whose columns are the cavity geometry variables
+            return dd  # dd is a dataframe whose columns are the cavity geometry variables
         except:
             return df
 

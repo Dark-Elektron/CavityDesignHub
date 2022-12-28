@@ -8,6 +8,8 @@ import logging
 import shutil
 import sys
 # import pyautogui
+from json import JSONDecodeError
+
 from PyQt5 import QtCore
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
@@ -499,7 +501,9 @@ class MainWindow:
         # serialize home
         try:
             # open state file
-            state_dict = fr.json_reader('ui_state_files/state_file.json')
+            with open('ui_state_files/state_file.json', 'r') as file:
+                state_dict = json.load(file)
+
         except FileNotFoundError:
             print("state_file.json not found, initializing state_dict = {}")
             state_dict = {}
@@ -529,13 +533,13 @@ class MainWindow:
         with open(f'{self.projectDir}/state_file.json', 'w', encoding='utf-8') as file:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
 
-    def deserialize(self, file):
+    def deserialize(self, filename):
         """
         Retrieve and update GUI object state from last saved GUI state
 
         Parameters
         ----------
-        file
+        filename: str
 
         Returns
         -------
@@ -543,10 +547,21 @@ class MainWindow:
         """
 
         # check if state file exists
-        if os.path.exists(file):
+        if os.path.exists(filename):
             # open state file
-            with open(file, 'r') as f:
-                state_dict = json.load(f)
+            try:
+                with open(filename, 'r') as f:
+                    state_dict = json.load(f)
+            except JSONDecodeError:
+                print("JSONDecodeError: State file corrupt. Click on save to write new one.")
+                state_dict = {}
+
+            # check if state file empty
+            if not state_dict:
+                # copy default state dict from application directory to project directory
+                shutil.copyfile('ui_state_files/_state_file_default.json', filename)
+                with open(filename, 'r') as f:
+                    state_dict = json.load(f)
 
             self.projectDir = state_dict['Project Directory']
             self.last_saved_theme = state_dict['Theme']

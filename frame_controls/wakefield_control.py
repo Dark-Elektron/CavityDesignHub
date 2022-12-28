@@ -374,8 +374,8 @@ class WakefieldControl:
 
     def prompt(self, code, fid):
         # path = os.getcwd()
-        # path = os.path.join(path, fr"File\{code}\Cavity{fid}")
-        path = fr'{self.main_control.projectDir}\SimulationData\ABCI\Cavity{fid}'
+        # path = os.path.join(path, fr"File\{code}\{fid}")
+        path = fr'{self.main_control.projectDir}\SimulationData\ABCI\{fid}'
         if os.path.exists(path):
             print_("File already exists. Do you want to overwrite it?")
             msg = QMessageBox()
@@ -642,19 +642,19 @@ class WakefieldControl:
                                                      fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
                                                      DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                      projectDir=projectDir,
-                                                     WG_M=ii, marker=ii, sub_dir=f"Cavity{key}")
+                                                     WG_M=ii, marker=ii, sub_dir=f"{key}")
                             except KeyError:
                                 for m in range(2):
                                     abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
                                                      fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
                                                      DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                      projectDir=projectDir,
-                                                     WG_M=ii, marker=ii, sub_dir=f"Cavity{key}")
+                                                     WG_M=ii, marker=ii, sub_dir=f"{key}")
 
-                            dirc = fr'{projectDir}\SimulationData\ABCI\Cavity{key}{marker}'
+                            dirc = fr'{projectDir}\SimulationData\ABCI\{key}{marker}'
                             # try:
-                            k_loss = abs(ABCIData(dirc, f'Cavity{fid}', 0).loss_factor['Longitudinal'])
-                            k_kick = abs(ABCIData(dirc, f'Cavity{fid}', 1).loss_factor['Transverse'])
+                            k_loss = abs(ABCIData(dirc, f'{fid}', 0).loss_factor['Longitudinal'])
+                            k_kick = abs(ABCIData(dirc, f'{fid}', 1).loss_factor['Transverse'])
                             # except:
                             #     k_loss = 0
                             #     k_kick = 0
@@ -662,7 +662,7 @@ class WakefieldControl:
                             d[fid] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, n_cell)
 
                 # save qoi dictionary
-                run_save_directory = fr'{projectDir}\SimulationData\ABCI\Cavity{key}{marker}'
+                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{key}{marker}'
                 with open(fr'{run_save_directory}\qois.json', "w") as f:
                     json.dump(d, f, indent=4, separators=(',', ': '))
 
@@ -734,7 +734,7 @@ class WakefieldControl:
                 marker = solver_args['marker']
 
                 proc = solver_args['proc']
-                sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points
+                sub_dir = fr'{key}'  # the simulation runs at the quadrature points
                 # are saved to the key of the mean value run
                 no_error = True
                 for i in range(no_sims):
@@ -756,7 +756,7 @@ class WakefieldControl:
                     fid = fr'{key}_Q{i}'
 
                     # check if folder exists and skip if it does
-                    if os.path.exists(fr'{projectDir}\SimulationData\ABCI\Cavity{key}\Cavity{fid}'):
+                    if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{key}\{fid}'):
                         skip = True
 
                     if not skip:
@@ -772,7 +772,7 @@ class WakefieldControl:
                                           )
 
                     # get objective function values
-                    abci_folder = fr'{projectDir}\SimulationData\ABCI\Cavity{key}'
+                    abci_folder = fr'{projectDir}\SimulationData\ABCI\{key}'
                     if os.path.exists(abci_folder):
                         # ic(abci_obj_list)
                         obj_result = get_wakefield_objectives_value(fid, abci_obj_list, abci_folder)
@@ -796,7 +796,7 @@ class WakefieldControl:
                         result_dict_abci[o[1]]['expe'].append(v_expe_fobj[i])
                         result_dict_abci[o[1]]['stdDev'].append(v_stdDev_fobj[i])
 
-                    with open(fr"{projectDir}\SimulationData\ABCI\Cavity{key}\uq.json", 'w') as file:
+                    with open(fr"{projectDir}\SimulationData\ABCI\{key}\uq.json", 'w') as file:
                         file.write(json.dumps(result_dict_abci, indent=4, separators=(',', ': ')))
 
 
@@ -871,7 +871,7 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
         print(f"Processing for Cavity {key}")
         try:
-            abci_data_mon = ABCIData(abci_data_dir, f"Cavity{key}", 0)
+            abci_data_mon = ABCIData(abci_data_dir, f"{key}", 0)
 
             # get longitudinal and transverse impedance plot data
             xr_mon, yr_mon, _ = abci_data_mon.get_data('Real Part of Longitudinal Impedance')
@@ -913,7 +913,7 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
         try:
             print(f"Processing for Cavity {key}")
-            abci_data_dip = ABCIData(abci_data_dir, f"Cavity{key}", 1)
+            abci_data_dip = ABCIData(abci_data_dir, f"{key}", 1)
 
             xr_dip, yr_dip, _ = abci_data_dip.get_data('Real Part of Transverse Impedance')
             xi_dip, yi_dip, _ = abci_data_dip.get_data('Imaginary Part of Transverse Impedance')
@@ -950,8 +950,8 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
     def all_(mon_interval, dip_interval):
         print(f"Processing for Cavity {key}")
-        abci_data_long = ABCIData(abci_data_dir, f"Cavity{key}_", 0)
-        abci_data_trans = ABCIData(abci_data_dir, f"Cavity{key}_", 1)
+        abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
+        abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
 
         # get longitudinal and transverse impedance plot data
         xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')

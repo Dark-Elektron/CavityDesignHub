@@ -75,20 +75,23 @@ class SLANSGeometry(Geometry):
         filename = f'cavity_{bc}'
 
         # Write Slans Geometry
-        with open(f"{projectDir}/SimulationData/SLANS/Cavity{fid}/{filename}.geo", 'w') as f:
+        # with open(f"{projectDir}/SimulationData/SLANS/Cavity{fid}/{filename}.geo", 'w') as f:
+        with open(f"{projectDir}/SimulationData/SLANS/{fid}/{filename}.geo", 'w') as f:
             # print("it got here")
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             # print(n)
             # print(self.WG_mesh)
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
-                self.Jxy * n + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
-                    1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh, self.Jxy, self.unit))
+                self.Jxy * n + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2)
+                + (1 if self.WG_L > 0 else 0) * self.WG_mesh
+                + (1 if self.WG_R > 0 else 0) * self.WG_mesh, self.Jxy, self.unit))
             f.write('10 0 0 0 0 0 0 0 0\n')
             f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.ri_L, self.Jy0, BC_Left))
 
             if end_L == 2:
-                f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.Rbp_L, self.Jxy_all_bp[5] + self.Jxy_all_bp[6] +
-                                                                  self.Jxy_all_bp[7], BC_Left))
+                f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.Rbp_L, self.Jxy_all_bp[5]
+                                                                  + self.Jxy_all_bp[6]
+                                                                  + self.Jxy_all_bp[7], BC_Left))
 
             if self.WG_L > 0:
                 if end_L == 2:
@@ -115,24 +118,29 @@ class SLANSGeometry(Geometry):
 
                 if self.WG_R > 0:
                     if end_R == 2:
-                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R, self.Rbp_R,
-                                                                        self.WG_mesh))
+                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L + self.WG_R
+                                                                        + self.L_L + self.L_R,
+                                                                        self.Rbp_R, self.WG_mesh))
                     else:
-                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R, self.Rbp_R,
-                                                                        self.WG_mesh))
+                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L + self.WG_R
+                                                                        + self.L_L + self.L_R,
+                                                                        self.Rbp_R, self.WG_mesh))
 
                 if end_R == 2:
-                    f.write('1 {:g} {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R, self.ri_R,
-                                                                         -(self.Jxy_all_bp[5] + self.Jxy_all_bp[6] +
-                                                                           self.Jxy_all_bp[7]), BC_Right))
+                    f.write('1 {:g} {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.WG_L + self.WG_R
+                                                                         + self.L_L + self.L_R, self.ri_R,
+                                                                         -(self.Jxy_all_bp[5] + self.Jxy_all_bp[6]
+                                                                           + self.Jxy_all_bp[7]), BC_Right))
 
                 f.write(
-                    '1 {:g} 0 0 1 0 {:.0f} {:.0f} 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R, -self.Jy0, BC_Right))
+                    '1 {:g} 0 0 1 0 {:.0f} {:.0f} 0\n'.format(self.WG_L + self.WG_R
+                                                              + self.L_L + self.L_R,
+                                                              -self.Jy0, BC_Right))
 
                 f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.Jxy_bp * (
-                            (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
-                                                                1 if self.WG_L > 0 else 0) * self.WG_mesh + (
-                                                                1 if self.WG_R > 0 else 0) * self.WG_mesh)))
+                            (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2)
+                                                            + (1 if self.WG_L > 0 else 0) * self.WG_mesh
+                                                            + (1 if self.WG_R > 0 else 0) * self.WG_mesh)))
                 f.write('0 0 0 0 0 0 0 0 0')
 
             # n>1
@@ -153,10 +161,12 @@ class SLANSGeometry(Geometry):
                 if self.WG_R > 0:
                     if end_R == 2:
                         f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(
-                            self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.WG_mesh))
+                            self.WG_L + self.WG_R + self.L_L + self.L_R
+                            + 2 * (n - 1) * self.L_M, self.Rbp_R, self.WG_mesh))
                     else:
                         f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(
-                            self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.WG_mesh))
+                            self.WG_L + self.WG_R + self.L_L
+                            + self.L_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.WG_mesh))
 
                 if end_R == 2:
                     f.write('1 {:g} {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(
@@ -184,16 +194,21 @@ class SLANSGeometry(Geometry):
                 #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
 
                 # direct mesh decrease
-                f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy*n+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2)+(1 if self.WG_L > 0 else 0)*self.WG_mesh+(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
+                f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy*n + self.Jxy_bp *
+                                                            ((1 if end_R == 2 else 0)/2 + (1 if end_L == 2 else 0)/2)
+                                                            + (1 if self.WG_L > 0 else 0)*self.WG_mesh
+                                                            +(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
 
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
         genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
-        filepath = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}'
+        # filepath = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}'
+        filepath = fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}'
 
         # folder for exe to write to
-        cwd = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}'
+        # cwd = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}'
+        cwd = fr'{projectDir}\SimulationData\SLANS\{fid}'
 
         # the next two lines suppress pop up windows from the slans codes
         # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
@@ -201,15 +216,9 @@ class SLANSGeometry(Geometry):
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
         subprocess.call([genmesh_path, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
-        path = fr'{projectDir}\SimulationData\SLANS\Cavity{self.fid}'
+        # path = fr'{projectDir}\SimulationData\SLANS\Cavity{self.fid}'
+        path = fr'{projectDir}\SimulationData\SLANS\{self.fid}'
 
-        # if f_shift == 'default':
-            # parameters delete later
-            # try:
-            #     if self.ui.le_Beta.text() or self.ui.le_Freq_Shift.text() or self.ui.sb_No_Of_Modes.value():
-            #         beta, f_shift, n_modes = float(self.ui.le_Beta.text()), float(self.ui.le_Freq_Shift.text()), self.ui.sb_No_Of_Modes.value()
-            #         # print(beta, f_shift, n_modes)
-            # except:
         beta, f_shift, n_modes = 1, 0, no_of_cells + 1
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
@@ -220,20 +229,20 @@ class SLANSGeometry(Geometry):
         slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
 
         # check if corresponding file exists at before the executable is called
-        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.geo'):
+        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.geo'):
             subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)  # settings, number of modes, etc
 
-            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.gem'):
+            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.gem'):
                 subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
-                if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\aslans.mtx') \
-                        and os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\bslans.mtx'):
+                if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\aslans.mtx') \
+                        and os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\bslans.mtx'):
                     subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
-                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}.res'):
+                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.res'):
                         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
-        run_save_directory = f"{projectDir}/SimulationData/SLANS/Cavity{fid}"
+        run_save_directory = f"{projectDir}/SimulationData/SLANS/{fid}"
         # save json file
         shape = {'IC': mid_cells_par,
                  'OC': l_end_cell_par,
@@ -308,12 +317,9 @@ class SLANSGeometry(Geometry):
 
     def createFolder(self):
         path = os.getcwd()
-        path = os.path.join(path, "SimulationData/SLANS/Cavity{}".format(self.fid))
+        path = os.path.join(path, f"SimulationData/SLANS/{self.fid}")
         if os.path.exists(path):
             pass
         else:
             os.mkdir(path)
             return "Yes"
-
-    def button_clicked(self, i):
-        return i.text()

@@ -200,7 +200,7 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
     oc = update_alpha(oc)
     if cell_type is None:
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/SLANS/Cavity{key}/{key}.txt'
+        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -218,8 +218,8 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
 
     else:
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/SLANS/Cavity{key}/{key}.txt'
-        path_mc = fr'{projectDir}/SimulationData/SLANS/Cavity{key}/{key}_Multicell.txt'
+        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
+        path_mc = fr'{projectDir}/SimulationData/SLANS/{key}/{key}_Multicell.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -632,7 +632,7 @@ def get_geometric_parameters(frame_control, code):
                     if to_all == 'YesToAll':
                         shape_space[key] = val
                     else:
-                        path = f'{frame_control.main_control.projectDir}/SimulationData/{code}/Cavity{key}'
+                        path = f'{frame_control.main_control.projectDir}/SimulationData/{code}/{key}'
                         if os.path.exists(path):
                             continue
                         else:
