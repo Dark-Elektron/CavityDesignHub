@@ -70,6 +70,8 @@ class MainWindow:
     """Main GUI window
     """
     def __init__(self):
+        self.tree = None
+        self.model = None
         self.animation = None
         self.wakefield_widget = None
         self.eigenmode_widget = None
@@ -403,6 +405,8 @@ class MainWindow:
                 # only initialize UI after successfully setting folder
                 if self.global_state == 0:
                     self.initUI()
+                    # add file system tree
+                    self.file_system(self.projectDir)
                     self.global_state += 1
         else:
             print('Please enter a valid project name')
@@ -431,6 +435,8 @@ class MainWindow:
             self.ui.l_Project_Name.setText(self.projectDir)
             if self.global_state == 0:
                 self.initUI()
+                # add file system tree
+                self.file_system(self.projectDir)
                 self.global_state += 1
 
         elif project_dir != '':
@@ -446,6 +452,8 @@ class MainWindow:
                 self.ui.l_Project_Name.setText(self.projectDir)
                 if self.global_state == 0:
                     self.initUI()
+                    # add file system tree
+                    self.file_system(self.projectDir)
                     self.global_state += 1
 
             else:
@@ -684,6 +692,66 @@ class MainWindow:
     def closeEvent(self, event):
         self.settings.setValue("geometry", self.main_win.saveGeometry())
         self.settings.setValue("windowState", self.main_win.saveState(version=0))
+
+    def file_system(self, dir_path):
+        self.model = QFileSystemModel()
+        self.model.setRootPath(dir_path)
+        self.tree = QTreeView()
+        self.tree.setModel(self.model)
+        self.tree.setRootIndex(self.model.index(dir_path))
+        # self.tree.setColumnWidth(0, 250)
+        self.tree.setAlternatingRowColors(True)
+
+        # hide unnecessary details
+        for i in range(1, self.tree.model().columnCount()):
+            self.tree.header().hideSection(i)
+
+        # set contextMenu
+        self.tree.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tree.customContextMenuRequested.connect(self.file_system_context_menu)
+
+        # add functionality to open files
+        self.tree.doubleClicked.connect(self.open_file)
+
+        # add to GUI
+        self.ui.gl_File_System_View.addWidget(self.tree)
+
+    def file_system_context_menu(self):
+        menu = QMenu()
+        open = menu.addAction('Open')
+        new = menu.addAction('New')
+        delete = menu.addAction('Delete')
+
+        open.triggered.connect(self.open_file)
+        new.triggered.connect(self.new_file)
+        delete.triggered.connect(self.delete_file)
+
+        cursor = QCursor()
+        menu.exec_(cursor.pos())
+
+    def open_file(self):
+        index = self.tree.currentIndex()
+        file_path = self.model.filePath(index)
+
+        os.startfile(file_path)
+
+    def new_file(self):
+        options = QFileDialog.Options()
+        # options |= QFileDialog.DontUseNativeDialog
+        filename, _ = QFileDialog.getSaveFileName(None, "QFileDialog.getSaveFileName()","","All Files (*);;Text Files (*.txt)", options=options)
+        if filename:
+            with open(filename, 'w') as file:
+                file.write('')
+
+    def delete_file(self):
+        index = self.tree.currentIndex()
+        file_path = self.model.filePath(index)
+
+        # check if file or folder is selected
+        if os.path.isdir(file_path):
+            print("Folder")
+        else:
+            os.remove(file_path)
 
 
 class QPlainTextEditLogger(logging.Handler):

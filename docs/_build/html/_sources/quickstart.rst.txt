@@ -107,45 +107,61 @@ Copy all files in extracted folder to ``<root>\CavityDesignHub\exe\ABCI_exe``
 Run a Simulation
 ****************
 
-Once you're able to setup, you can launch the GUI by navigating to the
-folder containing the ``main.py`` file and running the following command from
-the Windows command line
+Once setup is complete, the GUI can be launched by navigating to the folder containing the ``main.py`` file.
+Run the following command from the Windows command line
 
 .. code-block:: python
 
    python3 main.py
 
-If you have an IDE, open and :guilabel:`run` ``main.py`` directly in the IDE. This
-open the GUI as shown in the following figure
+In a Python IDE, open and :guilabel:`run` ``main.py`` directly in the IDE. This opens the GUI as shown in the following figure
 
 .. _gui home page:
 
-.. figure:: ../images/ellipse_tangent.png
+.. figure:: ../images/home_page.png
    :alt: accelerator cavity
    :align: center
-   :width: 200px
-
-The GUI shows a grid of buttons.
 
 Create New Project
 ^^^^^^^^^^^^^^^^
 
 To create a new project,
 
-* Click on :guilabel:`New` on the top toolbar.
+* Click on :guilabel:`New` on the menubar.
 
+.. figure:: ../images/create_new_project1.png
+   :alt: accelerator cavity
+   :align: center
+   :height: 60px
+|
 * Enter the name of the project and click :guilabel:`Enter` on your keyboard.
 
+.. figure:: ../images/create_new_project2.png
+   :alt: accelerator cavity
+   :align: center
+   :height: 60px
+
+|
 * Specify the folder to save the project to.
 
+.. figure:: ../images/create_new_project4.png
+   :alt: accelerator cavity
+   :align: center
+   :height: 300px
+|
 * Now we are ready for our first analysis.
 
+.. figure:: ../images/create_new_project5.png
+   :alt: accelerator cavity
+   :align: center
+   :height: 60px
+|
 
-**Eigenmode Analysis**
+Eigenmode Analysis
+^^^^^^^^^^^^^^^^^^
 
 First,we are going to run an eigenmode analysis.
-* Click on :guilabel:`EIGENMODE ANALYSIS`. This takes you to another frame
-which contains different fields and buttons.
+* | Click on :guilabel:`EIGENMODE ANALYSIS`. This takes you to another frame which contains different fields and buttons.
 
 There are four major categories on the left pane.
 These are :guilabel:`Cell Geometric Parameters`, :guilabel:`Cell Parameters`,
@@ -158,106 +174,106 @@ for one eigenmode for single module single mid cell without beam pipes.
 For this, we set the boundary conditions of the left and right ends of the cavity
 to ``Magnetic Wall En=0`` in order to obtain the TM010:math:`-\pi` mode.
 
-* Click on :guilabel:`Cell Geometric Parameters` to expand the input fields
-for the geometric parameters if not already expanded.
+* | Click on :guilabel:`Cell Geometric Parameters` to expand the input fields
+  | for the geometric parameters if not already expanded.
 
-To enter the geometry for simulation, we create a ``.json`` file which
-contains the dimensions. The structure of the ``.json`` file is shown below
+To enter the geometry for simulation, we create a ``.json`` file which contains the dimensions.
+The structure of the ``.json`` file is shown below. The inner cell ``IC`` parameters are
+``[A, B, a, b, Ri, L, Req]`` = `[42, 42, 12, 19, 35, 57.7, 103.3, 0]`. the left
+outer cell ``OC`` parameters are
+``[A, B, a, b, Ri, L, Req]`` = `[42, 42, 12, 19, 35, 57.7, 103.3, 0]`,
+and the right outer cell parameters ``OC_R`` are
+``[A, B, a, b, Ri, L, Req, alpha]`` = `[42, 42, 12, 19, 35, 57.7, 103.3, 0]`. The outer cell and inner cell dimensions
+are the same since we are considering just the mid cell of the TESLA cavity. No beam pipes are required so ``BP`` is
+set to ``none``. The frequency ``FREQ`` is set to the desired frequency.
 
 .. code-block:: json
 
     {
         "cavity_name":{
             "IC": [
-                124.44, <- A
-                132.25, <- B
-                60.44, <- a
-                42.23, <- b
-                143.972, <- Ri
-                187, <- L
-                342.4, <- Req
-                94.50406852541953 <- alpha
+                42,
+                42,
+                12,
+                19,
+                35,
+                57.7,
+                103.3,
+                0
             ],
             "OC": [
-                125.16,
-                115.08,
-                34.42,
-                24,
-                160.76,
-                191.6255,
-                342.4,
-                112.08716030100433
+                42,
+                42,
+                12,
+                19,
+                35,
+                57.7,
+                103.3,
+                0
             ],
             "OC_R": [
-                125.16,
-                115.08,
-                34.42,
-                24,
-                160.76,
-                191.6255,
-                342.4,
-                112.08716030100433
+                42,
+                42,
+                12,
+                19,
+                35,
+                57.7,
+                103.3,
+                0
             ],
-            "BP": "both", <- beampipe
-            "FREQ": 400.79 <- fundamental mode frequency
+            "BP": "none",
+            "FREQ": 1300
         }
     }
 
-Multiple entries are also possible. An example of a `.json` file that contains
-two cavities is
+.. note::
 
-.. code-block:: json
+   Multiple entries are also possible. An example of a `.json` file that contains
+   two cavities is
 
-    {
-        "cavity_1":{
-            "IC": [
-                ...
-                ],
-            "OC": [
-                ...
-                ],
-            "OC_R": [
-                ...
-                ],
-            "BP": "both",
-            "FREQ": 400.79
-        },
-        "cavity_2":{
-            "IC": [
-                ...
-                ],
-            "OC": [
-                ...
-                ],
-            "OC_R": [
-                ...
-                ],
-            "BP": "both",
-            "FREQ": 400.79
-        }
-    }
+   .. code-block:: json
 
-This file can be saved to ``Cavities`` folder in the project directory. To load
-the file, click on :guilabel:`...`.
+       {
+           "cavity_1":{
+               "IC": [...],
+               "OC": [...],
+               "OC_R": [...],
+               "BP": "both",
+               "FREQ": 400.79
+           },
+           "cavity_2":{
+               "IC": [...],
+               "OC": [...],
+               "OC_R": [...],
+               "BP": "both",
+               "FREQ": 1300
+           }
+       }
 
-Click on :guilabel:`Cell Parameters` to expand the widget if not already expanded.
-You should see the fields ``No. of Cells`` and ``No. of Modules``. Set both of them
-to ``1``.
+* | Create a file in the project sub directory ``Cavities`` and copy the above json formatted text to the file. Change
+  | ``cavity_name`` to ``TESLA``. Save the file with a `.json` extension.
 
-* Click on :guilabel:`Analysis Settings` to show the analysis settings widgets.
-You should see the following in your GUI
+* | Click on :guilabel:`Cell Geometric Parameters` to expand the widget if not already expanded.
 
-Leave the ``Freq. Shift`` as ``0``, ``No. of Modes`` should be left as `1` since
-we are only interested in one mode. Leave the polarity as `Monopole` and if the
-``Left BC`` and ``Right BC`` should be set to ``Magnetic Wall En=0``. The number
-of ``Processors`` should be set to ``1``.
+* | Click on :guilabel:`...` and navigate to the file to load the file.
 
-The analysis is now ready to be run. Click on the play button at the bottom right
-of the panel to run.
+* | Once loaded, click on :guilabel:`Select Shape` dropdown. You should see the ``<cavity_name>`` in the dropdown.
+  | In our case, ``<cavity_name>`` is ``TESLA``. Select it.
 
-The results are written to ``<root>/<project_name>/SimulationData/SLANS/<filename>``
-If no name was given, the results are saved to
-``<root>/<project_name>/SimulationData/SLANS/Cavity0. The quantities that
+* | Click on :guilabel:`Cell Parameters` to expand the widget if not already expanded. Set the fields
+  | ``No. of Cells`` and ``No. of Modules`` to ``1``.
+
+* | Click on :guilabel:`Analysis Settings` to show the analysis settings widgets.
+
+* | Leave ``Freq. Shift`` as ``0``, ``No. of Modes`` should be left as `1` since
+  | we are only interested in one mode. Leave the polarity as `Monopole` and if the
+  | ``Left BC`` and ``Right BC`` should be set to ``Magnetic Wall En=0``. The number
+  | of ``Processors`` should be set to ``1``.
+
+* Click on the play button at the bottom right of the panel to run.
+
+The results are written to ``<root>/<project_name>/SimulationData/SLANS/<cavity_name>``
+If no name was given, the results are saved to ``<root>/<project_name>/SimulationData/SLANS/Cavity0. The quantities that
 we are interested in could be found in ``qois.json``. This file is writen by
 Python. The SLANS written files can be viewed using the corresponding executatble
 file in ``<root>/CavityDesignHub/exe/SLANS_exe. The table below shows the
@@ -285,7 +301,8 @@ The geometry could also be entered manually by filling in the values in the fiel
 with the corresponding geometric parameter values.
 
 
-**Tune**
+Tune
+^^^^
 
 In the design of accelerator cavities, we usually want the cavity to operate at a particular
 frequency. We have 6 variables to play around with and one variable is reserved for tuning
@@ -300,28 +317,38 @@ In the following example, we will tune Req of the mid cell of a TESLA   cavity t
 operate at a fundamental mode frequency of 1300~MHz. The description of the fields are
 given in \ref{}.
 
-* On the homepage of the application, click on :guilabel:`TUNE` or the side button :guilabel:`T`. This will navigate
-to the `Tune` frame.
+* | On the homepage of the application, click on :guilabel:`TUNE` or the side button :guilabel:`T`. This will navigate
+  | to the `Tune` frame.
 
-* Select ``Mid Cell`` as the ``Cell Type``, ``Variable`` as ``Req``. Leave ``Method``,
-``Tuner`` as ``PyTune``, ``Left BC`` and ``Right BC`` as ``Magnetic Wall En=0``,
-``N Cells`` as ``1`` and ``Frequency`` to ``1300``.
+* | Select ``Mid Cell`` as the ``Cell Type``, ``Variable`` as ``Req``. Leave ``Method``,
+  | ``Tuner`` as ``PyTune``, ``Left BC`` and ``Right BC`` as ``Magnetic Wall En=0``,
+  | ``N Cells`` as ``1`` and ``Frequency`` to ``1300``.
+
+* | Enter the geometric parameters to the corresponding fields
+
+* | Click on the play button to run.
+
+.. note::
+
+   The SLANS software creates a lot of pop ups during the running of any simulation so the system would become
+   unusable for the period of the tuning or eigenmode analysis. It is most noticable when a large number of
+   cavities are tuned or analysed in one sweep.
 
 
 
-
-**Wakefield Analysis**
+Wakefield Analysis
+^^^^^^^^^^^^^^^^^^^^
 
 The process to run wakefield analysis using ABCI is similar to that for eigenmode
 analysis. The geometry is loaded exactly the same.
 
-* Click on :guilabel:`...` to open the file dialog box and select the `.json` file
-containing the geometric parameters
+* | Click on :guilabel:`...` to open the file dialog box and select the `.json` file
+  | containing the geometric parameters
 
-* Click on :guilabel:`Cell Parameters` to set the number of cells, modules, length of the
-left beam pipe, polarity and number of processor. Set ``Polarity`` to ``monopole`` to
-calculate for the longitudinal wakefield analysis, ``Dipole`` for transverse wakefield analysis
-and ``Both`` for both longitudinal and transverse wakefield analysis. Select ``Both``.
+* | Click on :guilabel:`Cell Parameters` to set the number of cells, modules, length of the
+  | left beam pipe, polarity and number of processor. Set ``Polarity`` to ``monopole`` to
+  | calculate for the longitudinal wakefield analysis, ``Dipole`` for transverse wakefield analysis
+  | and ``Both`` for both longitudinal and transverse wakefield analysis. Select ``Both``.
 
 The results are written to ``<root>/<project_name>/SimulationData/ABCI/<filename>``
 If no name was given, the results are saved to
@@ -335,7 +362,7 @@ file in ``<root>/CavityDesignHub/exe/ABCI_exe/TopDrawer for Windows``.
 Updating
 ********
 
-The PoC-Library can be updated by using ``git fetch`` and ``git merge``.
+The PoC-Library can be updated by using ``git fetch`` :octicon:`report;1em;sd-text-info` and ``git merge`` :octicon:`git-merge;1em;sd-text-info`.
 
 .. code-block:: PowerShell
 
@@ -343,7 +370,7 @@ The PoC-Library can be updated by using ``git fetch`` and ``git merge``.
    # update the local repository
    git fetch --prune
    # review the commit tree and messages, using the 'treea' alias
-   git treea
+   git tree
    # if all changes are OK, do a fast-forward merge
    git merge
 

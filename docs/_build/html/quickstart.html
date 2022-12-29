@@ -49,6 +49,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#configuring-cadh-on-a-local-system">Configuring CaDH  on a Local System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-a-simulation">Run a Simulation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#create-new-project">Create New Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#eigenmode-analysis">Eigenmode Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tune">Tune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wakefield-analysis">Wakefield Analysis</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#updating">Updating</a></li>
@@ -94,19 +97,22 @@ details and examples.</p>
 <div class="contents local topic" id="contents-of-this-page">
 <p class="topic-title">Contents of this Page</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#requirements-and-dependencies" id="id3">Requirements and Dependencies</a></p></li>
-<li><p><a class="reference internal" href="#download" id="id4">Download</a></p></li>
-<li><p><a class="reference internal" href="#configuring-cadh-on-a-local-system" id="id5">Configuring CaDH  on a Local System</a></p></li>
-<li><p><a class="reference internal" href="#run-a-simulation" id="id6">Run a Simulation</a></p>
+<li><p><a class="reference internal" href="#requirements-and-dependencies" id="id7">Requirements and Dependencies</a></p></li>
+<li><p><a class="reference internal" href="#download" id="id8">Download</a></p></li>
+<li><p><a class="reference internal" href="#configuring-cadh-on-a-local-system" id="id9">Configuring CaDH  on a Local System</a></p></li>
+<li><p><a class="reference internal" href="#run-a-simulation" id="id10">Run a Simulation</a></p>
 <ul>
-<li><p><a class="reference internal" href="#create-new-project" id="id7">Create New Project</a></p></li>
+<li><p><a class="reference internal" href="#create-new-project" id="id11">Create New Project</a></p></li>
+<li><p><a class="reference internal" href="#eigenmode-analysis" id="id12">Eigenmode Analysis</a></p></li>
+<li><p><a class="reference internal" href="#tune" id="id13">Tune</a></p></li>
+<li><p><a class="reference internal" href="#wakefield-analysis" id="id14">Wakefield Analysis</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#updating" id="id8">Updating</a></p></li>
+<li><p><a class="reference internal" href="#updating" id="id15">Updating</a></p></li>
 </ul>
 </div>
 <section id="requirements-and-dependencies">
-<span id="quick-requirements"></span><h2><a class="toc-backref" href="#id3">Requirements and Dependencies</a><a class="headerlink" href="#requirements-and-dependencies" title="Permalink to this heading"></a></h2>
+<span id="quick-requirements"></span><h2><a class="toc-backref" href="#id7">Requirements and Dependencies</a><a class="headerlink" href="#requirements-and-dependencies" title="Permalink to this heading"></a></h2>
 <p>The CaDH is a GUI for coordinating different electromagnetic codes.
 It also comes with some scripts to ease most of the common tasks. CaDH uses
 Python 3 as a platform independent scripting environment.
@@ -125,7 +131,7 @@ See <span class="xref std std-ref">USING:Require</span> for further details.</p>
 <p>All dependencies are contained in requirements.txt</p>
 </section>
 <section id="download">
-<span id="quick-download"></span><h2><a class="toc-backref" href="#id4">Download</a><a class="headerlink" href="#download" title="Permalink to this heading"></a></h2>
+<span id="quick-download"></span><h2><a class="toc-backref" href="#id8">Download</a><a class="headerlink" href="#download" title="Permalink to this heading"></a></h2>
 <p>The CaDH-Library can be downloaded as a <a class="reference external" href="https://github.com/Dark-Elektron/CavityDesignHub/archive/refs/heads/master.zip">zip-file</a>
 (latest ‘master’ branch), cloned with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code> or embedded with
 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">add</span></code> from GitHub. GitHub offers HTTPS and SSH as transfer
@@ -152,7 +158,7 @@ details. The installation directory is referred to as <code class="docutils lite
 </table>
 </section>
 <section id="configuring-cadh-on-a-local-system">
-<span id="quick-configuration"></span><h2><a class="toc-backref" href="#id5">Configuring CaDH  on a Local System</a><a class="headerlink" href="#configuring-cadh-on-a-local-system" title="Permalink to this heading"></a></h2>
+<span id="quick-configuration"></span><h2><a class="toc-backref" href="#id9">Configuring CaDH  on a Local System</a><a class="headerlink" href="#configuring-cadh-on-a-local-system" title="Permalink to this heading"></a></h2>
 <p>CaDH currently makes use of other software for analysis. These software are not
 outrightly open source but could be obtained from the website of the author.</p>
 <p>For wakefield analysis, the ABCI code is required.</p>
@@ -180,32 +186,60 @@ or from the command line using</p>
 <p>Copy all files in extracted folder to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\ABCI_exe</span></code></p>
 </section>
 <section id="run-a-simulation">
-<span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id6">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
-<p>Once you’re able to setup, you can launch the GUI by navigating to the
-folder containing the <code class="docutils literal notranslate"><span class="pre">main.py</span></code> file and running the following command from
-the Windows command line</p>
+<span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id10">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
+<p>Once setup is complete, the GUI can be launched by navigating to the folder containing the <code class="docutils literal notranslate"><span class="pre">main.py</span></code> file.
+Run the following command from the Windows command line</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span>
 </pre></div>
 </div>
-<p>If you have an IDE, open and <span class="guilabel">run</span> <code class="docutils literal notranslate"><span class="pre">main.py</span></code> directly in the IDE. This
-open the GUI as shown in the following figure</p>
+<p>In a Python IDE, open and <span class="guilabel">run</span> <code class="docutils literal notranslate"><span class="pre">main.py</span></code> directly in the IDE. This opens the GUI as shown in the following figure</p>
 <figure class="align-center" id="gui-home-page">
-<a class="reference internal image-reference" href="_images/ellipse_tangent.png"><img alt="accelerator cavity" src="_images/ellipse_tangent.png" style="width: 200px;" /></a>
+<img alt="accelerator cavity" src="_images/home_page.png" />
 </figure>
-<p>The GUI shows a grid of buttons.</p>
 <section id="create-new-project">
-<h3><a class="toc-backref" href="#id7">Create New Project</a><a class="headerlink" href="#create-new-project" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id11">Create New Project</a><a class="headerlink" href="#create-new-project" title="Permalink to this heading"></a></h3>
 <p>To create a new project,</p>
 <ul class="simple">
-<li><p>Click on <span class="guilabel">New</span> on the top toolbar.</p></li>
+<li><p>Click on <span class="guilabel">New</span> on the menubar.</p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/create_new_project1.png"><img alt="accelerator cavity" src="_images/create_new_project1.png" style="height: 60px;" /></a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul class="simple">
 <li><p>Enter the name of the project and click <span class="guilabel">Enter</span> on your keyboard.</p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/create_new_project2.png"><img alt="accelerator cavity" src="_images/create_new_project2.png" style="height: 60px;" /></a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul class="simple">
 <li><p>Specify the folder to save the project to.</p></li>
+</ul>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/create_new_project4.png"><img alt="accelerator cavity" src="_images/create_new_project4.png" style="height: 300px;" /></a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+<ul class="simple">
 <li><p>Now we are ready for our first analysis.</p></li>
 </ul>
-<p><strong>Eigenmode Analysis</strong></p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/create_new_project5.png"><img alt="accelerator cavity" src="_images/create_new_project5.png" style="height: 60px;" /></a>
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</section>
+<section id="eigenmode-analysis">
+<h3><a class="toc-backref" href="#id12">Eigenmode Analysis</a><a class="headerlink" href="#eigenmode-analysis" title="Permalink to this heading"></a></h3>
 <p>First,we are going to run an eigenmode analysis.
-* Click on <span class="guilabel">EIGENMODE ANALYSIS</span>. This takes you to another frame
-which contains different fields and buttons.</p>
+* | Click on <span class="guilabel">EIGENMODE ANALYSIS</span>. This takes you to another frame which contains different fields and buttons.</p>
 <p>There are four major categories on the left pane.
 These are <span class="guilabel">Cell Geometric Parameters</span>, <span class="guilabel">Cell Parameters</span>,
 <span class="guilabel">Analysis Settings</span> and <span class="guilabel">Uncertainty Quantification</span>.</p>
@@ -214,100 +248,122 @@ which has geometric dimensions [A, B, a, b, Ri, L, Req] = []
 for one eigenmode for single module single mid cell without beam pipes.</p>
 <p>For this, we set the boundary conditions of the left and right ends of the cavity
 to <code class="docutils literal notranslate"><span class="pre">Magnetic</span> <span class="pre">Wall</span> <span class="pre">En=0</span></code> in order to obtain the TM010:math:<cite>-pi</cite> mode.</p>
-<ul class="simple">
-<li><p>Click on <span class="guilabel">Cell Geometric Parameters</span> to expand the input fields</p></li>
+<ul>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Cell Geometric Parameters</span> to expand the input fields</div>
+<div class="line">for the geometric parameters if not already expanded.</div>
+</div>
+</li>
 </ul>
-<p>for the geometric parameters if not already expanded.</p>
-<p>To enter the geometry for simulation, we create a <code class="docutils literal notranslate"><span class="pre">.json</span></code> file which
-contains the dimensions. The structure of the <code class="docutils literal notranslate"><span class="pre">.json</span></code> file is shown below</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
-    &quot;cavity_name&quot;:{
-        &quot;IC&quot;: [
-            124.44, &lt;- A
-            132.25, &lt;- B
-            60.44, &lt;- a
-            42.23, &lt;- b
-            143.972, &lt;- Ri
-            187, &lt;- L
-            342.4, &lt;- Req
-            94.50406852541953 &lt;- alpha
-        ],
-        &quot;OC&quot;: [
-            125.16,
-            115.08,
-            34.42,
-            24,
-            160.76,
-            191.6255,
-            342.4,
-            112.08716030100433
-        ],
-        &quot;OC_R&quot;: [
-            125.16,
-            115.08,
-            34.42,
-            24,
-            160.76,
-            191.6255,
-            342.4,
-            112.08716030100433
-        ],
-        &quot;BP&quot;: &quot;both&quot;, &lt;- beampipe
-        &quot;FREQ&quot;: 400.79 &lt;- fundamental mode frequency
-    }
-}
+<p>To enter the geometry for simulation, we create a <code class="docutils literal notranslate"><span class="pre">.json</span></code> file which contains the dimensions.
+The structure of the <code class="docutils literal notranslate"><span class="pre">.json</span></code> file is shown below. The inner cell <code class="docutils literal notranslate"><span class="pre">IC</span></code> parameters are
+<code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">B,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">Ri,</span> <span class="pre">L,</span> <span class="pre">Req]</span></code> = <cite>[42, 42, 12, 19, 35, 57.7, 103.3, 0]</cite>. the left
+outer cell <code class="docutils literal notranslate"><span class="pre">OC</span></code> parameters are
+<code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">B,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">Ri,</span> <span class="pre">L,</span> <span class="pre">Req]</span></code> = <cite>[42, 42, 12, 19, 35, 57.7, 103.3, 0]</cite>,
+and the right outer cell parameters <code class="docutils literal notranslate"><span class="pre">OC_R</span></code> are
+<code class="docutils literal notranslate"><span class="pre">[A,</span> <span class="pre">B,</span> <span class="pre">a,</span> <span class="pre">b,</span> <span class="pre">Ri,</span> <span class="pre">L,</span> <span class="pre">Req,</span> <span class="pre">alpha]</span></code> = <cite>[42, 42, 12, 19, 35, 57.7, 103.3, 0]</cite>. The outer cell and inner cell dimensions
+are the same since we are considering just the mid cell of the TESLA cavity. No beam pipes are required so <code class="docutils literal notranslate"><span class="pre">BP</span></code> is
+set to <code class="docutils literal notranslate"><span class="pre">none</span></code>. The frequency <code class="docutils literal notranslate"><span class="pre">FREQ</span></code> is set to the desired frequency.</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="nt">&quot;cavity_name&quot;</span><span class="p">:{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;IC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="mi">42</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">42</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">12</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">19</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">35</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mf">57.7</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mf">103.3</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">0</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;OC&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="mi">42</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">42</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">12</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">19</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">35</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mf">57.7</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mf">103.3</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">0</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;OC_R&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"></span>
+<span class="w">            </span><span class="mi">42</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">42</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">12</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">19</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">35</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mf">57.7</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mf">103.3</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="mi">0</span><span class="w"></span>
+<span class="w">        </span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;BP&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;FREQ&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1300</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>Multiple entries are also possible. An example of a <cite>.json</cite> file that contains
 two cavities is</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span>{
     &quot;cavity_1&quot;:{
-        &quot;IC&quot;: [
-            ...
-            ],
-        &quot;OC&quot;: [
-            ...
-            ],
-        &quot;OC_R&quot;: [
-            ...
-            ],
+        &quot;IC&quot;: [...],
+        &quot;OC&quot;: [...],
+        &quot;OC_R&quot;: [...],
         &quot;BP&quot;: &quot;both&quot;,
         &quot;FREQ&quot;: 400.79
     },
     &quot;cavity_2&quot;:{
-        &quot;IC&quot;: [
-            ...
-            ],
-        &quot;OC&quot;: [
-            ...
-            ],
-        &quot;OC_R&quot;: [
-            ...
-            ],
+        &quot;IC&quot;: [...],
+        &quot;OC&quot;: [...],
+        &quot;OC_R&quot;: [...],
         &quot;BP&quot;: &quot;both&quot;,
-        &quot;FREQ&quot;: 400.79
+        &quot;FREQ&quot;: 1300
     }
 }
 </pre></div>
 </div>
-<p>This file can be saved to <code class="docutils literal notranslate"><span class="pre">Cavities</span></code> folder in the project directory. To load
-the file, click on <span class="guilabel">…</span>.</p>
-<p>Click on <span class="guilabel">Cell Parameters</span> to expand the widget if not already expanded.
-You should see the fields <code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Cells</span></code> and <code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Modules</span></code>. Set both of them
-to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<ul class="simple">
-<li><p>Click on <span class="guilabel">Analysis Settings</span> to show the analysis settings widgets.</p></li>
+</div>
+<ul>
+<li><div class="line-block">
+<div class="line">Create a file in the project sub directory <code class="docutils literal notranslate"><span class="pre">Cavities</span></code> and copy the above json formatted text to the file. Change</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">cavity_name</span></code> to <code class="docutils literal notranslate"><span class="pre">TESLA</span></code>. Save the file with a <cite>.json</cite> extension.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Cell Geometric Parameters</span> to expand the widget if not already expanded.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">…</span> and navigate to the file to load the file.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Once loaded, click on <span class="guilabel">Select Shape</span> dropdown. You should see the <code class="docutils literal notranslate"><span class="pre">&lt;cavity_name&gt;</span></code> in the dropdown.</div>
+<div class="line">In our case, <code class="docutils literal notranslate"><span class="pre">&lt;cavity_name&gt;</span></code> is <code class="docutils literal notranslate"><span class="pre">TESLA</span></code>. Select it.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Cell Parameters</span> to expand the widget if not already expanded. Set the fields</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Cells</span></code> and <code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Modules</span></code> to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Analysis Settings</span> to show the analysis settings widgets.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Leave <code class="docutils literal notranslate"><span class="pre">Freq.</span> <span class="pre">Shift</span></code> as <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Modes</span></code> should be left as <cite>1</cite> since</div>
+<div class="line">we are only interested in one mode. Leave the polarity as <cite>Monopole</cite> and if the</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">Left</span> <span class="pre">BC</span></code> and <code class="docutils literal notranslate"><span class="pre">Right</span> <span class="pre">BC</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">Magnetic</span> <span class="pre">Wall</span> <span class="pre">En=0</span></code>. The number</div>
+<div class="line">of <code class="docutils literal notranslate"><span class="pre">Processors</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</div>
+</div>
+</li>
+<li><p>Click on the play button at the bottom right of the panel to run.</p></li>
 </ul>
-<p>You should see the following in your GUI</p>
-<p>Leave the <code class="docutils literal notranslate"><span class="pre">Freq.</span> <span class="pre">Shift</span></code> as <code class="docutils literal notranslate"><span class="pre">0</span></code>, <code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Modes</span></code> should be left as <cite>1</cite> since
-we are only interested in one mode. Leave the polarity as <cite>Monopole</cite> and if the
-<code class="docutils literal notranslate"><span class="pre">Left</span> <span class="pre">BC</span></code> and <code class="docutils literal notranslate"><span class="pre">Right</span> <span class="pre">BC</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">Magnetic</span> <span class="pre">Wall</span> <span class="pre">En=0</span></code>. The number
-of <code class="docutils literal notranslate"><span class="pre">Processors</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<p>The analysis is now ready to be run. Click on the play button at the bottom right
-of the panel to run.</p>
-<p>The results are written to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/SLANS/&lt;filename&gt;</span></code>
-If no name was given, the results are saved to
-<code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/SLANS/Cavity0.</span> <span class="pre">The</span> <span class="pre">quantities</span> <span class="pre">that</span>
+<p>The results are written to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/SLANS/&lt;cavity_name&gt;</span></code>
+If no name was given, the results are saved to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/SLANS/Cavity0.</span> <span class="pre">The</span> <span class="pre">quantities</span> <span class="pre">that</span>
 <span class="pre">we</span> <span class="pre">are</span> <span class="pre">interested</span> <span class="pre">in</span> <span class="pre">could</span> <span class="pre">be</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">``qois.json</span></code>. This file is writen by
 Python. The SLANS written files can be viewed using the corresponding executatble
 file in <a href="#id1"><span class="problematic" id="id2">``</span></a>&lt;root&gt;/CavityDesignHub/exe/SLANS_exe. The table below shows the
@@ -353,7 +409,9 @@ files and corresponding executable files to open them.</p>
 </table>
 <p>The geometry could also be entered manually by filling in the values in the field
 with the corresponding geometric parameter values.</p>
-<p><strong>Tune</strong></p>
+</section>
+<section id="tune">
+<h3><a class="toc-backref" href="#id13">Tune</a><a class="headerlink" href="#tune" title="Permalink to this heading"></a></h3>
 <p>In the design of accelerator cavities, we usually want the cavity to operate at a particular
 frequency. We have 6 variables to play around with and one variable is reserved for tuning
 to the desired frequency. In most cases, the equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> is the preferred
@@ -365,28 +423,52 @@ variable.</p>
 <p>In the following example, we will tune Req of the mid cell of a TESLA   cavity to
 operate at a fundamental mode frequency of 1300~MHz. The description of the fields are
 given in ref{}.</p>
-<ul class="simple">
-<li><p>On the homepage of the application, click on <span class="guilabel">TUNE</span> or the side button <span class="guilabel">T</span>. This will navigate</p></li>
+<ul>
+<li><div class="line-block">
+<div class="line">On the homepage of the application, click on <span class="guilabel">TUNE</span> or the side button <span class="guilabel">T</span>. This will navigate</div>
+<div class="line">to the <cite>Tune</cite> frame.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Select <code class="docutils literal notranslate"><span class="pre">Mid</span> <span class="pre">Cell</span></code> as the <code class="docutils literal notranslate"><span class="pre">Cell</span> <span class="pre">Type</span></code>, <code class="docutils literal notranslate"><span class="pre">Variable</span></code> as <code class="docutils literal notranslate"><span class="pre">Req</span></code>. Leave <code class="docutils literal notranslate"><span class="pre">Method</span></code>,</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">Tuner</span></code> as <code class="docutils literal notranslate"><span class="pre">PyTune</span></code>, <code class="docutils literal notranslate"><span class="pre">Left</span> <span class="pre">BC</span></code> and <code class="docutils literal notranslate"><span class="pre">Right</span> <span class="pre">BC</span></code> as <code class="docutils literal notranslate"><span class="pre">Magnetic</span> <span class="pre">Wall</span> <span class="pre">En=0</span></code>,</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">Cells</span></code> as <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">Frequency</span></code> to <code class="docutils literal notranslate"><span class="pre">1300</span></code>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Enter the geometric parameters to the corresponding fields</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on the play button to run.</div>
+</div>
+</li>
 </ul>
-<p>to the <cite>Tune</cite> frame.</p>
-<ul class="simple">
-<li><p>Select <code class="docutils literal notranslate"><span class="pre">Mid</span> <span class="pre">Cell</span></code> as the <code class="docutils literal notranslate"><span class="pre">Cell</span> <span class="pre">Type</span></code>, <code class="docutils literal notranslate"><span class="pre">Variable</span></code> as <code class="docutils literal notranslate"><span class="pre">Req</span></code>. Leave <code class="docutils literal notranslate"><span class="pre">Method</span></code>,</p></li>
-</ul>
-<p><code class="docutils literal notranslate"><span class="pre">Tuner</span></code> as <code class="docutils literal notranslate"><span class="pre">PyTune</span></code>, <code class="docutils literal notranslate"><span class="pre">Left</span> <span class="pre">BC</span></code> and <code class="docutils literal notranslate"><span class="pre">Right</span> <span class="pre">BC</span></code> as <code class="docutils literal notranslate"><span class="pre">Magnetic</span> <span class="pre">Wall</span> <span class="pre">En=0</span></code>,
-<code class="docutils literal notranslate"><span class="pre">N</span> <span class="pre">Cells</span></code> as <code class="docutils literal notranslate"><span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">Frequency</span></code> to <code class="docutils literal notranslate"><span class="pre">1300</span></code>.</p>
-<p><strong>Wakefield Analysis</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The SLANS software creates a lot of pop ups during the running of any simulation so the system would become
+unusable for the period of the tuning or eigenmode analysis. It is most noticable when a large number of
+cavities are tuned or analysed in one sweep.</p>
+</div>
+</section>
+<section id="wakefield-analysis">
+<h3><a class="toc-backref" href="#id14">Wakefield Analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
 <p>The process to run wakefield analysis using ABCI is similar to that for eigenmode
 analysis. The geometry is loaded exactly the same.</p>
-<ul class="simple">
-<li><p>Click on <span class="guilabel">…</span> to open the file dialog box and select the <cite>.json</cite> file</p></li>
+<ul>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">…</span> to open the file dialog box and select the <cite>.json</cite> file</div>
+<div class="line">containing the geometric parameters</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Cell Parameters</span> to set the number of cells, modules, length of the</div>
+<div class="line">left beam pipe, polarity and number of processor. Set <code class="docutils literal notranslate"><span class="pre">Polarity</span></code> to <code class="docutils literal notranslate"><span class="pre">monopole</span></code> to</div>
+<div class="line">calculate for the longitudinal wakefield analysis, <code class="docutils literal notranslate"><span class="pre">Dipole</span></code> for transverse wakefield analysis</div>
+<div class="line">and <code class="docutils literal notranslate"><span class="pre">Both</span></code> for both longitudinal and transverse wakefield analysis. Select <code class="docutils literal notranslate"><span class="pre">Both</span></code>.</div>
+</div>
+</li>
 </ul>
-<p>containing the geometric parameters</p>
-<ul class="simple">
-<li><p>Click on <span class="guilabel">Cell Parameters</span> to set the number of cells, modules, length of the</p></li>
-</ul>
-<p>left beam pipe, polarity and number of processor. Set <code class="docutils literal notranslate"><span class="pre">Polarity</span></code> to <code class="docutils literal notranslate"><span class="pre">monopole</span></code> to
-calculate for the longitudinal wakefield analysis, <code class="docutils literal notranslate"><span class="pre">Dipole</span></code> for transverse wakefield analysis
-and <code class="docutils literal notranslate"><span class="pre">Both</span></code> for both longitudinal and transverse wakefield analysis. Select <code class="docutils literal notranslate"><span class="pre">Both</span></code>.</p>
 <p>The results are written to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/ABCI/&lt;filename&gt;</span></code>
 If no name was given, the results are saved to
 <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/ABCI/Cavity0.</span> <span class="pre">The</span> <span class="pre">quantities</span> <span class="pre">that</span>
@@ -396,13 +478,13 @@ file in <code class="docutils literal notranslate"><span class="pre">&lt;root&gt
 </section>
 </section>
 <section id="updating">
-<span id="quick-updating"></span><h2><a class="toc-backref" href="#id8">Updating</a><a class="headerlink" href="#updating" title="Permalink to this heading"></a></h2>
-<p>The PoC-Library can be updated by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span></code> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code>.</p>
+<span id="quick-updating"></span><h2><a class="toc-backref" href="#id15">Updating</a><a class="headerlink" href="#updating" title="Permalink to this heading"></a></h2>
+<p>The PoC-Library can be updated by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span></code> <a href="#id3"><span class="problematic" id="id4">:octicon:`report;1em;sd-text-info`</span></a> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> <a href="#id5"><span class="problematic" id="id6">:octicon:`git-merge;1em;sd-text-info`</span></a>.</p>
 <div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd </span><span class="n">CaDHRoot</span>
 <span class="c"># update the local repository</span>
 <span class="n">git</span> <span class="n">fetch</span> <span class="p">-</span><span class="n">-prune</span>
 <span class="c"># review the commit tree and messages, using the &#39;treea&#39; alias</span>
-<span class="n">git</span> <span class="n">treea</span>
+<span class="n">git</span> <span class="n">tree</span>
 <span class="c"># if all changes are OK, do a fast-forward merge</span>
 <span class="n">git</span> <span class="n">merge</span>
 </pre></div>

@@ -41,6 +41,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
@@ -133,9 +134,9 @@
             <span class="n">freq</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">alpha_i</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">alpha_o</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">if</span> <span class="n">resume</span> <span class="o">==</span> <span class="s2">&quot;Yes&quot;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">resume</span> <span class="o">==</span> <span class="s2">&quot;Yes&quot;</span> <span class="ow">and</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
                 <span class="c1"># if folder exist, read value</span>
-                <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">/cavity_</span><span class="si">{</span><span class="n">bc</span><span class="si">}</span><span class="s1">.svl&#39;</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">/cavity_</span><span class="si">{</span><span class="n">bc</span><span class="si">}</span><span class="s1">.svl&#39;</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">data_dict</span> <span class="o">=</span> <span class="n">fr</span><span class="o">.</span><span class="n">svl_reader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
                     <span class="c1"># print(data_dict)</span>
@@ -210,7 +211,7 @@
                             <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
                                 <span class="n">Req</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
                             <span class="c1"># round</span>
-                            <span class="n">Req</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">Req</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="nb">round</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                            <span class="n">Req</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">Req</span><span class="p">,</span> <span class="n">freq</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">try</span><span class="p">:</span>
                                 <span class="n">L</span><span class="p">,</span> <span class="n">freq</span> <span class="o">=</span> <span class="n">pytune</span><span class="o">.</span><span class="n">tuneL</span><span class="p">(</span><span class="n">inner_cell</span><span class="p">,</span> <span class="n">outer_cell</span><span class="p">,</span> <span class="n">target_freq</span><span class="p">,</span> <span class="n">beampipes</span><span class="p">,</span> <span class="n">bc</span><span class="p">,</span>
@@ -272,7 +273,7 @@
 
             <span class="c1"># clear folder after every run. This is to avoid copying of wrong values to save folder</span>
             <span class="c1"># processor folder</span>
-            <span class="n">proc_fold</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/Cavity_process_</span><span class="si">{</span><span class="n">proc</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="n">proc_fold</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">/SimulationData/SLANS/_process_</span><span class="si">{</span><span class="n">proc</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="n">keep</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;SLANS_exe&#39;</span><span class="p">]</span>
             <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">proc_fold</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">item</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keep</span><span class="p">:</span>  <span class="c1"># If it isn&#39;t in the list for retaining</span>
@@ -295,39 +296,9 @@
         <span class="n">runtime</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Processor </span><span class="si">{</span><span class="n">proc</span><span class="si">}</span><span class="s1"> runtime: </span><span class="si">{</span><span class="n">runtime</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
 
-    <span class="c1"># def calculate_alpha(self, A, B, a, b, Ri, L, Req, L_bp):</span>
-    <span class="c1">#</span>
-    <span class="c1">#     data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],</span>
-    <span class="c1">#             [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])</span>
-    <span class="c1">#     df = fsolve(self.ellipse_tangent,</span>
-    <span class="c1">#                             np.array([0.5*a + L_bp, Ri + 0.5 * b, L - A + L_bp, Req - 0.5 * B]),</span>
-    <span class="c1">#                             args=data, full_output=True)</span>
-    <span class="c1">#     x1, y1, x2, y2 = df[0]</span>
-    <span class="c1">#     error_msg = df[-2]</span>
-    <span class="c1">#</span>
-    <span class="c1">#     m = (y2 - y1) / (x2 - x1)</span>
-    <span class="c1">#     alpha = 180 - np.arctan(m) * 180 / np.pi</span>
-    <span class="c1">#     return alpha, error_msg</span>
-
-    <span class="c1"># @staticmethod</span>
-    <span class="c1"># def save_last(projectDir, key):</span>
-    <span class="c1">#     # copy slans files from folder with key</span>
-    <span class="c1">#     # Source path</span>
-    <span class="c1">#     # src = fr&#39;{projectDir}/SimulationData/SLANS/Cavity_process_{process_num}&#39;</span>
-    <span class="c1">#     # Destination path</span>
-    <span class="c1">#     dest = fr&#39;{projectDir}/SimulationData/SLANS/Cavity{key}&#39;</span>
-    <span class="c1">#     if os.path.exists(dest):</span>
-    <span class="c1">#         shutil.rmtree(dest)</span>
-    <span class="c1">#     # Copy the content of source to destination</span>
-    <span class="c1">#     # destination = shutil.copytree(src, dest)</span>
-    <span class="c1">#</span>
-    <span class="c1">#     # delete SLANS_EXE folder</span>
-    <span class="c1">#     if os.path.exists(fr&#39;{projectDir}/SimulationData/SLANS/Cavity{key}/SLANS_exe&#39;):</span>
-    <span class="c1">#         shutil.rmtree(fr&#39;{projectDir}/SimulationData/SLANS/Cavity{key}/SLANS_exe&#39;)</span>
-
 <div class="viewcode-block" id="Tuner.save_tune_result"><a class="viewcode-back" href="../../../../analysis_modules.tune.tuners.html#analysis_modules.tune.tuners.tuner.Tuner.save_tune_result">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">save_tune_result</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">projectDir</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s2">\SimulationData\SLANS\Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">\tune_res.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s2">\SimulationData\SLANS\</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">\tune_res.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
             <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span></div></div>
 
     <span class="c1"># if __name__ == &#39;__main__&#39;:</span>

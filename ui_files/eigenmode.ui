@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1678</width>
-    <height>1750</height>
+    <height>1166</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,9 +72,9 @@
             <widget class="QWidget" name="scrollAreaWidgetContents">
              <property name="geometry">
               <rect>
-               <x>0</x>
-               <y>-423</y>
-               <width>462</width>
+               <x>-93</x>
+               <y>0</y>
+               <width>402</width>
                <height>2004</height>
               </rect>
              </property>
@@ -382,14 +382,53 @@
                     <string notr="true">	border-radius: 15px;</string>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_33">
-                    <item row="1" column="2">
+                    <item row="1" column="1" colspan="2">
+                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
+                    </item>
+                    <item row="1" column="4">
+                     <widget class="SwitchControl" name="sc_Create_Summary"/>
+                    </item>
+                    <item row="1" column="3">
                      <widget class="QLabel" name="label_4">
                       <property name="text">
                        <string>Summary</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="1">
+                    <item row="1" column="0">
+                     <widget class="QLabel" name="label_17">
+                      <property name="text">
+                       <string>Select Shape</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0" colspan="2">
+                     <widget class="QComboBox" name="cb_Shape_Entry_Mode">
+                      <property name="minimumSize">
+                       <size>
+                        <width>50</width>
+                        <height>50</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>150</width>
+                        <height>100</height>
+                       </size>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>Load Shape Space</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Enter Shape Manually</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="0" column="2" colspan="3">
                      <widget class="QWidget" name="w_Select_Shape_Space" native="true">
                       <layout class="QGridLayout" name="gridLayout_86">
                        <property name="leftMargin">
@@ -447,38 +486,6 @@
                        </item>
                       </layout>
                      </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QComboBox" name="cb_Shape_Entry_Mode">
-                      <property name="minimumSize">
-                       <size>
-                        <width>50</width>
-                        <height>50</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>150</width>
-                        <height>100</height>
-                       </size>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>Load Shape Space</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Enter Shape Manually</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="1" column="0" colspan="2">
-                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
-                    </item>
-                    <item row="1" column="3">
-                     <widget class="SwitchControl" name="sc_Create_Summary"/>
                     </item>
                    </layout>
                   </widget>

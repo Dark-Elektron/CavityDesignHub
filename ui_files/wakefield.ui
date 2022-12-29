@@ -1290,7 +1290,27 @@
                 <string notr="true">border-radius: 15px;</string>
                </property>
                <layout class="QGridLayout" name="gridLayout_35">
-                <item row="0" column="0">
+                <item row="2" column="3">
+                 <widget class="QLabel" name="label_11">
+                  <property name="text">
+                   <string>Summary</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1" colspan="2">
+                 <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
+                </item>
+                <item row="2" column="4">
+                 <widget class="SwitchControl" name="sc_Create_Summary"/>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="label_16">
+                  <property name="text">
+                   <string>Select Shape</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0" colspan="2">
                  <widget class="QComboBox" name="cb_Shape_Entry_Mode">
                   <item>
                    <property name="text">
@@ -1304,10 +1324,7 @@
                   </item>
                  </widget>
                 </item>
-                <item row="1" column="0" colspan="2">
-                 <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
-                </item>
-                <item row="0" column="1">
+                <item row="0" column="2" colspan="3">
                  <widget class="QWidget" name="w_Select_Shape_Space" native="true">
                   <layout class="QGridLayout" name="gridLayout_86">
                    <property name="leftMargin">
@@ -1322,14 +1339,7 @@
                    <property name="bottomMargin">
                     <number>0</number>
                    </property>
-                   <item row="0" column="2">
-                    <widget class="QPushButton" name="pb_Select_Shape_Space">
-                     <property name="text">
-                      <string>...</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item row="0" column="0">
+                   <item row="0" column="0" colspan="3">
                     <widget class="QLineEdit" name="le_Shape_Space">
                      <property name="text">
                       <string>test</string>
@@ -1339,18 +1349,15 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="0" column="3">
+                    <widget class="QPushButton" name="pb_Select_Shape_Space">
+                     <property name="text">
+                      <string>...</string>
+                     </property>
+                    </widget>
+                   </item>
                   </layout>
                  </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QLabel" name="label_11">
-                  <property name="text">
-                   <string>Summary</string>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="3">
-                 <widget class="SwitchControl" name="sc_Create_Summary"/>
                 </item>
                </layout>
               </widget>
