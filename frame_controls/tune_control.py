@@ -2053,7 +2053,7 @@ class OptimizationControl:
                         err = True
 
                 # # add original point
-                # filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\cavity_33.svl'
+                # filename = fr'{projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
                 # params = fr.svl_reader(filename)
                 # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
                 # tab_val_f = obj_result

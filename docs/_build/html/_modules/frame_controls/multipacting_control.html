@@ -1242,7 +1242,7 @@
 <div class="viewcode-block" id="MultipactingControl.prompt"><a class="viewcode-back" href="../../frame_controls.html#frame_controls.multipacting_control.MultipactingControl.prompt">[docs]</a>    <span class="k">def</span> <span class="nf">prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">,</span> <span class="n">fid</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">main_control</span><span class="o">.</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\Cavity</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="c1"># print(path)</span>
-        <span class="c1"># path = os.path.join(path, fr&quot;{}\{code}\Cavity{fid}&quot;)</span>
+        <span class="c1"># path = os.path.join(path, fr&quot;{}\{code}\{fid}&quot;)</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
             <span class="n">print_</span><span class="p">(</span><span class="s2">&quot;Simulation data already exists. Do you want to overwrite it?&quot;</span><span class="p">)</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="n">QMessageBox</span><span class="p">()</span>

@@ -270,12 +270,14 @@ set to ``none``. The frequency ``FREQ`` is set to the desired frequency.
   | ``Left BC`` and ``Right BC`` should be set to ``Magnetic Wall En=0``. The number
   | of ``Processors`` should be set to ``1``.
 
-* Click on the play button at the bottom right of the panel to run.
+* | Click on the play button at the bottom right of the panel to run.
+
+* | Navigate to ``SimulationData/SLANS/TESLA`` to see results.
 
 The results are written to ``<root>/<project_name>/SimulationData/SLANS/<cavity_name>``
 If no name was given, the results are saved to ``<root>/<project_name>/SimulationData/SLANS/Cavity0. The quantities that
 we are interested in could be found in ``qois.json``. This file is writen by
-Python. The SLANS written files can be viewed using the corresponding executatble
+Python. The SLANS written files can be viewed using the corresponding executable
 file in ``<root>/CavityDesignHub/exe/SLANS_exe. The table below shows the
 files and corresponding executable files to open them.
 
@@ -350,12 +352,10 @@ analysis. The geometry is loaded exactly the same.
   | calculate for the longitudinal wakefield analysis, ``Dipole`` for transverse wakefield analysis
   | and ``Both`` for both longitudinal and transverse wakefield analysis. Select ``Both``.
 
-The results are written to ``<root>/<project_name>/SimulationData/ABCI/<filename>``
-If no name was given, the results are saved to
-``<root>/<project_name>/SimulationData/ABCI/Cavity0. The quantities that
-we are interested in could be found in ``qois.json``. This file is writen by
-Python. The ABCI written files can be viewed using the corresponding executatble
-file in ``<root>/CavityDesignHub/exe/ABCI_exe/TopDrawer for Windows``.
+The results are written to ``SimulationData/ABCI/<filename>``. If no name was given, the results are saved to
+``SimulationData/ABCI/Cavity0. The quantities that we are interested in could be found in ``qois.json``.
+This file is writen by Python. The ABCI written files can be viewed using the corresponding executable
+file in ``exe/ABCI_exe/TopDrawer for Windows``.
 
 .. _QUICK:Updating:
 

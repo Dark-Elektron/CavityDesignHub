@@ -75,7 +75,7 @@ class SLANSGeometry(Geometry):
         filename = f'cavity_{bc}'
 
         # Write Slans Geometry
-        # with open(f"{projectDir}/SimulationData/SLANS/Cavity{fid}/{filename}.geo", 'w') as f:
+        # with open(f"{projectDir}/SimulationData/SLANS/{fid}/{filename}.geo", 'w') as f:
         with open(f"{projectDir}/SimulationData/SLANS/{fid}/{filename}.geo", 'w') as f:
             # print("it got here")
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
@@ -203,11 +203,11 @@ class SLANSGeometry(Geometry):
 
         # Slans run
         genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
-        # filepath = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}'
+        # filepath = fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}'
         filepath = fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}'
 
         # folder for exe to write to
-        # cwd = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}'
+        # cwd = fr'{projectDir}\SimulationData\SLANS\{fid}'
         cwd = fr'{projectDir}\SimulationData\SLANS\{fid}'
 
         # the next two lines suppress pop up windows from the slans codes

@@ -125,7 +125,7 @@ class UQ:
 
         Ttab_val_f = []
         # print_('3')
-        sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
+        sub_dir = fr'{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
         for i in range(no_sims):
             skip = False
             p_init = p_true * (1 + delta * nodes[:, i])
@@ -170,10 +170,10 @@ class UQ:
             fid = fr'{key}_Q{i}'
 
             # check if folder exists and skip if it does
-            # print_(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}')
-            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}'):
+            # print_(fr'{projectDir}\SimulationData\SLANS\{key}\{fid}')
+            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{key}\{fid}'):
                 skip = True
-                # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\Cavity{key}\Cavity{fid}')
+                # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\{key}\{fid}')
 
             # skip analysis if folder already exists.
             if not skip:
@@ -185,7 +185,7 @@ class UQ:
                                                  f_shift='default', beta=1, n_modes=6, beampipes="both",
                                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
 
-            filename = fr'{parentDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\qois.json'
+            filename = fr'{parentDir}\SimulationData\SLANS\{key}\{fid}\qois.json'
             # ic(filename)
             if os.path.exists(filename):
                 # n_cells = 5
@@ -194,7 +194,7 @@ class UQ:
                 # ic(n_cells, norm_length)
                 # qois_result = self.get_qoi_value(params, slans_obj_list, n_cells, norm_length)
 
-                with open(fr'{parentDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\qois.json') as json_file:
+                with open(fr'{parentDir}\SimulationData\SLANS\{key}\{fid}\qois.json') as json_file:
                     results = json.load(json_file)
 
                 # print(results)
@@ -216,7 +216,7 @@ class UQ:
                 err = True
 
         # # add original point
-        # filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\cavity_33.svl'
+        # filename = fr'{projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
         # params = fr.svl_reader(filename)
         # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
         # tab_val_f = obj_result
@@ -239,10 +239,10 @@ class UQ:
 
             # plt.show()
 
-            with open(fr"{parentDir}\SimulationData\SLANS\Cavity{key}\uq.json", 'w') as file:
+            with open(fr"{parentDir}\SimulationData\SLANS\{key}\uq.json", 'w') as file:
                 file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
         else:
-            print_(fr"There was a problem running UQ analysis for Cavity{key}")
+            print_(fr"There was a problem running UQ analysis for {key}")
 
     @staticmethod
     def get_qoi_value(d, obj, n_cells, norm_length):

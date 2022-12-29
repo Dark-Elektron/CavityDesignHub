@@ -274,7 +274,7 @@ class ABCIGeometry(Geometry):
 
     @staticmethod
     def createFolder(fid, projectDir, subdir='', marker=''):
-        # path = os.path.join(path, f"{projectDir}\SimulationData\ABCI\Cavity{fid}{marker}")
+        # path = os.path.join(path, f"{projectDir}\SimulationData\ABCI\{fid}{marker}")
         # if os.path.exists(path):
         #     pass
         # else:

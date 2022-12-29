@@ -958,7 +958,7 @@ class MultipactingControl:
                         if toall == 'YesToAll':
                             self.shape_space[key] = val
                         else:
-                            path = f'{self.main_control.projectDir}/SimulationData/{code}/Cavity{key}'
+                            path = f'{self.main_control.projectDir}/SimulationData/{code}/{key}'
                             if os.path.exists(path):
                                 continue
                             else:
@@ -1153,9 +1153,9 @@ class MultipactingControl:
             return self.shape_space
 
     def prompt(self, code, fid):
-        path = fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity{fid}'
+        path = fr'{self.main_control.projectDir}\SimulationData\SLANS\{fid}'
         # print(path)
-        # path = os.path.join(path, fr"{}\{code}\Cavity{fid}")
+        # path = os.path.join(path, fr"{}\{code}\{fid}")
         if os.path.exists(path):
             print_("Simulation data already exists. Do you want to overwrite it?")
             msg = QMessageBox()
@@ -1488,7 +1488,7 @@ class MultipactingControl:
 
     def write_cst_paramters(self, key, ic, oc, projectDir):
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/SLANS/Cavity{key}/{key}.txt'
+        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
 
         # print(path)
         with open(path, 'w') as f:

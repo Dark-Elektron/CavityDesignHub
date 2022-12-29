@@ -435,9 +435,11 @@ class MainWindow:
             self.ui.l_Project_Name.setText(self.projectDir)
             if self.global_state == 0:
                 self.initUI()
-                # add file system tree
-                self.file_system(self.projectDir)
+
                 self.global_state += 1
+
+            # add file system tree
+            self.file_system(self.projectDir)
 
         elif project_dir != '':
             # check if it's a valid project folder
@@ -452,9 +454,10 @@ class MainWindow:
                 self.ui.l_Project_Name.setText(self.projectDir)
                 if self.global_state == 0:
                     self.initUI()
-                    # add file system tree
-                    self.file_system(self.projectDir)
                     self.global_state += 1
+
+                # add file system tree
+                self.file_system(self.projectDir)
 
             else:
                 print('Please select a valid project directory')
@@ -694,27 +697,32 @@ class MainWindow:
         self.settings.setValue("windowState", self.main_win.saveState(version=0))
 
     def file_system(self, dir_path):
-        self.model = QFileSystemModel()
-        self.model.setRootPath(dir_path)
-        self.tree = QTreeView()
-        self.tree.setModel(self.model)
-        self.tree.setRootIndex(self.model.index(dir_path))
-        # self.tree.setColumnWidth(0, 250)
-        self.tree.setAlternatingRowColors(True)
+        if self.model:
+            self.model.setRootPath("")
+            self.model.setRootPath(dir_path)
+            self.tree.setRootIndex(self.model.index(dir_path))
+        else:
+            self.model = QFileSystemModel()
+            self.model.setRootPath(dir_path)
+            self.tree = QTreeView()
+            self.tree.setModel(self.model)
+            self.tree.setRootIndex(self.model.index(dir_path))
+            # self.tree.setColumnWidth(0, 250)
+            self.tree.setAlternatingRowColors(True)
 
-        # hide unnecessary details
-        for i in range(1, self.tree.model().columnCount()):
-            self.tree.header().hideSection(i)
+            # hide unnecessary details
+            for i in range(1, self.tree.model().columnCount()):
+                self.tree.header().hideSection(i)
 
-        # set contextMenu
-        self.tree.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.tree.customContextMenuRequested.connect(self.file_system_context_menu)
+            # set contextMenu
+            self.tree.setContextMenuPolicy(Qt.CustomContextMenu)
+            self.tree.customContextMenuRequested.connect(self.file_system_context_menu)
 
-        # add functionality to open files
-        self.tree.doubleClicked.connect(self.open_file)
+            # add functionality to open files
+            self.tree.doubleClicked.connect(self.open_file)
 
-        # add to GUI
-        self.ui.gl_File_System_View.addWidget(self.tree)
+            # add to GUI
+            self.ui.gl_File_System_View.addWidget(self.tree)
 
     def file_system_context_menu(self):
         menu = QMenu()

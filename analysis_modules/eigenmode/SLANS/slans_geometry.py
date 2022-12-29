@@ -123,9 +123,9 @@ class SLANSGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            run_save_directory = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}'
+            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{fid}'
         else:
-            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{subdir}\Cavity{fid}'
+            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
 
         # Write Slans Geometry
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
@@ -416,9 +416,9 @@ class SLANSGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            run_save_directory = fr'{parentDir}\{projectDir}\Cavity{fid}'
+            run_save_directory = fr'{parentDir}\{projectDir}\{fid}'
         else:
-            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{subdir}\Cavity{fid}'
+            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
 
         # Write Slans Geometry
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
@@ -686,10 +686,10 @@ class SLANSGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            run_save_directory = fr'{parentDir}\{projectDir}\Cavity{fid}'
+            run_save_directory = fr'{parentDir}\{projectDir}\{fid}'
         else:
             print("it's here", fid)
-            run_save_directory = fr'{parentDir}\SimulationData\SLANS\{subdir}\Cavity{fid}'
+            run_save_directory = fr'{parentDir}\SimulationData\SLANS\{subdir}\{fid}'
 
         # Write Slans Geometry
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
@@ -900,11 +900,11 @@ class SLANSGeometry(Geometry):
     @staticmethod
     def createFolder(fid, projectDir, subdir=''):
         # change save directory
-        path = fr'{projectDir}\SimulationData\SLANS\Cavity{fid}'
+        path = fr'{projectDir}\SimulationData\SLANS\{fid}'
         if subdir == '':
             pass
         else:
-            new_path = fr'{projectDir}\SimulationData\SLANS\{subdir}\Cavity{fid}'
+            new_path = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
             if os.path.exists(new_path):
                 path = new_path
             else:
@@ -912,7 +912,7 @@ class SLANSGeometry(Geometry):
                     os.mkdir(fr'{projectDir}\SimulationData\SLANS\{subdir}')
 
                 os.mkdir(new_path)
-                path = fr'{projectDir}\SimulationData\SLANS\{subdir}\Cavity{fid}'
+                path = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
 
         if os.path.exists(path):
             shutil.rmtree(path)

@@ -269,7 +269,7 @@ class SLANSDataExtraction:
                     # else:
                     #     continue
                     # key = dir_[dir_.index("Cavity"):]
-                    slans_data = SLANSData(slans_data_dir, f"Cavity{key}", bc)
+                    slans_data = SLANSData(slans_data_dir, f"{key}", bc)
 
                     try:
                         d_0d = slans_data.get_0D_plot_data()

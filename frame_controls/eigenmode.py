@@ -2,6 +2,9 @@ import subprocess
 import time
 import multiprocessing as mp
 from threading import Thread
+
+from psutil import NoSuchProcess
+
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
@@ -301,11 +304,11 @@ class EigenmodeControl:
         # signal to progress bar
         self.show_progress_bar = False
 
-        # try:
-        for p in self.processes:
-            p.terminate()
-        # except:
-        #     pass
+        try:
+            for p in self.processes:
+                p.terminate()
+        except NoSuchProcess:
+            pass
 
         self.processes.clear()
         self.processes_id.clear()
@@ -334,9 +337,9 @@ class EigenmodeControl:
             self.progress_bar.hide()
 
     def prompt(self, code, fid):
-        path = fr'{self.main_control.projectDir}\SimulationData\SLANS\Cavity{fid}'
+        path = fr'{self.main_control.projectDir}\SimulationData\SLANS\{fid}'
         # print(path)
-        # path = os.path.join(path, fr"{}\{code}\Cavity{fid}")
+        # path = os.path.join(path, fr"{}\{code}\{fid}")
         if os.path.exists(path):
             print_("Simulation data already exists. Do you want to overwrite it?")
             msg = QMessageBox()
@@ -616,7 +619,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
     Ttab_val_f = []
 
-    sub_dir = fr'Cavity{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
+    sub_dir = fr'{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
     for i in range(no_sims):
         skip = False
         p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
@@ -636,7 +639,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
         fid = fr'{key}_Q{i}'
 
         # check if folder exists and skip if it does
-        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}'):
+        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{key}\{fid}'):
             skip = True
 
         # skip analysis if folder already exists.
@@ -653,7 +656,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
                                   n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
                                   parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
 
-        filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\Cavity{fid}\cavity_{bc}.svl'
+        filename = fr'{projectDir}\SimulationData\SLANS\{key}\{fid}\cavity_{bc}.svl'
         if os.path.exists(filename):
             params = fr.svl_reader(filename)
             norm_length = 2*n_cells*shape['IC'][5]
@@ -675,7 +678,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
             err = True
 
     # # add original point
-    # filename = fr'{projectDir}\SimulationData\SLANS\Cavity{key}\cavity_33.svl'
+    # filename = fr'{projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
     # params = fr.svl_reader(filename)
     # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
     # tab_val_f = obj_result
@@ -695,10 +698,10 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
         # plt.show()
 
-        with open(fr"{projectDir}\SimulationData\SLANS\Cavity{key}\uq.json", 'w') as file:
+        with open(fr"{projectDir}\SimulationData\SLANS\{key}\uq.json", 'w') as file:
             file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
     else:
-        print_(fr"There was a problem running UQ analysis for Cavity{key}")
+        print_(fr"There was a problem running UQ analysis for {key}")
 
 
 def get_qoi_value(d, obj, n_cells, norm_length):

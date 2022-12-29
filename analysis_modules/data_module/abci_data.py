@@ -550,8 +550,8 @@ class ABCIDataExtraction:
             def all(mon_interval, dip_interval):
                 for key, value in d.items():
                     print(f"Processing for Cavity {key}")
-                    abci_data_long = ABCIData(abci_data_dir, f"Cavity{key}_", 0)
-                    abci_data_trans = ABCIData(abci_data_dir, f"Cavity{key}_", 1)
+                    abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
+                    abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
 
                     # get longitudinal and transverse impedance plot data
                     xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')

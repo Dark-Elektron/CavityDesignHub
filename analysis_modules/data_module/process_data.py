@@ -60,7 +60,7 @@ class ProcessData:
             # get freq from folder
 
             try:
-                d = fr.svl_reader(fr"{dirc}\Cavity{key}\cavity_33.svl")
+                d = fr.svl_reader(fr"{dirc}\{key}\cavity_33.svl")
                 freq = d['FREQUENCY'][0]
                 print(key, freq)
                 ic = [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, alpha_ic]
@@ -328,7 +328,7 @@ class ProcessData:
 
     def write_cst_paramters(self, key, ic, oc, cell_type, projectDir):
         # print("Writing parameters to file")
-        path = fr'{projectDir}/Cavity{key}/{key}.txt'
+        path = fr'{projectDir}/{key}/{key}.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -368,7 +368,7 @@ if __name__ == '__main__':
 #     print(len(pd))
 #     # remove problematic folder
 #     # for key in pd:
-#     #     pf = fr'D:\Dropbox\CavityDesignHub\C800MHz\SimulationData\SLANS\Cavity{key}'
+#     #     pf = fr'D:\Dropbox\CavityDesignHub\C800MHz\SimulationData\SLANS\{key}'
 #     #     if os.path.exists(pf):
 #     #         shutil.rmtree(pf)
 #

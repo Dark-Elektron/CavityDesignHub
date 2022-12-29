@@ -151,7 +151,7 @@
         <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;cavity_</span><span class="si">{</span><span class="n">bc</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="c1"># Write Slans Geometry</span>
-        <span class="c1"># with open(f&quot;{projectDir}/SimulationData/SLANS/Cavity{fid}/{filename}.geo&quot;, &#39;w&#39;) as f:</span>
+        <span class="c1"># with open(f&quot;{projectDir}/SimulationData/SLANS/{fid}/{filename}.geo&quot;, &#39;w&#39;) as f:</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s2">/SimulationData/SLANS/</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">.geo&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="c1"># print(&quot;it got here&quot;)</span>
             <span class="c1"># N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign</span>
@@ -279,11 +279,11 @@
 
         <span class="c1"># Slans run</span>
         <span class="n">genmesh_path</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parentDir</span><span class="si">}</span><span class="s1">\exe\SLANS_exe\genmesh2.exe&#39;</span>
-        <span class="c1"># filepath = fr&#39;{projectDir}\SimulationData\SLANS\Cavity{fid}\{filename}&#39;</span>
+        <span class="c1"># filepath = fr&#39;{projectDir}\SimulationData\SLANS\{fid}\{filename}&#39;</span>
         <span class="n">filepath</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">\</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="c1"># folder for exe to write to</span>
-        <span class="c1"># cwd = fr&#39;{projectDir}\SimulationData\SLANS\Cavity{fid}&#39;</span>
+        <span class="c1"># cwd = fr&#39;{projectDir}\SimulationData\SLANS\{fid}&#39;</span>
         <span class="n">cwd</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">&#39;</span>
 
         <span class="c1"># the next two lines suppress pop up windows from the slans codes</span>
