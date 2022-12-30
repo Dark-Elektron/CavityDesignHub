@@ -14,18 +14,34 @@ details and examples.
 Requirements and Dependencies
 *****************************
 
-The CaDH is a GUI for coordinating different electromagnetic codes.
-It also comes with some scripts to ease most of the common tasks. CaDH uses
-Python 3 as a platform independent scripting environment.
-All Python scripts are wrapped in Bash or PowerShell scripts,
-to hide some platform specifics of Darwin, Linux or Windows.
+The CaDH is a GUI for coordinating different electromagnetic codes. It also comes with some scripts to ease most of the
+common tasks. CaDH uses Python 3 as a platform independent scripting environment. All Python scripts are wrapped in
+Bash or PowerShell scripts, to hide some platform specifics of Darwin, Linux or Windows.
 See :ref:`USING:Require` for further details.
 
 
-.. rubric:: CaDH requires:
+TL;DR
+=====
+
+.. code-block::
+
+   git clone https://github.com/Dark-Elektron/CavityDesignHub.git
+   pip install -r requirements.txt
+
+* Navigate to ``<root>\CavityDesignHub\exe\SLANS_exe\fonts`` and install all fonts in the folder.
+
+* Download ABCI version 12.5 code from `here <https://abci.kek.jp/abci.htm>`_.
+
+.. code-block:: PowerShell
+
+   cd <root>/CavityDesignHub
+   unzip ABCI_MP_12_5.zip
+   robocopy ABCI_MP_12_5 <root>\CavityDesignHub\exe\ABCI_exe /COPYALL /E
+
+
+.. rubric:: CavityDesignHub requires:
 
 * The **Python 3** programming language and runtime.
-
 
 .. rubric:: CaDH optionally requires:
 
@@ -40,11 +56,9 @@ All dependencies are contained in requirements.txt
 Download
 ********
 
-The CaDH-Library can be downloaded as a `zip-file <https://github.com/Dark-Elektron/CavityDesignHub/archive/refs/heads/master.zip>`_
-(latest 'master' branch), cloned with ``git clone`` or embedded with
-``git submodule add`` from GitHub. GitHub offers HTTPS and SSH as transfer
+The CaDH-Library can be cloned with ``git clone``. GitHub offers HTTPS and SSH as transfer
 protocols. See the :ref:`Download <USING:Download>` page for further
-details. The installation directory is referred to as ``CaDHRoot``.
+details.
 
 +----------+----------------------------------------------------------------------------+
 | Protocol | Git Clone Command                                                          |
@@ -54,25 +68,39 @@ details. The installation directory is referred to as ``CaDHRoot``.
 | SSH      | git clone git@github.com:Dark-Elektron/CavityDesignHub.git                 |
 +----------+----------------------------------------------------------------------------+
 
+To install the requirements, use
+
+.. code-block:: PowerShell
+
+   pip install -r requirements.txt
+
+.. note::
+
+   On PyCharm, :guilabel:`Right Click` on ``test_plugin`` and mark directory as ``Sources Root``.
+   A change to this will be considered in later releases.
 
 .. _QUICK:Configuration:
 
 Configuring CaDH  on a Local System
 *********************************
 
-CaDH currently makes use of other software for analysis. These software are not
-outrightly open source but could be obtained from the website of the author.
+CaDH currently makes use of other software for analysis. These software are not outrightly open source but could be
+obtained from the website of the author.
+
+**SuperLANS**
+
+For eigenmode analysis, SLANS is required. The executable files are included in the cloned repository. There might,
+however, be a problem with the codes because they use fonts that are not included in the standard Windows OS. To install
+the fonts, navigate to ``<root>\CavityDesignHub\exe\SLANS_exe\fonts`` and install all fonts in the folder.
+
+**ABCI**
 
 For wakefield analysis, the ABCI code is required.
 
-.. rubric:: 1. Download ABCI code from `here <https://abci.kek.jp/abci.htm>`.
-ABCI version 12.5 is recommended.
+* | Download ABCI code from `here <https://abci.kek.jp/abci.htm>`. ABCI version 12.5 is recommended.
 
-.. rubric:: 2. Copy files
-
-Copy the files from the downloaded zip file to ``<root>\CavityDesignHub\exe\ABCI_exe``
-This can be done directly on Windows by copying the files to the specified folder
-or from the command line using
+* | Copy files from the downloaded zip file to ``<root>\CavityDesignHub\exe\ABCI_exe``. This can be done directly on
+Windows by copying the files to the specified folder or from the command line using
 
 **On Windows**
 
@@ -80,7 +108,7 @@ First extract the files from ``ABCI_MP_12_5.zip``
 
 .. code-block:: PowerShell
 
-   cd CaDHRoot
+   cd <root>/CavityDesignHub
    unzip ABCI_MP_12_5.zip
 
 Copy all files in extracted folder to ``<root>\CavityDesignHub\exe\ABCI_exe``

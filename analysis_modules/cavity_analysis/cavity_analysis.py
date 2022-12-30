@@ -14,6 +14,7 @@ from scipy.optimize import fsolve
 from utils.file_reader import FileReader
 from analysis_modules.plot_module.matplotlib_annotation_objects import DraggableText
 from utils import shared_functions
+from utils.shared_functions import ellipse_tangent
 
 fr = FileReader()
 
@@ -950,7 +951,7 @@ class Cavities:
         data = ([0 + L_bp_l, Ri_el + b_el, L_el + L_bp_l, Req_el - B_el],
                 [a_el, b_el, A_el, B_el])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
 
-        x1el, y1el, x2el, y2el = fsolve(self.f, np.array(
+        x1el, y1el, x2el, y2el = fsolve(ellipse_tangent, np.array(
             [a_el + L_bp_l, Ri_el + 0.85 * b_el, L_el - A_el + L_bp_l, Req_el - 0.85 * B_el]),
                                         args=data,
                                         xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
@@ -958,14 +959,14 @@ class Cavities:
         # CALCULATE x1, y1, x2, y2
         data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
                 [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1, y1, x2, y2 = fsolve(self.f,
+        x1, y1, x2, y2 = fsolve(ellipse_tangent,
                                 np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
                                 args=data, xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
         # CALCULATE x1_er, y1_er, x2_er, y2_er
         data = ([0 + L_bp_r, Ri_er + b_er, L_er + L_bp_r, Req_er - B_er],
                 [a_er, b_er, A_er, B_er])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1er, y1er, x2er, y2er = fsolve(self.f, np.array(
+        x1er, y1er, x2er, y2er = fsolve(ellipse_tangent, np.array(
             [a_er + L_bp_r, Ri_er + 0.85 * b_er, L_er - A_er + L_bp_r, Req_er - 0.85 * B_er]),
                                         args=data,
                                         xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
@@ -1369,26 +1370,17 @@ class Cavities:
         # ax.grid(which='both')
         fig.show()
 
-    @staticmethod
-    def f(z, *data):
-        """
-        Calculates the coordinates of the tangent line connecting of two ellipses
-        :param z: List containing an initial guess
-        :param data: list containing center coordinate of the ellipses and their corresponding dimensions
-        :return: returns the functions to be solved to calculate the coordinates
+    def run_slans(self):
+        for cav in self.cavities_list:
+            cav.run_slans()
 
-        """
-        coord, dim = data
-        h, k, p, q = coord
-        a, b, A, B = dim
-        x1, y1, x2, y2 = z
+    def run_abci(self):
+        for cav in self.cavities_list:
+            cav.run_abci()
 
-        f1 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-        f2 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-        f3 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
-        f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
-
-        return f1, f2, f3, f4
+    def run_multipacting(self):
+        for cav in self.cavities_list:
+            cav.run_multipacting()
 
     @staticmethod
     def linspace(start, stop, step=1.):
@@ -2187,6 +2179,15 @@ class Cavity:
         ax.minorticks_on()
         # ax.grid(which='both')
         plt.show()
+
+    def run_slans(self):
+        pass
+
+    def run_abci(self):
+        pass
+
+    def run_multipacting(self):
+        pass
 
     def plot_ql_vs_pin(self):
         label = self.name

@@ -272,13 +272,13 @@
              <widget class="QWidget" name="w_Pane" native="true">
               <property name="minimumSize">
                <size>
-                <width>75</width>
+                <width>90</width>
                 <height>0</height>
                </size>
               </property>
               <property name="maximumSize">
                <size>
-                <width>75</width>
+                <width>90</width>
                 <height>16777215</height>
                </size>
               </property>
@@ -315,20 +315,7 @@
                  </property>
                 </spacer>
                </item>
-               <item row="4" column="1">
-                <spacer name="horizontalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="0">
+               <item row="3" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rTune">
                  <property name="minimumSize">
                   <size>
@@ -343,11 +330,7 @@
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 181, 76);
-border-style: solid;
-border-color: rgb(255, 181, 76);
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>T</string>
@@ -357,7 +340,7 @@ border-radius: 15px;</string>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="0">
+               <item row="8" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rPlot">
                  <property name="minimumSize">
                   <size>
@@ -372,11 +355,7 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(167, 255, 151);
-border-style: solid;
-border-color: rgb(167, 255, 151);
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>P</string>
@@ -386,7 +365,7 @@ border-radius: 15px;</string>
                  </property>
                 </widget>
                </item>
-               <item row="4" column="0">
+               <item row="4" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rEigenmode">
                  <property name="minimumSize">
                   <size>
@@ -401,11 +380,7 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(216, 74, 255);
-border-style: solid;
-border-color: rgb(216, 74, 255);
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>E</string>
@@ -415,7 +390,7 @@ border-radius: 15px;</string>
                  </property>
                 </widget>
                </item>
-               <item row="6" column="0">
+               <item row="6" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rMultipacting">
                  <property name="minimumSize">
                   <size>
@@ -430,18 +405,14 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(200, 200, 200);
-border-style: solid;
-border-color: rgb(200, 200, 200);
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>M</string>
                  </property>
                 </widget>
                </item>
-               <item row="9" column="0">
+               <item row="9" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rMisc">
                  <property name="minimumSize">
                   <size>
@@ -456,11 +427,7 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 235, 188);
-border-style: solid;
-border-color: rgb(255, 235, 188);
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>M</string>
@@ -470,7 +437,7 @@ border-radius: 15px;</string>
                  </property>
                 </widget>
                </item>
-               <item row="2" column="0">
+               <item row="2" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rHome">
                  <property name="minimumSize">
                   <size>
@@ -485,11 +452,7 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color:white;
-border-style: solid;
-border-color: black;
-border-width: 1px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>H</string>
@@ -499,7 +462,7 @@ border-radius: 15px;</string>
                  </property>
                 </widget>
                </item>
-               <item row="1" column="0">
+               <item row="1" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rBack">
                  <property name="minimumSize">
                   <size>
@@ -514,18 +477,14 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: gray;
-border-style: solid;
-border-color: gray;
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>&lt;-</string>
                  </property>
                 </widget>
                </item>
-               <item row="5" column="0">
+               <item row="5" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rWakefield">
                  <property name="minimumSize">
                   <size>
@@ -540,11 +499,7 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(255, 69, 119);
-border-style: solid;
-border-color: rgb(255, 69, 119);
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>W</string>
@@ -554,7 +509,7 @@ border-radius: 15px;</string>
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0">
+               <item row="7" column="0" alignment="Qt::AlignLeft">
                 <widget class="QPushButton" name="pb_rPostprocess">
                  <property name="minimumSize">
                   <size>
@@ -569,11 +524,7 @@ border-radius: 15px;</string>
                   </size>
                  </property>
                  <property name="styleSheet">
-                  <string notr="true">background-color: rgb(167, 222, 255);
-border-style: solid;
-border-color: rgb(167, 222, 255);
-border-width: 5px;
-border-radius: 15px;</string>
+                  <string notr="true"/>
                  </property>
                  <property name="text">
                   <string>PP</string>
@@ -657,8 +608,8 @@ border-radius: 15px;</string>
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>891</width>
-                           <height>1003</height>
+                           <width>886</width>
+                           <height>977</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -991,7 +942,7 @@ P R O C E S S</string>
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>361</width>
+                        <width>357</width>
                         <height>919</height>
                        </rect>
                       </property>

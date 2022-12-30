@@ -1,17 +1,8 @@
-import ast
-import math
-
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-from scipy.optimize import fsolve
-import numpy as np
-
 from utils.shared_functions import *
 
 LINE_CP_ROUNDNESS = 100
-
-# THIS IS WHERE ALL THE PAINTING IS DONE
 
 
 class QGraphicsLine(QGraphicsPathItem):
@@ -113,7 +104,7 @@ class QGraphicsLineDirect(QGraphicsLine):
             a_el = text_to_list(self.ui.le_a_ol.text())[0]
             b_el = text_to_list(self.ui.le_b_ol.text())[0]
             Ri_el = text_to_list(self.ui.le_Ri_ol.text())[0]
-            L_el= text_to_list(self.ui.le_L_ol.text())[0]
+            L_el = text_to_list(self.ui.le_L_ol.text())[0]
             Req_el = text_to_list(self.ui.le_Req_ol.text())[0]
 
             # right end cell
@@ -138,7 +129,9 @@ class QGraphicsLineDirect(QGraphicsLine):
                     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m
 
             # ADD BEAM PIPES IF ONLY MID CELLS IS CHECKED AND ABCI CODE SELECTED
-            if self.ui.cb_Inner_Cell.checkState() == 2 and self.ui.cb_LBP.checkState() == 0 and self.ui.cb_RBP.checkState() == 0:
+            if self.ui.cb_Inner_Cell.checkState() == 2 \
+                    and self.ui.cb_LBP.checkState() == 0 \
+                    and self.ui.cb_RBP.checkState() == 0:
                 L_bp_l, L_bp_r = 0, 0
             else:
                 if self.ui.cb_LBP.checkState() == 2:
@@ -168,7 +161,7 @@ class QGraphicsLineDirect(QGraphicsLine):
         n_cell = self.ui.sb_N_Cells.value()
 
         # calculate shift
-        shift = (L_bp_r+L_bp_l + (n_cell-1)*2*L_m + L_el + L_er)/2
+        shift = (L_bp_r+L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er)/2
 
         # SHIFT POINT TO START POINT
         path.moveTo(-shift, 0)
@@ -181,8 +174,10 @@ class QGraphicsLineDirect(QGraphicsLine):
 
         # calculate angles outside loop
         # CALCULATE x1_el, y1_el, x2_el, y2_el
-        data = ([0+L_bp_l, Ri_el+b_el, L_el+L_bp_l, Req_el-B_el], [a_el, b_el, A_el, B_el]) # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1el, y1el, x2el, y2el = fsolve(ellipse_tangent, np.array([0.5*a_el+L_bp_l, Ri_el+0.5*b_el, L_el-A_el + L_bp_l, Req_el-0.5*B_el]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        data = ([0+L_bp_l, Ri_el+b_el, L_el+L_bp_l, Req_el-B_el], [a_el, b_el, A_el, B_el])
+        x1el, y1el, x2el, y2el = fsolve(ellipse_tangent,
+                                        np.array([0.5*a_el+L_bp_l, Ri_el + 0.5*b_el,
+                                                  L_el-A_el + L_bp_l, Req_el-0.5*B_el]), args=data)
         # calculate iris angle
         alpha1_el = np.arctan((Ri_el+b_el-y1el)/(x1el-L_bp_l))
         alpha1_el = np.rad2deg(alpha1_el)
@@ -191,8 +186,9 @@ class QGraphicsLineDirect(QGraphicsLine):
         alpha2_el = np.rad2deg(alpha2_el)
 
         # CALCULATE x1, y1, x2, y2
-        data = ([0+L_bp_l, Ri_m+b_m, L_m+L_bp_l, Req_m-B_m], [a_m, b_m, A_m, B_m]) # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1, y1, x2, y2 = fsolve(ellipse_tangent, np.array([0.5*a_m+L_bp_l, Ri_m+0.5*b_m, L_m-A_m + L_bp_l, Req_m-0.5*B_m]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        data = ([0+L_bp_l, Ri_m+b_m, L_m+L_bp_l, Req_m-B_m], [a_m, b_m, A_m, B_m])
+        x1, y1, x2, y2 = fsolve(ellipse_tangent, np.array([0.5*a_m+L_bp_l, Ri_m+0.5*b_m,
+                                                           L_m-A_m + L_bp_l, Req_m - 0.5*B_m]), args=data)
         # calculate angle
         alpha1 = np.arctan((Ri_m+b_m-y1)/(x1-L_bp_l))
         alpha1 = np.rad2deg(alpha1)
@@ -201,11 +197,13 @@ class QGraphicsLineDirect(QGraphicsLine):
         alpha2 = np.rad2deg(alpha2)
 
         # CALCULATE x1_er, y1_er, x2_er, y2_er
-        data = ([0+L_bp_l, Ri_er+b_er, L_er+L_bp_l, Req_er-B_er], [a_er, b_er, A_er, B_er]) # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        x1er, y1er, x2er, y2er = fsolve(ellipse_tangent, np.array([0.5*a_er+L_bp_l, Ri_er+0.5*b_er, L_er-A_er + L_bp_l, Req_er-0.5*B_er]), args=data) # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        data = ([0+L_bp_l, Ri_er+b_er, L_er+L_bp_l, Req_er-B_er], [a_er, b_er, A_er, B_er])
+        x1er, y1er, x2er, y2er = fsolve(ellipse_tangent, np.array([0.5*a_er+L_bp_l, Ri_er+0.5*b_er,
+                                                                   L_er-A_er + L_bp_l, Req_er-0.5*B_er]), args=data)
         # calculate angle
         alpha1_er = np.arctan((Ri_er+b_er-y1er)/(x1er-L_bp_l))
         alpha1_er = np.rad2deg(alpha1_er)
+
         # calculate equator angle
         alpha2_er = np.arctan((B_er - (Req_er-y2er))/(L_er + L_bp_l - x2er))
         alpha2_er = np.rad2deg(alpha2_er)
@@ -220,7 +218,8 @@ class QGraphicsLineDirect(QGraphicsLine):
                 path.lineTo(-shift + x2el, y2el)
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                path.arcTo(QRectF(L_el-A_el + L_bp_l-shift, Req_el-2*B_el, 2*A_el, 2*B_el), 180+alpha2_el, 90-alpha2_el) #180-2*alpha2_el
+                path.arcTo(QRectF(L_el-A_el + L_bp_l-shift, Req_el-2*B_el, 2*A_el, 2*B_el),
+                           180+alpha2_el, 90-alpha2_el)
 
             else:
                 # print(2)
@@ -231,28 +230,31 @@ class QGraphicsLineDirect(QGraphicsLine):
                 path.lineTo(2*(i-1)*L_m + L_m + L_el-shift + x2, y2)
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + L_m-A_m + L_bp_l-shift, Req_m-2*B_m, 2*A_m, 2*B_m), 180+alpha2, 90-alpha2)
+                path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + L_m-A_m + L_bp_l-shift,
+                                  Req_m-2*B_m, 2*A_m, 2*B_m), 180+alpha2, 90-alpha2)
 
             if i == (n_cell-1) and A_er:
                 # print(3)
                 if i == 0:
                     # EQUATOR ARC TO NEXT POINT
-                    path.arcTo(QRectF(+ L_m-A_er + L_bp_l-shift, Req_er-2*B_er, 2*A_er, 2*B_er), 270, 90-alpha2_er)
+                    path.arcTo(QRectF(L_m-A_er + L_bp_l-shift, Req_er-2*B_er, 2*A_er, 2*B_er), 270, 90-alpha2_er)
 
                     # STRAIGHT LINE TO NEXT POINT
-                    path.lineTo(+ 2*L_er - x1er + 2*L_bp_l-shift, y1er)
+                    path.lineTo(2*L_er - x1er + 2*L_bp_l-shift, y1er)
 
                     # ARC
-                    path.arcTo(QRectF(+ 2*L_er-a_er + L_bp_l-shift, Ri_er, 2*a_er, 2*b_er), 180-alpha1_er, -90+alpha1_er)
+                    path.arcTo(QRectF(2*L_er-a_er + L_bp_l-shift, Ri_er, 2*a_er, 2*b_er), 180-alpha1_er, -90+alpha1_er)
                 else:
                     # EQUATOR ARC TO NEXT POINT
-                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + L_m-A_er + L_bp_l-shift, Req_er-2*B_er, 2*A_er, 2*B_er), 270, 90-alpha2_er)
+                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + L_m-A_er + L_bp_l-shift,
+                                      Req_er-2*B_er, 2*A_er, 2*B_er), 270, 90-alpha2_er)
 
                     # STRAIGHT LINE TO NEXT POINT
                     path.lineTo(2*(i-1)*L_m + L_m + L_el + 2*L_er - x1er + 2*L_bp_l-shift, y1er)
 
                     # ARC
-                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + 2*L_er-a_er + L_bp_l-shift, Ri_er, 2*a_er, 2*b_er), 180-alpha1_er, -90+alpha1_er)
+                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + 2*L_er-a_er + L_bp_l-shift,
+                                      Ri_er, 2*a_er, 2*b_er), 180-alpha1_er, -90+alpha1_er)
             else:
                 # print(4)
                 # SECOND EQUATOR ARC TO NEXT POINT
@@ -260,19 +262,20 @@ class QGraphicsLineDirect(QGraphicsLine):
                     path.arcTo(QRectF(+ L_m-A_m + L_bp_l-shift, Req_m-2*B_m, 2*A_m, 2*B_m), 270, 90-alpha2)
 
                     # STRAIGHT LINE TO NEXT POINT
-                    path.lineTo( + 2*L_m - x1 + 2*L_bp_l-shift, y1)
+                    path.lineTo(2*L_m - x1 + 2*L_bp_l-shift, y1)
 
                     # ARC
                     path.arcTo(QRectF(+ 2*L_m-a_m + L_bp_l-shift, Ri_m, 2*a_m, 2*b_m), 180-alpha1, -90+alpha1)
                 else:
-                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + L_m-A_m + L_bp_l-shift, Req_m-2*B_m, 2*A_m, 2*B_m), 270, 90-alpha2)
+                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + L_m-A_m + L_bp_l-shift,
+                                      Req_m-2*B_m, 2*A_m, 2*B_m), 270, 90-alpha2)
 
                     # STRAIGHT LINE TO NEXT POINT
                     path.lineTo(2*(i-1)*L_m + L_m + L_el + 2*L_m - x1 + 2*L_bp_l-shift, y1)
 
                     # ARC
-                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + 2*L_m-a_m + L_bp_l-shift, Ri_m, 2*a_m, 2*b_m), 180-alpha1, -90+alpha1)
-
+                    path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + 2*L_m-a_m + L_bp_l-shift,
+                                      Ri_m, 2*a_m, 2*b_m), 180-alpha1, -90+alpha1)
 
         # BEAM PIPE
         path.lineTo(2*n_cell*L_er + L_bp_l+L_bp_r-shift, Ri_er)

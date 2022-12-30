@@ -33,6 +33,7 @@ class GraphicsView(QGraphicsView):
         # else:
         #     self.ui = win.ui
         #     self.geom_in = win.ui
+
         self.ui = win.ui
 
         self.scene = win.scene
@@ -46,10 +47,10 @@ class GraphicsView(QGraphicsView):
         self.wE_original = self.ui.scrollArea.wheelEvent
         self.ui.scrollArea.wheelEvent = self.wE
 
-        self.dragEdge = None # python wanted me to initialize it
-        self.last_lmb_click_scene_pos = None # python wanted me to initialize it
-        self.previousEdge = None # python wanted me to initialize it
-        self.last_start_socket = None # python wanted me to initialize it
+        self.dragEdge = None
+        self.last_lmb_click_scene_pos = None
+        self.previousEdge = None
+        self.last_start_socket = None
 
         self.setScene(self.grScene)
 
@@ -61,7 +62,7 @@ class GraphicsView(QGraphicsView):
         self.zoomInFactor = 1.25
         self.zoomClamp = False
         self.zoom = 10
-        # set intital scale
+        # set initial scale
 
         self.zoomStep = 1
         self.zoomRange = [0, 10]
@@ -74,7 +75,8 @@ class GraphicsView(QGraphicsView):
 
     def initUi(self):
         # Housekeeping QGraphicsView
-        self.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
+        self.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing
+                            | QPainter.SmoothPixmapTransform)
         self.setViewportUpdateMode(QGraphicsView.FullViewportUpdate)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -216,7 +218,7 @@ class GraphicsView(QGraphicsView):
 
         self.last_lmb_click_scene_pos = self.mapToScene(event.pos())
 
-        if DEBUG: print("LMB Click on", item, self.debug_modifiers(event))
+        # if DEBUG: print("LMB Click on", item, self.debug_modifiers(event))
         # print("Item type:", type(item))
 
         # Logic
@@ -263,7 +265,8 @@ class GraphicsView(QGraphicsView):
         item = self.getItemAtClick(event)
 
         # logic
-        # if hasattr(item, "node") or isinstance(item, QGraphicsEdge) or isinstance(item, QGraphicsEdge) or item is None:
+        # if hasattr(item, "node") or isinstance(item, QGraphicsEdge)
+        # or isinstance(item, QGraphicsEdge) or item is None:
         #     if event.modifiers() and Qt.ShiftModifier:
         #         event.ignore()
         #         fakeEvent = QMouseEvent(QEvent.MouseButtonRelease, event.localPos(), event.screenPos(),
@@ -382,9 +385,11 @@ class GraphicsView(QGraphicsView):
         else:
             self.ui.scrollArea.wheelEvent = self.wE_original
 
+    @staticmethod
     def cutIntersectingEdgees(self):
         print()
 
+    @staticmethod
     def debug_modifiers(self, event):
         out = "MODS: "
         if event.modifiers() and Qt.ShiftModifier: out += "SHIFT "
@@ -392,6 +397,7 @@ class GraphicsView(QGraphicsView):
         elif event.modifiers() and Qt.AltModifier: out += "ALT "
         return out
 
+    @staticmethod
     def get_key_modifiers(self):
         QModifiers = QApplication.keyboardModifiers()
         modifiers = []

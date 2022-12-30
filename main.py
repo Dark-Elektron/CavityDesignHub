@@ -180,7 +180,10 @@ class MainWindow:
         self.ui.pb_rMisc.installEventFilter(self.main_win)
 
         # ui effects
-        self.ui_effects()
+        try:
+            self.ui_effects()
+        except AttributeError:
+            pass
 
         # window state before closing
         self.settings = QSettings('MyQtApp', "CavityDesignHub")
@@ -189,7 +192,7 @@ class MainWindow:
         try:
             self.read_settings()
         except Exception as e:
-            print("Exception occured", e)
+            pass
 
     def new_open_folder(self):
         """
@@ -442,22 +445,25 @@ class MainWindow:
             self.file_system(self.projectDir)
 
         elif project_dir != '':
-            # check if it's a valid project folder
-            sub_dirs = [a for a in os.listdir(project_dir) if os.path.isdir(os.path.join(project_dir, a))]
-            compare_dirs = ['Cavities', 'PostprocessingData', 'SimulationData']
+            try:
+                # check if it's a valid project folder
+                sub_dirs = [a for a in os.listdir(project_dir) if os.path.isdir(os.path.join(project_dir, a))]
+                compare_dirs = ['Cavities', 'PostprocessingData', 'SimulationData']
 
-            if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
-                self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
-                self.projectDir = f2b_slashes(project_dir)
+                if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
+                    self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
+                    self.projectDir = f2b_slashes(project_dir)
 
-                # only initialize UI after successfully setting folder and initialise only once
-                self.ui.l_Project_Name.setText(self.projectDir)
-                if self.global_state == 0:
-                    self.initUI()
-                    self.global_state += 1
+                    # only initialize UI after successfully setting folder and initialise only once
+                    self.ui.l_Project_Name.setText(self.projectDir)
+                    if self.global_state == 0:
+                        self.initUI()
+                        self.global_state += 1
 
-                # add file system tree
-                self.file_system(self.projectDir)
+                    # add file system tree
+                    self.file_system(self.projectDir)
+            except FileNotFoundError:
+                pass
 
             else:
                 print('Please select a valid project directory')
@@ -490,9 +496,6 @@ class MainWindow:
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.ui.cb_Theme.currentText()])
         QApplication.instance().setStyleSheet(stylesheet)
         self.last_saved_theme = self.ui.cb_Theme.currentText()
-
-        # change plot widget colors
-        self.plot_widget.plt.change_background('#586e75')
 
         # if self.ui.hs_Theme.value() == 0:
         #     self.stylesheet_filename = 'qss/aqua.qss'
@@ -608,7 +611,10 @@ class MainWindow:
         # if x == msg.Yes:
         #     self.deserialize('ui_state_files/state_file.json')
 
-        self.deserialize('ui_state_files/state_file.json')
+        try:
+            self.deserialize('ui_state_files/state_file.json')
+        except AttributeError:
+            print("Could not deserialize state file. ")
 
     def checkIfPathExist(self, directory, folder):
         path = f"{directory}/{folder}"

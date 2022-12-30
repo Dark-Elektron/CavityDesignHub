@@ -72,10 +72,10 @@
             <widget class="QWidget" name="scrollAreaWidgetContents">
              <property name="geometry">
               <rect>
-               <x>-93</x>
+               <x>-9</x>
                <y>0</y>
-               <width>402</width>
-               <height>2004</height>
+               <width>411</width>
+               <height>2017</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -379,7 +379,7 @@
                  <item row="1" column="0">
                   <widget class="QWidget" name="w_Load_Manual" native="true">
                    <property name="styleSheet">
-                    <string notr="true">	border-radius: 15px;</string>
+                    <string notr="true"/>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_33">
                     <item row="1" column="1" colspan="2">
@@ -1633,7 +1633,7 @@
               <item row="0" column="0">
                <widget class="QWidget" name="w_Simulation_Controls" native="true">
                 <property name="styleSheet">
-                 <string notr="true">	border-radius: 15px;</string>
+                 <string notr="true"/>
                 </property>
                 <layout class="QGridLayout" name="gl_Simulation_Controls">
                  <item row="0" column="2">

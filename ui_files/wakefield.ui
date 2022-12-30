@@ -192,7 +192,7 @@
            <x>0</x>
            <y>0</y>
            <width>525</width>
-           <height>2479</height>
+           <height>2503</height>
           </rect>
          </property>
          <property name="styleSheet">
@@ -1287,7 +1287,7 @@
              <item row="0" column="0">
               <widget class="QWidget" name="w_Load_Manual" native="true">
                <property name="styleSheet">
-                <string notr="true">border-radius: 15px;</string>
+                <string notr="true"/>
                </property>
                <layout class="QGridLayout" name="gridLayout_35">
                 <item row="2" column="3">
@@ -2072,7 +2072,7 @@
           <item row="0" column="0" alignment="Qt::AlignLeft">
            <widget class="QWidget" name="w_Simulation_Controls" native="true">
             <property name="styleSheet">
-             <string notr="true">border-radius: 15px;</string>
+             <string notr="true"/>
             </property>
             <layout class="QGridLayout" name="gl_Simulation_Controls">
              <item row="0" column="4" rowspan="2">

@@ -118,8 +118,8 @@ class Ui_MainWindow(object):
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.w_Pane = QtWidgets.QWidget(self.widget_8)
-        self.w_Pane.setMinimumSize(QtCore.QSize(75, 0))
-        self.w_Pane.setMaximumSize(QtCore.QSize(75, 16777215))
+        self.w_Pane.setMinimumSize(QtCore.QSize(90, 0))
+        self.w_Pane.setMaximumSize(QtCore.QSize(90, 16777215))
         self.w_Pane.setObjectName("w_Pane")
         self.gridLayout_8 = QtWidgets.QGridLayout(self.w_Pane)
         self.gridLayout_8.setContentsMargins(-1, 0, -1, 0)
@@ -128,105 +128,67 @@ class Ui_MainWindow(object):
         self.gridLayout_8.addItem(spacerItem1, 0, 0, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout_8.addItem(spacerItem2, 10, 0, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_8.addItem(spacerItem3, 4, 1, 1, 1)
         self.pb_rTune = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rTune.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rTune.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rTune.setStyleSheet("background-color: rgb(255, 181, 76);\n"
-"border-style: solid;\n"
-"border-color: rgb(255, 181, 76);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rTune.setStyleSheet("")
         self.pb_rTune.setCheckable(True)
         self.pb_rTune.setObjectName("pb_rTune")
-        self.gridLayout_8.addWidget(self.pb_rTune, 3, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rTune, 3, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rPlot = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rPlot.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rPlot.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rPlot.setStyleSheet("background-color: rgb(167, 255, 151);\n"
-"border-style: solid;\n"
-"border-color: rgb(167, 255, 151);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rPlot.setStyleSheet("")
         self.pb_rPlot.setCheckable(True)
         self.pb_rPlot.setObjectName("pb_rPlot")
-        self.gridLayout_8.addWidget(self.pb_rPlot, 8, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rPlot, 8, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rEigenmode = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rEigenmode.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rEigenmode.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rEigenmode.setStyleSheet("background-color: rgb(216, 74, 255);\n"
-"border-style: solid;\n"
-"border-color: rgb(216, 74, 255);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rEigenmode.setStyleSheet("")
         self.pb_rEigenmode.setCheckable(True)
         self.pb_rEigenmode.setObjectName("pb_rEigenmode")
-        self.gridLayout_8.addWidget(self.pb_rEigenmode, 4, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rEigenmode, 4, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rMultipacting = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rMultipacting.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rMultipacting.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rMultipacting.setStyleSheet("background-color: rgb(200, 200, 200);\n"
-"border-style: solid;\n"
-"border-color: rgb(200, 200, 200);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rMultipacting.setStyleSheet("")
         self.pb_rMultipacting.setObjectName("pb_rMultipacting")
-        self.gridLayout_8.addWidget(self.pb_rMultipacting, 6, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rMultipacting, 6, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rMisc = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rMisc.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rMisc.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rMisc.setStyleSheet("background-color: rgb(255, 235, 188);\n"
-"border-style: solid;\n"
-"border-color: rgb(255, 235, 188);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rMisc.setStyleSheet("")
         self.pb_rMisc.setCheckable(True)
         self.pb_rMisc.setObjectName("pb_rMisc")
-        self.gridLayout_8.addWidget(self.pb_rMisc, 9, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rMisc, 9, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rHome = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rHome.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rHome.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rHome.setStyleSheet("background-color:white;\n"
-"border-style: solid;\n"
-"border-color: black;\n"
-"border-width: 1px;\n"
-"border-radius: 15px;")
+        self.pb_rHome.setStyleSheet("")
         self.pb_rHome.setCheckable(True)
         self.pb_rHome.setObjectName("pb_rHome")
-        self.gridLayout_8.addWidget(self.pb_rHome, 2, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rHome, 2, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rBack = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rBack.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rBack.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rBack.setStyleSheet("background-color: gray;\n"
-"border-style: solid;\n"
-"border-color: gray;\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rBack.setStyleSheet("")
         self.pb_rBack.setObjectName("pb_rBack")
-        self.gridLayout_8.addWidget(self.pb_rBack, 1, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rBack, 1, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rWakefield = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rWakefield.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rWakefield.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rWakefield.setStyleSheet("background-color: rgb(255, 69, 119);\n"
-"border-style: solid;\n"
-"border-color: rgb(255, 69, 119);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rWakefield.setStyleSheet("")
         self.pb_rWakefield.setCheckable(True)
         self.pb_rWakefield.setObjectName("pb_rWakefield")
-        self.gridLayout_8.addWidget(self.pb_rWakefield, 5, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rWakefield, 5, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.pb_rPostprocess = QtWidgets.QPushButton(self.w_Pane)
         self.pb_rPostprocess.setMinimumSize(QtCore.QSize(50, 50))
         self.pb_rPostprocess.setMaximumSize(QtCore.QSize(50, 50))
-        self.pb_rPostprocess.setStyleSheet("background-color: rgb(167, 222, 255);\n"
-"border-style: solid;\n"
-"border-color: rgb(167, 222, 255);\n"
-"border-width: 5px;\n"
-"border-radius: 15px;")
+        self.pb_rPostprocess.setStyleSheet("")
         self.pb_rPostprocess.setCheckable(True)
         self.pb_rPostprocess.setObjectName("pb_rPostprocess")
-        self.gridLayout_8.addWidget(self.pb_rPostprocess, 7, 0, 1, 1)
+        self.gridLayout_8.addWidget(self.pb_rPostprocess, 7, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.gridLayout_4.addWidget(self.w_Pane, 0, 0, 1, 1)
         self.widget = QtWidgets.QWidget(self.widget_8)
         self.widget.setObjectName("widget")
@@ -253,7 +215,7 @@ class Ui_MainWindow(object):
         self.sa_Home.setWidgetResizable(True)
         self.sa_Home.setObjectName("sa_Home")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 891, 1003))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 886, 977))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_5 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.setSpacing(20)
@@ -395,8 +357,8 @@ class Ui_MainWindow(object):
         self.pb_Save_Log = QtWidgets.QPushButton(self.widget_4)
         self.pb_Save_Log.setObjectName("pb_Save_Log")
         self.gridLayout_11.addWidget(self.pb_Save_Log, 0, 1, 1, 1)
-        spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_11.addItem(spacerItem4, 0, 0, 1, 1)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout_11.addItem(spacerItem3, 0, 0, 1, 1)
         self.pb_Clear_Log = QtWidgets.QPushButton(self.widget_4)
         self.pb_Clear_Log.setObjectName("pb_Clear_Log")
         self.gridLayout_11.addWidget(self.pb_Clear_Log, 0, 2, 1, 1)
@@ -405,7 +367,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 361, 919))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 357, 919))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_3.setObjectName("gridLayout_3")
@@ -416,8 +378,8 @@ class Ui_MainWindow(object):
         self.label_2.setAlignment(QtCore.Qt.AlignCenter)
         self.label_2.setObjectName("label_2")
         self.gridLayout_3.addWidget(self.label_2, 0, 0, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_3.addItem(spacerItem5, 2, 0, 1, 1)
+        spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_3.addItem(spacerItem4, 2, 0, 1, 1)
         self.scrollArea.setWidget(self.scrollAreaWidgetContents)
         self.gridLayout_2.addWidget(self.scrollArea, 0, 1, 1, 1)
         self.gridLayout_12.addWidget(self.splitter, 0, 0, 1, 1)
@@ -438,8 +400,8 @@ class Ui_MainWindow(object):
         self.pb_Expand_Collapse_Log.setIconSize(QtCore.QSize(24, 24))
         self.pb_Expand_Collapse_Log.setObjectName("pb_Expand_Collapse_Log")
         self.gridLayout_10.addWidget(self.pb_Expand_Collapse_Log, 0, 0, 1, 1)
-        spacerItem6 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout_10.addItem(spacerItem6, 1, 0, 1, 1)
+        spacerItem5 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout_10.addItem(spacerItem5, 1, 0, 1, 1)
         self.gridLayout_15.addWidget(self.widget_2, 1, 1, 1, 1)
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()

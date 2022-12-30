@@ -44,17 +44,13 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start Guide</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#requirements-and-dependencies">Requirements and Dependencies</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#download">Download</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#configuring-cadh-on-a-local-system">Configuring CaDH  on a Local System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-a-simulation">Run a Simulation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#create-new-project">Create New Project</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#open-project">Open Project</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#eigenmode-analysis">Eigenmode Analysis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#tune">Tune</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#wakefield-analysis">Wakefield Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#requirements-and-dependencies">Requirements and Dependencies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tl-dr">TL;DR</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#download">Download</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuring-cadh-on-a-local-system">Configuring CaDH  on a Local System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-a-simulation">Run a Simulation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#updating">Updating</a></li>
 </ul>
 </li>
@@ -98,30 +94,39 @@ details and examples.</p>
 <div class="contents local topic" id="contents-of-this-page">
 <p class="topic-title">Contents of this Page</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#requirements-and-dependencies" id="id7">Requirements and Dependencies</a></p></li>
-<li><p><a class="reference internal" href="#download" id="id8">Download</a></p></li>
-<li><p><a class="reference internal" href="#configuring-cadh-on-a-local-system" id="id9">Configuring CaDH  on a Local System</a></p></li>
-<li><p><a class="reference internal" href="#run-a-simulation" id="id10">Run a Simulation</a></p>
+<li><p><a class="reference internal" href="#requirements-and-dependencies" id="id7">Requirements and Dependencies</a></p>
 <ul>
-<li><p><a class="reference internal" href="#create-new-project" id="id11">Create New Project</a></p></li>
-<li><p><a class="reference internal" href="#open-project" id="id12">Open Project</a></p></li>
-<li><p><a class="reference internal" href="#eigenmode-analysis" id="id13">Eigenmode Analysis</a></p></li>
-<li><p><a class="reference internal" href="#tune" id="id14">Tune</a></p></li>
-<li><p><a class="reference internal" href="#wakefield-analysis" id="id15">Wakefield Analysis</a></p></li>
+<li><p><a class="reference internal" href="#tl-dr" id="id8">TL;DR</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#updating" id="id16">Updating</a></p></li>
+<li><p><a class="reference internal" href="#download" id="id9">Download</a></p></li>
+<li><p><a class="reference internal" href="#configuring-cadh-on-a-local-system" id="id10">Configuring CaDH  on a Local System</a></p></li>
+<li><p><a class="reference internal" href="#run-a-simulation" id="id11">Run a Simulation</a></p></li>
+<li><p><a class="reference internal" href="#updating" id="id12">Updating</a></p></li>
 </ul>
 </div>
 <section id="requirements-and-dependencies">
 <span id="quick-requirements"></span><h2><a class="toc-backref" href="#id7">Requirements and Dependencies</a><a class="headerlink" href="#requirements-and-dependencies" title="Permalink to this heading"></a></h2>
-<p>The CaDH is a GUI for coordinating different electromagnetic codes.
-It also comes with some scripts to ease most of the common tasks. CaDH uses
-Python 3 as a platform independent scripting environment.
-All Python scripts are wrapped in Bash or PowerShell scripts,
-to hide some platform specifics of Darwin, Linux or Windows.
+<p>The CaDH is a GUI for coordinating different electromagnetic codes. It also comes with some scripts to ease most of the
+common tasks. CaDH uses Python 3 as a platform independent scripting environment. All Python scripts are wrapped in
+Bash or PowerShell scripts, to hide some platform specifics of Darwin, Linux or Windows.
 See <span class="xref std std-ref">USING:Require</span> for further details.</p>
-<p class="rubric">CaDH requires:</p>
+<section id="tl-dr">
+<h3><a class="toc-backref" href="#id8">TL;DR</a><a class="headerlink" href="#tl-dr" title="Permalink to this heading"></a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Dark</span><span class="o">-</span><span class="n">Elektron</span><span class="o">/</span><span class="n">CavityDesignHub</span><span class="o">.</span><span class="n">git</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Navigate to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\SLANS_exe\fonts</span></code> and install all fonts in the folder.</p></li>
+<li><p>Download ABCI version 12.5 code from <a class="reference external" href="https://abci.kek.jp/abci.htm">here</a>.</p></li>
+</ul>
+<div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd </span><span class="p">&lt;</span><span class="n">root</span><span class="p">&gt;/</span><span class="n">CavityDesignHub</span>
+<span class="n">unzip</span> <span class="n">ABCI_MP_12_5</span><span class="p">.</span><span class="n">zip</span>
+<span class="n">robocopy</span> <span class="n">ABCI_MP_12_5</span> <span class="p">&lt;</span><span class="n">root</span><span class="p">&gt;\</span><span class="n">CavityDesignHub</span><span class="p">\</span><span class="n">exe</span><span class="p">\</span><span class="n">ABCI_exe</span> <span class="p">/</span><span class="n">COPYALL</span> <span class="p">/</span><span class="n">E</span>
+</pre></div>
+</div>
+<p class="rubric">CavityDesignHub requires:</p>
 <ul class="simple">
 <li><p>The <strong>Python 3</strong> programming language and runtime.</p></li>
 </ul>
@@ -132,13 +137,12 @@ See <span class="xref std std-ref">USING:Require</span> for further details.</p>
 </ul>
 <p>All dependencies are contained in requirements.txt</p>
 </section>
+</section>
 <section id="download">
-<span id="quick-download"></span><h2><a class="toc-backref" href="#id8">Download</a><a class="headerlink" href="#download" title="Permalink to this heading"></a></h2>
-<p>The CaDH-Library can be downloaded as a <a class="reference external" href="https://github.com/Dark-Elektron/CavityDesignHub/archive/refs/heads/master.zip">zip-file</a>
-(latest ‘master’ branch), cloned with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code> or embedded with
-<code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">submodule</span> <span class="pre">add</span></code> from GitHub. GitHub offers HTTPS and SSH as transfer
+<span id="quick-download"></span><h2><a class="toc-backref" href="#id9">Download</a><a class="headerlink" href="#download" title="Permalink to this heading"></a></h2>
+<p>The CaDH-Library can be cloned with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code>. GitHub offers HTTPS and SSH as transfer
 protocols. See the <span class="xref std std-ref">Download</span> page for further
-details. The installation directory is referred to as <code class="docutils literal notranslate"><span class="pre">CaDHRoot</span></code>.</p>
+details.</p>
 <table class="docutils align-default">
 <colgroup>
 <col style="width: 12%" />
@@ -158,21 +162,40 @@ details. The installation directory is referred to as <code class="docutils lite
 </tr>
 </tbody>
 </table>
+<p>To install the requirements, use</p>
+<div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">-r</span> <span class="n">requirements</span><span class="p">.</span><span class="n">txt</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On PyCharm, <span class="guilabel">Right Click</span> on <code class="docutils literal notranslate"><span class="pre">test_plugin</span></code> and mark directory as <code class="docutils literal notranslate"><span class="pre">Sources</span> <span class="pre">Root</span></code>.
+A change to this will be considered in later releases.</p>
+</div>
 </section>
 <section id="configuring-cadh-on-a-local-system">
-<span id="quick-configuration"></span><h2><a class="toc-backref" href="#id9">Configuring CaDH  on a Local System</a><a class="headerlink" href="#configuring-cadh-on-a-local-system" title="Permalink to this heading"></a></h2>
-<p>CaDH currently makes use of other software for analysis. These software are not
-outrightly open source but could be obtained from the website of the author.</p>
+<span id="quick-configuration"></span><h2><a class="toc-backref" href="#id10">Configuring CaDH  on a Local System</a><a class="headerlink" href="#configuring-cadh-on-a-local-system" title="Permalink to this heading"></a></h2>
+<p>CaDH currently makes use of other software for analysis. These software are not outrightly open source but could be
+obtained from the website of the author.</p>
+<p><strong>SuperLANS</strong></p>
+<p>For eigenmode analysis, SLANS is required. The executable files are included in the cloned repository. There might,
+however, be a problem with the codes because they use fonts that are not included in the standard Windows OS. To install
+the fonts, navigate to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\SLANS_exe\fonts</span></code> and install all fonts in the folder.</p>
+<p><strong>ABCI</strong></p>
 <p>For wakefield analysis, the ABCI code is required.</p>
-<p class="rubric">1. Download ABCI code from <cite>here &lt;https://abci.kek.jp/abci.htm&gt;</cite>.</p>
-<p>ABCI version 12.5 is recommended.</p>
-<p class="rubric">2. Copy files</p>
-<p>Copy the files from the downloaded zip file to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\ABCI_exe</span></code>
-This can be done directly on Windows by copying the files to the specified folder
-or from the command line using</p>
+<ul>
+<li><div class="line-block">
+<div class="line">Download ABCI code from <cite>here &lt;https://abci.kek.jp/abci.htm&gt;</cite>. ABCI version 12.5 is recommended.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Copy files from the downloaded zip file to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\ABCI_exe</span></code>. This can be done directly on</div>
+</div>
+</li>
+</ul>
+<p>Windows by copying the files to the specified folder or from the command line using</p>
 <p><strong>On Windows</strong></p>
 <p>First extract the files from <code class="docutils literal notranslate"><span class="pre">ABCI_MP_12_5.zip</span></code></p>
-<div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd </span><span class="n">CaDHRoot</span>
+<div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd </span><span class="p">&lt;</span><span class="n">root</span><span class="p">&gt;/</span><span class="n">CavityDesignHub</span>
 <span class="n">unzip</span> <span class="n">ABCI_MP_12_5</span><span class="p">.</span><span class="n">zip</span>
 </pre></div>
 </div>
@@ -188,10 +211,8 @@ or from the command line using</p>
 <p>Copy all files in extracted folder to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\ABCI_exe</span></code></p>
 </section>
 <section id="run-a-simulation">
-<span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id10">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
+<span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id11">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
 <p>To run a simulation, we first need to create a project.</p>
-<section id="create-new-project">
-<h3><a class="toc-backref" href="#id11">Create New Project</a><a class="headerlink" href="#create-new-project" title="Permalink to this heading"></a></h3>
 <p>To create a new project,</p>
 <ul class="simple">
 <li><p>Click on <span class="guilabel">New</span> on the menubar.</p></li>
@@ -229,9 +250,6 @@ or from the command line using</p>
 <div class="line-block">
 <div class="line"><br /></div>
 </div>
-</section>
-<section id="open-project">
-<h3><a class="toc-backref" href="#id12">Open Project</a><a class="headerlink" href="#open-project" title="Permalink to this heading"></a></h3>
 <p>To open a project,</p>
 <ul>
 <li><div class="line-block">
@@ -256,9 +274,6 @@ Run the following command from the Windows command line</p>
 <figure class="align-center" id="gui-home-page">
 <img alt="accelerator cavity" src="_images/home_page.png" />
 </figure>
-</section>
-<section id="eigenmode-analysis">
-<h3><a class="toc-backref" href="#id13">Eigenmode Analysis</a><a class="headerlink" href="#eigenmode-analysis" title="Permalink to this heading"></a></h3>
 <p>First,we are going to run an eigenmode analysis.
 * | Click on <span class="guilabel">EIGENMODE ANALYSIS</span>. This takes you to another frame which contains different fields and buttons.</p>
 <p>There are four major categories on the left pane.
@@ -437,9 +452,6 @@ files and corresponding executable files to open them.</p>
 </table>
 <p>The geometry could also be entered manually by filling in the values in the field
 with the corresponding geometric parameter values.</p>
-</section>
-<section id="tune">
-<h3><a class="toc-backref" href="#id14">Tune</a><a class="headerlink" href="#tune" title="Permalink to this heading"></a></h3>
 <p>In the design of accelerator cavities, we usually want the cavity to operate at a particular frequency. We have six
 variables to play around with and one variable is reserved for tuning to the desired frequency. In most cases, the
 equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> is the preferred variable for tuning for mid cell cavities. For the end cells, L is the tune
@@ -479,9 +491,6 @@ Python. They can be viewed with any text editor. The tune results are saved in <
 unusable for the period of the tuning or eigenmode analysis. It is most noticeable when a large number of
 cavities are tuned or analysed in one sweep.</p>
 </div>
-</section>
-<section id="wakefield-analysis">
-<h3><a class="toc-backref" href="#id15">Wakefield Analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
 <p>The process to run wakefield analysis using ABCI is similar to that for eigenmode
 analysis. The geometry is loaded exactly the same.</p>
 <ul>
@@ -504,9 +513,8 @@ This file is writen by Python. The ABCI written files can be viewed using the co
 file in <code class="docutils literal notranslate"><span class="pre">exe/ABCI_exe/TopDrawer</span> <span class="pre">for</span> <span class="pre">Windows</span></code>. You can also set the default application for viewing <code class="docutils literal notranslate"><span class="pre">.top</span></code> files
 as the ABCI executable file.</p>
 </section>
-</section>
 <section id="updating">
-<span id="quick-updating"></span><h2><a class="toc-backref" href="#id16">Updating</a><a class="headerlink" href="#updating" title="Permalink to this heading"></a></h2>
+<span id="quick-updating"></span><h2><a class="toc-backref" href="#id12">Updating</a><a class="headerlink" href="#updating" title="Permalink to this heading"></a></h2>
 <p>The CaDH-Library can be updated by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span></code> <a href="#id3"><span class="problematic" id="id4">:octicon:`report;1em;sd-text-info`</span></a> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> <a href="#id5"><span class="problematic" id="id6">:octicon:`git-merge;1em;sd-text-info`</span></a>.</p>
 <div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd </span><span class="n">CaDHRoot</span>
 <span class="c"># update the local repository</span>
