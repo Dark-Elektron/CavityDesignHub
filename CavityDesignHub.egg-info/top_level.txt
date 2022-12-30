@@ -1,0 +1,11 @@
+analysis_modules
+exe
+frame_controls
+graphics
+manual_run
+node_editor
+qss
+test_plugin
+ui_files
+ui_state_files
+utils

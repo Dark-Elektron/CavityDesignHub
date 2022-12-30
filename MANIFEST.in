@@ -1,1 +1,6 @@
-recursive-include docs *.html *.css *.png *.gif
+graft exe
+graft manual_run
+graft ui_state_files
+graft qss
+include main.py icons_rc.py requirements.txt
+recursive-include docs *.html *.css *.png *.gif *.exe

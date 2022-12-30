@@ -16,7 +16,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1661, 1186)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(":/imgs/images/EMHub.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(":/imgs/images/logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setStyleSheet("*{\n"
 "    font: 16px \"Segoe UI\";\n"
@@ -477,7 +477,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "EMHub"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "CaDH"))
         self.pb_Apply_Theme.setText(_translate("MainWindow", "Apply"))
         self.pb_New_Project.setText(_translate("MainWindow", "New"))
         self.pb_Save_State.setText(_translate("MainWindow", "Save"))

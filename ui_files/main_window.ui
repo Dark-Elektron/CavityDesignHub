@@ -11,11 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>EMHub</string>
+   <string>CaDH</string>
   </property>
   <property name="windowIcon">
    <iconset resource="../qss/icons.qrc">
-    <normaloff>:/imgs/images/EMHub.png</normaloff>:/imgs/images/EMHub.png</iconset>
+    <normaloff>:/imgs/images/logo.png</normaloff>:/imgs/images/logo.png</iconset>
   </property>
   <property name="styleSheet">
    <string notr="true">*{

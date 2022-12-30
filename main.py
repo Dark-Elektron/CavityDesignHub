@@ -51,7 +51,7 @@ from utils.shared_functions import animate_width, f2b_slashes
 # pyuic5 -x ui_files/plot_widget_header.ui -o ui_files/plot_widget_header.py
 # pyuic5 -x ui_files/abci_plot.ui -o ui_files/abci_plot.py
 # pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py
-# pyrcc5 qss/icons.qrc -o icons_rc.py
+# C:\Users\sosoho\anaconda3\envs\PhD\Scripts\pyrcc5 qss/icons.qrc -o icons_rc.py
 # git push -f  https://github.com/Dark-Elektron/CavityDesignHub.git master
 # sphinx-autobuild ./source ./_build/html
 # sphinx-apidoc -o source .. -f

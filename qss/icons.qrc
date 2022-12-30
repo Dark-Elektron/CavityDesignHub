@@ -30,6 +30,7 @@
     <file>icons/PNG/settings.png</file>
   </qresource>
   <qresource prefix="imgs">
+    <file>images/logo.png</file>
     <file>images/stability_condition_wakefield.png</file>
     <file>images/end_same_cell.png</file>
     <file>images/end_cell.png</file>

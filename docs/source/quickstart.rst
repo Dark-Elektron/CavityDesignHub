@@ -104,26 +104,14 @@ Copy all files in extracted folder to ``<root>\CavityDesignHub\exe\ABCI_exe``
 
 .. _QUICK:RunSimulation:
 
+
 Run a Simulation
 ****************
 
-Once setup is complete, the GUI can be launched by navigating to the folder containing the ``main.py`` file.
-Run the following command from the Windows command line
-
-.. code-block:: python
-
-   python3 main.py
-
-In a Python IDE, open and :guilabel:`run` ``main.py`` directly in the IDE. This opens the GUI as shown in the following figure
-
-.. _gui home page:
-
-.. figure:: ../images/home_page.png
-   :alt: accelerator cavity
-   :align: center
+To run a simulation, we first need to create a project.
 
 Create New Project
-^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^
 
 To create a new project,
 
@@ -156,6 +144,32 @@ To create a new project,
    :align: center
    :height: 60px
 |
+
+Open Project
+^^^^^^^^^^^^^^^^
+
+To open a project,
+
+* | Click on :guilabel:`Open` on the menubar.
+
+* | Navigate to the folder containing the project files.
+
+* | Click on :guilabel:`Select Folder`.
+
+Once setup is complete, the GUI can be launched by navigating to the folder containing the ``main.py`` file.
+Run the following command from the Windows command line
+
+.. code-block:: python
+
+   python3 main.py
+
+In a Python IDE, open and :guilabel:`run` ``main.py`` directly in the IDE. This opens the GUI as shown in the following figure
+
+.. _gui home page:
+
+.. figure:: ../images/home_page.png
+   :alt: accelerator cavity
+   :align: center
 
 Eigenmode Analysis
 ^^^^^^^^^^^^^^^^^^
@@ -274,8 +288,8 @@ set to ``none``. The frequency ``FREQ`` is set to the desired frequency.
 
 * | Navigate to ``SimulationData/SLANS/TESLA`` to see results.
 
-The results are written to ``<root>/<project_name>/SimulationData/SLANS/<cavity_name>``
-If no name was given, the results are saved to ``<root>/<project_name>/SimulationData/SLANS/Cavity0. The quantities that
+The results are written to ``SimulationData/SLANS/<cavity_name>``
+If no name was given, the results are saved to ``SimulationData/SLANS/Cavity0``. The quantities that
 we are interested in could be found in ``qois.json``. This file is writen by
 Python. The SLANS written files can be viewed using the corresponding executable
 file in ``<root>/CavityDesignHub/exe/SLANS_exe. The table below shows the
@@ -298,7 +312,6 @@ files and corresponding executable files to open them.
 | :guilabel:`slansre.exe`  | ``<filename>.res`` | For most cases, only this executable is used |
 +--------------------------+--------------------+----------------------------------------------+
 
-
 The geometry could also be entered manually by filling in the values in the field
 with the corresponding geometric parameter values.
 
@@ -306,18 +319,15 @@ with the corresponding geometric parameter values.
 Tune
 ^^^^
 
-In the design of accelerator cavities, we usually want the cavity to operate at a particular
-frequency. We have 6 variables to play around with and one variable is reserved for tuning
-to the desired frequency. In most cases, the equator radius ``Req`` is the preferred
-variable for tuning for mid cell cavities. For the end cells, L is the tune variable.
-There are several other variations to this. For example, in a single or 2 cell cavity,
-L or Req could be selected as the tune variable. For cavities with flat-tops, like
-the Jlab cavities \ref{}, ``l``, the length of the flat top section is the tune
-variable.
+In the design of accelerator cavities, we usually want the cavity to operate at a particular frequency. We have six
+variables to play around with and one variable is reserved for tuning to the desired frequency. In most cases, the
+equator radius ``Req`` is the preferred variable for tuning for mid cell cavities. For the end cells, L is the tune
+variable. There are several other variations to this. For example, in a single or 2 cell cavity, ``L`` or ``Req``
+could be selected as the tune variable. For cavities with flat-tops, like the Jlab cavities \ref{}, ``l``, the length
+of the flat top section is the tune variable.
 
-In the following example, we will tune Req of the mid cell of a TESLA   cavity to
-operate at a fundamental mode frequency of 1300~MHz. The description of the fields are
-given in \ref{}.
+In the following example, we will tune Req of the mid cell of a TESLA cavity to operate at a fundamental mode frequency
+of 1300~MHz. The description of the fields are given in \ref{}.
 
 * | On the homepage of the application, click on :guilabel:`TUNE` or the side button :guilabel:`T`. This will navigate
   | to the `Tune` frame.
@@ -330,13 +340,16 @@ given in \ref{}.
 
 * | Click on the play button to run.
 
+The results are written to ``SimulationData/ABCI/<filename>``. If no name was given, the results are saved to
+``SimulationData/ABCI/Cavity0``. The folder contains the geometric properties and quantities of interest on the tuned
+cavities. They are saved in ``geometric_parameters.json`` and ``qois.json``, respectively. This file is writen by
+Python. They can be viewed with any text editor. The tune results are saved in ``tune_res.json``.
+
 .. note::
 
    The SLANS software creates a lot of pop ups during the running of any simulation so the system would become
-   unusable for the period of the tuning or eigenmode analysis. It is most noticable when a large number of
+   unusable for the period of the tuning or eigenmode analysis. It is most noticeable when a large number of
    cavities are tuned or analysed in one sweep.
-
-
 
 Wakefield Analysis
 ^^^^^^^^^^^^^^^^^^^^
@@ -344,7 +357,7 @@ Wakefield Analysis
 The process to run wakefield analysis using ABCI is similar to that for eigenmode
 analysis. The geometry is loaded exactly the same.
 
-* | Click on :guilabel:`...` to open the file dialog box and select the `.json` file
+* | Click on :guilabel:`...` to open the file dialog box and select the ``.json`` file
   | containing the geometric parameters
 
 * | Click on :guilabel:`Cell Parameters` to set the number of cells, modules, length of the
@@ -353,16 +366,17 @@ analysis. The geometry is loaded exactly the same.
   | and ``Both`` for both longitudinal and transverse wakefield analysis. Select ``Both``.
 
 The results are written to ``SimulationData/ABCI/<filename>``. If no name was given, the results are saved to
-``SimulationData/ABCI/Cavity0. The quantities that we are interested in could be found in ``qois.json``.
+``SimulationData/ABCI/Cavity0``. The quantities of interest are saved to ``qois.json``.
 This file is writen by Python. The ABCI written files can be viewed using the corresponding executable
-file in ``exe/ABCI_exe/TopDrawer for Windows``.
+file in ``exe/ABCI_exe/TopDrawer for Windows``. You can also set the default application for viewing ``.top`` files
+as the ABCI executable file.
 
 .. _QUICK:Updating:
 
 Updating
 ********
 
-The PoC-Library can be updated by using ``git fetch`` :octicon:`report;1em;sd-text-info` and ``git merge`` :octicon:`git-merge;1em;sd-text-info`.
+The CaDH-Library can be updated by using ``git fetch`` :octicon:`report;1em;sd-text-info` and ``git merge`` :octicon:`git-merge;1em;sd-text-info`.
 
 .. code-block:: PowerShell
 

@@ -1,0 +1,101 @@
+Metadata-Version: 2.1
+Name: CavityDesignHub
+Version: 0.1.0
+Summary: A GUI for accelerating cavity design.
+Home-page: https://github.com/Dark-Elektron/CavityDesignHub
+Author: Sosoho-Abasi Udongwo
+Author-email: numurho@gmail.com
+License: MIT License
+        
+        Copyright (c) [2022] [Sosoho-Abasi Udongwo]
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Other Environment
+Classifier: Intended Audience :: Science/Research
+Classifier: Natural Language :: English
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Scientific/Engineering
+Classifier: Topic :: Topic :: Scientific/Engineering :: Physics
+Requires-Python: >=3.0, <4
+License-File: LICENSE
+
+![GitHub all releases](https://img.shields.io/github/downloads/Dark-Elektron/CavityDesignHub/total?logo=Github) 
+![GitHub issues](https://img.shields.io/github/issues-raw/Dark-Elektron/CavityDesignHub?logo=Github) 
+![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Dark-Elektron/CavityDesignHub?logo=Github) 
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Dark-Elektron/CavityDesignHub?logo=Github) 
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/Dark-Elektron/CavityDesignHub?logo=Github)
+
+
+Overview
+=======
+
+This is the introduction file and I have to write somethign at some point in time here
+Now, this software is used to for conducting analysis on accelerating
+cavities. Eigenmode analysis, wakefield analysis, multipacting analysis
+and general post-processing.
+
+Each module performs a different operation. The analysis that are currently
+supported in this module are eigenmode analysis, wakefield analysis,
+and multipacting analysis.
+
+* Eigenmode analysis - SLANS :cite:p:`SLANS`
+* Wakefield analysis - ABCI :cite:p:`ABCI`
+* Multipacting analysis - Multipac
+* Optimisation - Python
+* Uncertainty quantification - Python
+* Postprocessing - Python
+
+Eigenmode Analysis
+***************
+
+Eigenmode analysis is performed using the SLANS electromagnetic code. The code
+also calculates most of the figures of merit. Some postprocessing is, however,
+required to transform them to the form that is used in most papers related
+to accelerating cavities design.
+
+The SUPERLANS code is intended to calculate azimuthal-homogenous modes in
+axissymmetric cavities, periodical structure, and cut-off frequencies in
+long homogenous waveguides :cite:p:`SLANS`. SLANS is written by Sergey
+Belomestnykh and it consists of a set of executable files for differnt
+purposes. The first of these is the ``genmesh.exe`` which reads a geometry
+file ``<filename>.geo`` written using Python and generates the mesh file
+which is a .gem file and some other related files. ``slansre.exe`` is then
+called to run the eigenmode simulation and the results are output to specified folder.
+
+The files output by the SLANS codes are basically three types
+
+* binary files:
+* text files: which can be read by regular text editors
+* meta files
+
+The inputs and output files of the various SLANS codes are given below:
+
+
+
+Wakefield Analysis
+******************
+
+
+
+.. bibliography::
+   :all:

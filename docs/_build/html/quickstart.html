@@ -49,6 +49,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#configuring-cadh-on-a-local-system">Configuring CaDH  on a Local System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-a-simulation">Run a Simulation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#create-new-project">Create New Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#open-project">Open Project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#eigenmode-analysis">Eigenmode Analysis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#tune">Tune</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#wakefield-analysis">Wakefield Analysis</a></li>
@@ -103,12 +104,13 @@ details and examples.</p>
 <li><p><a class="reference internal" href="#run-a-simulation" id="id10">Run a Simulation</a></p>
 <ul>
 <li><p><a class="reference internal" href="#create-new-project" id="id11">Create New Project</a></p></li>
-<li><p><a class="reference internal" href="#eigenmode-analysis" id="id12">Eigenmode Analysis</a></p></li>
-<li><p><a class="reference internal" href="#tune" id="id13">Tune</a></p></li>
-<li><p><a class="reference internal" href="#wakefield-analysis" id="id14">Wakefield Analysis</a></p></li>
+<li><p><a class="reference internal" href="#open-project" id="id12">Open Project</a></p></li>
+<li><p><a class="reference internal" href="#eigenmode-analysis" id="id13">Eigenmode Analysis</a></p></li>
+<li><p><a class="reference internal" href="#tune" id="id14">Tune</a></p></li>
+<li><p><a class="reference internal" href="#wakefield-analysis" id="id15">Wakefield Analysis</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#updating" id="id15">Updating</a></p></li>
+<li><p><a class="reference internal" href="#updating" id="id16">Updating</a></p></li>
 </ul>
 </div>
 <section id="requirements-and-dependencies">
@@ -187,15 +189,7 @@ or from the command line using</p>
 </section>
 <section id="run-a-simulation">
 <span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id10">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
-<p>Once setup is complete, the GUI can be launched by navigating to the folder containing the <code class="docutils literal notranslate"><span class="pre">main.py</span></code> file.
-Run the following command from the Windows command line</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span>
-</pre></div>
-</div>
-<p>In a Python IDE, open and <span class="guilabel">run</span> <code class="docutils literal notranslate"><span class="pre">main.py</span></code> directly in the IDE. This opens the GUI as shown in the following figure</p>
-<figure class="align-center" id="gui-home-page">
-<img alt="accelerator cavity" src="_images/home_page.png" />
-</figure>
+<p>To run a simulation, we first need to create a project.</p>
 <section id="create-new-project">
 <h3><a class="toc-backref" href="#id11">Create New Project</a><a class="headerlink" href="#create-new-project" title="Permalink to this heading"></a></h3>
 <p>To create a new project,</p>
@@ -236,8 +230,35 @@ Run the following command from the Windows command line</p>
 <div class="line"><br /></div>
 </div>
 </section>
+<section id="open-project">
+<h3><a class="toc-backref" href="#id12">Open Project</a><a class="headerlink" href="#open-project" title="Permalink to this heading"></a></h3>
+<p>To open a project,</p>
+<ul>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Open</span> on the menubar.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Navigate to the folder containing the project files.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Select Folder</span>.</div>
+</div>
+</li>
+</ul>
+<p>Once setup is complete, the GUI can be launched by navigating to the folder containing the <code class="docutils literal notranslate"><span class="pre">main.py</span></code> file.
+Run the following command from the Windows command line</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">python3</span> <span class="n">main</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>In a Python IDE, open and <span class="guilabel">run</span> <code class="docutils literal notranslate"><span class="pre">main.py</span></code> directly in the IDE. This opens the GUI as shown in the following figure</p>
+<figure class="align-center" id="gui-home-page">
+<img alt="accelerator cavity" src="_images/home_page.png" />
+</figure>
+</section>
 <section id="eigenmode-analysis">
-<h3><a class="toc-backref" href="#id12">Eigenmode Analysis</a><a class="headerlink" href="#eigenmode-analysis" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id13">Eigenmode Analysis</a><a class="headerlink" href="#eigenmode-analysis" title="Permalink to this heading"></a></h3>
 <p>First,we are going to run an eigenmode analysis.
 * | Click on <span class="guilabel">EIGENMODE ANALYSIS</span>. This takes you to another frame which contains different fields and buttons.</p>
 <p>There are four major categories on the left pane.
@@ -365,13 +386,13 @@ two cavities is</p>
 </div>
 </li>
 <li><div class="line-block">
-<div class="line">Navigate to <span class="guilabel">SimulationData</span>-&gt; <span class="guilabel">SLANS</span>-&gt; <span class="guilabel">TESLA</span> to see results.</div>
+<div class="line">Navigate to <code class="docutils literal notranslate"><span class="pre">SimulationData/SLANS/TESLA</span></code> to see results.</div>
 </div>
 </li>
 </ul>
-<p>The results are written to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/SLANS/&lt;cavity_name&gt;</span></code>
-If no name was given, the results are saved to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/SLANS/Cavity0.</span> <span class="pre">The</span> <span class="pre">quantities</span> <span class="pre">that</span>
-<span class="pre">we</span> <span class="pre">are</span> <span class="pre">interested</span> <span class="pre">in</span> <span class="pre">could</span> <span class="pre">be</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">``qois.json</span></code>. This file is writen by
+<p>The results are written to <code class="docutils literal notranslate"><span class="pre">SimulationData/SLANS/&lt;cavity_name&gt;</span></code>
+If no name was given, the results are saved to <code class="docutils literal notranslate"><span class="pre">SimulationData/SLANS/Cavity0</span></code>. The quantities that
+we are interested in could be found in <code class="docutils literal notranslate"><span class="pre">qois.json</span></code>. This file is writen by
 Python. The SLANS written files can be viewed using the corresponding executable
 file in <a href="#id1"><span class="problematic" id="id2">``</span></a>&lt;root&gt;/CavityDesignHub/exe/SLANS_exe. The table below shows the
 files and corresponding executable files to open them.</p>
@@ -418,18 +439,15 @@ files and corresponding executable files to open them.</p>
 with the corresponding geometric parameter values.</p>
 </section>
 <section id="tune">
-<h3><a class="toc-backref" href="#id13">Tune</a><a class="headerlink" href="#tune" title="Permalink to this heading"></a></h3>
-<p>In the design of accelerator cavities, we usually want the cavity to operate at a particular
-frequency. We have 6 variables to play around with and one variable is reserved for tuning
-to the desired frequency. In most cases, the equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> is the preferred
-variable for tuning for mid cell cavities. For the end cells, L is the tune variable.
-There are several other variations to this. For example, in a single or 2 cell cavity,
-L or Req could be selected as the tune variable. For cavities with flat-tops, like
-the Jlab cavities ref{}, <code class="docutils literal notranslate"><span class="pre">l</span></code>, the length of the flat top section is the tune
-variable.</p>
-<p>In the following example, we will tune Req of the mid cell of a TESLA   cavity to
-operate at a fundamental mode frequency of 1300~MHz. The description of the fields are
-given in ref{}.</p>
+<h3><a class="toc-backref" href="#id14">Tune</a><a class="headerlink" href="#tune" title="Permalink to this heading"></a></h3>
+<p>In the design of accelerator cavities, we usually want the cavity to operate at a particular frequency. We have six
+variables to play around with and one variable is reserved for tuning to the desired frequency. In most cases, the
+equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> is the preferred variable for tuning for mid cell cavities. For the end cells, L is the tune
+variable. There are several other variations to this. For example, in a single or 2 cell cavity, <code class="docutils literal notranslate"><span class="pre">L</span></code> or <code class="docutils literal notranslate"><span class="pre">Req</span></code>
+could be selected as the tune variable. For cavities with flat-tops, like the Jlab cavities ref{}, <code class="docutils literal notranslate"><span class="pre">l</span></code>, the length
+of the flat top section is the tune variable.</p>
+<p>In the following example, we will tune Req of the mid cell of a TESLA cavity to operate at a fundamental mode frequency
+of 1300~MHz. The description of the fields are given in ref{}.</p>
 <ul>
 <li><div class="line-block">
 <div class="line">On the homepage of the application, click on <span class="guilabel">TUNE</span> or the side button <span class="guilabel">T</span>. This will navigate</div>
@@ -451,20 +469,24 @@ given in ref{}.</p>
 </div>
 </li>
 </ul>
+<p>The results are written to <code class="docutils literal notranslate"><span class="pre">SimulationData/ABCI/&lt;filename&gt;</span></code>. If no name was given, the results are saved to
+<code class="docutils literal notranslate"><span class="pre">SimulationData/ABCI/Cavity0</span></code>. The folder contains the geometric properties and quantities of interest on the tuned
+cavities. They are saved in <code class="docutils literal notranslate"><span class="pre">geometric_parameters.json</span></code> and <code class="docutils literal notranslate"><span class="pre">qois.json</span></code>, respectively. This file is writen by
+Python. They can be viewed with any text editor. The tune results are saved in <code class="docutils literal notranslate"><span class="pre">tune_res.json</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The SLANS software creates a lot of pop ups during the running of any simulation so the system would become
-unusable for the period of the tuning or eigenmode analysis. It is most noticable when a large number of
+unusable for the period of the tuning or eigenmode analysis. It is most noticeable when a large number of
 cavities are tuned or analysed in one sweep.</p>
 </div>
 </section>
 <section id="wakefield-analysis">
-<h3><a class="toc-backref" href="#id14">Wakefield Analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id15">Wakefield Analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
 <p>The process to run wakefield analysis using ABCI is similar to that for eigenmode
 analysis. The geometry is loaded exactly the same.</p>
 <ul>
 <li><div class="line-block">
-<div class="line">Click on <span class="guilabel">…</span> to open the file dialog box and select the <cite>.json</cite> file</div>
+<div class="line">Click on <span class="guilabel">…</span> to open the file dialog box and select the <code class="docutils literal notranslate"><span class="pre">.json</span></code> file</div>
 <div class="line">containing the geometric parameters</div>
 </div>
 </li>
@@ -476,17 +498,16 @@ analysis. The geometry is loaded exactly the same.</p>
 </div>
 </li>
 </ul>
-<p>The results are written to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/ABCI/&lt;filename&gt;</span></code>
-If no name was given, the results are saved to
-<code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/&lt;project_name&gt;/SimulationData/ABCI/Cavity0.</span> <span class="pre">The</span> <span class="pre">quantities</span> <span class="pre">that</span>
-<span class="pre">we</span> <span class="pre">are</span> <span class="pre">interested</span> <span class="pre">in</span> <span class="pre">could</span> <span class="pre">be</span> <span class="pre">found</span> <span class="pre">in</span> <span class="pre">``qois.json</span></code>. This file is writen by
-Python. The ABCI written files can be viewed using the corresponding executatble
-file in <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;/CavityDesignHub/exe/ABCI_exe/TopDrawer</span> <span class="pre">for</span> <span class="pre">Windows</span></code>.</p>
+<p>The results are written to <code class="docutils literal notranslate"><span class="pre">SimulationData/ABCI/&lt;filename&gt;</span></code>. If no name was given, the results are saved to
+<code class="docutils literal notranslate"><span class="pre">SimulationData/ABCI/Cavity0</span></code>. The quantities of interest are saved to <code class="docutils literal notranslate"><span class="pre">qois.json</span></code>.
+This file is writen by Python. The ABCI written files can be viewed using the corresponding executable
+file in <code class="docutils literal notranslate"><span class="pre">exe/ABCI_exe/TopDrawer</span> <span class="pre">for</span> <span class="pre">Windows</span></code>. You can also set the default application for viewing <code class="docutils literal notranslate"><span class="pre">.top</span></code> files
+as the ABCI executable file.</p>
 </section>
 </section>
 <section id="updating">
-<span id="quick-updating"></span><h2><a class="toc-backref" href="#id15">Updating</a><a class="headerlink" href="#updating" title="Permalink to this heading"></a></h2>
-<p>The PoC-Library can be updated by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span></code> <a href="#id3"><span class="problematic" id="id4">:octicon:`report;1em;sd-text-info`</span></a> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> <a href="#id5"><span class="problematic" id="id6">:octicon:`git-merge;1em;sd-text-info`</span></a>.</p>
+<span id="quick-updating"></span><h2><a class="toc-backref" href="#id16">Updating</a><a class="headerlink" href="#updating" title="Permalink to this heading"></a></h2>
+<p>The CaDH-Library can be updated by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span></code> <a href="#id3"><span class="problematic" id="id4">:octicon:`report;1em;sd-text-info`</span></a> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> <a href="#id5"><span class="problematic" id="id6">:octicon:`git-merge;1em;sd-text-info`</span></a>.</p>
 <div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd </span><span class="n">CaDHRoot</span>
 <span class="c"># update the local repository</span>
 <span class="n">git</span> <span class="n">fetch</span> <span class="p">-</span><span class="n">-prune</span>
