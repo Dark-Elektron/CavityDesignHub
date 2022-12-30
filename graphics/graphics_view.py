@@ -5,12 +5,12 @@ from PyQt5.QtGui import *
 # from QGraphics.node_graphics_edge import QGraphicsEdge
 # from objects.node_edge import Edge, EDGE_TYPE_BEZIER, EDGE_TYPE_DIRECT
 from graphics.object_line import Line
+
 # from config import *
 
 MODE_NOOP = 1
 MODE_EDGE_DRAG = 2
 MODE_EDGE_CUT = 3
-
 
 EDGE_DRAG_START_THRESHOLD = 10
 
@@ -60,7 +60,7 @@ class GraphicsView(QGraphicsView):
         self.editingFlag = False
 
         self.zoomInFactor = 1.25
-        self.zoomClamp = False
+        self.zoomClamp = True
         self.zoom = 10
         # set initial scale
 
@@ -87,7 +87,7 @@ class GraphicsView(QGraphicsView):
         self.setAcceptDrops(True)
 
         # set initial zoom scale
-        self.scale(0.2, 0.2)
+        self.scale(1, 1)
 
     def update_signal(self):
         self.ui.le_A_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
@@ -244,7 +244,8 @@ class GraphicsView(QGraphicsView):
         if self.mode == MODE_EDGE_DRAG:
             self.setDragMode(QGraphicsView.NoDrag)
             res = self.edgeDragEnd(item)
-            if res: return
+            if res:
+                return
 
         QModifiers = QApplication.keyboardModifiers()
         if item is None:
@@ -278,7 +279,8 @@ class GraphicsView(QGraphicsView):
         if self.mode == MODE_EDGE_DRAG:
             if self.distanceBetweenCLickAndReleaseIsOff(event):
                 res = self.edgeDragEnd(item)
-                if res: return
+                if res:
+                    return
 
         if self.mode == MODE_EDGE_CUT:
             self.cutIntersectingEdges()
@@ -338,15 +340,15 @@ class GraphicsView(QGraphicsView):
             super().keyPressEvent(event)
 
     # def deleteSelected(self):
-        # # try:
-        # for item in self.grScene.selectedItems():
-        #
-        #     if isinstance(item, QGraphicsNode):
-        #         item.node.remove()
-        #     elif isinstance(item, QGraphicsEdge):
-        #         item.edge.remove()
-        # # except:
-        #     print("NODE GRVIEW:: It all starts here")
+    # # try:
+    # for item in self.grScene.selectedItems():
+    #
+    #     if isinstance(item, QGraphicsNode):
+    #         item.node.remove()
+    #     elif isinstance(item, QGraphicsEdge):
+    #         item.edge.remove()
+    # # except:
+    #     print("NODE GRVIEW:: It all starts here")
     def enterEvent(self, event):
         self.IN_VIEWPORT = True
         super().enterEvent(event)
@@ -392,9 +394,12 @@ class GraphicsView(QGraphicsView):
     @staticmethod
     def debug_modifiers(self, event):
         out = "MODS: "
-        if event.modifiers() and Qt.ShiftModifier: out += "SHIFT "
-        elif event.modifiers() and Qt.ControlModifier: out += "CTRL "
-        elif event.modifiers() and Qt.AltModifier: out += "ALT "
+        if event.modifiers() and Qt.ShiftModifier:
+            out += "SHIFT "
+        elif event.modifiers() and Qt.ControlModifier:
+            out += "CTRL "
+        elif event.modifiers() and Qt.AltModifier:
+            out += "ALT "
         return out
 
     @staticmethod
@@ -467,7 +472,7 @@ class GraphicsView(QGraphicsView):
         """This measures if we are far enough from last lmb click scene position"""
         new_lmb_release_scene_pos = self.mapToScene(event.pos())
         dist_scene = new_lmb_release_scene_pos - self.last_lmb_click_scene_pos
-        return (dist_scene.x() * dist_scene.x() + dist_scene.y() * dist_scene.y()) > EDGE_DRAG_START_THRESHOLD**2
+        return (dist_scene.x() * dist_scene.x() + dist_scene.y() * dist_scene.y()) > EDGE_DRAG_START_THRESHOLD ** 2
 
     # def contextMenuEvent(self, event):
     #     try:

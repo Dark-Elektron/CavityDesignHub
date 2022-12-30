@@ -12,7 +12,7 @@ class Scene:
         self.scene_width = 6400
         self.scene_height = 6400
 
-        self.grScene = None # had to initialize
+        self.grScene = None
         self.cavityShape = None
 
         # self.line = Line(main_win)

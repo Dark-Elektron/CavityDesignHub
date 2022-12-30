@@ -15,14 +15,15 @@ DEBUG = False
 
 # THIS IS THE OBJECT THAT HOLDS THE PAINTED LINE AND CAN BE ADDED TO THE SCENE
 
-class Line:
-    def __init__(self, main_win=None, line_type='line', pos=(0, 0), section='top', IC=None, OC=None, BP=None, color="#ffffff"):
-        super().__init__()
-        self.main_win = main_win
-        # self.vtk = self.main_win.grVTK.vtk_widget
-        # self._title = title
 
+class Line:
+    def __init__(self, main_win=None, line_type='line', pos=(0, 0),
+                 section='top', IC=None, OC=None, BP=None, color="#ffffff"):
+        super().__init__()
+
+        self.main_win = main_win
         self.scene = main_win.scene
+        self.grLine = None
 
         self.line_type = line_type
         self.section = section
@@ -32,9 +33,6 @@ class Line:
         self.scene.addLine(self)
         self.setPos(*pos)
         self.scene.grScene.addItem(self.grLine)
-
-    def draw_cavity(self):
-        print()
 
     @property
     def pos(self):

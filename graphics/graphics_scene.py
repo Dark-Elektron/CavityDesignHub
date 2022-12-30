@@ -12,13 +12,13 @@ class GraphicsScene(QGraphicsScene):
         self.scene = scene
 
         # Settings
-        self.gridSize = 100
-        self.gridSquares = 5
+        self.gridSize = 50
+        self.gridSquares = 2
 
         self._color_background = QColor("#ffffff")
         self._color_light = QColor("#2f2f2f")
         self._color_dark = QColor("#292929")
-        self._color_center = QColor("#ffffff")
+        self._color_center = QColor("#000000")
 
         self._pen_light = QPen(self._color_light)
         self._pen_light.setWidth(1)
@@ -48,13 +48,13 @@ class GraphicsScene(QGraphicsScene):
             # Compute all lines to be drawn
             lines_light, lines_dark = [], []
             for x in range(first_left, right, self.gridSize):
-                if (x % (self.gridSize*self.gridSquares)) != 0:
+                if (x % (self.gridSize * self.gridSquares)) != 0:
                     lines_light.append(QLine(x, top, x, bottom))
                 else:
                     lines_dark.append(QLine(x, top, x, bottom))
 
             for y in range(first_top, bottom, self.gridSize):
-                if (y % (self.gridSize*self.gridSquares)) != 0:
+                if (y % (self.gridSize * self.gridSquares)) != 0:
                     lines_light.append(QLine(left, y, right, y))
                 else:
                     lines_dark.append(QLine(left, y, right, y))
@@ -66,10 +66,9 @@ class GraphicsScene(QGraphicsScene):
             painter.setPen(self._pen_dark)
             painter.drawLines(*lines_dark)
 
-            #### DRAW CENTER AXIS
+            # DRAW CENTER AXIS
             lines_center = []
-            # print("hor", first_left, 0, right, 0)
-            # print("ver", 0, first_top, 0, bottom)
+
             center_line_H = QLine(left, 0, right, 0)
             center_line_V = QLine(0, top, 0, bottom)
             lines_center.append(center_line_H)
@@ -77,4 +76,3 @@ class GraphicsScene(QGraphicsScene):
 
             painter.setPen(self._pen_center)
             painter.drawLines(*lines_center)
-

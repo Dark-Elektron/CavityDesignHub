@@ -30,6 +30,7 @@ class Ui_Eigenmode(object):
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.widget_5 = QtWidgets.QWidget(self.splitter)
+        self.widget_5.setMaximumSize(QtCore.QSize(700, 16777215))
         self.widget_5.setObjectName("widget_5")
         self.gridLayout_4 = QtWidgets.QGridLayout(self.widget_5)
         self.gridLayout_4.setContentsMargins(0, 0, 0, 0)
