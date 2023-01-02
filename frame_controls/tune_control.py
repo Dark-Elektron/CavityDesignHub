@@ -1634,7 +1634,7 @@ class OptimizationControl:
 
                 # after removing duplicates, dataframe might change size
                 df = df.loc[df['key'].isin(processed_keys)]
-
+                print(tune_result)
                 # replace Req with tuned Req
                 df[['Req', 'L', 'alpha_i', 'alpha_o', 'freq']] = tune_result
 

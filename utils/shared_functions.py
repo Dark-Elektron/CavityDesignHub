@@ -1,8 +1,6 @@
 import ast
 import json
 import os
-
-import quadpy
 from PyQt5.QtWidgets import QFileDialog
 from icecream import ic
 from scipy.optimize import fsolve
@@ -345,7 +343,7 @@ def quad_stroud3(rdim, degree):
 def quad_stroud5(rdim, degree):
     # data for Stroud-5 quadrature in [0,1]**rdim
     # nodes and weights
-    o, nodestr, weights = quadpy.cn.stroud_cn_5_2(rdim)
+    # o, nodestr, weights = quadpy.cn.stroud_cn_5_2(rdim)
     nodes = 0.5 * nodestr + 0.5
     weights = weights / (2 ** rdim)
     dummy, nnodes = np.size(nodes)
@@ -797,5 +795,5 @@ if __name__ == '__main__':
     ic(weights)
     ic(nodes)
 
-    scheme = quadpy.cn.stroud_cn_5_2(5)
-    ic(scheme.points)
+    # scheme = quadpy.cn.stroud_cn_5_2(5)
+    # ic(scheme.points)

@@ -2309,6 +2309,105 @@ class Cavity:
         return fr"{self.name}({self.n_cells} [], {self.op_freq * 1e-6} MHz, {self.e} [], {self.b} [mT/MV/m])"
 
 
+class Machine:
+    def __init__(self, name, rho):
+        # machine properties
+        self.name = name
+        self.rho = rho
+
+        self.E = []
+        self.bunch_length = []
+        self.I0 = []
+        self.op_points = []
+
+    def add_op_points(self, op_point):
+        self.op_points.append(op_point)
+
+    def remove_op_points(self, op_point):
+        self.op_points.remove(op_point)
+
+    def analyse_machine(self):
+        pass
+
+    def compare_cavities_for_op_point(self, op_point):
+        pass
+
+
+class OperatingPoint:
+    def __init__(self, op_file_path):
+
+        if isinstance(op_file_path, list):
+            name, op_parameters = self.load_from_operating_points(op_file_path)
+        else:
+            name, op_parameters = self.load_operating_point(op_file_path)
+
+        self.name = name
+        self.E = op_parameters["E [GeV]"]
+        self.I0 = op_parameters["I0 [mA]"]
+        self.vrf = op_parameters["V [GV]"]*1e9
+        self.op_field = op_parameters["Eacc [MV/m]"]*1e6
+        self.op_temp = op_parameters["T [K]"]
+        self.sigma_sr = op_parameters["sigma_SR [mm]"]
+        self.sigma_bs = op_parameters["sigma_BS [mm]"]
+        self.cavities = []
+
+    def analyse(self):
+        pass
+
+    @staticmethod
+    def load_from_operating_points(op_file_path):
+        with open(fr"{op_file_path[0]}") as json_file:
+            op_parameters = json.load(json_file)
+
+        return op_file_path[1], op_parameters[op_file_path[1]]
+
+    @staticmethod
+    def load_operating_point(op_file_path):
+        with open(fr"{op_file_path}") as json_file:
+            op_parameters = json.load(json_file)
+
+        return op_parameters.key(), op_parameters
+
+    def set_sigma_sr(self, sigma):
+        self.sigma_bs = sigma
+
+    def get_sigma_sr(self):
+        return self.sigma_sr
+
+    def set_sigma_bs(self, sigma):
+        self.sigma_bs = sigma
+
+    def get_sigma_bs(self):
+        return self.sigma_bs
+
+    def set_I0(self, I0):
+        self.I0 = I0
+
+    def get_I0(self):
+        return self.I0
+
+    def set_energy(self, e):
+        self.E = e
+
+    def get_energy(self):
+        return self.E
+
+    def add_cavities(self, cavities):
+        if isinstance(cavities, list):
+            self.cavities.extend(cavities)
+        else:
+            self.cavities.append(cavities)
+
+    def set_beam_properties(self):
+        pass
+
+
+op_folder = fr"D:\Dropbox\CavityDesignHub\Cavity800\OperatingPoints\fcc.json"
+Z_op_point = OperatingPoint([op_folder, "Z"])
+W_op_point = OperatingPoint([op_folder, "W"])
+H_op_point = OperatingPoint([op_folder, "H"])
+ttbar_op_point = OperatingPoint([op_folder, "ttbar"])
+
 #
 # def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):
 #     # check if entries are of same length

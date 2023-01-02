@@ -614,78 +614,6 @@ import pandas as pd
 # for index, row in df.iterrows():
 #     print(row.tolist())
 
-def stroud(p):
-    # Stroud-3 method
-    #
-    # Input parameters:
-    #  p   number of dimensions
-    # Output parameters:
-    #  nodes   nodes of quadrature rule in [0,1]^p (column-wise)
-    #
-
-    nodes = np.zeros((p, 2 * p))
-    coeff = np.pi / p
-    fac = np.sqrt(2 / 3)
-
-    for i in range(2 * p):
-        for r in range(int(np.floor(0.5 * p))):
-            k = 2 * r
-            nodes[k, i] = fac * np.cos((k+1) * (i+1) * coeff)
-            nodes[k + 1, i] = fac * np.sin((k+1) * (i+1) * coeff)
-
-        if 0.5 * p != np.floor(0.5 * p):
-            nodes[-1, i] = ((-1) ** (i+1)) / np.sqrt(3)
-
-    # transform nodes from [-1,+1]^p to [0,1]^p
-    nodes = 0.5 * nodes + 0.5
-
-    return nodes
-
-
-def quad_stroud3(rdim, degree):
-    # data for Stroud-3 quadrature in [0,1]^k
-    # nodes and weights
-    nodes = stroud(rdim)
-    nodestr = 2. * nodes - 1.
-    weights = (1 / (2 * rdim)) * np.ones((2 * rdim, 1))
-    print("weights: ", weights)
-    print("nodes: ", nodes)
-
-    # evaluation of Legendre polynomials
-    bpoly = np.zeros((degree + 1, rdim, 2 * rdim))
-    for l in range(rdim):
-        for j in range(2 * rdim):
-            bpoly[0, l, j] = 1
-            bpoly[1, l, j] = nodestr[l, j]
-            for i in range(1, degree):
-                bpoly[i + 1, l, j] = ((2 * (i+1) - 1) * nodestr[l, j] * bpoly[i, l, j] - i * bpoly[i - 1, l, j]) / (i+1)
-
-    # standardisation of Legendre polynomials
-    for i in range(1, degree + 1):
-        bpoly[i, :, :] = bpoly[i, :, :] * np.sqrt(2 * (i+1) - 1)
-
-    return nodes, weights, bpoly
-
-
-def weighted_mean_obj(tab_var, weights):
-    rows_sims_no, cols = np.shape(tab_var)
-    no_weights, dummy = np.shape(weights)  # z funckji quadr_stroud wekt columnowy
-
-    if rows_sims_no == no_weights:
-        expe = np.zeros((cols, 1))
-        outvar = np.zeros((cols, 1))
-        for i in range(cols):
-            expe[i, 0] = np.dot(tab_var[:, i], weights)
-            outvar[i, 0] = np.dot(tab_var[:, i]**2, weights)
-
-        stdDev = np.sqrt(outvar - expe**2)
-    else:
-        expe = 0
-        stdDev = 0
-        ic('Cols_sims_no!=No_weights')
-
-    return expe, stdDev
-
 #
 # def uq():
 #     p_true = np.array([1, 2, 3, 4, 5])
@@ -1237,7 +1165,57 @@ def func(x):
 # monte_carlo()
 
 
-def area_circ(r):
-    return np.pi*r**2
 
-area_circ(3)
+
+def ellipse_tangent(z, *data):
+    """
+    Calculates the coordinates of the tangent line that connects two ellipses
+
+    .. _ellipse tangent:
+
+    .. figure:: ../images/ellipse_tangent.png
+       :alt: ellipse tangent
+       :align: center
+       :width: 200px
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+
+    Returns
+    -------
+    list of four non-linear functions
+
+    Note
+    -----
+    The four returned non-linear functions are
+
+    .. math::
+
+       f_1 = \\frac{A^2b^2(x_1 - h)(y_2-q)}{a^2B^2(x_2-p)(y_1-k)} - 1
+
+       f_2 = \\frac{(x_1 - h)^2}{a^2} + \\frac{(y_1-k)^2}{b^2} - 1
+
+       f_3 = \\frac{(x_2 - p)^2}{A^2} + \\frac{(y_2-q)^2}{B^2} - 1
+
+       f_4 = \\frac{-b^2(x_1-x_2)(x_1-h)}{a^2(y_1-y_2)(y_1-k)} - 1
+    """
+
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    for i in range(10):
+        x1 = h + (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))/(A ** 2 * b ** 2 * (y2 - q))
+        y1 = k + np.sqrt(b ** 2 * (1 - (x1 - h) ** 2 / a ** 2))
+        x2 = x1 - (a ** 2 * (y1 - y2) * (y1 - k))/(-b ** 2 * (x1 - h))
+        y2 = q + np.sqrt(B ** 2 * (1 - (x2 - p) ** 2 / A ** 2))
+
+    return x1, y1, x2, y2
