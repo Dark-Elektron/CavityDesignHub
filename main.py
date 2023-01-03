@@ -9,15 +9,11 @@ import shutil
 import sys
 # import pyautogui
 from json import JSONDecodeError
-
-from PyQt5 import QtCore
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from ui_files.main_window import Ui_MainWindow
-from ui_files.run_tune import Ui_w_Tune
-from ui_files.wakefield import Ui_Wakefield
 from utils.file_reader import FileReader
 from frame_controls.multipacting_control import MultipactingControl
 from frame_controls.misc import MiscControl
@@ -26,7 +22,6 @@ from frame_controls.eigenmode import EigenmodeControl
 from frame_controls.postprocess import PostprocessControl
 from frame_controls.tune_control import TuneControl, OptimizationControl
 from frame_controls.wakefield_control import WakefieldControl
-from node_editor.node_editor_widget import NodeEditorWidget
 import qtvscodestyle as qtvsc
 from utils.shared_functions import animate_width, f2b_slashes
 
@@ -390,9 +385,11 @@ class MainWindow:
                 # create project structure in folders
                 project_dir_structure = {f'{project_name}':
                                              {'Cavities': None,
+                                              'OperatingPoints': None,
                                               'SimulationData': {
                                                   'SLANS': None,
-                                                  'ABCI': None
+                                                  'ABCI': None,
+                                                  'CavitiesAnalysis': None
                                               },
                                               'PostprocessingData': {
                                                   'Plots': None,
@@ -448,7 +445,7 @@ class MainWindow:
             try:
                 # check if it's a valid project folder
                 sub_dirs = [a for a in os.listdir(project_dir) if os.path.isdir(os.path.join(project_dir, a))]
-                compare_dirs = ['Cavities', 'PostprocessingData', 'SimulationData']
+                compare_dirs = ['Cavities', 'OperatingPoints', 'PostprocessingData', 'SimulationData']
 
                 if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
                     self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]

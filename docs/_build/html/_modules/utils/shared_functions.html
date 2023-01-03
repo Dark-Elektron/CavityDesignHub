@@ -77,8 +77,6 @@
 <span></span><span class="kn">import</span> <span class="nn">ast</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
-
-<span class="kn">import</span> <span class="nn">quadpy</span>
 <span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QFileDialog</span>
 <span class="kn">from</span> <span class="nn">icecream</span> <span class="kn">import</span> <span class="n">ic</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
@@ -421,7 +419,7 @@
 <div class="viewcode-block" id="quad_stroud5"><a class="viewcode-back" href="../../utils.html#utils.shared_functions.quad_stroud5">[docs]</a><span class="k">def</span> <span class="nf">quad_stroud5</span><span class="p">(</span><span class="n">rdim</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
     <span class="c1"># data for Stroud-5 quadrature in [0,1]**rdim</span>
     <span class="c1"># nodes and weights</span>
-    <span class="n">o</span><span class="p">,</span> <span class="n">nodestr</span><span class="p">,</span> <span class="n">weights</span> <span class="o">=</span> <span class="n">quadpy</span><span class="o">.</span><span class="n">cn</span><span class="o">.</span><span class="n">stroud_cn_5_2</span><span class="p">(</span><span class="n">rdim</span><span class="p">)</span>
+    <span class="c1"># o, nodestr, weights = quadpy.cn.stroud_cn_5_2(rdim)</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">nodestr</span> <span class="o">+</span> <span class="mf">0.5</span>
     <span class="n">weights</span> <span class="o">=</span> <span class="n">weights</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">**</span> <span class="n">rdim</span><span class="p">)</span>
     <span class="n">dummy</span><span class="p">,</span> <span class="n">nnodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
@@ -873,8 +871,8 @@
     <span class="n">ic</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
     <span class="n">ic</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
 
-    <span class="n">scheme</span> <span class="o">=</span> <span class="n">quadpy</span><span class="o">.</span><span class="n">cn</span><span class="o">.</span><span class="n">stroud_cn_5_2</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-    <span class="n">ic</span><span class="p">(</span><span class="n">scheme</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+    <span class="c1"># scheme = quadpy.cn.stroud_cn_5_2(5)</span>
+    <span class="c1"># ic(scheme.points)</span>
 </pre></div>
 
            </div>

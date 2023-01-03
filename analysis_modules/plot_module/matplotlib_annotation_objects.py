@@ -219,6 +219,137 @@ class DraggableText:
         self.text.remove()
 
 
+class DraggableSquare:
+    lock = None  # only one can be animated at a time
+
+    def __init__(self, text):
+        self.text = text
+        self.press = None
+        self.background = None
+        self.prev_text = None
+
+        self.text.set_picker(True)
+
+        self.x = 0.5
+        self.y = 0.5
+
+        self.cid_press = None
+        self.cid_release = None
+        self.cid_motion = None
+
+    def connect(self):
+        """connect to all the events we need"""
+        self.cid_press = self.text.figure.canvas.mpl_connect('button_press_event', self.on_press)
+        self.cid_release = self.text.figure.canvas.mpl_connect('button_release_event', self.on_release)
+        self.cid_motion = self.text.figure.canvas.mpl_connect('motion_notify_event', self.on_motion)
+
+    def on_press(self, event):
+        """on button press we will see if the mouse is over us and store some data"""
+        if event.inaxes != self.text.axes:
+            return
+        if DraggableText.lock is not None:
+            return
+
+        contains, attrd = self.text.contains(event)
+
+        if not contains:
+            return
+
+        x0, y0 = self.text.xy
+
+        # save location details at press
+        self.press = x0, y0, event.xdata, event.ydata
+        DraggableText.lock = self
+
+        # draw everything but the selected text and store the pixel buffer
+        canvas = self.text.figure.canvas
+        axes = self.text.axes
+        self.text.set_animated(True)
+        canvas.draw()
+        self.background = canvas.copy_from_bbox(self.text.axes.bbox)
+
+        # now redraw just the Text
+        axes.draw_artist(self.text)
+
+        # and blit just the redrawn area
+        canvas.blit(axes.bbox)
+
+    def on_motion(self, event):
+        """on motion, we will move the text if the mouse is over us"""
+        if DraggableText.lock is not self:
+            return
+        if event.inaxes != self.text.axes:
+            return
+
+        # get text canvas and axes
+        fig = self.text.figure
+        canvas = self.text.figure.canvas
+        axes = self.text.axes
+
+        if self.text.xycoords == 'data':
+            # get size of figure
+            bbox = fig.get_window_extent().transformed(fig.dpi_scale_trans.inverted())
+            width, height = bbox.width * fig.dpi, bbox.height * fig.dpi
+
+            # calculate relative position as fraction of figure
+            self.x = event.x  # / width
+            self.y = event.y  # / height
+
+            # self.x, self.y = fig.transFigure.inversed().transform()
+            self.x, self.y = axes.transData.inverted().transform((self.x, self.y))
+            self.text.set_position((self.x, self.y))
+        elif self.text.xycoords == 'axes fraction':
+
+            # calculate relative position as fraction of figure
+            self.x = event.x  # / width
+            self.y = event.y  # / height
+
+            self.x, self.y = axes.transAxes.inverted().transform((self.x, self.y))
+            self.text.set_position((self.x, self.y))
+        elif self.text.xycoords == 'figure':
+
+            # calculate relative position as fraction of figure
+            self.x = event.x  # / width
+            self.y = event.y  # / height
+
+            self.x, self.y = fig.transFigure.inverted().transform((self.x, self.y))
+            self.text.set_position((self.x, self.y))
+
+        # restore the background region
+        canvas.restore_region(self.background)
+
+        # redraw just the current text
+        axes.draw_artist(self.text)
+
+        # blit just the redrawn area
+        canvas.blit(axes.bbox)
+
+    def on_release(self, event):
+        """on release, we reset the press data"""
+        if DraggableText.lock is not self:
+            return
+
+        # reset press data
+        self.press = None
+        DraggableText.lock = None
+
+        # turn off the text animation property and reset the background
+        self.text.set_animated(False)
+        self.background = None
+
+        # redraw the full figure
+        self.text.figure.canvas.draw()
+
+    def disconnect(self):
+        """disconnect all the stored connection ids"""
+        self.text.figure.canvas.mpl_disconnect(self.cid_press)
+        self.text.figure.canvas.mpl_disconnect(self.cid_release)
+        self.text.figure.canvas.mpl_disconnect(self.cid_motion)
+
+    def remove(self):
+        self.text.remove()
+
+
 class DraggableArrow:
     lock = None  # only one can be animated at a time
 

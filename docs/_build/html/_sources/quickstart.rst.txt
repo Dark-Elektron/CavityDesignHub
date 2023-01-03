@@ -302,6 +302,10 @@ set to ``none``. The frequency ``FREQ`` is set to the desired frequency.
 * | Once loaded, click on :guilabel:`Select Shape` dropdown. You should see the ``<cavity_name>`` in the dropdown.
   | In our case, ``<cavity_name>`` is ``TESLA``. Select it.
 
+.. note::
+
+   If the `json` file contains more than one cavity's geometric parameters, they will all be available for selection.
+
 * | Click on :guilabel:`Cell Parameters` to expand the widget if not already expanded. Set the fields
   | ``No. of Cells`` and ``No. of Modules`` to ``1``.
 
@@ -399,27 +403,76 @@ This file is writen by Python. The ABCI written files can be viewed using the co
 file in ``exe/ABCI_exe/TopDrawer for Windows``. You can also set the default application for viewing ``.top`` files
 as the ABCI executable file.
 
-.. _QUICK:Updating:
 
-Updating
+Plotting
 ********
 
-The CaDH-Library can be updated by using ``git fetch`` :octicon:`report;1em;sd-text-info` and ``git merge`` :octicon:`git-merge;1em;sd-text-info`.
+The plot module could be used to easily plot the output from the ABCI code. It is also capable of plotting traditional
+files like Excel files (``.xlsx``) and text files (``.txt``). SLANS files output plotting capabilities are not yet
+available.
 
-.. code-block:: PowerShell
+Plot ABCI results
+^^^^^^^^^^^^^^^^
 
-   cd CaDHRoot
-   # update the local repository
-   git fetch --prune
-   # review the commit tree and messages, using the 'treea' alias
-   git tree
-   # if all changes are OK, do a fast-forward merge
-   git merge
+* | Navigate to the plot frame from the home page by clicking on :guilabel:`Plot` or :guilabel:`P` on the side pane.
+
+* | Change the :guilabel:`Code` to ``ABCI`` if it is not the current text.
+
+* | Click on :guilabel:`...` on the column labeled :guilabel:`File/Folder`. This brings up a folder selection pop-up.
+  | Select the ``ABCI`` folder. This should be the default folder when the button is clicked.
+  | If not, navigate to the folder or to any other folder containing ABCI output folder directory.
+
+* | Click on :guilabel:`Select Folder` to select folder.
+
+* | Click on :guilabel:`v` on the column labeled :guilabel:`ID`. This lists all the ABCI directories in the selected
+  | directory. Select the results to be plotted. More than one folder can be selected.
+
+* | Under the Request column, several results could be selected. The selection differs depending on the value of the
+  | selection in the column :guilabel:`Polarisation`.
+
+* | A line plot or scatter plot could be made depending on the selection in the column named :guilabel:`Axis` and
+  | :guilabel:`Type`. Each plot can also be scaled by changing the values of :guilabel:`ScaleX` and :guilabel:`ScaleY`.
+
+* | Multiple plots could be added by clicking on :guilabel:`+` at the bottom left of the table or
+  | :guilabel:`right-clicking` and selecting :guilabel:`Add Row`.
+
+* | To change the axes labels and font size, fill out the values in the :guilabel:`x-label` and :guilabel:`y-label`
+  | fields. The legend title can also be changed by filling out the values in :guilabel:`Legend labels`. In case of
+  | multiple plots, the legend labels should be separated by double percentage signs ``%%``.
 
 
-.. seealso::
-   :doc:`Running one or more testbenches </UsingPoC/Simulation>`
-      The installation can be checked by running one or more of PoC's testbenches.
-   :doc:`Running one or more netlist generation flows </UsingPoC/Synthesis>`
-      The installation can also be checked by running one or more of PoC's
-      synthesis flows.
+Plot Excel Files
+^^^^^^^^^^^^^^^^
+
+* | Navigate to the plot frame from the home page by clicking on :guilabel:`Plot` or :guilabel:`P` on the side pane.
+
+* | Change the :guilabel:`Code` to ``Others`` if it is not the current text.
+
+* | Click on :guilabel:`...` on the column labeled :guilabel:`File/Folder`. This brings up a file selection pop-up.
+  | Navigate to the Excel file and select it by double clicking or by clicking on :guilabel:`Select File`.
+  | This loads the Excel file.
+
+* | Click on :guilabel:`ID` to select the sheet of interest.
+
+* | In the column :guilabel:`Request`, two fields are available. The first is for the variable to plot on the
+  | ``x-axis`` and the second for the ``y-axis``. Click on :guilabel:`v` on either column and select the variables
+  | to be plotted.
+
+* | Once this is entered, click on :guilabel:`Apply` to apply changes.
+
+.. note::
+   Multiple variables could be selected to be plotted on the ``y-axis`` but only one variable can be plotted on the
+   `x-axis`.
+
+* | As with the ABCI plots, a line plot or scatter plot could be made depending on the selection in the column
+  | named :guilabel:`Axis` and :guilabel:`Type`. Each plot can also be scaled by changing the values of
+  | :guilabel:`ScaleX` and :guilabel:`ScaleY`.
+
+* | Multiple plots could be added by clicking on :guilabel:`+` at the bottom left of the table or
+  | :guilabel:`right-clicking` and selecting :guilabel:`Add Row`.
+
+* | To change the axes labels and font size, fill out the values in the :guilabel:`x-label` and :guilabel:`y-label`
+  | fields. The legend title can also be changed by filling out the values in :guilabel:`Legend labels`. In case of
+  | multiple plots, the legend labels should be separated by double percentage signs ``%%``.
+
+* | Once this is entered, click on :guilabel:`Apply` to apply changes.

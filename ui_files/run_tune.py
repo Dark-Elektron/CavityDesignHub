@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_w_Tune(object):
     def setupUi(self, w_Tune):
         w_Tune.setObjectName("w_Tune")
-        w_Tune.resize(1678, 1042)
+        w_Tune.resize(1678, 1263)
         w_Tune.setStyleSheet("\n"
 "\n"
 "*{\n"
@@ -26,6 +26,7 @@ class Ui_w_Tune(object):
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
         self.splitter.setObjectName("splitter")
         self.widget = QtWidgets.QWidget(self.splitter)
+        self.widget.setMinimumSize(QtCore.QSize(500, 0))
         self.widget.setStyleSheet("")
         self.widget.setObjectName("widget")
         self.gridLayout_7 = QtWidgets.QGridLayout(self.widget)
@@ -43,7 +44,7 @@ class Ui_w_Tune(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 730, 1866))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 487, 1839))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_14 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -629,7 +630,7 @@ class Ui_w_Tune(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 728, 1488))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 557, 1488))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_3.setObjectName("gridLayout_3")

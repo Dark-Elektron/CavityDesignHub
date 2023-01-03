@@ -41,6 +41,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
@@ -291,6 +292,137 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid_motion</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DraggableText.remove"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableText.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="DraggableSquare"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableSquare">[docs]</a><span class="k">class</span> <span class="nc">DraggableSquare</span><span class="p">:</span>
+    <span class="n">lock</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># only one can be animated at a time</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prev_text</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">set_picker</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="mf">0.5</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="mf">0.5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_press</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_release</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_motion</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="DraggableSquare.connect"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableSquare.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;connect to all the events we need&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_press</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_press</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_release</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_release_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_release</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_motion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_motion</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DraggableSquare.on_press"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableSquare.on_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;on button press we will see if the mouse is over us and store some data&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">DraggableText</span><span class="o">.</span><span class="n">lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">contains</span><span class="p">,</span> <span class="n">attrd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">contains</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">xy</span>
+
+        <span class="c1"># save location details at press</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span>
+        <span class="n">DraggableText</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="c1"># draw everything but the selected text and store the pixel buffer</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">axes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">set_animated</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="n">canvas</span><span class="o">.</span><span class="n">copy_from_bbox</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">bbox</span><span class="p">)</span>
+
+        <span class="c1"># now redraw just the Text</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">draw_artist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># and blit just the redrawn area</span>
+        <span class="n">canvas</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">bbox</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DraggableSquare.on_motion"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableSquare.on_motion">[docs]</a>    <span class="k">def</span> <span class="nf">on_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;on motion, we will move the text if the mouse is over us&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">DraggableText</span><span class="o">.</span><span class="n">lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">axes</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># get text canvas and axes</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span>
+        <span class="n">canvas</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">axes</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">xycoords</span> <span class="o">==</span> <span class="s1">&#39;data&#39;</span><span class="p">:</span>
+            <span class="c1"># get size of figure</span>
+            <span class="n">bbox</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_window_extent</span><span class="p">()</span><span class="o">.</span><span class="n">transformed</span><span class="p">(</span><span class="n">fig</span><span class="o">.</span><span class="n">dpi_scale_trans</span><span class="o">.</span><span class="n">inverted</span><span class="p">())</span>
+            <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">bbox</span><span class="o">.</span><span class="n">width</span> <span class="o">*</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">,</span> <span class="n">bbox</span><span class="o">.</span><span class="n">height</span> <span class="o">*</span> <span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+            <span class="c1"># calculate relative position as fraction of figure</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">x</span>  <span class="c1"># / width</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span>  <span class="c1"># / height</span>
+
+            <span class="c1"># self.x, self.y = fig.transFigure.inversed().transform()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">xycoords</span> <span class="o">==</span> <span class="s1">&#39;axes fraction&#39;</span><span class="p">:</span>
+
+            <span class="c1"># calculate relative position as fraction of figure</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">x</span>  <span class="c1"># / width</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span>  <span class="c1"># / height</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">transAxes</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">xycoords</span> <span class="o">==</span> <span class="s1">&#39;figure&#39;</span><span class="p">:</span>
+
+            <span class="c1"># calculate relative position as fraction of figure</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">x</span>  <span class="c1"># / width</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span>  <span class="c1"># / height</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">transFigure</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">set_position</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+
+        <span class="c1"># restore the background region</span>
+        <span class="n">canvas</span><span class="o">.</span><span class="n">restore_region</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">background</span><span class="p">)</span>
+
+        <span class="c1"># redraw just the current text</span>
+        <span class="n">axes</span><span class="o">.</span><span class="n">draw_artist</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="c1"># blit just the redrawn area</span>
+        <span class="n">canvas</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">axes</span><span class="o">.</span><span class="n">bbox</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DraggableSquare.on_release"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableSquare.on_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;on release, we reset the press data&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">DraggableText</span><span class="o">.</span><span class="n">lock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># reset press data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">DraggableText</span><span class="o">.</span><span class="n">lock</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># turn off the text animation property and reset the background</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">set_animated</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">background</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># redraw the full figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DraggableSquare.disconnect"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableSquare.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;disconnect all the stored connection ids&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid_press</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid_release</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid_motion</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DraggableSquare.remove"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.matplotlib_annotation_objects.DraggableSquare.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span></div></div>
 
 

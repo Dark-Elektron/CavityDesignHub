@@ -1,5 +1,7 @@
 import json
 import os.path
+
+import matplotlib
 import scipy.io as spio
 import scipy.interpolate as sci
 import mplcursors
@@ -561,7 +563,10 @@ class Cavities:
             # ic(cryomodules_len_list)
             axs[0].plot(n_cav_per_cryomodule, cryomodules_len_list, marker='o', mec='k', label=f'{cav.name}')
             axs[1].plot(n_cav_per_cryomodule, n_cryomodules_list, marker='o', mec='k', label=f'{cav.name}')
-
+            ic(n_cav_per_cryomodule)
+            ic(cryomodules_len_list, n_cryomodules_list)
+            ic(n_cav_per_cryomodule)
+            ic()
         axs[0].set_xlabel("$N_\mathrm{cav}$/mod.")
         axs[0].set_ylabel("$L_\mathrm{cryo}$ [m]")
         axs[1].set_xlabel("$N_\mathrm{cav}$/mod.")
@@ -1305,7 +1310,7 @@ class Cavities:
 
         QL_0 = np.linspace(1e4, 1e9, 1000000)
 
-        xy_list = [(0.7, 0.65), (0.7, 0.3), (0.6, 0.6), (0.77, 0.25)]
+        xy_list = [(0.15, 0.13), (0.1, 0.16), (0.1, 0.19), (0.1, 0.21)]
         for i in range(len(E_acc)):
             f1_2 = f0[i] / (2 * QL_0)  # 380.6
             ic(R_Q[i], v_cav[i], Vrf[i])
@@ -1325,32 +1330,24 @@ class Cavities:
             # print(E_acc[i])
             # p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (
             #         l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo
-
-            if "*" in labels[i]:
-                l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4,
-                            ls='--')
-            else:
-                l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4)
-
-            # add annotations
-            ic(l_active)
             txt = f"{labels[i]}, " \
-                  f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz \n {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
-                  f"cav/beam" + "\n V$_\mathrm{RF}\mathrm{/beam}$ =" \
-                  + f"{round(Vrf[i] * 1e-9, 2)} GV " \
-                  + "\n V$_\mathrm{cav}$ =" \
-                  + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
-                    "P$_{\mathrm{in}}/\mathrm{beam}$ = " \
-                  + f"{round(min(pin) * 1e-3, 1)} kW \n" \
+                  f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
+                  f"cav; " + "P$_{\mathrm{in}}$ = " \
+                  + f"{round(min(pin) * 1e-3, 1)} kW; " \
                     "Q$_{\mathrm{L, 0}}^*$ = " \
                   + "{:.2e}".format(QL_0_x[i])
 
-            annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=12, rotation=0,
-                                   c=l[0].get_color(),
-                                   weight='bold')
+            if "*" in labels[i]:
+                l = ax.plot(QL_0, pin * 1e-3, label=txt, lw=4,
+                            ls='--')
+            else:
+                l = ax.plot(QL_0, pin * 1e-3, label=txt, lw=4)
 
-            dt = DraggableText(annotext)
-            dt.connect()
+            # add annotations
+            ic(l_active)
+
+            # annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=8, rotation=0,
+            #                        c=l[0].get_color())
 
         if p_data:
             # plot QL with penetration
@@ -1363,9 +1360,9 @@ class Cavities:
         ax.set_xlabel(r"$Q_{L,0}$")
         ax.set_ylabel(r"$P_\mathrm{in} ~[\mathrm{kW}]$")
         ax.set_xscale('log')
-        ax.set_xlim(5e3, 1e9)
-        ax.set_ylim(100, 2000)
-        ax.legend(loc='lower left', title=r"$E_\mathrm{acc}$")  #
+        ax.set_xlim(5e3, 1e8)
+        ax.set_ylim(0, 3000)
+        ax.legend(loc='upper left')  #
         ax.minorticks_on()
         # ax.grid(which='both')
         fig.show()
@@ -1704,7 +1701,7 @@ class Cavity:
             R/Q of the cavity. R/Q is the energy stored to power loss ratio of the cavity.
         G: float
             Geometric factor of the cavity.
-        Epk_Eacc: float
+        Epk_Eacc: float, list, array like
             Peak electric field to accelerating electric field ratio for the fundamental mode
         Bpk_Eacc
             Peak magnetic field to accelerating electric field ratio for the fundamental mode
@@ -2094,7 +2091,13 @@ class Cavity:
         n_cells, l_cells, G, b = [np.array(x) for x in geometry]
         E_acc, Vrf = [np.array(x) for x in RF]
 
-        fig, ax = plt.subplots()
+        self.fig, ax = plt.subplots()
+
+        self.cid_pick = self.fig.canvas.mpl_connect('pick_event', self.on_pick)
+        self.cid_motion = self.fig.canvas.mpl_connect('motion_notify_event', self.on_motion)
+        self.cid_button_press = self.fig.canvas.mpl_connect('button_press_event', self.on_press)
+        self.cid_button_release = self.fig.canvas.mpl_connect('button_release_event', self.on_release)
+
 
         # QOI
         f0, R_Q = [np.array(x) for x in QOI]
@@ -2148,10 +2151,10 @@ class Cavity:
             # add annotations
             ic(l_active)
             txt = f"{labels[i]}, " \
-                  f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz \n {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
-                  f"cav/beam" + "\n V$_\mathrm{RF}\mathrm{/beam}$ =" + f"{round(Vrf[i] * 1e-9, 2)} GV " \
-                  + "\n V$_\mathrm{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
-                                              "P$_{\mathrm{in}}/\mathrm{beam}$ = " + f"{round(min(pin) * 1e-3, 1)} kW \n" \
+                  f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
+                  f"cav/beam" + " V$_\mathrm{RF}\mathrm{/beam}$ =" + f"{round(Vrf[i] * 1e-9, 2)} GV " \
+                  + " V$_\mathrm{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV " \
+                                              "P$_{\mathrm{in}}/\mathrm{beam}$ = " + f"{round(min(pin) * 1e-3, 1)} kW" \
                                                                                      "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
                 QL_0_x[i])
 
@@ -2161,6 +2164,8 @@ class Cavity:
 
             dt = DraggableText(annotext)
             dt.connect()
+            
+            self.text_dict[id(annotext)] = dt
 
         if p_data:
             # plot QL with penetration
@@ -2179,6 +2184,23 @@ class Cavity:
         ax.minorticks_on()
         # ax.grid(which='both')
         plt.show()
+
+    def on_motion(self, event):
+        # vis = self.annot.get_visible()
+        # if isinstance(self.ax, event.inaxes):  # not so good fix
+        #     cont, ind = self.plot_object.contains(event)
+        #     if cont:
+        #         self.update_annot(
+        #             ind["ind"][0])  # ind returns an array of close points. ind['ind'][0] returns just the first point
+        #         self.annot.set_visible(True)
+        #         self.fig.canvas.draw_idle()
+        #     else:
+        #         if vis:
+        #             self.annot.set_visible(False)
+        #             self.fig.canvas.draw_idle()
+        self.MOTION = True
+
+        # if self.PRESS and self.MOTION:
 
     def run_slans(self):
         pass
@@ -2398,6 +2420,13 @@ class OperatingPoint:
         else:
             self.cavities.append(cavities)
 
+    def remove_cavities(self, cavities):
+        if isinstance(cavities, list):
+            for cav in cavities:
+                self.cavities.remove(cav)
+        else:
+            self.cavities.remove(cavities)
+
     def set_beam_properties(self):
         pass
 
@@ -2407,6 +2436,8 @@ Z_op_point = OperatingPoint([op_folder, "Z"])
 W_op_point = OperatingPoint([op_folder, "W"])
 H_op_point = OperatingPoint([op_folder, "H"])
 ttbar_op_point = OperatingPoint([op_folder, "ttbar"])
+
+H_op_point.add_cavities([3])
 
 #
 # def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):
@@ -2649,11 +2680,11 @@ if __name__ == '__main__':
     # 2 and 5 cell, 400MHz, 800MHz cavities comparison for H
     wp = 'H'  # working point
     sigma = 'SR_2.5mm'
-    slans_dirs = [fr"{parent_dir_slans}\Cavity3794_400", fr"{parent_dir_slans}\Cavity3794_800",
-                  fr"{parent_dir_slans}\CavityC3795_800"]
-    abci_dirs = [fr"{parent_dir_abci}\Cavity3794_400", fr"{parent_dir_abci}\Cavity3794_800",
-                 fr"{parent_dir_abci}\CavityC3795_800"]
-    cavities = Cavities([c3794_H_400, c3794_H_800, c3795_H_800])
+    slans_dirs = [fr"{parent_dir_slans}\3794_400", fr"{parent_dir_slans}\3794_800",
+                  fr"{parent_dir_slans}\C3795_800"]
+    abci_dirs = [fr"{parent_dir_abci}\3794_400", fr"{parent_dir_abci}\3794_800",
+                 fr"{parent_dir_abci}\C3795_800"]
+    cavities = Cavities([c3794_H_400, c3794_H_800, c3795_H_800], 'Cavities_C3794_400_800_C3795_800')
 
     # # 2 and 5 cell cavities comparison for H
     # wp = 'H'  # working point
@@ -2683,9 +2714,9 @@ if __name__ == '__main__':
 
     # print(cavities)
     # print(c3795_tt)
-    # cavities.make_latex_summary_tables()
-    # c3795_tt.make_latex_summary_tables()
-    # cavities.plot_cavities_contour('end')
+    cavities.make_latex_summary_tables()
+    c3795_tt.make_latex_summary_tables()
+    cavities.plot_cavities_contour('end')
 
     cavities.plot_ql_vs_pin()
     cavities.plot_cryomodule_comparison()

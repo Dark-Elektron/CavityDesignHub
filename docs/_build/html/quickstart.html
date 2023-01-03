@@ -51,7 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#download">Download</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuring-cadh-on-a-local-system">Configuring CaDH  on a Local System</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-a-simulation">Run a Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#updating">Updating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#plotting">Plotting</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
@@ -94,25 +94,25 @@ details and examples.</p>
 <div class="contents local topic" id="contents-of-this-page">
 <p class="topic-title">Contents of this Page</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#requirements-and-dependencies" id="id7">Requirements and Dependencies</a></p>
+<li><p><a class="reference internal" href="#requirements-and-dependencies" id="id3">Requirements and Dependencies</a></p>
 <ul>
-<li><p><a class="reference internal" href="#tl-dr" id="id8">TL;DR</a></p></li>
+<li><p><a class="reference internal" href="#tl-dr" id="id4">TL;DR</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#download" id="id9">Download</a></p></li>
-<li><p><a class="reference internal" href="#configuring-cadh-on-a-local-system" id="id10">Configuring CaDH  on a Local System</a></p></li>
-<li><p><a class="reference internal" href="#run-a-simulation" id="id11">Run a Simulation</a></p></li>
-<li><p><a class="reference internal" href="#updating" id="id12">Updating</a></p></li>
+<li><p><a class="reference internal" href="#download" id="id5">Download</a></p></li>
+<li><p><a class="reference internal" href="#configuring-cadh-on-a-local-system" id="id6">Configuring CaDH  on a Local System</a></p></li>
+<li><p><a class="reference internal" href="#run-a-simulation" id="id7">Run a Simulation</a></p></li>
+<li><p><a class="reference internal" href="#plotting" id="id8">Plotting</a></p></li>
 </ul>
 </div>
 <section id="requirements-and-dependencies">
-<span id="quick-requirements"></span><h2><a class="toc-backref" href="#id7">Requirements and Dependencies</a><a class="headerlink" href="#requirements-and-dependencies" title="Permalink to this heading"></a></h2>
+<span id="quick-requirements"></span><h2><a class="toc-backref" href="#id3">Requirements and Dependencies</a><a class="headerlink" href="#requirements-and-dependencies" title="Permalink to this heading"></a></h2>
 <p>The CaDH is a GUI for coordinating different electromagnetic codes. It also comes with some scripts to ease most of the
 common tasks. CaDH uses Python 3 as a platform independent scripting environment. All Python scripts are wrapped in
 Bash or PowerShell scripts, to hide some platform specifics of Darwin, Linux or Windows.
 See <span class="xref std std-ref">USING:Require</span> for further details.</p>
 <section id="tl-dr">
-<h3><a class="toc-backref" href="#id8">TL;DR</a><a class="headerlink" href="#tl-dr" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id4">TL;DR</a><a class="headerlink" href="#tl-dr" title="Permalink to this heading"></a></h3>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">Dark</span><span class="o">-</span><span class="n">Elektron</span><span class="o">/</span><span class="n">CavityDesignHub</span><span class="o">.</span><span class="n">git</span>
 <span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
 </pre></div>
@@ -139,7 +139,7 @@ See <span class="xref std std-ref">USING:Require</span> for further details.</p>
 </section>
 </section>
 <section id="download">
-<span id="quick-download"></span><h2><a class="toc-backref" href="#id9">Download</a><a class="headerlink" href="#download" title="Permalink to this heading"></a></h2>
+<span id="quick-download"></span><h2><a class="toc-backref" href="#id5">Download</a><a class="headerlink" href="#download" title="Permalink to this heading"></a></h2>
 <p>The CaDH-Library can be cloned with <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span></code>. GitHub offers HTTPS and SSH as transfer
 protocols. See the <span class="xref std std-ref">Download</span> page for further
 details.</p>
@@ -173,7 +173,7 @@ A change to this will be considered in later releases.</p>
 </div>
 </section>
 <section id="configuring-cadh-on-a-local-system">
-<span id="quick-configuration"></span><h2><a class="toc-backref" href="#id10">Configuring CaDH  on a Local System</a><a class="headerlink" href="#configuring-cadh-on-a-local-system" title="Permalink to this heading"></a></h2>
+<span id="quick-configuration"></span><h2><a class="toc-backref" href="#id6">Configuring CaDH  on a Local System</a><a class="headerlink" href="#configuring-cadh-on-a-local-system" title="Permalink to this heading"></a></h2>
 <p>CaDH currently makes use of other software for analysis. These software are not outrightly open source but could be
 obtained from the website of the author.</p>
 <p><strong>SuperLANS</strong></p>
@@ -211,7 +211,7 @@ the fonts, navigate to <code class="docutils literal notranslate"><span class="p
 <p>Copy all files in extracted folder to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\ABCI_exe</span></code></p>
 </section>
 <section id="run-a-simulation">
-<span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id11">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
+<span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id7">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
 <p>To run a simulation, we first need to create a project.</p>
 <p>To create a new project,</p>
 <ul class="simple">
@@ -380,6 +380,12 @@ two cavities is</p>
 <div class="line">In our case, <code class="docutils literal notranslate"><span class="pre">&lt;cavity_name&gt;</span></code> is <code class="docutils literal notranslate"><span class="pre">TESLA</span></code>. Select it.</div>
 </div>
 </li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <cite>json</cite> file contains more than one cavity’s geometric parameters, they will all be available for selection.</p>
+</div>
+<ul>
 <li><div class="line-block">
 <div class="line">Click on <span class="guilabel">Cell Parameters</span> to expand the widget if not already expanded. Set the fields</div>
 <div class="line"><code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Cells</span></code> and <code class="docutils literal notranslate"><span class="pre">No.</span> <span class="pre">of</span> <span class="pre">Modules</span></code> to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</div>
@@ -513,28 +519,115 @@ This file is writen by Python. The ABCI written files can be viewed using the co
 file in <code class="docutils literal notranslate"><span class="pre">exe/ABCI_exe/TopDrawer</span> <span class="pre">for</span> <span class="pre">Windows</span></code>. You can also set the default application for viewing <code class="docutils literal notranslate"><span class="pre">.top</span></code> files
 as the ABCI executable file.</p>
 </section>
-<section id="updating">
-<span id="quick-updating"></span><h2><a class="toc-backref" href="#id12">Updating</a><a class="headerlink" href="#updating" title="Permalink to this heading"></a></h2>
-<p>The CaDH-Library can be updated by using <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">fetch</span></code> <a href="#id3"><span class="problematic" id="id4">:octicon:`report;1em;sd-text-info`</span></a> and <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">merge</span></code> <a href="#id5"><span class="problematic" id="id6">:octicon:`git-merge;1em;sd-text-info`</span></a>.</p>
-<div class="highlight-PowerShell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd </span><span class="n">CaDHRoot</span>
-<span class="c"># update the local repository</span>
-<span class="n">git</span> <span class="n">fetch</span> <span class="p">-</span><span class="n">-prune</span>
-<span class="c"># review the commit tree and messages, using the &#39;treea&#39; alias</span>
-<span class="n">git</span> <span class="n">tree</span>
-<span class="c"># if all changes are OK, do a fast-forward merge</span>
-<span class="n">git</span> <span class="n">merge</span>
-</pre></div>
+<section id="plotting">
+<h2><a class="toc-backref" href="#id8">Plotting</a><a class="headerlink" href="#plotting" title="Permalink to this heading"></a></h2>
+<p>The plot module could be used to easily plot the output from the ABCI code. It is also capable of plotting traditional
+files like Excel files (<code class="docutils literal notranslate"><span class="pre">.xlsx</span></code>) and text files (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>). SLANS files output plotting capabilities are not yet
+available.</p>
+<ul>
+<li><div class="line-block">
+<div class="line">Navigate to the plot frame from the home page by clicking on <span class="guilabel">Plot</span> or <span class="guilabel">P</span> on the side pane.</div>
 </div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><span class="xref std std-doc">Running one or more testbenches</span></dt><dd><p>The installation can be checked by running one or more of PoC’s testbenches.</p>
-</dd>
-<dt><span class="xref std std-doc">Running one or more netlist generation flows</span></dt><dd><p>The installation can also be checked by running one or more of PoC’s
-synthesis flows.</p>
-</dd>
-</dl>
+</li>
+<li><div class="line-block">
+<div class="line">Change the <span class="guilabel">Code</span> to <code class="docutils literal notranslate"><span class="pre">ABCI</span></code> if it is not the current text.</div>
 </div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">…</span> on the column labeled <span class="guilabel">File/Folder</span>. This brings up a folder selection pop-up.</div>
+<div class="line">Select the <code class="docutils literal notranslate"><span class="pre">ABCI</span></code> folder. This should be the default folder when the button is clicked.</div>
+<div class="line">If not, navigate to the folder or to any other folder containing ABCI output folder directory.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">Select Folder</span> to select folder.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">v</span> on the column labeled <span class="guilabel">ID</span>. This lists all the ABCI directories in the selected</div>
+<div class="line">directory. Select the results to be plotted. More than one folder can be selected.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Under the Request column, several results could be selected. The selection differs depending on the value of the</div>
+<div class="line">selection in the column <span class="guilabel">Polarisation</span>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">A line plot or scatter plot could be made depending on the selection in the column named <span class="guilabel">Axis</span> and</div>
+<div class="line"><span class="guilabel">Type</span>. Each plot can also be scaled by changing the values of <span class="guilabel">ScaleX</span> and <span class="guilabel">ScaleY</span>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Multiple plots could be added by clicking on <span class="guilabel">+</span> at the bottom left of the table or</div>
+<div class="line"><span class="guilabel">right-clicking</span> and selecting <span class="guilabel">Add Row</span>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">To change the axes labels and font size, fill out the values in the <span class="guilabel">x-label</span> and <span class="guilabel">y-label</span></div>
+<div class="line">fields. The legend title can also be changed by filling out the values in <span class="guilabel">Legend labels</span>. In case of</div>
+<div class="line">multiple plots, the legend labels should be separated by double percentage signs <code class="docutils literal notranslate"><span class="pre">%%</span></code>.</div>
+</div>
+</li>
+</ul>
+<ul>
+<li><div class="line-block">
+<div class="line">Navigate to the plot frame from the home page by clicking on <span class="guilabel">Plot</span> or <span class="guilabel">P</span> on the side pane.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Change the <span class="guilabel">Code</span> to <code class="docutils literal notranslate"><span class="pre">Others</span></code> if it is not the current text.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">…</span> on the column labeled <span class="guilabel">File/Folder</span>. This brings up a file selection pop-up.</div>
+<div class="line">Navigate to the Excel file and select it by double clicking or by clicking on <span class="guilabel">Select File</span>.</div>
+<div class="line">This loads the Excel file.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Click on <span class="guilabel">ID</span> to select the sheet of interest.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">In the column <span class="guilabel">Request</span>, two fields are available. The first is for the variable to plot on the</div>
+<div class="line"><code class="docutils literal notranslate"><span class="pre">x-axis</span></code> and the second for the <code class="docutils literal notranslate"><span class="pre">y-axis</span></code>. Click on <span class="guilabel">v</span> on either column and select the variables</div>
+<div class="line">to be plotted.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Once this is entered, click on <span class="guilabel">Apply</span> to apply changes.</div>
+</div>
+</li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Multiple variables could be selected to be plotted on the <code class="docutils literal notranslate"><span class="pre">y-axis</span></code> but only one variable can be plotted on the
+<cite>x-axis</cite>.</p>
+</div>
+<ul>
+<li><div class="line-block">
+<div class="line">As with the ABCI plots, a line plot or scatter plot could be made depending on the selection in the column</div>
+<div class="line">named <span class="guilabel">Axis</span> and <span class="guilabel">Type</span>. Each plot can also be scaled by changing the values of</div>
+<div class="line"><span class="guilabel">ScaleX</span> and <span class="guilabel">ScaleY</span>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Multiple plots could be added by clicking on <span class="guilabel">+</span> at the bottom left of the table or</div>
+<div class="line"><span class="guilabel">right-clicking</span> and selecting <span class="guilabel">Add Row</span>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">To change the axes labels and font size, fill out the values in the <span class="guilabel">x-label</span> and <span class="guilabel">y-label</span></div>
+<div class="line">fields. The legend title can also be changed by filling out the values in <span class="guilabel">Legend labels</span>. In case of</div>
+<div class="line">multiple plots, the legend labels should be separated by double percentage signs <code class="docutils literal notranslate"><span class="pre">%%</span></code>.</div>
+</div>
+</li>
+<li><div class="line-block">
+<div class="line">Once this is entered, click on <span class="guilabel">Apply</span> to apply changes.</div>
+</div>
+</li>
+</ul>
 </section>
 </section>
 

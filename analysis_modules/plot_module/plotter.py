@@ -124,6 +124,7 @@ class Plot(FigureCanvasQTAgg):
         self.signals()
         self.text_dict = {}
         self.axvline_dict = {}
+        self.patched_dict = {}
 
         self.selected_object = None
 
@@ -478,16 +479,21 @@ class Plot(FigureCanvasQTAgg):
                  size=14, rotation=0, arrowprops=None):
         """
 
-        :param text:
-        :param box:
-        :param xy:
-        :param xycoords:
-        :param xytext:
-        :param textcoords:
-        :param size:
-        :param rotation:
-        :param arrowprops:
-        :return:
+        Parameters
+        ----------
+        text
+        box
+        xy
+        xycoords
+        xytext
+        textcoords
+        size
+        rotation
+        arrowprops
+
+        Returns
+        -------
+
         """
         if text.strip("") == "":
             return
@@ -543,6 +549,15 @@ class Plot(FigureCanvasQTAgg):
     def remove_axvline(self):
         self.axvline_dict[f"{id(self.selected_object)}"].remove()
         self.draw()
+
+    def add_square(self):
+        # add square object
+
+        #
+        pass
+
+    def remove_square(self):
+        pass
 
     def clear(self):
         # remove all text

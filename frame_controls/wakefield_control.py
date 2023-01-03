@@ -4,6 +4,8 @@ import time
 import multiprocessing as mp
 from threading import Thread
 import pandas as pd
+from psutil import NoSuchProcess
+
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from analysis_modules.data_module.abci_data import ABCIData
@@ -339,11 +341,11 @@ class WakefieldControl:
         # signal to progress bar
         self.show_progress_bar = False
 
-        # try:
-        for p in self.processes:
-            p.terminate()
-        # except:
-        #     pass
+        try:
+            for p in self.processes:
+                p.terminate()
+        except NoSuchProcess:
+            pass
 
         self.processes.clear()
         self.processes_id.clear()

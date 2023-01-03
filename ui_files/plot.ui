@@ -287,6 +287,12 @@
                       <enum>Qt::Vertical</enum>
                      </property>
                      <widget class="QWidget" name="widget_14" native="true">
+                      <property name="minimumSize">
+                       <size>
+                        <width>500</width>
+                        <height>500</height>
+                       </size>
+                      </property>
                       <property name="styleSheet">
                        <string notr="true"/>
                       </property>
@@ -332,12 +338,6 @@
                           <enum>Qt::Vertical</enum>
                          </property>
                          <widget class="QWidget" name="widget_13" native="true">
-                          <property name="minimumSize">
-                           <size>
-                            <width>0</width>
-                            <height>100</height>
-                           </size>
-                          </property>
                           <layout class="QGridLayout" name="gridLayout_15">
                            <property name="leftMargin">
                             <number>0</number>
@@ -357,8 +357,77 @@
                            <property name="verticalSpacing">
                             <number>0</number>
                            </property>
-                           <item row="1" column="1" colspan="2">
-                            <widget class="QLineEdit" name="le_Xlabel">
+                           <item row="0" column="0" rowspan="4">
+                            <widget class="QComboBox" name="cb_Active_Axis">
+                             <property name="minimumSize">
+                              <size>
+                               <width>0</width>
+                               <height>100</height>
+                              </size>
+                             </property>
+                             <item>
+                              <property name="text">
+                               <string>Left</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>Right</string>
+                              </property>
+                             </item>
+                            </widget>
+                           </item>
+                           <item row="3" column="5">
+                            <widget class="QSpinBox" name="sb_Title_Size">
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="9">
+                            <widget class="QPushButton" name="pb_Apply_Axis_Labels">
+                             <property name="text">
+                              <string>Apply</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="10">
+                            <spacer name="horizontalSpacer_2">
+                             <property name="orientation">
+                              <enum>Qt::Horizontal</enum>
+                             </property>
+                             <property name="sizeHint" stdset="0">
+                              <size>
+                               <width>40</width>
+                               <height>20</height>
+                              </size>
+                             </property>
+                            </spacer>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QSpinBox" name="sb_XLabel_Size">
+                             <property name="toolTip">
+                              <string>X axis label size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="5">
+                            <widget class="QLineEdit" name="le_Title">
                              <property name="minimumSize">
                               <size>
                                <width>200</width>
@@ -371,11 +440,99 @@
                                <height>16777215</height>
                               </size>
                              </property>
+                             <property name="placeholderText">
+                              <string>Plot Title</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="4">
+                            <widget class="QSpinBox" name="sb_YLabel_Tick_Size">
+                             <property name="toolTip">
+                              <string>Y axis ytick size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="7" colspan="2">
+                            <widget class="QLineEdit" name="le_Legend">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>200</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="placeholderText">
+                              <string>Legend labels</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="3" colspan="2">
+                            <widget class="QCheckableComboBox" name="ccb_Freq_Used_Ylabel">
+                             <item>
+                              <property name="text">
+                               <string>All</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$Z_\parallel~ [\mathrm{k\Omega}]$</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$Z_\perp ~[\mathrm{k\Omega/m}]$</string>
+                              </property>
+                             </item>
+                             <item>
+                              <property name="text">
+                               <string>$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$</string>
+                              </property>
+                             </item>
+                            </widget>
+                           </item>
+                           <item row="1" column="3" colspan="2">
+                            <widget class="QLineEdit" name="le_Ylabel">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
                              <property name="text">
                               <string/>
                              </property>
                              <property name="placeholderText">
-                              <string>X axis label</string>
+                              <string>Y axis label</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="2">
+                            <widget class="QSpinBox" name="sb_XLabel_Tick_Size">
+                             <property name="toolTip">
+                              <string>X axis xtick size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
                              </property>
                             </widget>
                            </item>
@@ -414,69 +571,8 @@
                              </property>
                             </widget>
                            </item>
-                           <item row="3" column="8">
-                            <widget class="QSpinBox" name="sb_Legend_Marker_Size">
-                             <property name="minimum">
-                              <number>8</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="value">
-                              <number>18</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="2">
-                            <widget class="QSpinBox" name="sb_XLabel_Tick_Size">
-                             <property name="toolTip">
-                              <string>X axis xtick size</string>
-                             </property>
-                             <property name="minimum">
-                              <number>8</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="value">
-                              <number>18</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="10">
-                            <spacer name="horizontalSpacer_2">
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>40</width>
-                               <height>20</height>
-                              </size>
-                             </property>
-                            </spacer>
-                           </item>
-                           <item row="1" column="5">
-                            <widget class="QLineEdit" name="le_Title">
-                             <property name="minimumSize">
-                              <size>
-                               <width>200</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>200</width>
-                               <height>16777215</height>
-                              </size>
-                             </property>
-                             <property name="placeholderText">
-                              <string>Plot Title</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="3" colspan="2">
-                            <widget class="QLineEdit" name="le_Ylabel">
+                           <item row="1" column="1" colspan="2">
+                            <widget class="QLineEdit" name="le_Xlabel">
                              <property name="minimumSize">
                               <size>
                                <width>200</width>
@@ -493,15 +589,12 @@
                               <string/>
                              </property>
                              <property name="placeholderText">
-                              <string>Y axis label</string>
+                              <string>X axis label</string>
                              </property>
                             </widget>
                            </item>
-                           <item row="3" column="1">
-                            <widget class="QSpinBox" name="sb_XLabel_Size">
-                             <property name="toolTip">
-                              <string>X axis label size</string>
-                             </property>
+                           <item row="3" column="8">
+                            <widget class="QSpinBox" name="sb_Legend_Marker_Size">
                              <property name="minimum">
                               <number>8</number>
                              </property>
@@ -513,103 +606,34 @@
                              </property>
                             </widget>
                            </item>
-                           <item row="3" column="4">
-                            <widget class="QSpinBox" name="sb_YLabel_Tick_Size">
-                             <property name="toolTip">
-                              <string>Y axis ytick size</string>
-                             </property>
-                             <property name="minimum">
-                              <number>8</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="value">
-                              <number>18</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="7" colspan="2">
-                            <widget class="QLineEdit" name="le_Legend">
-                             <property name="minimumSize">
-                              <size>
-                               <width>200</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>200</width>
-                               <height>16777215</height>
-                              </size>
-                             </property>
-                             <property name="placeholderText">
-                              <string>Legend Title</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="5">
-                            <widget class="QSpinBox" name="sb_Title_Size">
-                             <property name="minimum">
-                              <number>8</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="value">
-                              <number>18</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="9">
-                            <widget class="QPushButton" name="pb_Apply_Axis_Labels">
+                           <item row="0" column="1" colspan="2">
+                            <widget class="QLabel" name="label_4">
                              <property name="text">
-                              <string>Apply</string>
+                              <string>x-label</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="0" rowspan="3">
-                            <widget class="QComboBox" name="cb_Active_Axis">
-                             <property name="minimumSize">
-                              <size>
-                               <width>0</width>
-                               <height>100</height>
-                              </size>
+                           <item row="0" column="7" colspan="2">
+                            <widget class="QLabel" name="label_7">
+                             <property name="text">
+                              <string>Legend labels</string>
                              </property>
-                             <item>
-                              <property name="text">
-                               <string>Left</string>
-                              </property>
-                             </item>
-                             <item>
-                              <property name="text">
-                               <string>Right</string>
-                              </property>
-                             </item>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
                             </widget>
                            </item>
-                           <item row="2" column="3" colspan="2">
-                            <widget class="QCheckableComboBox" name="ccb_Freq_Used_Ylabel">
-                             <item>
-                              <property name="text">
-                               <string>All</string>
-                              </property>
-                             </item>
-                             <item>
-                              <property name="text">
-                               <string>$Z_\parallel~ [\mathrm{k\Omega}]$</string>
-                              </property>
-                             </item>
-                             <item>
-                              <property name="text">
-                               <string>$Z_\perp ~[\mathrm{k\Omega/m}]$</string>
-                              </property>
-                             </item>
-                             <item>
-                              <property name="text">
-                               <string>$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$</string>
-                              </property>
-                             </item>
+                           <item row="0" column="3" colspan="2">
+                            <widget class="QLabel" name="label_5">
+                             <property name="text">
+                              <string>y-label</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
                             </widget>
                            </item>
                            <item row="2" column="1" colspan="2">
@@ -629,6 +653,16 @@
                                <string>$f$ [GHz]</string>
                               </property>
                              </item>
+                            </widget>
+                           </item>
+                           <item row="0" column="5">
+                            <widget class="QLabel" name="label_6">
+                             <property name="text">
+                              <string>Plot title</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
                             </widget>
                            </item>
                           </layout>
@@ -805,7 +839,7 @@
                                     <x>0</x>
                                     <y>0</y>
                                     <width>1200</width>
-                                    <height>297</height>
+                                    <height>105</height>
                                    </rect>
                                   </property>
                                   <layout class="QGridLayout" name="gridLayout_27">
@@ -1394,14 +1428,14 @@
                                          <widget class="SwitchControl" name="cb_Transverse_Threshold"/>
                                         </item>
                                         <item row="0" column="3">
-                                         <widget class="QLatexLabel" name="latexLabel_23">
+                                         <widget class="QLatexLabel" name="latexLabel_23" native="true">
                                           <property name="Text" stdset="0">
                                            <string>$Z_{\perp, \mathrm{th}}$</string>
                                           </property>
                                          </widget>
                                         </item>
                                         <item row="0" column="1">
-                                         <widget class="QLatexLabel" name="latexLabel_22">
+                                         <widget class="QLatexLabel" name="latexLabel_22" native="true">
                                           <property name="Text" stdset="0">
                                            <string>$Z_{\parallel, \mathrm{th}}$</string>
                                           </property>
@@ -1492,13 +1526,13 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>452</width>
+                                          <width>444</width>
                                           <height>511</height>
                                          </rect>
                                         </property>
                                         <layout class="QGridLayout" name="gridLayout_31">
                                          <item row="1" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_2">
+                                          <widget class="QLatexLabel" name="latexLabel_2" native="true">
                                            <property name="toolTip">
                                             <string>Beam current</string>
                                            </property>
@@ -1508,7 +1542,7 @@
                                           </widget>
                                          </item>
                                          <item row="1" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_19">
+                                          <widget class="QLatexLabel" name="latexLabel_19" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{mA}]$</string>
                                            </property>
@@ -1522,14 +1556,14 @@
                                           </widget>
                                          </item>
                                          <item row="0" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_20">
+                                          <widget class="QLatexLabel" name="latexLabel_20" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{GeV}]$</string>
                                            </property>
                                           </widget>
                                          </item>
                                          <item row="4" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_3">
+                                          <widget class="QLatexLabel" name="latexLabel_3" native="true">
                                            <property name="toolTip">
                                             <string>Longitudinal damping time</string>
                                            </property>
@@ -1539,7 +1573,7 @@
                                           </widget>
                                          </item>
                                          <item row="3" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_16">
+                                          <widget class="QLatexLabel" name="latexLabel_16" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$[1e^{-5}]$</string>
                                            </property>
@@ -1553,14 +1587,14 @@
                                           </widget>
                                          </item>
                                          <item row="4" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_18">
+                                          <widget class="QLatexLabel" name="latexLabel_18" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{ms}]$</string>
                                            </property>
                                           </widget>
                                          </item>
                                          <item row="2" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_8">
+                                          <widget class="QLatexLabel" name="latexLabel_8" native="true">
                                            <property name="toolTip">
                                             <string>Synchrotron oscillation tune</string>
                                            </property>
@@ -1584,7 +1618,7 @@
                                           </widget>
                                          </item>
                                          <item row="3" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_9">
+                                          <widget class="QLatexLabel" name="latexLabel_9" native="true">
                                            <property name="toolTip">
                                             <string>Momentum compaction factor</string>
                                            </property>
@@ -1601,7 +1635,7 @@
                                           </widget>
                                          </item>
                                          <item row="10" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_21">
+                                          <widget class="QLatexLabel" name="latexLabel_21" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{m}]$</string>
                                            </property>
@@ -1611,14 +1645,14 @@
                                           <widget class="QLineEdit" name="le_Zth_Trans"/>
                                          </item>
                                          <item row="11" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_7">
+                                          <widget class="QLatexLabel" name="latexLabel_7" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$\mathrm{[k}\Omega\mathrm{]}$</string>
                                            </property>
                                           </widget>
                                          </item>
                                          <item row="10" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_5">
+                                          <widget class="QLatexLabel" name="latexLabel_5" native="true">
                                            <property name="toolTip">
                                             <string>Beta function</string>
                                            </property>
@@ -1628,7 +1662,7 @@
                                           </widget>
                                          </item>
                                          <item row="5" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_10">
+                                          <widget class="QLatexLabel" name="latexLabel_10" native="true">
                                            <property name="toolTip">
                                             <string>Transverse damping time</string>
                                            </property>
@@ -1638,7 +1672,7 @@
                                           </widget>
                                          </item>
                                          <item row="7" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_17">
+                                          <widget class="QLatexLabel" name="latexLabel_17" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{kHz}]$</string>
                                            </property>
@@ -1668,7 +1702,7 @@
                                           </widget>
                                          </item>
                                          <item row="5" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_15">
+                                          <widget class="QLatexLabel" name="latexLabel_15" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$[\mathrm{ms}]$</string>
                                            </property>
@@ -1689,7 +1723,7 @@
                                           </widget>
                                          </item>
                                          <item row="9" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_11">
+                                          <widget class="QLatexLabel" name="latexLabel_11" native="true">
                                            <property name="toolTip">
                                             <string>Number of cavities per beam</string>
                                            </property>
@@ -1699,14 +1733,14 @@
                                           </widget>
                                          </item>
                                          <item row="12" column="2">
-                                          <widget class="QLatexLabel" name="latexLabel_13">
+                                          <widget class="QLatexLabel" name="latexLabel_13" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$\mathrm{[k}\Omega/\mathrm{m}]}$</string>
                                            </property>
                                           </widget>
                                          </item>
                                          <item row="11" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_6">
+                                          <widget class="QLatexLabel" name="latexLabel_6" native="true">
                                            <property name="toolTip">
                                             <string>Longitudinal impedance threshold</string>
                                            </property>
@@ -1716,7 +1750,7 @@
                                           </widget>
                                          </item>
                                          <item row="0" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel">
+                                          <widget class="QLatexLabel" name="latexLabel" native="true">
                                            <property name="toolTip">
                                             <string>Beam energy</string>
                                            </property>
@@ -1726,7 +1760,7 @@
                                           </widget>
                                          </item>
                                          <item row="7" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_4">
+                                          <widget class="QLatexLabel" name="latexLabel_4" native="true">
                                            <property name="toolTip">
                                             <string>Frequency revolution</string>
                                            </property>
@@ -1736,7 +1770,7 @@
                                           </widget>
                                          </item>
                                          <item row="12" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_12">
+                                          <widget class="QLatexLabel" name="latexLabel_12" native="true">
                                            <property name="toolTip">
                                             <string>Transverse impedance threshold</string>
                                            </property>
@@ -1756,7 +1790,7 @@
                                           </widget>
                                          </item>
                                          <item row="13" column="0">
-                                          <widget class="QLatexLabel" name="latexLabel_14">
+                                          <widget class="QLatexLabel" name="latexLabel_14" native="true">
                                            <property name="Text" stdset="0">
                                             <string>$\mathrm{Label}$</string>
                                            </property>
@@ -2065,14 +2099,14 @@
    <header>QCheckableComboBox</header>
   </customwidget>
   <customwidget>
-   <class>QLatexLabel</class>
-   <extends>QWidget</extends>
-   <header>QLatexLabel</header>
-  </customwidget>
-  <customwidget>
    <class>SwitchControl</class>
    <extends>QCheckBox</extends>
    <header>QSwitchControl</header>
+  </customwidget>
+  <customwidget>
+   <class>QLatexLabel</class>
+   <extends>QWidget</extends>
+   <header>QLatexLabel</header>
   </customwidget>
  </customwidgets>
  <resources>

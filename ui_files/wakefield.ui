@@ -32,10 +32,10 @@
          <enum>Qt::Horizontal</enum>
         </property>
         <widget class="QWidget" name="widget_6" native="true">
-         <property name="maximumSize">
+         <property name="minimumSize">
           <size>
-           <width>700</width>
-           <height>16777215</height>
+           <width>500</width>
+           <height>0</height>
           </size>
          </property>
          <layout class="QGridLayout" name="gridLayout_3">
@@ -55,8 +55,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>525</width>
-               <height>2503</height>
+               <width>636</width>
+               <height>2479</height>
               </rect>
              </property>
              <property name="styleSheet">
