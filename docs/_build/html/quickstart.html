@@ -48,6 +48,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#tl-dr">TL;DR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#download">Download</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuring-cadh-on-a-local-system">Configuring CaDH  on a Local System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#customization">Customization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-a-simulation">Run a Simulation</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#create-new-project">Create New Project</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#open-project">Open Project</a></li>
@@ -107,19 +108,20 @@ details and examples.</p>
 <li><p><a class="reference internal" href="#tl-dr" id="id4">TL;DR</a></p></li>
 <li><p><a class="reference internal" href="#download" id="id5">Download</a></p></li>
 <li><p><a class="reference internal" href="#configuring-cadh-on-a-local-system" id="id6">Configuring CaDH  on a Local System</a></p></li>
-<li><p><a class="reference internal" href="#run-a-simulation" id="id7">Run a Simulation</a></p>
+<li><p><a class="reference internal" href="#customization" id="id7">Customization</a></p></li>
+<li><p><a class="reference internal" href="#run-a-simulation" id="id8">Run a Simulation</a></p>
 <ul>
-<li><p><a class="reference internal" href="#create-new-project" id="id8">Create New Project</a></p></li>
-<li><p><a class="reference internal" href="#open-project" id="id9">Open Project</a></p></li>
-<li><p><a class="reference internal" href="#eigenmode-analysis" id="id10">Eigenmode Analysis</a></p></li>
-<li><p><a class="reference internal" href="#tune" id="id11">Tune</a></p></li>
-<li><p><a class="reference internal" href="#wakefield-analysis" id="id12">Wakefield Analysis</a></p></li>
+<li><p><a class="reference internal" href="#create-new-project" id="id9">Create New Project</a></p></li>
+<li><p><a class="reference internal" href="#open-project" id="id10">Open Project</a></p></li>
+<li><p><a class="reference internal" href="#eigenmode-analysis" id="id11">Eigenmode Analysis</a></p></li>
+<li><p><a class="reference internal" href="#tune" id="id12">Tune</a></p></li>
+<li><p><a class="reference internal" href="#wakefield-analysis" id="id13">Wakefield Analysis</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#plotting" id="id13">Plotting</a></p>
+<li><p><a class="reference internal" href="#plotting" id="id14">Plotting</a></p>
 <ul>
-<li><p><a class="reference internal" href="#plot-abci-results" id="id14">Plot ABCI results</a></p></li>
-<li><p><a class="reference internal" href="#plot-excel-files" id="id15">Plot Excel Files</a></p></li>
+<li><p><a class="reference internal" href="#plot-abci-results" id="id15">Plot ABCI results</a></p></li>
+<li><p><a class="reference internal" href="#plot-excel-files" id="id16">Plot Excel Files</a></p></li>
 </ul>
 </li>
 </ul>
@@ -229,11 +231,22 @@ the fonts, navigate to <code class="docutils literal notranslate"><span class="p
 </div>
 <p>Copy all files in extracted folder to <code class="docutils literal notranslate"><span class="pre">&lt;root&gt;\CavityDesignHub\exe\ABCI_exe</span></code></p>
 </section>
+<section id="customization">
+<h2><a class="toc-backref" href="#id7">Customization</a><a class="headerlink" href="#customization" title="Permalink to this heading"></a></h2>
+<p>The GUI theme can be changed by clicking on the drop down menu in the top right corner of the GUI and selecting the
+desired theme. After this, click on <span class="guilabel">Apply</span> to apply the theme. To save this selection for the next time the
+software is run, click on <span class="guilabel">Save</span> on the menu bar.</p>
+<div class="admonition warning" id="quick-runsimulation">
+<p class="admonition-title">Warning</p>
+<p>Several buttons are currently non-functional in this GUI. The software is stillv very much under development
+but it can do the basic things which, for most design studies, are enough.</p>
+</div>
+</section>
 <section id="run-a-simulation">
-<span id="quick-runsimulation"></span><h2><a class="toc-backref" href="#id7">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id8">Run a Simulation</a><a class="headerlink" href="#run-a-simulation" title="Permalink to this heading"></a></h2>
 <p>To run a simulation, we first need to create a project.</p>
 <section id="create-new-project">
-<h3><a class="toc-backref" href="#id8">Create New Project</a><a class="headerlink" href="#create-new-project" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id9">Create New Project</a><a class="headerlink" href="#create-new-project" title="Permalink to this heading"></a></h3>
 <p>To create a new project,</p>
 <ul class="simple">
 <li><p>Click on <span class="guilabel">New</span> on the menubar.</p></li>
@@ -273,7 +286,7 @@ the fonts, navigate to <code class="docutils literal notranslate"><span class="p
 </div>
 </section>
 <section id="open-project">
-<h3><a class="toc-backref" href="#id9">Open Project</a><a class="headerlink" href="#open-project" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id10">Open Project</a><a class="headerlink" href="#open-project" title="Permalink to this heading"></a></h3>
 <p>To open a project,</p>
 <ul>
 <li><div class="line-block">
@@ -300,7 +313,7 @@ Run the following command from the Windows command line</p>
 </figure>
 </section>
 <section id="eigenmode-analysis">
-<h3><a class="toc-backref" href="#id10">Eigenmode Analysis</a><a class="headerlink" href="#eigenmode-analysis" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id11">Eigenmode Analysis</a><a class="headerlink" href="#eigenmode-analysis" title="Permalink to this heading"></a></h3>
 <p>First,we are going to run an eigenmode analysis.
 * | Click on <span class="guilabel">EIGENMODE ANALYSIS</span>. This takes you to another frame which contains different fields and buttons.</p>
 <p>There are four major categories on the left pane.
@@ -487,7 +500,7 @@ files and corresponding executable files to open them.</p>
 with the corresponding geometric parameter values.</p>
 </section>
 <section id="tune">
-<h3><a class="toc-backref" href="#id11">Tune</a><a class="headerlink" href="#tune" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id12">Tune</a><a class="headerlink" href="#tune" title="Permalink to this heading"></a></h3>
 <p>In the design of accelerator cavities, we usually want the cavity to operate at a particular frequency. We have six
 variables to play around with and one variable is reserved for tuning to the desired frequency. In most cases, the
 equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> is the preferred variable for tuning for mid cell cavities. For the end cells, L is the tune
@@ -529,7 +542,7 @@ cavities are tuned or analysed in one sweep.</p>
 </div>
 </section>
 <section id="wakefield-analysis">
-<h3><a class="toc-backref" href="#id12">Wakefield Analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id13">Wakefield Analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
 <p>The process to run wakefield analysis using ABCI is similar to that for eigenmode
 analysis. The geometry is loaded exactly the same.</p>
 <ul>
@@ -554,12 +567,12 @@ as the ABCI executable file.</p>
 </section>
 </section>
 <section id="plotting">
-<h2><a class="toc-backref" href="#id13">Plotting</a><a class="headerlink" href="#plotting" title="Permalink to this heading"></a></h2>
+<h2><a class="toc-backref" href="#id14">Plotting</a><a class="headerlink" href="#plotting" title="Permalink to this heading"></a></h2>
 <p>The plot module could be used to easily plot the output from the ABCI code. It is also capable of plotting traditional
 files like Excel files (<code class="docutils literal notranslate"><span class="pre">.xlsx</span></code>) and text files (<code class="docutils literal notranslate"><span class="pre">.txt</span></code>). SLANS files output plotting capabilities are not yet
 available.</p>
 <section id="plot-abci-results">
-<h3><a class="toc-backref" href="#id14">Plot ABCI results</a><a class="headerlink" href="#plot-abci-results" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id15">Plot ABCI results</a><a class="headerlink" href="#plot-abci-results" title="Permalink to this heading"></a></h3>
 <ul>
 <li><div class="line-block">
 <div class="line">Navigate to the plot frame from the home page by clicking on <span class="guilabel">Plot</span> or <span class="guilabel">P</span> on the side pane.</div>
@@ -608,7 +621,7 @@ available.</p>
 </ul>
 </section>
 <section id="plot-excel-files">
-<h3><a class="toc-backref" href="#id15">Plot Excel Files</a><a class="headerlink" href="#plot-excel-files" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id16">Plot Excel Files</a><a class="headerlink" href="#plot-excel-files" title="Permalink to this heading"></a></h3>
 <ul>
 <li><div class="line-block">
 <div class="line">Navigate to the plot frame from the home page by clicking on <span class="guilabel">Plot</span> or <span class="guilabel">P</span> on the side pane.</div>

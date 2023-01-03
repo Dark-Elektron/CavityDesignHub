@@ -130,7 +130,21 @@ Copy all files in extracted folder to ``<root>\CavityDesignHub\exe\ABCI_exe``
     cp -a /ABCI_MP_12_5/. /<root>\CavityDesignHub\exe\ABCI_exe/
 
 
+.. _QUICK:Customization
+
+Customization
+*************
+
+The GUI theme can be changed by clicking on the drop down menu in the top right corner of the GUI and selecting the
+desired theme. After this, click on :guilabel:`Apply` to apply the theme. To save this selection for the next time the
+software is run, click on :guilabel:`Save` on the menu bar.
+
 .. _QUICK:RunSimulation:
+
+.. warning::
+
+   Several buttons are currently non-functional in this GUI. The software is stillv very much under development
+   but it can do the basic things which, for most design studies, are enough.
 
 
 Run a Simulation
