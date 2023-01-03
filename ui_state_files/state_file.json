@@ -156,7 +156,7 @@
     "Beta_XY": "50",
     "N_Cav": "[56, 112, 118, 140]",
     "Longitudinal Threshold Checkbox": 0,
-    "Transverse Threshold Checkbox": 2,
+    "Transverse Threshold Checkbox": 0,
     "Threshold Line Color": "Black",
     "Threshold Linestyle": "-",
     "xlabel": "$f$ [MHz]",
