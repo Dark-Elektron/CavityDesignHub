@@ -5,6 +5,7 @@ import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
+import scipy.integrate
 import scipy.sparse as sps
 import scipy.sparse.linalg as spsl
 import scipy.io as spio
@@ -14,6 +15,9 @@ from icecream import ic
 m0 = 9.1093879e-31
 q0 = 1.6021773e-19
 c0 = 2.99792458e8
+
+mu0 = 4 * np.pi * 1e-7
+eps0 = 8.85418782e-12
 
 
 class FS:
@@ -36,7 +40,7 @@ class FS:
         ic('Old input data deleted.')
 
         # Inputs for eigenmode solver
-        freq = 801.58e6
+        freq = 1300e6
         gtype = 1
         # save the inputs 
         # save_values
@@ -168,11 +172,10 @@ class FS:
         spio.savemat(f"{self.folder}/model.mat", model, format='4')
 
         # start the mesh generator
-        ic("It's here")
+        # ic("It's here")
         subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder,
                         stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        ic("done done")
-        print("Done done")
+        ic("Done with meshing")
 
     def plot_mesh(self, s):
         # Function program plot_mesh(s)
@@ -191,7 +194,7 @@ class FS:
         cl = 0
         ok1 = os.path.exists(fr"{self.folder}\mesh.mat")
         ok2 = os.path.exists(fr"{self.folder}\fieldparam")
-        print(ok1, ok2)
+
         if not ok1:
             print(['The mesh does not exists. Choose Mesh Generator in menu Run.'])
         elif not ok2:
@@ -273,7 +276,7 @@ class FS:
             # self.ax.set_colormap('jet')
             self.fig.canvas.draw_idle()
 
-    def run_field_solver(self):
+    def run_field_solver(self, show_plots=True):
         # Function program cavity_field(s)
         # -----------------------------------------------------------------------
         # Runs the field solver for computing the EM fields in a cavity with
@@ -301,8 +304,6 @@ class FS:
 
         s = 0
 
-        self.fig, self.ax = plt.subplots()
-
         # gtype = 'Cavity'
         # self.gtype = gtype
         # freq = 801.58e6
@@ -313,35 +314,33 @@ class FS:
         if self.epsr > 1:
             print('Relative permittivity > 1?')
 
-        # generate the mesh
+        ic("Generating mesh")
         self.mesh_cavity(geodata, gridcons1, self.epsr, s)
-
-        # plot the mesh
-        self.plot_mesh(0)
-        ic("Here now done with plotting mesh")
+        ic('\nDone generating mesh')
+        if show_plots:
+            ic("Plotting mesh")
+            self.plot_mesh(0)
+            ic("\nDone with plotting mesh")
 
         # find resonance solution
-        ic('Computing the eigen values.')
         job = 1
+        ic('Computing the eigen values.')
         freqn = self.eigen(job, self.freq)
-        ic(freqn)
+        ic("Done with eigenmode analysis: freq:", freqn)
         # k1, k2 = self.find_resonance(freq)
 
-        if s > 0:
-            ic('Eigen values calculated.')
-            ic('                        ')
-
         err = (abs(freqn - self.freq) / self.freq) * 100
-        # ic(err)
         if err > 1:
             ic('Warning: Error in eigen frequency more than 1#.')
 
         # compute and plot the fields
+        ic("Computing fields")
         self.calculate_fields(0, gridcons1, 0)
-
-        ic("Now to plot the fields")
-        self.plot_FEM_fields(0, gridcons1, s)
-        # ---------------------------------------------------------------------
+        ic('\n Done computing fields')
+        if show_plots:
+            ic("Plotting fields")
+            self.plot_FEM_fields(0, gridcons1, s)
+            ic('\n Done plotting fields')
 
     def eigen(self, jobl, freq):
         maara = 10
@@ -358,12 +357,12 @@ class FS:
             subprocess.call(eigenCpath, cwd=cwd,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
-        ic("Done with eigenmode analysis")
+        ic("\n\nDone running eigenC_bin.exe")
 
         cinfo = spio.loadmat(fr"{self.folder}\cinfo.mat")['cinfo'][0]
         if cinfo != 0:
             ic(cinfo)
-            ic('Eigenvalue solver failed.')
+            ic('\n\nEigenvalue solver failed.')
 
         # load o_eigen
         o_eigen = spio.loadmat(fr"{self.folder}\o_eigen.mat")
@@ -382,9 +381,8 @@ class FS:
         AA = sps.csr_matrix((Aarvot, (ia, ja)), shape=(n, n))
         BB = sps.csr_matrix((Barvot, (ia, ja)), shape=(n, n))
 
-        ic("Here here here here")
         d2, u2 = spsl.eigs(AA, M=BB, k=maara, sigma=0)
-        ic("It is now where", u2)
+
         u2 = u2.real
 
         # ic(u2.shape)
@@ -405,22 +403,17 @@ class FS:
         u = u2[:, ind]
         # ic(k)
 
-        ic("It is now where2")
         # new frequency
         freqn = k / (2 * np.pi * np.sqrt(mu0 * e0))
-        ic("It is now where3")
         # ic(freqn)
         param = pd.read_csv(fr"{self.folder}\param", sep='\s+', header=None).to_numpy().T[0]
-        ic("It is now where4")
         # ic(param)
         # load param
         param[0] = freqn
         # save -ascii param param
-        ic("It is now where3")
         df = pd.DataFrame(param)
         df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
 
-        ic("It is now where")
         fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy().T[0]
         # load fieldparam
         fieldparam[1] = freqn
@@ -438,9 +431,7 @@ class FS:
                  }
 
         spio.savemat(f"{self.folder}/kama0.mat", kama0, format='4')
-        ic("here now and here")
-        # --------------------------
-        ic(freqn)
+        ic("\n\nDone with eigen")
         return freqn
 
     def calculate_fields(self, s, gridcons, ss=1):
@@ -460,26 +451,26 @@ class FS:
 
         ok1 = os.path.exists(fr"{self.folder}\mesh.mat")
         if not ok1:
-            ic(['The mesh does not exists. Choose Mesh Generator in menu Run.'])
+            ic(['\n\nThe mesh does not exists. Choose Mesh Generator in menu Run.'])
 
         ok2 = 1
         if s == 0:
             if os.path.exists(fr"{self.folder}\kama0.mat"):
                 ok2 = 0
             if ok2 == 0:
-                ic(['The fields do not exist. Choose Field Solver in menu Run.'])
+                ic(['\n\nThe fields do not exist. Choose Field Solver in menu Run.'])
 
             elif s == 1:
                 ok21 = os.path.exists(fr"{self.folder}\kama1.mat")
                 ok22 = os.path.exists(fr"{self.folder}\kama2.mat")
                 ok2 = ok21 * ok22
                 if ok2 == 0:
-                    ic(['The fields do not exist. Choose Field Solver in menu Run.'])
+                    ic(['\n\nThe fields do not exist. Choose Field Solver in menu Run.'])
 
         if ok1 == 0 and ok2 == 0 and ok3 == 0:
             ok = os.path.exists(fr"{self.folder}\geodata.n")
             if ok:
-                ic('Computing the fields.')
+                ic('\n\nComputing the fields.')
                 #  error_message('                                  ')
 
                 # define the grid constant
@@ -566,7 +557,7 @@ class FS:
 
         # compute the fields at generated points
         if s == 0:
-            ic("Calculating fields")
+            ic("\n\nCalculating fields")
             # !copy /y kama0.mat kama.mat
             shutil.copyfile(fr'{self.folder}\kama0.mat', fr'{self.folder}\kama.mat')
 
@@ -586,7 +577,8 @@ class FS:
             spio.savemat(fr'{self.folder}\fields.mat', fields)  # this was not saved as Mat object version 4. Ask why?
 
             self.save_fields(0, 1)
-            ic("It's now hwere before normalize")
+
+            ic("\n\nCalculating QoIs")
             self.calculate_QoI()
             # self.normalize_u(0)
         # else:
@@ -751,10 +743,10 @@ class FS:
             axs[1].set_ylabel('r axis [m]')
             plt.show()
 
-            print(Ez)
-            print(Ez.shape)
-            print(zz)
-            print(zz.shape)
+            # print(Ez)
+            # print(Ez.shape)
+            # print(zz)
+            # print(zz.shape)
             plt.spy(zz)
             plt.show()
             plt.spy(Ez.T)
@@ -781,8 +773,8 @@ class FS:
 
         geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
         n = len(geodata[:, 0])
-        gr = geodata[3:n, 0]
-        gz = geodata[3:n, 1]
+        gr = np.array(geodata[3:n, 0])
+        gz = np.array(geodata[3:n, 1])
 
         # load the field values
         # load fields Er Ez H I1 I2 zz rr z r
@@ -796,24 +788,105 @@ class FS:
         rr = fields['rr']
         z = fields['z']
         r = fields['r']
-        ic(zz, rr, zz.shape, rr.shape)
-        ic(Er, Er.shape)
 
         # plot the fields
         Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
-        ic(Er)
         Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
         EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2).T
-        U = 3
+        HH = np.reshape(abs(H), (max(I1.shape), max(I2.shape))).T
+
+        ic(HH.shape)
+        ic(EE.shape)
 
         # Calculate accelerating field
-        L_half_cell = 0.187  # length of cavity half cell
+        L_half_cell = 0.0577  # length of cavity half cell
+        iris_radius = 0.035
         E_axis = EE[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
         z_slice = zz[0, :]
-        z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
-        Vacc = np.trapz(z_slice, E_axis)
+        # z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
+
+        Vacc = self.calculate_vacc(z_slice, E_axis)
         Eacc = Vacc / (2 * L_half_cell)
-        Epk_Eacc = np.max(EE) / Eacc
+
+        epk = self.calculate_epk(np.max(EE), Eacc)
+        bpk = self.calculate_bpk(np.max(HH), Eacc)
+        ic(epk, bpk)
+
+        ic(np.shape(rr), np.shape(zz), np.shape(H))
+        U = self.calculate_U(EE, HH, rr, zz)
+        ic(U)
+        ic(np.max(EE)/U)
+
+        RQ = self.calculate_rq(Vacc, U)
+        ic(RQ, 2*RQ)
+
+        z_e, E_surf = self.get_surface_field(EE, zz, rr, iris_radius)
+        z_h, H_surf = self.get_surface_field(HH, zz, rr, iris_radius)
+
+        ic(self.calculate_epk(np.max(E_surf), Eacc), self.calculate_bpk(np.max(H_surf), Eacc))
+
+        # plt.scatter(np.array(z_e), E_surf/np.max(E_surf))
+        # plt.scatter(np.array(z_h), H_surf/np.max(H_surf))
+        # plt.show()
+
+    def get_surface_field(self, field_array, zz, rr, iris_radius):
+        """
+        Get the surface field values. Works by looping through the 2D field array and returning the first and last
+        non-zero elements in each row
+
+        Parameters
+        ----------
+        field_array
+        iris_radius
+
+        Returns
+        -------
+
+        """
+        left_surf_field_val, right_surf_field_val = [], []
+        left_z, right_z = [], []
+
+        for i, row in enumerate(field_array[np.all(rr >= iris_radius, axis=1)]):
+            row_ = row[row != 0]
+            left_surf_field_val.append(row_[0])
+            right_surf_field_val.append(row_[-1])
+
+            # get index from array
+            ind1 = np.argwhere(row == row_[0])
+            ind2 = np.argwhere(row == row_[-1])
+
+            left_z.append(zz[i][ind1][0][0])
+            right_z.append(zz[i][ind2][-1][-1])
+
+        left_surf_field_val.extend(right_surf_field_val[::-1])
+        left_z.extend(right_z[::-1])
+
+        return left_z, left_surf_field_val
+
+    def get_point(self, X, Y, Z, pts, zz, rr):
+        z_list = []
+
+        def find_nearest(array, value):
+            array = np.asarray(array)
+            idx = (np.abs(array - value)).argmin()
+            return idx
+
+        ic(X.shape, Y.shape, Z.shape)
+        contour_x = []
+        contour_y = []
+        for pt in pts.T:
+            # get index
+            ind_x = find_nearest(X, pt[0])
+            ind_y = find_nearest(Y, pt[1])
+            contour_x.append(zz_[ind_x])
+            contour_y.append(rr[ind_y])
+            z_list.append(Z.T[ind_x, ind_y])
+
+        ic(z_list)
+        coords = np.vstack((contour_x, contour_y))
+        plt.plot(coords[0, :], coords[1, :], c='r')
+        # plt.plot(z_list, marker='o')
+        plt.show()
 
     def find_resonance(self, freq):
         maara = 10           # number of eigenvalues
@@ -871,6 +944,61 @@ class FS:
         spio.savemat(f"{self.folder}/kama1.mat", kama2, format='4')
 
         return k1, k2, u1, u2
+
+    def calculate_vacc(self, z, E_axis):
+        """
+        calculates accelerating voltage
+
+        .. math::
+
+           V_acc = \int E(z=0)
+
+        Parameters
+        ----------
+        z
+        E_axis
+
+        Returns
+        -------
+
+        """
+        # calculate Vacc
+        E_axis = E_axis*np.exp(1j*(2*np.pi*self.freq/c0)*z)
+        Vacc = np.trapz(E_axis, z)
+
+        return np.abs(Vacc)
+
+    @staticmethod
+    def calculate_epk(Epk, Eacc):
+        return Epk/Eacc
+
+    @staticmethod
+    def calculate_bpk(Hpk, Eacc):
+        return mu0*Hpk*1e3/(Eacc*1e-6)
+
+    @staticmethod
+    def calculate_U(E, H, gr, gz):
+
+        iris_radius = 0.035
+        ic(E.shape, H.shape)
+        # H = H[0, :]
+        # E = E[0, :]
+        # calculate volume which is area under contour curve
+        ic(gr.shape)
+        z = gz[0, :]
+        r = gr[:, 0]
+        ic(len(z), len(r))
+
+        U = 0.5*mu0*np.trapz(np.trapz(H**2, r, axis=0), z)
+        UE = 0.5*eps0*np.trapz(np.trapz(E**2, r, axis=0), z)
+        ic(np.max(E))
+        ic(U, UE, UE/U)
+
+        return U
+
+    def calculate_rq(self, Vacc, U):
+        ic(Vacc, self.freq, U)
+        return Vacc**2/(2*np.pi*self.freq * U)
 
     def save_fields(self, wall, job):
         fieldfile1 = pd.read_csv(fr"{self.folder}\fieldfile1.txt", sep='\s+',
@@ -1189,7 +1317,6 @@ class FS:
 
 
 if __name__ == '__main__':
-    folder = fr'D:\Dropbox\CavityDesignHub\em_codes\customEig\run_files'
+    folder = fr'D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\run_files'
     fs = FS(folder)
-    fs.run_field_solver()
-    plt.show()
+    fs.run_field_solver(show_plots=False)

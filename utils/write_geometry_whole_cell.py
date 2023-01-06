@@ -24,9 +24,9 @@ def drawCavity():
     endTESLA_r = np.array([68.12, 68.12, 14.60, 20.76, 63.25, 92.14, 167.62]) * 1e-3
 
     # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3795
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = endC3795
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = endC3795
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midTESLA
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = endTESLA_r
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = endTESLA_l
 
     n_cell = 5
     step = 2  # step in boundary points in mm
