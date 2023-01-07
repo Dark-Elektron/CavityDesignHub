@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>analysis_modules.plot_module.plotter &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> CavityDesignHub (CaDH)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory.html">Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../get_involved.html">Get Involved</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">CavityDesignHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">CavityDesignHub (CaDH)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">analysis_modules.plot_module.plotter</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for analysis_modules.plot_module.plotter</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">termcolor</span> <span class="kn">import</span> <span class="n">colored</span>
+<span class="kn">from</span> <span class="nn">frame_controls.edit_line2d</span> <span class="kn">import</span> <span class="n">EditALine2DDialog</span>
+<span class="kn">from</span> <span class="nn">utils.file_reader</span> <span class="kn">import</span> <span class="n">FileReader</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qt5agg</span> <span class="kn">import</span> <span class="n">FigureCanvasQTAgg</span>  <span class="c1"># NavigationToolbar2QT as NavigationToolbar</span>
+<span class="kn">from</span> <span class="nn">utils.CustomNavBar</span> <span class="kn">import</span> <span class="n">MyCustomToolbar</span> <span class="k">as</span> <span class="n">NavigationToolbar</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">matplotlib.gridspec</span> <span class="k">as</span> <span class="nn">gridspec</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">from</span> <span class="nn">analysis_modules.plot_module.matplotlib_annotation_objects</span> <span class="kn">import</span> <span class="n">DraggableText</span><span class="p">,</span> <span class="n">DraggableAxvline</span>
+<span class="kn">from</span> <span class="nn">frame_controls.edit_annotated_text_dialog</span> <span class="kn">import</span> <span class="n">EditATextDialog</span>
+
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s1">&#39;Qt5Agg&#39;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;toolbar&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;toolmanager&#39;</span>
+
+<span class="n">fr</span> <span class="o">=</span> <span class="n">FileReader</span><span class="p">()</span>
+
+
+<span class="n">file_color</span> <span class="o">=</span> <span class="s1">&#39;yellow&#39;</span>
+<span class="n">DEBUG</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<div class="viewcode-block" id="print_"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.print_">[docs]</a><span class="k">def</span> <span class="nf">print_</span><span class="p">(</span><span class="o">*</span><span class="n">arg</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">DEBUG</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">colored</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{</span><span class="n">arg</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">file_color</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Plot"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot">[docs]</a><span class="k">class</span> <span class="nc">Plot</span><span class="p">(</span><span class="n">FigureCanvasQTAgg</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_y</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eal</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">eat</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">set_tight_layout</span><span class="p">(</span><span class="s2">&quot;True&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentUI</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="c1"># new feature</span>
+        <span class="c1"># add gridspec</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">7</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gs</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">figure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gs2</span> <span class="o">=</span> <span class="n">gridspec</span><span class="o">.</span><span class="n">GridSpec</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">height_ratios</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">width_ratios</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">figure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="n">ax2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs2</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">-</span><span class="n">i</span><span class="p">])</span>
+                <span class="c1"># turn off axis</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax2</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs2</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ax</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toggle_ax</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># self.ax = self.fig.add_subplot(111)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Left axis Default&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_zorder</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;savefig.facecolor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;ffffff&#39;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">Plot</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">widgetUI</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="c1"># self.plotUI = self.plot_widget.plotUI</span>
+        <span class="c1"># self.MROT = self.ui.cb_Polarization_ABCI.currentIndex()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">GLOBAL_STATE</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># mouse constants</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PRESS</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">RELEASE</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MOTION</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PICK</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># plot appearance</span>
+        <span class="c1"># self.aesthetics()</span>
+
+        <span class="c1"># handle events</span>
+        <span class="c1"># self.event_handler()</span>
+
+        <span class="c1"># add annotation</span>
+        <span class="n">annot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="n">textcoords</span><span class="o">=</span><span class="s2">&quot;offset points&quot;</span><span class="p">,</span>
+                                 <span class="n">bbox</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s2">&quot;round&quot;</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">),</span>
+                                 <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">))</span>
+        <span class="n">annot</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># zoom and pan</span>
+        <span class="n">scale</span> <span class="o">=</span> <span class="mf">1.1</span>
+        <span class="n">zp</span> <span class="o">=</span> <span class="n">ZoomPan</span><span class="p">()</span>
+        <span class="n">figZoom</span> <span class="o">=</span> <span class="n">zp</span><span class="o">.</span><span class="n">zoom_factory</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">base_scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span>
+        <span class="c1"># figPan = zp.pan_factory(self.axes)</span>
+
+        <span class="c1"># Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span> <span class="o">=</span> <span class="n">NavigationToolbar</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># create new axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_secondary_axes</span><span class="p">()</span>
+
+        <span class="c1"># # create new widgets</span>
+        <span class="c1"># self.create_new_widgets()</span>
+
+        <span class="c1"># redefine save_image function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">widgetUI</span><span class="o">.</span><span class="n">gl_Plot_Area</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">)</span>
+
+        <span class="c1"># handle events</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_handler</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axvline_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patched_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">picked_points_annotext_id_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_points_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Plot.toggle_ax"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.toggle_ax">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_ax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param visible:</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_list</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">visible</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs2</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">get_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_list</span><span class="p">):</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="n">visible</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs2</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">ax</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs2</span><span class="p">[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">-</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">get_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_list</span><span class="p">:</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">get_position</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Plot.signals"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.signals">[docs]</a>    <span class="k">def</span> <span class="nf">signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Plot.change_scale"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.change_scale">[docs]</a>    <span class="k">def</span> <span class="nf">change_scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">flush_events</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.plot_settings"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.plot_settings">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">plot_settings</span><span class="p">(</span><span class="n">mode</span><span class="p">):</span>
+        <span class="c1"># plt.style.use([&#39;science&#39;, &#39;no-latex&#39;])</span>
+        <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;presentation&#39;</span><span class="p">:</span>
+            <span class="c1"># plt.rcParams[&quot;figure.figsize&quot;] = (11, 6)</span>
+            <span class="c1">#</span>
+            <span class="c1"># mpl.rcParams[&#39;lines.markersize&#39;] = 10</span>
+            <span class="c1">#</span>
+            <span class="c1"># # axes</span>
+            <span class="c1"># mpl.rcParams[&#39;axes.labelsize&#39;] = 20</span>
+            <span class="c1"># mpl.rcParams[&#39;axes.titlesize&#39;] = 25</span>
+            <span class="c1">#</span>
+            <span class="c1"># mpl.rcParams[&#39;xtick.labelsize&#39;] = 15</span>
+            <span class="c1"># mpl.rcParams[&#39;ytick.labelsize&#39;] = 15</span>
+            <span class="c1">#</span>
+
+            <span class="c1"># plot settings</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;xtick.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;ytick.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.titlesize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;legend.fontsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;large&#39;</span>
+
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">9.8</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.dpi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+
+        <span class="k">if</span> <span class="n">mode</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;square&#39;</span><span class="p">:</span>
+            <span class="c1"># plot settings</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;xtick.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;ytick.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">20</span>
+
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.labelsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;axes.titlesize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">24</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;legend.fontsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;large&#39;</span>
+
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.figsize&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">]</span>
+            <span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.dpi&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span></div>
+
+<div class="viewcode-block" id="Plot.create_secondary_axes"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.create_secondary_axes">[docs]</a>    <span class="k">def</span> <span class="nf">create_secondary_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Create multiple axes</span>
+        <span class="c1"># twin object for two different y-axis on the sample plot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">twinx</span><span class="p">()</span>
+        <span class="c1"># turn off axis ticks and labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span><span class="o">.</span><span class="n">axes</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Right axis Default&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plot.event_handler"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.event_handler">[docs]</a>    <span class="k">def</span> <span class="nf">event_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_button_press</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_press</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_button_release</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_release_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_release</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_pick</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;pick_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_pick</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cid_motion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_motion</span><span class="p">)</span></div>
+
+        <span class="c1"># self.cid_figure_enter = self.fig.canvas.mpl_connect(&#39;figure_enter_event&#39;, self.enter_figure)</span>
+        <span class="c1"># self.cid_figure_leave = self.fig.canvas.mpl_connect(&#39;figure_leave_event&#39;, self.leave_figure)</span>
+        <span class="c1"># self.cid_axes_enter = self.fig.canvas.mpl_connect(&#39;axes_enter_event&#39;, self.enter_axes)</span>
+        <span class="c1"># self.cid_axes_leave = self.fig.canvas.mpl_connect(&#39;axes_leave_event&#39;, self.leave_axes)</span>
+
+<div class="viewcode-block" id="Plot.on_press"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.on_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># get event position in fig size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">event_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_y</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="c1"># set global variable to True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PRESS</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># handle identifying objects</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="c1"># selecting objects right click</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">Annotation</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draggableTextContextMenuEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">Line2D</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draggableAxvlineContextMenuEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">contextMenuEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Plot.on_release"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.on_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># reset selected object to none</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PRESS</span> <span class="o">=</span> <span class="kc">False</span></div>
+        <span class="c1"># set press to false</span>
+
+<div class="viewcode-block" id="Plot.on_pick"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.on_pick">[docs]</a>    <span class="k">def</span> <span class="nf">on_pick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1">########################################################</span>
+        <span class="c1"># # legend toggle</span>
+        <span class="c1"># # on the pick event, find the orig line corresponding to the</span>
+        <span class="c1"># # legend proxy line, and toggle the visibility</span>
+        <span class="c1"># legline = event.artist</span>
+
+        <span class="c1"># origline = self.lined[legline]</span>
+
+        <span class="c1"># vis = not origline.get_visible()</span>
+        <span class="c1"># origline.set_visible(vis)</span>
+        <span class="c1"># # Change the alpha on the line in the legend so we can see what lines</span>
+        <span class="c1"># # have been toggled</span>
+        <span class="c1"># if vis:</span>
+        <span class="c1">#     legline.set_alpha(1.0)</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     legline.set_alpha(0.2)</span>
+        <span class="c1">#############################################################</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">artist</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">legend</span><span class="o">.</span><span class="n">Legend</span><span class="p">):</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">Annotation</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)]</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+            <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">collections</span><span class="o">.</span><span class="n">PathCollection</span><span class="p">):</span>
+            <span class="n">obj_id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">obj_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">picked_points_annotext_id_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">annotext_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">picked_points_annotext_id_dict</span><span class="p">[</span><span class="n">obj_id</span><span class="p">]</span>
+
+                <span class="c1"># remove annotated text object from axes</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="p">[</span><span class="n">annotext_id</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+                <span class="c1"># remove annotated text object from dictionary</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="p">[</span><span class="n">annotext_id</span><span class="p">]</span>
+
+                <span class="c1"># remove scatter object from axes</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+                <span class="c1"># remove scatter object form dictionary</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">picked_points_annotext_id_dict</span><span class="p">[</span><span class="n">obj_id</span><span class="p">]</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+                <span class="c1"># return</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">,</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">lines</span><span class="o">.</span><span class="n">Line2D</span><span class="p">):</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">ind</span>
+            <span class="n">x_picked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="o">.</span><span class="n">get_xdata</span><span class="p">()[</span><span class="nb">min</span><span class="p">(</span><span class="n">ind</span><span class="p">)]</span>
+            <span class="n">y_picked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="o">.</span><span class="n">get_ydata</span><span class="p">()[</span><span class="nb">min</span><span class="p">(</span><span class="n">ind</span><span class="p">)]</span>
+
+            <span class="c1"># add annotated text at picked point</span>
+            <span class="c1"># calculate location of annotation from axes extents and event position</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentUI</span><span class="o">.</span><span class="n">cb_Active_Axis</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Left&quot;</span><span class="p">:</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span>
+
+            <span class="n">xlim</span><span class="p">,</span> <span class="n">ylim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">(),</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+            <span class="c1"># pos_x, pos_y = (x_picked - xlim[0])/(xlim[1] - xlim[0]), (y_picked - ylim[0])/(ylim[1] - ylim[0])</span>
+            <span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span> <span class="o">=</span> <span class="n">x_picked</span><span class="p">,</span> <span class="n">y_picked</span>
+
+            <span class="c1"># check if newly selected points is close to any of the old selected points</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_points_list</span><span class="p">)):</span>
+                <span class="n">pl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_points_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">pl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x_picked</span><span class="p">)</span><span class="o">/</span><span class="n">pl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.2</span> <span class="ow">and</span> <span class="p">(</span><span class="n">pl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">y_picked</span><span class="p">)</span><span class="o">/</span><span class="n">pl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.2</span><span class="p">:</span>
+                    <span class="c1"># delete point from list</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_points_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                    <span class="k">return</span>
+
+            <span class="c1"># plot circle around the point</span>
+            <span class="n">scatter_obj</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">pos_x</span><span class="p">,</span> <span class="n">pos_y</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">facecolors</span><span class="o">=</span><span class="s2">&quot;None&quot;</span><span class="p">,</span>
+                                     <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+            <span class="n">x_scale</span><span class="p">,</span> <span class="n">y_scale</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xscale</span><span class="p">(),</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_yscale</span><span class="p">()</span>
+
+            <span class="c1"># get x_axis title</span>
+            <span class="n">xlbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">xaxis</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+            <span class="n">ylbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">get_label</span><span class="p">()</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pos_x</span> <span class="o">&lt;=</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">x_scale</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+                    <span class="n">text_x</span> <span class="o">=</span> <span class="n">pos_x</span> <span class="o">+</span> <span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">20</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">text_x</span> <span class="o">=</span> <span class="n">pos_x</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">x_scale</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+                    <span class="n">text_size</span> <span class="o">=</span> <span class="mi">30</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xlbl</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">x_picked</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">fig_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">text_x</span> <span class="o">=</span> <span class="n">pos_x</span> <span class="o">-</span> <span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">20</span> <span class="o">-</span> <span class="p">(</span><span class="n">text_size</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">text_size</span> <span class="o">=</span> <span class="mi">30</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xlbl</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">x_picked</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">fig_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">text_x</span> <span class="o">=</span> <span class="n">pos_x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">((</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">20</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">text_size</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="k">if</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">pos_y</span> <span class="o">&lt;=</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">y_scale</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+                    <span class="n">text_y</span> <span class="o">=</span> <span class="n">pos_y</span> <span class="o">+</span> <span class="p">(</span><span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">5</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">text_y</span> <span class="o">=</span> <span class="n">pos_y</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">y_scale</span> <span class="o">==</span> <span class="s1">&#39;linear&#39;</span><span class="p">:</span>
+                    <span class="n">text_y</span> <span class="o">=</span> <span class="n">pos_y</span> <span class="o">-</span> <span class="p">(</span><span class="n">ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">5</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">text_y</span> <span class="o">=</span> <span class="n">pos_y</span>
+
+            <span class="n">text</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">xlbl</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">x_picked</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">ylbl</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="nb">round</span><span class="p">(</span><span class="n">y_picked</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">annotext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="s2">&quot;Round4&quot;</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">x_picked</span><span class="p">,</span> <span class="n">y_picked</span><span class="p">),</span> <span class="n">xycoords</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
+                                     <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="n">text_x</span><span class="p">,</span> <span class="n">text_y</span><span class="p">),</span> <span class="n">textcoords</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
+                                     <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                     <span class="n">arrowprops</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">arrowstyle</span><span class="o">=</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s1">&#39;black&#39;</span><span class="p">))</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">picked_points_annotext_id_dict</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">scatter_obj</span><span class="p">)]</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="n">annotext</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">selected_points_list</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x_picked</span><span class="p">,</span> <span class="n">y_picked</span><span class="p">])</span>
+
+            <span class="c1"># self.axvline_dict[f&quot;{id(self.selected_object)}&quot;].connect()</span>
+
+            <span class="c1"># xmouse, ymouse = event.mouseevent.xdata, event.mouseevent.ydata</span>
+            <span class="c1"># x, y = artist.get_xdata(), artist.get_ydata()</span>
+            <span class="c1"># ind = event.ind</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.on_motion"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.on_motion">[docs]</a>    <span class="k">def</span> <span class="nf">on_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="c1"># vis = self.annot.get_visible()</span>
+        <span class="c1"># if isinstance(self.ax, event.inaxes):  # not so good fix</span>
+        <span class="c1">#     cont, ind = self.plot_object.contains(event)</span>
+        <span class="c1">#     if cont:</span>
+        <span class="c1">#         self.update_annot(</span>
+        <span class="c1">#             ind[&quot;ind&quot;][0])  # ind returns an array of close points. ind[&#39;ind&#39;][0] returns just the first point</span>
+        <span class="c1">#         self.annot.set_visible(True)</span>
+        <span class="c1">#         self.fig.canvas.draw_idle()</span>
+        <span class="c1">#     else:</span>
+        <span class="c1">#         if vis:</span>
+        <span class="c1">#             self.annot.set_visible(False)</span>
+        <span class="c1">#             self.fig.canvas.draw_idle()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">MOTION</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+        <span class="c1"># if self.PRESS and self.MOTION:</span>
+
+<div class="viewcode-block" id="Plot.enter_axes"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.enter_axes">[docs]</a>    <span class="k">def</span> <span class="nf">enter_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.leave_axes"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.leave_axes">[docs]</a>    <span class="k">def</span> <span class="nf">leave_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.enter_figure"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.enter_figure">[docs]</a>    <span class="k">def</span> <span class="nf">enter_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+
+        <span class="c1"># get canvas size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig_size</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span><span class="o">*</span><span class="n">fig</span><span class="o">.</span><span class="n">dpi</span>
+
+        <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.leave_figure"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.leave_figure">[docs]</a>    <span class="k">def</span> <span class="nf">leave_figure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.update_annot"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.update_annot">[docs]</a>    <span class="k">def</span> <span class="nf">update_annot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ind</span><span class="p">):</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">xy</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="s2">&quot;ind&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span> <span class="n">y</span><span class="p">[</span><span class="n">ind</span><span class="p">[</span><span class="s2">&quot;ind&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]])</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">ind</span><span class="p">[</span><span class="s2">&quot;ind&quot;</span><span class="p">]))))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_bbox_patch</span><span class="p">()</span><span class="o">.</span><span class="n">set_alpha</span><span class="p">(</span><span class="mf">0.4</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">annot</span><span class="o">.</span><span class="n">get_bbox_patch</span><span class="p">()</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">((</span><span class="mi">167</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">222</span> <span class="o">/</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span> <span class="o">/</span> <span class="mi">255</span><span class="p">))</span></div>
+        <span class="c1"># self.annot.get_bbox_patch().set_alpha(1)</span>
+
+<div class="viewcode-block" id="Plot.contextMenuEvent"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">contextMenu</span> <span class="o">=</span> <span class="n">QMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">textAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Add Text&quot;</span><span class="p">)</span>
+        <span class="n">arrowAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Add Arrow&quot;</span><span class="p">)</span>
+        <span class="n">arrowAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Move axis marker to minimum&quot;</span><span class="p">)</span>
+        <span class="n">arrowAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Move axis marker to maximum&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get figure size and subtract from event.y because event.y counts bottom up.</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">)</span> <span class="o">-</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">textAct</span><span class="p">:</span>
+            <span class="c1"># create pop up widget</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eat</span> <span class="o">=</span> <span class="n">EditATextDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.draggableTextContextMenuEvent"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.draggableTextContextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">draggableTextContextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">contextMenu</span> <span class="o">=</span> <span class="n">QMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">editAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Edit&quot;</span><span class="p">)</span>
+        <span class="n">deleteAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Delete&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get figure size and subtract from event.y because event.y counts bottom up</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">dpi</span><span class="p">)</span> <span class="o">-</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">deleteAct</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_text</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">editAct</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="c1"># create pop up widget</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eat</span> <span class="o">=</span> <span class="n">EditATextDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eat</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.draggableAxvlineContextMenuEvent"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.draggableAxvlineContextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">draggableAxvlineContextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">contextMenu</span> <span class="o">=</span> <span class="n">QMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">editAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Edit&quot;</span><span class="p">)</span>
+        <span class="n">deleteAct</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Delete&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get figure size and subtract from event.y because event.y counts bottom up.</span>
+        <span class="n">action</span> <span class="o">=</span> <span class="n">contextMenu</span><span class="o">.</span><span class="n">exec_</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mapToGlobal</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QPoint</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">dpi</span> <span class="o">-</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">)))</span>
+
+        <span class="k">if</span> <span class="n">action</span> <span class="o">==</span> <span class="n">deleteAct</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_axvline</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axvline_dict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="k">elif</span> <span class="n">action</span> <span class="o">==</span> <span class="n">editAct</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">axvline_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">on_release</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="c1"># create pop up widget</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eal</span> <span class="o">=</span> <span class="n">EditALine2DDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">eal</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.add_text"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.add_text">[docs]</a>    <span class="k">def</span> <span class="nf">add_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">),</span> <span class="n">xycoords</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="n">xytext</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">textcoords</span><span class="o">=</span><span class="s1">&#39;data&#39;</span><span class="p">,</span>
+                 <span class="n">size</span><span class="o">=</span><span class="mi">14</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">arrowprops</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        text</span>
+<span class="sd">        box</span>
+<span class="sd">        xy</span>
+<span class="sd">        xycoords</span>
+<span class="sd">        xytext</span>
+<span class="sd">        textcoords</span>
+<span class="sd">        size</span>
+<span class="sd">        rotation</span>
+<span class="sd">        arrowprops</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parentUI</span><span class="o">.</span><span class="n">cb_Active_Axis</span><span class="o">.</span><span class="n">currentText</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;Left&quot;</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span>
+
+        <span class="c1"># add text</span>
+        <span class="k">if</span> <span class="n">xytext</span><span class="p">:</span>
+            <span class="n">bbox_props</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">box</span><span class="p">),</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+            <span class="n">annotext</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">xy</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="n">xycoords</span><span class="p">,</span>
+                                   <span class="n">xytext</span><span class="o">=</span><span class="n">xytext</span><span class="p">,</span> <span class="n">textcoords</span><span class="o">=</span><span class="n">textcoords</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox_props</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                   <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">,</span> <span class="n">arrowprops</span><span class="o">=</span><span class="n">arrowprops</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">box</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">:</span>
+                <span class="n">annotext</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">xy</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="n">xycoords</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                       <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">,</span> <span class="n">arrowprops</span><span class="o">=</span><span class="n">arrowprops</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">bbox_props</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">boxstyle</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">box</span><span class="p">),</span> <span class="n">fc</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+                <span class="n">annotext</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="n">xy</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="n">xycoords</span><span class="p">,</span> <span class="n">bbox</span><span class="o">=</span><span class="n">bbox_props</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
+                                       <span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">,</span> <span class="n">arrowprops</span><span class="o">=</span><span class="n">arrowprops</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">DraggableText</span><span class="p">(</span><span class="n">annotext</span><span class="p">)</span>
+        <span class="n">dt</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="p">[</span><span class="nb">id</span><span class="p">(</span><span class="n">annotext</span><span class="p">)]</span> <span class="o">=</span> <span class="n">dt</span>
+
+        <span class="k">return</span> <span class="n">annotext</span></div>
+
+<div class="viewcode-block" id="Plot.remove_text"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.remove_text">[docs]</a>    <span class="k">def</span> <span class="nf">remove_text</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">selected_obj_id</span> <span class="o">=</span> <span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="p">[</span><span class="n">selected_obj_id</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="c1"># remove key from dictionary</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="p">[</span><span class="n">selected_obj_id</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.add_axvline"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.add_axvline">[docs]</a>    <span class="k">def</span> <span class="nf">add_axvline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+        <span class="c1"># add vertical line</span>
+        <span class="n">axvline</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax_right</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;gray&#39;</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">DraggableAxvline</span><span class="p">(</span><span class="n">axvline</span><span class="p">)</span>
+        <span class="n">dt</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axvline_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="n">axvline</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+
+        <span class="k">return</span> <span class="n">axvline</span></div>
+
+<div class="viewcode-block" id="Plot.remove_axvline"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.remove_axvline">[docs]</a>    <span class="k">def</span> <span class="nf">remove_axvline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axvline_dict</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selected_object</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Plot.add_square"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.add_square">[docs]</a>    <span class="k">def</span> <span class="nf">add_square</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># add square object</span>
+
+        <span class="c1">#</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Plot.remove_square"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.remove_square">[docs]</a>    <span class="k">def</span> <span class="nf">remove_square</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Plot.clear"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># remove all text</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">val</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">print_</span><span class="p">(</span><span class="s2">&quot;plotter.py: Exception:: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="c1"># remove all lines</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">axvline_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">val</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">print_</span><span class="p">(</span><span class="s2">&quot;plotter.py: Exception:: &quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+        <span class="c1"># reset dictionaries</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axvline_dict</span> <span class="o">=</span> <span class="p">{}</span></div>
+
+<div class="viewcode-block" id="Plot.change_background"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.Plot.change_background">[docs]</a>    <span class="k">def</span> <span class="nf">change_background</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">color</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">flush_events</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="ZoomPan"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.ZoomPan">[docs]</a><span class="k">class</span> <span class="nc">ZoomPan</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_xlim</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cur_ylim</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x0</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y0</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xpress</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ypress</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="ZoomPan.zoom_factory"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.ZoomPan.zoom_factory">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">zoom_factory</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">base_scale</span><span class="o">=</span><span class="mf">2.</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">zoom</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="n">cur_xlim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+            <span class="n">cur_ylim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+
+            <span class="n">inv</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">]</span>
+
+            <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span> <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="s1">&#39;down&#39;</span><span class="p">:</span>
+                <span class="c1"># deal with zoom in</span>
+                <span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">base_scale</span>
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+                <span class="c1"># deal with zoom out</span>
+                <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">base_scale</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># deal with something that should never happen</span>
+                <span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="n">new_width</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">cur_xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scale_factor</span>
+            <span class="n">new_height</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">cur_ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="n">scale_factor</span>
+
+            <span class="n">relx</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xdata</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">cur_xlim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">cur_xlim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">rely</span> <span class="o">=</span> <span class="p">(</span><span class="n">cur_ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ydata</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">cur_ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">cur_ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">([</span><span class="n">xdata</span> <span class="o">-</span> <span class="n">new_width</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">relx</span><span class="p">),</span> <span class="n">xdata</span> <span class="o">+</span> <span class="n">new_width</span> <span class="o">*</span> <span class="n">relx</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="n">ydata</span> <span class="o">-</span> <span class="n">new_height</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">rely</span><span class="p">),</span> <span class="n">ydata</span> <span class="o">+</span> <span class="n">new_height</span> <span class="o">*</span> <span class="n">rely</span><span class="p">])</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>  <span class="c1"># get the figure of interest</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;scroll_event&#39;</span><span class="p">,</span> <span class="n">zoom</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">zoom</span></div>
+
+<div class="viewcode-block" id="ZoomPan.pan_factory"><a class="viewcode-back" href="../../../analysis_modules.plot_module.html#analysis_modules.plot_module.plotter.ZoomPan.pan_factory">[docs]</a>    <span class="k">def</span> <span class="nf">pan_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">onPress</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="n">ax</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_xlim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_xlim</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_ylim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
+
+            <span class="n">inv</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">]</span>
+
+            <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span> <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y0</span><span class="p">,</span> <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpress</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ypress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">press</span>
+
+        <span class="k">def</span> <span class="nf">onRelease</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">onMotion</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="n">ax</span><span class="p">:</span>
+                <span class="k">return</span>
+
+            <span class="n">inv</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="o">.</span><span class="n">inverted</span><span class="p">()</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">]</span>
+
+            <span class="n">xdata</span><span class="p">,</span> <span class="n">ydata</span> <span class="o">=</span> <span class="n">inv</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span>
+
+            <span class="n">dx</span> <span class="o">=</span> <span class="n">xdata</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">xpress</span>
+            <span class="n">dy</span> <span class="o">=</span> <span class="n">ydata</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ypress</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_xlim</span> <span class="o">-=</span> <span class="n">dx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cur_ylim</span> <span class="o">-=</span> <span class="n">dy</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_xlim</span><span class="p">)</span>
+            <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cur_ylim</span><span class="p">)</span>
+
+            <span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_figure</span><span class="p">()</span>  <span class="c1"># get the figure of interest</span>
+
+        <span class="c1"># attach the call back</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_press_event&#39;</span><span class="p">,</span> <span class="n">onPress</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;button_release_event&#39;</span><span class="p">,</span> <span class="n">onRelease</span><span class="p">)</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;motion_notify_event&#39;</span><span class="p">,</span> <span class="n">onMotion</span><span class="p">)</span>
+
+        <span class="c1"># return the function</span>
+        <span class="k">return</span> <span class="n">onMotion</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Plot</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
