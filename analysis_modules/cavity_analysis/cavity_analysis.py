@@ -2244,6 +2244,10 @@ class Cavity:
 
         self.ql_pin(label, geometry, RF, QOI, machine)
 
+    def view(self):
+        # view cavity contour plot
+        pass
+
     def write_cavity_for_multipac(self):
         pass
 

@@ -24,14 +24,14 @@ def drawCavity():
     endTESLA_r = np.array([68.12, 68.12, 14.60, 20.76, 63.25, 92.14, 167.62]) * 1e-3
 
     # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midTESLA
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = endTESLA_r
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = endTESLA_l
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3795
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = midC3795
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = midC3795
 
-    n_cell = 5
+    n_cell = 1
     step = 2  # step in boundary points in mm
-    L_bp_l = 4 * L_m  # 0.0001  #
-    L_bp_r = 4 * L_m  # 0.0001  #
+    L_bp_l = 0.0001  # 4 * L_m  #
+    L_bp_r = 0.0001  # 4 * L_m  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -768,6 +768,6 @@ def arcTo(x_center, y_center, a, b, step, start, end):
 
 if __name__ == '__main__':
 
-    # drawCavity()
-    drawCavity_flat_top()
+    drawCavity()
+    # drawCavity_flat_top()
     # drawCapacitor()

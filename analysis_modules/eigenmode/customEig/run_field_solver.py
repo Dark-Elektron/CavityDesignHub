@@ -1,8 +1,9 @@
+import ast
 import os
 import shutil
 import subprocess
 import sys
-
+from utils.shared_functions import *
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.integrate
@@ -20,106 +21,126 @@ mu0 = 4 * np.pi * 1e-7
 eps0 = 8.85418782e-12
 
 
-class FS:
-    # parameters for the MP analysis
-
+class Model:
     def __init__(self, folder):
+        self.job = None
+        self.mesh = None
+        self.fieldparam = None
+        self.param = None
         self.folder = folder
-        pass
+        self.geodata = None
 
     def create_inputs(self):
-        files_list = ["initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat", "counter_initials.mat",
+        # remove old files
+        files_list = ["geodata.n", "initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat", "counter_initials.mat",
                       "gene_initials.mat", "gene_temp.mat", "initials_temp.mat", "distance_flevel.mat",
                       "counter_initialsl.mat", "gene_initialsl.mat", "initials_templ.mat", "distance_flevell.mat",
                       "counter_initialsr.mat", "gene_initialsr.mat", "initials_tempr.mat", "distance_flevelr.mat",
                       "dx.mat", "alphas.mat"]
-        for file in files_list:
+        # input_files_list = ["initials", "param", "fieldparam", "counter_flevels.mat",
+        #                     "counter_initials.mat",
+        #                     "gene_initials.mat"]
+        for file in input_files_list:
             if os.path.exists(fr"{self.folder}\{file}"):
                 os.remove(fr"{self.folder}\{file}")
+
+        # write intset. sample points and set for integration
+        if not os.path.exists(fr"{self.folder}\intset.mat"):
+            PP, ww = self.inttri(6)
+            intset = {"PP": PP,
+                      "ww": ww}
+            spio.savemat(f"{self.folder}/intset.mat", intset, format='4')
+
+        # check if geometry has been written
+        if not os.path.exists(fr"{self.folder}\geodata.n"):
+            ic("The geometry file geodata.n seems to be missing")
+            return
 
         ic('Old input data deleted.')
 
         # Inputs for eigenmode solver
-        freq = 1300e6
+        # freq = 1300e6
+        freq = 801.58e6
         gtype = 1
         # save the inputs 
         # save_values
 
-        my0    = 4*np.pi*1e-7 
-        eps0   = 8.85418782e-12 
-        lambda_ = 1 / (freq*np.sqrt(eps0*my0))
-        eta0   = 376.7303134111465
+        my0 = 4 * np.pi * 1e-7
+        eps0 = 8.85418782e-12
+        lambda_ = 1 / (freq * np.sqrt(eps0 * my0))
+        eta0 = 376.7303134111465
         epsr = 1  # relative epsilon
         strech = 0
         d1 = 1  # Grid constant
         d2 = 1  # Mesh constant
-        R = -1 + 0*1j
+        R = -1 + 0 * 1j
         v0 = 2  # initial velocity
         N = 20  # Number of impacts
         Z = 0
-        
-        fieldparam = [gtype, freq, epsr, d1/1000, R.real, R.imag, strech, Z]
+
+        self.fieldparam = [gtype, freq, epsr, d1 / 1000, R.real, R.imag, strech, Z]
         # save -ascii fieldparam fieldparam
-        df = pd.DataFrame(fieldparam)
+        df = pd.DataFrame(self.fieldparam)
         df.to_csv(fr'{self.folder}\fieldparam', index=False, header=False, float_format='%.7E')
-        
+
         # field levels
         # flevel = np.arange(flmin, flmax, flstep).T*1e3
-        
+
         # # save counter_flevels flevel
         # df = pd.DataFrame(flevels)
         # df.to_csv(fr'{self.folder}\flevels', index=False, header=False, float_format='%.7E')
-        
+
         # parameters for the MP analysis
         m = 9.1093879e-31
         q = 1.6021773e-19
         c = 2.99792458e8
         param = np.zeros((7, 1))
-        V0 = 1                               # intensity of the EM field
+        V0 = 1  # intensity of the EM field
         # V0    = 2  error_message('POISTA TÄMÄ - TESTI (save_values.m)')
-        gamma = c/freq/(2*np.pi)                   # distance/phase -coefficient
-        v00 = c*np.sqrt(1 - 1/((v0 * q/(m*c**2)+1)**2))  # initial velocity (relativistic)
+        gamma = c / freq / (2 * np.pi)  # distance/phase -coefficient
+        v00 = c * np.sqrt(1 - 1 / ((v0 * q / (m * c ** 2) + 1) ** 2))  # initial velocity (relativistic)
         # v00   = sqrt(2*v0*q/m)                 # (classical)
-        ctype = 1                               # compute counter functions
-        tol = 1e-3                            # tolerance for the ODE solver
+        ctype = 1  # compute counter functions
+        tol = 1e-3  # tolerance for the ODE solver
         emin = 1  # not required for eigenmode analysis
         emax = 10  # not required for eigenmode analysis
-        param = [freq, V0, gamma, v00, N, ctype, tol, emin, emax]
+        self.param = [freq, V0, gamma, v00, N, ctype, tol, emin, emax]
         # save -ascii param param
-        df = pd.DataFrame(param)
+        df = pd.DataFrame(self.param)
         df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
-        
-        # grid constant for creating a new grid
-        # load geodata.n
-        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
 
-        geodata[0, 0] = d2/1000
-        # save -ascii geodata.n geodata
+        # grid constant for creating a new grid
+        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+        self.geodata[0, 0] = d2 / 1000
         df = pd.DataFrame(geodata)
         df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
-        
-        # # parameters for the initial point generator
-        # dx = dx/1000                         # dimensions in mm
-        # dc = dx/10                           # distance from the nearest corner
-        # alpha = 0                               # initial velocity angle
-        # dt = dphi/freq/360                   # time step
-        # initials = [-dx,dc,alpha,dt,zmin,zmax]
-        # # save gene_initials initials
-        # df = pd.DataFrame(initials)
-        # df.to_csv(fr'{self.folder}\initials', index=False, header=False, float_format='%.7E')
-        # -----------------------------------------------------------------------
 
-    def mesh_cavity(self, geodata, gridcons, epsr, s):
-        ic("inside mesh cavity")
-        n = len(geodata[:, 1]) - 1
-        gr = geodata[3:n, 0]
-        gz = geodata[3:n, 1]
-        gn = geodata[3:n, 2]
+    def define_geometry(self, n_cell, mid_cell, end_cell_left, end_cell_right, beampipe='both', plot=False):
+        write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+        self.geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+
+    def generate_mesh(self, gridcons=0.005, epsr=1, plot=False):
+
+        # Then the edges, the third column secifies the type of an edge as follows:
+        #   1 : nxE = 0 on boundary
+        #   3 : nxH = 0 on boundary
+        #   0 : for stretching (open boundary condition?)
+
+        if not self.geodata:
+            ic("Geometry data geodata.n missing. No geometry to mesh")
+            return
+
+        ic("Meshing geometry")
+
+        n = len(self.geodata[:, 1]) - 1
+        gr = self.geodata[3:n, 0]
+        gz = self.geodata[3:n, 1]
+        gn = self.geodata[3:n, 2]
         n = len(gr)
 
-        PEC = np.where(gn == 1)[0]       # electric walls
-        WIN = np.where(gn == 2)[0]       # dielectric walls
-        PMC = np.where(gn == 3)[0]       # magnetic walls
+        PEC = np.where(gn == 1)[0]  # electric walls
+        WIN = np.where(gn == 2)[0]  # dielectric walls
+        PMC = np.where(gn == 3)[0]  # magnetic walls
 
         if len(WIN) > 0:
             ic('Dielectric boundary found in a cavity.')
@@ -127,40 +148,26 @@ class FS:
 
         # specify the job for the eigenvalue solver
         if len(PMC) > 0:
-            if s > 0:
-                ic('A cavity with magnetic walls.')
-                job = 1
-            elif len(PEC) > 0 & len(PMC) == 0:
-                if s > 0:
-                    ic('A cavity with electric walls.')
-                    job = 0
-            else:
-                ic('Invalid geometry.')
-                return
-        job = {"job": 1}
-        # save job job
+            ic('A cavity with magnetic walls.')
+            self.job = 1
+        elif len(PEC) > 0 & len(PMC) == 0:
+            ic('A cavity with electric walls.')
+            self.job = 0
+        else:
+            ic('Invalid surface boundary conditions. Please check the geometry file.')
+            return
+
+        job = {"job": self.job}
         spio.savemat(f'{self.folder}/job.mat', job, format='4')
 
-        # First the nodes of the geometry
         nodes = np.array([gz, gr]).T
-
-        # Then the edges, the third column secifies the type of an edge as follows:
-        #   1 : nxE = 0 on boundary
-        #   3 : nxH = 0 on boundary
-        #   0 : for streching
-
-        edges = np.array([np.arange(1, n+1), np.append(np.arange(2, n+1), 1), gn]).T
-        # ic(edges)
+        edges = np.array([np.arange(1, n + 1), np.append(np.arange(2, n + 1), 1), gn]).T
         ne = len(edges[:, 0])
 
-        # And finally the pacthes, first the edges are listed, last three values
-        # give relative epsilon, relative mu and patch type, 0 = can strecth,
-        # 1-n = regulars
-        patches = np.append(np.arange(1, ne+1), [epsr, 1, 1])
-        # ic(patches)
-
+        # Patches: first the edges are listed, last three values give relative epsilon, relative mu and patch type,
+        # 0 = can stretch, 1-n = regulars
+        patches = np.append(np.arange(1, ne + 1), [epsr, 1, 1])
         esize = gridcons
-        esize = 0.005
 
         # save model.mat
         model = {'nodes': nodes,
@@ -168,115 +175,96 @@ class FS:
                  "patches": patches,
                  "esize": esize
                  }
-
         spio.savemat(f"{self.folder}/model.mat", model, format='4')
 
         # start the mesh generator
-        # ic("It's here")
         subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder,
                         stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        ic("Done with meshing")
 
-    def plot_mesh(self, s):
-        # Function program plot_mesh(s)
-        # --------------------------------------------------------------------
-        # Plots the mesh.
-        #
-        # --------------------------------------------------------------------
-        # CALLS TO : print.m, clear_window.m
-        # xx/yy/00 : Seppo Järvempää
-        # 04/04/00 : Pasi Ylä-Oijala - m-file
-        # --------------------------------------------------------------------
-        s = 0
-        # if nargin < 1:
-        #   s = 1
+        self.mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
+        ic("Meshing completed.")
+        if plot:
+            self.plot_mesh()
 
-        cl = 0
-        ok1 = os.path.exists(fr"{self.folder}\mesh.mat")
-        ok2 = os.path.exists(fr"{self.folder}\fieldparam")
+    def plot_mesh(self):
+        fig, ax = plt.subplots()
+        if not os.path.exists(fr"{self.folder}\mesh.mat"):
+            ic(['The mesh does not exists. There might have been an error in generating the mesh.'])
+            return
 
-        if not ok1:
-            print(['The mesh does not exists. Choose Mesh Generator in menu Run.'])
-        elif not ok2:
-            print('Parameter file fieldparam does not exist.')
+        if not os.path.exists(fr"{self.folder}\fieldparam"):
+            ic('Parameter file fieldparam does not exist.')
+            return
+
+        gtype = self.fieldparam[0]
+        if gtype == 1:
+            ic('\tPlotting the mesh.')
         else:
-            gtype = self.gtype
-            if gtype == 1:
-                if s > 0:
-                    print('Plotting the mesh.')
-                #      print('
-                else:
-                    if s > 0:
-                        print('Plotting the mesh. Blue area for streching.')
-                    #      print('                  ')
+            ic('\tPlotting the mesh. Blue area for streching.')
 
-            # plots 2-d mesh in mesh.mat, which includes coord and etopol -arrays
-            # load mesh
-            mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
-            coord = mesh['coord']
-            etopol = mesh['etopol']
-            alue = mesh['alue']
-            tyyppi = mesh['tyyppi']
-            boundary = mesh['boundary']
-            edges = mesh['edges']
+        # plots 2D mesh in mesh.mat, which includes coord and etopol -arrays
+        coord = self.mesh['coord']
+        etopol = self.mesh['etopol']
+        alue = self.mesh['alue']
+        tyyppi = self.mesh['tyyppi']
+        boundary = self.mesh['boundary']
+        edges = self.mesh['edges']
 
-            xmin = min(coord[:, 0])
-            xmax = max(coord[:, 0])
-            ymin = min(coord[:, 1])
-            ymax = max(coord[:, 1])
-            # self.ax.plot([xmin, xmax, xmax, xmin], [ymin, ymin, ymax, ymax], 'k.')
+        x_min = min(coord[:, 0])
+        x_max = max(coord[:, 0])
+        y_min = min(coord[:, 1])
+        y_max = max(coord[:, 1])
+        ax.plot([x_min, x_max, x_max, x_min], [y_min, y_min, y_max, y_max], 'k.')
 
-            koko, pois = np.shape(etopol)
-            ala = 0.0
-            X = np.zeros((4, koko))
-            Y = np.zeros((4, koko))
-            C = np.zeros((0, koko))
-            for i in range(koko):
-                n1 = int(etopol[i, 0]) - 1
-                x1 = coord[n1, 0]
-                y1 = coord[n1, 1]
-                n2 = int(etopol[i, 1]) - 1
-                x2 = coord[n2, 0]
-                y2 = coord[n2, 1]
-                n3 = int(etopol[i, 1]) - 1
-                x3 = coord[n3, 0]
-                y3 = coord[n3, 1]
-                X[:, i] = np.array([x1, x2, x3, x1]).T
-                Y[:, i] = np.array([y1, y2, y3, y1]).T
+        koko, pois = np.shape(etopol)
+        ala = 0.0
+        X = np.zeros((4, koko))
+        Y = np.zeros((4, koko))
+        C = np.zeros((0, koko))
+        for i in range(koko):
+            n1 = int(etopol[i, 0]) - 1
+            x1 = coord[n1, 0]
+            y1 = coord[n1, 1]
+            n2 = int(etopol[i, 1]) - 1
+            x2 = coord[n2, 0]
+            y2 = coord[n2, 1]
+            n3 = int(etopol[i, 1]) - 1
+            x3 = coord[n3, 0]
+            y3 = coord[n3, 1]
+            X[:, i] = np.array([x1, x2, x3, x1]).T
+            Y[:, i] = np.array([y1, y2, y3, y1]).T
 
-                osa = (x2 -x1) * (y3 -y1) -(x3 -x1) *(y2 -y1)
-                ala = ala + osa
-                self.ax.plot([x1, x2, x3, x1], [y1, y2, y3, y1], 'k')
+            osa = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
+            ala = ala + osa
+            ax.plot([x1, x2, x3, x1], [y1, y2, y3, y1], 'k')
 
-            I = np.where(alue.T[0] == 0)[0]
-            self.ax.fill(X[:, I], Y[:, I], 'b')
-            I = np.where(tyyppi.T[0] == 1)[0]
-            self.ax.fill(X[:, I], Y[:, I], 'r')
-            I = np.where(tyyppi.T[0] == 2)[0]
-            self.ax.fill(X[:, I], Y[:, I], 'g')
+        mask = np.where(alue.T[0] == 0)[0]
+        ax.fill(X[:, mask], Y[:, mask], 'b')
+        mask = np.where(tyyppi.T[0] == 1)[0]
+        ax.fill(X[:, mask], Y[:, mask], 'r')
+        mask = np.where(tyyppi.T[0] == 2)[0]
+        ax.fill(X[:, mask], Y[:, mask], 'g')
 
-            I = np.where(edges[:, 2] > 0)[0]  # no bouncing
-            for i in range(len(I)):
-                i1 = int(edges[I[i], 0]) - 1
-                i2 = int(edges[I[i], 1]) - 1
-                # ic(i1, np.shape(i1))
-                self.ax.plot([coord[i1, 0], coord[i2, 0]], [coord[i1, 1], coord[i2, 1]], 'r')
+        mask = np.where(edges[:, 2] > 0)[0]  # no bouncing
+        for i in range(len(mask)):
+            i1 = int(edges[mask[i], 0]) - 1
+            i2 = int(edges[mask[i], 1]) - 1
 
-            I = np.where(boundary == 3)
-            for i in range(len(I)):
-                self.ax.plot(coord[I[i], 0], coord[(I[i ] -1, 1)], 'b*')
+            ax.plot([coord[i1, 0], coord[i2, 0]], [coord[i1, 1], coord[i2, 1]], 'r')
 
-            I = np.where(boundary == 0)[0]
-            self.ax.plot(coord[I, 0], coord[I, 1], 'w*')
-            ala = ala / 2
-            self.ax.set_title('[MultiPac 2.0                    Mesh                  date ]')
-            self.ax.set_xlabel('z axis [m]')
-            self.ax.set_ylabel('r axis [m]')
-            # self.plt.ax.set_axis('image')
-            # self.ax.set_colormap('jet')
-            self.fig.canvas.draw_idle()
+        mask = np.where(boundary == 3)
+        for i in range(len(mask)):
+            ax.plot(coord[mask[i], 0], coord[(mask[i] - 1, 1)], 'b*')
 
-    def run_field_solver(self, show_plots=True):
+        mask = np.where(boundary == 0)[0]
+        ax.plot(coord[mask, 0], coord[mask, 1], 'w*')
+        ala = ala / 2
+        ax.set_xlabel('z axis [m]')
+        ax.set_ylabel('r axis [m]')
+
+        plt.show()
+
+    def run_field_solver(self, n_modes=None, freq=0, req_mode=None, show_plots=True, search=True):
         # Function program cavity_field(s)
         # -----------------------------------------------------------------------
         # Runs the field solver for computing the EM fields in a cavity with
@@ -291,42 +279,28 @@ class FS:
 
         self.create_inputs()
 
+        if not self.geodata:
+            return
+
+        if not self.mesh:
+            ic("No mesh found. Generating mesh with default settings.")
+            self.generate_mesh(plot=show_plots)
+
         # load geodata.n
-        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
-        gridcons1 = geodata[0, 0]
+        # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+        gridcons1 = self.geodata[0, 0]
 
         # load fieldparam
-        fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy()
-        self.gtype = fieldparam[0][0]
-        self.freq = fieldparam[1][0]
-        self.epsr = fieldparam[2][0]
-        self.gridcons = fieldparam[3][0]
-
-        s = 0
-
-        # gtype = 'Cavity'
-        # self.gtype = gtype
-        # freq = 801.58e6
-        # releps = 1
-        # gridcons = 5e-3
-        # self.epsr = releps
+        # fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy()
+        gtype = self.fieldparam[0]
+        freq = self.fieldparam[1]
+        epsr = self.fieldparam[2]
+        gridcons = self.fieldparam[3]
 
         if self.epsr > 1:
-            print('Relative permittivity > 1?')
+            ic('Relative permittivity > 1?')
 
-        ic("Generating mesh")
-        self.mesh_cavity(geodata, gridcons1, self.epsr, s)
-        ic('\nDone generating mesh')
-        if show_plots:
-            ic("Plotting mesh")
-            self.plot_mesh(0)
-            ic("\nDone with plotting mesh")
-
-        # find resonance solution
-        job = 1
-        ic('Computing the eigen values.')
-        freqn = self.eigen(job, self.freq)
-        ic("Done with eigenmode analysis: freq:", freqn)
+        freqn = self.eigen(n_modes, freq, req_mode, search)
         # k1, k2 = self.find_resonance(freq)
 
         err = (abs(freqn - self.freq) / self.freq) * 100
@@ -336,76 +310,77 @@ class FS:
         # compute and plot the fields
         ic("Computing fields")
         self.calculate_fields(0, gridcons1, 0)
-        ic('\n Done computing fields')
+        ic('\t Done computing fields')
         if show_plots:
             ic("Plotting fields")
             self.plot_FEM_fields(0, gridcons1, s)
-            ic('\n Done plotting fields')
+            ic('\t Done plotting fields')
 
-    def eigen(self, jobl, freq):
-        maara = 10
-        job = {"job": 1}
+    def eigen(self, n_modes, freq, req_mode, search=True):
+        if not n_modes:
+            n_modes = n_cells + 1
+        if req_mode:
+            if req_mode > n_modes:
+                req_mode = n_cells - 1
+        else:
+            req_mode = n_cells - 1
+
+        # maara = 10  Means number of modes in original code
         offset = {"offset": 0}
-        spio.savemat(f"{self.folder}/job.mat", job, format='4')
         spio.savemat(f"{self.folder}/offset.mat", offset, format='4')
-        # options.disp = 0
 
         # !eigenC_bin
         cwd = fr'{self.folder}'
         eigenCpath = fr'{self.folder}\eigenC_bin.exe'
         if os.path.exists(eigenCpath):
-            subprocess.call(eigenCpath, cwd=cwd,
-                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-
-        ic("\n\nDone running eigenC_bin.exe")
+            # subprocess.call(eigenCpath, cwd=cwd,
+            #                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            subprocess.call(eigenCpath, cwd=cwd)
+        ic("\tDone running eigenC_bin.exe")
 
         cinfo = spio.loadmat(fr"{self.folder}\cinfo.mat")['cinfo'][0]
         if cinfo != 0:
-            ic(cinfo)
-            ic('\n\nEigenvalue solver failed.')
+            ic('\t\tEigenvalue solver failed.')
 
         # load o_eigen
+        # I think eigen2_bin only writes out the matrices necessary for the computation of the eigenvalues and
+        # does not actually solve the eigenvalue problem
         o_eigen = spio.loadmat(fr"{self.folder}\o_eigen.mat")
         n = int(o_eigen['n'])
-        ia = o_eigen['ia'].T[0] - 1  # mnatlab indices to python
+        ia = o_eigen['ia'].T[0] - 1  # matlab indices to python
         ja = o_eigen['ja'].T[0] - 1
         Aarvot = o_eigen['Aarvot'].T[0]
         Barvot = o_eigen['Barvot'].T[0]
         nf = o_eigen['nf']
         index = o_eigen['index']
         siirto = o_eigen['siirto'][0]
-        # ic(index.shape, Aarvot.shape, Barvot.shape)
 
-        # ic(ia, ja, Aarvot, n)
-        # ic(np.shape(ia), np.shape(ja), np.shape(Aarvot))
         AA = sps.csr_matrix((Aarvot, (ia, ja)), shape=(n, n))
         BB = sps.csr_matrix((Barvot, (ia, ja)), shape=(n, n))
 
-        d2, u2 = spsl.eigs(AA, M=BB, k=maara, sigma=0)
+        d2, u2 = spsl.eigs(AA, M=BB, k=n_modes, sigma=freq)
 
+        # imaginary component of eigenvectors are zero
         u2 = u2.real
-
-        # ic(u2.shape)
         d2 = np.absolute(d2)
-
-        mu0 = 4 * np.pi * 1e-7
-        e0 = 8.85418782e-12
-        k0 = 2 * np.pi * freq * np.sqrt(mu0 * e0)
-
         k = np.sqrt(d2)
-        eigenvalues = k[0:maara]
-        # ic(eigenvalues)
-        k2 = k
 
-        val = np.min(abs(k0 - k2))
-        ind = np.argmin(abs(k0 - k2))
-        k = k2[ind]
-        u = u2[:, ind]
-        # ic(k)
+        if search:
+            k0 = 2 * np.pi * freq * np.sqrt(mu0 * e0)  # required eigenvalue, consider changing to frequency instead
+            k2 = k
 
-        # new frequency
-        freqn = k / (2 * np.pi * np.sqrt(mu0 * e0))
-        # ic(freqn)
+            # find eigenvalue with min error. To return all eigenvalues, modify here
+            val = np.min(abs(k0 - k2))
+            ind = np.argmin(abs(k0 - k2))
+            k = k2[ind]
+            u = u2[:, ind]
+            # new frequency
+            eigen_freq = k / (2 * np.pi * np.sqrt(mu0 * e0))
+        else:
+            eigenvalues = k[0:no_of_modes]
+            eigen_frequencies = k / (2 * np.pi * np.sqrt(mu0 * e0))
+            eigen_freq = eigen_frequencies[req_mode]
+
         param = pd.read_csv(fr"{self.folder}\param", sep='\s+', header=None).to_numpy().T[0]
         # ic(param)
         # load param
@@ -415,9 +390,8 @@ class FS:
         df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
 
         fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy().T[0]
-        # load fieldparam
         fieldparam[1] = freqn
-        # ic(freqn)
+
         # save -ascii fieldparam fieldparam
         df = pd.DataFrame(fieldparam)
         df.to_csv(fr'{self.folder}\fieldparam', index=False, header=False, float_format='%.7E')
@@ -431,7 +405,7 @@ class FS:
                  }
 
         spio.savemat(f"{self.folder}/kama0.mat", kama0, format='4')
-        ic("\n\nDone with eigen")
+        ic("\t\tDone with eigen")
         return freqn
 
     def calculate_fields(self, s, gridcons, ss=1):
@@ -451,26 +425,26 @@ class FS:
 
         ok1 = os.path.exists(fr"{self.folder}\mesh.mat")
         if not ok1:
-            ic(['\n\nThe mesh does not exists. Choose Mesh Generator in menu Run.'])
+            ic(['\t\tThe mesh does not exists. Choose Mesh Generator in menu Run.'])
 
         ok2 = 1
         if s == 0:
             if os.path.exists(fr"{self.folder}\kama0.mat"):
                 ok2 = 0
             if ok2 == 0:
-                ic(['\n\nThe fields do not exist. Choose Field Solver in menu Run.'])
+                ic(['\t\tThe fields do not exist. Choose Field Solver in menu Run.'])
 
             elif s == 1:
                 ok21 = os.path.exists(fr"{self.folder}\kama1.mat")
                 ok22 = os.path.exists(fr"{self.folder}\kama2.mat")
                 ok2 = ok21 * ok22
                 if ok2 == 0:
-                    ic(['\n\nThe fields do not exist. Choose Field Solver in menu Run.'])
+                    ic(['\t\tThe fields do not exist. Choose Field Solver in menu Run.'])
 
         if ok1 == 0 and ok2 == 0 and ok3 == 0:
             ok = os.path.exists(fr"{self.folder}\geodata.n")
             if ok:
-                ic('\n\nComputing the fields.')
+                ic('\t\tComputing the fields.')
                 #  error_message('                                  ')
 
                 # define the grid constant
@@ -483,7 +457,6 @@ class FS:
                 #     gridcons = geodata[0, 0]
 
         # load mesh
-        # ic(gtype)
         mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
         coord = mesh['coord']
         etopol = mesh['etopol']
@@ -557,7 +530,7 @@ class FS:
 
         # compute the fields at generated points
         if s == 0:
-            ic("\n\nCalculating fields")
+            ic("\t\tCalculating fields")
             # !copy /y kama0.mat kama.mat
             shutil.copyfile(fr'{self.folder}\kama0.mat', fr'{self.folder}\kama.mat')
 
@@ -578,7 +551,7 @@ class FS:
 
             self.save_fields(0, 1)
 
-            ic("\n\nCalculating QoIs")
+            ic("\t\tCalculating QoIs")
             self.calculate_QoI()
             # self.normalize_u(0)
         # else:
@@ -693,28 +666,28 @@ class FS:
         # ic(zz, type(zz), np.shape(zz))
 
         # plot the fields
-        if s == 0:                                   # a pcolor plot
+        if s == 0:  # a pcolor plot
             # ic(I2.shape, I1.shape, Er.shape)
             Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
             Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
             ic(Ez)
-            EE = np.sqrt(abs(Er)**2 + abs(Ez)**2).T
+            EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2).T
 
             # Calculate accelerating field
             L_half_cell = 0.0935  # length of cavity half cell
             E_axis = EE[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
-            E_axis = np.sqrt(Ez**2).T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
+            E_axis = np.sqrt(Ez ** 2).T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
             plt.plot(E_axis)
             plt.show()
             z_slice = zz[0, :]
             z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
 
             Vacc = np.trapz(E_axis * np.exp(1j * 2 * np.pi * 801.58e6 * z_slice / c0), z_slice)
-            Eacc = abs(Vacc)/(2*5*L_half_cell)
-            Epk_Eacc = np.max(EE)/Eacc
+            Eacc = abs(Vacc) / (2 * 5 * L_half_cell)
+            Epk_Eacc = np.max(EE) / Eacc
 
-            Hmag = np.sqrt(H**2).T
-            Hpk_Eacc = np.max(Hmag)*1e-3/(Eacc*1e-6)
+            Hmag = np.sqrt(H ** 2).T
+            Hpk_Eacc = np.max(Hmag) * 1e-3 / (Eacc * 1e-6)
 
             print(np.max(EE), Eacc, Epk_Eacc)
             print(np.max(Hmag), Eacc, Hpk_Eacc)
@@ -734,7 +707,7 @@ class FS:
             axs[0].set_title('MultiPac 2.0          Electric field   abs (E)   [V/m]      ')
 
             HH = np.reshape(H, (max(I1.shape), max(I2.shape))).T
-            pcH = axs[1].pcolor(zz, rr, 4e-7*np.pi*HH, cmap='RdBu')
+            pcH = axs[1].pcolor(zz, rr, 4e-7 * np.pi * HH, cmap='RdBu')
             plt.colorbar(pcH, ax=axs[1])
 
             axs[1].plot(gz, gr, '-b')
@@ -754,7 +727,7 @@ class FS:
             plt.spy(Er.T)
             plt.show()
 
-        else:                                   # an arrow plot
+        else:  # an arrow plot
             F = [Ez.T, Er.T]
             A = [z.T, r.T]
 
@@ -792,6 +765,9 @@ class FS:
         # plot the fields
         Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
         Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
+
+        # check electric fields
+        ic(Er.shape)
         EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2).T
         HH = np.reshape(abs(H), (max(I1.shape), max(I2.shape))).T
 
@@ -799,35 +775,59 @@ class FS:
         ic(EE.shape)
 
         # Calculate accelerating field
-        L_half_cell = 0.0577  # length of cavity half cell
-        iris_radius = 0.035
+        L_half_cell = 0.0935  # length of cavity half cell
+        iris_radius = 0.01
         E_axis = EE[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
         z_slice = zz[0, :]
+        plt.plot(z_slice, E_axis)
+        plt.show()
         # z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
 
         Vacc = self.calculate_vacc(z_slice, E_axis)
-        Eacc = Vacc / (2 * L_half_cell)
-
-        epk = self.calculate_epk(np.max(EE), Eacc)
-        bpk = self.calculate_bpk(np.max(HH), Eacc)
-        ic(epk, bpk)
+        Eacc = Vacc / (2 * 1 * L_half_cell)
 
         ic(np.shape(rr), np.shape(zz), np.shape(H))
-        U = self.calculate_U(EE, HH, rr, zz)
-        ic(U)
-        ic(np.max(EE)/U)
-
-        RQ = self.calculate_rq(Vacc, U)
-        ic(RQ, 2*RQ)
 
         z_e, E_surf = self.get_surface_field(EE, zz, rr, iris_radius)
         z_h, H_surf = self.get_surface_field(HH, zz, rr, iris_radius)
+        ic(np.max(EE), ic(np.max(E_surf)))
+        epk = self.calculate_epk(np.max(E_surf), Eacc)
+        bpk = self.calculate_bpk(np.max(H_surf), Eacc)
+        ic(epk, np.max(EE) / Eacc, bpk)
 
-        ic(self.calculate_epk(np.max(E_surf), Eacc), self.calculate_bpk(np.max(H_surf), Eacc))
-
-        # plt.scatter(np.array(z_e), E_surf/np.max(E_surf))
-        # plt.scatter(np.array(z_h), H_surf/np.max(H_surf))
+        # plt.plot(np.array(z_e), E_surf/np.max(E_surf))
+        # plt.plot(np.array(z_h), H_surf/np.max(H_surf))
         # plt.show()
+
+        # calculate energy
+        U = self.calculate_U(EE, HH, zz, rr)
+        ic(U)
+        ic(np.max(EE) / U, Vacc / U)
+
+        RQ = self.calculate_rq(Vacc, U)
+        ic(RQ)
+
+    @staticmethod
+    def calculate_U(EE, HH, zz, rr):
+        # correct energy for TESLA 1 CELL
+        # U = 0.001986
+        ic(EE.shape, HH.shape)
+
+        # calculate volume which is area under contour curve
+        ic(rr.shape)
+        z = zz[0, :]
+        r = rr[:, 0]
+        # ic(z, r)
+
+        U = np.pi * mu0 * np.trapz(np.trapz(HH ** 2 * rr, r, axis=0), z)
+        UE = np.pi * eps0 * np.trapz(np.trapz(EE ** 2 * rr, r, axis=0),
+                                     z)  # multiply by 2 because we only analysed half the geometry
+        ic(U, UE)
+
+        return U
+
+    def calculate_P(self):
+        pass
 
     def get_surface_field(self, field_array, zz, rr, iris_radius):
         """
@@ -848,56 +848,34 @@ class FS:
 
         for i, row in enumerate(field_array[np.all(rr >= iris_radius, axis=1)]):
             row_ = row[row != 0]
-            left_surf_field_val.append(row_[0])
-            right_surf_field_val.append(row_[-1])
+            # ic(row_.shape)
+            # print(i, row_.shape[0])
+            if row_.shape[0] != 0:
+                left_surf_field_val.append(row_[0])
+                right_surf_field_val.append(row_[-1])
 
-            # get index from array
-            ind1 = np.argwhere(row == row_[0])
-            ind2 = np.argwhere(row == row_[-1])
+                # get index from array
+                ind1 = np.argwhere(row == row_[0])
+                ind2 = np.argwhere(row == row_[-1])
 
-            left_z.append(zz[i][ind1][0][0])
-            right_z.append(zz[i][ind2][-1][-1])
+                left_z.append(zz[i][ind1][0][0])
+                right_z.append(zz[i][ind2][-1][-1])
 
         left_surf_field_val.extend(right_surf_field_val[::-1])
         left_z.extend(right_z[::-1])
 
         return left_z, left_surf_field_val
 
-    def get_point(self, X, Y, Z, pts, zz, rr):
-        z_list = []
-
-        def find_nearest(array, value):
-            array = np.asarray(array)
-            idx = (np.abs(array - value)).argmin()
-            return idx
-
-        ic(X.shape, Y.shape, Z.shape)
-        contour_x = []
-        contour_y = []
-        for pt in pts.T:
-            # get index
-            ind_x = find_nearest(X, pt[0])
-            ind_y = find_nearest(Y, pt[1])
-            contour_x.append(zz_[ind_x])
-            contour_y.append(rr[ind_y])
-            z_list.append(Z.T[ind_x, ind_y])
-
-        ic(z_list)
-        coords = np.vstack((contour_x, contour_y))
-        plt.plot(coords[0, :], coords[1, :], c='r')
-        # plt.plot(z_list, marker='o')
-        plt.show()
-
     def find_resonance(self, freq):
-        maara = 10           # number of eigenvalues
-        raja = 1e-3           # error tolerance
+        maara = 10  # number of eigenvalues
+        raja = 1e-3  # error tolerance
 
         EKENTTA = 0
         HKENTTA = 1
 
-        mu0 = 4*np.pi*1e-7
+        mu0 = 4 * np.pi * 1e-7
         e0 = 8.85418782e-12
-        k0 = 2*np.pi*freq*np.sqrt(mu0*e0)            # "correct" eigenvalue
+        k0 = 2 * np.pi * freq * np.sqrt(mu0 * e0)  # "correct" eigenvalue
 
         ic('----------- E-walls ------------')
         ic(' Eigenvalue   error     shift')
@@ -963,42 +941,22 @@ class FS:
 
         """
         # calculate Vacc
-        E_axis = E_axis*np.exp(1j*(2*np.pi*self.freq/c0)*z)
+        E_axis = E_axis * np.exp(1j * (2 * np.pi * self.freq / c0) * z)
         Vacc = np.trapz(E_axis, z)
 
         return np.abs(Vacc)
 
     @staticmethod
     def calculate_epk(Epk, Eacc):
-        return Epk/Eacc
+        return Epk / Eacc
 
     @staticmethod
     def calculate_bpk(Hpk, Eacc):
-        return mu0*Hpk*1e3/(Eacc*1e-6)
-
-    @staticmethod
-    def calculate_U(E, H, gr, gz):
-
-        iris_radius = 0.035
-        ic(E.shape, H.shape)
-        # H = H[0, :]
-        # E = E[0, :]
-        # calculate volume which is area under contour curve
-        ic(gr.shape)
-        z = gz[0, :]
-        r = gr[:, 0]
-        ic(len(z), len(r))
-
-        U = 0.5*mu0*np.trapz(np.trapz(H**2, r, axis=0), z)
-        UE = 0.5*eps0*np.trapz(np.trapz(E**2, r, axis=0), z)
-        ic(np.max(E))
-        ic(U, UE, UE/U)
-
-        return U
+        return mu0 * Hpk * 1e3 / (Eacc * 1e-6)
 
     def calculate_rq(self, Vacc, U):
         ic(Vacc, self.freq, U)
-        return Vacc**2/(2*np.pi*self.freq * U)
+        return Vacc ** 2 / (2 * np.pi * self.freq * U)
 
     def save_fields(self, wall, job):
         fieldfile1 = pd.read_csv(fr"{self.folder}\fieldfile1.txt", sep='\s+',
@@ -1122,7 +1080,7 @@ class FS:
             jatka = 1
             while (jatka > 0) & (jatka < 4):
                 ic('problem, have not stretched enough, trying to fix')
-                offset1 = offset1-0.9
+                offset1 = offset1 - 0.9
 
                 k3 = k
                 offset3 = offset2
@@ -1146,18 +1104,18 @@ class FS:
             if s1 != s2:
                 s3 = s2
                 offset3 = offset2
-                offset2 = 0.5*(offset1 + offset3)
+                offset2 = 0.5 * (offset1 + offset3)
                 s3 = s2
             elif s2 != s3:
                 s1 = s2
                 offset1 = offset2
-                offset2 = 0.5*(offset2 + offset3)
+                offset2 = 0.5 * (offset2 + offset3)
                 s1 = s2
 
             k, u, siirto = self.eee(offset2, maara, 0)
             ero2 = korig - k[ind]
             s2 = np.sign(ero2)
-        #   #  ic([k(ind), ero2, offset2, siirto])
+            #   #  ic([k(ind), ero2, offset2, siirto])
             ic([k[ind], ero2, siirto])
         offset1 = -0.9
         offset2 = 0
@@ -1169,10 +1127,10 @@ class FS:
         k3, _, _ = self.eee(offset3, maara, 0)
 
         if ind == 0:
-            ero2 = np.min(abs(k-korig))
-            ind = np.argmin(abs(k-korig))
+            ero2 = np.min(abs(k - korig))
+            ind = np.argmin(abs(k - korig))
             if abs(k[ind]) < 1e-6:
-                ind = ind+1
+                ind = ind + 1
 
         # ero1 = korig-k1(ind) s1 = np.sign(ero1)
         # ero2 = korig-k(ind) s2 = np.sign(ero2)
@@ -1188,7 +1146,7 @@ class FS:
             jatka = 1
             while (jatka > 0) & (jatka < 4):
                 ic('problem, have not stretched enough, trying to fix')
-                offset1 = offset1-0.9
+                offset1 = offset1 - 0.9
 
                 k3 = k
                 offset3 = offset2
@@ -1197,7 +1155,7 @@ class FS:
                 offset2 = offset1
                 s2 = s1
                 k1 = self.eee(offset1, maara, 0)
-                ero1 = korig-k1[ind]
+                ero1 = korig - k1[ind]
                 s1 = np.sign(ero3)
                 if s3 == 1:
                     jatka = 0
@@ -1212,12 +1170,12 @@ class FS:
             if s1 != s2:
                 s3 = s2
                 offset3 = offset2
-                offset2 = 0.5*(offset1+offset3)
+                offset2 = 0.5 * (offset1 + offset3)
                 s3 = s2
             elif s2 != s3:
                 s1 = s2
                 offset1 = offset2
-                offset2 = 0.5*(offset2+offset3)
+                offset2 = 0.5 * (offset2 + offset3)
                 s1 = s2
 
             k, u, siirto = self.eee(offset2, maara, 0)
@@ -1315,8 +1273,317 @@ class FS:
             kama_n = {'index': index, 'u': u, 'k': k}
             spio.savemat(fr'{self.folder}\kama_n.mat', kama_n, format='4')
 
+    def inttri(self, p):
+        # function [X,W]=inttri(p)
+        #
+        # The program gives the sample points X as a (2,n)-matrix and
+        # the weights W as an (n,1)-matrix for an integration over a
+        # planar triangle with the vertices (0,0), (1,0) and (0,1).
+        # The input argument p indicates the maximal degree of the poly-
+        # nomials of two variables which will be integrated exactly
+        # correctly, provided p<20. By a linear transformation, X and
+        # W are obtained from the paper: D.A. Dunavant: High degree
+        # efficient symmetrical gaussian quadrature rules for the
+        # triangle.- International Journal for Num. Methods in Eng.,
+        # vol. 21, 1129-1148(1985).
+        # ----------------------------------------------------------
+        # CALLS TO none
+        # 20 JUNI 1993:  Jukka Sarvas, Rolf Nevanlinna Institute
+        # ----------------------------------------------------------
+
+        if p == 11:
+            p = 12
+        elif (p == 15) | (p == 16):
+            p = 17
+        elif (p == 18) | (p > 19):
+            p = 19
+
+        table = {
+            '1': [3.33333333333333e-01, 3.33333333333333e-01, 5.00000000000000e-01],
+            '2': [1.66666666666666e-01, 6.66666666666667e-01, 1.66666666666667e-01, 6.66666666666667e-01,
+                  1.66666666666667e-01, 1.66666666666666e-01, 1.66666666666667e-01, 1.66666666666667e-01,
+                  1.66666666666667e-01],
+            '3': [3.33333333333333e-0, 2.00000000000000e-01, 6.00000000000000e-01, 2.00000000000000e-01,
+                  3.33333333333333e-01, 6.00000000000000e-01, 2.00000000000000e-01, 2.00000000000000e-01,
+                  -2.81250000000000e-01, 2.60416666666667e-01, 2.60416666666667e-01, 2.60416666666667e-01],
+            '4': [4.45948490915965e-01, 9.15762135097699e-02, 1.08103018168070e-01, 8.16847572980459e-01,
+                  4.45948490915965e-01, 9.15762135097710e-02, 1.08103018168070e-01, 8.16847572980459e-01,
+                  4.45948490915965e-01, 9.15762135097710e-02, 4.45948490915965e-01, 9.15762135097699e-02,
+                  1.11690794839006e-01, 5.49758718276610e-02, 1.11690794839006e-01, 5.49758718276610e-02,
+                  1.11690794839006e-01, 5.49758718276610e-02],
+            '5': [3.33333333333333e-01, 4.70142064105115e-01, 1.01286507323457e-01, 5.97158717897700e-02,
+                  7.97426985353087e-01, 4.70142064105115e-01, 1.01286507323456e-01, 3.33333333333333e-01,
+                  5.97158717897700e-02, 7.97426985353087e-01, 4.70142064105115e-01, 1.01286507323456e-01,
+                  4.70142064105115e-01, 1.01286507323457e-01, 1.12500000000000e-01, 6.61970763942530e-02,
+                  6.29695902724135e-02, 6.61970763942530e-02, 6.29695902724135e-02, 6.61970763942530e-02,
+                  6.29695902724135e-02],
+            '6': [2.49286745170911e-01, 6.30890144915021e-02, 5.01426509658179e-01, 8.73821971016996e-01,
+                  2.49286745170910e-01, 6.30890144915020e-02, 6.36502499121399e-01, 3.10352451033784e-01,
+                  5.31450498448170e-02, 5.31450498448170e-02, 3.10352451033784e-01, 6.36502499121399e-01,
+                  5.01426509658179e-01, 8.73821971016996e-01, 2.49286745170910e-01, 6.30890144915020e-02,
+                  2.49286745170911e-01, 6.30890144915021e-02, 5.31450498448170e-02, 5.31450498448170e-02,
+                  3.10352451033784e-01, 6.36502499121399e-01, 6.36502499121399e-01, 3.10352451033784e-01,
+                  5.83931378631895e-02, 2.54224531851035e-02, 5.83931378631895e-02, 2.54224531851035e-02,
+                  5.83931378631895e-02, 2.54224531851035e-02, 4.14255378091870e-02, 4.14255378091870e-02,
+                  4.14255378091870e-02, 4.14255378091870e-02, 4.14255378091870e-02, 4.14255378091870e-02],
+            '7': [3.33333333333333e-01, 2.60345966079040e-01, 6.51301029022160e-02, 4.79308067841920e-01,
+                  8.69739794195568e-01, 2.60345966079040e-01, 6.51301029022160e-02, 6.38444188569810e-01,
+                  3.12865496004874e-01, 4.86903154253160e-02, 4.86903154253160e-02, 3.12865496004874e-01,
+                  6.38444188569810e-01, 3.33333333333333e-01, 4.79308067841920e-01, 8.69739794195568e-01,
+                  2.60345966079040e-01, 6.51301029022160e-02, 2.60345966079040e-01, 6.51301029022160e-02,
+                  4.86903154253160e-02, 4.86903154253160e-02, 3.12865496004874e-01, 6.38444188569810e-01,
+                  6.38444188569810e-01, 3.12865496004874e-01, -7.47850222338410e-02, 8.78076287166040e-02,
+                  2.66736178044190e-02, 8.78076287166040e-02, 2.66736178044190e-02, 8.78076287166040e-02,
+                  2.66736178044190e-02, 3.85568804451285e-02, 3.85568804451285e-02, 3.85568804451285e-02,
+                  3.85568804451285e-02, 3.85568804451285e-02, 3.85568804451285e-02],
+            '8': [3.33333333333333e-01, 4.59292588292723e-01, 1.70569307751760e-01, 5.05472283170311e-02,
+                  8.14148234145540e-02, 6.58861384496480e-01, 8.98905543365938e-01, 4.59292588292723e-01,
+                  1.70569307751760e-01, 5.05472283170310e-02, 7.28492392955404e-01, 2.63112829634638e-01,
+                  8.39477740995800e-03, 8.39477740995800e-03, 2.63112829634638e-01, 7.28492392955404e-01,
+                  3.33333333333333e-01, 8.14148234145540e-02, 6.58861384496480e-01, 8.98905543365938e-01,
+                  4.59292588292723e-01, 1.70569307751760e-01, 5.05472283170310e-02, 4.59292588292723e-01,
+                  1.70569307751760e-01, 5.05472283170311e-02, 8.39477740995800e-03, 8.39477740995800e-03,
+                  2.63112829634638e-01, 7.28492392955404e-01, 7.28492392955404e-01, 2.63112829634638e-01,
+                  7.21578038388935e-02, 4.75458171336425e-02, 5.16086852673590e-02, 1.62292488115990e-02,
+                  4.75458171336425e-02, 5.16086852673590e-02, 1.62292488115990e-02, 4.75458171336425e-02,
+                  5.16086852673590e-02, 1.62292488115990e-02, 1.36151570872175e-02, 1.36151570872175e-02,
+                  1.36151570872175e-02, 1.36151570872175e-02, 1.36151570872175e-02, 1.36151570872175e-02],
+            '9': [3.33333333333333e-01, 4.89682519198737e-01, 4.37089591492936e-01, 1.88203535619032e-01,
+                  4.47295133944519e-02, 2.06349616025250e-02, 1.25820817014127e-01, 6.23592928761935e-01,
+                  9.10540973211095e-01, 4.89682519198738e-01, 4.37089591492937e-01, 1.88203535619033e-01,
+                  4.47295133944530e-02, 7.41198598784498e-01, 2.21962989160766e-01, 3.68384120547360e-02,
+                  3.68384120547360e-02, 2.21962989160766e-01, 7.41198598784498e-01, 3.33333333333333e-01,
+                  2.06349616025250e-02, 1.25820817014127e-01, 6.23592928761935e-01, 9.10540973211095e-01,
+                  4.89682519198738e-01, 4.37089591492937e-01, 1.88203535619033e-01, 4.47295133944530e-02,
+                  4.89682519198737e-01, 4.37089591492936e-01, 1.88203535619032e-01, 4.47295133944519e-02,
+                  3.68384120547360e-02, 3.68384120547360e-02, 2.21962989160766e-01, 7.41198598784498e-01,
+                  7.41198598784498e-01, 2.21962989160766e-01, 4.85678981413995e-02, 1.56673501135695e-02,
+                  3.89137705023870e-02, 3.98238694636050e-02, 1.27888378293490e-02, 1.56673501135695e-02,
+                  3.89137705023870e-02, 3.98238694636050e-02, 1.27888378293490e-02, 1.56673501135695e-02,
+                  3.89137705023870e-02, 3.98238694636050e-02, 1.27888378293490e-02, 2.16417696886445e-02,
+                  2.16417696886445e-02, 2.16417696886445e-02, 2.16417696886445e-02, 2.16417696886445e-02,
+                  2.16417696886445e-02],
+            '10': [3.33333333333333e-01, 4.85577633383658e-01, 1.09481575485037e-01, 2.88447332326850e-02,
+                   7.81036849029926e-01, 4.85577633383657e-01, 1.09481575485037e-01, 5.50352941820999e-01,
+                   7.28323904597411e-01, 9.23655933587501e-01, 3.07939838764121e-01, 2.46672560639903e-01,
+                   6.68032510122000e-02, 1.41707219414880e-01, 2.50035347626860e-02, 9.54081540029900e-03,
+                   1.41707219414880e-01, 2.50035347626860e-02, 9.54081540029900e-03, 3.07939838764121e-01,
+                   2.46672560639903e-01, 6.68032510122000e-02, 5.50352941820999e-01, 7.28323904597411e-01,
+                   9.23655933587501e-01, 3.33333333333333e-01, 2.88447332326850e-02, 7.81036849029926e-01,
+                   4.85577633383657e-01, 1.09481575485037e-01, 4.85577633383658e-01, 1.09481575485037e-01,
+                   1.41707219414880e-01, 2.50035347626860e-02, 9.54081540029900e-03, 1.41707219414880e-01,
+                   2.50035347626860e-02, 9.54081540029900e-03, 3.07939838764121e-01, 2.46672560639903e-01,
+                   6.68032510122000e-02, 5.50352941820999e-01, 7.28323904597411e-01, 9.23655933587501e-01,
+                   5.50352941820999e-01, 7.28323904597411e-01, 9.23655933587501e-01, 3.07939838764121e-01,
+                   2.46672560639903e-01, 6.68032510122000e-02, 4.54089951913770e-02, 1.83629788782335e-02,
+                   2.26605297177640e-02, 1.83629788782335e-02, 2.26605297177640e-02, 1.83629788782335e-02,
+                   2.26605297177640e-02, 3.63789584227100e-02, 1.41636212655285e-02, 4.71083348186650e-03,
+                   3.63789584227100e-02, 1.41636212655285e-02, 4.71083348186650e-03, 3.63789584227100e-02,
+                   1.41636212655285e-02, 4.71083348186650e-03, 3.63789584227100e-02, 1.41636212655285e-02,
+                   4.71083348186650e-03, 3.63789584227100e-02, 1.41636212655285e-02, 4.71083348186650e-03,
+                   3.63789584227100e-02, 1.41636212655285e-02, 4.71083348186650e-03],
+            '12': [4.88217389773805e-01, 4.39724392294461e-01, 2.71210385012116e-01, 1.27576145541586e-01,
+                   2.13173504532110e-02, 2.35652204523900e-02, 1.20551215411079e-01, 4.57579229975768e-01,
+                   7.44847708916828e-01, 9.57365299093579e-01, 4.88217389773805e-01, 4.39724392294460e-01,
+                   2.71210385012116e-01, 1.27576145541586e-01, 2.13173504532100e-02, 6.08943235779788e-01,
+                   6.95836086787803e-01, 8.58014033544073e-01, 2.75713269685514e-01, 2.81325580989940e-01,
+                   1.16251915907597e-01, 1.15343494534698e-01, 2.28383322222570e-02, 2.57340505483300e-02,
+                   1.15343494534698e-01, 2.28383322222570e-02, 2.57340505483300e-02, 2.75713269685514e-01,
+                   2.81325580989940e-01, 1.16251915907597e-01, 6.08943235779788e-01, 6.95836086787803e-01,
+                   8.58014033544073e-01, 2.35652204523900e-02, 1.20551215411079e-01, 4.57579229975768e-01,
+                   7.44847708916828e-01, 9.57365299093579e-01, 4.88217389773805e-01, 4.39724392294460e-01,
+                   2.71210385012116e-01, 1.27576145541586e-01, 2.13173504532100e-02, 4.88217389773805e-01,
+                   4.39724392294461e-01, 2.71210385012116e-01, 1.27576145541586e-01, 2.13173504532110e-02,
+                   1.15343494534698e-01, 2.28383322222570e-02, 2.57340505483300e-02, 1.15343494534698e-01,
+                   2.28383322222570e-02, 2.57340505483300e-02, 2.75713269685514e-01, 2.81325580989940e-01,
+                   1.16251915907597e-01, 6.08943235779788e-01, 6.95836086787803e-01, 8.58014033544073e-01,
+                   6.08943235779788e-01, 6.95836086787803e-01, 8.58014033544073e-01, 2.75713269685514e-01,
+                   2.81325580989940e-01, 1.16251915907597e-01, 1.28655332202275e-02, 2.18462722690190e-02,
+                   3.14291121089425e-02, 1.73980564653545e-02, 3.08313052577950e-03, 1.28655332202275e-02,
+                   2.18462722690190e-02, 3.14291121089425e-02, 1.73980564653545e-02, 3.08313052577950e-03,
+                   1.28655332202275e-02, 2.18462722690190e-02, 3.14291121089425e-02, 1.73980564653545e-02,
+                   3.08313052577950e-03, 2.01857788831905e-02, 1.11783866011515e-02, 8.65811555432950e-03,
+                   2.01857788831905e-02, 1.11783866011515e-02, 8.65811555432950e-03, 2.01857788831905e-02,
+                   1.11783866011515e-02, 8.65811555432950e-03, 2.01857788831905e-02, 1.11783866011515e-02,
+                   8.65811555432950e-03, 2.01857788831905e-02, 1.11783866011515e-02, 8.65811555432950e-03,
+                   2.01857788831905e-02, 1.11783866011515e-02, 8.65811555432950e-03],
+            '13': [3.33333333333333e-01, 4.95048184939704e-01, 4.68716635109574e-01, 4.14521336801276e-01,
+                   2.29399572042832e-01, 1.14424495196330e-01, 2.48113913634590e-02, 9.90363012059100e-03,
+                   6.25667297808520e-02, 1.70957326397447e-01, 5.41200855914337e-01, 7.71151009607340e-01,
+                   9.50377217273082e-01, 4.95048184939705e-01, 4.68716635109574e-01, 4.14521336801277e-01,
+                   2.29399572042831e-01, 1.14424495196330e-01, 2.48113913634590e-02, 6.36351174561660e-01,
+                   6.90169159986905e-01, 8.51409537834241e-01, 2.68794997058761e-01, 2.91730066734288e-01,
+                   1.26357385491669e-01, 9.48538283795790e-02, 1.81007732788070e-02, 2.22330766740900e-02,
+                   9.48538283795790e-02, 1.81007732788070e-02, 2.22330766740900e-02, 2.68794997058761e-01,
+                   2.91730066734288e-01, 1.26357385491669e-01, 6.36351174561660e-01, 6.90169159986905e-01,
+                   8.51409537834241e-01, 3.33333333333333e-01, 9.90363012059100e-03, 6.25667297808520e-02,
+                   1.70957326397447e-01, 5.41200855914337e-01, 7.71151009607340e-01, 9.50377217273082e-01,
+                   4.95048184939705e-01, 4.68716635109574e-01, 4.14521336801277e-01, 2.29399572042831e-01,
+                   1.14424495196330e-01, 2.48113913634590e-02, 4.95048184939704e-01, 4.68716635109574e-01,
+                   4.14521336801276e-01, 2.29399572042832e-01, 1.14424495196330e-01, 2.48113913634590e-02,
+                   9.48538283795790e-02, 1.81007732788070e-02, 2.22330766740900e-02, 9.48538283795790e-02,
+                   1.81007732788070e-02, 2.22330766740900e-02, 2.68794997058761e-01, 2.91730066734288e-01,
+                   1.26357385491669e-01, 6.36351174561660e-01, 6.90169159986905e-01, 8.51409537834241e-01,
+                   6.36351174561660e-01, 6.90169159986905e-01, 8.51409537834241e-01, 2.68794997058761e-01,
+                   2.91730066734288e-01, 1.26357385491669e-01, 2.62604617004010e-02, 5.64007260466500e-03,
+                   1.57117591812270e-02, 2.35362512520970e-02, 2.36817932681775e-02, 1.55837645228970e-02,
+                   3.98788573253700e-03, 5.64007260466500e-03, 1.57117591812270e-02, 2.35362512520970e-02,
+                   2.36817932681775e-02, 1.55837645228970e-02, 3.98788573253700e-03, 5.64007260466500e-03,
+                   1.57117591812270e-02, 2.35362512520970e-02, 2.36817932681775e-02, 1.55837645228970e-02,
+                   3.98788573253700e-03, 1.84242013643660e-02, 8.70073165191100e-03, 7.76089341952250e-03,
+                   1.84242013643660e-02, 8.70073165191100e-03, 7.76089341952250e-03, 1.84242013643660e-02,
+                   8.70073165191100e-03, 7.76089341952250e-03, 1.84242013643660e-02, 8.70073165191100e-03,
+                   7.76089341952250e-03, 1.84242013643660e-02, 8.70073165191100e-03, 7.76089341952250e-03,
+                   1.84242013643660e-02, 8.70073165191100e-03, 7.76089341952250e-03],
+            "14": [4.8896391036217808e-001, 4.1764471934045408e-001, 2.7347752830883808e-001, 1.7720553241254400e-001,
+                   6.1799883090871952e-002, 1.9390961248700980e-002, 2.2072179275642996e-002, 1.6471056131909198e-001,
+                   4.5304494338232296e-001, 6.4558893517491304e-001, 8.7640023381825504e-001, 9.6121807750259808e-001,
+                   4.8896391036217896e-001, 4.1764471934045392e-001, 2.7347752830883896e-001, 1.7720553241254300e-001,
+                   6.1799883090873000e-002, 1.9390961248701000e-002, 7.7060855477499600e-001, 5.7022229084668320e-001,
+                   6.8698016780808800e-001, 8.7975717137017088e-001, 1.7226668782135598e-001, 3.3686145979634492e-001,
+                   2.9837288213625800e-001, 1.1897449769695700e-001, 5.7124757403647992e-002, 9.2916249356971984e-002,
+                   1.4646950055654000e-002, 1.2683309328720000e-003, 5.7124757403647992e-002, 9.2916249356971984e-002,
+                   1.4646950055654000e-002, 1.2683309328720000e-003, 1.7226668782135598e-001, 3.3686145979634492e-001,
+                   2.9837288213625800e-001, 1.1897449769695700e-001, 7.7060855477499600e-001, 5.7022229084668320e-001,
+                   6.8698016780808800e-001, 8.7975717137017088e-001, 2.2072179275642996e-002, 1.6471056131909198e-001,
+                   4.5304494338232296e-001, 6.4558893517491304e-001, 8.7640023381825504e-001, 9.6121807750259808e-001,
+                   4.8896391036217896e-001, 4.1764471934045392e-001, 2.7347752830883896e-001, 1.7720553241254300e-001,
+                   6.1799883090873000e-002, 1.9390961248701000e-002, 4.8896391036217808e-001, 4.1764471934045408e-001,
+                   2.7347752830883808e-001, 1.7720553241254400e-001, 6.1799883090871952e-002, 1.9390961248700980e-002,
+                   5.7124757403647992e-002, 9.2916249356971984e-002, 1.4646950055654000e-002, 1.2683309328720000e-003,
+                   5.7124757403647992e-002, 9.2916249356971984e-002, 1.4646950055654000e-002, 1.2683309328720000e-003,
+                   1.7226668782135598e-001, 3.3686145979634492e-001, 2.9837288213625800e-001, 1.1897449769695700e-001,
+                   7.7060855477499600e-001, 5.7022229084668320e-001, 6.8698016780808800e-001, 8.7975717137017088e-001,
+                   7.7060855477499600e-001, 5.7022229084668320e-001, 6.8698016780808800e-001, 8.7975717137017088e-001,
+                   1.7226668782135598e-001, 3.3686145979634492e-001, 2.9837288213625800e-001, 1.1897449769695700e-001,
+                   1.0941790684714502e-002, 1.6394176772062500e-002, 2.5887052253645996e-002, 2.1081294368496500e-002,
+                   7.2168498348885008e-003, 2.4617018011999996e-003, 1.0941790684714502e-002, 1.6394176772062500e-002,
+                   2.5887052253645996e-002, 2.1081294368496500e-002, 7.2168498348885008e-003, 2.4617018011999996e-003,
+                   1.0941790684714502e-002, 1.6394176772062500e-002, 2.5887052253645996e-002, 2.1081294368496500e-002,
+                   7.2168498348885008e-003, 2.4617018011999996e-003, 1.2332876606282000e-002, 1.9285755393530500e-002,
+                   7.2181540567669984e-003, 2.5051144192504996e-003, 1.2332876606282000e-002, 1.9285755393530500e-002,
+                   7.2181540567669984e-003, 2.5051144192504996e-003, 1.2332876606282000e-002, 1.9285755393530500e-002,
+                   7.2181540567669984e-003, 2.5051144192504996e-003, 1.2332876606282000e-002, 1.9285755393530500e-002,
+                   7.2181540567669984e-003, 2.5051144192504996e-003, 1.2332876606282000e-002, 1.9285755393530500e-002,
+                   7.2181540567669984e-003, 2.5051144192504996e-003, 1.2332876606282000e-002, 1.9285755393530500e-002,
+                   7.2181540567669984e-003, 2.5051144192504996e-003],
+            '17': [3.3333333333333332e-001, 4.9717054055677400e-001, 4.8217632262462408e-001, 4.5023996902078096e-001,
+                   4.0026623937739688e-001, 2.5214126797095200e-001, 1.6204700465846200e-001, 7.5875882260746080e-002,
+                   1.5654726967821994e-002, 5.6589188864519992e-003, 3.5647354750751004e-002, 9.9520061958437008e-002,
+                   1.9946752124520604e-001, 4.9571746405809496e-001, 6.7590599068307696e-001, 8.4824823547850784e-001,
+                   9.6869054606435600e-001, 4.9717054055677400e-001, 4.8217632262462496e-001, 4.5023996902078208e-001,
+                   4.0026623937739704e-001, 2.5214126797095300e-001, 1.6204700465846100e-001, 7.5875882260746000e-002,
+                   1.5654726967822000e-002, 6.5549320380942296e-001, 5.7233759053202008e-001, 6.2600119028622704e-001,
+                   7.9642721497407104e-001, 7.5235100593773008e-001, 9.0462550409560800e-001, 3.3431986736365804e-001,
+                   2.9222153779694400e-001, 3.1957488542319000e-001, 1.9070422419229200e-001, 1.8048321164874596e-001,
+                   8.0711313679564016e-002, 1.0186928826919000e-002, 1.3544087167103600e-001, 5.4423924290583000e-002,
+                   1.2868560833637000e-002, 6.7165782413524000e-002, 1.4663182224828000e-002, 1.0186928826919000e-002,
+                   1.3544087167103600e-001, 5.4423924290583000e-002, 1.2868560833637000e-002, 6.7165782413524000e-002,
+                   1.4663182224828000e-002, 3.3431986736365804e-001, 2.9222153779694400e-001, 3.1957488542319000e-001,
+                   1.9070422419229200e-001, 1.8048321164874596e-001, 8.0711313679564016e-002, 6.5549320380942296e-001,
+                   5.7233759053202008e-001, 6.2600119028622704e-001, 7.9642721497407104e-001, 7.5235100593773008e-001,
+                   9.0462550409560800e-001, 3.3333333333333332e-001, 5.6589188864519992e-003, 3.5647354750751004e-002,
+                   9.9520061958437008e-002, 1.9946752124520604e-001, 4.9571746405809496e-001, 6.7590599068307696e-001,
+                   8.4824823547850784e-001, 9.6869054606435600e-001, 4.9717054055677400e-001, 4.8217632262462496e-001,
+                   4.5023996902078208e-001, 4.0026623937739704e-001, 2.5214126797095300e-001, 1.6204700465846100e-001,
+                   7.5875882260746000e-002, 1.5654726967822000e-002, 4.9717054055677400e-001, 4.8217632262462408e-001,
+                   4.5023996902078096e-001, 4.0026623937739688e-001, 2.5214126797095200e-001, 1.6204700465846200e-001,
+                   7.5875882260746080e-002, 1.5654726967821994e-002, 1.0186928826919000e-002, 1.3544087167103600e-001,
+                   5.4423924290583000e-002, 1.2868560833637000e-002, 6.7165782413524000e-002, 1.4663182224828000e-002,
+                   1.0186928826919000e-002, 1.3544087167103600e-001, 5.4423924290583000e-002, 1.2868560833637000e-002,
+                   6.7165782413524000e-002, 1.4663182224828000e-002, 3.3431986736365804e-001, 2.9222153779694400e-001,
+                   3.1957488542319000e-001, 1.9070422419229200e-001, 1.8048321164874596e-001, 8.0711313679564016e-002,
+                   6.5549320380942296e-001, 5.7233759053202008e-001, 6.2600119028622704e-001, 7.9642721497407104e-001,
+                   7.5235100593773008e-001, 9.0462550409560800e-001, 6.5549320380942296e-001, 5.7233759053202008e-001,
+                   6.2600119028622704e-001, 7.9642721497407104e-001, 7.5235100593773008e-001, 9.0462550409560800e-001,
+                   3.3431986736365804e-001, 2.9222153779694400e-001, 3.1957488542319000e-001, 1.9070422419229200e-001,
+                   1.8048321164874596e-001, 8.0711313679564016e-002, 1.6718599645401496e-002, 2.5467077202534996e-003,
+                   7.3354322638190000e-003, 1.2175439176836000e-002, 1.5553775434484498e-002, 1.5628555609310000e-002,
+                   1.2407827169832500e-002, 7.0280365352784992e-003, 1.5973380868895002e-003, 2.5467077202534996e-003,
+                   7.3354322638190000e-003, 1.2175439176836000e-002, 1.5553775434484498e-002, 1.5628555609310000e-002,
+                   1.2407827169832500e-002, 7.0280365352784992e-003, 1.5973380868895002e-003, 2.5467077202534996e-003,
+                   7.3354322638190000e-003, 1.2175439176836000e-002, 1.5553775434484498e-002, 1.5628555609310000e-002,
+                   1.2407827169832500e-002, 7.0280365352784992e-003, 1.5973380868895002e-003, 4.0598276594965000e-003,
+                   1.3402871141581498e-002, 9.2299966054110000e-003, 4.2384342671640000e-003, 9.1463983850125008e-003,
+                   3.3328160020824996e-003, 4.0598276594965000e-003, 1.3402871141581498e-002, 9.2299966054110000e-003,
+                   4.2384342671640000e-003, 9.1463983850125008e-003, 3.3328160020824996e-003, 4.0598276594965000e-003,
+                   1.3402871141581498e-002, 9.2299966054110000e-003, 4.2384342671640000e-003, 9.1463983850125008e-003,
+                   3.3328160020824996e-003, 4.0598276594965000e-003, 1.3402871141581498e-002, 9.2299966054110000e-003,
+                   4.2384342671640000e-003, 9.1463983850125008e-003, 3.3328160020824996e-003, 4.0598276594965000e-003,
+                   1.3402871141581498e-002, 9.2299966054110000e-003, 4.2384342671640000e-003, 9.1463983850125008e-003,
+                   3.3328160020824996e-003, 4.0598276594965000e-003, 1.3402871141581498e-002, 9.2299966054110000e-003,
+                   4.2384342671640000e-003, 9.1463983850125008e-003, 3.3328160020824996e-003],
+            '19': [3.3333333333333332e-001, 4.8960998707300704e-001, 4.5453689269789208e-001, 4.0141668064943096e-001,
+                   2.5555165440309700e-001, 1.7707794215212902e-001, 1.1006105322795214e-001, 5.5528624251839048e-002,
+                   1.2621863777228030e-002, 2.0780025853987000e-002, 9.0926214604214992e-002, 1.9716663870113800e-001,
+                   4.8889669119380496e-001, 6.4584411569574096e-001, 7.7987789354409584e-001, 8.8894275149632096e-001,
+                   9.7475627244554304e-001, 4.8960998707300600e-001, 4.5453689269789296e-001, 4.0141668064943104e-001,
+                   2.5555165440309800e-001, 1.7707794215213002e-001, 1.1006105322795200e-001, 5.5528624251839992e-002,
+                   1.2621863777228998e-002, 6.0063379479464496e-001, 5.5760326158878384e-001, 7.2098702581736496e-001,
+                   5.9452706895587104e-001, 8.3933147368083808e-001, 7.0108797892617304e-001, 8.2293132406985696e-001,
+                   9.2434425262078384e-001, 3.9575478735694296e-001, 3.0792998388043608e-001, 2.6456694840652000e-001,
+                   3.5853935220595100e-001, 1.5780740596859500e-001, 7.5050596975911008e-002, 1.4242160111338298e-001,
+                   6.5494628082938000e-002, 3.6114178484120000e-003, 1.3446675453078000e-001, 1.4446025776115000e-002,
+                   4.6933578838178000e-002, 2.8611203505670000e-003, 2.2386142409791600e-001, 3.4647074816760000e-002,
+                   1.0161119296278000e-002, 3.6114178484120000e-003, 1.3446675453078000e-001, 1.4446025776115000e-002,
+                   4.6933578838178000e-002, 2.8611203505670000e-003, 2.2386142409791600e-001, 3.4647074816760000e-002,
+                   1.0161119296278000e-002, 3.9575478735694296e-001, 3.0792998388043608e-001, 2.6456694840652000e-001,
+                   3.5853935220595100e-001, 1.5780740596859500e-001, 7.5050596975911008e-002, 1.4242160111338298e-001,
+                   6.5494628082938000e-002, 6.0063379479464496e-001, 5.5760326158878384e-001, 7.2098702581736496e-001,
+                   5.9452706895587104e-001, 8.3933147368083808e-001, 7.0108797892617304e-001, 8.2293132406985696e-001,
+                   9.2434425262078384e-001, 3.3333333333333332e-001, 2.0780025853987000e-002, 9.0926214604214992e-002,
+                   1.9716663870113800e-001, 4.8889669119380496e-001, 6.4584411569574096e-001, 7.7987789354409584e-001,
+                   8.8894275149632096e-001, 9.7475627244554304e-001, 4.8960998707300600e-001, 4.5453689269789296e-001,
+                   4.0141668064943104e-001, 2.5555165440309800e-001, 1.7707794215213002e-001, 1.1006105322795200e-001,
+                   5.5528624251839992e-002, 1.2621863777228998e-002, 4.8960998707300704e-001, 4.5453689269789208e-001,
+                   4.0141668064943096e-001, 2.5555165440309700e-001, 1.7707794215212902e-001, 1.1006105322795214e-001,
+                   5.5528624251839048e-002, 1.2621863777228030e-002, 3.6114178484120000e-003, 1.3446675453078000e-001,
+                   1.4446025776115000e-002, 4.6933578838178000e-002, 2.8611203505670000e-003, 2.2386142409791600e-001,
+                   3.4647074816760000e-002, 1.0161119296278000e-002, 3.6114178484120000e-003, 1.3446675453078000e-001,
+                   1.4446025776115000e-002, 4.6933578838178000e-002, 2.8611203505670000e-003, 2.2386142409791600e-001,
+                   3.4647074816760000e-002, 1.0161119296278000e-002, 3.9575478735694296e-001, 3.0792998388043608e-001,
+                   2.6456694840652000e-001, 3.5853935220595100e-001, 1.5780740596859500e-001, 7.5050596975911008e-002,
+                   1.4242160111338298e-001, 6.5494628082938000e-002, 6.0063379479464496e-001, 5.5760326158878384e-001,
+                   7.2098702581736496e-001, 5.9452706895587104e-001, 8.3933147368083808e-001, 7.0108797892617304e-001,
+                   8.2293132406985696e-001, 9.2434425262078384e-001, 6.0063379479464496e-001, 5.5760326158878384e-001,
+                   7.2098702581736496e-001, 5.9452706895587104e-001, 8.3933147368083808e-001, 7.0108797892617304e-001,
+                   8.2293132406985696e-001, 9.2434425262078384e-001, 3.9575478735694296e-001, 3.0792998388043608e-001,
+                   2.6456694840652000e-001, 3.5853935220595100e-001, 1.5780740596859500e-001, 7.5050596975911008e-002,
+                   1.4242160111338298e-001, 6.5494628082938000e-002, 1.6453165694459500e-002, 5.1653659456360000e-003,
+                   1.1193623631508002e-002, 1.5133062934734000e-002, 1.5245483901099000e-002, 1.2079606370820500e-002,
+                   8.0254017934004992e-003, 4.0422901308920000e-003, 1.0396810137425000e-003, 5.1653659456360000e-003,
+                   1.1193623631508002e-002, 1.5133062934734000e-002, 1.5245483901099000e-002, 1.2079606370820500e-002,
+                   8.0254017934004992e-003, 4.0422901308920000e-003, 1.0396810137425000e-003, 5.1653659456360000e-003,
+                   1.1193623631508002e-002, 1.5133062934734000e-002, 1.5245483901099000e-002, 1.2079606370820500e-002,
+                   8.0254017934004992e-003, 4.0422901308920000e-003, 1.0396810137425000e-003, 1.9424384524905000e-003,
+                   1.2787080306011000e-002, 4.4404517866690008e-003, 8.0622733808655008e-003, 1.2459709087455000e-003,
+                   9.1214200594755008e-003, 5.1292818680995000e-003, 1.8999644276510000e-003, 1.9424384524905000e-003,
+                   1.2787080306011000e-002, 4.4404517866690008e-003, 8.0622733808655008e-003, 1.2459709087455000e-003,
+                   9.1214200594755008e-003, 5.1292818680995000e-003, 1.8999644276510000e-003, 1.9424384524905000e-003,
+                   1.2787080306011000e-002, 4.4404517866690008e-003, 8.0622733808655008e-003, 1.2459709087455000e-003,
+                   9.1214200594755008e-003, 5.1292818680995000e-003, 1.8999644276510000e-003, 1.9424384524905000e-003,
+                   1.2787080306011000e-002, 4.4404517866690008e-003, 8.0622733808655008e-003, 1.2459709087455000e-003,
+                   9.1214200594755008e-003, 5.1292818680995000e-003, 1.8999644276510000e-003, 1.9424384524905000e-003,
+                   1.2787080306011000e-002, 4.4404517866690008e-003, 8.0622733808655008e-003, 1.2459709087455000e-003,
+                   9.1214200594755008e-003, 5.1292818680995000e-003, 1.8999644276510000e-003, 1.9424384524905000e-003,
+                   1.2787080306011000e-002, 4.4404517866690008e-003, 8.0622733808655008e-003, 1.2459709087455000e-003,
+                   9.1214200594755008e-003, 5.1292818680995000e-003, 1.8999644276510000e-003]
+        }
+
+        A = np.array(table[f'{p}'])
+        n = int(A.shape[0] / 3)
+        ic(n)
+        X = [A[0:n].T, A[n + 0:2 * n].T]
+        W = np.array([A[2*n:3*n]]).T
+        ic(X)
+        ic(W)
+
+        return X, W
+
 
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\run_files'
-    fs = FS(folder)
-    fs.run_field_solver(show_plots=False)
+    mod = Model(folder)
+    mod.define_geometry()
+    mod.generate_mesh()  # if mesh is not generated, use default settings in run analysis
+    mod.run_field_solver(show_plots=True)
