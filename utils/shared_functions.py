@@ -931,17 +931,17 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
         L_bp_l = 4 * L_m
         L_bp_r = 4 * L_m
     elif beampipe.lower() == 'none':
-        L_bp_l = 0.000001  # 4 * L_m  #
-        L_bp_r = 0.000001  # 4 * L_m  #
+        L_bp_l = 0.0001  # 4 * L_m  #
+        L_bp_r = 0.0001  # 4 * L_m  #
     elif beampipe.lower() == 'left':
         L_bp_l = 4 * L_m
-        L_bp_r = 0.000001
+        L_bp_r = 0.0001
     elif beampipe.lower() == 'right':
-        L_bp_l = 0.000001
+        L_bp_l = 0.0001
         L_bp_r = 4 * L_m
     else:
-        L_bp_l = 0.000001  # 4 * L_m  #
-        L_bp_r = 0.000001  # 4 * L_m  #
+        L_bp_l = 0.0001  # 4 * L_m  #
+        L_bp_r = 0.0001  # 4 * L_m  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -986,26 +986,26 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         # ADD BEAM PIPE LENGTH
-        lineTo(pt, [L_bp_l - shift, Ri_el], step)
+        lineTo(pt, [L_bp_l - shift, Ri_el], step, plot)
         pt = [L_bp_l - shift, Ri_el]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         for n in range(1, n_cell + 1):
             if n == 1:
                 # DRAW ARC:
-                pts = arcTo(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt, [-shift + x1el, y1el])
+                pts = arcTo(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt, [-shift + x1el, y1el], plot)
                 pt = [-shift + x1el, y1el]
                 for pp in pts:
                     fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW LINE CONNECTING ARCS
-                lineTo(pt, [-shift + x2el, y2el], step)
+                lineTo(pt, [-shift + x2el, y2el], step, plot)
                 pt = [-shift + x2el, y2el]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el])
+                pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el], plot)
                 pt = [L_bp_l + L_el - shift, Req_el]
                 for pp in pts:
                     fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -1016,7 +1016,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                                [L_el + L_er - x2er + 2 * L_bp_l - shift, Req_er])
+                                [L_el + L_er - x2er + 2 * L_bp_l - shift, Req_er], plot)
                     pt = [L_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1026,7 +1026,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
+                    lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step, plot)
                     pt = [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
@@ -1034,7 +1034,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
-                                [L_bp_l + L_el + L_er - shift, y1er])
+                                [L_bp_l + L_el + L_er - shift, y1er], plot)
 
                     pt = [L_bp_l + L_el + L_er - shift, Ri_er]
                     for pp in pts:
@@ -1048,12 +1048,11 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     # calculate new shift
                     shift = shift - (L_el + L_er)
                 else:
-                    print("if else")
                     # EQUATOR ARC TO NEXT POINT
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                                [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                                [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m], plot)
                     pt = [L_el + L_m - x2 + 2 * L_bp_l - shift, y2]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1063,7 +1062,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+                    lineTo(pt, [L_el + L_m - x1 + 2 * L_bp_l - shift, y1], step, plot)
                     pt = [L_el + L_m - x1 + 2 * L_bp_l - shift, y1]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
@@ -1071,7 +1070,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
-                                [L_bp_l + L_el + L_m - shift, y1])
+                                [L_bp_l + L_el + L_m - shift, y1], plot)
                     pt = [L_bp_l + L_el + L_m - shift, Ri_m]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1082,12 +1081,10 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
 
                     # calculate new shift
                     shift = shift - (L_el + L_m)
-                    ic(shift)
 
             elif n > 1 and n != n_cell:
-                print("elif")
                 # DRAW ARC:
-                pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+                pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1], plot)
                 pt = [-shift + x1, y1]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1097,12 +1094,12 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW LINE CONNECTING ARCS
-                lineTo(pt, [-shift + x2, y2], step)
+                lineTo(pt, [-shift + x2, y2], step, plot)
                 pt = [-shift + x2, y2]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m], plot)
                 pt = [L_bp_l + L_m - shift, Req_m]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1115,7 +1112,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
                 pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                            [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                            [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m], plot)
                 pt = [L_m + L_m - x2 + 2 * L_bp_l - shift, y2]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1125,7 +1122,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # STRAIGHT LINE TO NEXT POINT
-                lineTo(pt, [L_m + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+                lineTo(pt, [L_m + L_m - x1 + 2 * L_bp_l - shift, y1], step, plot)
                 pt = [L_m + L_m - x1 + 2 * L_bp_l - shift, y1]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
@@ -1133,9 +1130,8 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
                 pts = arcTo(L_m + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
-                            [L_bp_l + L_m + L_m - shift, y1])
+                            [L_bp_l + L_m + L_m - shift, y1], plot)
                 pt = [L_bp_l + L_m + L_m - shift, Ri_m]
-                ic(pt)
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
                         fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -1146,9 +1142,8 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 # calculate new shift
                 shift = shift - 2*L_m
             else:
-                print("else")
                 # DRAW ARC:
-                pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+                pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1], plot)
                 pt = [-shift + x1, y1]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1158,12 +1153,12 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW LINE CONNECTING ARCS
-                lineTo(pt, [-shift + x2, y2], step)
+                lineTo(pt, [-shift + x2, y2], step, plot)
                 pt = [-shift + x2, y2]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m], plot)
                 pt = [L_bp_l + L_m - shift, Req_m]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1176,7 +1171,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
                 pts = arcTo(L_m + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                            [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er])
+                            [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er], plot)
                 pt = [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1186,7 +1181,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # STRAIGHT LINE TO NEXT POINT
-                lineTo(pt, [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step)
+                lineTo(pt, [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step, plot)
                 pt = [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
@@ -1194,7 +1189,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
                 pts = arcTo(L_m + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
-                            [L_bp_l + L_m + L_er - shift, y1er])
+                            [L_bp_l + L_m + L_er - shift, y1er], plot)
                 pt = [L_bp_l + L_m + L_er - shift, Ri_er]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -1206,19 +1201,19 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
         # BEAM PIPE
         # reset shift
         shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
-        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + L_el + L_er - shift, Ri_er], step)
+        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + L_el + L_er - shift, Ri_er], step, plot)
         pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
 
         # END PATH
-        lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
+        lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step, plot)  # to add beam pipe to right
         pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0]
         # lineTo(pt, [2 * n_cell * L_er + L_bp_l - shift, 0], step)
         # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
 
         # CLOSE PATH
-        lineTo(pt, start_point, step)
+        lineTo(pt, start_point, step, plot)
         fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
 
     if plot:

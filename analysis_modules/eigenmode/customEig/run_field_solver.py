@@ -23,6 +23,12 @@ eta0 = 376.7303134111465
 
 class Model:
     def __init__(self, folder):
+        self.beampipe = None
+        self.mid_cell = None
+        self.end_cell_left = None
+        self.end_cell_right = None
+        self.n_cells = None
+        self.eig_freq = None
         self.fields = None
         self.job = None
         self.mesh = None
@@ -97,11 +103,24 @@ class Model:
         df = pd.DataFrame(self.geodata)
         df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
 
-    def define_geometry(self, n_cell, mid_cell, end_cell_left=None, end_cell_right=None,
+    def define_geometry(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
                         beampipe='none', plot=False):
+        self.n_cells = n_cells
+        self.mid_cell = mid_cell
+
+        if end_cell_left is None:
+            self.end_cell_left = mid_cell
+
+        if end_cell_right is None:
+            if end_cell_left is None:
+                self.end_cell_right = mid_cell
+            else:
+                self.end_cell_right = end_cell_left
+
+        self.beampipe = beampipe
 
         file_path = fr"{self.folder}\geodata.n"
-        write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+        write_cavity_for_custom_eig_solver(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
 
         self.geodata = pd.read_csv(file_path, sep='\s+', header=None).to_numpy()
 
@@ -166,6 +185,7 @@ class Model:
         # start the mesh generator
         subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder,
                         stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        # subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder)
 
         self.mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
         ic("Meshing completed.")
@@ -182,11 +202,11 @@ class Model:
             ic('Parameter file fieldparam does not exist.')
             return
 
-        gtype = self.fieldparam[0]
-        if gtype == 1:
-            ic('\tPlotting the mesh.')
-        else:
-            ic('\tPlotting the mesh. Blue area for streching.')
+        # gtype = self.fieldparam[0]
+        # if gtype == 1:
+        #     ic('\tPlotting the mesh.')
+        # else:
+        #     ic('\tPlotting the mesh. Blue area for streching.')
 
         # plots 2D mesh in mesh.mat, which includes coord and etopol -arrays
         coord = self.mesh['coord']
@@ -195,6 +215,14 @@ class Model:
         tyyppi = self.mesh['tyyppi']
         boundary = self.mesh['boundary']
         edges = self.mesh['edges']
+
+        for b in boundary:
+            print(b)
+        mask = np.all(boundary == 1, axis=1)
+        mask2 = np.all(boundary == 3, axis=1)
+        plt.scatter(coord[mask][:, 0], coord[mask][:, 1])
+        plt.scatter(coord[mask2][:, 0], coord[mask2][:, 1])
+        plt.show()
 
         x_min = min(coord[:, 0])
         x_max = max(coord[:, 0])
@@ -232,6 +260,8 @@ class Model:
         ax.fill(X[:, mask], Y[:, mask], 'g')
 
         mask = np.where(edges[:, 2] > 0)[0]  # no bouncing
+        for ed in edges:
+            print(ed)
         for i in range(len(mask)):
             i1 = int(edges[mask[i], 0]) - 1
             i2 = int(edges[mask[i], 1]) - 1
@@ -250,7 +280,7 @@ class Model:
 
         plt.show()
 
-    def run_field_solver(self, n_modes=None, freq=0, req_mode_num=None, show_plots=True, search=False):
+    def run_field_solver(self, n_modes=None, freq=0.0, req_mode_num=None, show_plots=True, search=False):
         # Function program cavity_field(s)
         # -----------------------------------------------------------------------
         # Runs the field solver for computing the EM fields in a cavity with
@@ -282,9 +312,12 @@ class Model:
         eigen_freq = self.eigen(n_modes, freq, req_mode_num, search)
 
         if search:
-            err = (abs(eigen_freq - freq) / freq) * 100
-            if err > 1:
-                ic('Warning: Error in eigen frequency more than 1#.')
+            if freq != 0:
+                err = (abs(eigen_freq - freq) / freq) * 100
+                if err > 1:
+                    ic('Warning: Error in eigen frequency more than 1#.')
+            else:
+                ic("No frequency to compare with.")
 
         # compute and plot the fields
         self.calculate_fields()
@@ -295,12 +328,12 @@ class Model:
 
     def eigen(self, n_modes, freq, req_mode_num, search):
         if n_modes is None:
-            n_modes = n_cells + 1
+            n_modes = self.n_cells + 1
         if req_mode_num:
             if req_mode_num > n_modes:
-                req_mode_num = n_cells - 1
+                req_mode_num = self.n_cells - 1
         else:
-            req_mode_num = n_cells - 1
+            req_mode_num = self.n_cells - 1
 
         # maara = 10  Means number of modes in original code
         offset = {"offset": 0}
@@ -310,9 +343,9 @@ class Model:
         cwd = fr'{self.folder}'
         eigenCpath = fr'{self.folder}\eigenC_bin.exe'
         if os.path.exists(eigenCpath):
-            # subprocess.call(eigenCpath, cwd=cwd,
-            #                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            subprocess.call(eigenCpath, cwd=cwd)
+            subprocess.call(eigenCpath, cwd=cwd,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # subprocess.call(eigenCpath, cwd=cwd)
         ic("\tDone running eigenC_bin.exe")
 
         cinfo = spio.loadmat(fr"{self.folder}\cinfo.mat")['cinfo'][0]
@@ -335,16 +368,18 @@ class Model:
         AA = sps.csr_matrix((Aarvot, (ia, ja)), shape=(n, n))
         BB = sps.csr_matrix((Barvot, (ia, ja)), shape=(n, n))
 
-        d2, u2 = spsl.eigs(AA, M=BB, k=n_modes, sigma=freq)
+        k0 = 2 * np.pi * freq * np.sqrt(mu0 * eps0)
+        d2, u2 = spsl.eigs(AA, M=BB, k=n_modes, sigma=k0)
 
         # imaginary component of eigenvectors are zero
         u2 = u2.real
+        ic(np.where(u2.imag != 0))
         d2 = np.absolute(d2)
         k = np.sqrt(d2)
 
         if search:
-            k0 = 2 * np.pi * freq * np.sqrt(mu0 * e0)  # required eigenvalue, consider changing to frequency instead
             k2 = k
+            eigen_frequencies = k / (2 * np.pi * np.sqrt(mu0 * eps0))
             # find eigenvalue with min error.
             val = np.min(abs(k0 - k2))
             ind = np.argmin(abs(k0 - k2))
@@ -363,6 +398,7 @@ class Model:
         # df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
 
         # fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy().T[0]
+        self.eig_freq = eigen_freq
         self.fieldparam[1] = eigen_freq
         df = pd.DataFrame(self.fieldparam)
         df.to_csv(fr'{self.folder}\fieldparam', index=False, header=False, float_format='%.7E')
@@ -446,6 +482,7 @@ class Model:
         if os.path.exists(multipacPath):
             subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
 
         Er = spio.loadmat(fr"{self.folder}\Er.mat")['Er']
         Ez = spio.loadmat(fr"{self.folder}\Ez.mat")['Ez']
@@ -576,21 +613,19 @@ class Model:
         HH = np.reshape(abs(H), (max(I1.shape), max(I2.shape))).T
 
         # Calculate accelerating field
-        L_half_cell = 0.0935  # length of cavity half cell
-        iris_radius = 0.01
-        E_axis = EE[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
+        E_axis = Ez.T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
         z_slice = zz[0, :]
         # z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
 
         Vacc = self.calculate_vacc(z_slice, E_axis)
-        Eacc = Vacc / (2 * 1 * L_half_cell)
+        ic(self.n_cells, self.mid_cell[5])
+        Eacc = Vacc / (2 * self.n_cells * self.mid_cell[5])
 
-        z_e, E_surf = self.get_surface_field(EE, zz, rr, iris_radius)
-        z_h, H_surf = self.get_surface_field(HH, zz, rr, iris_radius)
+        z_e, E_surf = self.get_surface_field(EE, zz, rr, 0)
+        z_h, H_surf = self.get_surface_field(HH, zz, rr, 0)
 
         epk = self.calculate_epk(np.max(E_surf), Eacc)
         bpk = self.calculate_bpk(np.max(H_surf), Eacc)
-        ic(epk, np.max(EE) / Eacc, bpk)
 
         # plt.plot(np.array(z_e), E_surf/np.max(E_surf))
         # plt.plot(np.array(z_h), H_surf/np.max(H_surf))
@@ -600,7 +635,8 @@ class Model:
         U = self.calculate_U(EE, HH, zz, rr)
 
         RQ = self.calculate_rq(Vacc, U)
-        ic(RQ)
+        freq = self.fieldparam[1]
+        ic(freq, epk, np.max(EE) / Eacc, bpk, RQ)
 
     @staticmethod
     def calculate_U(EE, HH, zz, rr):
@@ -654,9 +690,14 @@ class Model:
                 # get index from array
                 ind1 = np.argwhere(row == row_[0])
                 ind2 = np.argwhere(row == row_[-1])
-
-                left_z.append(zz[i][ind1][0][0])
-                right_z.append(zz[i][ind2][-1][-1])
+                if len(ind1) > 1:
+                    left_z.append(zz[i][ind1][0])
+                else:
+                    left_z.append(zz[i][ind1])
+                if len(ind2) > 1:
+                    right_z.append(zz[i][ind2][-1])
+                else:
+                    right_z.append(zz[i][ind2])
 
         left_surf_field_val.extend(right_surf_field_val[::-1])
         left_z.extend(right_z[::-1])
@@ -738,11 +779,14 @@ class Model:
 
         """
         # calculate Vacc
-        freq = self.fieldparam[1]
-        E_axis = E_axis * np.exp(1j * (2 * np.pi * freq / c0) * z)
+        E_axis = E_axis * np.exp(1j * (2 * np.pi * self.eig_freq / c0) * z)
         Vacc = np.trapz(E_axis, z)
 
         return np.abs(Vacc)
+
+    def calculate_rq(self, Vacc, U):
+        ic(Vacc, self.eig_freq, U)
+        return Vacc ** 2 / (2 * np.pi * self.eig_freq * U)
 
     @staticmethod
     def calculate_epk(Epk, Eacc):
@@ -751,10 +795,6 @@ class Model:
     @staticmethod
     def calculate_bpk(Hpk, Eacc):
         return mu0 * Hpk * 1e3 / (Eacc * 1e-6)
-
-    def calculate_rq(self, Vacc, U):
-        ic(Vacc, self.freq, U)
-        return Vacc ** 2 / (2 * np.pi * self.freq * U)
 
     def save_fields(self, wall, job):
         fieldfile1 = pd.read_csv(fr"{self.folder}\fieldfile1.txt", sep='\s+',
@@ -1387,6 +1427,9 @@ if __name__ == '__main__':
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
                          80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
 
-    mod.define_geometry(n_cells, midC3795)
-    mod.generate_mesh()
-    mod.run_field_solver(show_plots=True)
+    midTESLA = np.array([68.12, 68.12, 19.46, 30.81, 56.76, 93.5, 167.62]) * 1e-3
+    midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591])*1e-3
+
+    mod.define_geometry(n_cells, midC3795, endC3795, beampipe='both')
+    mod.generate_mesh(plot=True)
+    mod.run_field_solver(freq=801.58e6, search=True, show_plots=True)
