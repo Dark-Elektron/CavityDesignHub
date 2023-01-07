@@ -15,14 +15,15 @@ from icecream import ic
 
 m0 = 9.1093879e-31
 q0 = 1.6021773e-19
-c0 = 2.99792458e8
-
 mu0 = 4 * np.pi * 1e-7
 eps0 = 8.85418782e-12
+c0 = 2.99792458e8
+eta0 = 376.7303134111465
 
 
 class Model:
     def __init__(self, folder):
+        self.fields = None
         self.job = None
         self.mesh = None
         self.fieldparam = None
@@ -40,7 +41,7 @@ class Model:
         # input_files_list = ["initials", "param", "fieldparam", "counter_flevels.mat",
         #                     "counter_initials.mat",
         #                     "gene_initials.mat"]
-        for file in input_files_list:
+        for file in files_list:
             if os.path.exists(fr"{self.folder}\{file}"):
                 os.remove(fr"{self.folder}\{file}")
 
@@ -52,23 +53,14 @@ class Model:
             spio.savemat(f"{self.folder}/intset.mat", intset, format='4')
 
         # check if geometry has been written
-        if not os.path.exists(fr"{self.folder}\geodata.n"):
+        if self.geodata is None:
             ic("The geometry file geodata.n seems to be missing")
             return
 
         ic('Old input data deleted.')
 
         # Inputs for eigenmode solver
-        # freq = 1300e6
-        freq = 801.58e6
         gtype = 1
-        # save the inputs 
-        # save_values
-
-        my0 = 4 * np.pi * 1e-7
-        eps0 = 8.85418782e-12
-        lambda_ = 1 / (freq * np.sqrt(eps0 * my0))
-        eta0 = 376.7303134111465
         epsr = 1  # relative epsilon
         strech = 0
         d1 = 1  # Grid constant
@@ -77,47 +69,41 @@ class Model:
         v0 = 2  # initial velocity
         N = 20  # Number of impacts
         Z = 0
+        freq = 0
 
+        # initialize fieldparam
         self.fieldparam = [gtype, freq, epsr, d1 / 1000, R.real, R.imag, strech, Z]
-        # save -ascii fieldparam fieldparam
         df = pd.DataFrame(self.fieldparam)
         df.to_csv(fr'{self.folder}\fieldparam', index=False, header=False, float_format='%.7E')
 
-        # field levels
-        # flevel = np.arange(flmin, flmax, flstep).T*1e3
-
-        # # save counter_flevels flevel
-        # df = pd.DataFrame(flevels)
-        # df.to_csv(fr'{self.folder}\flevels', index=False, header=False, float_format='%.7E')
-
         # parameters for the MP analysis
-        m = 9.1093879e-31
-        q = 1.6021773e-19
-        c = 2.99792458e8
         param = np.zeros((7, 1))
         V0 = 1  # intensity of the EM field
-        # V0    = 2  error_message('POISTA TÄMÄ - TESTI (save_values.m)')
-        gamma = c / freq / (2 * np.pi)  # distance/phase -coefficient
-        v00 = c * np.sqrt(1 - 1 / ((v0 * q / (m * c ** 2) + 1) ** 2))  # initial velocity (relativistic)
+        # gamma = c0 / freq / (2 * np.pi)  # distance/phase -coefficient
+        v00 = c0 * np.sqrt(1 - 1 / ((v0 * q0 / (m0 * c0 ** 2) + 1) ** 2))  # initial velocity (relativistic)
         # v00   = sqrt(2*v0*q/m)                 # (classical)
         ctype = 1  # compute counter functions
         tol = 1e-3  # tolerance for the ODE solver
         emin = 1  # not required for eigenmode analysis
         emax = 10  # not required for eigenmode analysis
-        self.param = [freq, V0, gamma, v00, N, ctype, tol, emin, emax]
+        # self.param = [freq, V0, gamma, v00, N, ctype, tol, emin, emax]
         # save -ascii param param
-        df = pd.DataFrame(self.param)
-        df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
+        # df = pd.DataFrame(self.param)
+        # df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
 
         # grid constant for creating a new grid
-        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+        # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
         self.geodata[0, 0] = d2 / 1000
-        df = pd.DataFrame(geodata)
+        df = pd.DataFrame(self.geodata)
         df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
 
-    def define_geometry(self, n_cell, mid_cell, end_cell_left, end_cell_right, beampipe='both', plot=False):
-        write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
-        self.geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+    def define_geometry(self, n_cell, mid_cell, end_cell_left=None, end_cell_right=None,
+                        beampipe='none', plot=False):
+
+        file_path = fr"{self.folder}\geodata.n"
+        write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+
+        self.geodata = pd.read_csv(file_path, sep='\s+', header=None).to_numpy()
 
     def generate_mesh(self, gridcons=0.005, epsr=1, plot=False):
 
@@ -126,7 +112,7 @@ class Model:
         #   3 : nxH = 0 on boundary
         #   0 : for stretching (open boundary condition?)
 
-        if not self.geodata:
+        if self.geodata is None:
             ic("Geometry data geodata.n missing. No geometry to mesh")
             return
 
@@ -264,7 +250,7 @@ class Model:
 
         plt.show()
 
-    def run_field_solver(self, n_modes=None, freq=0, req_mode=None, show_plots=True, search=True):
+    def run_field_solver(self, n_modes=None, freq=0, req_mode_num=None, show_plots=True, search=False):
         # Function program cavity_field(s)
         # -----------------------------------------------------------------------
         # Runs the field solver for computing the EM fields in a cavity with
@@ -279,10 +265,10 @@ class Model:
 
         self.create_inputs()
 
-        if not self.geodata:
+        if self.geodata is None:
             return
 
-        if not self.mesh:
+        if self.mesh is None:
             ic("No mesh found. Generating mesh with default settings.")
             self.generate_mesh(plot=show_plots)
 
@@ -290,40 +276,31 @@ class Model:
         # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
         gridcons1 = self.geodata[0, 0]
 
-        # load fieldparam
-        # fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy()
-        gtype = self.fieldparam[0]
-        freq = self.fieldparam[1]
-        epsr = self.fieldparam[2]
-        gridcons = self.fieldparam[3]
+        # if self.epsr > 1:
+        #     ic('Relative permittivity > 1?')
 
-        if self.epsr > 1:
-            ic('Relative permittivity > 1?')
+        eigen_freq = self.eigen(n_modes, freq, req_mode_num, search)
 
-        freqn = self.eigen(n_modes, freq, req_mode, search)
-        # k1, k2 = self.find_resonance(freq)
-
-        err = (abs(freqn - self.freq) / self.freq) * 100
-        if err > 1:
-            ic('Warning: Error in eigen frequency more than 1#.')
+        if search:
+            err = (abs(eigen_freq - freq) / freq) * 100
+            if err > 1:
+                ic('Warning: Error in eigen frequency more than 1#.')
 
         # compute and plot the fields
-        ic("Computing fields")
-        self.calculate_fields(0, gridcons1, 0)
-        ic('\t Done computing fields')
+        self.calculate_fields()
+
         if show_plots:
             ic("Plotting fields")
-            self.plot_FEM_fields(0, gridcons1, s)
-            ic('\t Done plotting fields')
+            self.plot_FEM_fields(0)
 
-    def eigen(self, n_modes, freq, req_mode, search=True):
-        if not n_modes:
+    def eigen(self, n_modes, freq, req_mode_num, search):
+        if n_modes is None:
             n_modes = n_cells + 1
-        if req_mode:
-            if req_mode > n_modes:
-                req_mode = n_cells - 1
+        if req_mode_num:
+            if req_mode_num > n_modes:
+                req_mode_num = n_cells - 1
         else:
-            req_mode = n_cells - 1
+            req_mode_num = n_cells - 1
 
         # maara = 10  Means number of modes in original code
         offset = {"offset": 0}
@@ -368,37 +345,28 @@ class Model:
         if search:
             k0 = 2 * np.pi * freq * np.sqrt(mu0 * e0)  # required eigenvalue, consider changing to frequency instead
             k2 = k
-
-            # find eigenvalue with min error. To return all eigenvalues, modify here
+            # find eigenvalue with min error.
             val = np.min(abs(k0 - k2))
             ind = np.argmin(abs(k0 - k2))
             k = k2[ind]
             u = u2[:, ind]
             # new frequency
-            eigen_freq = k / (2 * np.pi * np.sqrt(mu0 * e0))
+            eigen_freq = k / (2 * np.pi * np.sqrt(mu0 * eps0))
         else:
-            eigenvalues = k[0:no_of_modes]
-            eigen_frequencies = k / (2 * np.pi * np.sqrt(mu0 * e0))
-            eigen_freq = eigen_frequencies[req_mode]
+            eigen_frequencies = k / (2 * np.pi * np.sqrt(mu0 * eps0))
+            eigen_freq = eigen_frequencies[req_mode_num]
+            u = u2[:, req_mode_num]
 
-        param = pd.read_csv(fr"{self.folder}\param", sep='\s+', header=None).to_numpy().T[0]
-        # ic(param)
-        # load param
-        param[0] = freqn
-        # save -ascii param param
-        df = pd.DataFrame(param)
-        df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
+        # param = pd.read_csv(fr"{self.folder}\param", sep='\s+', header=None).to_numpy().T[0]
+        # self.param[0] = eigen_freq
+        # df = pd.DataFrame(self.param)
+        # df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
 
-        fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy().T[0]
-        fieldparam[1] = freqn
-
-        # save -ascii fieldparam fieldparam
-        df = pd.DataFrame(fieldparam)
+        # fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy().T[0]
+        self.fieldparam[1] = eigen_freq
+        df = pd.DataFrame(self.fieldparam)
         df.to_csv(fr'{self.folder}\fieldparam', index=False, header=False, float_format='%.7E')
 
-        # save kama0 index -v4
-        # save kama0 u -append
-        # save kama0 k -append
         kama0 = {"index": index,
                  "u": u,
                  "k": k
@@ -406,91 +374,37 @@ class Model:
 
         spio.savemat(f"{self.folder}/kama0.mat", kama0, format='4')
         ic("\t\tDone with eigen")
-        return freqn
+        return eigen_freq
 
-    def calculate_fields(self, s, gridcons, ss=1):
+    def calculate_fields(self):
+        ic('\t\tComputing the fields.')
+        if self.geodata is None:
+            ic("Geometry file geodata.n does not exist.")
+            return
 
-        ok3 = 1
-        if os.path.exists(fr"{self.folder}\fieldparam"):
-            ok3 = 0
+        if not os.path.exists(fr"{self.folder}\mesh.mat"):
+            ic('\t\tThe mesh does not exists. Choose Mesh Generator in menu Run.')
+            return
 
-        if ok3 == 0:
-            fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+',
-                                     header=None).to_numpy().T[0]
-            gtype = fieldparam[0]
-            s = 0
+        if not os.path.exists(fr"{self.folder}\kama0.mat"):
+            ic('\t\tThe fields do not exist. Choose Field Solver in menu Run.')
+            return
 
-        # if not os.path.exists('s'):
-        #     s = 0
-
-        ok1 = os.path.exists(fr"{self.folder}\mesh.mat")
-        if not ok1:
-            ic(['\t\tThe mesh does not exists. Choose Mesh Generator in menu Run.'])
-
-        ok2 = 1
-        if s == 0:
-            if os.path.exists(fr"{self.folder}\kama0.mat"):
-                ok2 = 0
-            if ok2 == 0:
-                ic(['\t\tThe fields do not exist. Choose Field Solver in menu Run.'])
-
-            elif s == 1:
-                ok21 = os.path.exists(fr"{self.folder}\kama1.mat")
-                ok22 = os.path.exists(fr"{self.folder}\kama2.mat")
-                ok2 = ok21 * ok22
-                if ok2 == 0:
-                    ic(['\t\tThe fields do not exist. Choose Field Solver in menu Run.'])
-
-        if ok1 == 0 and ok2 == 0 and ok3 == 0:
-            ok = os.path.exists(fr"{self.folder}\geodata.n")
-            if ok:
-                ic('\t\tComputing the fields.')
-                #  error_message('                                  ')
-
-                # define the grid constant
-                # if gtype <= 2:
-                geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
-                gridcons = geodata[0, 0]
-                # else:
-                #     geodata = pd.read_csv(fr"{self.folder}\geodatal.n", sep='\s+',
-                #                           header=None).to_numpy()
-                #     gridcons = geodata[0, 0]
+        # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+        gridcons = self.geodata[0, 0]
+        n = len(self.geodata[:, 0])
+        gr = self.geodata[3:n, 0]
+        gz = self.geodata[3:n, 1]
 
         # load mesh
-        mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
-        coord = mesh['coord']
-        etopol = mesh['etopol']
-        alue = mesh['alue']
-        tyyppi = mesh['tyyppi']
-        boundary = mesh['boundary']
-        edges = mesh['edges']
+        # mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
+        coord = self.mesh['coord']
+        etopol = self.mesh['etopol']
+        alue = self.mesh['alue']
+        tyyppi = self.mesh['tyyppi']
+        boundary = self.mesh['boundary']
+        edges = self.mesh['edges']
 
-        # if gtype <= 2:
-        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+',
-                              header=None).to_numpy()
-        n = len(geodata[:, 0])
-        gr = geodata[3:n, 0]
-        gz = geodata[3:n, 1]
-        # else:
-        #     geodatal = pd.read_csv(fr"{self.folder}\geodatal.n", sep='\s+',
-        #                            header=None).to_numpy()
-        #     nl = len(geodatal[:, 0]) - 1
-        #     grl = geodatal[3:nl, 0]
-        #     gzl = geodatal[3:nl, 1]
-        #     geodataw = pd.read_csv(fr"{self.folder}\geodataw.n", sep='\s+',
-        #                            header=None).to_numpy()
-        #     nw = len(geodataw[:, 0]) - 1
-        #     grw = geodataw[3:nw, 0]
-        #     gzw = geodataw[3:nw, 0]
-        #     geodatar = pd.read_csv(fr"{self.folder}\geodatar.n", sep='\s+',
-        #                            header=None).to_numpy()
-        #     nr = len(geodatar[:, 0]) - 1
-        #     grr = geodatar[3:nr, 0]
-        #     gzr = geodatar[3:nr, 1]
-        #     gz = np.sort([gzl, gzw, gzr])
-        #     gr = np.sort([grl, grw, grr])
-
-        # generate field points
         z1 = min(gz)
         z2 = max(gz)
         r1 = min(gr)
@@ -513,7 +427,6 @@ class Model:
         r = rr.T.flatten()
 
         alue = 0
-
         ax = np.where(r == 0)
         r[ax] = r[ax] + 1e-10
         ind = np.arange(0, n) * np.ones((m, n))
@@ -521,97 +434,31 @@ class Model:
         ind2 = (np.ones((n, m)) * np.arange(0, m)).T
         zind = ind2.flatten()
 
-        #     save zr r -v4 -append
-        #     save zr alue -v4 -append
-        #     save zr rind -v4 -append
-        #     save zr zind -v4 -append
         zr = {'z': z, 'r': r, 'alue': alue, 'rind': rind, 'zind': zind}
         spio.savemat(fr'{self.folder}\zr.mat', zr, format='4')
 
         # compute the fields at generated points
-        if s == 0:
-            ic("\t\tCalculating fields")
-            # !copy /y kama0.mat kama.mat
-            shutil.copyfile(fr'{self.folder}\kama0.mat', fr'{self.folder}\kama.mat')
+        # !copy /y kama0.mat kama.mat
+        shutil.copyfile(fr'{self.folder}\kama0.mat', fr'{self.folder}\kama.mat')
 
-            # !Multipac fields
-            cwd = fr'{self.folder}'
-            multipacPath = fr'{self.folder}\Multipac.exe'
-            if os.path.exists(multipacPath):
-                subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
-                                stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        cwd = fr'{self.folder}'
+        multipacPath = fr'{self.folder}\Multipac.exe'
+        if os.path.exists(multipacPath):
+            subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
 
-            Er = spio.loadmat(fr"{self.folder}\Er.mat")['Er']
-            Ez = spio.loadmat(fr"{self.folder}\Ez.mat")['Ez']
-            H = spio.loadmat(fr"{self.folder}\H.mat")['H']
+        Er = spio.loadmat(fr"{self.folder}\Er.mat")['Er']
+        Ez = spio.loadmat(fr"{self.folder}\Ez.mat")['Ez']
+        H = spio.loadmat(fr"{self.folder}\H.mat")['H']
 
-            fields = {'I1': I1, 'I2': I2, 'rr': rr, 'zz': zz, 'r': r, 'z': z, 'Er': Er, 'Ez': Ez, 'H': H}
+        self.fields = {'I1': I1, 'I2': I2, 'rr': rr, 'zz': zz, 'r': r, 'z': z, 'Er': Er, 'Ez': Ez, 'H': H}
+        spio.savemat(fr'{self.folder}\fields.mat', self.fields)  # this was not saved as Mat object version 4. Ask why?
 
-            spio.savemat(fr'{self.folder}\fields.mat', fields)  # this was not saved as Mat object version 4. Ask why?
+        self.calculate_QoI()
 
-            self.save_fields(0, 1)
-
-            ic("\t\tCalculating QoIs")
-            self.calculate_QoI()
-            # self.normalize_u(0)
-        # else:
-        #     job = 0
-        #     # save job job -v4
-        #     # !copy /y kama1.mat kama.mat
-        #     # !Multipac fields
-        #     cwd = fr'{self.folder}'
-        #     multipacPath = fr'{self.folder}\Multipac.exe'
-        #     if os.path.exists(multipacPath):
-        #         subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
-        #
-        #     Er = spio.loadmat(fr"{self.folder}\Er.mat")['Er']
-        #     Ez = spio.loadmat(fr"{self.folder}\Ez.mat")['Ez']
-        #     H = spio.loadmat(fr"{self.folder}\H.mat")['H']
-        #     ic(Er.shape)
-        #
-        #     fields = {'I1': I1, 'I2': I2, 'rr': rr, 'zz': zz, 'r': r, 'z': z, 'Er': Er, 'Ez': Ez, 'H': H}
-        #     spio.savemat(fr'{self.folder}\fields', fields, format='4')
-        #     self.save_fields(1, job)
-        #     self.normalize_u(1)
-
-        # save zr z -v4
-        # save zr r -v4 -append
-        # save zr alue -v4 -append
-        # save zr rind -v4 -append
-        # save zr zind -v4 -append
-        #
-        # job = 1
-        # save job job -v4
-        # !copy /y kama2.mat kama.mat
-        # !Multipac fields
-        # load Er
-        # load Ez
-        # load H
-        # save fields2 I1 I2 rr zz r z Er Ez H
-        # save_fields(2)
-        # normalize_u(2)
-        # end
-        #
-        # if ss > 0
-        # cl = error_message('Fields are computed and saved.')
-        # cl = error_message(['To plot the fields, choose Plot FEM Fields in '...
-        # 'Menu Fields.'])
-        # cl = error_message('                               ')
-        #
-        # end
-        # end
-        # end
-        #
-        # if cl == 1
-        # clear_window
-        # end
-
-    def plot_FEM_fields(self, ptype, gridcons, s=0):
-        ok1 = 1
-        if os.path.exists(fr'{self.folder}/geodata.n'):
-            ok1 = 0
+    def plot_FEM_fields(self, ptype):
         ok2 = 0
-        if ok1 == 0:
+        if os.path.exists(fr'{self.folder}/geodata.n'):
             files = ['fields.mat', 'Er.mat', 'Ez.mat', 'H.mat', 'fieldparam']
             for f in files:
                 if os.path.exists(fr'{self.folder}/{f}'):
@@ -619,26 +466,21 @@ class Model:
                 else:
                     ok2 = 1
 
-        # ic(ok1, ok2)
-        if ok1 == 0 and ok2 == 0:
-            if s == 0:
-                if ptype == 0:
-                    ic('Plotting the fields. A pcolor plot.')
-                elif ptype == 1:
-                    ic('Plotting the fields. An arrow plot.')
+        if ok2 == 0:
+            if ptype == 0:
+                ic('Plotting the fields. A pcolor plot.')
+            elif ptype == 1:
+                ic('Plotting the fields. An arrow plot.')
 
-                geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
-                gridcons = geodata[0, 0]
-                self.plot_cavity_fields(ptype, gridcons, s)
+            # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+            self.plot_cavity_fields(ptype)
 
-            if s > 0:
-                ic('                                                  ')
-
-    def plot_cavity_fields(self, s, gridcons, ss):
+    def plot_cavity_fields(self, ptype):
+        fig, axs = plt.subplots(2, 1)
         # ----------------------------------------------------------------------
         # Plots the fields computed by the field solver. For a cavity.
         #
-        # INPUT  s : 0 - pcolor plots
+        # INPUT  ptype : 0 - pcolor plots
         #            1 - arrow plots
         #  gridcons : grid constant, [mm]
         # ----------------------------------------------------------------------
@@ -646,53 +488,31 @@ class Model:
         # 17/04/00 : Pasi Ylä-Oijala - Rolf Nevanlinna Institute
         # ----------------------------------------------------------------------
 
-        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
-        n = len(geodata[:, 0])
-        gr = geodata[3:n, 0]
-        gz = geodata[3:n, 1]
+        # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+        n = len(self.geodata[:, 0])
+        gr = self.geodata[3:n, 0]
+        gz = self.geodata[3:n, 1]
 
         # load the field values
         # load fields Er Ez H I1 I2 zz rr z r
-        fields = spio.loadmat(fr"{self.folder}\fields.mat")
-        Er = fields['Er']
-        Ez = fields['Ez']
-        H = fields['H']
-        I1 = fields['I1']
-        I2 = fields['I2']
-        zz = fields['zz']
-        rr = fields['rr']
-        z = fields['z']
-        r = fields['r']
-        # ic(zz, type(zz), np.shape(zz))
+        # fields = spio.loadmat(fr"{self.folder}\fields.mat")
+        Er = self.fields['Er']
+        Ez = self.fields['Ez']
+        H = self.fields['H']
+        I1 = self.fields['I1']
+        I2 = self.fields['I2']
+        zz = self.fields['zz']
+        rr = self.fields['rr']
+        z = self.fields['z']
+        r = self.fields['r']
 
         # plot the fields
-        if s == 0:  # a pcolor plot
+        if ptype == 0:  # a pcolor plot
             # ic(I2.shape, I1.shape, Er.shape)
             Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
             Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
-            ic(Ez)
             EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2).T
 
-            # Calculate accelerating field
-            L_half_cell = 0.0935  # length of cavity half cell
-            E_axis = EE[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
-            E_axis = np.sqrt(Ez ** 2).T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
-            plt.plot(E_axis)
-            plt.show()
-            z_slice = zz[0, :]
-            z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
-
-            Vacc = np.trapz(E_axis * np.exp(1j * 2 * np.pi * 801.58e6 * z_slice / c0), z_slice)
-            Eacc = abs(Vacc) / (2 * 5 * L_half_cell)
-            Epk_Eacc = np.max(EE) / Eacc
-
-            Hmag = np.sqrt(H ** 2).T
-            Hpk_Eacc = np.max(Hmag) * 1e-3 / (Eacc * 1e-6)
-
-            print(np.max(EE), Eacc, Epk_Eacc)
-            print(np.max(Hmag), Eacc, Hpk_Eacc)
-
-            fig, axs = plt.subplots(2, 1)
             pcE = axs[0].pcolor(zz, rr, EE, cmap='RdBu')
             # pcE = axs[0].contourf(zz, rr, EE, cmap='RdBu', levels=40)
             # color = 2 * np.log(np.hypot(Ez, Er))
@@ -704,30 +524,18 @@ class Model:
 
             axs[0].set_xlabel('z axis [m]')
             axs[0].set_ylabel('r axis [m]')
-            axs[0].set_title('MultiPac 2.0          Electric field   abs (E)   [V/m]      ')
+            axs[0].set_title(r'Electric field |$E$| [V/m]')
 
             HH = np.reshape(H, (max(I1.shape), max(I2.shape))).T
             pcH = axs[1].pcolor(zz, rr, 4e-7 * np.pi * HH, cmap='RdBu')
             plt.colorbar(pcH, ax=axs[1])
 
             axs[1].plot(gz, gr, '-b')
-            axs[1].set_title('Magnetic field     B_\phi  [TESLA]')
+            axs[1].set_title(r'Magnetic field |$B_\phi$| [T]')
             axs[1].set_xlabel('z axis [m]')
             axs[1].set_ylabel('r axis [m]')
             plt.show()
-
-            # print(Ez)
-            # print(Ez.shape)
-            # print(zz)
-            # print(zz.shape)
-            plt.spy(zz)
-            plt.show()
-            plt.spy(Ez.T)
-            plt.show()
-            plt.spy(Er.T)
-            plt.show()
-
-        else:  # an arrow plot
+        else:
             F = [Ez.T, Er.T]
             A = [z.T, r.T]
 
@@ -737,60 +545,49 @@ class Model:
             ax.plot(gz, gr, '-b')
             ax[1].set_xlabel('z axis [m]')
             ax[1].set_ylabel('r axis [m]')
-            ax[1].set_title('MultiPac 2.0            Electric field        [V/m]         ')
-
-        if ss > 0:
-            ic('Electric field plotted. To see the magnetic field choose Pcolor.')
+            ax[1].set_title(r'Electric field |$E$| [V/m]')
 
     def calculate_QoI(self):
+        ic("\t\tCalculating QoIs")
 
-        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
-        n = len(geodata[:, 0])
-        gr = np.array(geodata[3:n, 0])
-        gz = np.array(geodata[3:n, 1])
+        # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+        n = len(self.geodata[:, 0])
+        gr = np.array(self.geodata[3:n, 0])
+        gz = np.array(self.geodata[3:n, 1])
 
         # load the field values
-        # load fields Er Ez H I1 I2 zz rr z r
-        fields = spio.loadmat(fr"{self.folder}\fields.mat")
-        Er = fields['Er']
-        Ez = fields['Ez']
-        H = fields['H']
-        I1 = fields['I1']
-        I2 = fields['I2']
-        zz = fields['zz']
-        rr = fields['rr']
-        z = fields['z']
-        r = fields['r']
+        # fields = spio.loadmat(fr"{self.folder}\fields.mat")
+        Er = self.fields['Er']
+        Ez = self.fields['Ez']
+        H = self.fields['H']
+        I1 = self.fields['I1']
+        I2 = self.fields['I2']
+        zz = self.fields['zz']
+        rr = self.fields['rr']
+        z = self.fields['z']  # flattened zz array
+        r = self.fields['r']  # flattened rr array
 
         # plot the fields
         Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
         Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
 
         # check electric fields
-        ic(Er.shape)
         EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2).T
         HH = np.reshape(abs(H), (max(I1.shape), max(I2.shape))).T
-
-        ic(HH.shape)
-        ic(EE.shape)
 
         # Calculate accelerating field
         L_half_cell = 0.0935  # length of cavity half cell
         iris_radius = 0.01
         E_axis = EE[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
         z_slice = zz[0, :]
-        plt.plot(z_slice, E_axis)
-        plt.show()
         # z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
 
         Vacc = self.calculate_vacc(z_slice, E_axis)
         Eacc = Vacc / (2 * 1 * L_half_cell)
 
-        ic(np.shape(rr), np.shape(zz), np.shape(H))
-
         z_e, E_surf = self.get_surface_field(EE, zz, rr, iris_radius)
         z_h, H_surf = self.get_surface_field(HH, zz, rr, iris_radius)
-        ic(np.max(EE), ic(np.max(E_surf)))
+
         epk = self.calculate_epk(np.max(E_surf), Eacc)
         bpk = self.calculate_bpk(np.max(H_surf), Eacc)
         ic(epk, np.max(EE) / Eacc, bpk)
@@ -801,8 +598,6 @@ class Model:
 
         # calculate energy
         U = self.calculate_U(EE, HH, zz, rr)
-        ic(U)
-        ic(np.max(EE) / U, Vacc / U)
 
         RQ = self.calculate_rq(Vacc, U)
         ic(RQ)
@@ -836,6 +631,8 @@ class Model:
 
         Parameters
         ----------
+        rr
+        zz
         field_array
         iris_radius
 
@@ -941,7 +738,8 @@ class Model:
 
         """
         # calculate Vacc
-        E_axis = E_axis * np.exp(1j * (2 * np.pi * self.freq / c0) * z)
+        freq = self.fieldparam[1]
+        E_axis = E_axis * np.exp(1j * (2 * np.pi * freq / c0) * z)
         Vacc = np.trapz(E_axis, z)
 
         return np.abs(Vacc)
@@ -979,8 +777,6 @@ class Model:
         file[ez, 5:6] = file[ez, 5:6] / E0[0]
         file[bp, 5:6] = my0 * file[bp, 5:6] / E0[0]
         fieldfile1 = file
-
-        ic(E0)
 
         if wall == 0:
             # save -ascii fieldfile1.n fieldfile1
@@ -1273,7 +1069,8 @@ class Model:
             kama_n = {'index': index, 'u': u, 'k': k}
             spio.savemat(fr'{self.folder}\kama_n.mat', kama_n, format='4')
 
-    def inttri(self, p):
+    @staticmethod
+    def inttri(p):
         # function [X,W]=inttri(p)
         #
         # The program gives the sample points X as a (2,n)-matrix and
@@ -1584,6 +1381,12 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\run_files'
     mod = Model(folder)
-    mod.define_geometry()
-    mod.generate_mesh()  # if mesh is not generated, use default settings in run analysis
+    n_cells = 1
+    midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
+                         71.98698698698699, 93.5, 171.1929])*1e-3
+    endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
+                         80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
+
+    mod.define_geometry(n_cells, midC3795)
+    mod.generate_mesh()
     mod.run_field_solver(show_plots=True)

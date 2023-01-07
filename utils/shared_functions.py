@@ -908,14 +908,14 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
         print_(fr"There was a problem running UQ analysis for {key}")
 
 
-def write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left=None, end_cell_right=None,
+def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None,
                                        beampipe='none', plot=False):
 
-    if not end_cell_left:
+    if end_cell_left is None:
         end_cell_left = mid_cell
 
-    if not end_cell_right:
-        if not end_cell_left:
+    if end_cell_right is None:
+        if end_cell_left is None:
             end_cell_right = mid_cell
         else:
             end_cell_right = end_cell_left
@@ -930,20 +930,18 @@ def write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left=None, end
     if beampipe.lower() == 'both':
         L_bp_l = 4 * L_m
         L_bp_r = 4 * L_m
-
-    if beampipe.lower() == 'none':
+    elif beampipe.lower() == 'none':
         L_bp_l = 0.000001  # 4 * L_m  #
         L_bp_r = 0.000001  # 4 * L_m  #
-
-    if beampipe.lower() == 'left':
+    elif beampipe.lower() == 'left':
         L_bp_l = 4 * L_m
         L_bp_r = 0.000001
-
-    if beampipe.lower() == 'right':
+    elif beampipe.lower() == 'right':
         L_bp_l = 0.000001
         L_bp_r = 4 * L_m
-
-
+    else:
+        L_bp_l = 0.000001  # 4 * L_m  #
+        L_bp_r = 0.000001  # 4 * L_m  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -974,7 +972,7 @@ def write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left=None, end
                                     args=data,
                                     xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
-    with open(r'D:\Dropbox\multipacting\MPGUI21\geodata.n', 'w') as fil:
+    with open(file_path, 'w') as fil:
         fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
         fil.write("   1.25000000e-02   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")  # a point inside the structure
         fil.write("  -3.1415927e+00  -2.7182818e+00   0.0000000e+00   0.0000000e+00\n")  # a point outside the structure
@@ -990,7 +988,6 @@ def write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left=None, end
         # ADD BEAM PIPE LENGTH
         lineTo(pt, [L_bp_l - shift, Ri_el], step)
         pt = [L_bp_l - shift, Ri_el]
-        print(pt)
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         for n in range(1, n_cell + 1):
@@ -1050,7 +1047,6 @@ def write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left=None, end
 
                     # calculate new shift
                     shift = shift - (L_el + L_er)
-                    ic(shift)
                 else:
                     print("if else")
                     # EQUATOR ARC TO NEXT POINT
@@ -1209,12 +1205,10 @@ def write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left=None, end
 
         # BEAM PIPE
         # reset shift
-        print("pt before", pt)
         shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
         lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + L_el + L_er - shift, Ri_er], step)
         pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
-        print("pt after", pt)
 
         # END PATH
         lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
@@ -1231,43 +1225,62 @@ def write_cavity_for_custom_eig_solver(n_cell, mid_cell, end_cell_left=None, end
         plt.show()
 
 
+def linspace(start, stop, step=1.):
+    """
+    Like np.linspace but uses step instead of num
+    This is inclusive to stop, so if start=1, stop=3, step=0.5
+    Output is: array([1., 1.5, 2., 2.5, 3.])
+  """
+    if start < stop:
+        ll = np.linspace(start, stop, int((stop - start) / abs(step) + 1))
+        if stop not in ll:
+            ll = np.append(ll, stop)
+
+        return ll
+    else:
+        ll = np.linspace(stop, start, int((start - stop) / abs(step) + 1))
+        if start not in ll:
+            ll = np.append(ll, start)
+        return ll
+
+
 def lineTo(prevPt, nextPt, step, plot=False):
     if prevPt[0] == nextPt[0]:
         # vertical line
         # chwxk id nextPt is greater
         if prevPt[1] < nextPt[1]:
-            py = np.linspace(prevPt[1], nextPt[1], step)
+            py = linspace(prevPt[1], nextPt[1], step)
         else:
-            py = np.linspace(nextPt[1], prevPt[1], step)
+            py = linspace(nextPt[1], prevPt[1], step)
             py = py[::-1]
         px = np.ones(len(py)) * prevPt[0]
 
     elif prevPt[1] == nextPt[1]:
         # horizontal line
         if prevPt[0] < nextPt[1]:
-            px = np.linspace(prevPt[0], nextPt[0], step)
+            px = linspace(prevPt[0], nextPt[0], step)
         else:
-            px = np.linspace(nextPt[0], prevPt[0], step)
+            px = linspace(nextPt[0], prevPt[0], step)
 
         py = np.ones(len(px)) * prevPt[1]
     else:
         # calculate angle to get appropriate step size for x and y
         ang = np.arctan((nextPt[1] - prevPt[1]) / (nextPt[0] - prevPt[0]))
         if prevPt[0] < nextPt[0] and prevPt[1] < nextPt[1]:
-            px = np.linspace(prevPt[0], nextPt[0], step * np.cos(ang))
-            py = np.linspace(prevPt[1], nextPt[1], step * np.sin(ang))
+            px = linspace(prevPt[0], nextPt[0], step * np.cos(ang))
+            py = linspace(prevPt[1], nextPt[1], step * np.sin(ang))
         elif prevPt[0] > nextPt[0] and prevPt[1] < nextPt[1]:
-            px = np.linspace(nextPt[0], prevPt[0], step * np.cos(ang))
+            px = linspace(nextPt[0], prevPt[0], step * np.cos(ang))
             px = px[::-1]
-            py = np.linspace(prevPt[1], nextPt[1], step * np.sin(ang))
+            py = linspace(prevPt[1], nextPt[1], step * np.sin(ang))
         elif prevPt[0] < nextPt[0] and prevPt[1] > nextPt[1]:
-            px = np.linspace(prevPt[0], nextPt[0], step * np.cos(ang))
-            py = np.linspace(nextPt[1], prevPt[1], step * np.sin(ang))
+            px = linspace(prevPt[0], nextPt[0], step * np.cos(ang))
+            py = linspace(nextPt[1], prevPt[1], step * np.sin(ang))
             py = py[::-1]
         else:
-            px = np.linspace(nextPt[0], prevPt[0], step * np.cos(ang))
+            px = linspace(nextPt[0], prevPt[0], step * np.cos(ang))
             px = px[::-1]
-            py = np.linspace(nextPt[1], prevPt[1], step * np.sin(ang))
+            py = linspace(nextPt[1], prevPt[1], step * np.sin(ang))
             py = py[::-1]
     if plot:
         plt.plot(px, py)
