@@ -18,6 +18,7 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -48,7 +49,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#aceclerator-cavity-basics">Aceclerator cavity basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#electromagnetic-field-theory">Electromagnetic field theory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#maxwell-eigenvalue-problem">Maxwell eigenvalue problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#wakefield-equations">Wakefield equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#wakefield-analysis">Wakefield analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#theory-of-multipacting">Theory of multipacting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sensitivity-analysis-and-uncertainty-quantification">Sensitivity analysis and uncertainty quantification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#elliptical-cavity-optimization">Elliptical Cavity optimization</a></li>
@@ -101,7 +102,7 @@ be optimised for speed and accuracy.</p>
 <li><p><a class="reference internal" href="#aceclerator-cavity-basics" id="id1">Aceclerator cavity basics</a></p></li>
 <li><p><a class="reference internal" href="#electromagnetic-field-theory" id="id2">Electromagnetic field theory</a></p></li>
 <li><p><a class="reference internal" href="#maxwell-eigenvalue-problem" id="id3">Maxwell eigenvalue problem</a></p></li>
-<li><p><a class="reference internal" href="#wakefield-equations" id="id4">Wakefield equations</a></p></li>
+<li><p><a class="reference internal" href="#wakefield-analysis" id="id4">Wakefield analysis</a></p></li>
 <li><p><a class="reference internal" href="#theory-of-multipacting" id="id5">Theory of multipacting</a></p></li>
 <li><p><a class="reference internal" href="#sensitivity-analysis-and-uncertainty-quantification" id="id6">Sensitivity analysis and uncertainty quantification</a></p></li>
 <li><p><a class="reference internal" href="#elliptical-cavity-optimization" id="id7">Elliptical Cavity optimization</a></p></li>
@@ -125,7 +126,7 @@ decade, there has been a great deal of advancement in the design and fabrication
 resonant cavities. Cavity shapes have evolved from being totally cylindrical in shape,
 the so-called pillbox cavities, to the widely used (standard) elliptical cavities nowadays.
 Cavity geometric parameters are selected based on certain desired properties. The so-
-called cavity figures of merit are used to quantify these desired properties.▼</p>
+called cavity figures of merit are used to quantify these desired properties.</p>
 </section>
 <section id="electromagnetic-field-theory">
 <span id="quick-electromagnetic-field-theory"></span><h2><a class="toc-backref" href="#id2">Electromagnetic field theory</a><a class="headerlink" href="#electromagnetic-field-theory" title="Permalink to this heading"></a></h2>
@@ -133,11 +134,49 @@ called cavity figures of merit are used to quantify these desired properties.▼
 <section id="maxwell-eigenvalue-problem">
 <span id="quick-maxwell-eigenvalue-problem"></span><h2><a class="toc-backref" href="#id3">Maxwell eigenvalue problem</a><a class="headerlink" href="#maxwell-eigenvalue-problem" title="Permalink to this heading"></a></h2>
 </section>
-<section id="wakefield-equations">
-<span id="quick-wakefield-equations"></span><h2><a class="toc-backref" href="#id4">Wakefield equations</a><a class="headerlink" href="#wakefield-equations" title="Permalink to this heading"></a></h2>
+<section id="wakefield-analysis">
+<span id="quick-wakefield-equations"></span><h2><a class="toc-backref" href="#id4">Wakefield analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h2>
 </section>
 <section id="theory-of-multipacting">
 <span id="quick-theory-of-multipacting"></span><h2><a class="toc-backref" href="#id5">Theory of multipacting</a><a class="headerlink" href="#theory-of-multipacting" title="Permalink to this heading"></a></h2>
+<p>Multipacting is a phenomenon in resonant frequency structures whereby charged
+particles are continuously discharged at an exponential rate from the
+conductor walls of the device. Multipacting occurs only at specific
+conditions dependent on the alternating field and the wall’s surface
+properties. More specifically, the emission properties of the wall coupled
+with the electromagnetic field strength and profile are determinants of
+multipacting. In accelerating cavities, multipacting occurs mostly at the
+equator.</p>
+<p>For multipacting to occur, two conditions must be satisfied. The first is
+that the an electron emitted at the cavity wall and driven by the cavity
+electromagnetic field returns to the same point after an integer number of
+cycles. Secondly, the impacting electron produces more than one secondary
+electron cite{Oija}. Different measures could predict Multipacting. The one
+adopted here is implemented in the 2D code described in cite{Oija, Padamse}.
+The tools for multipacting analysis are the counter and distance functions.
+The counter and distance functions are used to predict multipacting.</p>
+<p>The counter functions are the electron counter function <span class="math notranslate nohighlight">\(c_N\)</span>, enhanced
+counter function <span class="math notranslate nohighlight">\(e_N\)</span> and total electron counter function <span class="math notranslate nohighlight">\(t_N\)</span>. These
+quantify the number of free electrons remaining after a given number of
+impacts (20 in this case), the number of secondary electrons and the number
+of all electrons, respectively, where <span class="math notranslate nohighlight">\(N\)</span> is the maximum number of impacts.
+The final impact energy <span class="math notranslate nohighlight">\(Ef_N\)</span> of the free electrons is also calculated.</p>
+<p>The distance function <span class="math notranslate nohighlight">\(d_N\)</span> defined mathematically as</p>
+<div class="math notranslate nohighlight">
+\[d_N = \sqrt{|x_N-x_0|^2 + \gamma^2|\mathrm{e}^{i\psi_N} - \mathrm{e}^{i\psi_0}|^2}\]</div>
+<p>quantifies the distance between the initial point and the last impact point where
+<span class="math notranslate nohighlight">\((x_0, \psi_0)\)</span>, <span class="math notranslate nohighlight">\((x_N, \psi_N)\)</span> are the coordinates of the initial and
+final position after <span class="math notranslate nohighlight">\(N\)</span> impacts.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="../images/sey_Nb.png"><img alt="accelerator cavity" src="../images/sey_Nb.png" style="width: 200px;" /></a>
+</figure>
+<p>Multipacting strongly depends on the surface finish of the cavity wall
+materials and, therefore, strongly depends on the material’s secondary
+emission yield curve (SEY). It is quite peculiar because if the energy of
+the impacting particle is too low or too high, no electron is released.
+This sets an experimentally determined bound of impact energy for which
+electrons are released in different materials. Figure ref{fig: sey niobium}
+shows a typical SEY curve for Niobium.</p>
 </section>
 <section id="sensitivity-analysis-and-uncertainty-quantification">
 <span id="quick-sensitivity-analysis-and-uq"></span><h2><a class="toc-backref" href="#id6">Sensitivity analysis and uncertainty quantification</a><a class="headerlink" href="#sensitivity-analysis-and-uncertainty-quantification" title="Permalink to this heading"></a></h2>

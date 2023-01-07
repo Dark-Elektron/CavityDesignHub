@@ -41,6 +41,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
@@ -200,7 +201,7 @@
 
         <span class="n">Ttab_val_f</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># print_(&#39;3&#39;)</span>
-        <span class="n">sub_dir</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span>  <span class="c1"># the simulation runs at the quadrature points are saved to the key of mean value run</span>
+        <span class="n">sub_dir</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span>  <span class="c1"># the simulation runs at the quadrature points are saved to the key of mean value run</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">no_sims</span><span class="p">):</span>
             <span class="n">skip</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="n">p_init</span> <span class="o">=</span> <span class="n">p_true</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">nodes</span><span class="p">[:,</span> <span class="n">i</span><span class="p">])</span>
@@ -246,7 +247,7 @@
 
             <span class="c1"># check if folder exists and skip if it does</span>
             <span class="c1"># print_(fr&#39;{projectDir}\SimulationData\SLANS\{key}\{fid}&#39;)</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">\Cavity</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">projectDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">\</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">):</span>
                 <span class="n">skip</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="c1"># ic(&quot;Skipped: &quot;, fid, fr&#39;{projectDir}\SimulationData\ABCI\{key}\{fid}&#39;)</span>
 
@@ -260,7 +261,7 @@
                                                  <span class="n">f_shift</span><span class="o">=</span><span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_modes</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">beampipes</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">,</span>
                                                  <span class="n">parentDir</span><span class="o">=</span><span class="n">parentDir</span><span class="p">,</span> <span class="n">projectDir</span><span class="o">=</span><span class="n">projectDir</span><span class="p">,</span> <span class="n">subdir</span><span class="o">=</span><span class="n">sub_dir</span><span class="p">)</span>
 
-            <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parentDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">\Cavity</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">\qois.json&#39;</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parentDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">\</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">\qois.json&#39;</span>
             <span class="c1"># ic(filename)</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
                 <span class="c1"># n_cells = 5</span>
@@ -269,7 +270,7 @@
                 <span class="c1"># ic(n_cells, norm_length)</span>
                 <span class="c1"># qois_result = self.get_qoi_value(params, slans_obj_list, n_cells, norm_length)</span>
 
-                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parentDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">\Cavity</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">\qois.json&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">parentDir</span><span class="si">}</span><span class="s1">\SimulationData\SLANS\</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">\</span><span class="si">{</span><span class="n">fid</span><span class="si">}</span><span class="s1">\qois.json&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
                     <span class="n">results</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
 
                 <span class="c1"># print(results)</span>
@@ -314,10 +315,10 @@
 
             <span class="c1"># plt.show()</span>
 
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parentDir</span><span class="si">}</span><span class="s2">\SimulationData\SLANS\Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">\uq.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">parentDir</span><span class="si">}</span><span class="s2">\SimulationData\SLANS\</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">\uq.json&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
                 <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">result_dict_slans</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">print_</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;There was a problem running UQ analysis for Cavity</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+            <span class="n">print_</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;There was a problem running UQ analysis for </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="UQ.get_qoi_value"><a class="viewcode-back" href="../../../analysis_modules.uq.html#analysis_modules.uq.uq_cavity.UQ.get_qoi_value">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_qoi_value</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">n_cells</span><span class="p">,</span> <span class="n">norm_length</span><span class="p">):</span>

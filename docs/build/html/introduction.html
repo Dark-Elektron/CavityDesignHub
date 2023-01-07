@@ -93,8 +93,8 @@ and general post-processing.</p>
 supported in this module are eigenmode analysis, wakefield analysis,
 and multipacting analysis.</p>
 <ul class="simple">
-<li><p>Eigenmode analysis - SLANS <span id="id1">[<a class="reference internal" href="#id8" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span></p></li>
-<li><p>Wakefield analysis - ABCI <span id="id2">[<a class="reference internal" href="#id9" title="Yong Ho Chin. Abci. URL: https://abci.kek.jp/abci.htm.">Chi</a>]</span></p></li>
+<li><p>Eigenmode analysis - SLANS <a href="#id1"><span class="problematic" id="id2">:cite:p:`SLANS`</span></a></p></li>
+<li><p>Wakefield analysis - ABCI <a href="#id3"><span class="problematic" id="id4">:cite:p:`ABCI`</span></a></p></li>
 <li><p>Multipacting analysis - Multipac</p></li>
 <li><p>Optimisation - Python</p></li>
 <li><p>Uncertainty quantification - Python</p></li>
@@ -108,7 +108,7 @@ required to transform them to the form that is used in most papers related
 to accelerating cavities design.</p>
 <p>The SUPERLANS code is intended to calculate azimuthal-homogenous modes in
 axissymmetric cavities, periodical structure, and cut-off frequencies in
-long homogenous waveguides <span id="id3">[<a class="reference internal" href="#id8" title="V. Yakovlev D. Myakishev. SLANS. URL: http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.">DM</a>]</span>. SLANS is written by Sergey
+long homogenous waveguides <a href="#id5"><span class="problematic" id="id6">:cite:p:`SLANS`</span></a>. SLANS is written by Sergey
 Belomestnykh and it consists of a set of executable files for differnt
 purposes. The first of these is the <code class="docutils literal notranslate"><span class="pre">genmesh.exe</span></code> which reads a geometry
 file <code class="docutils literal notranslate"><span class="pre">&lt;filename&gt;.geo</span></code> written using Python and generates the mesh file
@@ -131,7 +131,7 @@ codes written in Python.</p>
 <h2>Wakefield Analysis<a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h2>
 <p>Wakefield analysis is performed using the ABCI
 (Azimuthal Beam Cavity Interaction) code written by Yang Ho Chin
-<span id="id4">[<a class="reference internal" href="#id9" title="Yong Ho Chin. Abci. URL: https://abci.kek.jp/abci.htm.">Chi</a>]</span>. It solves the Maxwell equations directly in the tiem domain
+<a href="#id7"><span class="problematic" id="id8">:cite:p:`ABCI`</span></a>. It solves the Maxwell equations directly in the tiem domain
 when a bunched beam goes through an axi-symmetric structure on or off axis.
 It can be found <a class="reference external" href="https://abci.kek.jp/abci.htm">here</a>.</p>
 <div class="admonition note">
@@ -163,22 +163,6 @@ optimisations are supported. More should be included in future releases.</p>
 <p>Uncertainty quantificaion (UQ) is done using self-written Python codes
 which call to the previously mentioned analysis codes. The procedure followed
 is described in here. The mathematics can be found in the theory section.</p>
-<div class="docutils container" id="id6">
-<dl class="citation">
-<dt class="label" id="id9"><span class="brackets">Chi</span></dt>
-<dd><p>Yong Ho Chin. Abci. URL: <a class="reference external" href="https://abci.kek.jp/abci.htm">https://abci.kek.jp/abci.htm</a>.</p>
-</dd>
-<dt class="label" id="id8"><span class="brackets">DM</span></dt>
-<dd><p>V. Yakovlev D. Myakishev. <em>SLANS</em>. URL: <a class="reference external" href="http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF">http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF</a>.</p>
-</dd>
-<dt class="label" id="id7"><span class="brackets">Nel87</span></dt>
-<dd><p>Edward Nelson. <em>Radically Elementary Probability Theory</em>. Princeton University Press, 1987.</p>
-</dd>
-<dt class="label" id="id10"><span class="brackets">PYOU01</span></dt>
-<dd><p>S. Järvenpää P. Ylä-Oijala, J. Lukkarinen and M. Ukkola. <em>User's manual</em>. Rolf Nevanlinna Institute, Helsinki, 2001. URL: <a class="reference external" href="https://accelconf.web.cern.ch/e08/papers/mopp137.pdf">https://accelconf.web.cern.ch/e08/papers/mopp137.pdf</a>.</p>
-</dd>
-</dl>
-</div>
 </section>
 </section>
 

@@ -1,6 +1,15 @@
 frame\_controls package
 =======================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   frame_controls.misc_widgets
+   frame_controls.postprocess_widgets
+
 Submodules
 ----------
 

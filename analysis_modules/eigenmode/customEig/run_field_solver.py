@@ -1,5 +1,6 @@
 import ast
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -216,14 +217,6 @@ class Model:
         boundary = self.mesh['boundary']
         edges = self.mesh['edges']
 
-        for b in boundary:
-            print(b)
-        mask = np.all(boundary == 1, axis=1)
-        mask2 = np.all(boundary == 3, axis=1)
-        plt.scatter(coord[mask][:, 0], coord[mask][:, 1])
-        plt.scatter(coord[mask2][:, 0], coord[mask2][:, 1])
-        plt.show()
-
         x_min = min(coord[:, 0])
         x_max = max(coord[:, 0])
         y_min = min(coord[:, 1])
@@ -260,8 +253,6 @@ class Model:
         ax.fill(X[:, mask], Y[:, mask], 'g')
 
         mask = np.where(edges[:, 2] > 0)[0]  # no bouncing
-        for ed in edges:
-            print(ed)
         for i in range(len(mask)):
             i1 = int(edges[mask[i], 0]) - 1
             i2 = int(edges[mask[i], 1]) - 1
@@ -613,16 +604,15 @@ class Model:
         HH = np.reshape(abs(H), (max(I1.shape), max(I2.shape))).T
 
         # Calculate accelerating field
-        E_axis = Ez.T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
+        E_z_axis = Ez.T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
         z_slice = zz[0, :]
         # z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
 
-        Vacc = self.calculate_vacc(z_slice, E_axis)
-        ic(self.n_cells, self.mid_cell[5])
+        Vacc = self.calculate_vacc(z_slice, E_z_axis)
         Eacc = Vacc / (2 * self.n_cells * self.mid_cell[5])
 
-        z_e, E_surf = self.get_surface_field(EE, zz, rr, 0)
-        z_h, H_surf = self.get_surface_field(HH, zz, rr, 0)
+        z_e, E_surf = self.get_surface_field(EE, zz, rr)
+        z_h, H_surf = self.get_surface_field(HH, zz, rr)
 
         epk = self.calculate_epk(np.max(E_surf), Eacc)
         bpk = self.calculate_bpk(np.max(H_surf), Eacc)
@@ -640,19 +630,40 @@ class Model:
 
     @staticmethod
     def calculate_U(EE, HH, zz, rr):
-        # correct energy for TESLA 1 CELL
-        # U = 0.001986
-        ic(EE.shape, HH.shape)
+        """
+        Calculates the energy :math:`U_n` of eigenmode :math:`n` from either electric or magnetic field.
+
+        .. math::
+           U_n = \\frac{1}{2} \int_{z_\min}^{z_\max} \int_{r_\min}^{r_\max} \int_{0}^{2\pi} D_n \cdot E_n \mathrm{d}V
+           = \\frac{1}{2}\int_{z_\min}^{z_\max} \int_{r_\min}^{r_\max} \int_{0}^{2\pi} B_n \cdot H_n \mathrm{d}V
+
+           D_n \cdot E_n = \epsilon_0 E^2; ~B_n \cdot H_n = \mu_0 H^2
+
+        Parameters
+        ----------
+        EE: 2D array
+            Array of electric field magnitude in 2D space
+        HH:
+            Array of magnetic field magnitude in 2D space
+        zz: 2D array
+            Grid points z coordinate
+        rr: 2D array
+            Grid points r coordinate
+
+        Returns
+        -------
+        U: float
+            Energy over the shape volume
+
+        """
 
         # calculate volume which is area under contour curve
-        ic(rr.shape)
         z = zz[0, :]
         r = rr[:, 0]
         # ic(z, r)
 
         U = np.pi * mu0 * np.trapz(np.trapz(HH ** 2 * rr, r, axis=0), z)
-        UE = np.pi * eps0 * np.trapz(np.trapz(EE ** 2 * rr, r, axis=0),
-                                     z)  # multiply by 2 because we only analysed half the geometry
+        UE = np.pi * eps0 * np.trapz(np.trapz(EE ** 2 * rr, r, axis=0), z)
         ic(U, UE)
 
         return U
@@ -660,49 +671,34 @@ class Model:
     def calculate_P(self):
         pass
 
-    def get_surface_field(self, field_array, zz, rr, iris_radius):
+    def get_surface_field(self, field_array, zz, rr):
         """
         Get the surface field values. Works by looping through the 2D field array and returning the first and last
         non-zero elements in each row
 
         Parameters
         ----------
-        rr
-        zz
-        field_array
-        iris_radius
+        rr: 2D array
+            r coordinates
+        zz: 2D array
+            z coordinates
+        field_array: 2D array
+            Field values on grid
 
         Returns
         -------
 
         """
-        left_surf_field_val, right_surf_field_val = [], []
-        left_z, right_z = [], []
 
-        for i, row in enumerate(field_array[np.all(rr >= iris_radius, axis=1)]):
-            row_ = row[row != 0]
-            # ic(row_.shape)
-            # print(i, row_.shape[0])
-            if row_.shape[0] != 0:
-                left_surf_field_val.append(row_[0])
-                right_surf_field_val.append(row_[-1])
+        # copy rr to avoid making changes to it
+        rr_copy = np.copy(rr)
+        rr_copy[field_array == 0] = 0  # this line alters rr hence the copy
+        # r_surf = np.max(r, axis=0)
+        indx_r_surf = np.argmax(rr_copy, axis=0)
+        z = zz[0, :]
+        surf_field = field_array[indx_r_surf, np.arange(len(z))]
 
-                # get index from array
-                ind1 = np.argwhere(row == row_[0])
-                ind2 = np.argwhere(row == row_[-1])
-                if len(ind1) > 1:
-                    left_z.append(zz[i][ind1][0])
-                else:
-                    left_z.append(zz[i][ind1])
-                if len(ind2) > 1:
-                    right_z.append(zz[i][ind2][-1])
-                else:
-                    right_z.append(zz[i][ind2])
-
-        left_surf_field_val.extend(right_surf_field_val[::-1])
-        left_z.extend(right_z[::-1])
-
-        return left_z, left_surf_field_val
+        return z, surf_field
 
     def find_resonance(self, freq):
         maara = 10  # number of eigenvalues
@@ -761,39 +757,85 @@ class Model:
 
         return k1, k2, u1, u2
 
-    def calculate_vacc(self, z, E_axis):
+    def calculate_vacc(self, z, E_z_axis):
         """
-        calculates accelerating voltage
+        Calculates the accelerating voltage of the accelerating mode
 
         .. math::
-
-           V_acc = \int E(z=0)
+           V_\mathrm{cav} = \\vert \int_{z_\min}^{z_\max} E_z(r=0, z) \mathrm{e}^{jk_0 z}\\vert \mathrm{d}z
 
         Parameters
         ----------
+        E_z_axis
         z
-        E_axis
 
         Returns
         -------
 
         """
         # calculate Vacc
-        E_axis = E_axis * np.exp(1j * (2 * np.pi * self.eig_freq / c0) * z)
+        E_axis = E_z_axis * np.exp(1j * (2 * np.pi * self.eig_freq / c0) * z)
         Vacc = np.trapz(E_axis, z)
 
         return np.abs(Vacc)
 
     def calculate_rq(self, Vacc, U):
+        """
+        Calculates the :math:`R/Q_\parallel` of the accelerating mode.
+
+        .. math::
+           R/Q = \\frac{|V_{\parallel, n(0, z)}|^2}{\omega_n U_n}
+
+        Parameters
+        ----------
+        Vacc: float
+            Accelerating voltage.
+        U: float
+            Stored energy
+
+        Returns
+        -------
+
+        """
         ic(Vacc, self.eig_freq, U)
         return Vacc ** 2 / (2 * np.pi * self.eig_freq * U)
 
     @staticmethod
     def calculate_epk(Epk, Eacc):
+        """
+        Calculates the peak surface electric field to accelerating field ratio
+
+        Parameters
+        ----------
+        Epk: float
+            Peak electric field
+        Eacc: float
+            Accelerating electric field
+
+        Returns
+        -------
+        Epk/Eacc: float
+
+        """
         return Epk / Eacc
 
     @staticmethod
     def calculate_bpk(Hpk, Eacc):
+        """
+        Calculates the peak surface magnetic field to accelerating field ratio
+
+        Parameters
+        ----------
+        Hpk: float
+            Peak wall surface magnetic field
+        Eacc: float
+            Accelerating electric field
+
+        Returns
+        -------
+        Bpk/Eacc: float
+
+        """
         return mu0 * Hpk * 1e3 / (Eacc * 1e-6)
 
     def save_fields(self, wall, job):
@@ -1421,7 +1463,7 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\run_files'
     mod = Model(folder)
-    n_cells = 1
+    n_cells = 5
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
                          71.98698698698699, 93.5, 171.1929])*1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
@@ -1431,5 +1473,5 @@ if __name__ == '__main__':
     midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591])*1e-3
 
     mod.define_geometry(n_cells, midC3795, endC3795, beampipe='both')
-    mod.generate_mesh(plot=True)
+    mod.generate_mesh()
     mod.run_field_solver(freq=801.58e6, search=True, show_plots=True)

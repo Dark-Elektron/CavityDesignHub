@@ -41,6 +41,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
@@ -689,78 +690,6 @@
 <span class="c1"># for index, row in df.iterrows():</span>
 <span class="c1">#     print(row.tolist())</span>
 
-<div class="viewcode-block" id="stroud"><a class="viewcode-back" href="../../utils.html#utils.test.stroud">[docs]</a><span class="k">def</span> <span class="nf">stroud</span><span class="p">(</span><span class="n">p</span><span class="p">):</span>
-    <span class="c1"># Stroud-3 method</span>
-    <span class="c1">#</span>
-    <span class="c1"># Input parameters:</span>
-    <span class="c1">#  p   number of dimensions</span>
-    <span class="c1"># Output parameters:</span>
-    <span class="c1">#  nodes   nodes of quadrature rule in [0,1]^p (column-wise)</span>
-    <span class="c1">#</span>
-
-    <span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">p</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">p</span><span class="p">))</span>
-    <span class="n">coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="n">p</span>
-    <span class="n">fac</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="mi">3</span><span class="p">)</span>
-
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">p</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="p">))):</span>
-            <span class="n">k</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">r</span>
-            <span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">((</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">)</span>
-            <span class="n">nodes</span><span class="p">[</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">fac</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">k</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">coeff</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">p</span><span class="p">):</span>
-            <span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-
-    <span class="c1"># transform nodes from [-1,+1]^p to [0,1]^p</span>
-    <span class="n">nodes</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">nodes</span> <span class="o">+</span> <span class="mf">0.5</span>
-
-    <span class="k">return</span> <span class="n">nodes</span></div>
-
-
-<div class="viewcode-block" id="quad_stroud3"><a class="viewcode-back" href="../../utils.html#utils.test.quad_stroud3">[docs]</a><span class="k">def</span> <span class="nf">quad_stroud3</span><span class="p">(</span><span class="n">rdim</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
-    <span class="c1"># data for Stroud-3 quadrature in [0,1]^k</span>
-    <span class="c1"># nodes and weights</span>
-    <span class="n">nodes</span> <span class="o">=</span> <span class="n">stroud</span><span class="p">(</span><span class="n">rdim</span><span class="p">)</span>
-    <span class="n">nodestr</span> <span class="o">=</span> <span class="mf">2.</span> <span class="o">*</span> <span class="n">nodes</span> <span class="o">-</span> <span class="mf">1.</span>
-    <span class="n">weights</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;weights: &quot;</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;nodes: &quot;</span><span class="p">,</span> <span class="n">nodes</span><span class="p">)</span>
-
-    <span class="c1"># evaluation of Legendre polynomials</span>
-    <span class="n">bpoly</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rdim</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">))</span>
-    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rdim</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">rdim</span><span class="p">):</span>
-            <span class="n">bpoly</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-            <span class="n">bpoly</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">nodestr</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span><span class="p">):</span>
-                <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="p">((</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">nodestr</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">*</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># standardisation of Legendre polynomials</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">degree</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">bpoly</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bpoly</span></div>
-
-
-<div class="viewcode-block" id="weighted_mean_obj"><a class="viewcode-back" href="../../utils.html#utils.test.weighted_mean_obj">[docs]</a><span class="k">def</span> <span class="nf">weighted_mean_obj</span><span class="p">(</span><span class="n">tab_var</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
-    <span class="n">rows_sims_no</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">tab_var</span><span class="p">)</span>
-    <span class="n">no_weights</span><span class="p">,</span> <span class="n">dummy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>  <span class="c1"># z funckji quadr_stroud wekt columnowy</span>
-
-    <span class="k">if</span> <span class="n">rows_sims_no</span> <span class="o">==</span> <span class="n">no_weights</span><span class="p">:</span>
-        <span class="n">expe</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="n">outvar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
-            <span class="n">expe</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tab_var</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">weights</span><span class="p">)</span>
-            <span class="n">outvar</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">tab_var</span><span class="p">[:,</span> <span class="n">i</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
-
-        <span class="n">stdDev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">outvar</span> <span class="o">-</span> <span class="n">expe</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">expe</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">stdDev</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">ic</span><span class="p">(</span><span class="s1">&#39;Cols_sims_no!=No_weights&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">expe</span><span class="p">,</span> <span class="n">stdDev</span></div>
-
 <span class="c1">#</span>
 <span class="c1"># def uq():</span>
 <span class="c1">#     p_true = np.array([1, 2, 3, 4, 5])</span>
@@ -1312,10 +1241,60 @@
 <span class="c1"># monte_carlo()</span>
 
 
-<div class="viewcode-block" id="area_circ"><a class="viewcode-back" href="../../utils.html#utils.test.area_circ">[docs]</a><span class="k">def</span> <span class="nf">area_circ</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="o">*</span><span class="n">r</span><span class="o">**</span><span class="mi">2</span></div>
 
-<span class="n">area_circ</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ellipse_tangent"><a class="viewcode-back" href="../../utils.html#utils.test.ellipse_tangent">[docs]</a><span class="k">def</span> <span class="nf">ellipse_tangent</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the coordinates of the tangent line that connects two ellipses</span>
+
+<span class="sd">    .. _ellipse tangent:</span>
+
+<span class="sd">    .. figure:: ../images/ellipse_tangent.png</span>
+<span class="sd">       :alt: ellipse tangent</span>
+<span class="sd">       :align: center</span>
+<span class="sd">       :width: 200px</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    z: list, array like</span>
+<span class="sd">        Contains list of tangent points coordinate&#39;s variables ``[x1, y1, x2, y2]``.</span>
+<span class="sd">        See :numref:`ellipse tangent`</span>
+<span class="sd">    data: list, array like</span>
+<span class="sd">        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses</span>
+<span class="sd">        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of four non-linear functions</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    -----</span>
+<span class="sd">    The four returned non-linear functions are</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">       f_1 = \\frac{A^2b^2(x_1 - h)(y_2-q)}{a^2B^2(x_2-p)(y_1-k)} - 1</span>
+
+<span class="sd">       f_2 = \\frac{(x_1 - h)^2}{a^2} + \\frac{(y_1-k)^2}{b^2} - 1</span>
+
+<span class="sd">       f_3 = \\frac{(x_2 - p)^2}{A^2} + \\frac{(y_2-q)^2}{B^2} - 1</span>
+
+<span class="sd">       f_4 = \\frac{-b^2(x_1-x_2)(x_1-h)}{a^2(y_1-y_2)(y_1-k)} - 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">coord</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">coord</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">dim</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">z</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">h</span> <span class="o">+</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">B</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="n">A</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">q</span><span class="p">))</span>
+        <span class="n">y1</span> <span class="o">=</span> <span class="n">k</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">x2</span> <span class="o">=</span> <span class="n">x1</span> <span class="o">-</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">))</span><span class="o">/</span><span class="p">(</span><span class="o">-</span><span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">))</span>
+        <span class="n">y2</span> <span class="o">=</span> <span class="n">q</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">B</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">A</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span></div>
 </pre></div>
 
            </div>

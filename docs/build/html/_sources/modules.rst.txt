@@ -5,6 +5,7 @@ CavityDesignHub
    :maxdepth: 4
 
    analysis_modules
+   cavity
    exe
    frame_controls
    graphics
@@ -14,6 +15,7 @@ CavityDesignHub
    node_editor
    qss
    setup
+   test_plugin
    ui_files
    ui_state_files
    utils

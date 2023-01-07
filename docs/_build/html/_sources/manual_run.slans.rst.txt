@@ -1,14 +1,6 @@
 manual\_run.slans package
 =========================
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   manual_run.slans.SLANS_exe
-
 Submodules
 ----------
 

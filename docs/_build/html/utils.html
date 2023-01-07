@@ -51,6 +51,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
@@ -60,6 +61,7 @@
 <li class="toctree-l2"><a class="reference internal" href="node_editor.html">node_editor package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="qss.html">qss package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_plugin.html">test_plugin package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ui_files.html">ui_files package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ui_state_files.html">ui_state_files package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">utils package</a><ul>
@@ -5989,6 +5991,16 @@ arguments is the optional sequence of the names of the signal’s arguments.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.arcTo">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">arcTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#arcTo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.arcTo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.arcTo2">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">arcTo2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#arcTo2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.arcTo2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.button_clicked">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">button_clicked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">button</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#button_clicked"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.button_clicked" title="Permalink to this definition"></a></dt>
 <dd><p>Return text on button clicked</p>
@@ -6072,6 +6084,19 @@ data = <code class="docutils literal notranslate"><span class="pre">[coords,</sp
 <dt class="sig sig-object py" id="utils.shared_functions.get_geometric_parameters">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">get_geometric_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_control</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">code</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#get_geometric_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.get_geometric_parameters" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.lineTo">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">lineTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prevPt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nextPt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#lineTo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.lineTo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.linspace">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">linspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#linspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.linspace" title="Permalink to this definition"></a></dt>
+<dd><p>Like np.linspace but uses step instead of num
+This is inclusive to stop, so if start=1, stop=3, step=0.5
+Output is: array([1., 1.5, 2., 2.5, 3.])</p>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.load_shape_space">
@@ -6190,8 +6215,18 @@ data = <code class="docutils literal notranslate"><span class="pre">[coords,</sp
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.uq">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">uq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">qois</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_modules</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_modes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_shift</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parentDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projectDir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#uq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.uq" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="utils.shared_functions.weighted_mean_obj">
 <span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">weighted_mean_obj</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tab_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#weighted_mean_obj"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.weighted_mean_obj" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.shared_functions.write_cavity_for_custom_eig_solver">
+<span class="sig-prename descclassname"><span class="pre">utils.shared_functions.</span></span><span class="sig-name descname"><span class="pre">write_cavity_for_custom_eig_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beampipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/utils/shared_functions.html#write_cavity_for_custom_eig_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#utils.shared_functions.write_cavity_for_custom_eig_solver" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">

@@ -102,19 +102,30 @@ Customizing subtitles</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#requirements-and-dependencies">Requirements and Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#tl-dr">TL;DR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#download">Download</a></li>
 <li class="toctree-l2"><a class="reference internal" href="quickstart.html#configuring-cadh-on-a-local-system">Configuring CaDH  on a Local System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#integration">Integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#run-a-simulation">Run a Simulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#run-a-synthesis">Run a Synthesis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="quickstart.html#updating">Updating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#customization">Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#run-a-simulation">Run a Simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#create-new-project">Create New Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#open-project">Open Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#eigenmode-analysis">Eigenmode Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#tune">Tune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#wakefield-analysis">Wakefield Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#plotting">Plotting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#plot-abci-results">Plot ABCI results</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#plot-excel-files">Plot Excel Files</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#aceclerator-cavity-basics">Aceclerator cavity basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#electromagnetic-field-theory">Electromagnetic field theory</a></li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#maxwell-eigenvalue-problem">Maxwell eigenvalue problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#wakefield-equations">Wakefield equations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory.html#wakefield-analysis">Wakefield analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#theory-of-multipacting">Theory of multipacting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#sensitivity-analysis-and-uncertainty-quantification">Sensitivity analysis and uncertainty quantification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#elliptical-cavity-optimization">Elliptical Cavity optimization</a></li>
@@ -177,6 +188,7 @@ Customizing subtitles</p>
 <li class="toctree-l4"><a class="reference internal" href="analysis_modules.eigenmode.html">analysis_modules.eigenmode package</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="analysis_modules.eigenmode.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l6"><a class="reference internal" href="analysis_modules.eigenmode.SLANS.html">analysis_modules.eigenmode.SLANS package</a></li>
+<li class="toctree-l6"><a class="reference internal" href="analysis_modules.eigenmode.customEig.html">analysis_modules.eigenmode.customEig package</a></li>
 </ul>
 </li>
 <li class="toctree-l5"><a class="reference internal" href="analysis_modules.eigenmode.html#module-analysis_modules.eigenmode">Module contents</a></li>
@@ -195,7 +207,7 @@ Customizing subtitles</p>
 <li class="toctree-l4"><a class="reference internal" href="analysis_modules.plot_module.html">analysis_modules.plot_module package</a><ul>
 <li class="toctree-l5"><a class="reference internal" href="analysis_modules.plot_module.html#submodules">Submodules</a></li>
 <li class="toctree-l5"><a class="reference internal" href="analysis_modules.plot_module.html#module-analysis_modules.plot_module.matplotlib_annotation_objects">analysis_modules.plot_module.matplotlib_annotation_objects module</a></li>
-<li class="toctree-l5"><a class="reference internal" href="analysis_modules.plot_module.html#analysis-modules-plot-module-plotter-module">analysis_modules.plot_module.plotter module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="analysis_modules.plot_module.html#module-analysis_modules.plot_module.plotter">analysis_modules.plot_module.plotter module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="analysis_modules.plot_module.html#module-analysis_modules.plot_module">Module contents</a></li>
 </ul>
 </li>
@@ -233,23 +245,46 @@ Customizing subtitles</p>
 <li class="toctree-l3"><a class="reference internal" href="analysis_modules.html#module-analysis_modules">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cavity.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cavity.html#module-cavity.cavity">cavity.cavity module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cavity.html#module-cavity">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="exe.html#module-exe">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="frame_controls.misc_widgets.html">frame_controls.misc_widgets package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.misc_widgets.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.misc_widgets.html#module-frame_controls.misc_widgets.mode_nomenclature">frame_controls.misc_widgets.mode_nomenclature module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.misc_widgets.html#module-frame_controls.misc_widgets.wg_calculations">frame_controls.misc_widgets.wg_calculations module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.misc_widgets.html#module-frame_controls.misc_widgets">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="frame_controls.postprocess_widgets.html">frame_controls.postprocess_widgets package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.postprocess_widgets.html#submodules">Submodules</a></li>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.postprocess_widgets.html#module-frame_controls.postprocess_widgets.pandas_widget">frame_controls.postprocess_widgets.pandas_widget module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.postprocess_widgets.html#module-frame_controls.postprocess_widgets.ppplot">frame_controls.postprocess_widgets.ppplot module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="frame_controls.postprocess_widgets.html#module-frame_controls.postprocess_widgets">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="frame_controls.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-edit-annotated-text-dialog-module">frame_controls.edit_annotated_text_dialog module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-edit-line2d-module">frame_controls.edit_line2d module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#module-frame_controls.edit_annotated_text_dialog">frame_controls.edit_annotated_text_dialog module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#module-frame_controls.edit_line2d">frame_controls.edit_line2d module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-eigenmode-module">frame_controls.eigenmode module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-misc-module">frame_controls.misc module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#module-frame_controls.misc">frame_controls.misc module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-multipacting-control-module">frame_controls.multipacting_control module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-plot-control-module">frame_controls.plot_control module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-plot-properties-module">frame_controls.plot_properties module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#module-frame_controls.plot_properties">frame_controls.plot_properties module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-postprocess-module">frame_controls.postprocess module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-tune-control-module">frame_controls.tune_control module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="frame_controls.html#frame-controls-wakefield-control-module">frame_controls.wakefield_control module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="frame_controls.html#module-frame_controls">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a><ul>
@@ -267,10 +302,6 @@ Customizing subtitles</p>
 <li class="toctree-l2"><a class="reference internal" href="manual_run.html">manual_run package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="manual_run.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="manual_run.abci.html">manual_run.abci package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="manual_run.abci.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l6"><a class="reference internal" href="manual_run.abci.ABCI_exe.html">manual_run.abci.ABCI_exe package</a></li>
-</ul>
-</li>
 <li class="toctree-l5"><a class="reference internal" href="manual_run.abci.html#submodules">Submodules</a></li>
 <li class="toctree-l5"><a class="reference internal" href="manual_run.abci.html#manual-run-abci-abciwakefield-module">manual_run.abci.abciWakefield module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="manual_run.abci.html#module-manual_run.abci.abci_code">manual_run.abci.abci_code module</a></li>
@@ -287,10 +318,6 @@ Customizing subtitles</p>
 </ul>
 </li>
 <li class="toctree-l4"><a class="reference internal" href="manual_run.slans.html">manual_run.slans package</a><ul>
-<li class="toctree-l5"><a class="reference internal" href="manual_run.slans.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l6"><a class="reference internal" href="manual_run.slans.SLANS_exe.html">manual_run.slans.SLANS_exe package</a></li>
-</ul>
-</li>
 <li class="toctree-l5"><a class="reference internal" href="manual_run.slans.html#submodules">Submodules</a></li>
 <li class="toctree-l5"><a class="reference internal" href="manual_run.slans.html#module-manual_run.slans.geometry_manual">manual_run.slans.geometry_manual module</a></li>
 <li class="toctree-l5"><a class="reference internal" href="manual_run.slans.html#manual-run-slans-slanseigen-module">manual_run.slans.slansEigen module</a></li>
@@ -338,6 +365,14 @@ Customizing subtitles</p>
 <li class="toctree-l2"><a class="reference internal" href="qss.html">qss package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="qss.html#subpackages">Subpackages</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="qss.icons.html">qss.icons package</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="qss.icons.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="qss.icons.GIF.html">qss.icons.GIF package</a></li>
+<li class="toctree-l6"><a class="reference internal" href="qss.icons.ICNS.html">qss.icons.ICNS package</a></li>
+<li class="toctree-l6"><a class="reference internal" href="qss.icons.ICO.html">qss.icons.ICO package</a></li>
+<li class="toctree-l6"><a class="reference internal" href="qss.icons.PNG.html">qss.icons.PNG package</a></li>
+<li class="toctree-l6"><a class="reference internal" href="qss.icons.TIFF.html">qss.icons.TIFF package</a></li>
+</ul>
+</li>
 <li class="toctree-l5"><a class="reference internal" href="qss.icons.html#module-qss.icons">Module contents</a></li>
 </ul>
 </li>
@@ -353,6 +388,21 @@ Customizing subtitles</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_plugin.html">test_plugin package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#module-test_plugin.QCheckableComboBox">test_plugin.QCheckableComboBox module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#test-plugin-qcheckablecomboboxplugin-module">test_plugin.QCheckableComboBoxplugin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#module-test_plugin.QDropShadowWidget">test_plugin.QDropShadowWidget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#test-plugin-qdropshadowwidgetplugin-module">test_plugin.QDropShadowWidgetplugin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#module-test_plugin.QLatexLabel">test_plugin.QLatexLabel module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#test-plugin-qlatexlabelplugin-module">test_plugin.QLatexLabelplugin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#module-test_plugin.QSwitchControl">test_plugin.QSwitchControl module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#test-plugin-qswitchcontrolplugin-module">test_plugin.QSwitchControlplugin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#module-test_plugin.exampleWidget">test_plugin.exampleWidget module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#test-plugin-exampleplugin-module">test_plugin.exampleplugin module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="test_plugin.html#module-test_plugin">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="ui_files.html">ui_files package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="ui_files.html#submodules">Submodules</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ui_files.html#ui-files-abci-plot-module">ui_files.abci_plot module</a></li>
@@ -385,7 +435,7 @@ Customizing subtitles</p>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html">utils package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="utils.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="utils.html#utils-customnavbar-module">utils.CustomNavBar module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#module-utils.CustomNavBar">utils.CustomNavBar module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils.html#module-utils.create_project">utils.create_project module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils.html#module-utils.file_reader">utils.file_reader module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="utils.html#module-utils.hom_coupler_orientation">utils.hom_coupler_orientation module</a></li>

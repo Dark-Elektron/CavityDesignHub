@@ -1,6 +1,15 @@
 analysis\_modules.eigenmode.SLANS package
 =========================================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   analysis_modules.eigenmode.SLANS.EndCellTune
+   analysis_modules.eigenmode.SLANS.MidCellTune
+
 Submodules
 ----------
 
