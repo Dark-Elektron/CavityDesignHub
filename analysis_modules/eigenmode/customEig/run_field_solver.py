@@ -4,6 +4,10 @@ import re
 import shutil
 import subprocess
 import sys
+
+from matplotlib import colors
+from scipy.signal import find_peaks
+
 from utils.shared_functions import *
 import matplotlib.pyplot as plt
 import numpy as np
@@ -24,6 +28,11 @@ eta0 = 376.7303134111465
 
 class Model:
     def __init__(self, folder):
+        self.Epk, self.Hpk, self.Eacc, self.Vacc, self.E_z_axis = None, None, None, None, None
+        self.k_loss, self.epk, self.bpk = None, None, None
+        self.ff, self.kcc, self.Q0, self.U, self.Pds = None, None, None, None, None
+        self.Rs, self.R_Q, self.G, self.GR_Q = None, None, None, None
+        self.eigen_frequencies = None
         self.beampipe = None
         self.mid_cell = None
         self.end_cell_left = None
@@ -40,7 +49,8 @@ class Model:
 
     def create_inputs(self):
         # remove old files
-        files_list = ["geodata.n", "initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat", "counter_initials.mat",
+        files_list = ["geodata.n", "initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat",
+                      "counter_initials.mat",
                       "gene_initials.mat", "gene_temp.mat", "initials_temp.mat", "distance_flevel.mat",
                       "counter_initialsl.mat", "gene_initialsl.mat", "initials_templ.mat", "distance_flevell.mat",
                       "counter_initialsr.mat", "gene_initialsr.mat", "initials_tempr.mat", "distance_flevelr.mat",
@@ -184,7 +194,7 @@ class Model:
         spio.savemat(f"{self.folder}/model.mat", model, format='4')
 
         # start the mesh generator
-        subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder,
+        subprocess.call(fr"D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\2dgen_bin.exe", cwd=self.folder,
                         stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         # subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder)
 
@@ -271,7 +281,7 @@ class Model:
 
         plt.show()
 
-    def run_field_solver(self, n_modes=None, freq=0.0, req_mode_num=None, show_plots=True, search=False):
+    def run_field_solver(self, n_modes=None, freq=None, req_mode_num=None, show_plots=True, search=True):
         # Function program cavity_field(s)
         # -----------------------------------------------------------------------
         # Runs the field solver for computing the EM fields in a cavity with
@@ -295,10 +305,14 @@ class Model:
 
         # load geodata.n
         # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
-        gridcons1 = self.geodata[0, 0]
 
         # if self.epsr > 1:
         #     ic('Relative permittivity > 1?')
+        if freq is None:
+            # calculate freq from mid cell length
+            beta = 1
+            freq = beta*c0/(4*self.mid_cell[5])
+            ic(freq)
 
         eigen_freq = self.eigen(n_modes, freq, req_mode_num, search)
 
@@ -364,13 +378,12 @@ class Model:
 
         # imaginary component of eigenvectors are zero
         u2 = u2.real
-        ic(np.where(u2.imag != 0))
         d2 = np.absolute(d2)
         k = np.sqrt(d2)
 
         if search:
             k2 = k
-            eigen_frequencies = k / (2 * np.pi * np.sqrt(mu0 * eps0))
+            self.eigen_frequencies = np.sort(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
             # find eigenvalue with min error.
             val = np.min(abs(k0 - k2))
             ind = np.argmin(abs(k0 - k2))
@@ -379,8 +392,8 @@ class Model:
             # new frequency
             eigen_freq = k / (2 * np.pi * np.sqrt(mu0 * eps0))
         else:
-            eigen_frequencies = k / (2 * np.pi * np.sqrt(mu0 * eps0))
-            eigen_freq = eigen_frequencies[req_mode_num]
+            self.eigen_frequencies = np.sort(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
+            eigen_freq = self.eigen_frequencies[req_mode_num]
             u = u2[:, req_mode_num]
 
         # param = pd.read_csv(fr"{self.folder}\param", sep='\s+', header=None).to_numpy().T[0]
@@ -564,16 +577,20 @@ class Model:
             axs[1].set_ylabel('r axis [m]')
             plt.show()
         else:
-            F = [Ez.T, Er.T]
-            A = [z.T, r.T]
-
+            EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2)
             fig, ax = plt.subplots()
             # arrow(F,A,gridcons,'f','s','k')
-            ax.quiver(z, r, Ez, Er)
+            ic(EE.min(), np.min(EE))
+            skip = slice(None, None, 8)
+            ax.quiver(z[skip], r[skip], Ez[skip], Er[skip], EE[skip], cmap='coolwarm',
+                      norm=colors.LogNorm(vmin=np.min(EE) + 0.1, vmax=np.max(EE)),
+                      minlength=3)
+
             ax.plot(gz, gr, '-b')
-            ax[1].set_xlabel('z axis [m]')
-            ax[1].set_ylabel('r axis [m]')
-            ax[1].set_title(r'Electric field |$E$| [V/m]')
+            ax.set_xlabel('z axis [m]')
+            ax.set_ylabel('r axis [m]')
+            ax.set_title(r'Electric field |$E$| [V/m]')
+            plt.show()
 
     def calculate_QoI(self):
         ic("\t\tCalculating QoIs")
@@ -604,29 +621,42 @@ class Model:
         HH = np.reshape(abs(H), (max(I1.shape), max(I2.shape))).T
 
         # Calculate accelerating field
-        E_z_axis = Ez.T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
+        self.E_z_axis = Ez.T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
         z_slice = zz[0, :]
         # z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
 
-        Vacc = self.calculate_vacc(z_slice, E_z_axis)
-        Eacc = Vacc / (2 * self.n_cells * self.mid_cell[5])
+        self.Vacc = self.calculate_vacc(z_slice, self.E_z_axis)
+        self.Eacc = self.Vacc / (2 * self.n_cells * self.mid_cell[5])
 
-        z_e, E_surf = self.get_surface_field(EE, zz, rr)
-        z_h, H_surf = self.get_surface_field(HH, zz, rr)
+        z_e_surf, r_e_surf, E_surf = self.get_surface_field(EE, zz, rr)
+        z_h_surf, r_h_surf, H_surf = self.get_surface_field(HH, zz, rr)
 
-        epk = self.calculate_epk(np.max(E_surf), Eacc)
-        bpk = self.calculate_bpk(np.max(H_surf), Eacc)
+        self.Epk = np.max(E_surf)
+        self.Hpk = np.max(H_surf)
+
+        self.epk = self.calculate_epk(self.Epk, self.Eacc)
+        self.bpk = self.calculate_bpk(self.Hpk, self.Eacc)
 
         # plt.plot(np.array(z_e), E_surf/np.max(E_surf))
         # plt.plot(np.array(z_h), H_surf/np.max(H_surf))
         # plt.show()
 
         # calculate energy
-        U = self.calculate_U(EE, HH, zz, rr)
+        self.U = self.calculate_U(EE, HH, zz, rr)
+        # calculate R/Q
+        self.R_Q = self.calculate_rq(self.Vacc, self.U)
+        # calculate loss factor
+        self.k_loss = self.calculate_loss_factor(self.R_Q)
+        # calculate surface resistance using copper conductivity
+        self.Rs = self.calculate_surface_resistance_copper()
+        self.Pds = self.calculate_disspated_power(H_surf, z_h_surf, r_h_surf)
+        self.Q0 = self.calculate_q()
+        self.G = self.calculate_g()
 
-        RQ = self.calculate_rq(Vacc, U)
-        freq = self.fieldparam[1]
-        ic(freq, epk, np.max(EE) / Eacc, bpk, RQ)
+        ic(self.eig_freq, self.epk, self.bpk, self.R_Q, self.k_loss,
+           self.Rs, self.Pds, self.Q0, self.G)
+
+        self.save_qois()
 
     @staticmethod
     def calculate_U(EE, HH, zz, rr):
@@ -668,8 +698,78 @@ class Model:
 
         return U
 
-    def calculate_P(self):
-        pass
+    def calculate_surface_resistance_copper(self):
+        """
+        Calculates the surface resistance for Copper with conductivity
+
+        of :math:`\sigma = 5.96 \\times 10^7 \mathrm{S/m}` at eigen frequency
+
+        .. math::
+           R_\mathrm{s} = \\sqrt{\\frac{\mu \omega}{2 \sigma}}
+
+        Returns
+        -------
+        Rs: float
+            Surface resistance of copper at operating frequency.
+        """
+        sigma_Cu = 5.96e7
+        Rs = np.sqrt((mu0 * 2 * np.pi * self.eig_freq) / (2 * sigma_Cu))
+
+        return Rs
+
+    def calculate_disspated_power(self, H_surf, z_surf, r_surf):
+        """
+        Calculates the dissipated power from the cavity walls
+
+        .. math::
+           P_\mathrm{ds} = \\frac{1}{2} R_\mathrm{s} \int_{z_\min}^{z_\max} \int_{0}^{2\pi} |H_\\theta|^2 \mathrm{d}s
+
+        Parameters
+        ----------
+        H_surf
+        z_surf
+        r_surf
+
+        Returns
+        -------
+
+        """
+        dr_surf = np.diff(r_surf)
+        dz_surf = np.diff(z_surf)
+
+        # Pds = self.Rs * np.pi * np.trapz(abs(H_surf) ** 2 * r_surf, z_surf)
+        H2r_surf = H_surf**2*r_surf
+        Pds = self.Rs * np.pi * np.sum((H2r_surf[1:] + H2r_surf[:-1])/2 * np.sqrt(dr_surf**2 + dz_surf**2))
+
+        dA_l = r_surf[:-1] * np.sqrt(dr_surf**2 + dz_surf**2)
+        dA_r = r_surf[1:] * np.sqrt(dr_surf**2 + dz_surf**2)
+        dA = (r_surf[1:] + r_surf[:-1])/2 * np.sqrt(dr_surf**2 + dz_surf**2)
+        A_l = 2*np.pi*np.sum(dA_l)
+        A_r = 2*np.pi*np.sum(dA_r)
+        A = 2*np.pi*np.sum(dA)
+        ic(A_l, A_r, A)
+
+        return Pds
+
+    def calculate_q(self):
+        return (2 * np.pi * self.eig_freq * self.U) / self.Pds
+
+    def calculate_g(self):
+        """
+        Calculates the geometry or form factor for the cavity
+
+        .. math::
+           G = Q_0 \cdot R_\mathrm{s} = \\frac{\omega U_n}{P_\mathrm{ds}}
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        """
+
+        return self.Q0 * self.Rs
 
     def get_surface_field(self, field_array, zz, rr):
         """
@@ -682,7 +782,7 @@ class Model:
             r coordinates
         zz: 2D array
             z coordinates
-        field_array: 2D array
+        field_array: array
             Field values on grid
 
         Returns
@@ -693,12 +793,12 @@ class Model:
         # copy rr to avoid making changes to it
         rr_copy = np.copy(rr)
         rr_copy[field_array == 0] = 0  # this line alters rr hence the copy
-        # r_surf = np.max(r, axis=0)
+        r_surf = np.max(rr_copy, axis=0)
         indx_r_surf = np.argmax(rr_copy, axis=0)
-        z = zz[0, :]
-        surf_field = field_array[indx_r_surf, np.arange(len(z))]
+        z_surf = zz[0, :]
+        surf_field = field_array[indx_r_surf, np.arange(len(z_surf))]
 
-        return z, surf_field
+        return z_surf, r_surf, surf_field
 
     def find_resonance(self, freq):
         maara = 10  # number of eigenvalues
@@ -766,11 +866,14 @@ class Model:
 
         Parameters
         ----------
-        E_z_axis
-        z
-
+        E_z_axis: array
+            :math:`z` component of electric field on axis :math:`r=0`
+        z: array
+            :math:`z` coordinate points along axis :math:`r=0`
         Returns
         -------
+        Vacc: float
+            Accelerating voltage along axis :math:`r=0`
 
         """
         # calculate Vacc
@@ -797,7 +900,7 @@ class Model:
         -------
 
         """
-        ic(Vacc, self.eig_freq, U)
+
         return Vacc ** 2 / (2 * np.pi * self.eig_freq * U)
 
     @staticmethod
@@ -837,6 +940,70 @@ class Model:
 
         """
         return mu0 * Hpk * 1e3 / (Eacc * 1e-6)
+
+    def calculate_loss_factor(self, R_Q):
+        return (2 * np.pi * self.eig_freq) / 4 * R_Q * 1e-12  # [V/pC]
+
+    def calculate_volume(self, EE, zz, rr):
+
+        z = zz[0, :]
+        r = rr[:, 0]
+
+        rr_copy = np.copy(rr)
+        rr_copy[EE == 0] = 0
+
+        V = 2*np.pi*np.trapz(np.trapz(rr_copy, r, axis=0), z)
+
+        return V
+
+    def save_qois(self):
+        # save json file
+        shape = {'IC': update_alpha(self.mid_cell),
+                 'OC': update_alpha(self.end_cell_left),
+                 'OC_R': update_alpha(self.end_cell_right)}
+
+        with open(fr"{self.folder}\geometric_parameters.json", 'w') as f:
+            json.dump(shape, f, indent=4, separators=(',', ': '))
+
+        Req = self.mid_cell[6]
+        self.G = self.Q0 * self.Rs
+        self.GR_Q = self.G * 2 * self.R_Q
+
+        # cel to cell coupling factor
+        ic(self.eigen_frequencies)
+        f_diff = self.eigen_frequencies[self.n_cells - 1] - self.eigen_frequencies[0]
+        f_add = self.eigen_frequencies[self.n_cells - 1] + self.eigen_frequencies[0]
+        self.kcc = 2 * f_diff / f_add * 100
+
+        # field flatness
+        # get max in each cell
+        peaks, _ = find_peaks(self.E_z_axis)
+        E_abs_peaks = self.E_z_axis[peaks]
+        self.ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+
+        d = {
+            "Req [mm]": Req*1e3,
+            "Normalization Length [mm]": self.mid_cell[5]*1e3,
+            "freq [MHz]": self.eig_freq*1e-6,
+            "Q []": self.Q0,
+            "E [MV/m]": self.U,
+            "Vacc [MV]": self.Vacc,
+            "Eacc [MV/m]": self.Eacc,
+            "Epk [MV/m]": self.Epk*1e-6,
+            "Hpk [A/m]": self.Hpk,
+            "Bpk [mT]": mu0 * self.Hpk*1e3,
+            "kcc [%]": self.kcc,
+            "ff [%]": self.ff,
+            "Rsh [Ohm]": self.R_Q*self.Q0,
+            "R/Q [Ohm]": self.R_Q,
+            "Epk/Eacc []": self.epk,
+            "Bpk/Eacc [mT/MV/m]": self.bpk,
+            "G [Ohm]": self.G,
+            "GR/Q [Ohm^2]": self.GR_Q
+        }
+
+        with open(fr'{self.folder}\qois.json', "w") as f:
+            json.dump(d, f, indent=4, separators=(',', ': '))
 
     def save_fields(self, wall, job):
         fieldfile1 = pd.read_csv(fr"{self.folder}\fieldfile1.txt", sep='\s+',
@@ -1453,7 +1620,7 @@ class Model:
         n = int(A.shape[0] / 3)
         ic(n)
         X = [A[0:n].T, A[n + 0:2 * n].T]
-        W = np.array([A[2*n:3*n]]).T
+        W = np.array([A[2 * n:3 * n]]).T
         ic(X)
         ic(W)
 
@@ -1463,15 +1630,15 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\run_files'
     mod = Model(folder)
-    n_cells = 5
+    n_cells = 1
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
-                         71.98698698698699, 93.5, 171.1929])*1e-3
+                         71.98698698698699, 93.5, 171.1929]) * 1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
                          80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
 
-    midTESLA = np.array([68.12, 68.12, 19.46, 30.81, 56.76, 93.5, 167.62]) * 1e-3
-    midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591])*1e-3
+    midTESLA = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
+    midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591]) * 1e-3
 
-    mod.define_geometry(n_cells, midC3795, endC3795, beampipe='both')
+    mod.define_geometry(n_cells, midTESLA, beampipe='both')
     mod.generate_mesh()
-    mod.run_field_solver(freq=801.58e6, search=True, show_plots=True)
+    mod.run_field_solver(show_plots=True)

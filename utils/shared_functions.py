@@ -29,7 +29,10 @@ def update_alpha(cell):
     List of cavity geometry parameters
 
     """
-    A, B, a, b, Ri, L, Req, _ = cell
+    if len(cell) == 8:
+        A, B, a, b, Ri, L, Req, _ = cell
+    else:
+        A, B, a, b, Ri, L, Req = cell
     alpha = calculate_alpha(A, B, a, b, Ri, L, Req, 0)
     cell = [A, B, a, b, Ri, L, Req, alpha[0]]
     return cell
