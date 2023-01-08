@@ -631,8 +631,20 @@ class WakefieldControl:
                     Nb = float(row['Nb [1e11]'])
                     sigma_z = [float(x) for x in row['sigma_z (SR/BS) [mm]'].split('/')]
                     freq = float(row['f [MHz]'])
-                    R_Q = float(row['R/Q [Ohm]'])
+
+                    # try getting  R_Q from corresponding SLANS folder
+                    try:
+                        with open(fr'{projectDir}\SimulationData\SLANS\{key}\qois.json') as json_file:
+                            qois_slans = json.load(json_file)
+                        R_Q = qois_slans['R/Q [Ohm]']
+                        print("Found a corresponding SLANS file")
+                    except:
+                        R_Q = float(row['R/Q [Ohm]'])
+                        print("Did not find a corresponding SLANS file. Please check the R/Q used to calculate the"
+                              "k_FM and P_HOM")
+
                     n_cell = int(row['n cell'])
+
                     bl_diff = ['SR', 'BS']
 
                     for i, s in enumerate(sigma_z):

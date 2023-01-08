@@ -482,9 +482,6 @@
                            </item>
                            <item row="2" column="3" colspan="2">
                             <widget class="QCheckableComboBox" name="ccb_Freq_Used_Ylabel">
-                             <property name="focusPolicy">
-                              <enum>Qt::NoFocus</enum>
-                             </property>
                              <item>
                               <property name="text">
                                <string>All</string>
@@ -641,9 +638,6 @@
                            </item>
                            <item row="2" column="1" colspan="2">
                             <widget class="QCheckableComboBox" name="ccb_Freq_Used_Xlabel">
-                             <property name="focusPolicy">
-                              <enum>Qt::NoFocus</enum>
-                             </property>
                              <item>
                               <property name="text">
                                <string>All</string>

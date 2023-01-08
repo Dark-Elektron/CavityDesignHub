@@ -81,7 +81,9 @@ class Cavities:
         self.cavities_list = cavities_list
 
         self.returned_results = None
-        self.ls = ['solid', 'dashed', 'dashdot']
+        self.ls = ['solid', 'dashed', 'dashdot', 'dotted',
+                   'solid', 'dashed', 'dashdot', 'dotted',
+                   'solid', 'dashed', 'dashdot', 'dotted']
 
         self.E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
         self.set_cavities_field()
@@ -138,11 +140,11 @@ class Cavities:
         results = []
         for i, cav in enumerate(self.cavities_list):
             # E_acc_Pin(cavity, op_field[i], ls[i], fig, ax, ax_right, ax_right2)
-            results.append(self.qois(cav, cav.op_field * 1e-6))
+            results.append(self.qois(cav, cav.op_field * 1e-6, E_acc))
 
         self.returned_results = results
 
-    def qois(self, cavity, op_field):
+    def qois(self, cavity, op_field, E_acc):
         """
 
         Parameters
@@ -256,17 +258,13 @@ class Cavities:
         ic(results)
         return results_norm_units
 
-    def plot_power_comparison(self, fig=None, ax_list=None):
+    def plot_power_comparison(self, E_acc, fig=None, ax_list=None):
         """
         Can be called using ``cavities.plot_power_comparison()``
 
         .. math::
 
            W^{3 \\beta}_{\delta}
-
-        .. py:function:: self.plot_power_comparison(self, fig=None, ax_list=None)
-
-        .. inheritance-diagram::
 
         Parameters
         ----------
@@ -414,7 +412,10 @@ class Cavities:
 
         ax.set_xticks([r + width for r in range(len(x))], x)
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
-        ax.legend(loc="upper left")
+
+        ax.axhline(1.05, c='k')
+        ax.set_ylim(-0.01, 1.5*ax.get_ylim()[-1])
+        ax.legend(loc='upper center', ncol=len(self.cavities_list))
         plt.tight_layout()
 
         # save plots
@@ -451,7 +452,9 @@ class Cavities:
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
         # label = ["C3795_ttbar (5-Cell)", "FCCUROS5_ttbar (5-Cell)", "TELSA_ttbar (5-Cell)"]
         # ax.legend(label, loc="upper left")
-        ax.legend(loc="upper right")
+        ax.axhline(1.05, c='k')
+        ax.set_ylim(-0.01, 1.5*ax.get_ylim()[-1])
+        ax.legend(loc='upper center', ncol=len(self.cavities_list))
         plt.tight_layout()
 
         # save plots
@@ -488,7 +491,9 @@ class Cavities:
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
         # label = ["C3795_ttbar (5-Cell)", "FCCUROS5_ttbar (5-Cell)", "TELSA_ttbar (5-Cell)"]
         # ax.legend(label, loc="upper left")
-        ax.legend(loc="upper right")
+        ax.axhline(1.05, c='k')
+        ax.set_ylim(-0.01, 1.5*ax.get_ylim()[-1])
+        ax.legend(loc='upper center', ncol=len(self.cavities_list))
         plt.tight_layout()
 
         # save plots
@@ -659,9 +664,9 @@ class Cavities:
             z_shift = z - z.max() / 2
             plt.plot(z_shift, e_axis_norm, label=cav.name)
 
-        plt.axhline(1.02, c='k')
         plt.xlabel('$z$ [mm]')
         plt.ylabel('$|E_\mathrm{axis}|/|E_\mathrm{axis}|_\mathrm{max}$')
+        plt.axhline(1.02, c='k')
         plt.ylim(-0.01, 1.5)
         plt.legend(loc='upper center', ncol=len(self.cavities_list))
         plt.tight_layout()
@@ -1330,12 +1335,13 @@ class Cavities:
             # print(E_acc[i])
             # p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (
             #         l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo
-            txt = f"{labels[i]}, " \
-                  f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
-                  f"cav; " + "P$_{\mathrm{in}}$ = " \
-                  + f"{round(min(pin) * 1e-3, 1)} kW; " \
-                    "Q$_{\mathrm{L, 0}}^*$ = " \
-                  + "{:.2e}".format(QL_0_x[i])
+            # txt = f"{labels[i]}, " \
+            #       f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
+            #       f"cav; " + "P$_{\mathrm{in}}$ = " \
+            #       + f"{round(min(pin) * 1e-3, 1)} kW; " \
+            #         "Q$_{\mathrm{L, 0}}^*$ = " \
+            #       + "{:.2e}".format(QL_0_x[i])
+            txt = labels[i]
 
             if "*" in labels[i]:
                 l = ax.plot(QL_0, pin * 1e-3, label=txt, lw=4,
@@ -1360,7 +1366,7 @@ class Cavities:
         ax.set_xlabel(r"$Q_{L,0}$")
         ax.set_ylabel(r"$P_\mathrm{in} ~[\mathrm{kW}]$")
         ax.set_xscale('log')
-        ax.set_xlim(5e3, 1e8)
+        ax.set_xlim(5e3, 1e9)
         ax.set_ylim(0, 3000)
         ax.legend(loc='upper left')  #
         ax.minorticks_on()
@@ -1500,7 +1506,7 @@ class Cavities:
         try:
             l1 = r"\begin{table}[!htb]"
             l2 = r"\centering"
-            l3 = r"\caption{Geometric parameters and QoIs of optimized cavity C$_{3794}$, baseline cavity and LHC cavity.}"
+            l3 = r"\caption{Geometric parameters and QoIs of cavities.}"
             l4 = r"\begin{tabular}{lccc}"
             l5 = r"\toprule"
             l6 = r" ".join([fr"& {cav.name} " for cav in self.cavities_list]) + r" \\"
@@ -1558,7 +1564,7 @@ class Cavities:
                          l21, l22, l23, l24, l25, l26, l27, l28, l29, l30,
                          l31)
 
-            with open(r"D:\Dropbox\Quick presentation files\latex_test.txt", 'w') as f:
+            with open(fr"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\Summaries\{self.save_folder}_latex_summary.txt", 'w') as f:
                 for ll in all_lines:
                     f.write(ll + '\n')
         except KeyError:
@@ -1618,7 +1624,7 @@ class Cavities:
                     }
 
             df = pd.DataFrame.from_dict(data)
-            df.to_excel(r"D:\Dropbox\Quick presentation files\summary_table_excel.xlsx", sheet_name='Cavities')
+            df.to_excel(fr"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\Summaries\{self.save_folder}_excel_summary.xlsx", sheet_name='Cavities')
         except Exception as e:
             print("Either SLANS or ABCI results not available. Please use '<cav>.set_slans_qois(<folder>)' "
                   "or '<cav>.set_abci_qois(<folder>)' to fix this.")
@@ -1813,7 +1819,11 @@ class Cavity:
 
         # if np.isclose(self.op_freq, 801.58e6):
         print(f"Rs_{self.material}_{self.op_temp}_{round(self.op_freq * 1e-6, 2)}Mhz")
-        self.Rs = Rs_dict[f"Rs_{self.material}_{self.op_temp}_{round(self.op_freq * 1e-6, 2)}Mhz"]
+        try:
+            self.Rs = Rs_dict[f"Rs_{self.material}_{self.op_temp}_{round(self.op_freq * 1e-6, 2)}Mhz"]
+        except KeyError:
+            self.Rs = Rs_dict[f"Rs_bulkNb_2K_801.58Mhz"]
+
         self.Q0 = self.G * 1e9 / self.Rs  # c
         # ic("800 MHz")
         # elif np.isclose(self.op_freq, 400.79e6):
@@ -1933,6 +1943,7 @@ class Cavity:
         # ic(d_geom_params)
 
         d_qois = d_qois[f'{working_point}_{bunch_length}']
+
         self.k_fm = d_qois['k_FM [V/pC]']
         self.k_loss = d_qois['|k_loss| [V/pC]']
         self.k_kick = d_qois['|k_kick| [V/pC/m]']
@@ -2098,7 +2109,6 @@ class Cavity:
         self.cid_button_press = self.fig.canvas.mpl_connect('button_press_event', self.on_press)
         self.cid_button_release = self.fig.canvas.mpl_connect('button_release_event', self.on_release)
 
-
         # QOI
         f0, R_Q = [np.array(x) for x in QOI]
 
@@ -2154,8 +2164,8 @@ class Cavity:
                   f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
                   f"cav/beam" + " V$_\mathrm{RF}\mathrm{/beam}$ =" + f"{round(Vrf[i] * 1e-9, 2)} GV " \
                   + " V$_\mathrm{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV " \
-                                              "P$_{\mathrm{in}}/\mathrm{beam}$ = " + f"{round(min(pin) * 1e-3, 1)} kW" \
-                                                                                     "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
+                                            "P$_{\mathrm{in}}/\mathrm{beam}$ = " + f"{round(min(pin) * 1e-3, 1)} kW" \
+                                                                                   "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
                 QL_0_x[i])
 
             annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=12, rotation=0,
@@ -2164,7 +2174,7 @@ class Cavity:
 
             dt = DraggableText(annotext)
             dt.connect()
-            
+
             self.text_dict[id(annotext)] = dt
 
         if p_data:
@@ -2370,8 +2380,8 @@ class OperatingPoint:
         self.name = name
         self.E = op_parameters["E [GeV]"]
         self.I0 = op_parameters["I0 [mA]"]
-        self.vrf = op_parameters["V [GV]"]*1e9
-        self.op_field = op_parameters["Eacc [MV/m]"]*1e6
+        self.vrf = op_parameters["V [GV]"] * 1e9
+        self.op_field = op_parameters["Eacc [MV/m]"] * 1e6
         self.op_temp = op_parameters["T [K]"]
         self.sigma_sr = op_parameters["sigma_SR [mm]"]
         self.sigma_bs = op_parameters["sigma_BS [mm]"]
@@ -2442,6 +2452,7 @@ H_op_point = OperatingPoint([op_folder, "H"])
 ttbar_op_point = OperatingPoint([op_folder, "ttbar"])
 
 H_op_point.add_cavities([3])
+
 
 #
 # def QL_Pin(labels, geometry, RF, QOI, Machine, p_data=None):
@@ -2641,23 +2652,98 @@ def plot_surface_resistance():
     plt.show()
 
 
-if __name__ == '__main__':
-    c3794_H_400 = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
-                         Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_400", op_field=11.87e6,
-                         op_temp='4.5K', material='NbCu')
+def mucol_study():
+    # MUCOL STUDY
 
-    c3794_H_800 = Cavity(2, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
-                         Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_800", op_field=11.87e6,
-                         op_temp='2K', material='bulkNb')
+    #RCS
+    V = 20.87*1e9
 
-    # c3795_H_400 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
-    #                      Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795", op_field=24.72e6,
-    #                      op_temp='4.5K', material='NbCu')
+    ILC_LL = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1201.2516, G=284.4373,
+                    Epk_Eacc=2.31, Bpk_Eacc=3.62, inv_eta=745, name="ILC-LL", op_field=30e6,
+                    op_temp='2K', material='bulkNb')
 
-    c3795_H_800 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
-                         Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795_800", op_field=24.72e6,
-                         op_temp='2K', material='bulkNb')
+    ICHIRO = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1204.0024, G=283.9091,
+                    Epk_Eacc=2.32, Bpk_Eacc=3.61, inv_eta=745, name="ICHIRO", op_field=30e6,
+                    op_temp='2K', material='bulkNb')
 
+    NLSF = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1148.3234, G=276.6571,
+                  Epk_Eacc=2.09, Bpk_Eacc=3.84, inv_eta=745, name="NLSF", op_field=30e6,
+                  op_temp='2K', material='bulkNb')
+
+    NLSF_A = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1172.6666, G=277.9839,
+                    Epk_Eacc=2.07, Bpk_Eacc=3.77, inv_eta=745, name="NLSF-A", op_field=30e6,
+                    op_temp='2K', material='bulkNb')
+
+    NLSF_B = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1130.0682, G=279.9786,
+                    Epk_Eacc=2.07, Bpk_Eacc=3.83, inv_eta=745, name="NLSF-B", op_field=30e6,
+                    op_temp='2K', material='bulkNb')
+
+    TESLA = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1022.8792, G=271.3334,
+                   Epk_Eacc=1.98, Bpk_Eacc=4.17, inv_eta=745, name="TESLA", op_field=30e6,
+                   op_temp='2K', material='bulkNb')
+
+    C3795 = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=521.06, G=272.93,
+                   Epk_Eacc=2.05, Bpk_Eacc=4.33, inv_eta=745, name="C3795", op_field=30e6,
+                   op_temp='2K', material='bulkNb')
+
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\SLANS"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\ABCI"
+
+    slans_dirs = [fr"{parent_dir_slans}\LL",
+                  fr"{parent_dir_slans}\ICHIRO",
+                  fr"{parent_dir_slans}\NLSF",
+                  fr"{parent_dir_slans}\NLSF-A",
+                  fr"{parent_dir_slans}\NLSF-B",
+                  fr"{parent_dir_slans}\TESLA",
+                  # fr"{parent_dir_slans}\C3795_1300MHz"
+                  ]
+
+    abci_dirs = [fr"{parent_dir_abci}\LL",
+                 fr"{parent_dir_abci}\ICHIRO",
+                 fr"{parent_dir_abci}\NLSF",
+                 fr"{parent_dir_abci}\NLSF-A",
+                 fr"{parent_dir_abci}\NLSF-B",
+                 fr"{parent_dir_abci}\TESLA",
+                 # fr"{parent_dir_slans}\C3795_1300MHz"
+                 ]
+
+    cavities = Cavities([ILC_LL, ICHIRO, NLSF, NLSF_A, NLSF_B, TESLA], 'TESLA_and_LL_Cavities')
+
+    cavities.set_cavities_slans(slans_dirs)
+    cavities.set_cavities_abci(abci_dirs)
+
+    E_acc = np.linspace(0.5, 50, 100) * 1e6  # V/m
+    cavities.compare_power(E_acc=E_acc)
+    cavities.plot_power_comparison(E_acc)
+    cavities.plot_compare_bar()
+    cavities.plot_compare_fm_bar()
+    cavities.plot_compare_hom_bar()
+
+    # print(cavities)
+    # print(c3795_tt)
+    cavities.plot_cavities_contour('mid')
+
+    cavities.plot_ql_vs_pin()
+    cavities.plot_cryomodule_comparison()
+    cavities.plot_axis_fields()
+    cavities.plot_surface_fields()
+
+    # makr summaries
+    cavities.make_latex_summary_tables()
+    cavities.make_excel_summary()
+
+    # multipacting
+    multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+
+    to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
+    # for tp in to_plot:
+    # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    cavities.plot_dispersion()
+    # plt.show()
+
+
+def ttbar_study():
     c3794_H = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
                      Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794", op_field=11.87e6,
                      op_temp='4.5K', material='NbCu')
@@ -2681,15 +2767,6 @@ if __name__ == '__main__':
     parent_dir_slans = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"
     parent_dir_abci = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI"
 
-    # 2 and 5 cell, 400MHz, 800MHz cavities comparison for H
-    wp = 'H'  # working point
-    sigma = 'SR_2.5mm'
-    slans_dirs = [fr"{parent_dir_slans}\3794_400", fr"{parent_dir_slans}\3794_800",
-                  fr"{parent_dir_slans}\C3795_800"]
-    abci_dirs = [fr"{parent_dir_abci}\3794_400", fr"{parent_dir_abci}\3794_800",
-                 fr"{parent_dir_abci}\C3795_800"]
-    cavities = Cavities([c3794_H_400, c3794_H_800, c3795_H_800], 'Cavities_C3794_400_800_C3795_800')
-
     # # 2 and 5 cell cavities comparison for H
     # wp = 'H'  # working point
     # sigma = 'SR_2.5mm'
@@ -2697,14 +2774,14 @@ if __name__ == '__main__':
     # abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
     # cavities = Cavities([c3794_H, c3795_H])
 
-    # # 5 cell cavities comparison for ttbar
-    # wp = 'ttbar'  # working point
-    # sigma = 'SR_1.67mm'
-    # slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5",
-    #               fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
-    # abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5",
-    #              fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
-    # cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], 'Cavities_C3795_FCCUROS5_TESLA')
+    # 5 cell cavities comparison for ttbar
+    wp = 'ttbar'  # working point
+    sigma = 'SR_1.67mm'
+    slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5",
+                  fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
+    abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5",
+                 fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
+    cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], 'Cavities_C3795_FCCUROS5_TESLA')
 
     cavities.set_cavities_slans(slans_dirs)
     cavities.set_cavities_abci(abci_dirs)
@@ -2738,3 +2815,70 @@ if __name__ == '__main__':
     cavities.plot_dispersion()
     # plt.show()
     c3795_tt.plot_ql_vs_pin()
+
+
+def h_study():
+    c3794_H_400 = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
+                         Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_400", op_field=11.87e6,
+                         op_temp='4.5K', material='NbCu')
+
+    c3794_H_800 = Cavity(2, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
+                         Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_800", op_field=11.87e6,
+                         op_temp='2K', material='bulkNb')
+
+    # c3795_H_400 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
+    #                      Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795", op_field=24.72e6,
+    #                      op_temp='4.5K', material='NbCu')
+
+    c3795_H_800 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
+                         Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795_800", op_field=24.72e6,
+                         op_temp='2K', material='bulkNb')
+
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI"
+
+    # 2 and 5 cell, 400MHz, 800MHz cavities comparison for H
+    wp = 'H'  # working point
+    sigma = 'SR_2.5mm'
+    slans_dirs = [fr"{parent_dir_slans}\3794_400", fr"{parent_dir_slans}\3794_800",
+                  fr"{parent_dir_slans}\C3795_800"]
+    abci_dirs = [fr"{parent_dir_abci}\3794_400", fr"{parent_dir_abci}\3794_800",
+                 fr"{parent_dir_abci}\C3795_800"]
+    cavities = Cavities([c3794_H_400, c3794_H_800, c3795_H_800], 'Cavities_C3794_400_800_C3795_800')
+
+    cavities.set_cavities_slans(slans_dirs)
+    cavities.set_cavities_abci(abci_dirs)
+
+    E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
+    cavities.compare_power(E_acc=E_acc)
+    cavities.plot_power_comparison()
+    cavities.plot_compare_bar()
+    cavities.plot_compare_fm_bar()
+    cavities.plot_compare_hom_bar()
+
+    # print(cavities)
+    # print(c3795_tt)
+    cavities.make_latex_summary_tables()
+    cavities.plot_cavities_contour('end')
+
+    cavities.plot_ql_vs_pin()
+    cavities.plot_cryomodule_comparison()
+    cavities.plot_axis_fields()
+    cavities.plot_surface_fields()
+    cavities.make_excel_summary()
+
+    # multipacting
+    multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+
+    to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
+    # for tp in to_plot:
+    # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    cavities.plot_dispersion()
+    # plt.show()
+
+
+if __name__ == '__main__':
+    wp = 'MuCol'  # working point
+    sigma = 'SR_23.1mm'
+    mucol_study()

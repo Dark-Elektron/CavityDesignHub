@@ -54,7 +54,7 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-1151</y>
                <width>636</width>
                <height>2479</height>
               </rect>
@@ -1750,6 +1750,11 @@
                      <string>3</string>
                     </property>
                    </row>
+                   <row>
+                    <property name="text">
+                     <string>4</string>
+                    </property>
+                   </row>
                    <column>
                     <property name="text">
                      <string>WP</string>
@@ -1923,6 +1928,41 @@
                    <item row="3" column="6">
                     <property name="text">
                      <string>5</string>
+                    </property>
+                   </item>
+                   <item row="4" column="0">
+                    <property name="text">
+                     <string>MuCol</string>
+                    </property>
+                   </item>
+                   <item row="4" column="1">
+                    <property name="text">
+                     <string>20.38</string>
+                    </property>
+                   </item>
+                   <item row="4" column="2">
+                    <property name="text">
+                     <string>25.4</string>
+                    </property>
+                   </item>
+                   <item row="4" column="3">
+                    <property name="text">
+                     <string>23.1/23.1</string>
+                    </property>
+                   </item>
+                   <item row="4" column="4">
+                    <property name="text">
+                     <string>1300</string>
+                    </property>
+                   </item>
+                   <item row="4" column="5">
+                    <property name="text">
+                     <string>1201.2516</string>
+                    </property>
+                   </item>
+                   <item row="4" column="6">
+                    <property name="text">
+                     <string>9</string>
                     </property>
                    </item>
                   </widget>

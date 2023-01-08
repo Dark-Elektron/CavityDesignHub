@@ -4,7 +4,7 @@ import re
 import shutil
 import subprocess
 import sys
-
+from sys import exit
 from matplotlib import colors
 from scipy.signal import find_peaks
 
@@ -27,7 +27,8 @@ eta0 = 376.7303134111465
 
 
 class Model:
-    def __init__(self, folder):
+    def __init__(self, folder, name):
+        self.name = name
         self.Epk, self.Hpk, self.Eacc, self.Vacc, self.E_z_axis = None, None, None, None, None
         self.k_loss, self.epk, self.bpk = None, None, None
         self.ff, self.kcc, self.Q0, self.U, self.Pds = None, None, None, None, None
@@ -44,10 +45,18 @@ class Model:
         self.mesh = None
         self.fieldparam = None
         self.param = None
-        self.folder = folder
+        self.folder = fr"{folder}/{name}"
         self.geodata = None
 
     def create_inputs(self):
+        # check if folder exists
+        if not os.path.exists(self.folder):
+            try:
+                os.mkdir(self.folder)
+            except FileNotFoundError:
+                ic("There was a problem creating the directory for the simulation files. Please check folder.")
+                exit()
+
         # remove old files
         files_list = ["geodata.n", "initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat",
                       "counter_initials.mat",
@@ -116,17 +125,22 @@ class Model:
 
     def define_geometry(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
                         beampipe='none', plot=False):
+
         self.n_cells = n_cells
         self.mid_cell = mid_cell
 
         if end_cell_left is None:
             self.end_cell_left = mid_cell
+        else:
+            self.end_cell_left = end_cell_left
 
         if end_cell_right is None:
             if end_cell_left is None:
                 self.end_cell_right = mid_cell
             else:
                 self.end_cell_right = end_cell_left
+        else:
+            self.end_cell_right = end_cell_right
 
         self.beampipe = beampipe
 
@@ -134,6 +148,8 @@ class Model:
         write_cavity_for_custom_eig_solver(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
 
         self.geodata = pd.read_csv(file_path, sep='\s+', header=None).to_numpy()
+
+        self.create_inputs()
 
     def generate_mesh(self, gridcons=0.005, epsr=1, plot=False):
 
@@ -194,7 +210,7 @@ class Model:
         spio.savemat(f"{self.folder}/model.mat", model, format='4')
 
         # start the mesh generator
-        subprocess.call(fr"D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\2dgen_bin.exe", cwd=self.folder,
+        subprocess.call(fr"..\..\..\exe\own_exe\2dgen_bin.exe", cwd=self.folder,
                         stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         # subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder)
 
@@ -294,8 +310,6 @@ class Model:
         # 10/04/00 : Pasi Yla-Oijala, Rolf Nevanlinna Institute
         # ------------------------------------------------------------------------
 
-        self.create_inputs()
-
         if self.geodata is None:
             return
 
@@ -346,7 +360,7 @@ class Model:
 
         # !eigenC_bin
         cwd = fr'{self.folder}'
-        eigenCpath = fr'{self.folder}\eigenC_bin.exe'
+        eigenCpath = fr'..\..\..\exe\own_exe\eigenC_bin.exe'
         if os.path.exists(eigenCpath):
             subprocess.call(eigenCpath, cwd=cwd,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -482,7 +496,7 @@ class Model:
         shutil.copyfile(fr'{self.folder}\kama0.mat', fr'{self.folder}\kama.mat')
 
         cwd = fr'{self.folder}'
-        multipacPath = fr'{self.folder}\Multipac.exe'
+        multipacPath = fr'..\..\..\exe\own_exe\Multipac.exe'
         if os.path.exists(multipacPath):
             subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -657,6 +671,8 @@ class Model:
            self.Rs, self.Pds, self.Q0, self.G)
 
         self.save_qois()
+        # write_cst_paramters(self.name, self.mid_cell, self.end_cell_left, self.end_cell_right,
+        #                     projectDir=self.folder, cell_type="None")
 
     @staticmethod
     def calculate_U(EE, HH, zz, rr):
@@ -967,7 +983,7 @@ class Model:
 
         Req = self.mid_cell[6]
         self.G = self.Q0 * self.Rs
-        self.GR_Q = self.G * 2 * self.R_Q
+        self.GR_Q = self.G * self.R_Q
 
         # cel to cell coupling factor
         ic(self.eigen_frequencies)
@@ -1618,19 +1634,16 @@ class Model:
 
         A = np.array(table[f'{p}'])
         n = int(A.shape[0] / 3)
-        ic(n)
         X = [A[0:n].T, A[n + 0:2 * n].T]
         W = np.array([A[2 * n:3 * n]]).T
-        ic(X)
-        ic(W)
 
         return X, W
 
 
 if __name__ == '__main__':
-    folder = fr'D:\Dropbox\CavityDesignHub\analysis_modules\eigenmode\customEig\run_files'
-    mod = Model(folder)
-    n_cells = 1
+    folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\CUSTOM_EIG'
+    mod = Model(folder, 'TESLA')
+    n_cells = 5
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
                          71.98698698698699, 93.5, 171.1929]) * 1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
@@ -1639,6 +1652,6 @@ if __name__ == '__main__':
     midTESLA = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
     midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591]) * 1e-3
 
-    mod.define_geometry(n_cells, midTESLA, beampipe='both')
+    mod.define_geometry(n_cells, midC3795, endC3795, beampipe='both')
     mod.generate_mesh()
     mod.run_field_solver(show_plots=True)
