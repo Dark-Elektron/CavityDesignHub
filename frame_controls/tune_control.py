@@ -148,11 +148,6 @@ class TuneControl:
         # self.tuneUI.pb_Tune_Settings.clicked.connect(
         #     lambda: animate_height(self.tuneUI.w_Tune_Settings, 0, 200, True))
 
-        # disable secondary settings if Tuner is SLANS
-        self.tuneUI.cb_Tuner.currentTextChanged.connect(
-            lambda: self.tuneUI.w_Iteration_Settings.setEnabled(False) if self.tuneUI.cb_Tuner.currentText() == 'SLANS'
-            else self.tuneUI.w_Iteration_Settings.setEnabled(True))
-
         # control to ensure that SLANS mid cell tuner is always set to tune for Req
         # and end cell tuner is always set to L
         self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.slans_tuners_control())

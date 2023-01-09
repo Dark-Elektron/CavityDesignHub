@@ -12,8 +12,8 @@ class SLANSTune:
         self.filename = 'tuned'
 
     def mid_cell_tune(self, A, B, a, b, Ri, L, Req_0, freq0, proc=0, f_shift=0, n_modes=1, beta=1):
-        self.tuner = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
-        self.slans_files = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
+        self.tuner = fr'{self.projectDir}\SimulationData\SLANS\_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
+        self.slans_files = fr'{self.projectDir}\SimulationData\SLANS\_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
 
         self.freq0 = freq0
         # print("\t\tSLANS_TUNE:: Started tuning, initial values -> ", A, B, a, b, Req_0, Ri, L, freq0)
@@ -30,7 +30,7 @@ class SLANSTune:
         # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        cwd = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune'
+        cwd = fr'{self.projectDir}\SimulationData\SLANS\_process_{proc}\SLANS_exe\MidCellTune'
         subprocess.call([self.tuner, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
         # print("\t\t\tDone tuning")
 
@@ -41,8 +41,8 @@ class SLANSTune:
 
     def end_cell_tune(self, par_in, par_out, freq0, proc, f_shift=0, n_modes=1, beta=1):
         print("here in end cell tuner", proc)
-        self.tuner_end = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe'
-        self.slans_files_end = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files'
+        self.tuner_end = fr'{self.projectDir}\SimulationData\SLANS\_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe'
+        self.slans_files_end = fr'{self.projectDir}\SimulationData\SLANS\_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files'
 
         self.freq0 = freq0
         print("\t\tSLANS_TUNE:: Started tuning, initial values -> ", par_in, par_out, freq0)
@@ -55,7 +55,7 @@ class SLANSTune:
         filepath = fr'{self.slans_files_end}/{self.filename}'
 
         print("\t\tCalling subprocess, TunedCell\n")
-        cwd = fr'{self.projectDir}\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files'
+        cwd = fr'{self.projectDir}\SimulationData\SLANS\_process_{proc}\SLANS_exe\EndCellTune\Superlans_Files'
         print(filepath)
         subprocess.call([self.tuner_end, filepath], cwd=cwd)
         print("\t\t\tDone tuning")
@@ -244,8 +244,8 @@ class SLANSTune:
 
 if __name__ == '__main__':
     parentDir = "D:\Dropbox\CavityDesignHub" # '<parentDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files\TunedCell.exe'
-    projectDir = "D:\Dropbox\CavityDesignHub\SampleProject" # '<projectDir>\SimulationData\SLANS\Cavity_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
-    "D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe"
+    projectDir = "D:\Dropbox\CavityDesignHub\SampleProject" # '<projectDir>\SimulationData\SLANS\_process_{proc}\SLANS_exe\MidCellTune\Superlans_Files'
+    "D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\_process_0\SLANS_exe\EndCellTune\Superlans_Files\TunedCellEnd_120421.exe"
     # Create tuner object
     tune = SLANSTune(parentDir, projectDir)
 
@@ -262,5 +262,5 @@ if __name__ == '__main__':
     L, freq, alpha, h, e = tune.end_cell_tune(mid_cell_par, end_cell_par, target_freq, 0)
     print(L, freq, alpha, h, e)
 
-# D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
-# D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\Cavity_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
+# D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned
+# D:\Dropbox\CavityDesignHub\SampleProject\SimulationData\SLANS\_process_0\SLANS_exe\EndCellTune\Superlans_Files\tuned

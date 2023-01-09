@@ -6,7 +6,7 @@ Last updated: 22/01/2019, 07:55.
 Available at: https://github.com/GTRONICK/QSS/blob/master/Aqua.qss qlineargradient(spread:pad, x1:0.5, y1:1, x2:0.5, y2:0, stop:0 rgba(0, 113, 255, 255), stop:1 rgba(91, 171, 252, 255));
 */
 *{
-    font: 13px "Segoe UI";
+    font: 8px "Segoe UI";
 }
 #pb_Tune, #pb_Eigenmode_Analysis, #pb_Wakefield_Analysis, #pb_Tune, #pb_Plot, #pb_Misc, #pb_Post_Process{
     font: 18px "Segoe UI";

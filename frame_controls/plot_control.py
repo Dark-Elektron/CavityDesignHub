@@ -1,4 +1,5 @@
 from PyQt5 import QtGui
+from labellines import labelLines
 from scipy.special import jn_zeros, jnp_zeros
 from ui_files.plot import Ui_Plot
 from ui_files.plottypeselector import Ui_PlotTypeSelector
@@ -75,6 +76,7 @@ class PlotControl:
         self.args_dict_clone = {}
         self.other_data = {}
         self.ax_obj_dict = {}
+        self.operation_points = pd.DataFrame()
         # baseline matplotlib line.Line2D objects
         self.axes_decorations_dict = {"xlabel": "x",
                                       "ylabel": "y",
@@ -441,7 +443,7 @@ class PlotControl:
         self.ui.pb_Refresh.clicked.connect(lambda: self.plot())
 
         # toggle plot menu
-        self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: animate_width(self.ui.w_Plot_Menu, 0, 440, True))
+        self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: animate_width(self.ui.w_Plot_Menu, 0, 500, True))
         self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: self.ui.w_Plot_Area_Buttons.setEnabled(
             True) if self.ui.w_Plot_Menu.maximumWidth() == 0 else self.ui.w_Plot_Area_Buttons.setDisabled(True))
 
@@ -453,8 +455,11 @@ class PlotControl:
         # self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda: animate_height(self.ui.w_Plot_Args, 0, 200, True))
 
         # signal for threshold
-        self.ui.cb_Longitudinal_Threshold.stateChanged.connect(lambda: self.calc_limits('monopole'))
-        self.ui.cb_Transverse_Threshold.stateChanged.connect(lambda: self.calc_limits('dipole'))
+        self.ui.pb_Load_Machine_Parameters.clicked.connect(lambda: self.load_operation_points())
+        self.ui.cb_Longitudinal_Threshold.stateChanged.connect(
+            lambda: self.calc_limits('monopole', self.ui.ccb_Operation_Points.currentText()))
+        self.ui.cb_Transverse_Threshold.stateChanged.connect(
+            lambda: self.calc_limits('dipole', self.ui.ccb_Operation_Points.currentText()))
 
         # signal for inset plot
         self.ui.cb_Show_Hide_Inset.clicked.connect(lambda: self.plot_inset())
@@ -491,6 +496,9 @@ class PlotControl:
         self.ui.ccb_Freq_Used_Ylabel.currentTextChanged.connect(lambda: self.ui.le_Ylabel.setText(
             self.ui.ccb_Freq_Used_Ylabel.currentText()))
 
+        self.ui.ccb_Operation_Points.currentTextChanged.connect(
+            lambda: self.operation_points_selection(self.ui.ccb_Operation_Points.currentText()))
+
     def initUI(self):
         self.createPlotTypeWidget()
 
@@ -519,6 +527,8 @@ class PlotControl:
 
         # add signal
         cutoff.currentTextChanged.connect(lambda: self.plot_cutoff(cutoff))
+
+        self.ui.w_Machines_View.hide()
 
     def plot(self):
         # try:
@@ -1576,108 +1586,243 @@ class PlotControl:
             row = self.ui.tableWidget.currentRow()
             self.row = row
 
-    def calc_limits(self, mode):
-        if len(self.freq_glob) > 0:
-            if self.ui.cb_Longitudinal_Threshold.checkState() == 2 or self.ui.cb_Transverse_Threshold.checkState() == 2:
-                E0 = [45.6, 80, 120, 182.5]  # [GeV] Energy
-                nu_s = [0.025, 0.0506, 0.036, 0.087]  # Synchrotron oscillation tune
-                I0 = [1400, 135, 26.7, 5]  # [mA] Beam current5.4 * 2
-                alpha_c = [1.48, 1.48, 0.73, 0.73]  # [10−5] Momentum compaction factor
-                tau_z = [424.6, 78.7, 23.4, 6.8]  # [ms] Longitudinal damping time
-                tau_xy = [849.2, 157.4, 46.8, 13.6]  # [ms] Transverse damping time
-                frev = [3.07, 3.07, 3.07, 3.07]  # [kHz] Revolution frequency
-                beta_xy = 50
+    def load_operation_points(self):
+        filename, _ = QFileDialog.getOpenFileName(
+            None, "Open File", fr"{self.main_control.projectDir}/Cavities", "Json Files (*.json)")
+        try:
+            self.ui.le_Machine_Parameters_Filename.setText(filename)
+            with open(filename, 'r') as file:
+                dd = json.load(file)
 
-                #     Ncav = [52, 52, 136, 584] # Number of cavities per beam
-                Ncav = [56, 112, 128, 140]  # 1_2_2_25
+            # populate checkboxes with key
+            self.ui.ccb_Operation_Points.addItem("All")
+            for col in dd.keys():
+                self.ui.ccb_Operation_Points.addItem(fr'{col}')
 
-                E0 = ast.literal_eval(self.ui.le_E0.text())
-                nu_s = ast.literal_eval(self.ui.le_Nu_S.text())
-                I0 = ast.literal_eval(self.ui.le_I0.text())
-                alpha_c = ast.literal_eval(self.ui.le_Alpha_S.text())
-                tau_z = ast.literal_eval(self.ui.le_Tau_Z.text())
-                tau_xy = ast.literal_eval(self.ui.le_Tau_XY.text())
-                frev = ast.literal_eval(self.ui.le_F_Rev.text())
-                beta_xy = ast.literal_eval(self.ui.le_Beta_XY.text())
-                Ncav = ast.literal_eval(self.ui.le_N_Cav.text())
-                unit = {'MHz': 1e6,
-                        'GHz': 1e9}
+            self.operation_points = pd.DataFrame(dd)
 
-                Z_list, ZT_le = [], []
-                if mode == 'monopole':
-                    # trim f
-                    # f_list = f_list[0:len(f_list) - 100]
-                    # f_list = self.freq_glob[0:len(self.freq_glob)]
+        except Exception as e:
+            print('Failed to open file:: ', e)
 
-                    # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
-
-                    f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
-                                         self.ui.dsb_Frange_Max.value(),
-                                         num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
-                    Z_le = []
-                    for i, n in enumerate(Ncav):
-                        Z = [(2 * E0[i] * 1e9 * nu_s[i]) / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3 * f)
-                             if f > 1e-8 else 1e5 for f in f_list]
-
-                        Z_le.append(round((2 * E0[i] * 1e9 * nu_s[i]) / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3)*1e-9*1e-3, 2))
-                        Z_list.append(Z)
-
-                    self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
-                                        np.array(Z_list)*1e-3, mode)  # to kOhm
-
-                    self.ui.le_Zth_Long.setText(f"[{Z_le}]")
-                    return f_list, Z_list
-
-                elif mode == 'dipole':
-                    # f_list = self.freq_glob[0:len(self.freq_glob)]
-                    # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
-
-                    f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
-                                         self.ui.dsb_Frange_Max.value(),
-                                         num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
-                    for i, n in enumerate(Ncav):
-                        ZT = (2 * E0[i]) * 1e9 / (n * I0[i]*1e-3 * beta_xy * tau_xy[i]*1e-3 * frev[i]*1e3)
-                        ZT_le.append(ZT*1e-3)
-                        Z_list.append(ZT)
-                    self.ui.le_Zth_Trans.setText(f"[{ZT_le}]")
-                    self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
-                                        np.array(Z_list)*1e-3, mode)  # to kOhm
-
-                    return Z_list
-
+    def operation_points_selection(self, selection):
+        cols = selection.split(', ')
+        if not self.operation_points.empty:
+            if selection is None or selection == '':
+                pass
             else:
-                self.remove_baselines()
+                # update machine parameters in View Machine(s)
+                self.ui.le_E0.setText(f'{list(self.operation_points.loc["E [GeV]", cols])}')
+                self.ui.le_Nu_S.setText(f'{list(self.operation_points.loc["nu_s []", cols])}')
+                self.ui.le_I0.setText(f'{list(self.operation_points.loc["I0 [mA]", cols])}')
+                self.ui.le_Alpha_P.setText(f'{list(self.operation_points.loc["alpha_p [1e-5]", cols])}')
+                self.ui.le_Tau_Z.setText(f'{list(self.operation_points.loc["tau_z [ms]", cols])}')
+                self.ui.le_Tau_XY.setText(f'{list(self.operation_points.loc["tau_xy [ms]", cols])}')
+                self.ui.le_F_Rev.setText(f'{list(self.operation_points.loc["f_rev [kHz]", cols])}')
+                self.ui.le_Beta_XY.setText(f'{list(self.operation_points.loc["beta_xy [m]", cols])}')
+                self.ui.le_N_Cav.setText(f'{list(self.operation_points.loc["N_c []", cols])}')
 
-    def plot_baselines(self, f_list, Z_list, mode):
+    def calc_limits(self, mode, selection=None):
+        if self.operation_points is not None:
+            if len(self.freq_glob) > 0:
+                if self.ui.cb_Longitudinal_Threshold.checkState() == 2 or self.ui.cb_Transverse_Threshold.checkState() == 2:
+                    E0 = [45.6, 80, 120, 182.5]  # [GeV] Energy
+                    nu_s = [0.025, 0.0506, 0.036, 0.087]  # Synchrotron oscillation tune
+                    I0 = [1400, 135, 26.7, 5]  # [mA] Beam current5.4 * 2
+                    alpha_c = [1.48, 1.48, 0.73, 0.73]  # [10−5] Momentum compaction factor
+                    tau_z = [424.6, 78.7, 23.4, 6.8]  # [ms] Longitudinal damping time
+                    tau_xy = [849.2, 157.4, 46.8, 13.6]  # [ms] Transverse damping time
+                    f_rev = [3.07, 3.07, 3.07, 3.07]  # [kHz] Revolution frequency
+                    beta_xy = 50
+
+                    #     n_cav = [52, 52, 136, 584] # Number of cavities per beam
+                    n_cav = [56, 112, 128, 140]  # 1_2_2_25
+
+                    # E0 = ast.literal_eval(self.ui.le_E0.text())
+                    # nu_s = ast.literal_eval(self.ui.le_Nu_S.text())
+                    # I0 = ast.literal_eval(self.ui.le_I0.text())
+                    # alpha_c = ast.literal_eval(self.ui.le_Alpha_S.text())
+                    # tau_z = ast.literal_eval(self.ui.le_Tau_Z.text())
+                    # tau_xy = ast.literal_eval(self.ui.le_Tau_XY.text())
+                    # f_rev = ast.literal_eval(self.ui.le_F_Rev.text())
+                    # beta_xy = ast.literal_eval(self.ui.le_Beta_XY.text())
+                    # n_cav = ast.literal_eval(self.ui.le_N_Cav.text())
+
+                    if selection is None or selection == '':
+                        if self.operation_points.empty:
+                            pass
+                        else:
+                            E0 = list(self.operation_points.loc["E [GeV]"])
+                            nu_s = list(self.operation_points.loc["nu_s []"])
+                            I0 = list(self.operation_points.loc["I0 [mA]"])
+                            alpha_c = list(self.operation_points.loc["alpha_p [1e-5]"])
+                            tau_z = list(self.operation_points.loc["tau_z [ms]"])
+                            tau_xy = list(self.operation_points.loc["tau_xy [ms]"])
+                            f_rev = list(self.operation_points.loc["f_rev [kHz]"])
+                            beta_xy = list(self.operation_points.loc["beta_xy [m]"])
+                            n_cav = list(self.operation_points.loc["N_c []"])
+                    else:
+                        cols = selection.split(', ')
+                        E0 = list(self.operation_points.loc["E [GeV]", cols])
+                        nu_s = list(self.operation_points.loc["nu_s []", cols])
+                        I0 = list(self.operation_points.loc["I0 [mA]", cols])
+                        alpha_c = list(self.operation_points.loc["alpha_p [1e-5]", cols])
+                        tau_z = list(self.operation_points.loc["tau_z [ms]", cols])
+                        tau_xy = list(self.operation_points.loc["tau_xy [ms]", cols])
+                        f_rev = list(self.operation_points.loc["f_rev [kHz]", cols])
+                        beta_xy = list(self.operation_points.loc["beta_xy [m]", cols])
+                        n_cav = list(self.operation_points.loc["N_c []", cols])
+
+                    unit = {'MHz': 1e6,
+                            'GHz': 1e9}
+
+                    Z_list, ZT_le = [], []
+                    if mode == 'monopole':
+                        # trim f
+                        # f_list = f_list[0:len(f_list) - 100]
+                        # f_list = self.freq_glob[0:len(self.freq_glob)]
+
+                        # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
+
+                        f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
+                                             self.ui.dsb_Frange_Max.value(),
+                                             num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
+                        Z_le = []
+                        try:
+                            for i, n in enumerate(n_cav):
+                                Z = [(2 * E0[i] * 1e9 * nu_s[i])
+                                     / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3 * f)
+                                     if f > 1e-8 else 1e5 for f in f_list]
+
+                                Z_le.append(round((2 * E0[i] * 1e9 * nu_s[i])
+                                                  / (n * I0[i]*1e-3 * alpha_c[i]*1e-5
+                                                     * tau_z[i]*1e-3)*1e-9*1e-3, 2))
+                                Z_list.append(Z)
+
+                            self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
+                                                np.array(Z_list)*1e-3, mode, labels=selection.split(', '))  # to kOhm
+
+                            self.ui.le_Zth_Long.setText(f"[{Z_le}]")
+                        except ZeroDivisionError:
+                            print("ZeroDivisionError, check input")
+                        return f_list, Z_list
+
+                    elif mode == 'dipole':
+                        # f_list = self.freq_glob[0:len(self.freq_glob)]
+                        # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
+
+                        f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
+                                             self.ui.dsb_Frange_Max.value(),
+                                             num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
+                        try:
+                            for i, n in enumerate(n_cav):
+                                ZT = (2 * E0[i]) * 1e9 / (n * I0[i]*1e-3 * beta_xy[i] * tau_xy[i]*1e-3 * f_rev[i]*1e3)
+                                ZT_le.append(ZT*1e-3)
+                                Z_list.append(ZT)
+                            self.ui.le_Zth_Trans.setText(f"[{ZT_le}]")
+                            self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
+                                                np.array(Z_list)*1e-3, mode, labels=selection.split(', '))  # to kOhm
+
+                        except ZeroDivisionError:
+                            print("ZeroDivisionError, check input")
+
+                        return Z_list
+
+                else:
+                    self.remove_baselines()
+        else:
+            print("Please load a valid operation point(s) file.")
+
+    def plot_baselines(self, f_list, Z_list, mode, labels):
         if mode == 'monopole':
             # plot baselines
-            text = ['Z', 'W', 'H', 'tt']
             for i, z in enumerate(Z_list):
-                aa = self.ax.plot(f_list, z, ls='--', c='gray')
+                aa = self.ax.plot(f_list, z, ls='--', c='k')
+
+                # transform axes coordinates to data coordinates
+
+                # axis_to_data = self.ax.transLimits
+                # pos = axis_to_data.transform((0.05, 0.5))
+                # indx = np.argmin(abs(f_list - pos[0]))
+                # inv = axis_to_data.inverted()
+                # print(pos)
+                # print((f_list[indx], z[indx]))
+                # x, y = inv.transform((f_list[indx], z[indx]))
+                # print(x, y)
+
+                pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
+                print(pos)
+                indx = np.argmin(abs(f_list - pos[0]))
+                print((f_list[indx], z[indx]))
+                x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
+                print(x, y)
+
+                ab = self.plt.add_text(r"$\mathrm{" + fr"{labels[i]}" + r"}$",
+                                       box="Round4", xy=(x, y),
+                                       xycoords='axes fraction', size=14)
                 # ab = self.ax.text(1, z[200], f'{text[i]}')
 
                 # keep record
                 self.baseline_line_objects.append(aa[0])
-                # self.baseline_line_objects.append(ab)
+                self.baseline_line_objects.append(ab)
 
             self.ax.autoscale(True, axis='y')
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
         else:
             # plot baselines
-            text = ['Z', 'W', 'H', 'tt']
             for i, z in enumerate(Z_list):
-                aa = self.ax.axhline(z, ls='--', c='gray')
-                # ab = self.ax.text(0.5, z+1.8, f'{text[i]}', transform = self.ax.transAxes, va='top')
-                # coordinate system transformation
+                aa = self.ax.axhline(z, ls='--', c='k')
+
+                # transform axes coordinates to data coordinates
+                pos = self.ax.transData.transform((0.01, 0))
+                ab = self.plt.add_text(r"$\mathrm{" + fr"{labels[i]}" + r"}$",
+                                       box="Round4", xy=(pos[0], z),
+                                       xycoords='data', size=14)
 
                 # keep record
                 self.baseline_line_objects.append(aa)
-                # self.baseline_line_objects.append(ab)
+                self.baseline_line_objects.append(ab)
 
             self.ax.autoscale(True, axis='y')
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
+
+    @staticmethod
+    def axis_data_coords_sys_transform(axis_obj_in, xin, yin, inverse=False):
+        """ inverse = False : Axis => Data
+                    = True  : Data => Axis
+        """
+        if axis_obj_in.get_yscale() == 'log':
+            xlim = axis_obj_in.get_xlim()
+            ylim = axis_obj_in.get_ylim()
+
+            x_delta = xlim[1] - xlim[0]
+            y_delta = ylim[1] - ylim[0]
+            if not inverse:
+                x_out = xlim[0] + xin * x_elta
+                y_out = ylim[0] + yin * y_elta
+            else:
+                x_delta2 = xin - xlim[0]
+                y_delta2 = yin - ylim[0]
+                x_out = x_delta2 / x_delta
+                y_out = y_delta2 / y_delta
+
+        else:
+            xlim = axis_obj_in.get_xlim()
+            ylim = axis_obj_in.get_ylim()
+
+            x_delta = xlim[1] - xlim[0]
+            y_delta = ylim[1] - ylim[0]
+            if not inverse:
+                x_out = xlim[0] + xin * x_delta
+                y_out = ylim[0] + yin * y_delta
+            else:
+                x_delta2 = xin - xlim[0]
+                y_delta2 = yin - ylim[0]
+                x_out = x_delta2 / x_delta
+                y_out = y_delta2 / y_delta
+
+        return x_out, y_out
 
     def remove_baselines(self):
         for line in self.baseline_line_objects:
@@ -2118,7 +2263,7 @@ class PlotControl:
         state_dict["E0"] = self.ui.le_E0.text()
         state_dict["Nu_S"] = self.ui.le_Nu_S.text()
         state_dict["I0"] = self.ui.le_I0.text()
-        state_dict["Alpha_S"] = self.ui.le_Alpha_S.text()
+        state_dict["Alpha_S"] = self.ui.le_Alpha_P.text()
         state_dict["Tau_Z"] = self.ui.le_Tau_Z.text()
         state_dict["Tau_XY"] = self.ui.le_Tau_XY.text()
         state_dict["F_Rev"] = self.ui.le_F_Rev.text()
@@ -2155,7 +2300,7 @@ class PlotControl:
         self.ui.le_E0.setText(state_dict["E0"])
         self.ui.le_Nu_S.setText(state_dict["Nu_S"])
         self.ui.le_I0.setText(state_dict["I0"])
-        self.ui.le_Alpha_S.setText(state_dict["Alpha_S"])
+        self.ui.le_Alpha_P.setText(state_dict["Alpha_S"])
         self.ui.le_Tau_Z.setText(state_dict["Tau_Z"])
         self.ui.le_Tau_XY.setText(state_dict["Tau_XY"])
         self.ui.le_F_Rev.setText(state_dict["F_Rev"])
