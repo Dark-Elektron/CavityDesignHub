@@ -62,7 +62,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-714</y>
                 <width>487</width>
                 <height>1839</height>
                </rect>
@@ -83,6 +83,12 @@
                </item>
                <item row="4" column="0" alignment="Qt::AlignTop">
                 <widget class="QPushButton" name="pb_Tune_Settings">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
                  <property name="text">
                   <string>Settings</string>
                  </property>
@@ -752,6 +758,12 @@
                      </property>
                      <item row="4" column="0" alignment="Qt::AlignTop">
                       <widget class="QPushButton" name="pb_Outer_Cell">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
                         <string>Outer Cell</string>
                        </property>
@@ -762,6 +774,12 @@
                      </item>
                      <item row="7" column="0" alignment="Qt::AlignTop">
                       <widget class="QPushButton" name="pb_Expansion">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
                         <string>Expansion</string>
                        </property>
@@ -772,6 +790,12 @@
                      </item>
                      <item row="2" column="0" alignment="Qt::AlignTop">
                       <widget class="QPushButton" name="pb_Inner_Cell">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="text">
                         <string>Inner Cell</string>
                        </property>

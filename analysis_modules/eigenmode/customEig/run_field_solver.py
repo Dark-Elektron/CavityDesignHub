@@ -135,10 +135,13 @@ class Model:
             self.end_cell_left = end_cell_left
 
         if end_cell_right is None:
-            if end_cell_left is None:
-                self.end_cell_right = mid_cell
+            if self.n_cells > 1:
+                if end_cell_left is None:
+                    self.end_cell_right = mid_cell
+                else:
+                    self.end_cell_right = end_cell_left
             else:
-                self.end_cell_right = end_cell_left
+                self.end_cell_right = mid_cell
         else:
             self.end_cell_right = end_cell_right
 
@@ -993,7 +996,9 @@ class Model:
 
         # field flatness
         # get max in each cell
-        peaks, _ = find_peaks(self.E_z_axis)
+        peaks, _ = find_peaks(abs(self.E_z_axis))
+        plt.plot(self.E_z_axis)
+        plt.show()
         E_abs_peaks = self.E_z_axis[peaks]
         self.ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
 
@@ -1643,7 +1648,7 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\CUSTOM_EIG'
     mod = Model(folder, 'TESLA')
-    n_cells = 5
+    n_cells = 1
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
                          71.98698698698699, 93.5, 171.1929]) * 1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
@@ -1651,7 +1656,9 @@ if __name__ == '__main__':
 
     midTESLA = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
     midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591]) * 1e-3
+    midDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
+    endDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
 
-    mod.define_geometry(n_cells, midC3795, endC3795, beampipe='both')
+    mod.define_geometry(n_cells, midDegen, endDegen, beampipe='left', plot=True)
     mod.generate_mesh()
     mod.run_field_solver(show_plots=True)

@@ -163,8 +163,8 @@ class Tuner:
             # # round
             # L, freq = round(L, 2), round(freq, 2)
             if (1 - 0.001)*target_freq < round(freq, 2) < (1 + 0.001)*target_freq \
-                    and (90.5 <= alpha_i <= 180) \
-                    and (90.5 <= alpha_o <= 180) and error_msg1 == 1 and error_msg2 == 1:
+                    and (90.0 <= alpha_i <= 180) \
+                    and (90.0 <= alpha_o <= 180) and error_msg1 == 1 and error_msg2 == 1:
                 result = f"Success: {target_freq, freq}"
 
                 if cell_type == 'Mid Cell':

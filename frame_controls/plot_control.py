@@ -1750,7 +1750,8 @@ class PlotControl:
                 # print(x, y)
 
                 pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
-                print(pos)
+                pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
+                print(pos, pos2)
                 indx = np.argmin(abs(f_list - pos[0]))
                 print((f_list[indx], z[indx]))
                 x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
@@ -1799,13 +1800,15 @@ class PlotControl:
             x_delta = xlim[1] - xlim[0]
             y_delta = ylim[1] - ylim[0]
             if not inverse:
-                x_out = xlim[0] + xin * x_elta
-                y_out = ylim[0] + yin * y_elta
+                x_out = xlim[0] + ((np.e**xin - 1)/(np.e-1)) * x_delta
+                y_out = ylim[0] + ((np.e**yin - 1)/(np.e-1)) * y_delta
+                print("\t", x_out, y_out)
             else:
                 x_delta2 = xin - xlim[0]
                 y_delta2 = yin - ylim[0]
-                x_out = x_delta2 / x_delta
-                y_out = y_delta2 / y_delta
+                x_out = np.log(1 + (np.e - 1)*x_delta2 / x_delta)
+                y_out = np.log(1 + (np.e - 1)*y_delta2 / y_delta)
+                print("\t", x_out, y_out)
 
         else:
             xlim = axis_obj_in.get_xlim()

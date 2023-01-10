@@ -118,7 +118,7 @@ class Ui_Plot(object):
         self.splitter.setOrientation(QtCore.Qt.Vertical)
         self.splitter.setObjectName("splitter")
         self.widget_14 = QtWidgets.QWidget(self.splitter)
-        self.widget_14.setMinimumSize(QtCore.QSize(500, 500))
+        self.widget_14.setMinimumSize(QtCore.QSize(0, 500))
         self.widget_14.setStyleSheet("")
         self.widget_14.setObjectName("widget_14")
         self.gridLayout_9 = QtWidgets.QGridLayout(self.widget_14)

@@ -924,9 +924,20 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
             end_cell_right = end_cell_left
 
     # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = mid_cell
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = end_cell_left
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = end_cell_right
+    if len(mid_cell) == 7:
+        A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = mid_cell
+    else:
+        A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = mid_cell
+
+    if len(mid_cell) == 7:
+        A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = end_cell_left
+    else:
+        A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = end_cell_left
+
+    if len(mid_cell) == 7:
+        A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = end_cell_right
+    else:
+        A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = end_cell_right
 
     step = 2  # step in boundary points in mm
 
@@ -1019,8 +1030,8 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                                [L_el + L_er - x2er + 2 * L_bp_l - shift, Req_er], plot)
-                    pt = [L_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
+                                [L_el + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er], plot)
+                    pt = [L_el + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
                             fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -1029,8 +1040,8 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step, plot)
-                    pt = [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
+                    lineTo(pt, [L_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step, plot)
+                    pt = [L_el + L_er - x1er + + L_bp_l + L_bp_r  - shift, y1er]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # ARC

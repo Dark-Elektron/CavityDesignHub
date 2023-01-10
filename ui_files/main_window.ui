@@ -260,12 +260,6 @@
            <enum>Qt::Horizontal</enum>
           </property>
           <widget class="QWidget" name="widget_7" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>250</width>
-             <height>0</height>
-            </size>
-           </property>
            <layout class="QGridLayout" name="gridLayout_16">
             <item row="0" column="0">
              <layout class="QGridLayout" name="gl_File_System_View"/>
@@ -614,8 +608,8 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>886</width>
-                           <height>977</height>
+                           <width>980</width>
+                           <height>1003</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -948,7 +942,7 @@ P R O C E S S</string>
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>335</width>
+                        <width>397</width>
                         <height>919</height>
                        </rect>
                       </property>
