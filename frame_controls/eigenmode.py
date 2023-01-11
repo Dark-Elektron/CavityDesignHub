@@ -12,6 +12,7 @@ from ui_files.eigenmode import Ui_Eigenmode
 from utils.file_reader import FileReader
 from utils.shared_classes import *
 from utils.shared_functions import *
+from analysis_modules.eigenmode.customEig.run_field_solver import Model
 
 slans_geom = SLANSGeometry()
 fr = FileReader()
@@ -189,6 +190,8 @@ class EigenmodeControl:
         rbc = self.ui.cb_RBC.currentIndex()+1
         bc = 10*lbc + rbc
 
+        # solver
+        eigenproblem_solver = self.ui.cb_Eigenproblem_Solver.currentText()
         proc_count = self.ui.sb_No_Of_Processors_SLANS.value()
 
         # uq
@@ -228,7 +231,8 @@ class EigenmodeControl:
 
             service = mp.Process(target=self.run_sequential, args=(
                 n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
-                self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(), UQ))
+                self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(),
+                UQ, eigenproblem_solver))
 
             service.start()
 
@@ -538,38 +542,61 @@ class EigenmodeControl:
 
     @staticmethod
     def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir,
-                       progress_list, sub_dir='', UQ=False):
+                       progress_list, sub_dir='', UQ=False, solver='slans'):
         progress = 0
         # get length of processor
         total_no_of_shapes = len(list(processor_shape_space.keys()))
 
         for key, shape in processor_shape_space.items():
-            # # create folders for all keys
-            slans_geom.createFolder(key, projectDir, subdir=sub_dir)
+            if solver.lower() == 'slans':
+                # # create folders for all keys
+                slans_geom.createFolder(key, projectDir, subdir=sub_dir)
 
-            write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+                write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
 
-            # run SLANS code
-            start_time = time.time()
-            try:
-                slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                  n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
-            except KeyError:
-                slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                  n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+                # run SLANS code
+                start_time = time.time()
+                try:
+                    slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                      n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+                except KeyError:
+                    slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                      n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
 
-            # run UQ
-            if UQ:
-                uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
-                   n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
-                   f_shift=f_shift, bc=bc, parentDir=parentDir, projectDir=projectDir)
+                # run UQ
+                if UQ:
+                    uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
+                       n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
+                       f_shift=f_shift, bc=bc, parentDir=parentDir, projectDir=projectDir)
 
-            print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
+                print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
 
-            # update progress
-            progress_list.append((progress+1)/total_no_of_shapes)
+                # update progress
+                progress_list.append((progress+1)/total_no_of_shapes)
+
+            else:
+                # run own eigenmode code
+                folder = fr"{projectDir}\SimulationData\NativeEig"
+                mod = Model(folder=folder, name=f"{key}", parent_dir=parentDir)
+
+                try:
+                    # convert first to m.
+                    mid_cell = np.array(shape['IC'])*1e-3
+                    end_cell_left = np.array(shape['OC'])*1e-3
+                    end_cell_right = np.array(shape['OC_R'])*1e-3
+
+                    mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
+                            req_mode_num=int(n_modes), plot=False)
+                except KeyError:
+                    # convert first to m.
+                    mid_cell = np.array(shape['IC'])*1e-3
+                    end_cell_left = np.array(shape['OC'])*1e-3
+                    end_cell_right = np.array(shape['OC'])*1e-3
+
+                    mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
+                            req_mode_num=int(n_modes), plot=False)
 
     def update_alpha(self):
         A_i_space = text_to_list(self.ui.le_A_i.text())[0]

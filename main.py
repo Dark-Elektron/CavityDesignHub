@@ -157,6 +157,7 @@ class MainWindow:
 
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.last_saved_theme])
         QApplication.instance().setStyleSheet(stylesheet)
+        # self.main_win.setStyleSheet("*{font-size: 8px;}")
 
         # self.ui.pb_rHome.enterEvent = self.tray_animation
         # self.ui.pb_rHome.leaveEvent = self.tray_animation
@@ -610,8 +611,8 @@ class MainWindow:
 
         try:
             self.deserialize('ui_state_files/state_file.json')
-        except AttributeError:
-            print("Could not deserialize state file. ")
+        except AttributeError as e:
+            print("Could not deserialize state file: ", e)
 
     def checkIfPathExist(self, directory, folder):
         path = f"{directory}/{folder}"

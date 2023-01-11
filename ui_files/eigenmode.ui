@@ -6,19 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1678</width>
-    <height>1166</height>
+    <width>878</width>
+    <height>862</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#Eigenmode{/*background-color: rgba(255, 255, 255, 255);;*/}
-
-*{
-    font: 16px &quot;Segoe UI&quot;;
-}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="2">
@@ -79,9 +75,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>475</width>
-               <height>1993</height>
+               <y>-436</y>
+               <width>391</width>
+               <height>1493</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -372,6 +368,27 @@
                    <item>
                     <property name="text">
                      <string>Monopole</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="7" column="0">
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>Eigenproblem Solver</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="7" column="1">
+                  <widget class="QComboBox" name="cb_Eigenproblem_Solver">
+                   <item>
+                    <property name="text">
+                     <string>SLANS</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Native</string>
                     </property>
                    </item>
                   </widget>

@@ -14,12 +14,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Eigenmode(object):
     def setupUi(self, Eigenmode):
         Eigenmode.setObjectName("Eigenmode")
-        Eigenmode.resize(1678, 1166)
-        Eigenmode.setStyleSheet("#Eigenmode{/*background-color: rgba(255, 255, 255, 255);;*/}\n"
-"\n"
-"*{\n"
-"    font: 16px \"Segoe UI\";\n"
-"}")
+        Eigenmode.resize(878, 866)
+        Eigenmode.setStyleSheet("")
         self.gridLayout = QtWidgets.QGridLayout(Eigenmode)
         self.gridLayout.setObjectName("gridLayout")
         self.widget = QtWidgets.QWidget(Eigenmode)
@@ -50,7 +46,7 @@ class Ui_Eigenmode(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 475, 1993))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -436, 391, 1493))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -157,6 +153,14 @@ class Ui_Eigenmode(object):
         self.cb_Polarization_SLANS.setObjectName("cb_Polarization_SLANS")
         self.cb_Polarization_SLANS.addItem("")
         self.gridLayout_2.addWidget(self.cb_Polarization_SLANS, 4, 1, 1, 1)
+        self.label_13 = QtWidgets.QLabel(self.w_Analysis_Settings)
+        self.label_13.setObjectName("label_13")
+        self.gridLayout_2.addWidget(self.label_13, 7, 0, 1, 1)
+        self.cb_Eigenproblem_Solver = QtWidgets.QComboBox(self.w_Analysis_Settings)
+        self.cb_Eigenproblem_Solver.setObjectName("cb_Eigenproblem_Solver")
+        self.cb_Eigenproblem_Solver.addItem("")
+        self.cb_Eigenproblem_Solver.addItem("")
+        self.gridLayout_2.addWidget(self.cb_Eigenproblem_Solver, 7, 1, 1, 1)
         self.gridLayout_11.addWidget(self.w_Analysis_Settings, 10, 0, 1, 1, QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.w_Cell_Geometric_Parameters = QtWidgets.QWidget(self.scrollAreaWidgetContents)
         self.w_Cell_Geometric_Parameters.setObjectName("w_Cell_Geometric_Parameters")
@@ -770,6 +774,9 @@ class Ui_Eigenmode(object):
         self.label_16.setText(_translate("Eigenmode", "Right BC"))
         self.label.setText(_translate("Eigenmode", "Polarity"))
         self.cb_Polarization_SLANS.setItemText(0, _translate("Eigenmode", "Monopole"))
+        self.label_13.setText(_translate("Eigenmode", "Eigenproblem Solver"))
+        self.cb_Eigenproblem_Solver.setItemText(0, _translate("Eigenmode", "SLANS"))
+        self.cb_Eigenproblem_Solver.setItemText(1, _translate("Eigenmode", "Native"))
         self.label_4.setText(_translate("Eigenmode", "Summary"))
         self.label_17.setText(_translate("Eigenmode", "Select Shape"))
         self.cb_Shape_Entry_Mode.setItemText(0, _translate("Eigenmode", "Load Shape Space"))

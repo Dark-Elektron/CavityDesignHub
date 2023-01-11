@@ -14,11 +14,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-*{
-    font: 16px &quot;Segoe UI&quot;;
-	/*background-color: rgb(255, 255, 255);;*/
-}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -359,6 +355,12 @@
                            </property>
                            <item row="0" column="0" rowspan="4">
                             <widget class="QComboBox" name="cb_Active_Axis">
+                             <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                               <horstretch>0</horstretch>
+                               <verstretch>0</verstretch>
+                              </sizepolicy>
+                             </property>
                              <property name="minimumSize">
                               <size>
                                <width>0</width>
@@ -506,12 +508,6 @@
                            </item>
                            <item row="1" column="3" colspan="2">
                             <widget class="QLineEdit" name="le_Ylabel">
-                             <property name="minimumSize">
-                              <size>
-                               <width>200</width>
-                               <height>0</height>
-                              </size>
-                             </property>
                              <property name="text">
                               <string/>
                              </property>
@@ -538,12 +534,6 @@
                            </item>
                            <item row="3" column="3">
                             <widget class="QSpinBox" name="sb_YLabel_Size">
-                             <property name="minimumSize">
-                              <size>
-                               <width>50</width>
-                               <height>0</height>
-                              </size>
-                             </property>
                              <property name="toolTip">
                               <string>Y axis label size</string>
                              </property>
@@ -573,18 +563,6 @@
                            </item>
                            <item row="1" column="1" colspan="2">
                             <widget class="QLineEdit" name="le_Xlabel">
-                             <property name="minimumSize">
-                              <size>
-                               <width>200</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>200</width>
-                               <height>16777215</height>
-                              </size>
-                             </property>
                              <property name="text">
                               <string/>
                              </property>
@@ -839,7 +817,7 @@
                                     <x>0</x>
                                     <y>0</y>
                                     <width>1200</width>
-                                    <height>105</height>
+                                    <height>112</height>
                                    </rect>
                                   </property>
                                   <layout class="QGridLayout" name="gridLayout_27">
@@ -1001,8 +979,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>306</width>
-                                <height>131</height>
+                                <width>218</width>
+                                <height>133</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1355,8 +1333,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>559</width>
-                                <height>1116</height>
+                                <width>452</width>
+                                <height>1050</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
@@ -1745,8 +1723,8 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>479</width>
-                                          <height>449</height>
+                                          <width>372</width>
+                                          <height>365</height>
                                          </rect>
                                         </property>
                                         <layout class="QGridLayout" name="gridLayout_31">

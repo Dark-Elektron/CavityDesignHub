@@ -14,19 +14,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_w_Tune(object):
     def setupUi(self, w_Tune):
         w_Tune.setObjectName("w_Tune")
-        w_Tune.resize(1678, 1263)
-        w_Tune.setStyleSheet("\n"
-"\n"
-"*{\n"
-"    font: 16px \"Segoe UI\";\n"
-"}")
+        w_Tune.setStyleSheet("")
         self.gridLayout = QtWidgets.QGridLayout(w_Tune)
         self.gridLayout.setObjectName("gridLayout")
         self.splitter = QtWidgets.QSplitter(w_Tune)
         self.splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.splitter.setHandleWidth(2)
         self.splitter.setObjectName("splitter")
         self.widget = QtWidgets.QWidget(self.splitter)
-        self.widget.setMinimumSize(QtCore.QSize(500, 0))
         self.widget.setStyleSheet("")
         self.widget.setObjectName("widget")
         self.gridLayout_7 = QtWidgets.QGridLayout(self.widget)
@@ -44,7 +39,6 @@ class Ui_w_Tune(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -714, 487, 1839))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_14 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -650,7 +644,7 @@ class Ui_w_Tune(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 557, 1488))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 410, 1240))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_3.setObjectName("gridLayout_3")
@@ -1033,16 +1027,9 @@ class Ui_w_Tune(object):
         self.gl_PyqtGraph = QtWidgets.QGridLayout()
         self.gl_PyqtGraph.setObjectName("gl_PyqtGraph")
         self.widget_10 = QtWidgets.QWidget(self.w_PyqtGraph)
-        self.widget_10.setMinimumSize(QtCore.QSize(100, 0))
         self.widget_10.setObjectName("widget_10")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.widget_10)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.l_Cavity_Image = QtWidgets.QLabel(self.widget_10)
-        self.l_Cavity_Image.setText("")
-        self.l_Cavity_Image.setPixmap(QtGui.QPixmap(":/imgs/images/mid_cell.png"))
-        self.l_Cavity_Image.setScaledContents(True)
-        self.l_Cavity_Image.setObjectName("l_Cavity_Image")
-        self.gridLayout_6.addWidget(self.l_Cavity_Image, 0, 0, 1, 1)
         self.widget_5 = QtWidgets.QWidget(self.widget_10)
         self.widget_5.setObjectName("widget_5")
         self.gridLayout_9 = QtWidgets.QGridLayout(self.widget_5)
@@ -1056,20 +1043,27 @@ class Ui_w_Tune(object):
         self.l_Input_Help.setObjectName("l_Input_Help")
         self.gridLayout_9.addWidget(self.l_Input_Help, 0, 1, 1, 1)
         self.gridLayout_6.addWidget(self.widget_5, 0, 1, 1, 1)
+        self.l_Cavity_Image = QtWidgets.QLabel(self.widget_10)
+        self.l_Cavity_Image.setMaximumSize(QtCore.QSize(500, 500))
+        self.l_Cavity_Image.setText("")
+        self.l_Cavity_Image.setPixmap(QtGui.QPixmap(":/imgs/images/mid_cell.png"))
+        self.l_Cavity_Image.setScaledContents(True)
+        self.l_Cavity_Image.setObjectName("l_Cavity_Image")
+        self.gridLayout_6.addWidget(self.l_Cavity_Image, 0, 0, 1, 1)
         self.gl_PyqtGraph.addWidget(self.widget_10, 0, 0, 1, 1)
         self.gridLayout_10.addLayout(self.gl_PyqtGraph, 0, 0, 1, 1)
-        self.gridLayout.addWidget(self.splitter, 1, 0, 1, 1)
+        self.gridLayout.addWidget(self.splitter, 0, 0, 1, 1)
 
         self.retranslateUi(w_Tune)
         self.tabWidget_3.setCurrentIndex(0)
         self.pb_Setup.toggled['bool'].connect(self.w_Setup.setVisible) # type: ignore
-        self.pb_Cell_Geometric_Parameters.toggled['bool'].connect(self.w_Cell_Geometric_Parameters.setVisible) # type: ignore
+        self.pb_Tune_Multiple.toggled['bool'].connect(self.w_Tune_Multiple.setVisible) # type: ignore
         self.pb_Expansion.toggled['bool'].connect(self.w_Expansion.setVisible) # type: ignore
         self.pb_Tune_Settings.toggled['bool'].connect(self.w_Tune_Settings.setVisible) # type: ignore
         self.pb_Outer_Cell.toggled['bool'].connect(self.w_Outer_Cell.setVisible) # type: ignore
-        self.pb_Inner_Cell.toggled['bool'].connect(self.w_Inner_Cell.setVisible) # type: ignore
-        self.pb_Tune_Multiple.toggled['bool'].connect(self.w_Tune_Multiple.setVisible) # type: ignore
         self.pb_Postprocess.toggled['bool'].connect(self.w_Postprocess.setVisible) # type: ignore
+        self.pb_Inner_Cell.toggled['bool'].connect(self.w_Inner_Cell.setVisible) # type: ignore
+        self.pb_Cell_Geometric_Parameters.toggled['bool'].connect(self.w_Cell_Geometric_Parameters.setVisible) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(w_Tune)
 
     def retranslateUi(self, w_Tune):

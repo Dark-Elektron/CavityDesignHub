@@ -162,7 +162,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_multipac_triplot" title="analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_multipac_triplot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_multipac_triplot</span></code></a>(folders[, kind])</p></td>
 <td><p>Plot Multipac triplot</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison" title="analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_power_comparison</span></code></a>([fig, ax_list])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison" title="analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_power_comparison</span></code></a>(E_acc[, fig, ax_list])</p></td>
 <td><p>Can be called using <code class="docutils literal notranslate"><span class="pre">cavities.plot_power_comparison()</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_ql_vs_pin" title="analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_ql_vs_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_ql_vs_pin</span></code></a>()</p></td>
@@ -174,7 +174,7 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.ql_pin" title="analysis_modules.cavity_analysis.cavity_analysis.Cavities.ql_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ql_pin</span></code></a>(labels, geometry, RF, QOI, Machine[, ...])</p></td>
 <td><p>Calculate the value of input power as a function of loaded quality factor</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.qois" title="analysis_modules.cavity_analysis.cavity_analysis.Cavities.qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois</span></code></a>(cavity, op_field)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.qois" title="analysis_modules.cavity_analysis.cavity_analysis.Cavities.qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois</span></code></a>(cavity, op_field, E_acc)</p></td>
 <td><p><dl class="field-list simple">
 <dt class="field-odd">param cavity</dt>
 <dd class="field-odd"><p>Cavity object</p>
@@ -358,15 +358,10 @@ results</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison">
-<span class="sig-name descname"><span class="pre">plot_power_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#Cavities.plot_power_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">plot_power_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E_acc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#Cavities.plot_power_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison" title="Permalink to this definition"></a></dt>
 <dd><p>Can be called using <code class="docutils literal notranslate"><span class="pre">cavities.plot_power_comparison()</span></code></p>
 <div class="math notranslate nohighlight">
 \[W^{3 \beta}_{\delta}\]</div>
-<dl class="py function">
-<dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.Cavities.self.plot_power_comparison">
-<span class="sig-prename descclassname"><span class="pre">self.</span></span><span class="sig-name descname"><span class="pre">plot_power_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.self.plot_power_comparison" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -409,7 +404,7 @@ results</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.Cavities.qois">
-<span class="sig-name descname"><span class="pre">qois</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cavity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_field</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#Cavities.qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.qois" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">qois</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cavity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_acc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#Cavities.qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.Cavities.qois" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -925,6 +920,16 @@ results</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.h_study">
+<span class="sig-prename descclassname"><span class="pre">analysis_modules.cavity_analysis.cavity_analysis.</span></span><span class="sig-name descname"><span class="pre">h_study</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#h_study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.h_study" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.mucol_study">
+<span class="sig-prename descclassname"><span class="pre">analysis_modules.cavity_analysis.cavity_analysis.</span></span><span class="sig-name descname"><span class="pre">mucol_study</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#mucol_study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.mucol_study" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.plot_beampipe_decay">
 <span class="sig-prename descclassname"><span class="pre">analysis_modules.cavity_analysis.cavity_analysis.</span></span><span class="sig-name descname"><span class="pre">plot_beampipe_decay</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fc_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#plot_beampipe_decay"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.plot_beampipe_decay" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
@@ -937,6 +942,11 @@ results</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.plot_surface_resistance">
 <span class="sig-prename descclassname"><span class="pre">analysis_modules.cavity_analysis.cavity_analysis.</span></span><span class="sig-name descname"><span class="pre">plot_surface_resistance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#plot_surface_resistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.plot_surface_resistance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="analysis_modules.cavity_analysis.cavity_analysis.ttbar_study">
+<span class="sig-prename descclassname"><span class="pre">analysis_modules.cavity_analysis.cavity_analysis.</span></span><span class="sig-name descname"><span class="pre">ttbar_study</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/cavity_analysis/cavity_analysis.html#ttbar_study"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.cavity_analysis.cavity_analysis.ttbar_study" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>

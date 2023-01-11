@@ -71,6 +71,7 @@ class Cavities:
             Folder to save generated images, latex, excel, and text files.
         """
 
+        self.p_qois = None
         self.fm_results = None
         self.hom_results = None
         self.save_folder = save_folder
@@ -137,6 +138,7 @@ class Cavities:
             self.E_acc = E_acc
             self.set_cavities_field()
 
+        self.p_qois = []
         results = []
         for i, cav in enumerate(self.cavities_list):
             # E_acc_Pin(cavity, op_field[i], ls[i], fig, ax, ax_right, ax_right2)
@@ -160,18 +162,18 @@ class Cavities:
         """
 
         ind = np.where((E_acc >= 0.99 * op_field * 1e6) & (E_acc <= 1.01 * op_field * 1e6))
-        ic(cavity.pdyn[ind])
         qois = {
-            r"$N_\mathrm{cav/beam}$": np.average(cavity.n_cav[ind]),
-            r"$Q_\mathrm{0} [10^8]$": np.average(cavity.Q0[ind] * 1e-8),
-            r"$R_\mathrm{s} [\mathrm{n\Omega}]$": np.average(cavity.Rs[ind]),
-            r"$P_\mathrm{stat/cav}$ [W]": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
-            r"$P_\mathrm{dyn/cav}$ [W]": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
-            # r"$P_\mathrm{wp/cav}$ [W]": np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),
-            r"$P_\mathrm{in/beam}$ [kW]": np.average(cavity.p_in[ind]) * 1e-3,
+            r"N_cav/beam": np.average(cavity.n_cav[ind]),
+            r"Q0 [10^8]$": np.average(cavity.Q0[ind] * 1e-8),
+            r"Rs [Ohm]$": np.average(cavity.Rs[ind]),
+            r"P_stat/cav [W]": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
+            r"P_dyn/cav [W]": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
+            # r"P_\mathrm{wp/cav}$ [W]": np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),
+            r"P_in/beam [kW]": np.average(cavity.p_in[ind]) * 1e-3,
             # r"$Q_\mathrm{0} \mathrm{[10^8]}$": np.average(cavity.Q0[ind] * 1e-8),
             # r"$Rs_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Rs[ind])
         }
+        self.p_qois.append(qois)
 
         qois_norm_units = {
             r"$n_\mathrm{cav/beam}$": np.average(cavity.n_cav[ind]),
@@ -1507,7 +1509,7 @@ class Cavities:
             l1 = r"\begin{table}[!htb]"
             l2 = r"\centering"
             l3 = r"\caption{Geometric parameters and QoIs of cavities.}"
-            l4 = r"\begin{tabular}{lccc}"
+            l4 = r"\resizebox{\textwidth}{!}{\begin{tabular}{l" + f"{''.join(['c' for i in self.cavities_list])}" + "}"
             l5 = r"\toprule"
             l6 = r" ".join([fr"& {cav.name} " for cav in self.cavities_list]) + r" \\"
             l7 = r"\midrule"
@@ -1552,17 +1554,28 @@ class Cavities:
                 [fr"& {round(cav.k_loss, 4)} " for cav in self.cavities_list]) + r" \\"
             l26 = r"$k_\mathrm{\perp} \mathrm{[SR/BS]} [\mathrm{V/pC/m}]$ " + "".join(
                 [fr"& {round(cav.k_kick, 4)} " for cav in self.cavities_list]) + r" \\"
-            l27 = r"$P_\mathrm{HOM}\mathrm{/cav} \mathrm{[SR/BS]} [\mathrm{W}]$ " + "".join(
+            l27 = r"\midrule"
+            l28 = r"\midrule"
+
+            l29 = r"$N_\mathrm{cav/beam}$ " + "".join(
+                [fr"& {round(qoi[r'N_cav/beam'], 2)} " for qoi in self.p_qois]) + r" \\"
+            l29a = r"$P_\mathrm{in}\mathrm{/cav} [\mathrm{kW}]$ " + "".join(
+                [fr"& {round(qoi[r'P_in/beam [kW]'], 2)} " for qoi in self.p_qois]) + r" \\"
+            l30 = r"$P_\mathrm{stat}\mathrm{/cav} [\mathrm{W}]$ " + "".join(
+                [fr"& {round(qoi[r'P_stat/cav [W]'], 2)} " for qoi in self.p_qois]) + r" \\"
+            l31 = r"$P_\mathrm{dyn}\mathrm{/cav} [\mathrm{W}]$ " + "".join(
+                [fr"& {round(qoi[r'P_dyn/cav [W]'], 2)} " for qoi in self.p_qois]) + r" \\"
+            l32 = r"$P_\mathrm{HOM}\mathrm{/cav} \mathrm{[SR/BS]} [\mathrm{kW}]$ " + "".join(
                 [fr"& {round(cav.phom, 2)} " for cav in self.cavities_list]) + r" \\"
-            l28 = r"\bottomrule"
-            l29 = r"\end{tabular}"
-            l30 = r"\label{tab: selected shape}"
-            l31 = r"\end{table}"
+            l33 = r"\bottomrule"
+            l34 = r"\end{tabular}}"
+            l35 = r"\label{tab: selected shape}"
+            l36 = r"\end{table}"
 
             all_lines = (l1, l2, l3, l4, l5, l6, l7, l8, l9, l10,
                          l11, l12, l13, l14, l15, l16, l17, l18, l19, l20,
-                         l21, l22, l23, l24, l25, l26, l27, l28, l29, l30,
-                         l31)
+                         l21, l22, l23, l24, l25, l26, l27, l28, l29, l29a, l30,
+                         l31, l32, l33, l34, l35, l36)
 
             with open(fr"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\Summaries\{self.save_folder}_latex_summary.txt", 'w') as f:
                 for ll in all_lines:
@@ -1690,7 +1703,7 @@ class Cavity:
     """
 
     def __init__(self, n_cells, l_cell_mid, freq, vrf, R_Q, G, Epk_Eacc, Bpk_Eacc, inv_eta=219, name="Unnamed",
-                 op_field=1e6, wp='Z', op_temp='2K', material='bulkNb'):
+                 op_field=1e6, wp='Z', op_temp='2K', material='bulkNb', project=''):
         """Constructs all the necessary attributes of the Cavity object
 
         Parameters
@@ -1731,7 +1744,7 @@ class Cavity:
         self.abci_dir = None
         self.ff = ''
         self.k_cc = ''
-        self.project = ''
+        self.project = project
         self.reference = ''
         self.beta = 1
         self.cw_pulsed = ''
@@ -1948,6 +1961,8 @@ class Cavity:
         self.k_loss = d_qois['|k_loss| [V/pC]']
         self.k_kick = d_qois['|k_kick| [V/pC/m]']
         self.phom = d_qois['P_HOM [kW]']
+        self.sigma = bunch_length
+        self.I0 = d_qois['I0 [mA]']
 
         # ic(d_qois)
 
@@ -2674,9 +2689,9 @@ def mucol_study():
                     Epk_Eacc=2.07, Bpk_Eacc=3.77, inv_eta=745, name="NLSF-A", op_field=30e6,
                     op_temp='2K', material='bulkNb')
 
-    NLSF_B = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1130.0682, G=279.9786,
-                    Epk_Eacc=2.07, Bpk_Eacc=3.83, inv_eta=745, name="NLSF-B", op_field=30e6,
-                    op_temp='2K', material='bulkNb')
+    # NLSF_RE = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1130.0682, G=279.9786,
+    #                 Epk_Eacc=2.07, Bpk_Eacc=3.83, inv_eta=745, name="NLSF-B", op_field=30e6,
+    #                 op_temp='2K', material='bulkNb')
 
     TESLA = Cavity(9, l_cell_mid=57.7e-3, freq=1300e6, vrf=V, R_Q=1022.8792, G=271.3334,
                    Epk_Eacc=1.98, Bpk_Eacc=4.17, inv_eta=745, name="TESLA", op_field=30e6,
@@ -2689,25 +2704,25 @@ def mucol_study():
     parent_dir_slans = r"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\SLANS"
     parent_dir_abci = r"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\ABCI"
 
-    slans_dirs = [fr"{parent_dir_slans}\LL",
+    slans_dirs = [fr"{parent_dir_slans}\ILC-LL",
                   fr"{parent_dir_slans}\ICHIRO",
                   fr"{parent_dir_slans}\NLSF",
                   fr"{parent_dir_slans}\NLSF-A",
-                  fr"{parent_dir_slans}\NLSF-B",
+                  # fr"{parent_dir_slans}\NLSF-B",
                   fr"{parent_dir_slans}\TESLA",
                   # fr"{parent_dir_slans}\C3795_1300MHz"
                   ]
 
-    abci_dirs = [fr"{parent_dir_abci}\LL",
+    abci_dirs = [fr"{parent_dir_abci}\ILC-LL",
                  fr"{parent_dir_abci}\ICHIRO",
                  fr"{parent_dir_abci}\NLSF",
                  fr"{parent_dir_abci}\NLSF-A",
-                 fr"{parent_dir_abci}\NLSF-B",
+                 # fr"{parent_dir_abci}\NLSF-B",
                  fr"{parent_dir_abci}\TESLA",
                  # fr"{parent_dir_slans}\C3795_1300MHz"
                  ]
 
-    cavities = Cavities([ILC_LL, ICHIRO, NLSF, NLSF_A, NLSF_B, TESLA], 'TESLA_and_LL_Cavities')
+    cavities = Cavities([ILC_LL, ICHIRO, NLSF, NLSF_A, TESLA], 'TESLA_and_LL_Cavities')
 
     cavities.set_cavities_slans(slans_dirs)
     cavities.set_cavities_abci(abci_dirs)

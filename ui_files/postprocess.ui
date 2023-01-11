@@ -14,10 +14,7 @@
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-*{
-    font: 16px &quot;Segoe UI&quot;;
-}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
@@ -93,8 +90,8 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>480</width>
-                          <height>717</height>
+                          <width>456</width>
+                          <height>805</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_48">
@@ -571,8 +568,8 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>133</width>
-                          <height>133</height>
+                          <width>442</width>
+                          <height>783</height>
                          </rect>
                         </property>
                         <attribute name="label">
@@ -589,8 +586,8 @@
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>494</width>
-                              <height>751</height>
+                              <width>414</width>
+                              <height>755</height>
                              </rect>
                             </property>
                             <layout class="QGridLayout" name="gridLayout_11">
@@ -902,8 +899,8 @@
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>541</width>
-                              <height>323</height>
+                              <width>451</width>
+                              <height>310</height>
                              </rect>
                             </property>
                             <layout class="QGridLayout" name="gridLayout_27">
@@ -1087,9 +1084,9 @@
                         <property name="geometry">
                          <rect>
                           <x>0</x>
-                          <y>-419</y>
-                          <width>451</width>
-                          <height>1333</height>
+                          <y>0</y>
+                          <width>426</width>
+                          <height>1307</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_50">

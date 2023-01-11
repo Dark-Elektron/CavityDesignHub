@@ -46,10 +46,15 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#aceclerator-cavity-basics">Aceclerator cavity basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#electromagnetic-field-theory">Electromagnetic field theory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#maxwell-eigenvalue-problem">Maxwell eigenvalue problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#wakefield-analysis">Wakefield analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aceclerator-cavity-basics">Aceclerator cavity basics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#figures-of-merit-in-accelerator-cavity-design">Figures of merit in accelerator cavity design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#electromagnetic-field-theory">Electromagnetic field theory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#maxwell-eigenvalue-problem">Maxwell eigenvalue problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#wakefield-analysis">Wakefield analysis</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#theory-of-multipacting">Theory of multipacting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#sensitivity-analysis-and-uncertainty-quantification">Sensitivity analysis and uncertainty quantification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#elliptical-cavity-optimization">Elliptical Cavity optimization</a></li>
@@ -99,13 +104,20 @@ be optimised for speed and accuracy.</p>
 <div class="contents local topic" id="contents-of-this-page">
 <p class="topic-title">Contents of this Page</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#aceclerator-cavity-basics" id="id1">Aceclerator cavity basics</a></p></li>
-<li><p><a class="reference internal" href="#electromagnetic-field-theory" id="id2">Electromagnetic field theory</a></p></li>
-<li><p><a class="reference internal" href="#maxwell-eigenvalue-problem" id="id3">Maxwell eigenvalue problem</a></p></li>
-<li><p><a class="reference internal" href="#wakefield-analysis" id="id4">Wakefield analysis</a></p></li>
-<li><p><a class="reference internal" href="#theory-of-multipacting" id="id5">Theory of multipacting</a></p></li>
-<li><p><a class="reference internal" href="#sensitivity-analysis-and-uncertainty-quantification" id="id6">Sensitivity analysis and uncertainty quantification</a></p></li>
-<li><p><a class="reference internal" href="#elliptical-cavity-optimization" id="id7">Elliptical Cavity optimization</a></p></li>
+<li><p><a class="reference internal" href="#aceclerator-cavity-basics" id="id1">Aceclerator cavity basics</a></p>
+<ul>
+<li><p><a class="reference internal" href="#figures-of-merit-in-accelerator-cavity-design" id="id2">Figures of merit in accelerator cavity design</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#electromagnetic-field-theory" id="id3">Electromagnetic field theory</a></p>
+<ul>
+<li><p><a class="reference internal" href="#maxwell-eigenvalue-problem" id="id4">Maxwell eigenvalue problem</a></p></li>
+<li><p><a class="reference internal" href="#wakefield-analysis" id="id5">Wakefield analysis</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#theory-of-multipacting" id="id6">Theory of multipacting</a></p></li>
+<li><p><a class="reference internal" href="#sensitivity-analysis-and-uncertainty-quantification" id="id7">Sensitivity analysis and uncertainty quantification</a></p></li>
+<li><p><a class="reference internal" href="#elliptical-cavity-optimization" id="id8">Elliptical Cavity optimization</a></p></li>
 </ul>
 </div>
 <section id="aceclerator-cavity-basics">
@@ -118,27 +130,77 @@ physics research, biomedical research, radiotherapy, and ion implantation for th
 facturing of semiconductors. Particle accelerators are comprised of several components
 which include the particle or beam source, a radiofrequency (RF) source, electromagnets,
 waveguides, resonant cavities, etc.</p>
-<figure class="align-center" id="ellipse-tangent">
-<a class="reference internal image-reference" href="_images/ellipse_tangent.png"><img alt="accelerator cavity" src="_images/ellipse_tangent.png" style="width: 200px;" /></a>
-</figure>
 <p>Resonant cavities are particularly responsible for particle acceleration. Over the last
 decade, there has been a great deal of advancement in the design and fabrication of
 resonant cavities. Cavity shapes have evolved from being totally cylindrical in shape,
 the so-called pillbox cavities, to the widely used (standard) elliptical cavities nowadays.
 Cavity geometric parameters are selected based on certain desired properties. The so-
 called cavity figures of merit are used to quantify these desired properties.</p>
+<section id="figures-of-merit-in-accelerator-cavity-design">
+<h3><a class="toc-backref" href="#id2">Figures of merit in accelerator cavity design</a><a class="headerlink" href="#figures-of-merit-in-accelerator-cavity-design" title="Permalink to this heading"></a></h3>
+<p>There are several figures of merits that quantify the efficiency and effectiveness of accelerating cavities.
+These include the quality factor, <span class="math notranslate nohighlight">\(Q\)</span>, the shunt impedance, <span class="math notranslate nohighlight">\(R_\mathrm{sh}\)</span>, dissipated power,
+<span class="math notranslate nohighlight">\(P_\mathrm{c}\)</span>, stored energy, <span class="math notranslate nohighlight">\(U\)</span>, etc.</p>
+<p>The quality factor quantifies the ratio of the amount of energy stored in a cavity to the power dissipated at the
+cavity walls. Mathematically,</p>
+<div class="math notranslate nohighlight">
+\[Q = \omega \frac{U}{P_\mathrm{ds}}.\]</div>
+<p>The shunt impedance is another important quantity used to characterise the losses in a cavity.
+It is given mathematically as:</p>
+<div class="math notranslate nohighlight">
+\[R_\mathrm{sh} = \frac{V_\mathrm{acc}^2}{P_\mathrm{ds}}\]</div>
+<p>where <span class="math notranslate nohighlight">\(U\)</span> is the stored energy given as:</p>
+<div class="math notranslate nohighlight">
+\[U = \frac{1}{2} \epsilon_0 \int_V |E|^2 \mathrm{d}V = \frac{1}{2} \mu_0 \int_V |H|^2 \mathrm{d}V.\]</div>
+<p>and <span class="math notranslate nohighlight">\(P_\mathrm{c}\)</span> is the power loss given as:</p>
+<div class="math notranslate nohighlight">
+\[P_\mathrm{ds} = \frac{1}{2} R_\mathrm{sh} \int_S |H|^2 \mathrm{d}s.\]</div>
+<p>The accelerating voltage is given as</p>
+<div class="math notranslate nohighlight">
+\[V_\mathrm{acc} = \int_0^L E_z (\rho, \phi) e^{j\omega t}\mathrm{d}z.\]</div>
+<p>where L is the length of the cavity or beam pipe.</p>
+</section>
 </section>
 <section id="electromagnetic-field-theory">
-<span id="quick-electromagnetic-field-theory"></span><h2><a class="toc-backref" href="#id2">Electromagnetic field theory</a><a class="headerlink" href="#electromagnetic-field-theory" title="Permalink to this heading"></a></h2>
-</section>
+<span id="quick-electromagnetic-field-theory"></span><h2><a class="toc-backref" href="#id3">Electromagnetic field theory</a><a class="headerlink" href="#electromagnetic-field-theory" title="Permalink to this heading"></a></h2>
+<p>Maxwell equations
+Electromagnetic interactions are represented mathematically with the Maxwell equations.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\nabla D = \rho,\\\nabla B = 0,\\\nabla \times H = J + \frac{\partial D}{\partial t},\\\nabla \times E = - \frac{\partial B}{\partial t}.\end{aligned}\end{align} \]</div>
+<p>where E is the electric field intensity, and H is the magnetic field intensity, D is the electric flux density,
+B is the magnetic flux density. They are related by material properties given as follows:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}D = \epsilon E,\\B = \mu H.\end{aligned}\end{align} \]</div>
+<p>Combining the Maxwell equations and using appropriate vector identities result in the wave equations for electric
+and magnetic fields as follows.</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\left(\nabla^2 - \frac{1}{c^2}\frac{\partial^2}{\partial t^2}\right)\bigg\{\begin{matrix} E\\H\end{matrix}\bigg\} = 0.\end{split}\]</div>
+<p>magnetic permeability and <span class="math notranslate nohighlight">\(\epsilon\)</span> electrical permittivity.</p>
 <section id="maxwell-eigenvalue-problem">
-<span id="quick-maxwell-eigenvalue-problem"></span><h2><a class="toc-backref" href="#id3">Maxwell eigenvalue problem</a><a class="headerlink" href="#maxwell-eigenvalue-problem" title="Permalink to this heading"></a></h2>
+<span id="quick-maxwell-eigenvalue-problem"></span><h3><a class="toc-backref" href="#id4">Maxwell eigenvalue problem</a><a class="headerlink" href="#maxwell-eigenvalue-problem" title="Permalink to this heading"></a></h3>
+<p>The Maxwell Eigenvalue Problem (MEVP) is solved using SLANS cite{SLANS} to evaluate
+<span class="math notranslate nohighlight">\(e_\mathrm{pk}\)</span>, <span class="math notranslate nohighlight">\(b_\mathrm{pk}\)</span>, and <span class="math notranslate nohighlight">\(R/Q\)</span>. The MEVP is given as</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}\nabla \times \left({\mu}\, \nabla \times E(x)\right) - \lambda(x)\epsilon\,  E(x)= 0, &amp; &amp; \lambda = \frac{\omega^2}{c^2},~\mathbf{x} \in \mathbb{R}^7,\\\nabla \cdot E = 0 &amp; &amp; E \in \Omega,\\n \times E = 0 &amp; &amp; E \in \partial \Omega,\end{aligned}\end{align} \]</div>
+<p>where:math:<cite>mathbf{x}</cite> is a vector of the geometric variables describing the domain <span class="math notranslate nohighlight">\(\Omega\)</span> with boundary
+<span class="math notranslate nohighlight">\(\partial \Omega\)</span>, <span class="math notranslate nohighlight">\(\mathbf{E}\)</span> is the electric field, <span class="math notranslate nohighlight">\(\lambda\)</span> a vector of eigenvalues, <span class="math notranslate nohighlight">\(\mu\)</span></p>
 </section>
 <section id="wakefield-analysis">
-<span id="quick-wakefield-equations"></span><h2><a class="toc-backref" href="#id4">Wakefield analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h2>
+<span id="quick-wakefield-equations"></span><h3><a class="toc-backref" href="#id5">Wakefield analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
+<p>The longitudinal and transverse wake functions <span class="math notranslate nohighlight">\(w_\parallel\)</span> and <span class="math notranslate nohighlight">\(\mathbf{w}_\perp\)</span>, respectively,
+are evaluated using ABCI electromagnetic code cite{ABCI}. They are defined as</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}w_\parallel(\rho, s) &amp;= -\frac{c}{q} \int E_z|_{z=ct-s} \mathrm{d}t,\\\mathbf{w}_\perp(\rho, s) &amp;= \frac{c}{q} \int (\textbf{E}_\perp + c \hat z \times \textbf{B})|_{z=ct-s},\end{aligned}\end{align} \]</div>
+<p>where <span class="math notranslate nohighlight">\(s\)</span> is the distance between the leading and a trailing test particle with offset
+<span class="math notranslate nohighlight">\(\boldsymbol{\rho} = (x, y)\)</span> relative to the <span class="math notranslate nohighlight">\(z\)</span>-axis, and <span class="math notranslate nohighlight">\(z\)</span> is the direction of travel of the
+particles. The longitudinal ($Z_parallel$) and transverse impedances (<span class="math notranslate nohighlight">\(Z_\perp\)</span>) are evaluated as the
+Fourier transform of the wake functions thus:</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}Z_\parallel (\omega) &amp;= \frac{1}{c} \int_0^\infty w_\parallel(s) \mathrm{e}^{(i\omega s/c)},\\\textbf{Z}_\perp (\omega) &amp;= \frac{1}{c} \int_0^\infty \mathbf{w}_\perp(s) \mathrm{e}^{(i\omega s/c)}.\end{aligned}\end{align} \]</div>
+</section>
 </section>
 <section id="theory-of-multipacting">
-<span id="quick-theory-of-multipacting"></span><h2><a class="toc-backref" href="#id5">Theory of multipacting</a><a class="headerlink" href="#theory-of-multipacting" title="Permalink to this heading"></a></h2>
+<span id="quick-theory-of-multipacting"></span><h2><a class="toc-backref" href="#id6">Theory of multipacting</a><a class="headerlink" href="#theory-of-multipacting" title="Permalink to this heading"></a></h2>
 <p>Multipacting is a phenomenon in resonant frequency structures whereby charged
 particles are continuously discharged at an exponential rate from the
 conductor walls of the device. Multipacting occurs only at specific
@@ -179,10 +241,10 @@ electrons are released in different materials. Figure ref{fig: sey niobium}
 shows a typical SEY curve for Niobium.</p>
 </section>
 <section id="sensitivity-analysis-and-uncertainty-quantification">
-<span id="quick-sensitivity-analysis-and-uq"></span><h2><a class="toc-backref" href="#id6">Sensitivity analysis and uncertainty quantification</a><a class="headerlink" href="#sensitivity-analysis-and-uncertainty-quantification" title="Permalink to this heading"></a></h2>
+<span id="quick-sensitivity-analysis-and-uq"></span><h2><a class="toc-backref" href="#id7">Sensitivity analysis and uncertainty quantification</a><a class="headerlink" href="#sensitivity-analysis-and-uncertainty-quantification" title="Permalink to this heading"></a></h2>
 </section>
 <section id="elliptical-cavity-optimization">
-<span id="quick-cavity-optimization"></span><h2><a class="toc-backref" href="#id7">Elliptical Cavity optimization</a><a class="headerlink" href="#elliptical-cavity-optimization" title="Permalink to this heading"></a></h2>
+<span id="quick-cavity-optimization"></span><h2><a class="toc-backref" href="#id8">Elliptical Cavity optimization</a><a class="headerlink" href="#elliptical-cavity-optimization" title="Permalink to this heading"></a></h2>
 <p>Accelerator cavities consists of cells joined together at either the equator
 or the iris. Figure {} shows a typical elliptical accelerator cavity.
 The geometry could be divided into two groups: the mid-cells and the end-cells

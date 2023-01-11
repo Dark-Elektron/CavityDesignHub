@@ -2,37 +2,22 @@
 <ui version="4.0">
  <class>w_Tune</class>
  <widget class="QWidget" name="w_Tune">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>1678</width>
-    <height>1263</height>
-   </rect>
-  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-
-*{
-    font: 16px &quot;Segoe UI&quot;;
-}</string>
+   <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0">
+   <item row="0" column="0">
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
+     <property name="handleWidth">
+      <number>2</number>
+     </property>
      <widget class="QWidget" name="widget" native="true">
-      <property name="minimumSize">
-       <size>
-        <width>500</width>
-        <height>0</height>
-       </size>
-      </property>
       <property name="styleSheet">
        <string notr="true"/>
       </property>
@@ -59,14 +44,6 @@
               <bool>true</bool>
              </property>
              <widget class="QWidget" name="scrollAreaWidgetContents">
-              <property name="geometry">
-               <rect>
-                <x>0</x>
-                <y>-714</y>
-                <width>487</width>
-                <height>1839</height>
-               </rect>
-              </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
@@ -1851,8 +1828,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>557</width>
-                <height>1488</height>
+                <width>410</width>
+                <height>1240</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
@@ -2855,26 +2832,7 @@
         <layout class="QGridLayout" name="gl_PyqtGraph">
          <item row="0" column="0">
           <widget class="QWidget" name="widget_10" native="true">
-           <property name="minimumSize">
-            <size>
-             <width>100</width>
-             <height>0</height>
-            </size>
-           </property>
            <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="0">
-             <widget class="QLabel" name="l_Cavity_Image">
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="../qss/icons.qrc">:/imgs/images/mid_cell.png</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
             <item row="0" column="1">
              <widget class="QWidget" name="widget_5" native="true">
               <layout class="QGridLayout" name="gridLayout_9">
@@ -2909,6 +2867,25 @@
               </layout>
              </widget>
             </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="l_Cavity_Image">
+              <property name="maximumSize">
+               <size>
+                <width>500</width>
+                <height>500</height>
+               </size>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="pixmap">
+               <pixmap resource="../qss/icons.qrc">:/imgs/images/mid_cell.png</pixmap>
+              </property>
+              <property name="scaledContents">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
            </layout>
           </widget>
          </item>
@@ -2939,7 +2916,6 @@
  </customwidgets>
  <resources>
   <include location="../qss/icons.qrc"/>
-  <include location="C:/Users/sosoho/.designer/qss/icons.qrc"/>
  </resources>
  <connections>
   <connection>
@@ -2959,18 +2935,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>pb_Cell_Geometric_Parameters</sender>
+   <sender>pb_Tune_Multiple</sender>
    <signal>toggled(bool)</signal>
-   <receiver>w_Cell_Geometric_Parameters</receiver>
+   <receiver>w_Tune_Multiple</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>298</x>
-     <y>660</y>
+     <x>259</x>
+     <y>474</y>
     </hint>
     <hint type="destinationlabel">
-     <x>298</x>
-     <y>1122</y>
+     <x>259</x>
+     <y>561</y>
     </hint>
    </hints>
   </connection>
@@ -3023,6 +2999,22 @@
    </hints>
   </connection>
   <connection>
+   <sender>pb_Postprocess</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Postprocess</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>304</x>
+     <y>722</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>182</x>
+     <y>845</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
    <sender>pb_Inner_Cell</sender>
    <signal>toggled(bool)</signal>
    <receiver>w_Inner_Cell</receiver>
@@ -3039,34 +3031,18 @@
    </hints>
   </connection>
   <connection>
-   <sender>pb_Tune_Multiple</sender>
+   <sender>pb_Cell_Geometric_Parameters</sender>
    <signal>toggled(bool)</signal>
-   <receiver>w_Tune_Multiple</receiver>
+   <receiver>w_Cell_Geometric_Parameters</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>259</x>
-     <y>474</y>
+     <x>298</x>
+     <y>660</y>
     </hint>
     <hint type="destinationlabel">
-     <x>259</x>
-     <y>561</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pb_Postprocess</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>w_Postprocess</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>304</x>
-     <y>722</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>182</x>
-     <y>845</y>
+     <x>298</x>
+     <y>1122</y>
     </hint>
    </hints>
   </connection>

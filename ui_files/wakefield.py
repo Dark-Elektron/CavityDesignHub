@@ -15,10 +15,7 @@ class Ui_Wakefield(object):
     def setupUi(self, Wakefield):
         Wakefield.setObjectName("Wakefield")
         Wakefield.resize(1581, 1465)
-        Wakefield.setStyleSheet("\n"
-"*{\n"
-"    font: 16px \"Segoe UI\";\n"
-"}")
+        Wakefield.setStyleSheet("")
         self.gridLayout = QtWidgets.QGridLayout(Wakefield)
         self.gridLayout.setObjectName("gridLayout")
         self.widget = QtWidgets.QWidget(Wakefield)
@@ -41,7 +38,7 @@ class Ui_Wakefield(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -1151, 636, 2479))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 384, 2289))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_9 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)

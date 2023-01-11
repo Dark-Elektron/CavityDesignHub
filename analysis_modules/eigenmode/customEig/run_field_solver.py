@@ -27,7 +27,7 @@ eta0 = 376.7303134111465
 
 
 class Model:
-    def __init__(self, folder, name):
+    def __init__(self, folder, name, parent_dir=None):
         self.name = name
         self.Epk, self.Hpk, self.Eacc, self.Vacc, self.E_z_axis = None, None, None, None, None
         self.k_loss, self.epk, self.bpk = None, None, None
@@ -45,18 +45,11 @@ class Model:
         self.mesh = None
         self.fieldparam = None
         self.param = None
-        self.folder = fr"{folder}/{name}"
+        self.folder = fr"{folder}\{name}"
         self.geodata = None
+        self.parent_dir = parent_dir
 
     def create_inputs(self):
-        # check if folder exists
-        if not os.path.exists(self.folder):
-            try:
-                os.mkdir(self.folder)
-            except FileNotFoundError:
-                ic("There was a problem creating the directory for the simulation files. Please check folder.")
-                exit()
-
         # remove old files
         files_list = ["geodata.n", "initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat",
                       "counter_initials.mat",
@@ -125,7 +118,7 @@ class Model:
 
     def define_geometry(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
                         beampipe='none', plot=False):
-
+        ic(mid_cell, end_cell_left, end_cell_right)
         self.n_cells = n_cells
         self.mid_cell = mid_cell
 
@@ -146,6 +139,14 @@ class Model:
             self.end_cell_right = end_cell_right
 
         self.beampipe = beampipe
+
+        # check if folder exists
+        if not os.path.exists(self.folder):
+            try:
+                os.mkdir(self.folder)
+            except FileNotFoundError:
+                ic("There was a problem creating the directory for the simulation files. Please check folder.")
+                exit()
 
         file_path = fr"{self.folder}\geodata.n"
         write_cavity_for_custom_eig_solver(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
@@ -213,9 +214,14 @@ class Model:
         spio.savemat(f"{self.folder}/model.mat", model, format='4')
 
         # start the mesh generator
-        subprocess.call(fr"..\..\..\exe\own_exe\2dgen_bin.exe", cwd=self.folder,
-                        stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        # subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder)
+        if self.parent_dir is not None:
+            subprocess.call(fr"{self.parent_dir}\exe\own_exe\2dgen_bin.exe", cwd=self.folder,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # subprocess.call(fr"{self.parent_dir}\exe\own_exe\2dgen_bin.exe", cwd=self.folder)
+        else:
+            subprocess.call(fr"..\..\..\exe\own_exe\2dgen_bin.exe", cwd=self.folder,
+                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder)
 
         self.mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
         ic("Meshing completed.")
@@ -351,11 +357,12 @@ class Model:
     def eigen(self, n_modes, freq, req_mode_num, search):
         if n_modes is None:
             n_modes = self.n_cells + 1
+
         if req_mode_num:
             if req_mode_num > n_modes:
-                req_mode_num = self.n_cells - 1
-        else:
-            req_mode_num = self.n_cells - 1
+                req_mode_num = self.n_cells
+        # else:
+        #     req_mode_num = self.n_cells - 1
 
         # maara = 10  Means number of modes in original code
         offset = {"offset": 0}
@@ -363,7 +370,11 @@ class Model:
 
         # !eigenC_bin
         cwd = fr'{self.folder}'
-        eigenCpath = fr'..\..\..\exe\own_exe\eigenC_bin.exe'
+        if self.parent_dir is not None:
+            eigenCpath = fr'{self.parent_dir}\exe\own_exe\eigenC_bin.exe'
+        else:
+            eigenCpath = fr'..\..\..\exe\own_exe\eigenC_bin.exe'
+
         if os.path.exists(eigenCpath):
             subprocess.call(eigenCpath, cwd=cwd,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -400,18 +411,30 @@ class Model:
 
         if search:
             k2 = k
-            self.eigen_frequencies = np.sort(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
-            # find eigenvalue with min error.
-            val = np.min(abs(k0 - k2))
-            ind = np.argmin(abs(k0 - k2))
-            k = k2[ind]
-            u = u2[:, ind]
-            # new frequency
-            eigen_freq = k / (2 * np.pi * np.sqrt(mu0 * eps0))
+            eigen_frequencies = np.array(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
+            # sort array
+            sort_ind = eigen_frequencies.argsort()
+            self.eigen_frequencies = eigen_frequencies[sort_ind]
+            k2 = k2[sort_ind]
+            u2 = u2[:, sort_ind]
+
+            if req_mode_num:
+                ind = int(req_mode_num) - 1
+                eigen_freq = self.eigen_frequencies[ind]
+                k = k2[ind]
+                u = u2[:, ind]
+            else:
+                # find eigenvalue with min error.
+                val = np.min(abs(k0 - k2))
+                ind = np.argmin(abs(k0 - k2))
+                k = k2[ind]
+                u = u2[:, ind]
+                # new frequency
+                eigen_freq = k / (2 * np.pi * np.sqrt(mu0 * eps0))
         else:
             self.eigen_frequencies = np.sort(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
-            eigen_freq = self.eigen_frequencies[req_mode_num]
-            u = u2[:, req_mode_num]
+            eigen_freq = self.eigen_frequencies[int(req_mode_num)-1]
+            u = u2[:, int(req_mode_num)-1]
 
         # param = pd.read_csv(fr"{self.folder}\param", sep='\s+', header=None).to_numpy().T[0]
         # self.param[0] = eigen_freq
@@ -499,7 +522,10 @@ class Model:
         shutil.copyfile(fr'{self.folder}\kama0.mat', fr'{self.folder}\kama.mat')
 
         cwd = fr'{self.folder}'
-        multipacPath = fr'..\..\..\exe\own_exe\Multipac.exe'
+        if self.parent_dir is not None:
+            multipacPath = fr'{self.parent_dir}\exe\own_exe\Multipac.exe'
+        else:
+            multipacPath = fr'..\..\..\exe\own_exe\Multipac.exe'
         if os.path.exists(multipacPath):
             subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -977,9 +1003,9 @@ class Model:
 
     def save_qois(self):
         # save json file
-        shape = {'IC': update_alpha(self.mid_cell),
-                 'OC': update_alpha(self.end_cell_left),
-                 'OC_R': update_alpha(self.end_cell_right)}
+        shape = {'IC': update_alpha(self.mid_cell*1e3),
+                 'OC': update_alpha(self.end_cell_left*1e3),
+                 'OC_R': update_alpha(self.end_cell_right*1e3)}
 
         with open(fr"{self.folder}\geometric_parameters.json", 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
@@ -1339,6 +1365,13 @@ class Model:
             kama_n = {'index': index, 'u': u, 'k': k}
             spio.savemat(fr'{self.folder}\kama_n.mat', kama_n, format='4')
 
+    def run(self, n_cells, mid_cell, end_cell_left, end_cell_right=None, beampipe=None,
+            req_mode_num=None, plot=False):
+        self.define_geometry(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=beampipe, plot=plot)
+        self.generate_mesh()
+        self.run_field_solver(req_mode_num=req_mode_num, show_plots=True)
+        ic("Analysis ended.")
+
     @staticmethod
     def inttri(p):
         # function [X,W]=inttri(p)
@@ -1648,7 +1681,7 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\CUSTOM_EIG'
     mod = Model(folder, 'TESLA')
-    n_cells = 1
+    n_cells = 2
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
                          71.98698698698699, 93.5, 171.1929]) * 1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
@@ -1659,6 +1692,4 @@ if __name__ == '__main__':
     midDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
     endDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
 
-    mod.define_geometry(n_cells, midDegen, endDegen, beampipe='left', plot=True)
-    mod.generate_mesh()
-    mod.run_field_solver(show_plots=True)
+    mod.run(n_cells, midDegen, midDegen, beampipe='none', plot=True)

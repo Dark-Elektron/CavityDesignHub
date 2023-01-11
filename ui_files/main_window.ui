@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1661</width>
-    <height>1186</height>
+    <height>1122</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,10 +18,7 @@
     <normaloff>:/imgs/images/logo.png</normaloff>:/imgs/images/logo.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">*{
-    font: 16px &quot;Segoe UI&quot;;
-	/*background-color: rgb(255, 255, 255);*/
-}</string>
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
@@ -259,7 +256,28 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
+          <property name="handleWidth">
+           <number>2</number>
+          </property>
           <widget class="QWidget" name="widget_7" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>200</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>200</width>
+             <height>0</height>
+            </size>
+           </property>
            <layout class="QGridLayout" name="gridLayout_16">
             <item row="0" column="0">
              <layout class="QGridLayout" name="gl_File_System_View"/>
@@ -267,6 +285,12 @@
            </layout>
           </widget>
           <widget class="QWidget" name="widget_8" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
              <widget class="QWidget" name="w_Pane" native="true">
@@ -557,6 +581,9 @@
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
+                 <property name="handleWidth">
+                  <number>2</number>
+                 </property>
                  <widget class="QWidget" name="w_Home" native="true">
                   <property name="minimumSize">
                    <size>
@@ -608,8 +635,8 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>980</width>
-                           <height>1003</height>
+                           <width>878</width>
+                           <height>963</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -639,7 +666,6 @@
                             <property name="font">
                              <font>
                               <family>Segoe UI</family>
-                              <pointsize>-1</pointsize>
                               <weight>50</weight>
                               <italic>false</italic>
                               <bold>false</bold>
@@ -677,14 +703,10 @@ A N A L Y S I S</string>
                             <property name="font">
                              <font>
                               <family>Segoe UI</family>
-                              <pointsize>-1</pointsize>
                               <weight>50</weight>
                               <italic>false</italic>
                               <bold>false</bold>
                              </font>
-                            </property>
-                            <property name="styleSheet">
-                             <string notr="true"/>
                             </property>
                             <property name="text">
                              <string>T U N E</string>
@@ -714,7 +736,6 @@ A N A L Y S I S</string>
                             <property name="font">
                              <font>
                               <family>Segoe UI</family>
-                              <pointsize>-1</pointsize>
                               <weight>50</weight>
                               <italic>false</italic>
                               <bold>false</bold>
@@ -752,7 +773,6 @@ A N A L Y S I S</string>
                             <property name="font">
                              <font>
                               <family>Segoe UI</family>
-                              <pointsize>-1</pointsize>
                               <weight>50</weight>
                               <italic>false</italic>
                               <bold>false</bold>
@@ -789,7 +809,6 @@ A N A L Y S I S</string>
                             <property name="font">
                              <font>
                               <family>Segoe UI</family>
-                              <pointsize>-1</pointsize>
                               <weight>50</weight>
                               <italic>false</italic>
                               <bold>false</bold>
@@ -852,7 +871,6 @@ P R O C E S S</string>
                             <property name="font">
                              <font>
                               <family>Segoe UI</family>
-                              <pointsize>-1</pointsize>
                               <weight>50</weight>
                               <italic>false</italic>
                               <bold>false</bold>
@@ -889,6 +907,12 @@ P R O C E S S</string>
                   </layout>
                  </widget>
                  <widget class="QWidget" name="w_Log" native="true">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
                   <layout class="QGridLayout" name="gridLayout_2">
                    <property name="leftMargin">
                     <number>0</number>
@@ -942,8 +966,8 @@ P R O C E S S</string>
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>397</width>
-                        <height>919</height>
+                        <width>399</width>
+                        <height>922</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_3">
@@ -1097,7 +1121,7 @@ P R O C E S S</string>
      <x>0</x>
      <y>0</y>
      <width>1661</width>
-     <height>27</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

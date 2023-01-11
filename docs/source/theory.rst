@@ -28,13 +28,6 @@ facturing of semiconductors. Particle accelerators are comprised of several comp
 which include the particle or beam source, a radiofrequency (RF) source, electromagnets,
 waveguides, resonant cavities, etc.
 
-.. _ellipse tangent:
-
-.. figure:: ../images/ellipse_tangent.png
-   :alt: accelerator cavity
-   :align: center
-   :width: 200px
-
 Resonant cavities are particularly responsible for particle acceleration. Over the last
 decade, there has been a great deal of advancement in the design and fabrication of
 resonant cavities. Cavity shapes have evolved from being totally cylindrical in shape,
@@ -42,22 +35,122 @@ the so-called pillbox cavities, to the widely used (standard) elliptical cavitie
 Cavity geometric parameters are selected based on certain desired properties. The so-
 called cavity figures of merit are used to quantify these desired properties.
 
+Figures of merit in accelerator cavity design
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+There are several figures of merits that quantify the efficiency and effectiveness of accelerating cavities.
+These include the quality factor, :math:`Q`, the shunt impedance, :math:`R_\mathrm{sh}`, dissipated power,
+:math:`P_\mathrm{c}`, stored energy, :math:`U`, etc.
+
+The quality factor quantifies the ratio of the amount of energy stored in a cavity to the power dissipated at the
+cavity walls. Mathematically,
+
+.. math::
+   Q = \omega \frac{U}{P_\mathrm{ds}}.
+
+The shunt impedance is another important quantity used to characterise the losses in a cavity.
+It is given mathematically as:
+
+.. math::
+   R_\mathrm{sh} = \frac{V_\mathrm{acc}^2}{P_\mathrm{ds}}
+
+where :math:`U` is the stored energy given as:
+
+.. math::
+   U = \frac{1}{2} \epsilon_0 \int_V |E|^2 \mathrm{d}V = \frac{1}{2} \mu_0 \int_V |H|^2 \mathrm{d}V.
+
+and :math:`P_\mathrm{c}` is the power loss given as:
+
+.. math::
+   P_\mathrm{ds} = \frac{1}{2} R_\mathrm{sh} \int_S |H|^2 \mathrm{d}s.
+
+The accelerating voltage is given as
+
+.. math::
+   V_\mathrm{acc} = \int_0^L E_z (\rho, \phi) e^{j\omega t}\mathrm{d}z.
+
+where L is the length of the cavity or beam pipe.
+
+
 .. _QUICK:Electromagnetic field theory:
 
 Electromagnetic field theory
 *********************
 
+Maxwell equations
+Electromagnetic interactions are represented mathematically with the Maxwell equations.
+
+.. math::
+
+     \nabla D = \rho,
+
+     \nabla B = 0,
+
+     \nabla \times H = J + \frac{\partial D}{\partial t},
+
+     \nabla \times E = - \frac{\partial B}{\partial t}.
+
+where E is the electric field intensity, and H is the magnetic field intensity, D is the electric flux density,
+B is the magnetic flux density. They are related by material properties given as follows:
+
+.. math::
+
+   D = \epsilon E,
+
+   B = \mu H.
+
+Combining the Maxwell equations and using appropriate vector identities result in the wave equations for electric
+and magnetic fields as follows.
+
+.. math::
+
+    \left(\nabla^2 - \frac{1}{c^2}\frac{\partial^2}{\partial t^2}\right)\bigg\{\begin{matrix} E\\H\end{matrix}\bigg\} = 0.
+magnetic permeability and :math:`\epsilon` electrical permittivity.
+
 
 .. _QUICK:Maxwell eigenvalue problem:
 
 Maxwell eigenvalue problem
-*********************
+^^^^^^^^^^^^^^^^^^^^
+
+The Maxwell Eigenvalue Problem (MEVP) is solved using SLANS \cite{SLANS} to evaluate
+:math:`e_\mathrm{pk}`, :math:`b_\mathrm{pk}`, and :math:`R/Q`. The MEVP is given as
+
+.. math::
+   \nabla \times \left({\mu}\, \nabla \times E(x)\right) - \lambda(x)\epsilon\,  E(x)= 0, & & \lambda = \frac{\omega^2}{c^2},~\mathbf{x} \in \mathbb{R}^7,
+
+   \nabla \cdot E = 0 & & E \in \Omega,
+
+   n \times E = 0 & & E \in \partial \Omega,
+
+
+where:math:`\mathbf{x}` is a vector of the geometric variables describing the domain :math:`\Omega` with boundary
+:math:`\partial \Omega`, :math:`\mathbf{E}` is the electric field, :math:`\lambda` a vector of eigenvalues, :math:`\mu`
 
 
 .. _QUICK:Wakefield equations:
 
 Wakefield analysis
-*********************
+^^^^^^^^^^^^^^^^
+
+The longitudinal and transverse wake functions :math:`w_\parallel` and :math:`\mathbf{w}_\perp`, respectively,
+are evaluated using ABCI electromagnetic code \cite{ABCI}. They are defined as
+
+.. math::
+
+   w_\parallel(\rho, s) &= -\frac{c}{q} \int E_z|_{z=ct-s} \mathrm{d}t,
+
+   \mathbf{w}_\perp(\rho, s) &= \frac{c}{q} \int (\textbf{E}_\perp + c \hat z \times \textbf{B})|_{z=ct-s},
+
+where :math:`s` is the distance between the leading and a trailing test particle with offset
+:math:`\boldsymbol{\rho} = (x, y)` relative to the :math:`z`-axis, and :math:`z` is the direction of travel of the
+particles. The longitudinal ($Z_\parallel$) and transverse impedances (:math:`Z_\perp`) are evaluated as the
+Fourier transform of the wake functions thus:
+
+.. math::
+   Z_\parallel (\omega) &= \frac{1}{c} \int_0^\infty w_\parallel(s) \mathrm{e}^{(i\omega s/c)},
+
+   \textbf{Z}_\perp (\omega) &= \frac{1}{c} \int_0^\infty \mathbf{w}_\perp(s) \mathrm{e}^{(i\omega s/c)}.
 
 
 
