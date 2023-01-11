@@ -126,16 +126,27 @@ be optimised for speed and accuracy.</p>
 velocities to serve for various purposes. This is achieved using electromagnetic fields.
 They are specially used for fundamental science research in areas cutting across physics,
 medicine, material science, and so on. Typical applications today include high energy
-physics research, biomedical research, radiotherapy, and ion implantation for the manu-
-facturing of semiconductors. Particle accelerators are comprised of several components
-which include the particle or beam source, a radiofrequency (RF) source, electromagnets,
-waveguides, resonant cavities, etc.</p>
+physics research, biomedical research, radiotherapy, and ion implantation for the manufacturing of semiconductors.
+Particle accelerators are comprised of several components which include the particle or beam source,
+a radiofrequency (RF) source, electromagnets, waveguides, resonant cavities, etc.</p>
+<figure class="align-center">
+<img alt="9-cell accelerating cavity" src="_images/cavity.jpg" />
+</figure>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
 <p>Resonant cavities are particularly responsible for particle acceleration. Over the last
 decade, there has been a great deal of advancement in the design and fabrication of
 resonant cavities. Cavity shapes have evolved from being totally cylindrical in shape,
 the so-called pillbox cavities, to the widely used (standard) elliptical cavities nowadays.
 Cavity geometric parameters are selected based on certain desired properties. The so-
 called cavity figures of merit are used to quantify these desired properties.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/tcZAqZkb_7w"
+title="YouTube video player" frameborder="0" allow="accelerometer;
+autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen>
+</iframe><div class="line-block">
+<div class="line"><br /></div>
+</div>
 <section id="figures-of-merit-in-accelerator-cavity-design">
 <h3><a class="toc-backref" href="#id2">Figures of merit in accelerator cavity design</a><a class="headerlink" href="#figures-of-merit-in-accelerator-cavity-design" title="Permalink to this heading"></a></h3>
 <p>There are several figures of merits that quantify the efficiency and effectiveness of accelerating cavities.
@@ -193,7 +204,7 @@ are evaluated using ABCI electromagnetic code cite{ABCI}. They are defined as</p
 \[ \begin{align}\begin{aligned}w_\parallel(\rho, s) &amp;= -\frac{c}{q} \int E_z|_{z=ct-s} \mathrm{d}t,\\\mathbf{w}_\perp(\rho, s) &amp;= \frac{c}{q} \int (\textbf{E}_\perp + c \hat z \times \textbf{B})|_{z=ct-s},\end{aligned}\end{align} \]</div>
 <p>where <span class="math notranslate nohighlight">\(s\)</span> is the distance between the leading and a trailing test particle with offset
 <span class="math notranslate nohighlight">\(\boldsymbol{\rho} = (x, y)\)</span> relative to the <span class="math notranslate nohighlight">\(z\)</span>-axis, and <span class="math notranslate nohighlight">\(z\)</span> is the direction of travel of the
-particles. The longitudinal ($Z_parallel$) and transverse impedances (<span class="math notranslate nohighlight">\(Z_\perp\)</span>) are evaluated as the
+particles. The longitudinal (<span class="math notranslate nohighlight">\(Z_\parallel\)</span>) and transverse impedances (<span class="math notranslate nohighlight">\(Z_\perp\)</span>) are evaluated as the
 Fourier transform of the wake functions thus:</p>
 <div class="math notranslate nohighlight">
 \[ \begin{align}\begin{aligned}Z_\parallel (\omega) &amp;= \frac{1}{c} \int_0^\infty w_\parallel(s) \mathrm{e}^{(i\omega s/c)},\\\textbf{Z}_\perp (\omega) &amp;= \frac{1}{c} \int_0^\infty \mathbf{w}_\perp(s) \mathrm{e}^{(i\omega s/c)}.\end{aligned}\end{align} \]</div>
@@ -201,14 +212,11 @@ Fourier transform of the wake functions thus:</p>
 </section>
 <section id="theory-of-multipacting">
 <span id="quick-theory-of-multipacting"></span><h2><a class="toc-backref" href="#id6">Theory of multipacting</a><a class="headerlink" href="#theory-of-multipacting" title="Permalink to this heading"></a></h2>
-<p>Multipacting is a phenomenon in resonant frequency structures whereby charged
-particles are continuously discharged at an exponential rate from the
-conductor walls of the device. Multipacting occurs only at specific
-conditions dependent on the alternating field and the wall’s surface
-properties. More specifically, the emission properties of the wall coupled
-with the electromagnetic field strength and profile are determinants of
-multipacting. In accelerating cavities, multipacting occurs mostly at the
-equator.</p>
+<p>Multipacting is a phenomenon in resonant frequency structures whereby charged particles are continuously discharged
+at an exponential rate from the conductor walls of the device. Multipacting occurs only at specific conditions
+dependent on the alternating field and the wall’s surface properties. More specifically, the emission properties
+of the wall coupled with the electromagnetic field strength and profile are determinants of
+multipacting. In accelerating cavities, multipacting occurs mostly at the equator.</p>
 <p>For multipacting to occur, two conditions must be satisfied. The first is
 that the an electron emitted at the cavity wall and driven by the cavity
 electromagnetic field returns to the same point after an integer number of
@@ -242,6 +250,53 @@ shows a typical SEY curve for Niobium.</p>
 </section>
 <section id="sensitivity-analysis-and-uncertainty-quantification">
 <span id="quick-sensitivity-analysis-and-uq"></span><h2><a class="toc-backref" href="#id7">Sensitivity analysis and uncertainty quantification</a><a class="headerlink" href="#sensitivity-analysis-and-uncertainty-quantification" title="Permalink to this heading"></a></h2>
+<p>Sensitivity analysis is a technique that quantifies the change in a model output induced by an input random variable.
+It can be considered either on a local or a global scale. For instance, variance-based sensitivity analysis is a form
+of global sensitivity that uses a ratio of variances to measure the influence of the input parameter on the output.
+One such method is the Sobol’ decomposition cite{IEEEhowto:Sobol}, and the metric values are the Sobol’ indices.
+They are calculated using</p>
+<div class="math notranslate nohighlight">
+\[S_j = \frac{\mathbb{V}_j [\mathbb{E}_{\sim j}[Y|\textbf{X}_j]]}{\mathbb{V}[Y]} \in [0, 1]\]</div>
+<div class="math notranslate nohighlight">
+\[ST_{j} = \frac{\mathbb{E}_{\sim j}[\mathbb{V}_{j}[Y|\mathbf{X}_{\sim j}]]}{\mathbb{V}[Y]}\]</div>
+<p>where <span class="math notranslate nohighlight">\(S_j, ST_j\)</span> are the main and total Sobol’ indices, respectively, <span class="math notranslate nohighlight">\(\textbf{X}\)</span> is a random vector of
+independent uniform random variables, and $Y$ is a model output. The first order or main Sobol’ indices <span class="math notranslate nohighlight">\(S_j\)</span>
+determine the sensitivity of the output due to the variation of only one parameter. On the contrary, the total Sobol’
+indices quantify the total effect of an input parameter on the output. They are usually estimated with the (quasi)
+Monte Carlo (MC) method using~cite{IEEEhowto:Damar Wicaksono}</p>
+<div class="math notranslate nohighlight">
+\[S_j = \frac{\frac{1}{N} \sum_{n=1}^N Y(B)_n \cdot Y(A_B^j)_n - \frac{1}{N} \sum f(A)_n \cdot f(B)_n}{\frac{1}{N} \sum f(A)_n \cdot f(B)_n}\]</div>
+<div class="math notranslate nohighlight">
+\[ST_j = \frac{\frac{1}{N} \sum f^2(A)_n \cdot f(A)_n f(AB^j)_n}{\frac{1}{N} \sum f(A)_n \cdot f(B)_n}\]</div>
+<p>where <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> are matrices of independent <span class="math notranslate nohighlight">\(N\times D\)</span> samples for <span class="math notranslate nohighlight">\(N\)</span> number of samples
+and <span class="math notranslate nohighlight">\(D\)</span> number of input parameters, and <span class="math notranslate nohighlight">\(A_B^j\)</span> are matrices built by substituting
+the <span class="math notranslate nohighlight">\(j^{\mathrm{th}}\)</span> column of <span class="math notranslate nohighlight">\(A\)</span> with that of <span class="math notranslate nohighlight">\(B\)</span>. The Latin hypercube sequence (LHS) is used to
+the build matrices <span class="math notranslate nohighlight">\(A\)</span> and <span class="math notranslate nohighlight">\(B\)</span> here because it is a low-discrepancy sequence. This property of the LHS
+improves the efficiency of the estimators.</p>
+<p>section{Surrogate modelling}
+MC simulations involve a large number of simulations. Typically, the more simulations, the more accurate the results.
+To reduce the computational cost required to calculate the Sobol’ indices, surrogate models are used to approximate
+the model output. A pseudo-spectral approach is taken using polynomial chaos expansion (PCE) given by~cite{IEEEhowto:Xiu07}</p>
+<div class="math notranslate nohighlight">
+\[Y = f(\textbf{X}) = \sum_{\boldsymbol{\alpha} \in \mathbb{N}^M} y_{\boldsymbol{\alpha}} \Psi_{\boldsymbol{\alpha}}(\textbf{X})\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Psi_\alpha(\textbf{X})\)</span> represents certain basis functions, <span class="math notranslate nohighlight">\(y_{\boldsymbol{\alpha}}\)</span> are the
+expansion coefficients to be computed and <span class="math notranslate nohighlight">\(\boldsymbol{\alpha}\)</span> represents multi-indices~cite{IEEEhowto:B. Sudret}.
+In this work, the geometric parameters are considered to be independent and uniformly distributed.
+The corresponding orthogonal set of polynomials for this distribution is the Legendre polynomials defined by</p>
+<div class="math notranslate nohighlight">
+\[P_0(x) = 1;~ P_1(x) = x;\]</div>
+<div class="math notranslate nohighlight">
+\[(n+1)P_{n+1}(x) = (2n+1)xP_n(x) - nP_{n-1}(x)\]</div>
+<p>for a univariate polynomial. The multivariate polynomial is given as</p>
+<div class="math notranslate nohighlight">
+\[\Psi_{\boldsymbol{\alpha}}(\mathbf{X}) := \prod_{i=1}^N P_{\alpha_i}^{(i)}(X_i)\]</div>
+<p>Specifically, according to cite{IEEEhowto:B. Sudret}, to build the PCE, it is sufficient to sample</p>
+<div class="math notranslate nohighlight">
+\[(N-1)\frac{(N+p)!}{N! p!}\]</div>
+<p>points, where <span class="math notranslate nohighlight">\(N\)</span> and <span class="math notranslate nohighlight">\(p\)</span> are the dimension and degree of the polynomial, respectively.
+This implies 1260 simulation samples of the geometric model for <span class="math notranslate nohighlight">\(N=13\)</span> and <span class="math notranslate nohighlight">\(p=2\)</span>.</p>
+<p>The knowledge of Sobol’s indices significantly speeds up the hook-type coupler’s physically based and mathematically
+oriented optimization process.</p>
 </section>
 <section id="elliptical-cavity-optimization">
 <span id="quick-cavity-optimization"></span><h2><a class="toc-backref" href="#id8">Elliptical Cavity optimization</a><a class="headerlink" href="#elliptical-cavity-optimization" title="Permalink to this heading"></a></h2>
@@ -253,6 +308,8 @@ groups independently than optimising the entire cavity geometry. Figure {} shows
 a typical parametrisation of an accelerator cavity. It is important to note that
 several designers may parametrise the cavity in different ways ref{} and also
 use different notations.</p>
+<p>bibitem{ImageRef} Picture of a nine-cell cavity reprinted from <a class="reference external" href="http://www.zanon.com/images/gallery">http://www.zanon.com/images/gallery</a>
+/physics5.jpg, accessed 22/02/2020.</p>
 </section>
 </section>
 

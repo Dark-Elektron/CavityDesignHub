@@ -1,17 +1,11 @@
-import ast
-import os
-import re
 import shutil
 import subprocess
-import sys
 from sys import exit
 from matplotlib import colors
 from scipy.signal import find_peaks
-
 from utils.shared_functions import *
 import matplotlib.pyplot as plt
 import numpy as np
-import scipy.integrate
 import scipy.sparse as sps
 import scipy.sparse.linalg as spsl
 import scipy.io as spio
@@ -50,6 +44,13 @@ class Model:
         self.parent_dir = parent_dir
 
     def create_inputs(self):
+        """
+        Create required inputs
+
+        Returns
+        -------
+
+        """
         # remove old files
         files_list = ["geodata.n", "initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat",
                       "counter_initials.mat",
@@ -118,6 +119,28 @@ class Model:
 
     def define_geometry(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
                         beampipe='none', plot=False):
+        """
+        Define geometry
+
+        Parameters
+        ----------
+        n_cells: int
+            Number of cavity cells
+        mid_cell: array like
+            Mid cell cell geometric parameters
+        end_cell_left: array like
+            Left end cell cell geometric parameters
+        end_cell_right: array like
+            Right end cell cell geometric parameters
+        beampipe: {"none", "both", "left", "right"}
+            Which sides to include beampipes
+        plot: bool
+            Show geometry after definition or not
+
+        Returns
+        -------
+
+        """
         ic(mid_cell, end_cell_left, end_cell_right)
         self.n_cells = n_cells
         self.mid_cell = mid_cell
@@ -156,6 +179,22 @@ class Model:
         self.create_inputs()
 
     def generate_mesh(self, gridcons=0.005, epsr=1, plot=False):
+        """
+        Generate mesh
+
+        Parameters
+        ----------
+        gridcons: float
+            Maximum element width
+        epsr:
+            Relative permittivity
+        plot:
+            Show mesh after generation or not
+
+        Returns
+        -------
+
+        """
 
         # Then the edges, the third column secifies the type of an edge as follows:
         #   1 : nxE = 0 on boundary
@@ -229,6 +268,13 @@ class Model:
             self.plot_mesh()
 
     def plot_mesh(self):
+        """
+        Plot generated mesh
+
+        Returns
+        -------
+
+        """
         fig, ax = plt.subplots()
         if not os.path.exists(fr"{self.folder}\mesh.mat"):
             ic(['The mesh does not exists. There might have been an error in generating the mesh.'])
@@ -352,9 +398,27 @@ class Model:
 
         if show_plots:
             ic("Plotting fields")
-            self.plot_FEM_fields(0)
+            self.plot_FEM_fields('contour')
 
     def eigen(self, n_modes, freq, req_mode_num, search):
+        """
+        Perform eigenmode simulation
+
+        Parameters
+        ----------
+        n_modes: int
+            Number of modes
+        freq: float
+            Frequency to find eigenvalues around
+        req_mode_num: int
+            Required mode number
+        search: null
+            Redundant for now
+
+        Returns
+        -------
+
+        """
         if n_modes is None:
             n_modes = self.n_cells + 1
 
@@ -457,6 +521,13 @@ class Model:
         return eigen_freq
 
     def calculate_fields(self):
+        """
+        Calculate the fields from the eigenvectors
+
+        Returns
+        -------
+
+        """
         ic('\t\tComputing the fields.')
         if self.geodata is None:
             ic("Geometry file geodata.n does not exist.")
@@ -551,26 +622,28 @@ class Model:
                     ok2 = 1
 
         if ok2 == 0:
-            if ptype == 0:
+            if ptype == 'contour':
                 ic('Plotting the fields. A pcolor plot.')
-            elif ptype == 1:
+            elif ptype == 'arrow':
                 ic('Plotting the fields. An arrow plot.')
 
             # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
             self.plot_cavity_fields(ptype)
 
     def plot_cavity_fields(self, ptype):
+        """
+        Plots the computed fields on the input geometry
+
+        Parameters
+        ----------
+        ptype: {'contour', 'arrow'}
+            Plot type
+
+        Returns
+        -------
+
+        """
         fig, axs = plt.subplots(2, 1)
-        # ----------------------------------------------------------------------
-        # Plots the fields computed by the field solver. For a cavity.
-        #
-        # INPUT  ptype : 0 - pcolor plots
-        #            1 - arrow plots
-        #  gridcons : grid constant, [mm]
-        # ----------------------------------------------------------------------
-        # CALLS TO : arrow.m, error_message.m, clear_window.m
-        # 17/04/00 : Pasi Ylä-Oijala - Rolf Nevanlinna Institute
-        # ----------------------------------------------------------------------
 
         # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
         n = len(self.geodata[:, 0])
@@ -591,7 +664,7 @@ class Model:
         r = self.fields['r']
 
         # plot the fields
-        if ptype == 0:  # a pcolor plot
+        if ptype == 'contour':  # a pcolor plot
             # ic(I2.shape, I1.shape, Er.shape)
             Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
             Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
@@ -987,9 +1060,42 @@ class Model:
         return mu0 * Hpk * 1e3 / (Eacc * 1e-6)
 
     def calculate_loss_factor(self, R_Q):
+        """
+        Calculates fundamental mode loss factor
+
+        .. math::
+          k_{\parallel, n}  = \\frac{|V_{\parallel, n}(0, 0)|^2}{4 U_n} = \\frac{\omega_n}{4} \\frac{R}{Q}_n
+
+        Parameters
+        ----------
+        R_Q: float
+            R/Q of cavity geometry
+
+        Returns
+        -------
+        k_loss: float
+            Mode loss factor
+        """
         return (2 * np.pi * self.eig_freq) / 4 * R_Q * 1e-12  # [V/pC]
 
     def calculate_volume(self, EE, zz, rr):
+        """
+        Calculates the volume of the volume of revolution of the cavity profile
+
+        Parameters
+        ----------
+        EE: array like
+            Electric field array
+        zz: array like
+            z coordinates on grid
+        rr: array like
+            r coordinates on grid
+
+        Returns
+        -------
+        V: float
+            Volume of revolution of cavity profile
+        """
 
         z = zz[0, :]
         r = rr[:, 0]
@@ -1002,7 +1108,14 @@ class Model:
         return V
 
     def save_qois(self):
-        # save json file
+        """
+        Save the quantities of interest
+
+        Returns
+        -------
+
+        """
+
         shape = {'IC': update_alpha(self.mid_cell*1e3),
                  'OC': update_alpha(self.end_cell_left*1e3),
                  'OC_R': update_alpha(self.end_cell_right*1e3)}
@@ -1053,6 +1166,18 @@ class Model:
             json.dump(d, f, indent=4, separators=(',', ': '))
 
     def save_fields(self, wall, job):
+        """
+        Save mode fields
+
+        Parameters
+        ----------
+        wall
+        job
+
+        Returns
+        -------
+
+        """
         fieldfile1 = pd.read_csv(fr"{self.folder}\fieldfile1.txt", sep='\s+',
                                  header=None).to_numpy()
         file = fieldfile1
@@ -1374,7 +1499,7 @@ class Model:
 
     @staticmethod
     def inttri(p):
-        # function [X,W]=inttri(p)
+        # function [X,W] = inttri(p)
         #
         # The program gives the sample points X as a (2,n)-matrix and
         # the weights W as an (n,1)-matrix for an integration over a

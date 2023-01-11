@@ -13,8 +13,6 @@ Welcome to CavityDesignHub's documentation!
 Welcome to the cavity design hub guide.
 **Who is this for??**
 
-It's so funy that I was trying to copy something that someone said
-
 If you want to learn, :ref:`install CavityHub first <settingup>` and
 then explore these pages.
 
