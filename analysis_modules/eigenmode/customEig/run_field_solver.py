@@ -425,8 +425,8 @@ class Model:
         if req_mode_num:
             if req_mode_num > n_modes:
                 req_mode_num = self.n_cells
-        # else:
-        #     req_mode_num = self.n_cells - 1
+        else:
+            req_mode_num = self.n_cells
 
         # maara = 10  Means number of modes in original code
         offset = {"offset": 0}
@@ -472,7 +472,6 @@ class Model:
         u2 = u2.real
         d2 = np.absolute(d2)
         k = np.sqrt(d2)
-
         if search:
             k2 = k
             eigen_frequencies = np.array(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
@@ -488,6 +487,7 @@ class Model:
                 k = k2[ind]
                 u = u2[:, ind]
             else:
+                ic(req_mode_num)
                 # find eigenvalue with min error.
                 val = np.min(abs(k0 - k2))
                 ind = np.argmin(abs(k0 - k2))

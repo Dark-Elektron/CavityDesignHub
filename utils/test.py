@@ -1270,8 +1270,15 @@ L_bp_l = 0
 # CALCULATE x1, y1, x2, y2
 data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
         [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+
+
 df = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
             args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+error_msg = df[-2]
+if error_msg == 4:
+    print("Finding reentrant shape")
+    df = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 1.15 * b_m, L_m - A_m + L_bp_l, Req_m - 1.15 * B_m]),
+                args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
 
 x1, y1, x2, y2 = df[0]
 ic(df)

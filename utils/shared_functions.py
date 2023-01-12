@@ -4,6 +4,7 @@ import os
 from PyQt5.QtWidgets import QFileDialog
 from icecream import ic
 from matplotlib import pyplot as plt
+from matplotlib.patches import Ellipse
 from scipy.optimize import fsolve
 import numpy as np
 from PyQt5.QtCore import *
@@ -63,17 +64,46 @@ def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
 
     """
 
-    data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
-            [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-    df = fsolve(ellipse_tangent,
-                np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
-                args=data, fprime=jac, full_output=True)
+    df = tangent_coords(A, B, a, b, Ri, L, Req, L_bp)
     x1, y1, x2, y2 = df[0]
-    ic(df[0])
     error_msg = df[-2]
 
     alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
     return alpha, error_msg
+
+
+def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
+    data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
+            [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+
+    df = fsolve(ellipse_tangent,
+                np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
+                args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+
+    error_msg = df[-2]
+    if error_msg == 4:
+        df = fsolve(ellipse_tangent, np.array([a + L_bp, Ri + 1.15 * b, L - A + L_bp, Req - 1.15 * B]),
+                    args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+        ic(df)
+
+    if tangent_check:
+        h, k, p, q = data[0]
+        a, b, A, B = data[1]
+        el_ab = Ellipse((h, k), 2 * a, 2 * b, alpha=0.5)
+        el_AB = Ellipse((p, q), 2 * A, 2 * B, alpha=0.5)
+
+        fig, ax = plt.subplots()
+        ax.add_artist(el_ab)
+        ax.add_artist(el_AB)
+
+        x1, y1, x2, y2 = df[0]
+        # ax.set_xlim(-1.1 * a, 1.1 * L)
+        # ax.set_ylim(Ri, 1.1 * Req)
+        ax.plot([x1, x2], [y1, y2])
+
+        plt.show()
+
+    return df
 
 
 def ellipse_tangent(z, *data):
@@ -973,6 +1003,8 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
 def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None,
                                        beampipe='none', plot=False):
+    if plot:
+        plt.rcParams["figure.figsize"] = (12, 2)
 
     if end_cell_left is None:
         end_cell_left = mid_cell
@@ -1022,27 +1054,16 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
 
     # calculate angles outside loop
     # CALCULATE x1_el, y1_el, x2_el, y2_el
-    data = ([0 + L_bp_l, Ri_el + b_el, L_el + L_bp_l, Req_el - B_el],
-            [a_el, b_el, A_el, B_el])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-
-    x1el, y1el, x2el, y2el = fsolve(ellipse_tangent, np.array(
-        [a_el + L_bp_l, Ri_el + 0.85 * b_el, L_el - A_el + L_bp_l, Req_el - 0.85 * B_el]),
-                                    args=data, fprime=jac,
-                                    xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+    df = tangent_coords(A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, L_bp_l)
+    x1el, y1el, x2el, y2el = df[0]
 
     # CALCULATE x1, y1, x2, y2
-    data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
-            [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-    x1, y1, x2, y2 = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
-                            args=data, fprime=jac, xtol=1.49012e-12)
+    df = tangent_coords(A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp_l)
+    x1, y1, x2, y2 = df[0]
 
     # CALCULATE x1_er, y1_er, x2_er, y2_er
-    data = ([0 + L_bp_r, Ri_er + b_er, L_er + L_bp_r, Req_er - B_er],
-            [a_er, b_er, A_er, B_er])
-    x1er, y1er, x2er, y2er = fsolve(ellipse_tangent, np.array(
-        [a_er + L_bp_r, Ri_er + 0.85 * b_er, L_er - A_er + L_bp_r, Req_er - 0.85 * B_er]),
-                                    args=data, fprime=jac,
-                                    xtol=1.49012e-12)
+    df = tangent_coords(A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, L_bp_r)
+    x1er, y1er, x2er, y2er = df[0]
 
     with open(file_path, 'w') as fil:
         fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
@@ -1289,7 +1310,10 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
         fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
 
     if plot:
+        plt.tight_layout()
         plt.show()
+
+        plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
 
 
 def linspace(start, stop, step=1.):
