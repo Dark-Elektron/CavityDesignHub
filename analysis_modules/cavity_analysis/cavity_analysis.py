@@ -1,7 +1,5 @@
 import json
 import os.path
-
-import matplotlib
 import scipy.io as spio
 import scipy.interpolate as sci
 import mplcursors
@@ -9,13 +7,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from icecream import ic
-from matplotlib import ticker
 import matplotlib as mpl
 from scipy.optimize import fsolve
-
 from utils.file_reader import FileReader
 from analysis_modules.plot_module.matplotlib_annotation_objects import DraggableText
-from utils import shared_functions
 from utils.shared_functions import ellipse_tangent
 
 fr = FileReader()
@@ -71,13 +66,13 @@ class Cavities:
             Folder to save generated images, latex, excel, and text files.
         """
 
+        if cavities_list is None:
+            self.cavities_list = []
+
         self.p_qois = None
         self.fm_results = None
         self.hom_results = None
         self.save_folder = save_folder
-
-        if cavities_list is None:
-            self.cavities_list = []
 
         self.cavities_list = cavities_list
 
@@ -260,7 +255,7 @@ class Cavities:
         ic(results)
         return results_norm_units
 
-    def plot_power_comparison(self, E_acc, fig=None, ax_list=None):
+    def plot_power_comparison(self, fig=None, ax_list=None):
         """
         Can be called using ``cavities.plot_power_comparison()``
 
@@ -340,9 +335,9 @@ class Cavities:
             # ax_right.yaxis.label.set_color(p2.get_color())
             # ax_right2.yaxis.label.set_color(p3.get_color())
 
-            ax1.set_xlim(min(E_acc) * 1e-6, max(E_acc) * 1e-6)
-            ax2.set_xlim(min(E_acc) * 1e-6, max(E_acc) * 1e-6)
-            ax3.set_xlim(min(E_acc) * 1e-6, max(E_acc) * 1e-6)
+            ax1.set_xlim(min(cavity.E_acc) * 1e-6, max(cavity.E_acc) * 1e-6)
+            ax2.set_xlim(min(cavity.E_acc) * 1e-6, max(cavity.E_acc) * 1e-6)
+            ax3.set_xlim(min(cavity.E_acc) * 1e-6, max(cavity.E_acc) * 1e-6)
             # # ax.set_ylim(0, 50)
             # ax_right.set_ylim(100, 400)f
             # ax_right2.set_ylim(0, 700)
@@ -1325,24 +1320,9 @@ class Cavities:
                   ((1 + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.cos(phi[i])) ** 2 +
                    ((delta_f[i] / f1_2) + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.sin(phi[i])) ** 2)
 
-            # p_cryo = 8 / (np.sqrt(f0[i] / 500e6))
-
             # material/ wall power
             e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
 
-            # Rs_NbCu_4_5k_400Mhz = 39.5 * np.exp(0.014 * (E_acc[i] * 1e-6 * b[i])) + 27
-
-            # eta = 1 / 219  # c
-            # Q0 = G[i] * 1e9 / Rs_NbCu_4_5k_400Mhz  # c
-            # print(E_acc[i])
-            # p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (
-            #         l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo
-            # txt = f"{labels[i]}, " \
-            #       f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
-            #       f"cav; " + "P$_{\mathrm{in}}$ = " \
-            #       + f"{round(min(pin) * 1e-3, 1)} kW; " \
-            #         "Q$_{\mathrm{L, 0}}^*$ = " \
-            #       + "{:.2e}".format(QL_0_x[i])
             txt = labels[i]
 
             if "*" in labels[i]:
@@ -2729,7 +2709,7 @@ def mucol_study():
 
     E_acc = np.linspace(0.5, 50, 100) * 1e6  # V/m
     cavities.compare_power(E_acc=E_acc)
-    cavities.plot_power_comparison(E_acc)
+    cavities.plot_power_comparison()
     cavities.plot_compare_bar()
     cavities.plot_compare_fm_bar()
     cavities.plot_compare_hom_bar()
@@ -2803,7 +2783,7 @@ def ttbar_study():
 
     E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
     cavities.compare_power(E_acc=E_acc)
-    cavities.plot_power_comparison()
+    cavities.plot_power_comparison(E)
     cavities.plot_compare_bar()
     cavities.plot_compare_fm_bar()
     cavities.plot_compare_hom_bar()

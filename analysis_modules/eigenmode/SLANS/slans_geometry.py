@@ -274,10 +274,19 @@ class SLANSGeometry(Geometry):
         slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
 
         # print(cwd)
-        subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
-        subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
-        subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
-        subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+        # check if corresponding file exists at before the executable is called
+        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.geo'):
+            subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)  # settings, number of modes, etc
+
+            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.gem'):
+                subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+
+                if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\aslans.mtx') \
+                        and os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\bslans.mtx'):
+                    subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+
+                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.res'):
+                        subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
         # save json file
         shape = {'IC': update_alpha(mid_cells_par),
@@ -286,68 +295,70 @@ class SLANSGeometry(Geometry):
 
         with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
+        try:
+            filename = fr'{run_save_directory}\cavity_33.svl'
+            d = fr.svl_reader(filename)
 
-        filename = fr'{run_save_directory}\cavity_33.svl'
-        d = fr.svl_reader(filename)
+            Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
+            Freq = d['FREQUENCY'][no_of_cells - 1]
+            E_stored = d['STORED ENERGY'][no_of_cells - 1]
+            Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
+            Q = d['QUALITY FACTOR'][no_of_cells - 1]
+            Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
+            Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
+            # Vacc = dict['ACCELERATION'][no_of_cells - 1]
+            Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
+            r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
+            G = 0.00948 * Q * np.sqrt(Freq / 1300)
+            GR_Q = G * 2 * r_Q
 
-        Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
-        Freq = d['FREQUENCY'][no_of_cells - 1]
-        E_stored = d['STORED ENERGY'][no_of_cells - 1]
-        Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
-        Q = d['QUALITY FACTOR'][no_of_cells - 1]
-        Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
-        Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
-        # Vacc = dict['ACCELERATION'][no_of_cells - 1]
-        Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
-        r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
-        G = 0.00948 * Q * np.sqrt(Freq / 1300)
-        GR_Q = G * 2 * r_Q
+            Vacc = np.sqrt(
+                2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
+            # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+            norm_length = 2*mid_cells_par[5]
+            Eacc = Vacc / (
+                        no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
+            Epk_Eacc = Epk / Eacc
+            Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
+            Bpk_Eacc = Bpk / Eacc
 
-        Vacc = np.sqrt(
-            2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
-        # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
-        norm_length = 2*mid_cells_par[5]
-        Eacc = Vacc / (
-                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
-        Epk_Eacc = Epk / Eacc
-        Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
-        Bpk_Eacc = Bpk / Eacc
+            # cel to cell coupling factor
+            f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
+            f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
+            kcc = 2*f_diff/f_add * 100
 
-        # cel to cell coupling factor
-        f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
-        f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
-        kcc = 2*f_diff/f_add * 100
+            # field flatness
+            ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
+            # get max in each cell
+            peaks, _ = find_peaks(ax_field['y_abs'])
+            E_abs_peaks = ax_field['y_abs'][peaks]
+            ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
 
-        # field flatness
-        ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
-        # get max in each cell
-        peaks, _ = find_peaks(ax_field['y_abs'])
-        E_abs_peaks = ax_field['y_abs'][peaks]
-        ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
+            d = {
+                "Req [mm]": Req,
+                "Normalization Length [mm]": norm_length,
+                "freq [MHz]": Freq,
+                "Q []": Q,
+                "E [MV/m]": E_stored,
+                "Vacc [MV]": Vacc,
+                "Eacc [MV/m]": Eacc,
+                "Epk [MV/m]": Epk,
+                "Hpk [A/m]": Hpk,
+                "Bpk [mT]": Bpk,
+                "kcc [%]": kcc,
+                "ff [%]": ff,
+                "Rsh [Ohm]": Rsh,
+                "R/Q [Ohm]": 2 * r_Q,
+                "Epk/Eacc []": Epk_Eacc,
+                "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
+                "G [Ohm]": G,
+                "GR/Q [Ohm^2]": GR_Q
+            }
 
-        d = {
-            "Req [mm]": Req,
-            "Normalization Length [mm]": norm_length,
-            "freq [MHz]": Freq,
-            "Q []": Q,
-            "E [MV/m]": E_stored,
-            "Vacc [MV]": Vacc,
-            "Eacc [MV/m]": Eacc,
-            "Epk [MV/m]": Epk,
-            "Hpk [A/m]": Hpk,
-            "Bpk [mT]": Bpk,
-            "kcc [%]": kcc,
-            "ff [%]": ff,
-            "Rsh [Ohm]": Rsh,
-            "R/Q [Ohm]": 2 * r_Q,
-            "Epk/Eacc []": Epk_Eacc,
-            "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
-            "G [Ohm]": G,
-            "GR/Q [Ohm^2]": GR_Q
-        }
-
-        with open(fr'{run_save_directory}\qois.json', "w") as f:
-            json.dump(d, f, indent=4, separators=(',', ': '))
+            with open(fr'{run_save_directory}\qois.json', "w") as f:
+                json.dump(d, f, indent=4, separators=(',', ': '))
+        except FileNotFoundError:
+            print("Simulation failed")
 
     def cavity_multicell(self, no_of_modules=1, cells_par=None, fid=None, bc=33,
                          f_shift='default', beta=1, n_modes=None, beampipes="None",

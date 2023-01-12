@@ -7,7 +7,6 @@ import ctypes
 import logging
 import shutil
 import sys
-# import pyautogui
 from json import JSONDecodeError
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
@@ -20,7 +19,7 @@ from frame_controls.misc import MiscControl
 from frame_controls.plot_control import PlotControl
 from frame_controls.eigenmode import EigenmodeControl
 from frame_controls.postprocess import PostprocessControl
-from frame_controls.tune_control import TuneControl, OptimizationControl
+from frame_controls.tune_control import TuneControl
 from frame_controls.wakefield_control import WakefieldControl
 import qtvscodestyle as qtvsc
 from utils.shared_functions import animate_width, f2b_slashes
@@ -64,6 +63,7 @@ AN_DURATION = 250
 class MainWindow:
     """Main GUI window
     """
+
     def __init__(self):
         self.tree = None
         self.model = None
@@ -384,21 +384,25 @@ class MainWindow:
                             make_dirs_from_dict(val, os.path.join(current_dir, key))
 
                 # create project structure in folders
-                project_dir_structure = {f'{project_name}':
-                                             {'Cavities': None,
-                                              'OperatingPoints': None,
-                                              'SimulationData': {
-                                                  'SLANS': None,
-                                                  'ABCI': None,
-                                                  'CavitiesAnalysis': None
-                                              },
-                                              'PostprocessingData': {
-                                                  'Plots': None,
-                                                  'Data': None,
-                                                  'CSTData': None
-                                              }
-                                              }
-                                         }
+                project_dir_structure = {
+                    f'{project_name}':
+                        {
+                            'Cavities': None,
+                            'OperatingPoints': None,
+                            'SimulationData': {
+                                'SLANS': None,
+                                'NativeEig': None,
+                                'ABCI': None,
+                                'CavitiesAnalysis': None
+                            },
+                            'PostprocessingData': {
+                                'Plots': None,
+                                'Data': None,
+                                'CSTData': None
+                            },
+                            'Reference': None
+                        }
+                }
 
                 make_dirs_from_dict(project_dir_structure)
                 self.projectDir = f2b_slashes(fr"{project_dir}\{project_name}")
@@ -750,7 +754,8 @@ class MainWindow:
     def new_file(self):
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
-        filename, _ = QFileDialog.getSaveFileName(None, "QFileDialog.getSaveFileName()","","All Files (*);;Text Files (*.txt)", options=options)
+        filename, _ = QFileDialog.getSaveFileName(None, "QFileDialog.getSaveFileName()", "",
+                                                  "All Files (*);;Text Files (*.txt)", options=options)
         if filename:
             with open(filename, 'w') as file:
                 file.write('')

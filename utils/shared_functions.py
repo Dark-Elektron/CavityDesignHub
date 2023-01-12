@@ -67,12 +67,12 @@ def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
             [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     df = fsolve(ellipse_tangent,
                 np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
-                args=data, full_output=True)
+                args=data, fprime=jac, full_output=True)
     x1, y1, x2, y2 = df[0]
+    ic(df[0])
     error_msg = df[-2]
 
-    m = (y2 - y1) / (x2 - x1)
-    alpha = 180 - np.arctan(m) * 180 / np.pi
+    alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
     return alpha, error_msg
 
 
@@ -127,6 +127,63 @@ def ellipse_tangent(z, *data):
     f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
 
     return f1, f2, f3, f4
+
+
+def jac(z, *data):
+    """
+    Computes the Jacobian of the non-linear system of ellipse tangent equations
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+    Returns
+    -------
+    J: array like
+        Array of the Jacobian
+
+    """
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    # f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    # f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    # f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    # f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    df1_dx1 = A ** 2 * b ** 2 * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)**2)
+    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p)**2 * (y1 - k))
+    df1_dy2 = A ** 2 * b ** 2 * (x1 - h) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+
+    df2_dx1 = 2 * (x1 - h) / a ** 2
+    df2_dy1 = 2 * (y1 - k) / b ** 2
+    df2_dx2 = 0
+    df2_dy2 = 0
+
+    df3_dx1 = 0
+    df3_dy1 = 0
+    df3_dx2 = 2 * (x2 - p) / A ** 2
+    df3_dy2 = 2 * (y2 - q) / B ** 2
+
+    df4_dx1 = -b ** 2 * ((x1 - x2) + (x1 - h)) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k))**2)
+    df4_dx2 = b ** 2 * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2)**2 * (y1 - k))
+
+    J = [[df1_dx1, df1_dy1, df1_dx2, df1_dy2],
+         [df2_dx1, df2_dy1, df2_dx2, df2_dy2],
+         [df3_dx1, df3_dy1, df3_dx2, df3_dy2],
+         [df4_dx1, df4_dy1, df4_dx2, df4_dy2]]
+
+    return J
 
 
 def perform_geometry_checks(par_mid, par_end):
@@ -609,8 +666,12 @@ def get_geometric_parameters(frame_control, code):
                         or frame_control.ui.cb_Shape_Space_Keys.currentText() == "All":
                     pass
                 else:
-                    if key not in frame_control.selected_keys:
-                        continue
+                    if isinstance(frame_control.selected_keys, str):
+                        if key != frame_control.selected_keys:
+                            continue
+                    else:
+                        if key not in frame_control.selected_keys:
+                            continue
 
                 if not to_all:
                     ans = frame_control.prompt(code, key)
@@ -640,7 +701,6 @@ def get_geometric_parameters(frame_control, code):
                         else:
                             shape_space[key] = val
 
-            # print_(shape_space)
             return shape_space
         except Exception as e:
             print(f"File not found, check path:: {e}")
@@ -772,13 +832,13 @@ def get_geometric_parameters(frame_control, code):
 #     return inner_cell, outer_cell_left, outer_cell_right
 
 
-def open_file(frame_control, le, cb):
+def open_file(frame_control, le, cb, start_folder=''):
     # clear combobox
     frame_control.ui.cb_Shape_Space_Keys.clear()
     frame_control.ui.cb_Shape_Space_Keys.addItem('All')
     # self.selected_keys.clear()
 
-    filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Json Files (*.json)")
+    filename, _ = QFileDialog.getOpenFileName(None, "Open File", start_folder, "Json Files (*.json)")
     try:
         le.setText(filename)
         with open(filename, 'r') as file:
@@ -959,8 +1019,6 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
-    # shift = 0
-    # shift = L_m  # for end cell
 
     # calculate angles outside loop
     # CALCULATE x1_el, y1_el, x2_el, y2_el
@@ -969,22 +1027,22 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
 
     x1el, y1el, x2el, y2el = fsolve(ellipse_tangent, np.array(
         [a_el + L_bp_l, Ri_el + 0.85 * b_el, L_el - A_el + L_bp_l, Req_el - 0.85 * B_el]),
-                                    args=data,
+                                    args=data, fprime=jac,
                                     xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
     # CALCULATE x1, y1, x2, y2
     data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
             [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     x1, y1, x2, y2 = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
-                            args=data, xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+                            args=data, fprime=jac, xtol=1.49012e-12)
 
     # CALCULATE x1_er, y1_er, x2_er, y2_er
     data = ([0 + L_bp_r, Ri_er + b_er, L_er + L_bp_r, Req_er - B_er],
-            [a_er, b_er, A_er, B_er])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+            [a_er, b_er, A_er, B_er])
     x1er, y1er, x2er, y2er = fsolve(ellipse_tangent, np.array(
         [a_er + L_bp_r, Ri_er + 0.85 * b_er, L_er - A_er + L_bp_r, Req_er - 0.85 * B_er]),
-                                    args=data,
-                                    xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+                                    args=data, fprime=jac,
+                                    xtol=1.49012e-12)
 
     with open(file_path, 'w') as fil:
         fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")

@@ -33,9 +33,11 @@ from icecream import ic
 import scipy as sp
 # import pyvista as pv
 import matplotlib.pyplot as plt
+from matplotlib.patches import Ellipse
 from scipy.optimize import fsolve
 
 from utils.file_reader import FileReader
+from utils.shared_functions import ellipse_tangent
 
 fr = FileReader()
 
@@ -1166,8 +1168,7 @@ def func(x):
 
 
 
-
-def ellipse_tangent(z, *data):
+def ellipse_tangent_(z, *data):
     """
     Calculates the coordinates of the tangent line that connects two ellipses
 
@@ -1219,3 +1220,82 @@ def ellipse_tangent(z, *data):
         y2 = q + np.sqrt(B ** 2 * (1 - (x2 - p) ** 2 / A ** 2))
 
     return x1, y1, x2, y2
+
+
+def jac(z, *data):
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    # f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    # f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    # f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    # f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    df1_dx1 = A ** 2 * b ** 2 * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)**2)
+    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p)**2 * (y1 - k))
+    df1_dy2 = A ** 2 * b ** 2 * (x1 - h) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+
+    df2_dx1 = 2 * (x1 - h) / a ** 2
+    df2_dy1 = 2 * (y1 - k) / b ** 2
+    df2_dx2 = 0
+    df2_dy2 = 0
+
+    df3_dx1 = 0
+    df3_dy1 = 0
+    df3_dx2 = 2 * (x2 - p) / A ** 2
+    df3_dy2 = 2 * (y2 - q) / B ** 2
+
+    df4_dx1 = -b ** 2 * ((x1 - x2) + (x1 - h)) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k))**2)
+    df4_dx2 = b ** 2 * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2)**2 * (y1 - k))
+
+    J = [[df1_dx1, df1_dy1, df1_dx2, df1_dy2],
+         [df2_dx1, df2_dy1, df2_dx2, df2_dy2],
+         [df3_dx1, df3_dy1, df3_dx2, df3_dy2],
+         [df4_dx1, df4_dy1, df4_dx2, df4_dy2]]
+
+    return J
+
+
+mid = np.array([49, 34.30, 10.5, 17, 32.0, 57.7, 98.58]) * 1e-3
+# mid = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
+
+A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = mid
+L_bp_l = 0
+
+# CALCULATE x1, y1, x2, y2
+data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
+        [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+df = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
+            args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+
+x1, y1, x2, y2 = df[0]
+ic(df)
+error_msg = df[-2]
+
+m = (y2 - y1) / (x2 - x1)
+alpha = 180 - np.arctan2((y2 - y1), (x2 - x1)) * 180 / np.pi
+ic(alpha)
+
+fig, ax = plt.subplots()
+
+coord, dim = data
+h, k, p, q = coord
+a, b, A, B = dim
+
+el_ab = Ellipse((h, k), 2*a, 2*b, alpha=0.5)
+el_AB = Ellipse((p, q), 2*A, 2*B, alpha=0.5)
+
+ax.add_artist(el_ab)
+ax.add_artist(el_AB)
+
+ax.set_xlim(-1.1*a, 1.1*L_m)
+ax.set_ylim(Ri_m, 1.1*Req_m)
+ax.plot([x1, x2], [y1, y2])
+
+plt.show()
+

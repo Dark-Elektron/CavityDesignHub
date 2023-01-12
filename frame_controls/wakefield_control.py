@@ -88,7 +88,8 @@ class WakefieldControl:
 
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
-            lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys))
+            lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
+                              start_folder=f"{self.main_control.projectDir}/Cavities"))
 
         # control shape entry mode
         self.ui.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())

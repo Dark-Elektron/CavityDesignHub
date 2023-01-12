@@ -251,52 +251,55 @@ class SLANSGeometry(Geometry):
         with open(f"{run_save_directory}/geometric_parameters.json", 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
 
-        filename = fr'{run_save_directory}/cavity_33.svl'
-        d = fr.svl_reader(filename)
+        try:
+            filename = fr'{run_save_directory}/cavity_33.svl'
+            d = fr.svl_reader(filename)
 
-        Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
-        Freq = d['FREQUENCY'][no_of_cells - 1]
-        E_stored = d['STORED ENERGY'][no_of_cells - 1]
-        Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
-        Q = d['QUALITY FACTOR'][no_of_cells - 1]
-        Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
-        Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
-        # Vacc = dict['ACCELERATION'][no_of_cells - 1]
-        Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
-        r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
-        G = 0.00948 * Q * (Freq / 1300)
-        GR_Q = G * 2 * r_Q
+            Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
+            Freq = d['FREQUENCY'][no_of_cells - 1]
+            E_stored = d['STORED ENERGY'][no_of_cells - 1]
+            Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
+            Q = d['QUALITY FACTOR'][no_of_cells - 1]
+            Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
+            Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
+            # Vacc = dict['ACCELERATION'][no_of_cells - 1]
+            Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
+            r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
+            G = 0.00948 * Q * (Freq / 1300)
+            GR_Q = G * 2 * r_Q
 
-        Vacc = np.sqrt(
-            2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
-        # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
-        norm_length = 2*mid_cells_par[5]
-        Eacc = Vacc / (
-                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
-        Epk_Eacc = Epk / Eacc
-        Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
-        Bpk_Eacc = Bpk / Eacc
+            Vacc = np.sqrt(
+                2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
+            # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+            norm_length = 2*mid_cells_par[5]
+            Eacc = Vacc / (
+                        no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
+            Epk_Eacc = Epk / Eacc
+            Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
+            Bpk_Eacc = Bpk / Eacc
 
-        d = {
-            "Req": Req,
-            "Normalization Length": norm_length,
-            "freq": Freq,
-            "Q": Q,
-            "E": E_stored,
-            "Vacc": Vacc,
-            "Eacc": Eacc,
-            "Epk": Epk,
-            "Hpk": Hpk,
-            "Bpk": Bpk,
-            "R/Q": 2 * r_Q,
-            "Epk/Eacc": Epk_Eacc,
-            "Bpk/Eacc": Bpk_Eacc,
-            "G": G,
-            "GR/Q": GR_Q
-        }
+            d = {
+                "Req": Req,
+                "Normalization Length": norm_length,
+                "freq": Freq,
+                "Q": Q,
+                "E": E_stored,
+                "Vacc": Vacc,
+                "Eacc": Eacc,
+                "Epk": Epk,
+                "Hpk": Hpk,
+                "Bpk": Bpk,
+                "R/Q": 2 * r_Q,
+                "Epk/Eacc": Epk_Eacc,
+                "Bpk/Eacc": Bpk_Eacc,
+                "G": G,
+                "GR/Q": GR_Q
+            }
 
-        with open(fr'{run_save_directory}\qois.json', "w") as f:
-            json.dump(d, f, indent=4, separators=(',', ': '))
+            with open(fr'{run_save_directory}\qois.json', "w") as f:
+                json.dump(d, f, indent=4, separators=(',', ': '))
+        except FileNotFoundError:
+            print("Simulation failed")
 
     def write_dtr(self, path, filename, beta, f_shift, n_modes):
         with open("{}\{}.dtr".format(path, filename), 'w') as f:

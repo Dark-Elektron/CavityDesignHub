@@ -141,7 +141,7 @@ class Model:
         -------
 
         """
-        ic(mid_cell, end_cell_left, end_cell_right)
+
         self.n_cells = n_cells
         self.mid_cell = mid_cell
 
@@ -381,7 +381,7 @@ class Model:
             # calculate freq from mid cell length
             beta = 1
             freq = beta*c0/(4*self.mid_cell[5])
-            ic(freq)
+            ic("calculated freq from length: ", freq)
 
         eigen_freq = self.eigen(n_modes, freq, req_mode_num, search)
 
@@ -738,6 +738,7 @@ class Model:
 
         # Calculate accelerating field
         self.E_z_axis = Ez.T[rr == 0]  # & zz>=-L_half_cell & zz <= L_half_cell
+        self.E_z_axis_abs = abs(self.E_z_axis)
         z_slice = zz[0, :]
         # z_active = z_slice[(z_slice >= -L_half_cell) & (z_slice <= L_half_cell)]
 
@@ -769,8 +770,8 @@ class Model:
         self.Q0 = self.calculate_q()
         self.G = self.calculate_g()
 
-        ic(self.eig_freq, self.epk, self.bpk, self.R_Q, self.k_loss,
-           self.Rs, self.Pds, self.Q0, self.G)
+        # ic(self.eig_freq, self.epk, self.bpk, self.R_Q, self.k_loss,
+        #    self.Rs, self.Pds, self.Q0, self.G)
 
         self.save_qois()
         # write_cst_paramters(self.name, self.mid_cell, self.end_cell_left, self.end_cell_right,
@@ -1136,9 +1137,9 @@ class Model:
         # field flatness
         # get max in each cell
         peaks, _ = find_peaks(abs(self.E_z_axis))
-        plt.plot(self.E_z_axis)
+        plt.plot(self.E_z_axis_abs)
         plt.show()
-        E_abs_peaks = self.E_z_axis[peaks]
+        E_abs_peaks = self.E_z_axis_abs[peaks]
         self.ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
 
         d = {
@@ -1161,7 +1162,7 @@ class Model:
             "G [Ohm]": self.G,
             "GR/Q [Ohm^2]": self.GR_Q
         }
-
+        ic(d)
         with open(fr'{self.folder}\qois.json', "w") as f:
             json.dump(d, f, indent=4, separators=(',', ': '))
 
@@ -1806,7 +1807,7 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\CUSTOM_EIG'
     mod = Model(folder, 'TESLA')
-    n_cells = 2
+    n_cells = 9
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
                          71.98698698698699, 93.5, 171.1929]) * 1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
@@ -1814,7 +1815,11 @@ if __name__ == '__main__':
 
     midTESLA = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
     midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591]) * 1e-3
+
     midDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
     endDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
 
-    mod.run(n_cells, midDegen, midDegen, beampipe='none', plot=True)
+    midNLSF_RE = np.array([49, 35.30, 10.5, 17, 32.0, 57.7, 98.58, 0]) * 1e-3
+    endNLSF_RE = np.array([50, 35, 10, 15, 32.0, 57.7, 98.58, 0]) * 1e-3
+
+    mod.run(n_cells, midNLSF_RE, endNLSF_RE, beampipe='both', plot=True)

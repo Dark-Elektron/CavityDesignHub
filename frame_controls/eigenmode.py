@@ -124,7 +124,8 @@ class EigenmodeControl:
 
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
-            lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys))
+            lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
+                              start_folder=f"{self.main_control.projectDir}/Cavities"))
 
         # control shape entry mode
         self.ui.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
@@ -202,9 +203,11 @@ class EigenmodeControl:
 
         # get geometric parameters
         self.shape_space = get_geometric_parameters(self, 'SLANS')
+        ic(self.shape_space)
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(self.shape_space.keys())
+        ic(keys)
         shape_space_len = len(keys)
         share = round(shape_space_len / proc_count)
 
@@ -392,11 +395,19 @@ class EigenmodeControl:
         # remove existing cells
         self.graphicsView.removeCells()
         for key in self.loaded_shape_space.keys():
-            if key in self.ui.cb_Shape_Space_Keys.currentText():
-                IC = self.loaded_shape_space[key]["IC"]
-                OC = self.loaded_shape_space[key]["OC"]
-                BP = self.loaded_shape_space[key]["BP"]
-                self.graphicsView.drawCells(IC, OC, BP, QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
+            if isinstance(self.ui.cb_Shape_Space_Keys.currentText(), str):
+                if key == self.ui.cb_Shape_Space_Keys.currentText():
+                    IC = self.loaded_shape_space[key]["IC"]
+                    OC = self.loaded_shape_space[key]["OC"]
+                    BP = self.loaded_shape_space[key]["BP"]
+                    self.graphicsView.drawCells(IC, OC, BP,
+                                                QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
+            else:
+                if key in self.ui.cb_Shape_Space_Keys.currentText():
+                    IC = self.loaded_shape_space[key]["IC"]
+                    OC = self.loaded_shape_space[key]["OC"]
+                    BP = self.loaded_shape_space[key]["BP"]
+                    self.graphicsView.drawCells(IC, OC, BP, QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
 
                 ci += 1
 
