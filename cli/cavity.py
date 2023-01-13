@@ -284,10 +284,13 @@ class Cavity:
                 self.get_custom_eig_qois()
 
     def run_wakefield(self, MROT=2, MT=10, NFS=10000, wakelength=100, bunch_length=25,
-                      DDR_SIG=0.1, DDZ_SIG=0.1, WG_M=None, marker='', qoi_df={}, solver='ABCI'):
+                      DDR_SIG=0.1, DDZ_SIG=0.1, WG_M=None, marker='', wp_dict=None, solver='ABCI'):
 
-        if len(qoi_df.keys()) != 0:
-            self.wake_op_points = qoi_df
+        if wp_dict is None:
+            wp_dict = {}
+
+        if len(wp_dict.keys()) != 0:
+            self.wake_op_points = wp_dict
 
         for _ in tqdm([1]):
             if solver == 'ABCI':
@@ -296,7 +299,7 @@ class Cavity:
                               MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
                               DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
                               parentDir=SOFTWARE_DIRECTORY, projectDir=fr'{self.folder}', WG_M=WG_M, marker=marker,
-                              qoi_df=qoi_df, freq=self.freq, R_Q=self.R_Q)
+                              wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
 
     def calc_op_freq(self):
         if not self.freq:
@@ -335,7 +338,7 @@ class Cavity:
     def run_abci(name, n_cells, n_modules, shape, MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
                  DDR_SIG=0.1, DDZ_SIG=0.1,
                  parentDir=None, projectDir=None,
-                 WG_M=None, marker='', qoi_df=None, freq=0, R_Q=0):
+                 WG_M=None, marker='', wp_dict=None, freq=0, R_Q=0):
 
         # run abci code
         if WG_M is None:
@@ -346,7 +349,7 @@ class Cavity:
         for ii in WG_M:
             try:
                 if MROT == 2:
-                    for m in range(2):
+                    for m in tqdm(range(2)):
                         abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
                                          fid=name, MROT=m, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
@@ -360,7 +363,7 @@ class Cavity:
                                      WG_M=ii, marker=ii)
             except KeyError:
                 if MROT == 2:
-                    for m in range(2):
+                    for m in tqdm(range(2)):
                         abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
                                          fid=name, MROT=m, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
@@ -373,61 +376,59 @@ class Cavity:
                                      WG_M=ii, marker=ii)
 
         done(f'Cavity {name}. Time: {time.time() - start_time}')
+        if len(wp_dict.keys()) > 0:
+            try:
+                if freq != 0 and R_Q != 0:
+                    d = {}
+                    # save qois
+                    for key, vals in tqdm(wp_dict.items()):
+                        WP = key
+                        I0 = float(vals['I0 [mA]'])
+                        Nb = float(vals['Nb [1e11]'])
+                        sigma_z = [float(x) for x in vals['sigma_z (SR/BS) [mm]'].split('/')]
+                        bl_diff = ['SR', 'BS']
 
-        if 'I0 [mA]' in qoi_df.keys() and 'Nb [1e11]' in qoi_df.keys() and 'sigma_z (SR/BS) [mm]' in qoi_df.keys():
-            if freq != 0 and R_Q != 0:
-                d = {}
-                # save qois
-                for key, vals in qoi_df.iterrows():
-                    WP = key
-                    I0 = float(vals['I0 [mA]'])
-                    Nb = float(vals['Nb [1e11]'])
-                    sigma_z = [float(x) for x in vals['sigma_z (SR/BS) [mm]'].split('/')]
-                    bl_diff = ['SR', 'BS']
+                        info("Running wakefield analysis for given operating points.")
+                        for i, s in enumerate(sigma_z):
+                            for ii in WG_M:
+                                fid = f"{WP}_{bl_diff[i]}_{s}mm{ii}"
+                                try:
+                                    for m in range(2):
+                                        abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
+                                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
+                                                         projectDir=projectDir,
+                                                         WG_M=ii, marker=ii, sub_dir=f"{name}")
+                                except KeyError:
+                                    for m in range(2):
+                                        abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
+                                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
+                                                         projectDir=projectDir,
+                                                         WG_M=ii, marker=ii, sub_dir=f"{name}")
 
-                    for i, s in enumerate(sigma_z):
-                        for ii in WG_M:
-                            fid = f"{WP}_{bl_diff[i]}_{s}mm{ii}"
-                            try:
-                                for m in range(2):
-                                    abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                                     fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
-                                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                                     projectDir=projectDir,
-                                                     WG_M=ii, marker=ii, sub_dir=f"{name}")
-                            except KeyError:
-                                for m in range(2):
-                                    abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                                     fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
-                                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                                     projectDir=projectDir,
-                                                     WG_M=ii, marker=ii, sub_dir=f"{name}")
+                                dirc = fr'{projectDir}\SimulationData\ABCI\{name}{marker}'
+                                # try:
+                                k_loss = abs(ABCIData(dirc, f'{fid}', 0).loss_factor['Longitudinal'])
+                                k_kick = abs(ABCIData(dirc, f'{fid}', 1).loss_factor['Transverse'])
+                                # except:
+                                #     k_loss = 0
+                                #     k_kick = 0
 
-                            dirc = fr'{projectDir}\SimulationData\ABCI\{name}{marker}'
-                            # try:
-                            k_loss = abs(ABCIData(dirc, f'{fid}', 0).loss_factor['Longitudinal'])
-                            k_kick = abs(ABCIData(dirc, f'{fid}', 1).loss_factor['Transverse'])
-                            # except:
-                            #     k_loss = 0
-                            #     k_kick = 0
+                                d[fid] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, n_cells)
 
-                            d[fid] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, n_cells)
+                    # save qoi dictionary
+                    run_save_directory = fr'{projectDir}\SimulationData\ABCI\{name}{marker}'
+                    with open(fr'{run_save_directory}\qois.json', "w") as f:
+                        json.dump(d, f, indent=4, separators=(',', ': '))
 
-                # save qoi dictionary
-                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{name}{marker}'
-                with open(fr'{run_save_directory}\qois.json', "w") as f:
-                    json.dump(d, f, indent=4, separators=(',', ': '))
-
-                done("Done with the secondary analysis for working points")
-            else:
-                info("To run analysis for working points, eigenmode simulation has to be run first"
-                     "to obtain the cavity operating frequency and R/Q")
-        elif len(qoi_df.keys()) > 0:
-            info('The working point entered is not valid. See below for the proper input structure.')
-            show_valid_operating_point_structure()
-        else:
-            pass
-
+                    done("Done with the secondary analysis for working points")
+                else:
+                    info("To run analysis for working points, eigenmode simulation has to be run first"
+                         "to obtain the cavity operating frequency and R/Q")
+            except KeyError:
+                error('The working point entered is not valid. See below for the proper input structure.')
+                show_valid_operating_point_structure()
 
     @staticmethod
     def uq(shape_space, objectives, solver_dict, solver_args_dict):
@@ -562,7 +563,6 @@ class Cavity:
 
     def get_slans_tune_res(self, tune_variable, cell_type):
         tune_res = 'tune_res.json'
-        ic(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}")
         with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}", 'r') as json_file:
             self.slans_tune_res = json.load(json_file)
 
@@ -624,7 +624,6 @@ class Cavity:
         self.R_Q = self.slans_qois['R/Q [Ohm]']
         self.GR_Q = self.slans_qois['GR/Q [Ohm^2]']
         self.G = self.GR_Q / self.R_Q
-        # print(G)
         # self.Q = d_qois['Q []']
         self.e = self.slans_qois['Epk/Eacc []']
         self.b = self.slans_qois['Bpk/Eacc [mT/MV/m]']
@@ -646,7 +645,7 @@ class Cavity:
     def get_abci_qois(self):
         qois = 'qois.json'
 
-        with open(fr"{self.folder}\{self.name}\SimulationData\ABCI\{self.name}\{qois}") as json_file:
+        with open(fr"{self.folder}\SimulationData\ABCI\{self.name}\{qois}") as json_file:
             self.abci_qois = json.load(json_file)
 
         if len(self.wake_op_points.keys()) != 0 and self.freq != 0 and self.R_Q != 0:
@@ -779,8 +778,6 @@ class Cavity:
 
         dir_util.copy_tree(src, dst)
 
-    @staticmethod
-
 
 class Cavities:
     """
@@ -817,6 +814,20 @@ class Cavities:
         self.E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
         self.set_cavities_field()
 
+    def add_cavity(self, cav):
+        """
+        Adds cavity to cavities
+        Parameters
+        ----------
+        cav: object
+            Cavity object
+
+        Returns
+        -------
+
+        """
+        self.cavities_list.append(cav)
+
     def set_cavities_field(self):
         """
         Sets cavities analysis field range.
@@ -827,39 +838,6 @@ class Cavities:
         """
         for cav in self.cavities_list:
             cav.set_Eacc(Eacc=self.E_acc)
-
-    def set_cavities_slans(self, dir_list):
-        """
-        Set folders to read SLANS results from
-
-        Parameters
-        ----------
-        dir_list: list, array like
-            List of SLANS directories for the corresponding cavities
-
-        Returns
-        -------
-
-        """
-        for i, dirc in enumerate(dir_list):
-            print(dirc)
-            self.cavities_list[i].set_slans_qois(dirc)
-
-    def set_cavities_abci(self, dir_list):
-        """
-        Set folders to read ABCI results from
-
-        Parameters
-        ----------
-        dir_list: list, array like
-            List of ABCI directories for the corresponding cavities
-
-        Returns
-        -------
-
-        """
-        for i, dirc in enumerate(dir_list):
-            self.cavities_list[i].set_abci_qois(dirc, working_point=wp, bunch_length=sigma)
 
     def compare_power(self, E_acc=None):
         if E_acc is not None:
@@ -2360,20 +2338,6 @@ class Cavities:
                   "or '<cav>.set_abci_qois(<folder>)' to fix this.")
             print(e)
 
-    def add_cavity(self, cav):
-        """
-        Adds cavity to cavities
-        Parameters
-        ----------
-        cav: object
-            Cavity object
-
-        Returns
-        -------
-
-        """
-        self.cavities_list.append(cav)
-
     def remove_cavity(self, cav):
         """
         Removes cavity from cavity list
@@ -2439,7 +2403,7 @@ def get_qois_value(f_fm, R_Q, k_loss, k_kick, sigma_z, I0, Nb, n_cell):
 
 
 def show_valid_operating_point_structure():
-        d = {
+    dd = {
             '<wp1>': {
                 'I0 [mA]': '<value>',
                 'Nb [1e11]': '<value>',
@@ -2452,7 +2416,7 @@ def show_valid_operating_point_structure():
             }
         }
 
-        info(d)
+    info(dd)
 
 # if __name__ == '__main__':
 #     p = str(Path(SOFTWARE_DIRECTORY).parents[0])

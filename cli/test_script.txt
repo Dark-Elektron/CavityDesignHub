@@ -7,3 +7,12 @@ cav.run_eigenmode()
 cav.run_wakefield()
 cav.run_eigenmode(solver='custom')
 cav.run_tune('Req', freq=1300)
+
+wp = {
+            'H': {
+                'I0 [mA]': '26.7',
+                'Nb [1e11]': '1.51',
+                'sigma_z (SR/BS) [mm]': '2.5/4.45'
+            }
+        }
+cav.run_wakefield(wp_dict=wp)

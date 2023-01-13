@@ -3,11 +3,15 @@ import os
 import subprocess
 from math import floor
 
+from scipy.signal import find_peaks
+
 from analysis_modules.eigenmode.SLANS.geometry_manual import Geometry
 from analysis_modules.eigenmode.SLANS.slans_code import SLANS
 import numpy as np
 
 from utils.file_reader import FileReader
+from utils.shared_functions import update_alpha
+
 fr = FileReader()
 
 
@@ -243,16 +247,16 @@ class SLANSGeometry(Geometry):
                         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
         run_save_directory = f"{projectDir}/SimulationData/SLANS/{fid}"
+
         # save json file
-        shape = {'IC': mid_cells_par,
-                 'OC': l_end_cell_par,
-                 'OC_R': r_end_cell_par}
+        shape = {'IC': update_alpha(mid_cells_par),
+                 'OC': update_alpha(l_end_cell_par),
+                 'OC_R': update_alpha(r_end_cell_par)}
 
-        with open(f"{run_save_directory}/geometric_parameters.json", 'w') as f:
+        with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
-
         try:
-            filename = fr'{run_save_directory}/cavity_33.svl'
+            filename = fr'{run_save_directory}\cavity_33.svl'
             d = fr.svl_reader(filename)
 
             Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
@@ -265,35 +269,50 @@ class SLANSGeometry(Geometry):
             # Vacc = dict['ACCELERATION'][no_of_cells - 1]
             Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
             r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
-            G = 0.00948 * Q * (Freq / 1300)
+            G = 0.00948 * Q * np.sqrt(Freq / 1300)
             GR_Q = G * 2 * r_Q
 
             Vacc = np.sqrt(
-                2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
+                2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
             # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
             norm_length = 2*mid_cells_par[5]
             Eacc = Vacc / (
-                        no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
+                        no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
             Epk_Eacc = Epk / Eacc
             Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
             Bpk_Eacc = Bpk / Eacc
 
+            # cel to cell coupling factor
+            f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
+            f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
+            kcc = 2*f_diff/f_add * 100
+
+            # field flatness
+            ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
+            # get max in each cell
+            peaks, _ = find_peaks(ax_field['y_abs'])
+            E_abs_peaks = ax_field['y_abs'][peaks]
+            ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
+
             d = {
-                "Req": Req,
-                "Normalization Length": norm_length,
-                "freq": Freq,
-                "Q": Q,
-                "E": E_stored,
-                "Vacc": Vacc,
-                "Eacc": Eacc,
-                "Epk": Epk,
-                "Hpk": Hpk,
-                "Bpk": Bpk,
-                "R/Q": 2 * r_Q,
-                "Epk/Eacc": Epk_Eacc,
-                "Bpk/Eacc": Bpk_Eacc,
-                "G": G,
-                "GR/Q": GR_Q
+                "Req [mm]": Req,
+                "Normalization Length [mm]": norm_length,
+                "freq [MHz]": Freq,
+                "Q []": Q,
+                "E [MV/m]": E_stored,
+                "Vacc [MV]": Vacc,
+                "Eacc [MV/m]": Eacc,
+                "Epk [MV/m]": Epk,
+                "Hpk [A/m]": Hpk,
+                "Bpk [mT]": Bpk,
+                "kcc [%]": kcc,
+                "ff [%]": ff,
+                "Rsh [Ohm]": Rsh,
+                "R/Q [Ohm]": 2 * r_Q,
+                "Epk/Eacc []": Epk_Eacc,
+                "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
+                "G [Ohm]": G,
+                "GR/Q [Ohm^2]": GR_Q
             }
 
             with open(fr'{run_save_directory}\qois.json', "w") as f:
@@ -326,3 +345,26 @@ class SLANSGeometry(Geometry):
         else:
             os.mkdir(path)
             return "Yes"
+
+    @staticmethod
+    def get_axis_field_data(folder, mode):
+        axis_field_data = {}
+
+        x, y = [], []
+        path = os.path.join(fr"{folder}\cavity_33_{mode}.af")
+        with open(path, 'r') as f:
+            for ll in f.readlines():
+                ll = ll.strip()
+                x.append(float(ll.split(' ')[0]))
+                y.append(float(ll.split(' ')[1]))
+
+        # get avg x
+        # avg_x = sum(x) / len(x)
+        # x_shift = [t - avg_x for t in x]
+
+        y_abs = [abs(e) for e in y]
+
+        # RETURN ABSOLUTE FIELD VALUE
+        axis_field_data['x'], axis_field_data['y'], axis_field_data['y_abs'] = np.array(x), np.array(y), np.array(y_abs)
+
+        return axis_field_data
