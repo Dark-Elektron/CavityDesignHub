@@ -258,16 +258,15 @@ class ABCIGeometry(Geometry):
 
             abci_path = os.getcwd()
 
-            # print(abci_path)
             exe_path = os.path.join(abci_path, fr'{parentDir}\exe\ABCI_exe\ABCI_MP64+.exe')
             # print(exe_path)
             subprocess.call([exe_path, fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             # save json file
-            shape = {'IC': mid_cells_par,
-                     'OC': l_end_cell_par,
-                     'OC_R': r_end_cell_par}
+            shape = {'IC': list(mid_cells_par),
+                     'OC': list(l_end_cell_par),
+                     'OC_R': list(r_end_cell_par)}
 
             with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
                 json.dump(shape, f, indent=4, separators=(',', ': '))
