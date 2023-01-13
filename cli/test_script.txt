@@ -1,0 +1,9 @@
+import numpy as np
+from cli.cavity import Cavity
+midcell = np.array([42, 42, 12, 19, 35, 57.7, 103.3])
+cav = Cavity(1, midcell)
+cav.save(files_path='D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\ConsoleTest')
+cav.run_eigenmode()
+cav.run_wakefield()
+cav.run_eigenmode(solver='custom')
+cav.run_tune('Req', freq=1300)

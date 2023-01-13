@@ -21,7 +21,7 @@ eta0 = 376.7303134111465
 
 
 class Model:
-    def __init__(self, folder, name, parent_dir=None):
+    def __init__(self, folder=None, name=None, parent_dir=None):
         self.name = name
         self.Epk, self.Hpk, self.Eacc, self.Vacc, self.E_z_axis = None, None, None, None, None
         self.k_loss, self.epk, self.bpk = None, None, None
@@ -42,6 +42,12 @@ class Model:
         self.folder = fr"{folder}\{name}"
         self.geodata = None
         self.parent_dir = parent_dir
+
+    def set_name(self, name):
+        self.name = name
+
+    def set_folder(self, folder):
+        self.folder = folder
 
     def create_inputs(self):
         """
@@ -258,6 +264,7 @@ class Model:
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             # subprocess.call(fr"{self.parent_dir}\exe\own_exe\2dgen_bin.exe", cwd=self.folder)
         else:
+            print(os.path.exists(fr"..\..\..\exe\own_exe\2dgen_bin.exe"), os.path.exists(self.folder))
             subprocess.call(fr"..\..\..\exe\own_exe\2dgen_bin.exe", cwd=self.folder,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             # subprocess.call(f"{self.folder}/2dgen_bin.exe", cwd=self.folder)
