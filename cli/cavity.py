@@ -48,7 +48,33 @@ def done(*arg):
 
 
 class Cavity:
+    """
+    Command Line Interface module for running analysis.
+
+    .. note::
+
+       Still under development so some functions might not work properly
+    """
     def __init__(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none', name='cavity'):
+        """
+        Initialise cavity object. A cavity object is defined by the number of cells, the cell geometric parameters,
+        if it has beampipes or not and the name. These properties could be changed and retrieved later using the
+        corresponding ``set`` and ``get`` functions.
+
+        Parameters
+        ----------
+        n_cells: int
+            Number of cells
+        mid_cell: list, array like
+            Mid cell geometric parameters of the cavity
+        end_cell_left: list, array like
+            Left end cell geometric parameters of the cavity
+        end_cell_right: list, array like
+            Right end cell geometric parameters of the cavity
+        beampipe: {'none', 'both', 'left', 'right'}
+            Beampipe options
+        name
+        """
         self.n_modes = n_cells + 1
         self.n_modules = 1
         self.folder = None
@@ -102,30 +128,136 @@ class Cavity:
         }
 
     def set_name(self, name):
+        """
+        Set cavity name
+
+        Parameters
+        ----------
+        name: str
+            Name of cavity
+
+        Returns
+        -------
+
+        """
         self.name = name
 
     def set_n_cells(self, n_cells):
-        self.n_cells = n_cells
+        """
+        Sets number of cells of cavity
+
+        Parameters
+        ----------
+        n_cells: int
+            Number of cavity cells
+
+        Returns
+        -------
+
+        """
+        self.n_cells = int(n_cells)
 
     def set_mid_cell(self, cell):
+        """
+        Set mid cell geometric parameters of cavity
+
+        Parameters
+        ----------
+        cell: list, array like
+            Geometric parameters of cells
+
+        Returns
+        -------
+
+        """
         self.mid_cell = cell
 
     def set_end_cell_left(self, cell):
-        self.mid_cell = cell
+        """
+        Set left end cell geometric parameters of cavity
+
+        Parameters
+        ----------
+        cell: list, array like
+            Geometric parameters of cells
+
+        Returns
+        -------
+
+        """
+        self.end_cell_left = cell
 
     def set_end_cell_right(self, cell):
+        """
+        Set right end cell geometric parameters of cavity
+
+        Parameters
+        ----------
+        cell: list, array like
+            Geometric parameters of cells
+
+        Returns
+        -------
+
+        """
         self.end_cell_right = cell
 
     def set_boundary_conditions(self, bc):
-        self.bc = bc
+        """
+        Sets boundary conditions for the beampipes of cavity
+
+        Parameters
+        ----------
+        bc: int
+            Boundary condition of left and right cell/beampipe ends
+
+        Returns
+        -------
+
+        """
+        self.bc = int(bc)
 
     def set_beampipe(self, bp):
+        """
+        Set beampipe option of cavity
+
+        Parameters
+        ----------
+        bp: str
+            Beampipe option of cell
+
+        Returns
+        -------
+
+        """
         self.beampipe = bp
 
     def load(self):
+        """
+        Load existing cavity project folder
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        """
         pass
 
     def save(self, files_path):
+        """
+        Set folder to save cavity analysis results
+
+        Parameters
+        ----------
+        files_path: str
+            Save project directory
+
+        Returns
+        -------
+
+        """
 
         if files_path is None:
             error('Please specify a folder to write the simulation results to.')
@@ -133,7 +265,7 @@ class Cavity:
         else:
             try:
                 self.folder = files_path
-                success = self.create_project()
+                success = self._create_project()
                 if not success:
                     error("Project could not be created. Please check the folder and try again.")
                     return
@@ -147,12 +279,60 @@ class Cavity:
             self.folder = os.getcwd()
 
     def load_shape_space(self, filepath):
+        """
+        Get cavity geometric parameters from shape space
+
+        Parameters
+        ----------
+        filepath: str
+            Shape space directory
+
+        Returns
+        -------
+
+        """
         pass
 
-    def save_shape_space(self):
+    def save_shape_space(self, filepath=None):
+        """
+        Save current geometric parameters as shape space
+
+        Parameters
+        ----------
+        filepath: str
+            Directory to save shape space to. If no input is given, it is saved to the Cavities directory
+
+        Returns
+        -------
+
+        """
         pass
 
     def run_tune(self, tune_variable, cell_type='Mid Cell', freq=None, solver='SLANS', proc=0, resume=False, n_cells=1):
+        """
+        Tune current cavity geometry
+
+        Parameters
+        ----------
+        n_cells: int
+            Number of cells used for tuning.
+        resume: bool
+            Option to resume tuning or not. Only for shape space with multiple entries.
+        proc: int
+            Processor number
+        solver: {'SLANS', 'Native'}
+            Solver to be used. Native solver is still under development. Results are not as accurate as that of SLANS.
+        freq: float
+            Reference frequency in MHz
+        cell_type: {'mid cell', 'end-mid cell', 'mid-end cell', 'single cell'}
+            Type of cell to tune
+        tune_variable: {'Req', 'L'}
+            Tune variable. Currently supports only the tuning of the equator radius ``Req`` and half-cell length ``L``
+
+        Returns
+        -------
+
+        """
 
         for _ in tqdm([1]):
             iter_set = ['Linear Interpolation', 1e-4, 10]
@@ -225,8 +405,8 @@ class Cavity:
                 if solver.lower() == 'slans':
                     if run_tune.lower() == 'y':
                         # copy files required for simulation
-                        self.overwriteFolder(proc, self.folder, self.name)
-                        self.copyFiles(proc, SOFTWARE_DIRECTORY, self.folder, self.name)
+                        self._overwriteFolder(proc, self.folder, self.name)
+                        self._copyFiles(proc, SOFTWARE_DIRECTORY, self.folder, self.name)
 
                         self.run_tune_slans(shape_space, resume, proc, self.bc,
                                             SOFTWARE_DIRECTORY, self.folder, self.name, tuner,
@@ -242,8 +422,8 @@ class Cavity:
             else:
                 if solver.lower() == 'slans':
                     # copy files required for simulation
-                    self.overwriteFolder(proc, self.folder, self.name)
-                    self.copyFiles(proc, SOFTWARE_DIRECTORY, self.folder, self.name)
+                    self._overwriteFolder(proc, self.folder, self.name)
+                    self._copyFiles(proc, SOFTWARE_DIRECTORY, self.folder, self.name)
 
                     self.run_tune_slans(shape_space, resume, proc, self.bc,
                                         SOFTWARE_DIRECTORY, fr'{self.folder}', self.name, tuner,
@@ -267,13 +447,33 @@ class Cavity:
 
     def run_eigenmode(self, solver='SLANS', freq_shift=0, boundary_cond=None, subdir='',
                       UQ=False):
+        """
+        Run eigenmode analysis on cavity
+
+        Parameters
+        ----------
+        solver: {'SLANS', 'Native'}
+            Solver to be used. Native solver is still under development. Results are not as accurate as that of SLANS.
+        freq_shift:
+            Frequency shift. Eigenmode solver searches for eigenfrequencies around this value
+        boundary_cond: int
+            Boundary condition of left and right cell/beampipe ends
+        subdir: str
+            Sub directory to save results to
+        UQ: bool
+            Used to turn on or off uncertainty quantification
+
+        Returns
+        -------
+
+        """
 
         for _ in tqdm([1]):
             if boundary_cond:
                 self.bc = boundary_cond
 
             if solver.lower() == 'slans':
-                self.run_slans(self.name, self.n_cells, self.n_modules, self.shape_space, self.n_modes, freq_shift,
+                self._run_slans(self.name, self.n_cells, self.n_modules, self.shape_space, self.n_modes, freq_shift,
                                self.bc, SOFTWARE_DIRECTORY, self.folder, sub_dir='', UQ=UQ)
 
                 # load quantities of interest
@@ -282,7 +482,7 @@ class Cavity:
                 except FileNotFoundError:
                     error("Could not find the tune results. Please rerun eigenmode analysis.")
             else:
-                self.run_custom_eig(self.name, self.folder, self.n_cells,
+                self._run_custom_eig(self.name, self.folder, self.n_cells,
                                     self.mid_cell, self.end_cell_left, self.end_cell_right,
                                     beampipe=self.beampipe, plot=False)
                 # load quantities of interest
@@ -290,6 +490,38 @@ class Cavity:
 
     def run_wakefield(self, MROT=2, MT=10, NFS=10000, wakelength=50, bunch_length=25,
                       DDR_SIG=0.1, DDZ_SIG=0.1, WG_M=None, marker='', wp_dict=None, solver='ABCI'):
+        """
+        Run wakefield analysis on cavity
+
+        Parameters
+        ----------
+        MROT: {0, 1}
+            Polarisation 0 for longitudinal polarization and 1 for transversal polarization
+        MT: int
+            Number of time steps it takes for a beam to move from one mesh cell to the other
+        NFS: int
+            Number of frequency samples
+        wakelength:
+            Wakelength to be analysed
+        bunch_length: float
+            Length of the bunch
+        DDR_SIG: float
+            Mesh to bunch length ration in the r axis
+        DDZ_SIG: float
+            Mesh to bunch length ration in the z axis
+        WG_M:
+            For module simulation. Specifies the length of the beampipe between two cavities.
+        marker: str
+            Marker for the cavities. Adds this to the cavity name specified in a shape space json file
+        wp_dict: dict
+            Python dictionary containing relevant parameters for the wakefield analysis for a specific operating point
+        solver: {'ABCI'}
+            Only one solver is currently available
+
+        Returns
+        -------
+
+        """
 
         if wp_dict is None:
             wp_dict = {}
@@ -297,12 +529,13 @@ class Cavity:
         if len(wp_dict.keys()) != 0:
             self.wake_op_points = wp_dict
 
-        msg = True
+        exist = False
         # check if folders already exists
         if os.path.exists(fr'{self.folder}'):
+            exist = True
             if len(wp_dict.keys()) != 0:
 
-                for wp, vals in wp_dict:
+                for wp, vals in wp_dict.items():
                     self.sigma = vals['sigma_z (SR/BS) [mm]']
 
                     wp_SR = f"{wp}_SR_{self.sigma.split(r'/')[0]}mm"
@@ -311,31 +544,31 @@ class Cavity:
                             os.path.exists(fr"{self.folder}/SimulationData/ABCI/{self.name}/{wp_BS}"):
                         pass
                     else:
-                        msg = False
+                        exist = False
             else:
-                msg = True
+                exist = False
         else:
-            msg = False
+            exist = False
 
-        if msg:
+        if exist:
             run_wake = input("Wakefield results already exist for these settings. Run wakefield again? (y/N)")
             if run_wake.lower() == 'y':
                 msg = True
             else:
                 msg = False
 
-        if msg:
+        if not exist:
             for _ in tqdm([1]):
                 if solver == 'ABCI':
                     info(">> Running wakefield simulation")
-                    self.run_abci(self.name, self.n_cells, self.n_modules, self.shape_space,
+                    self._run_abci(self.name, self.n_cells, self.n_modules, self.shape_space,
                                   MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
                                   DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
                                   parentDir=SOFTWARE_DIRECTORY, projectDir=fr'{self.folder}', WG_M=WG_M, marker=marker,
                                   wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
 
                     try:
-                        self.get_slans_qois()
+                        self.get_abci_qois()
                     except FileNotFoundError:
                         error("Could not find the abci wakefield results. Please rerun wakefield analysis.")
         else:
@@ -345,17 +578,27 @@ class Cavity:
                 error("Could not find the abci wakefield results. Please rerun wakefield analysis.")
 
     def calc_op_freq(self):
+        """
+        Calculates operating frequency. The operating frequency is used for tuning when a frequency is not given.
+        It is advisable to always include the desired tune frequency. Example
+
+        .. py:function:: cav.run_tune('Req', freq=1300)
+
+        Returns
+        -------
+
+        """
         if not self.freq:
             self.freq = (c0 / 4 * self.L)
 
     @staticmethod
-    def run_custom_eig(name, folder, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe='both', plot=False):
+    def _run_custom_eig(name, folder, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe='both', plot=False):
         custom_eig.set_name(name)
         custom_eig.set_folder(folder)
         custom_eig.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe='both', plot=True)
 
     @staticmethod
-    def run_slans(name, n_cells, n_modules, shape, n_modes, f_shift, bc, parentDir, projectDir, sub_dir='', UQ=False):
+    def _run_slans(name, n_cells, n_modules, shape, n_modes, f_shift, bc, parentDir, projectDir, sub_dir='', UQ=False):
         start_time = time.time()
         # create folders for all keys
         slans_geom.createFolder(name, projectDir, subdir=sub_dir)
@@ -378,7 +621,7 @@ class Cavity:
         done(f'Done with Cavity {name}. Time: {time.time() - start_time}')
 
     @staticmethod
-    def run_abci(name, n_cells, n_modules, shape, MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
+    def _run_abci(name, n_cells, n_modules, shape, MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
                  DDR_SIG=0.1, DDZ_SIG=0.1,
                  parentDir=None, projectDir=None,
                  WG_M=None, marker='', wp_dict=None, freq=0, R_Q=0):
@@ -608,58 +851,80 @@ class Cavity:
         self.wall_material = wm
 
     def get_slans_tune_res(self, tune_variable, cell_type):
+        """
+
+        Parameters
+        ----------
+        tune_variable: {'Req', 'L'}
+            Tune variable. Currently supports only the tuning of the equator radius ``Req`` and half-cell length ``L``
+        cell_type: {'mid cell', 'end-mid cell', 'mid-end cell', 'single cell'}
+            Type of cell to tune
+
+        Returns
+        -------
+
+        """
         tune_res = 'tune_res.json'
-        with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}", 'r') as json_file:
-            self.slans_tune_res = json.load(json_file)
+        if os.path.exists(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}"):
+            with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}", 'r') as json_file:
+                self.slans_tune_res = json.load(json_file)
 
-        self.freq = self.slans_tune_res['freq']
+            self.freq = self.slans_tune_res['freq']
 
-        if tune_variable.lower() == 'req':
-            self.shape_space['IC'][6] = self.slans_tune_res['Req']
-            self.shape_space['OC'][6] = self.slans_tune_res['Req']
-            self.shape_space['OC_R'][6] = self.slans_tune_res['Req']
-            self.mid_cell[6] = self.slans_tune_res['Req']
-            self.end_cell_left[6] = self.slans_tune_res['Req']
-            self.end_cell_right[6] = self.slans_tune_res['Req']
+            if tune_variable.lower() == 'req':
+                self.shape_space['IC'][6] = self.slans_tune_res['Req']
+                self.shape_space['OC'][6] = self.slans_tune_res['Req']
+                self.shape_space['OC_R'][6] = self.slans_tune_res['Req']
+                self.mid_cell[6] = self.slans_tune_res['Req']
+                self.end_cell_left[6] = self.slans_tune_res['Req']
+                self.end_cell_right[6] = self.slans_tune_res['Req']
+            else:
+                self.shape_space['IC'][5] = self.slans_tune_res['Req']
+                self.shape_space['OC'][5] = self.slans_tune_res['Req']
+                self.shape_space['OC_R'][5] = self.slans_tune_res['Req']
+                self.mid_cell[5] = self.slans_tune_res['Req']
+                self.end_cell_left[5] = self.slans_tune_res['Req']
+                self.end_cell_right[5] = self.slans_tune_res['Req']
+
+            # set alpha
+            if len(self.mid_cell) == 7:
+                if isinstance(self.shape_space['IC'], np.ndarray):
+                    self.shape_space['IC'] = np.append(self.shape_space['IC'], self.slans_tune_res['alpha_i'])
+                    self.mid_cell = np.append(self.mid_cell, self.slans_tune_res['alpha_i'])
+                elif isinstance(self.shape_space['IC'], list):
+                    self.shape_space['IC'].append(self.slans_tune_res['alpha_i'])
+                    self.mid_cell.append(self.slans_tune_res['alpha_i'])
+            elif len(self.mid_cell['IC']) == 8:
+                self.shape_space['IC'][7] = self.slans_tune_res['alpha_i']
+                self.mid_cell[7] = self.slans_tune_res['alpha_i']
+
+            if cell_type.lower() == 'end-mid cell' \
+                    or cell_type.lower() == 'mid-end cell' \
+                    or cell_type.lower() == 'single cell':
+
+                if len(self.end_cell_left) == 7:
+                    if isinstance(self.shape_space['OC'], np.ndarray):
+                        self.shape_space['OC'].append(self.slans_tune_res['alpha_o'])
+                        self.end_cell_left.append(self.slans_tune_res['alpha_o'])
+                    elif isinstance(self.shape_space['OC'], list):
+                        self.shape_space['OC'].append(self.slans_tune_res['alpha_o'])
+                        self.end_cell_left.append(self.slans_tune_res['alpha_o'])
+
+                elif len(self.end_cell_left) == 8:
+                    self.shape_space['OC'][7] = self.slans_tune_res['alpha_o']
+                    self.end_cell_left[7] = self.slans_tune_res['alpha_o']
+
+            # expand tune to be able to tune right cavity geometry also
         else:
-            self.shape_space['IC'][5] = self.slans_tune_res['Req']
-            self.shape_space['OC'][5] = self.slans_tune_res['Req']
-            self.shape_space['OC_R'][5] = self.slans_tune_res['Req']
-            self.mid_cell[5] = self.slans_tune_res['Req']
-            self.end_cell_left[5] = self.slans_tune_res['Req']
-            self.end_cell_right[5] = self.slans_tune_res['Req']
-
-        # set alpha
-        if len(self.mid_cell) == 7:
-            if isinstance(self.shape_space['IC'], np.ndarray):
-                self.shape_space['IC'] = np.append(self.shape_space['IC'], self.slans_tune_res['alpha_i'])
-                self.mid_cell = np.append(self.mid_cell, self.slans_tune_res['alpha_i'])
-            elif isinstance(self.shape_space['IC'], list):
-                self.shape_space['IC'].append(self.slans_tune_res['alpha_i'])
-                self.mid_cell.append(self.slans_tune_res['alpha_i'])
-        elif len(self.mid_cell['IC']) == 8:
-            self.shape_space['IC'][7] = self.slans_tune_res['alpha_i']
-            self.mid_cell[7] = self.slans_tune_res['alpha_i']
-
-        if cell_type.lower() == 'end-mid cell' \
-                or cell_type.lower() == 'mid-end cell' \
-                or cell_type.lower() == 'single cell':
-
-            if len(self.end_cell_left) == 7:
-                if isinstance(self.shape_space['OC'], np.ndarray):
-                    self.shape_space['OC'].append(self.slans_tune_res['alpha_o'])
-                    self.end_cell_left.append(self.slans_tune_res['alpha_o'])
-                elif isinstance(self.shape_space['OC'], list):
-                    self.shape_space['OC'].append(self.slans_tune_res['alpha_o'])
-                    self.end_cell_left.append(self.slans_tune_res['alpha_o'])
-
-            elif len(self.end_cell_left) == 8:
-                self.shape_space['OC'][7] = self.slans_tune_res['alpha_o']
-                self.end_cell_left[7] = self.slans_tune_res['alpha_o']
-
-        # expand tune to be able to tune right cavity geometry also
+            error("Tune results not found. Please tune the cavity")
 
     def get_slans_qois(self):
+        """
+        Get quantities of interest written by the SLANS code
+        Returns
+        -------
+
+        """
         qois = 'qois.json'
 
         with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{qois}") as json_file:
@@ -684,12 +949,31 @@ class Cavity:
         # print(self.surface_field)
 
     def get_custom_eig_qois(self):
+        """
+        Get quantities of interest written by the native eigenmode analysis code
+        Returns
+        -------
+
+        """
         qois = 'qois.json'
 
         with open(fr"{self.folder}\SimulationData\NativeEig\{self.name}\{qois}") as json_file:
             self.custom_eig_qois = json.load(json_file)
 
     def get_abci_qois(self, opt='SR'):
+        """
+        Get the quantities of interest written by the ABCI code
+
+        Parameters
+        ----------
+        opt: {'SR', 'BS'}
+            SR - Synchrotron radiation bunch length
+            BS - Bremsstrahlung
+
+        Returns
+        -------
+
+        """
         qois = 'qois.json'
 
         with open(fr"{self.folder}\SimulationData\ABCI\{self.name}\{qois}") as json_file:
@@ -716,37 +1000,14 @@ class Cavity:
                     self.phom = d_qois['P_HOM [kW]']
                     self.I0 = d_qois['I0 [mA]']
 
-    @staticmethod
-    def createFolder(name, projectDir, subdir=''):
-        # change save directory
-        path = fr'{projectDir}\{name}'
-        if subdir == '':
-            pass
-        else:
-            new_path = fr'{projectDir}\{subdir}\{name}'
-            if os.path.exists(new_path):
-                path = new_path
-            else:
-                if not os.path.exists(fr'{projectDir}\{subdir}'):
-                    os.mkdir(fr'{projectDir}\{subdir}')
-
-                os.mkdir(new_path)
-                path = fr'{projectDir}\{subdir}\{name}'
-
-        if os.path.exists(path):
-            shutil.rmtree(path)
-            os.mkdir(path)
-        else:
-            os.mkdir(path)
-
-    def create_project(self):
+    def _create_project(self):
         project_name = self.name
         project_dir = self.folder
 
         if project_name != '':
 
             # check if folder already exist
-            e = self.checkIfPathExist(project_dir, project_name)
+            e = self._check_if_path_exists(project_dir, project_name)
 
             if e:
                 def make_dirs_from_dict(d, current_dir=fr"{project_dir}"):
@@ -791,7 +1052,8 @@ class Cavity:
             self.folder = f2b_slashes(fr"{project_dir}\{project_name}")
             return False
 
-    def checkIfPathExist(self, directory, folder):
+    @staticmethod
+    def _check_if_path_exists(directory, folder):
         path = f"{directory}/{folder}"
         if os.path.exists(path):
             x = input("Project already exists. Do you want to overwrite? y/N")
@@ -819,7 +1081,7 @@ class Cavity:
             return True
 
     @staticmethod
-    def overwriteFolder(invar, projectDir, name):
+    def _overwriteFolder(invar, projectDir, name):
         path = fr"{projectDir}\SimulationData\SLANS\_process_{invar}"
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -828,7 +1090,7 @@ class Cavity:
         os.makedirs(path)
 
     @staticmethod
-    def copyFiles(invar, parentDir, projectDir, name):
+    def _copyFiles(invar, parentDir, projectDir, name):
         src = fr"{parentDir}\exe\SLANS_exe"
         dst = fr"{projectDir}\SimulationData\SLANS\_process_{invar}\SLANS_exe"
 
