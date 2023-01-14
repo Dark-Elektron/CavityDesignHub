@@ -73,6 +73,8 @@ class Cavity:
         # abci results
         self.k_fm, self.k_loss, self.k_kick, self.phom, self.sigma, self.I0 = [0 for _ in range(6)]
 
+        self.wall_material = None
+
         self.freq = None
 
         if not (isinstance(end_cell_left, np.ndarray) or isinstance(end_cell_left, list)):
@@ -219,7 +221,7 @@ class Cavity:
                 }
 
             if len(self.slans_tune_res.keys()) != 0:
-                run_tune = input("This cavity has already been tuned. Run tune again? y/N")
+                run_tune = input("This cavity has already been tuned. Run tune again? (y/N)")
                 if solver.lower() == 'slans':
                     if run_tune.lower() == 'y':
                         # copy files required for simulation
@@ -275,7 +277,10 @@ class Cavity:
                                self.bc, SOFTWARE_DIRECTORY, self.folder, sub_dir='', UQ=UQ)
 
                 # load quantities of interest
-                self.get_slans_qois()
+                try:
+                    self.get_slans_qois()
+                except FileNotFoundError:
+                    error("Could not find the tune results. Please rerun eigenmode analysis.")
             else:
                 self.run_custom_eig(self.name, self.folder, self.n_cells,
                                     self.mid_cell, self.end_cell_left, self.end_cell_right,
@@ -283,7 +288,7 @@ class Cavity:
                 # load quantities of interest
                 self.get_custom_eig_qois()
 
-    def run_wakefield(self, MROT=2, MT=10, NFS=10000, wakelength=100, bunch_length=25,
+    def run_wakefield(self, MROT=2, MT=10, NFS=10000, wakelength=50, bunch_length=25,
                       DDR_SIG=0.1, DDZ_SIG=0.1, WG_M=None, marker='', wp_dict=None, solver='ABCI'):
 
         if wp_dict is None:
@@ -292,14 +297,52 @@ class Cavity:
         if len(wp_dict.keys()) != 0:
             self.wake_op_points = wp_dict
 
-        for _ in tqdm([1]):
-            if solver == 'ABCI':
-                info(">> Running wakefield simulation")
-                self.run_abci(self.name, self.n_cells, self.n_modules, self.shape_space,
-                              MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
-                              DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
-                              parentDir=SOFTWARE_DIRECTORY, projectDir=fr'{self.folder}', WG_M=WG_M, marker=marker,
-                              wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
+        msg = True
+        # check if folders already exists
+        if os.path.exists(fr'{self.folder}'):
+            if len(wp_dict.keys()) != 0:
+
+                for wp, vals in wp_dict:
+                    self.sigma = vals['sigma_z (SR/BS) [mm]']
+
+                    wp_SR = f"{wp}_SR_{self.sigma.split(r'/')[0]}mm"
+                    wp_BS = f"{wp}_SR_{self.sigma.split(r'/')[1]}mm"
+                    if os.path.exists(fr"{self.folder}/SimulationData/ABCI/{self.name}/{wp_SR}") and \
+                            os.path.exists(fr"{self.folder}/SimulationData/ABCI/{self.name}/{wp_BS}"):
+                        pass
+                    else:
+                        msg = False
+            else:
+                msg = True
+        else:
+            msg = False
+
+        if msg:
+            run_wake = input("Wakefield results already exist for these settings. Run wakefield again? (y/N)")
+            if run_wake.lower() == 'y':
+                msg = True
+            else:
+                msg = False
+
+        if msg:
+            for _ in tqdm([1]):
+                if solver == 'ABCI':
+                    info(">> Running wakefield simulation")
+                    self.run_abci(self.name, self.n_cells, self.n_modules, self.shape_space,
+                                  MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
+                                  DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
+                                  parentDir=SOFTWARE_DIRECTORY, projectDir=fr'{self.folder}', WG_M=WG_M, marker=marker,
+                                  wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
+
+                    try:
+                        self.get_slans_qois()
+                    except FileNotFoundError:
+                        error("Could not find the abci wakefield results. Please rerun wakefield analysis.")
+        else:
+            try:
+                self.get_abci_qois()
+            except FileNotFoundError:
+                error("Could not find the abci wakefield results. Please rerun wakefield analysis.")
 
     def calc_op_freq(self):
         if not self.freq:
@@ -561,6 +604,9 @@ class Cavity:
                     with open(fr"{projectDir}\SimulationData\ABCI\{key}\uq.json", 'w') as file:
                         file.write(json.dumps(result_dict_abci, indent=4, separators=(',', ': ')))
 
+    def set_wall_material(self, wm):
+        self.wall_material = wm
+
     def get_slans_tune_res(self, tune_variable, cell_type):
         tune_res = 'tune_res.json'
         with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}", 'r') as json_file:
@@ -619,6 +665,7 @@ class Cavity:
         with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{qois}") as json_file:
             self.slans_qois = json.load(json_file)
 
+        self.freq = self.slans_qois['freq [MHz]']
         self.k_cc = self.slans_qois['kcc [%]']
         self.ff = self.slans_qois['ff [%]']
         self.R_Q = self.slans_qois['R/Q [Ohm]']
@@ -642,23 +689,32 @@ class Cavity:
         with open(fr"{self.folder}\SimulationData\NativeEig\{self.name}\{qois}") as json_file:
             self.custom_eig_qois = json.load(json_file)
 
-    def get_abci_qois(self):
+    def get_abci_qois(self, opt='SR'):
         qois = 'qois.json'
 
         with open(fr"{self.folder}\SimulationData\ABCI\{self.name}\{qois}") as json_file:
             self.abci_qois = json.load(json_file)
 
         if len(self.wake_op_points.keys()) != 0 and self.freq != 0 and self.R_Q != 0:
-            for wp, vals in self.wake_op_points:
-                self.sigma = vals['sigma [mm]']
+            for wp, vals in self.wake_op_points.items():
+                self.sigma = vals['sigma_z (SR/BS) [mm]']
 
-                d_qois = self.abci_qois[f'{wp}_{self.sigma}']
+                if opt == 'SR':
+                    d_qois = self.abci_qois[f"{wp}_{opt}_{self.sigma.split(r'/')[0]}mm"]
 
-                self.k_fm = d_qois['k_FM [V/pC]']
-                self.k_loss = d_qois['|k_loss| [V/pC]']
-                self.k_kick = d_qois['|k_kick| [V/pC/m]']
-                self.phom = d_qois['P_HOM [kW]']
-                self.I0 = d_qois['I0 [mA]']
+                    self.k_fm = d_qois['k_FM [V/pC]']
+                    self.k_loss = d_qois['|k_loss| [V/pC]']
+                    self.k_kick = d_qois['|k_kick| [V/pC/m]']
+                    self.phom = d_qois['P_HOM [kW]']
+                    self.I0 = d_qois['I0 [mA]']
+                else:
+                    d_qois = self.abci_qois[f"{wp}_{opt}_{self.sigma.split(r'/')[1]}mm"]
+
+                    self.k_fm = d_qois['k_FM [V/pC]']
+                    self.k_loss = d_qois['|k_loss| [V/pC]']
+                    self.k_kick = d_qois['|k_kick| [V/pC/m]']
+                    self.phom = d_qois['P_HOM [kW]']
+                    self.I0 = d_qois['I0 [mA]']
 
     @staticmethod
     def createFolder(name, projectDir, subdir=''):
@@ -2417,6 +2473,29 @@ def show_valid_operating_point_structure():
         }
 
     info(dd)
+
+
+def get_surface_resistance(Eacc, b, m, freq, T):
+    Rs_dict = {
+        "Rs_NbCu_2K_400.79Mhz": 0.57 * (Eacc * 1e-6 * b) + 28.4,  # nOhm
+        "Rs_NbCu_4.5K_400.79Mhz": 39.5 * np.exp(0.014 * (Eacc * 1e-6 * b)) + 27,  # nOhm
+        "Rs_bulkNb_2K_400.79Mhz": (2.33 / 1000) * (Eacc * 1e-6 * b) ** 2 + 26.24,  # nOhm
+        "Rs_bulkNb_4.5K_400.79Mhz": 0.0123 * (Eacc * 1e-6 * b) ** 2 + 62.53,  # nOhm
+
+        "Rs_NbCu_2K_801.58Mhz": 1.45 * (Eacc * 1e-6 * b) + 92,  # nOhm
+        "Rs_NbCu_4.5K_801.58Mhz": 50 * np.exp(0.033 * (Eacc * 1e-6 * b)) + 154,  # nOhm
+        "Rs_bulkNb_2K_801.58Mhz": (16.4 + Eacc * 1e-6 * b * 0.092) * (800 / 704) ** 2,  # nOhm
+        "Rs_bulkNb_4.5K_801.58Mhz": 4 * (62.7 + (Eacc * 1e-6 * b) ** 2 * 0.012)  # nOhm
+    }
+    if freq < 600:
+        freq = 400.79
+
+    if freq >= 600:
+        freq = 801.58
+
+    rs = Rs_dict[fr"Rs_{m}_{T}K_{freq}Mhz"]
+
+    return rs
 
 # if __name__ == '__main__':
 #     p = str(Path(SOFTWARE_DIRECTORY).parents[0])

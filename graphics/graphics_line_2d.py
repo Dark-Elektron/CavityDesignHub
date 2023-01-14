@@ -24,10 +24,6 @@ class QGraphicsLine(QGraphicsPathItem):
         self.initUI()
 
     def initUI(self):
-        # shadow = QGraphicsDropShadowEffect()
-        # shadow.setBlurRadius(15)
-        # shadow.setColor(QColor("#000000"))
-        # self.setGraphicsEffect(shadow)
         pass
 
     def setSource(self, x, y):

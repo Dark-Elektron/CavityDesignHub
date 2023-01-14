@@ -38,7 +38,7 @@ class Ui_Wakefield(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 384, 2289))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -544, 451, 1899))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_9 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)

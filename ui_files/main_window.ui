@@ -285,12 +285,6 @@
            </layout>
           </widget>
           <widget class="QWidget" name="widget_8" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
            <layout class="QGridLayout" name="gridLayout_4">
             <item row="0" column="0">
              <widget class="QWidget" name="w_Pane" native="true">

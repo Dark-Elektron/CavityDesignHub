@@ -47,16 +47,10 @@ class GraphicsView(QGraphicsView):
         self.wE_original = self.ui.scrollArea.wheelEvent
         self.ui.scrollArea.wheelEvent = self.wE
 
-        self.dragEdge = None
-        self.last_lmb_click_scene_pos = None
-        self.previousEdge = None
-        self.last_start_socket = None
-
         self.setScene(self.grScene)
 
         self.mode = MODE_NOOP
         self.edge_color = QColor("#001000")
-        self.socket_type = 1
         self.editingFlag = False
 
         self.zoomInFactor = 1.25
@@ -87,7 +81,7 @@ class GraphicsView(QGraphicsView):
         self.setAcceptDrops(True)
 
         # set initial zoom scale
-        self.scale(1, 1)
+        self.scale(0.5, 0.5)
 
     def update_signal(self):
         self.ui.le_A_i.editingFinished.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))

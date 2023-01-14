@@ -813,8 +813,6 @@ if __name__ == '__main__':
     #     QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     app = QApplication(sys.argv)
-
     main_win = MainWindow()
-
     main_win.show()
     sys.exit(app.exec_())

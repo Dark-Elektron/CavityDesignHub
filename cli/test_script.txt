@@ -1,7 +1,7 @@
 import numpy as np
 from cli.cavity import Cavity
 midcell = np.array([42, 42, 12, 19, 35, 57.7, 103.3])
-cav = Cavity(1, midcell)
+cav = Cavity(2, midcell)
 cav.save(files_path='D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\ConsoleTest')
 cav.run_eigenmode()
 cav.run_wakefield()
@@ -16,3 +16,11 @@ wp = {
             }
         }
 cav.run_wakefield(wp_dict=wp)
+
+from cli.cavity import Cavities
+cavs = Cavities([])
+cavs.add_cavity(cav)
+import matplotlib.pyplot as plt
+plt.ion()
+cavs.plot_compare_fm_bar()
+cavs.plot_compare_hom_bar()

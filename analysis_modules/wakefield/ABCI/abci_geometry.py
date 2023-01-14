@@ -28,7 +28,7 @@ class ABCIGeometry(Geometry):
                DDZ_SIG=0.1, DDR_SIG=0.1,
                parentDir='', projectDir='', WG_M=None, marker='', sub_dir=''):
         # Adding parameter arguments here for testing purposes # fid, fileID
-        self.fid = f'{fid}'.upper()
+        self.fid = f'{fid}'
 
         # this checks whether input is from gui or from the optimisation
         if mid_cells_par is not None:

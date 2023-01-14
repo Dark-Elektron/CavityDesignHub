@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Eigenmode(object):
     def setupUi(self, Eigenmode):
         Eigenmode.setObjectName("Eigenmode")
-        Eigenmode.resize(878, 866)
+        Eigenmode.resize(1063, 862)
         Eigenmode.setStyleSheet("")
         self.gridLayout = QtWidgets.QGridLayout(Eigenmode)
         self.gridLayout.setObjectName("gridLayout")
@@ -46,7 +46,7 @@ class Ui_Eigenmode(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -436, 391, 1493))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 391, 1493))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_11 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)

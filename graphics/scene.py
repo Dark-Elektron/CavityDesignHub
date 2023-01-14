@@ -15,8 +15,6 @@ class Scene:
         self.grScene = None
         self.cavityShape = None
 
-        # self.line = Line(main_win)
-
         self.initUI()
 
     def initUI(self):
@@ -36,13 +34,6 @@ class Scene:
     def displayItemsOnScene(self):
         for i, line in enumerate(self.lines):
             print("\tLine {}: {}".format(i, line))
-
-    def resetIterationVariables(self):
-        self.direct = 0
-        self.indirect = 0
-        self.hdp = 0
-        self.excitatory = 0
-        self.inhibitory = 0
 
     def format(self, obj_list):
         new_obj_list = []
