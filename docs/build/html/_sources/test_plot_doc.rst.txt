@@ -1,7 +1,0 @@
-test\_plot\_doc module
-======================
-
-.. automodule:: test_plot_doc
-   :members:
-   :undoc-members:
-   :show-inheritance:

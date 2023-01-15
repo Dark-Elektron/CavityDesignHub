@@ -12,3 +12,4 @@ dist
 docs
 utils/multipacting_codes
 __pycache__/
+.idea
