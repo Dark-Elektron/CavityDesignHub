@@ -854,9 +854,9 @@ def create_cst_sweep_import_random(p, v, v_int):
         f.write(dfAsString)
 
 
-var = ['lh1', 'lh3', 'lh4', 'dh3', 'alpha_h', 'ch2', 'r_cyl', 'offset_y']
-
-var_int = [[150, 190], [35, 45], [50, 70], [12, 20], [90, 120], [2, 4], [10, 18], [10, 30]] # big interval
+# var = ['lh1', 'lh3', 'lh4', 'dh3', 'alpha_h', 'ch2', 'r_cyl', 'offset_y']
+#
+# var_int = [[150, 190], [35, 45], [50, 70], [12, 20], [90, 120], [2, 4], [10, 18], [10, 30]] # big interval
 # var_int = [[155, 175], [37.5, 42.5], [55, 65], [15, 18], [100, 115], [2, 4], [12, 16], [15, 25]]  # small interval
 
 # create_cst_sweep_import_random(1, var, var_int)
@@ -879,20 +879,20 @@ def create_cst_sweep_import_sobol_sequence(dim, index, columns, l_bounds, u_boun
         f.write(dfAsString)
 
 
-columns = ['shaft_y', 'bend_out_sec_prob_length', 'bend_out_cap_gap', 'Window_margin', 'Shift_from_center',
-           'Cap_y', 'Cap_thickness', 'Cap_Height', 'Cap_Gap', 'Bend_out_chamber_Length', 'BP_HOM_Penetration']
-nominal_values = [215, 60, 5.1, 12, -15, -15.5, 3, 49.6, 15, 30.5, 20]
-variation = 0.2
-l_bounds, u_bounds = [], []
-for nv in nominal_values:
-    if nv < 0:
-        l_bounds.append(nv*(1 + variation))
-        u_bounds.append(nv*(1 - variation))
-    else:
-        l_bounds.append(nv*(1 - variation))
-        u_bounds.append(nv*(1 + variation))
-print([list(x) for x in zip(l_bounds, u_bounds)])
-# create_cst_sweep_import_sobol_sequence(11, 9, columns, l_bounds, u_bounds)
+# columns = ['shaft_y', 'bend_out_sec_prob_length', 'bend_out_cap_gap', 'Window_margin', 'Shift_from_center',
+#            'Cap_y', 'Cap_thickness', 'Cap_Height', 'Cap_Gap', 'Bend_out_chamber_Length', 'BP_HOM_Penetration']
+# nominal_values = [215, 60, 5.1, 12, -15, -15.5, 3, 49.6, 15, 30.5, 20]
+# variation = 0.2
+# l_bounds, u_bounds = [], []
+# for nv in nominal_values:
+#     if nv < 0:
+#         l_bounds.append(nv*(1 + variation))
+#         u_bounds.append(nv*(1 - variation))
+#     else:
+#         l_bounds.append(nv*(1 - variation))
+#         u_bounds.append(nv*(1 + variation))
+# print([list(x) for x in zip(l_bounds, u_bounds)])
+# # create_cst_sweep_import_sobol_sequence(11, 9, columns, l_bounds, u_bounds)
 
 
 def plot_settings():
@@ -909,7 +909,7 @@ def plot_settings():
     mpl.rcParams['figure.dpi'] = 100
 
 
-plot_settings()
+# plot_settings()
 
 
 def plot_bar_single():
@@ -1261,48 +1261,48 @@ def jac(z, *data):
     return J
 
 
-mid = np.array([49, 34.30, 10.5, 17, 32.0, 57.7, 98.58]) * 1e-3
-# mid = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
-
-A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = mid
-L_bp_l = 0
-
-# CALCULATE x1, y1, x2, y2
-data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
-        [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-
-
-df = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
-            args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
-error_msg = df[-2]
-if error_msg == 4:
-    print("Finding reentrant shape")
-    df = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 1.15 * b_m, L_m - A_m + L_bp_l, Req_m - 1.15 * B_m]),
-                args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
-
-x1, y1, x2, y2 = df[0]
-ic(df)
-error_msg = df[-2]
-
-m = (y2 - y1) / (x2 - x1)
-alpha = 180 - np.arctan2((y2 - y1), (x2 - x1)) * 180 / np.pi
-ic(alpha)
-
-fig, ax = plt.subplots()
-
-coord, dim = data
-h, k, p, q = coord
-a, b, A, B = dim
-
-el_ab = Ellipse((h, k), 2*a, 2*b, alpha=0.5)
-el_AB = Ellipse((p, q), 2*A, 2*B, alpha=0.5)
-
-ax.add_artist(el_ab)
-ax.add_artist(el_AB)
-
-ax.set_xlim(-1.1*a, 1.1*L_m)
-ax.set_ylim(Ri_m, 1.1*Req_m)
-ax.plot([x1, x2], [y1, y2])
-
-plt.show()
+# mid = np.array([49, 34.30, 10.5, 17, 32.0, 57.7, 98.58]) * 1e-3
+# # mid = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
+#
+# A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = mid
+# L_bp_l = 0
+#
+# # CALCULATE x1, y1, x2, y2
+# data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
+#         [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+#
+#
+# df = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
+#             args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+# error_msg = df[-2]
+# if error_msg == 4:
+#     print("Finding reentrant shape")
+#     df = fsolve(ellipse_tangent, np.array([a_m + L_bp_l, Ri_m + 1.15 * b_m, L_m - A_m + L_bp_l, Req_m - 1.15 * B_m]),
+#                 args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+#
+# x1, y1, x2, y2 = df[0]
+# ic(df)
+# error_msg = df[-2]
+#
+# m = (y2 - y1) / (x2 - x1)
+# alpha = 180 - np.arctan2((y2 - y1), (x2 - x1)) * 180 / np.pi
+# ic(alpha)
+#
+# fig, ax = plt.subplots()
+#
+# coord, dim = data
+# h, k, p, q = coord
+# a, b, A, B = dim
+#
+# el_ab = Ellipse((h, k), 2*a, 2*b, alpha=0.5)
+# el_AB = Ellipse((p, q), 2*A, 2*B, alpha=0.5)
+#
+# ax.add_artist(el_ab)
+# ax.add_artist(el_AB)
+#
+# ax.set_xlim(-1.1*a, 1.1*L_m)
+# ax.set_ylim(Ri_m, 1.1*Req_m)
+# ax.plot([x1, x2], [y1, y2])
+#
+# plt.show()
 

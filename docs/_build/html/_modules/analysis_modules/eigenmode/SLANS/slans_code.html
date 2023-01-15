@@ -41,6 +41,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../../introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../../get_involved.html">Get Involved</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
@@ -456,53 +457,10 @@
         <span class="n">a</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># cone ellipse x</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>  <span class="c1"># cone ellipse y</span>
 
-        <span class="c1"># OLD CODE STILL KEPT HERE IN CASE MINE RUNS INTO A PROBLEM, HAHA!</span>
-        <span class="c1"># x1 = 0</span>
-        <span class="c1"># y1 = ri + b</span>
-        <span class="c1"># x2 = L</span>
-        <span class="c1"># y2 = Req - B</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">tangent_coords</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">ri</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">xy_cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">])</span>
 
-        <span class="c1"># ell_1 = np.array([[x1, ri], [x1 + a, ri+b], [x1, ri+2*b], [x1 - a, ri + b]])</span>
-        <span class="c1"># ell_2 = np.array([[L, Req - 2 * B], [L + A, Req - B], [L, Req], [L - A, Req - B]])</span>
-        <span class="c1"># # print(&quot;ELL_1::&quot;, ell_1, np.shape(ell_1)[-1])</span>
-        <span class="c1"># # print(&quot;ELL_2::&quot;, ell_2, np.shape(ell_2)[-1])</span>
-        <span class="c1">#</span>
-        <span class="c1"># k = 0</span>
-        <span class="c1"># # initialize x0</span>
-        <span class="c1"># x0 = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))</span>
-        <span class="c1"># # print(np.shape(x0))</span>
-        <span class="c1">#</span>
-        <span class="c1"># for i in range(len(ell_1)):</span>
-        <span class="c1">#     for j in range(len(ell_2)):</span>
-        <span class="c1">#         x0[k][:] = np.concatenate([ell_1[i][:], ell_2[j][:]])</span>
-        <span class="c1">#         k = k + 1</span>
-        <span class="c1">#</span>
-        <span class="c1"># x = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))</span>
-        <span class="c1"># import time as t</span>
-        <span class="c1"># for k in range(len(x0)):</span>
-        <span class="c1">#     x[k][:] = scopt.fsolve(self.func, x0[k][:])</span>
-        <span class="c1">#</span>
-        <span class="c1"># ind_x0 = np.zeros(shape=(np.shape(x0)[0], 1))</span>
-        <span class="c1"># for i in range(len(x)):</span>
-        <span class="c1">#     ind_x0[i] = (x[i][3] &gt; x[i][1]) and (x[i][0] &gt; x1) and (L &gt; x[i][2]) #already adjusted index</span>
-        <span class="c1"># # print(ind_x0)</span>
-        <span class="c1"># # print(np.shape(ind_x0))</span>
-        <span class="c1">#</span>
-        <span class="c1"># # print(&quot;After ind_x0&quot;)</span>
-        <span class="c1"># xy_cross = x[np.where(ind_x0 == 1)[0]][-1] # x1 y1 x2 y2</span>
-        <span class="c1"># print(&quot;\tXY_CROSS::&quot;, xy_cross)</span>
-        <span class="c1"># print(np.shape(xy_cross))</span>
-        <span class="c1"># plot_cavity(xy_cross, data)</span>
-
-        <span class="n">data</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="n">B</span><span class="p">],</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>  <span class="c1"># data = ([h, k, p, q], [a_m, b_m, A_m, B_m])</span>
-        <span class="n">xy_cross</span> <span class="o">=</span> <span class="n">scopt</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ellipse_tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
-                                <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
-
-        <span class="c1"># xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),</span>
-        <span class="c1">#                         args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
-        <span class="c1"># print(&quot;\tXY_CROSS2::&quot;, xy_cross)</span>
-
-        <span class="c1"># #</span>
         <span class="n">xy_L_ell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
         <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">0</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">xy_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
@@ -511,69 +469,10 @@
         <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">xy_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">xy_cross</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
         <span class="n">rz_coor</span> <span class="o">=</span> <span class="n">xy_L_ell</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">((</span><span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">180</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">,</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
         <span class="n">zr12</span> <span class="o">=</span> <span class="p">[[</span><span class="n">rz_coor</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">,</span> <span class="n">rz_coor</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">rz_coor</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">,</span> <span class="n">rz_coor</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]]]</span>
 
-        <span class="k">return</span> <span class="n">zr12</span><span class="p">,</span> <span class="n">alpha</span></div>
-    <span class="c1">#</span>
-    <span class="c1"># def func(self, x_in):</span>
-    <span class="c1">#     A = data[0]  # ellipse x</span>
-    <span class="c1">#     B = data[1]  # ellipse y</span>
-    <span class="c1">#     Req = data[2]  # equator radius</span>
-    <span class="c1">#     ri = data[3]  # iris radius</span>
-    <span class="c1">#     L = data[4]  # quarter length</span>
-    <span class="c1">#     a = data[5]  # cone ellipse x</span>
-    <span class="c1">#     b = data[6]  # cone ellipse y</span>
-    <span class="c1">#</span>
-    <span class="c1">#     x1 = 0</span>
-    <span class="c1">#     y1 = ri + b</span>
-    <span class="c1">#     x2 = L</span>
-    <span class="c1">#     y2 = Req - B</span>
-    <span class="c1">#</span>
-    <span class="c1">#     # F(1) = (b^2/a^2)*cot(x(1))-(B^2/A^2)*cot(x(2))</span>
-    <span class="c1">#     # F(2) = B*sin(x(2))+y2-b*sin(x(1))-y1+(b^2/a^2)*cot(x(1))*(A*cos(x(2))+x2-(a*cos(x(1))+x1))</span>
-    <span class="c1">#</span>
-    <span class="c1">#     f1 = (x_in[0] - x1) ** 2 / (a ** 2) + (x_in[1] - y1) ** 2 / b ** 2 - 1  # already adjusted indices for python</span>
-    <span class="c1">#     f2 = (x_in[2] - x2) ** 2 / (A ** 2) + (x_in[3] - y2) ** 2 / B ** 2 - 1</span>
-    <span class="c1">#     f3 = (x_in[2] - x_in[0]) * (x_in[0] - x1) / (a ** 2) + (x_in[3] - x_in[1]) * (x_in[1] - y1) / b ** 2</span>
-    <span class="c1">#     f4 = (x_in[2] - x_in[0]) * (x_in[2] - x2) / (A ** 2) + (x_in[3] - x_in[1]) * (x_in[3] - y2) / B ** 2</span>
-    <span class="c1">#</span>
-    <span class="c1">#     return [f1, f2, f3, f4]</span>
-
-<div class="viewcode-block" id="SLANS.ellipse_tangent"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.SLANS.html#analysis_modules.eigenmode.SLANS.slans_code.SLANS.ellipse_tangent">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">ellipse_tangent</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="o">*</span><span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        z:</span>
-
-<span class="sd">        data: array like</span>
-<span class="sd">            First row contains the coordinates of the midpoints of the iris and equator ellipses</span>
-<span class="sd">            Second row contains the dimensions of the ellipses</span>
-
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-<span class="sd">            Since this function is the same as that in shared function, consider removing it and importing shared</span>
-<span class="sd">            function.</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># print(data)</span>
-        <span class="n">coord</span><span class="p">,</span> <span class="n">dim</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="n">h</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">q</span> <span class="o">=</span> <span class="n">coord</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span> <span class="o">=</span> <span class="n">dim</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">z</span>
-
-        <span class="n">f1</span> <span class="o">=</span> <span class="n">A</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">B</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">f2</span> <span class="o">=</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">f3</span> <span class="o">=</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">p</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">A</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">q</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">B</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">1</span>
-        <span class="n">f4</span> <span class="o">=</span> <span class="o">-</span><span class="n">b</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">x1</span> <span class="o">-</span> <span class="n">h</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">a</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">y2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">y1</span> <span class="o">-</span> <span class="n">k</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
-
-        <span class="k">return</span> <span class="p">[</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">,</span> <span class="n">f3</span><span class="p">,</span> <span class="n">f4</span><span class="p">]</span></div></div>
+        <span class="k">return</span> <span class="n">zr12</span><span class="p">,</span> <span class="n">alpha</span></div></div>
 
 
 <div class="viewcode-block" id="SLANS_Flattop"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.SLANS.html#analysis_modules.eigenmode.SLANS.slans_code.SLANS_Flattop">[docs]</a><span class="k">class</span> <span class="nc">SLANS_Flattop</span><span class="p">:</span>
@@ -920,7 +819,7 @@
                                                                  <span class="bp">self</span><span class="o">.</span><span class="n">Req_M</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Jxy_all</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span></div>
 
 <div class="viewcode-block" id="SLANS_Flattop.rz_conjug"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.SLANS.html#analysis_modules.eigenmode.SLANS.slans_code.SLANS_Flattop.rz_conjug">[docs]</a>    <span class="k">def</span> <span class="nf">rz_conjug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
+        <span class="sd">&quot;&quot;&quot;Calculate shift in geoemetric values</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -954,53 +853,19 @@
         <span class="n">a</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># cone ellipse x</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>  <span class="c1"># cone ellipse y</span>
 
-        <span class="c1"># OLD CODE STILL KEPT HERE IN CASE MINE RUNS INTO A PROBLEM, HAHA!</span>
-        <span class="c1"># x1 = 0</span>
-        <span class="c1"># y1 = ri + b</span>
-        <span class="c1"># x2 = L</span>
-        <span class="c1"># y2 = Req - B</span>
-
-        <span class="c1"># ell_1 = np.array([[x1, ri], [x1 + a, ri+b], [x1, ri+2*b], [x1 - a, ri + b]])</span>
-        <span class="c1"># ell_2 = np.array([[L, Req - 2 * B], [L + A, Req - B], [L, Req], [L - A, Req - B]])</span>
-        <span class="c1"># # print(&quot;ELL_1::&quot;, ell_1, np.shape(ell_1)[-1])</span>
-        <span class="c1"># # print(&quot;ELL_2::&quot;, ell_2, np.shape(ell_2)[-1])</span>
-        <span class="c1">#</span>
-        <span class="c1"># k = 0</span>
-        <span class="c1"># # initialize x0</span>
-        <span class="c1"># x0 = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))</span>
-        <span class="c1"># # print(np.shape(x0))</span>
-        <span class="c1">#</span>
-        <span class="c1"># for i in range(len(ell_1)):</span>
-        <span class="c1">#     for j in range(len(ell_2)):</span>
-        <span class="c1">#         x0[k][:] = np.concatenate([ell_1[i][:], ell_2[j][:]])</span>
-        <span class="c1">#         k = k + 1</span>
-        <span class="c1">#</span>
-        <span class="c1"># x = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))</span>
-        <span class="c1"># import time as t</span>
-        <span class="c1"># for k in range(len(x0)):</span>
-        <span class="c1">#     x[k][:] = scopt.fsolve(self.func, x0[k][:])</span>
-        <span class="c1">#</span>
-        <span class="c1"># ind_x0 = np.zeros(shape=(np.shape(x0)[0], 1))</span>
-        <span class="c1"># for i in range(len(x)):</span>
-        <span class="c1">#     ind_x0[i] = (x[i][3] &gt; x[i][1]) and (x[i][0] &gt; x1) and (L &gt; x[i][2]) #already adjusted index</span>
-        <span class="c1"># # print(ind_x0)</span>
-        <span class="c1"># # print(np.shape(ind_x0))</span>
-        <span class="c1">#</span>
-        <span class="c1"># # print(&quot;After ind_x0&quot;)</span>
-        <span class="c1"># xy_cross = x[np.where(ind_x0 == 1)[0]][-1] # x1 y1 x2 y2</span>
-        <span class="c1"># print(&quot;\tXY_CROSS::&quot;, xy_cross)</span>
-        <span class="c1"># print(np.shape(xy_cross))</span>
-        <span class="c1"># plot_cavity(xy_cross, data)</span>
-
         <span class="n">data</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="n">B</span><span class="p">],</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>  <span class="c1"># data = ([h, k, p, q], [a_m, b_m, A_m, B_m])</span>
-        <span class="n">xy_cross</span> <span class="o">=</span> <span class="n">scopt</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">ellipse_tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
-                                <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">scopt</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">ellipse_tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
+                          <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fprime</span><span class="o">=</span><span class="n">jac</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
 
-        <span class="c1"># xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),</span>
-        <span class="c1">#                         args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
-        <span class="c1"># print(&quot;\tXY_CROSS2::&quot;, xy_cross)</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">error_msg</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">ellipse_tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
+                        <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fprime</span><span class="o">=</span><span class="n">jac</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1.49012e-12</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
 
-        <span class="c1"># #</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">xy_cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">])</span>
+
         <span class="n">xy_L_ell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
         <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">0</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">xy_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
@@ -1009,7 +874,7 @@
         <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">xy_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">xy_cross</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
         <span class="n">rz_coor</span> <span class="o">=</span> <span class="n">xy_L_ell</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">((</span><span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">180</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">,</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
         <span class="n">zr12</span> <span class="o">=</span> <span class="p">[[</span><span class="n">rz_coor</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">,</span> <span class="n">rz_coor</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">rz_coor</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">,</span> <span class="n">rz_coor</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]]]</span>
 
         <span class="k">return</span> <span class="n">zr12</span><span class="p">,</span> <span class="n">alpha</span></div></div>
@@ -1254,14 +1119,32 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;7 </span><span class="si">{:g}</span><span class="s1"> </span><span class="si">{:g}</span><span class="s1"> 90 </span><span class="si">{:g}</span><span class="s1"> </span><span class="si">{:.0f}</span><span class="s1"> 0 5 0 </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">WG_L</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_L</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">L_M</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]),</span>
                                                                  <span class="bp">self</span><span class="o">.</span><span class="n">Req_M</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Jxy_all</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span></div>
 
-<div class="viewcode-block" id="SLANS_Multicell.rz_conjug"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.SLANS.html#analysis_modules.eigenmode.SLANS.slans_code.SLANS_Multicell.rz_conjug">[docs]</a>    <span class="k">def</span> <span class="nf">rz_conjug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="SLANS_Multicell.rz_conjug"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.SLANS.html#analysis_modules.eigenmode.SLANS.slans_code.SLANS_Multicell.rz_conjug">[docs]</a>    <span class="k">def</span> <span class="nf">rz_conjug</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate shift in geoemetric values</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        cell: {&quot;left&quot;, &quot;right&quot;, &quot;mid&quot;}</span>
+<span class="sd">            Specifies the cell cup type.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        zr12: list</span>
+<span class="sd">            Maybe it&#39;s a shift of some sort calculated from the coordinates of the tangent of the ellipses</span>
+<span class="sd">            comprising the cavity</span>
+
+<span class="sd">        alpha: float</span>
+<span class="sd">            Angle of the line tangent to the iris and equator ellipses.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># global data</span>
         <span class="k">if</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;left&#39;</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">A_L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Req_L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ri_L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_L</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_L</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">cell</span> <span class="o">==</span> <span class="s1">&#39;right&#39;</span><span class="p">:</span>
             <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">A_R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Req_R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ri_R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_R</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_R</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">A_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">Req_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">ri_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_M</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_M</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">A_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">B_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Req_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ri_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">L_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a_M</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b_M</span><span class="p">]</span>
 
         <span class="n">A</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># ellipse x</span>
         <span class="n">B</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># ellipse y</span>
@@ -1271,53 +1154,19 @@
         <span class="n">a</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>  <span class="c1"># cone ellipse x</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>  <span class="c1"># cone ellipse y</span>
 
-        <span class="c1"># OLD CODE STILL KEPT HERE IN CASE MINE RUNS INTO A PROBLEM, HAHA!</span>
-        <span class="c1"># x1 = 0</span>
-        <span class="c1"># y1 = ri + b</span>
-        <span class="c1"># x2 = L</span>
-        <span class="c1"># y2 = Req - B</span>
-
-        <span class="c1"># ell_1 = np.array([[x1, ri], [x1 + a, ri+b], [x1, ri+2*b], [x1 - a, ri + b]])</span>
-        <span class="c1"># ell_2 = np.array([[L, Req - 2 * B], [L + A, Req - B], [L, Req], [L - A, Req - B]])</span>
-        <span class="c1"># # print(&quot;ELL_1::&quot;, ell_1, np.shape(ell_1)[-1])</span>
-        <span class="c1"># # print(&quot;ELL_2::&quot;, ell_2, np.shape(ell_2)[-1])</span>
-        <span class="c1">#</span>
-        <span class="c1"># k = 0</span>
-        <span class="c1"># # initialize x0</span>
-        <span class="c1"># x0 = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))</span>
-        <span class="c1"># # print(np.shape(x0))</span>
-        <span class="c1">#</span>
-        <span class="c1"># for i in range(len(ell_1)):</span>
-        <span class="c1">#     for j in range(len(ell_2)):</span>
-        <span class="c1">#         x0[k][:] = np.concatenate([ell_1[i][:], ell_2[j][:]])</span>
-        <span class="c1">#         k = k + 1</span>
-        <span class="c1">#</span>
-        <span class="c1"># x = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))</span>
-        <span class="c1"># import time as t</span>
-        <span class="c1"># for k in range(len(x0)):</span>
-        <span class="c1">#     x[k][:] = scopt.fsolve(self.func, x0[k][:])</span>
-        <span class="c1">#</span>
-        <span class="c1"># ind_x0 = np.zeros(shape=(np.shape(x0)[0], 1))</span>
-        <span class="c1"># for i in range(len(x)):</span>
-        <span class="c1">#     ind_x0[i] = (x[i][3] &gt; x[i][1]) and (x[i][0] &gt; x1) and (L &gt; x[i][2]) #already adjusted index</span>
-        <span class="c1"># # print(ind_x0)</span>
-        <span class="c1"># # print(np.shape(ind_x0))</span>
-        <span class="c1">#</span>
-        <span class="c1"># # print(&quot;After ind_x0&quot;)</span>
-        <span class="c1"># xy_cross = x[np.where(ind_x0 == 1)[0]][-1] # x1 y1 x2 y2</span>
-        <span class="c1"># print(&quot;\tXY_CROSS::&quot;, xy_cross)</span>
-        <span class="c1"># print(np.shape(xy_cross))</span>
-        <span class="c1"># plot_cavity(xy_cross, data)</span>
-
         <span class="n">data</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="n">B</span><span class="p">],</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">])</span>  <span class="c1"># data = ([h, k, p, q], [a_m, b_m, A_m, B_m])</span>
-        <span class="n">xy_cross</span> <span class="o">=</span> <span class="n">scopt</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">ellipse_tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
-                                <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>  <span class="c1"># [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">scopt</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">ellipse_tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">0.85</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
+                          <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fprime</span><span class="o">=</span><span class="n">jac</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
 
-        <span class="c1"># xy_cross = scopt.fsolve(self.ellipse_tangent, np.array([0.5*a, ri + 0.5 * b, L - A, Req - 0.5 * B]),</span>
-        <span class="c1">#                         args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess</span>
-        <span class="c1"># print(&quot;\tXY_CROSS2::&quot;, xy_cross)</span>
+        <span class="n">error_msg</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">error_msg</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">fsolve</span><span class="p">(</span><span class="n">ellipse_tangent</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">ri</span> <span class="o">+</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">b</span><span class="p">,</span> <span class="n">L</span> <span class="o">-</span> <span class="n">A</span><span class="p">,</span> <span class="n">Req</span> <span class="o">-</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">B</span><span class="p">]),</span>
+                        <span class="n">args</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">fprime</span><span class="o">=</span><span class="n">jac</span><span class="p">,</span> <span class="n">xtol</span><span class="o">=</span><span class="mf">1.49012e-12</span><span class="p">,</span> <span class="n">full_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">error_msg</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
 
-        <span class="c1"># #</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">xy_cross</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">])</span>
+
         <span class="n">xy_L_ell</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
 
         <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">0</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">xy_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
@@ -1326,7 +1175,7 @@
         <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">xy_cross</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">L</span><span class="p">,</span> <span class="n">xy_cross</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
         <span class="n">rz_coor</span> <span class="o">=</span> <span class="n">xy_L_ell</span>
-        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">((</span><span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_L_ell</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">180</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span><span class="p">,</span> <span class="p">(</span><span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span><span class="p">))</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
         <span class="n">zr12</span> <span class="o">=</span> <span class="p">[[</span><span class="n">rz_coor</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">,</span> <span class="n">rz_coor</span><span class="p">[</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">rz_coor</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">L</span><span class="p">,</span> <span class="n">rz_coor</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]]]</span>
 
         <span class="k">return</span> <span class="n">zr12</span><span class="p">,</span> <span class="n">alpha</span></div></div>

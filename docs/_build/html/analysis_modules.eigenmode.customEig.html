@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>analysis_modules.eigenmode.customEig package &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
@@ -69,7 +69,7 @@
 <li class="toctree-l3"><a class="reference internal" href="analysis_modules.html#module-analysis_modules">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
@@ -119,21 +119,14 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="analysis-modules-eigenmode-customeig-compute-qois-module">
-<h2>analysis_modules.eigenmode.customEig.compute_QoIs module<a class="headerlink" href="#analysis-modules-eigenmode-customeig-compute-qois-module" title="Permalink to this heading"></a></h2>
-</section>
 <section id="module-analysis_modules.eigenmode.customEig.run_field_solver">
 <span id="analysis-modules-eigenmode-customeig-run-field-solver-module"></span><h2>analysis_modules.eigenmode.customEig.run_field_solver module<a class="headerlink" href="#module-analysis_modules.eigenmode.customEig.run_field_solver" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analysis_modules.eigenmode.customEig.run_field_solver.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analysis_modules.eigenmode.customEig.run_field_solver.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_U" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_U"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_U</span></code></a>(EE, HH, zz, rr)</p></td>
 <td><p>Calculates the energy <span class="math notranslate nohighlight">\(U_n\)</span> of eigenmode <span class="math notranslate nohighlight">\(n\)</span> from either electric or magnetic field.</p></td>
@@ -198,10 +191,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 68%" />
-<col style="width: 32%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>calculate_QoI</strong></p></td>
 <td></td>
@@ -236,6 +225,12 @@
 <tr class="row-odd"><td><p><strong>search</strong></p></td>
 <td></td>
 </tr>
+<tr class="row-even"><td><p><strong>set_folder</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>set_name</strong></p></td>
+<td></td>
+</tr>
 </tbody>
 </table>
 <dl class="py method">
@@ -251,7 +246,7 @@
 \[ \begin{align}\begin{aligned}U_n = \frac{1}{2} \int_{z_\min}^{z_\max} \int_{r_\min}^{r_\max} \int_{0}^{2\pi} D_n \cdot E_n \mathrm{d}V
 = \frac{1}{2}\int_{z_\min}^{z_\max} \int_{r_\min}^{r_\max} \int_{0}^{2\pi} B_n \cdot H_n \mathrm{d}V\\D_n \cdot E_n = \epsilon_0 E^2; ~B_n \cdot H_n = \mu_0 H^2\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>EE</strong> (<em>2D array</em>) – Array of electric field magnitude in 2D space</p></li>
 <li><p><strong>HH</strong> – Array of magnetic field magnitude in 2D space</p></li>
@@ -259,10 +254,10 @@
 <li><p><strong>rr</strong> (<em>2D array</em>) – Grid points r coordinate</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>U</strong> – Energy over the shape volume</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -273,16 +268,16 @@
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_bpk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Hpk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Eacc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_bpk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_bpk" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the peak surface magnetic field to accelerating field ratio</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Hpk</strong> (<em>float</em>) – Peak wall surface magnetic field</p></li>
 <li><p><strong>Eacc</strong> (<em>float</em>) – Accelerating electric field</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Bpk/Eacc</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -295,7 +290,7 @@
 <div class="math notranslate nohighlight">
 \[P_\mathrm{ds} = \frac{1}{2} R_\mathrm{s} \int_{z_\min}^{z_\max} \int_{0}^{2\pi} |H_\theta|^2 \mathrm{d}s\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>H_surf</strong> – </p></li>
 <li><p><strong>z_surf</strong> – </p></li>
@@ -310,16 +305,16 @@
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_epk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Epk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Eacc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_epk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_epk" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the peak surface electric field to accelerating field ratio</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Epk</strong> (<em>float</em>) – Peak electric field</p></li>
 <li><p><strong>Eacc</strong> (<em>float</em>) – Accelerating electric field</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Epk/Eacc</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -346,13 +341,13 @@
 <div class="math notranslate nohighlight">
 \[k_{\parallel, n}  = \frac{|V_{\parallel, n}(0, 0)|^2}{4 U_n} = \frac{\omega_n}{4} \frac{R}{Q}_n\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>R_Q</strong> (<em>float</em>) – R/Q of cavity geometry</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>k_loss</strong> – Mode loss factor</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -370,7 +365,7 @@
 <div class="math notranslate nohighlight">
 \[R/Q = \frac{|V_{\parallel, n(0, z)}|^2}{\omega_n U_n}\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Vacc</strong> (<em>float</em>) – Accelerating voltage.</p></li>
 <li><p><strong>U</strong> (<em>float</em>) – Stored energy</p></li>
@@ -387,10 +382,10 @@
 <div class="math notranslate nohighlight">
 \[R_\mathrm{s} = \sqrt{\frac{\mu \omega}{2 \sigma}}\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>Rs</strong> – Surface resistance of copper at operating frequency.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>float</p>
 </dd>
 </dl>
@@ -403,16 +398,16 @@
 <div class="math notranslate nohighlight">
 \[V_\mathrm{cav} = \vert \int_{z_\min}^{z_\max} E_z(r=0, z) \mathrm{e}^{jk_0 z}\vert \mathrm{d}z\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>E_z_axis</strong> (<em>array</em>) – <span class="math notranslate nohighlight">\(z\)</span> component of electric field on axis <span class="math notranslate nohighlight">\(r=0\)</span></p></li>
 <li><p><strong>z</strong> (<em>array</em>) – <span class="math notranslate nohighlight">\(z\)</span> coordinate points along axis <span class="math notranslate nohighlight">\(r=0\)</span></p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Vacc</strong> – Accelerating voltage along axis <span class="math notranslate nohighlight">\(r=0\)</span></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -423,17 +418,17 @@
 <span class="sig-name descname"><span class="pre">calculate_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">EE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_volume" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the volume of the volume of revolution of the cavity profile</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>EE</strong> (<em>array like</em>) – Electric field array</p></li>
 <li><p><strong>zz</strong> (<em>array like</em>) – z coordinates on grid</p></li>
 <li><p><strong>rr</strong> (<em>array like</em>) – r coordinates on grid</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>V</strong> – Volume of revolution of cavity profile</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -450,7 +445,7 @@
 <span class="sig-name descname"><span class="pre">define_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beampipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.define_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.define_geometry" title="Permalink to this definition"></a></dt>
 <dd><p>Define geometry</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_cells</strong> (<em>int</em>) – Number of cavity cells</p></li>
 <li><p><strong>mid_cell</strong> (<em>array like</em>) – Mid cell cell geometric parameters</p></li>
@@ -473,7 +468,7 @@
 <span class="sig-name descname"><span class="pre">eigen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_modes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req_mode_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.eigen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.eigen" title="Permalink to this definition"></a></dt>
 <dd><p>Perform eigenmode simulation</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>n_modes</strong> (<em>int</em>) – Number of modes</p></li>
 <li><p><strong>freq</strong> (<em>float</em>) – Frequency to find eigenvalues around</p></li>
@@ -494,7 +489,7 @@
 <span class="sig-name descname"><span class="pre">generate_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridcons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.generate_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.generate_mesh" title="Permalink to this definition"></a></dt>
 <dd><p>Generate mesh</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>gridcons</strong> (<em>float</em>) – Maximum element width</p></li>
 <li><p><strong>epsr</strong> – Relative permittivity</p></li>
@@ -510,7 +505,7 @@
 <dd><p>Get the surface field values. Works by looping through the 2D field array and returning the first and last
 non-zero elements in each row</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rr</strong> (<em>2D array</em>) – r coordinates</p></li>
 <li><p><strong>zz</strong> (<em>2D array</em>) – z coordinates</p></li>
@@ -545,7 +540,7 @@ non-zero elements in each row</p>
 <span class="sig-name descname"><span class="pre">plot_cavity_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.plot_cavity_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_cavity_fields" title="Permalink to this definition"></a></dt>
 <dd><p>Plots the computed fields on the input geometry</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ptype</strong> (<em>{'contour'</em><em>, </em><em>'arrow'}</em>) – Plot type</p>
 </dd>
 </dl>
@@ -572,7 +567,7 @@ non-zero elements in each row</p>
 <span class="sig-name descname"><span class="pre">save_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wall</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.save_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.save_fields" title="Permalink to this definition"></a></dt>
 <dd><p>Save mode fields</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>wall</strong> – </p></li>
 <li><p><strong>job</strong> – </p></li>
@@ -590,6 +585,16 @@ non-zero elements in each row</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.search">
 <span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">korig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maara</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raja</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.search" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.set_folder">
+<span class="sig-name descname"><span class="pre">set_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.set_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.set_folder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.set_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.set_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

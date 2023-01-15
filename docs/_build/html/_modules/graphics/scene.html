@@ -91,8 +91,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">grScene</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cavityShape</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="c1"># self.line = Line(main_win)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">initUI</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Scene.initUI"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.initUI">[docs]</a>    <span class="k">def</span> <span class="nf">initUI</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -112,13 +110,6 @@
 <div class="viewcode-block" id="Scene.displayItemsOnScene"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.displayItemsOnScene">[docs]</a>    <span class="k">def</span> <span class="nf">displayItemsOnScene</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lines</span><span class="p">):</span>
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">Line </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">line</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="Scene.resetIterationVariables"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.resetIterationVariables">[docs]</a>    <span class="k">def</span> <span class="nf">resetIterationVariables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">direct</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">indirect</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">hdp</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">excitatory</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">inhibitory</span> <span class="o">=</span> <span class="mi">0</span></div>
 
 <div class="viewcode-block" id="Scene.format"><a class="viewcode-back" href="../../graphics.html#graphics.scene.Scene.format">[docs]</a>    <span class="k">def</span> <span class="nf">format</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj_list</span><span class="p">):</span>
         <span class="n">new_obj_list</span> <span class="o">=</span> <span class="p">[]</span>

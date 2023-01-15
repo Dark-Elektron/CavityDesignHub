@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to CavityDesignHub’s documentation! &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
@@ -43,6 +43,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
 </ul>
@@ -81,7 +82,6 @@
 </div>
 <p>Welcome to the cavity design hub guide.
 <strong>Who is this for??</strong></p>
-<p>It’s so funy that I was trying to copy something that someone said</p>
 <p>If you want to learn, <span class="xref std std-ref">install CavityHub first</span> and
 then explore these pages.</p>
 <p>Creating subtitles
@@ -121,11 +121,27 @@ Customizing subtitles</p>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="command_line_interface.html#run-a-simulation">Run a Simulation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="command_line_interface.html#create-new-project">Create New Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="command_line_interface.html#eigenmode-analysis">Eigenmode Analysis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="command_line_interface.html#tune">Tune</a></li>
+<li class="toctree-l3"><a class="reference internal" href="command_line_interface.html#wakefield-analysis">Wakefield Analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="command_line_interface.html#plotting">Plotting</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#aceclerator-cavity-basics">Aceclerator cavity basics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#electromagnetic-field-theory">Electromagnetic field theory</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#maxwell-eigenvalue-problem">Maxwell eigenvalue problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="theory.html#wakefield-analysis">Wakefield analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="theory.html#aceclerator-cavity-basics">Aceclerator cavity basics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="theory.html#figures-of-merit-in-accelerator-cavity-design">Figures of merit in accelerator cavity design</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="theory.html#electromagnetic-field-theory">Electromagnetic field theory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="theory.html#maxwell-eigenvalue-problem">Maxwell eigenvalue problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="theory.html#wakefield-analysis">Wakefield analysis</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#theory-of-multipacting">Theory of multipacting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#sensitivity-analysis-and-uncertainty-quantification">Sensitivity analysis and uncertainty quantification</a></li>
 <li class="toctree-l2"><a class="reference internal" href="theory.html#elliptical-cavity-optimization">Elliptical Cavity optimization</a></li>
@@ -245,10 +261,10 @@ Customizing subtitles</p>
 <li class="toctree-l3"><a class="reference internal" href="analysis_modules.html#module-analysis_modules">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="cavity.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cavity.html#module-cavity.cavity">cavity.cavity module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="cavity.html#module-cavity">Module contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="cli.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html#module-cli.cavity">cli.cavity module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="cli.html#module-cli">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a><ul>

@@ -4,14 +4,6 @@ analysis\_modules.eigenmode.customEig package
 Submodules
 ----------
 
-analysis\_modules.eigenmode.customEig.compute\_QoIs module
-----------------------------------------------------------
-
-.. automodule:: analysis_modules.eigenmode.customEig.compute_QoIs
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 analysis\_modules.eigenmode.customEig.run\_field\_solver module
 ---------------------------------------------------------------
 

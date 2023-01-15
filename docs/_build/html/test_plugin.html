@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>test_plugin package &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
@@ -44,6 +44,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
 </ul>
@@ -51,7 +52,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
@@ -121,10 +122,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QComboBox</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#test_plugin.QCheckableComboBox.QCheckableComboBox.Delegate" title="test_plugin.QCheckableComboBox.QCheckableComboBox.Delegate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Delegate</span></code></a></p></td>
 <td><p><p class="rubric">Methods</p>
@@ -1146,10 +1143,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>InsertPolicy</strong></p></td>
 <td></td>
@@ -1303,10 +1296,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QStyledItemDelegate</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">blockSignals</span></code>(self, bool)</p></td>
 <td><p></p></td>
@@ -1440,10 +1429,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 68%" />
-<col style="width: 32%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>EndEditHint</strong></p></td>
 <td></td>
@@ -1560,10 +1545,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RenderFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -2458,10 +2439,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>PaintDeviceMetric</strong></p></td>
 <td></td>
@@ -2564,7 +2541,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">test_plugin.QLatexLabel.</span></span><span class="sig-name descname"><span class="pre">QLatexLabel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_plugin/QLatexLabel.html#QLatexLabel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_plugin.QLatexLabel.QLatexLabel" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>Text</strong></dt><dd></dd>
 </dl>
@@ -2572,10 +2549,6 @@
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RenderFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -3470,10 +3443,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>PaintDeviceMetric</strong></p></td>
 <td></td>
@@ -3613,10 +3582,6 @@ SOFTWARE.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RenderFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -4511,10 +4476,6 @@ SOFTWARE.</p>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>PaintDeviceMetric</strong></p></td>
 <td></td>
@@ -4604,7 +4565,7 @@ SOFTWARE.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">test_plugin.QSwitchControl.</span></span><span class="sig-name descname"><span class="pre">SwitchControl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bg_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#777777'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circle_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#DDD'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">active_color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#aa00ff'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_curve</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">38</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">animation_duration</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">500</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checked</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">change_cursor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_plugin/QSwitchControl.html#SwitchControl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_plugin.QSwitchControl.SwitchControl" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QCheckBox</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>activeColor</strong></dt><dd></dd>
 <dt><strong>animationDuration</strong></dt><dd></dd>
@@ -4615,10 +4576,6 @@ SOFTWARE.</p>
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RenderFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -5519,10 +5476,6 @@ SOFTWARE.</p>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>PaintDeviceMetric</strong></p></td>
 <td></td>
@@ -5933,7 +5886,7 @@ Decorators can be used to define new properties or to modify existing ones.</p>
 <p>Matplotlib figure canvas that is to be embedded within the widget.
 FigureCanvas is the area onto which the figure is drawn</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>button_pick_id</strong></dt><dd></dd>
 <dt><strong>callbacks</strong></dt><dd></dd>
@@ -5946,10 +5899,6 @@ FigureCanvas is the area onto which the figure is drawn</p>
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RenderFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -6976,10 +6925,6 @@ FigureCanvas is the area onto which the figure is drawn</p>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>PaintDeviceMetric</strong></p></td>
 <td></td>
@@ -7072,7 +7017,7 @@ FigureCanvas is the area onto which the figure is drawn</p>
 <span class="sig-name descname"><span class="pre">plotBPolAoS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_plugin/exampleWidget.html#PlotCanvas.plotBPolAoS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_plugin.exampleWidget.PlotCanvas.plotBPolAoS" title="Permalink to this definition"></a></dt>
 <dd><p>Plot poloidal field probe values.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ids</strong> (<em>IDS object</em>) – IDS object referring to the IDS from which the
 data is to be extracted.</p>
 </dd>
@@ -7084,7 +7029,7 @@ data is to be extracted.</p>
 <span class="sig-name descname"><span class="pre">plotFluxAoS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/test_plugin/exampleWidget.html#PlotCanvas.plotFluxAoS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#test_plugin.exampleWidget.PlotCanvas.plotFluxAoS" title="Permalink to this definition"></a></dt>
 <dd><p>Plot values found in flux loops AoS.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>ids</strong> (<em>IDS object</em>) – IDS object referring to the IDS from which the
 data is to be extracted.</p>
 </dd>
@@ -7101,10 +7046,6 @@ data is to be extracted.</p>
 poloidal probe quantities and plotting them to matplotlib figure canvas.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">RenderFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -8008,10 +7949,6 @@ poloidal probe quantities and plotting them to matplotlib figure canvas.</p>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>PaintDeviceMetric</strong></p></td>
 <td></td>
@@ -8168,10 +8105,10 @@ revision is the optional revision of the signal that is exported to QML.
 If it is not specified then 0 is used.
 arguments is the optional sequence of the names of the signal’s arguments.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>pyqtSignal(<a href="#id3"><span class="problematic" id="id4">*</span></a>types, name</p>
 </dd>
-<dt class="field-even">Type</dt>
+<dt class="field-even">Type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str = …, revision</p>
 </dd>
 </dl>

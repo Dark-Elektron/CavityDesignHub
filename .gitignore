@@ -9,3 +9,5 @@ MuCol_Study
 exe/customEig
 manual_run/slans/Cavity
 dist
+docs
+utils/multipacting_codes

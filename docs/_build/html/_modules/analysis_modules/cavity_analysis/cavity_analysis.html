@@ -76,8 +76,6 @@
   <h1>Source code for analysis_modules.cavity_analysis.cavity_analysis</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os.path</span>
-
-<span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">spio</span>
 <span class="kn">import</span> <span class="nn">scipy.interpolate</span> <span class="k">as</span> <span class="nn">sci</span>
 <span class="kn">import</span> <span class="nn">mplcursors</span>
@@ -85,13 +83,10 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">icecream</span> <span class="kn">import</span> <span class="n">ic</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">ticker</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
 <span class="kn">from</span> <span class="nn">scipy.optimize</span> <span class="kn">import</span> <span class="n">fsolve</span>
-
 <span class="kn">from</span> <span class="nn">utils.file_reader</span> <span class="kn">import</span> <span class="n">FileReader</span>
 <span class="kn">from</span> <span class="nn">analysis_modules.plot_module.matplotlib_annotation_objects</span> <span class="kn">import</span> <span class="n">DraggableText</span>
-<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">shared_functions</span>
 <span class="kn">from</span> <span class="nn">utils.shared_functions</span> <span class="kn">import</span> <span class="n">ellipse_tangent</span>
 
 <span class="n">fr</span> <span class="o">=</span> <span class="n">FileReader</span><span class="p">()</span>
@@ -147,13 +142,13 @@
 <span class="sd">            Folder to save generated images, latex, excel, and text files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
+        <span class="k">if</span> <span class="n">cavities_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span> <span class="o">=</span> <span class="p">[]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">p_qois</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fm_results</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">hom_results</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">save_folder</span> <span class="o">=</span> <span class="n">save_folder</span>
-
-        <span class="k">if</span> <span class="n">cavities_list</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cavities_list</span> <span class="o">=</span> <span class="n">cavities_list</span>
 
@@ -336,7 +331,7 @@
         <span class="n">ic</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">results_norm_units</span></div>
 
-<div class="viewcode-block" id="Cavities.plot_power_comparison"><a class="viewcode-back" href="../../../analysis_modules.cavity_analysis.html#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_power_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">E_acc</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Cavities.plot_power_comparison"><a class="viewcode-back" href="../../../analysis_modules.cavity_analysis.html#analysis_modules.cavity_analysis.cavity_analysis.Cavities.plot_power_comparison">[docs]</a>    <span class="k">def</span> <span class="nf">plot_power_comparison</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax_list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Can be called using ``cavities.plot_power_comparison()``</span>
 
@@ -416,9 +411,9 @@
             <span class="c1"># ax_right.yaxis.label.set_color(p2.get_color())</span>
             <span class="c1"># ax_right2.yaxis.label.set_color(p3.get_color())</span>
 
-            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span>
-            <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span>
-            <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span>
+            <span class="n">ax1</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span>
+            <span class="n">ax2</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span>
+            <span class="n">ax3</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">,</span> <span class="nb">max</span><span class="p">(</span><span class="n">cavity</span><span class="o">.</span><span class="n">E_acc</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e-6</span><span class="p">)</span>
             <span class="c1"># # ax.set_ylim(0, 50)</span>
             <span class="c1"># ax_right.set_ylim(100, 400)f</span>
             <span class="c1"># ax_right2.set_ylim(0, 700)</span>
@@ -1401,24 +1396,9 @@
                   <span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="p">((</span><span class="n">R_Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">QL_0</span> <span class="o">*</span> <span class="n">I0</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
                    <span class="p">((</span><span class="n">delta_f</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">f1_2</span><span class="p">)</span> <span class="o">+</span> <span class="p">((</span><span class="n">R_Q</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">QL_0</span> <span class="o">*</span> <span class="n">I0</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">/</span> <span class="n">v_cav</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">phi</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
 
-            <span class="c1"># p_cryo = 8 / (np.sqrt(f0[i] / 500e6))</span>
-
             <span class="c1"># material/ wall power</span>
             <span class="n">e_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e6</span>  <span class="c1"># MV/m</span>
 
-            <span class="c1"># Rs_NbCu_4_5k_400Mhz = 39.5 * np.exp(0.014 * (E_acc[i] * 1e-6 * b[i])) + 27</span>
-
-            <span class="c1"># eta = 1 / 219  # c</span>
-            <span class="c1"># Q0 = G[i] * 1e9 / Rs_NbCu_4_5k_400Mhz  # c</span>
-            <span class="c1"># print(E_acc[i])</span>
-            <span class="c1"># p_wp = (1 / eta) * Vrf[i] * (E_acc[i] * l_active[i] / (R_Q[i] * Q0)) + (1 / eta) * (</span>
-            <span class="c1">#         l_cavity[i] * Vrf[i] / (l_active[i] * E_acc[i])) * p_cryo</span>
-            <span class="c1"># txt = f&quot;{labels[i]}, &quot; \</span>
-            <span class="c1">#       f&quot;{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} &quot; \</span>
-            <span class="c1">#       f&quot;cav; &quot; + &quot;P$_{\mathrm{in}}$ = &quot; \</span>
-            <span class="c1">#       + f&quot;{round(min(pin) * 1e-3, 1)} kW; &quot; \</span>
-            <span class="c1">#         &quot;Q$_{\mathrm{L, 0}}^*$ = &quot; \</span>
-            <span class="c1">#       + &quot;{:.2e}&quot;.format(QL_0_x[i])</span>
             <span class="n">txt</span> <span class="o">=</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="s2">&quot;*&quot;</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
@@ -2805,7 +2785,7 @@
 
     <span class="n">E_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e6</span>  <span class="c1"># V/m</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">compare_power</span><span class="p">(</span><span class="n">E_acc</span><span class="o">=</span><span class="n">E_acc</span><span class="p">)</span>
-    <span class="n">cavities</span><span class="o">.</span><span class="n">plot_power_comparison</span><span class="p">(</span><span class="n">E_acc</span><span class="p">)</span>
+    <span class="n">cavities</span><span class="o">.</span><span class="n">plot_power_comparison</span><span class="p">()</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">plot_compare_bar</span><span class="p">()</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">plot_compare_fm_bar</span><span class="p">()</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">plot_compare_hom_bar</span><span class="p">()</span>
@@ -2879,7 +2859,7 @@
 
     <span class="n">E_acc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e6</span>  <span class="c1"># V/m</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">compare_power</span><span class="p">(</span><span class="n">E_acc</span><span class="o">=</span><span class="n">E_acc</span><span class="p">)</span>
-    <span class="n">cavities</span><span class="o">.</span><span class="n">plot_power_comparison</span><span class="p">()</span>
+    <span class="n">cavities</span><span class="o">.</span><span class="n">plot_power_comparison</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">plot_compare_bar</span><span class="p">()</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">plot_compare_fm_bar</span><span class="p">()</span>
     <span class="n">cavities</span><span class="o">.</span><span class="n">plot_compare_hom_bar</span><span class="p">()</span>

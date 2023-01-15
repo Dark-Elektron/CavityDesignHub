@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>node_editor package &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
@@ -44,6 +44,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
 </ul>
@@ -51,7 +52,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
@@ -156,7 +157,7 @@
 <dd><p>Bases: <a class="reference internal" href="#node_editor.node_serializable.Serializable" title="node_editor.node_serializable.Serializable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Serializable</span></code></a></p>
 <p>Class for representing Edge in NodeEditor.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><a class="reference internal" href="#node_editor.node_edge.Edge.edge_type" title="node_editor.node_edge.Edge.edge_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edge_type</span></code></a></dt><dd><p>Edge type</p>
 </dd>
@@ -169,10 +170,6 @@
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_edge.Edge.createEdgeClassInstance" title="node_editor.node_edge.Edge.createEdgeClassInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">createEdgeClassInstance</span></code></a>()</p></td>
 <td><p>Create instance of grEdge class :return: Instance of <cite>grEdge</cite> class representing the Graphics Edge in the grScene</p></td>
@@ -228,7 +225,7 @@
 <dd><p>Deserialization method which take data in python <code class="docutils literal notranslate"><span class="pre">dict</span></code> format with helping <cite>hashmap</cite> containing
 references to existing entities.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Dictionary containing serialized data</p></li>
 <li><p><strong>hashmap</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Helper dictionary containing references (by id == key) to existing objects</p></li>
@@ -236,10 +233,10 @@ references to existing entities.</p>
 Sockets of which we want to keep the existing object’s <cite>id</cite>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if deserialization was successful, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -251,7 +248,7 @@ Sockets of which we want to keep the existing object’s <cite>id</cite>.</p></l
 <dd><p>Provide the safe selecting/deselecting operation. In the background it takes care about the flags, notifications
 and storing history for undo/redo.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>new_state</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if you want to select the <code class="docutils literal notranslate"><span class="pre">Edge</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> if you want to deselect the <code class="docutils literal notranslate"><span class="pre">Edge</span></code></p>
 </dd>
 </dl>
@@ -262,10 +259,10 @@ and storing history for undo/redo.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">edge_type</span></span><a class="headerlink" href="#node_editor.node_edge.Edge.edge_type" title="Permalink to this definition"></a></dt>
 <dd><p>Edge type</p>
 <dl class="field-list simple">
-<dt class="field-odd">Getter</dt>
+<dt class="field-odd">Getter<span class="colon">:</span></dt>
 <dd class="field-odd"><p>get edge type constant for current <code class="docutils literal notranslate"><span class="pre">Edge</span></code>. See <span class="xref std std-ref">edge-type-constants</span></p>
 </dd>
-<dt class="field-even">Setter</dt>
+<dt class="field-even">Setter<span class="colon">:</span></dt>
 <dd class="field-even"><p>sets new edge type. On background, creates new <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphicsEdge" title="node_editor.node_graphics_edge.QDMGraphicsEdge"><code class="xref py py-class docutils literal notranslate"><span class="pre">QDMGraphicsEdge</span></code></a>
 child class if necessary, adds this <code class="docutils literal notranslate"><span class="pre">QGraphicsPathItem</span></code> to the <code class="docutils literal notranslate"><span class="pre">QGraphicsScene</span></code> and updates edge sockets
 positions.</p>
@@ -284,13 +281,13 @@ positions.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">end_socket</span></span><a class="headerlink" href="#node_editor.node_edge.Edge.end_socket" title="Permalink to this definition"></a></dt>
 <dd><p>End socket</p>
 <dl class="field-list simple">
-<dt class="field-odd">Getter</dt>
+<dt class="field-odd">Getter<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Returns end <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not set</p>
 </dd>
-<dt class="field-even">Setter</dt>
+<dt class="field-even">Setter<span class="colon">:</span></dt>
 <dd class="field-even"><p>Sets end <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> safely</p>
 </dd>
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -313,13 +310,13 @@ positions.</p>
 <span class="sig-name descname"><span class="pre">getOtherSocket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">known_socket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><span class="pre">Socket</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge.html#Edge.getOtherSocket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge.Edge.getOtherSocket" title="Permalink to this definition"></a></dt>
 <dd><p>Returns the opposite socket on this <code class="docutils literal notranslate"><span class="pre">Edge</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>known_socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – Provide known <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> to be able to determine the opposite one.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The oposite socket on this <code class="docutils literal notranslate"><span class="pre">Edge</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -336,7 +333,7 @@ positions.</p>
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">registerEdgeValidator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">validator_callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge.html#Edge.registerEdgeValidator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge.Edge.registerEdgeValidator" title="Permalink to this definition"></a></dt>
 <dd><p>Register Edge Validator Callback</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>validator_callback</strong> (<cite>function</cite>) – A function handle to validate Edge</p>
 </dd>
 </dl>
@@ -354,7 +351,7 @@ Notifies nodes previously connected <code class="xref py py-class docutils liter
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">onInputChanged()</span></code></p></li>
 </ul>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>silent_for_socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> of a <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code> which
 won’t be notified, when this <code class="docutils literal notranslate"><span class="pre">Edge</span></code> is going to be removed</p></li>
@@ -376,10 +373,10 @@ won’t be notified, when this <code class="docutils literal notranslate"><span 
 <dd><p>Serialization method to serialize this class data into <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code> which can be easily stored
 in memory or file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>data serialized in <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 </dd>
 </dl>
@@ -390,13 +387,13 @@ in memory or file.</p>
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_socket</span></span><a class="headerlink" href="#node_editor.node_edge.Edge.start_socket" title="Permalink to this definition"></a></dt>
 <dd><p>Start socket</p>
 <dl class="field-list simple">
-<dt class="field-odd">Getter</dt>
+<dt class="field-odd">Getter<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Returns start <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a></p>
 </dd>
-<dt class="field-even">Setter</dt>
+<dt class="field-even">Setter<span class="colon">:</span></dt>
 <dd class="field-even"><p>Sets start <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> safely</p>
 </dd>
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a></p>
 </dd>
 </dl>
@@ -414,16 +411,16 @@ This should be called if you update <code class="docutils literal notranslate"><
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validateEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start_socket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><span class="pre">Socket</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_socket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><span class="pre">Socket</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/node_editor/node_edge.html#Edge.validateEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge.Edge.validateEdge" title="Permalink to this definition"></a></dt>
 <dd><p>Validate Edge agains all registered <cite>Edge Validator Callbacks</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>start_socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – Starting <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> of Edge to check</p></li>
 <li><p><strong>end_socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – Target/End <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> of Edge to check</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if the Edge is valid or <code class="docutils literal notranslate"><span class="pre">False</span></code> if not</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -441,10 +438,6 @@ This should be called if you update <code class="docutils literal notranslate"><
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_edge_dragging.EdgeDragging.edgeDragEnd" title="node_editor.node_edge_dragging.EdgeDragging.edgeDragEnd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">edgeDragEnd</span></code></a>(item)</p></td>
 <td><p>Code handling the end of the dragging an <cite>Edge</cite> operation.</p></td>
@@ -466,7 +459,7 @@ This should be called if you update <code class="docutils literal notranslate"><
 <dd><p>Code handling the end of the dragging an <cite>Edge</cite> operation. If this code returns True then skip the
 rest of the mouse event processing. Can be called with <code class="docutils literal notranslate"><span class="pre">None</span></code> to cancel the edge dragging mode</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>item</strong> (<code class="docutils literal notranslate"><span class="pre">QGraphicsItem</span></code>) – Item in the <cite>Graphics Scene</cite> where we ended dragging an <cite>Edge</cite></p>
 </dd>
 </dl>
@@ -489,7 +482,7 @@ rest of the mouse event processing. Can be called with <code class="docutils lit
 <span class="sig-name descname"><span class="pre">updateDestination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_dragging.html#EdgeDragging.updateDestination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_dragging.EdgeDragging.updateDestination" title="Permalink to this definition"></a></dt>
 <dd><p>Update the end point of our dragging edge</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – new X scene position</p></li>
 <li><p><strong>y</strong> – new Y scene position</p></li>
@@ -511,10 +504,6 @@ it will intersect that edge.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_edge_intersect.EdgeIntersect.dropNode" title="node_editor.node_edge_intersect.EdgeIntersect.dropNode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropNode</span></code></a>(node, scene_pos_x, scene_pos_y)</p></td>
 <td><p>Code handling the dropping of a node on an existing edge.</p></td>
@@ -544,7 +533,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">dropNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_pos_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_pos_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_intersect.html#EdgeIntersect.dropNode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_intersect.EdgeIntersect.dropNode" title="Permalink to this definition"></a></dt>
 <dd><p>Code handling the dropping of a node on an existing edge.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scene_pos_x</strong> (<cite>float</cite>) – scene position x</p></li>
 <li><p><strong>scene_pos_y</strong> (<cite>float</cite>) – scene position y</p></li>
@@ -558,7 +547,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">enterState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_intersect.html#EdgeIntersect.enterState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_intersect.EdgeIntersect.enterState" title="Permalink to this definition"></a></dt>
 <dd><p>Initialize when we enter the state</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>node</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code> which we started to drag</p>
 </dd>
 </dl>
@@ -569,13 +558,13 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">hotZoneRect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QRectF</span></span></span><a class="reference internal" href="_modules/node_editor/node_edge_intersect.html#EdgeIntersect.hotZoneRect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_intersect.EdgeIntersect.hotZoneRect" title="Permalink to this definition"></a></dt>
 <dd><p>Returns A QRectF of creating a box around a node</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>node</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code> for which we want to get <cite>QRectF</cite> describing its position and area</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><cite>QRectF</cite> describing node’s position and area</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><cite>QRectF</cite></p>
 </dd>
 </dl>
@@ -586,13 +575,13 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_box</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QRectF</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><span class="pre">Edge</span></a></span></span><a class="reference internal" href="_modules/node_editor/node_edge_intersect.html#EdgeIntersect.intersect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_intersect.EdgeIntersect.intersect" title="Permalink to this definition"></a></dt>
 <dd><p>Checking for intersection of a rectangle (usually a <cite>Node</cite>) with edges in the scene</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>node_box</strong> (<cite>QRectF</cite>) – <cite>QRectF</cite> for which we want find intersecting <cite>Edges</cite></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> or <cite>None</cite> if the node is being cut by an <cite>Edge</cite></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></p>
 </dd>
 </dl>
@@ -603,10 +592,10 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">isConnected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_intersect.html#EdgeIntersect.isConnected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_intersect.EdgeIntersect.isConnected" title="Permalink to this definition"></a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if node got any connections</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>node</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code>) – <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code> which connections to check</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -617,7 +606,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">leaveState</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_pos_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_pos_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_intersect.html#EdgeIntersect.leaveState"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_intersect.EdgeIntersect.leaveState" title="Permalink to this definition"></a></dt>
 <dd><p>Deinit when we leave this state</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scene_pos_x</strong> (<cite>float</cite>) – scene position x</p></li>
 <li><p><strong>scene_pos_y</strong> (<cite>float</cite>) – scene position y</p></li>
@@ -631,7 +620,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_pos_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_pos_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_intersect.html#EdgeIntersect.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_intersect.EdgeIntersect.update" title="Permalink to this definition"></a></dt>
 <dd><p>Updating during mouse move when grView is in this state</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>scene_pos_x</strong> (<cite>float</cite>) – scene position x</p></li>
 <li><p><strong>scene_pos_y</strong> (<cite>float</cite>) – scene position y</p></li>
@@ -652,10 +641,6 @@ it will intersect that edge.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_edge_rerouting.EdgeRerouting.clearReroutingEdges" title="node_editor.node_edge_rerouting.EdgeRerouting.clearReroutingEdges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">clearReroutingEdges</span></code></a>()</p></td>
 <td><p>Remove the helping dashed edges from the <code class="xref py py-class docutils literal notranslate"><span class="pre">Scene</span></code></p></td>
@@ -697,10 +682,10 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">getAffectedEdges</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="reference internal" href="_modules/node_editor/node_edge_rerouting.html#EdgeRerouting.getAffectedEdges"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_rerouting.EdgeRerouting.getAffectedEdges" title="Permalink to this definition"></a></dt>
 <dd><p>Get a list of all edges connected to the <cite>self.start_socket</cite> where we started the re-routing</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List of all edges affected by the rerouting started from this <cite>self.start_socket</cite> <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a></p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">list</span></code></p>
 </dd>
 </dl>
@@ -729,7 +714,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">setAffectedEdgesVisible</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">visibility</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_rerouting.html#EdgeRerouting.setAffectedEdgesVisible"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_rerouting.EdgeRerouting.setAffectedEdgesVisible" title="Permalink to this definition"></a></dt>
 <dd><p>Show/Hide all edges connected to the <cite>self.start_socket</cite> where we started the re-routing</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>visibility</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> if all the affected <a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> (s) should be shown or hidden</p>
 </dd>
 </dl>
@@ -740,7 +725,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">startRerouting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">socket</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><span class="pre">Socket</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_rerouting.html#EdgeRerouting.startRerouting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_rerouting.EdgeRerouting.startRerouting" title="Permalink to this definition"></a></dt>
 <dd><p>Method to start the re-routing. Called from the grView’s state machine.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>socket</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code>) – <a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code></a> where we started the re-routing</p>
 </dd>
 </dl>
@@ -751,7 +736,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">stopRerouting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#node_editor.node_socket.Socket" title="node_editor.node_socket.Socket"><span class="pre">Socket</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_rerouting.html#EdgeRerouting.stopRerouting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_rerouting.EdgeRerouting.stopRerouting" title="Permalink to this definition"></a></dt>
 <dd><p>Method for stopping the re-routing</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>target</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Socket</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>) – Target where we ended the rerouting (usually released mouse button). Provide <code class="docutils literal notranslate"><span class="pre">Socket</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code> to cancel</p>
 </dd>
 </dl>
@@ -762,7 +747,7 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">updateScenePos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_rerouting.html#EdgeRerouting.updateScenePos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_rerouting.EdgeRerouting.updateScenePos" title="Permalink to this definition"></a></dt>
 <dd><p>Update position of all the rerouting edges (dashed ones). Called from mouseMove event to update to new mouse position</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – new X position</p></li>
 <li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – new Y position</p></li>
@@ -783,10 +768,6 @@ it will intersect that edge.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_edge_snapping.EdgeSnapping.getSnappedSocketItem" title="node_editor.node_edge_snapping.EdgeSnapping.getSnappedSocketItem"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getSnappedSocketItem</span></code></a>(event)</p></td>
 <td><p>Returns <a class="reference internal" href="#node_editor.node_graphics_socket.QDMGraphicsSocket" title="node_editor.node_graphics_socket.QDMGraphicsSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">QDMGraphicsSocket</span></code></a> which we should snap to</p></td>
@@ -807,10 +788,10 @@ it will intersect that edge.</p>
 <span class="sig-name descname"><span class="pre">getSnappedToSocketPosition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scenepos:</span> <span class="pre">~PyQt5.QtCore.QPointF)</span> <span class="pre">-&gt;</span> <span class="pre">('QDMGraphicsSocket'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">&lt;class</span> <span class="pre">'PyQt5.QtCore.QPointF'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_edge_snapping.html#EdgeSnapping.getSnappedToSocketPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_edge_snapping.EdgeSnapping.getSnappedToSocketPosition" title="Permalink to this definition"></a></dt>
 <dd><p>Returns grSocket and Scene position to nearest Socket or original position if no nearby Socket found</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>scenepos</strong> (<code class="docutils literal notranslate"><span class="pre">QPointF</span></code>) – From which point should I snap?</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>grSocket and Scene postion to nearest socket</p>
 </dd>
 </dl>
@@ -883,10 +864,6 @@ application start with calling this:</p>
 <p>Class representing Cutting Line used for cutting multiple <cite>Edges</cite> with one stroke</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicsItemFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -1368,10 +1345,6 @@ application start with calling this:</p>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 69%" />
-<col style="width: 31%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheMode</strong></p></td>
 <td></td>
@@ -1404,10 +1377,10 @@ application start with calling this:</p>
 <span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QPainterPath</span></span></span><a class="reference internal" href="_modules/node_editor/node_graphics_cutline.html#QDMCutLine.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_cutline.QDMCutLine.shape" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the QPainterPath object from list of line points</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>shape function returning <code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> representation of Cutting Line</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code></p>
 </dd>
 </dl>
@@ -1426,10 +1399,6 @@ application start with calling this:</p>
 <p>Base class for Graphics Edge</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicsItemFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -1905,10 +1874,6 @@ application start with calling this:</p>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 71%" />
-<col style="width: 29%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheMode</strong></p></td>
 <td></td>
@@ -2000,10 +1965,10 @@ application start with calling this:</p>
 is an instance of derived <a class="reference internal" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathBase" title="node_editor.node_graphics_edge_path.GraphicsEdgePathBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">GraphicsEdgePathBase</span></code></a> class
 containing the actual <cite>calcPath()</cite> function - computing how the edge should look like.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> of the edge connecting <cite>source</cite> and <cite>destination</cite></p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code></p>
 </dd>
 </dl>
@@ -2032,7 +1997,7 @@ containing the actual <cite>calcPath()</cite> function - computing how the edge 
 <span class="sig-name descname"><span class="pre">doSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_edge.html#QDMGraphicsEdge.doSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge.QDMGraphicsEdge.doSelect" title="Permalink to this definition"></a></dt>
 <dd><p>Safe version of selecting the <cite>Graphics Node</cite>. Takes care about the selection state flag used internally</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>new_state</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> to select, <code class="docutils literal notranslate"><span class="pre">False</span></code> to deselect</p>
 </dd>
 </dl>
@@ -2067,16 +2032,16 @@ containing the actual <cite>calcPath()</cite> function - computing how the edge 
 <span class="sig-name descname"><span class="pre">intersectsWith</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QPointF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QPointF</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/node_editor/node_graphics_edge.html#QDMGraphicsEdge.intersectsWith"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge.QDMGraphicsEdge.intersectsWith" title="Permalink to this definition"></a></dt>
 <dd><p>Does this Graphics Edge intersect with the line between point A and point B ?</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>p1</strong> (<code class="docutils literal notranslate"><span class="pre">QPointF</span></code>) – point A</p></li>
 <li><p><strong>p2</strong> (<code class="docutils literal notranslate"><span class="pre">QPointF</span></code>) – point B</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if this <cite>Graphics Edge</cite> intersects</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -2118,7 +2083,7 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">setDestination</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_edge.html#QDMGraphicsEdge.setDestination"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge.QDMGraphicsEdge.setDestination" title="Permalink to this definition"></a></dt>
 <dd><p>Set destination point</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – x position</p></li>
 <li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – y position</p></li>
@@ -2132,7 +2097,7 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">setSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_edge.html#QDMGraphicsEdge.setSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge.QDMGraphicsEdge.setSource" title="Permalink to this definition"></a></dt>
 <dd><p>Set source point</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – x position</p></li>
 <li><p><strong>y</strong> (<code class="docutils literal notranslate"><span class="pre">float</span></code>) – y position</p></li>
@@ -2146,10 +2111,10 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">shape</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QPainterPath</span></span></span><a class="reference internal" href="_modules/node_editor/node_graphics_edge.html#QDMGraphicsEdge.shape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge.QDMGraphicsEdge.shape" title="Permalink to this definition"></a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> representation of this <cite>Edge</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>path representation</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code></p>
 </dd>
 </dl>
@@ -2173,10 +2138,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <p>Base Class for calculating the graphics path to draw for an graphics Edge</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathBase.calcPath" title="node_editor.node_graphics_edge_path.GraphicsEdgePathBase.calcPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calcPath</span></code></a>()</p></td>
 <td><p>Calculate the Direct line connection</p></td>
@@ -2188,10 +2149,10 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">calcPath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_edge_path.html#GraphicsEdgePathBase.calcPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathBase.calcPath" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the Direct line connection</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> of the graphics path to draw</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -2206,10 +2167,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <p>Cubic line connection Graphics Edge</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathBezier.calcPath" title="node_editor.node_graphics_edge_path.GraphicsEdgePathBezier.calcPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calcPath</span></code></a>()</p></td>
 <td><p>Calculate the cubic Bezier line connection with 2 control points</p></td>
@@ -2221,10 +2178,10 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">calcPath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QPainterPath</span></span></span><a class="reference internal" href="_modules/node_editor/node_graphics_edge_path.html#GraphicsEdgePathBezier.calcPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathBezier.calcPath" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the cubic Bezier line connection with 2 control points</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> of the cubic Bezier line</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code></p>
 </dd>
 </dl>
@@ -2239,10 +2196,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <p>Direct line connection Graphics Edge</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathDirect.calcPath" title="node_editor.node_graphics_edge_path.GraphicsEdgePathDirect.calcPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calcPath</span></code></a>()</p></td>
 <td><p>Calculate the Direct line connection</p></td>
@@ -2254,10 +2207,10 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">calcPath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QPainterPath</span></span></span><a class="reference internal" href="_modules/node_editor/node_graphics_edge_path.html#GraphicsEdgePathDirect.calcPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathDirect.calcPath" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the Direct line connection</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> of the direct line</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code></p>
 </dd>
 </dl>
@@ -2272,10 +2225,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <p>Square line connection Graphics Edge</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathSquare.calcPath" title="node_editor.node_graphics_edge_path.GraphicsEdgePathSquare.calcPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calcPath</span></code></a>()</p></td>
 <td><p>Calculate the square edge line connection</p></td>
@@ -2287,10 +2236,10 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">calcPath</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_edge_path.html#GraphicsEdgePathSquare.calcPath"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_edge_path.GraphicsEdgePathSquare.calcPath" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate the square edge line connection</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code> of the edge square line</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QPainterPath</span></code></p>
 </dd>
 </dl>
@@ -2314,7 +2263,7 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QGraphicsItem</span></code></p>
 <p>Class describing Graphics representation of <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><a class="reference internal" href="#node_editor.node_graphics_node.QDMGraphicsNode.content" title="node_editor.node_graphics_node.QDMGraphicsNode.content"><code class="xref py py-obj docutils literal notranslate"><span class="pre">content</span></code></a></dt><dd><p>Reference to <cite>Node Content</cite></p>
 </dd>
@@ -2325,10 +2274,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicsItemFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -2831,10 +2776,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 69%" />
-<col style="width: 31%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheMode</strong></p></td>
 <td></td>
@@ -2867,7 +2808,7 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">doSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_node.html#QDMGraphicsNode.doSelect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_node.QDMGraphicsNode.doSelect" title="Permalink to this definition"></a></dt>
 <dd><p>Safe version of selecting the <cite>Graphics Node</cite>. Takes care about the selection state flag used internally</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>new_state</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> to select, <code class="docutils literal notranslate"><span class="pre">False</span></code> to deselect</p>
 </dd>
 </dl>
@@ -2950,13 +2891,13 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">title</span></span><a class="headerlink" href="#node_editor.node_graphics_node.QDMGraphicsNode.title" title="Permalink to this definition"></a></dt>
 <dd><p>title of this <cite>Node</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Getter</dt>
+<dt class="field-odd">Getter<span class="colon">:</span></dt>
 <dd class="field-odd"><p>current Graphics Node title</p>
 </dd>
-<dt class="field-even">Setter</dt>
+<dt class="field-even">Setter<span class="colon">:</span></dt>
 <dd class="field-even"><p>stores and make visible the new title</p>
 </dd>
-<dt class="field-odd">Type</dt>
+<dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -2975,10 +2916,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <p>Class representing Graphic of <code class="xref py py-class docutils literal notranslate"><span class="pre">Scene</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SceneLayers</span></code>(...)</p></td>
 <td><p></p></td>
@@ -3332,10 +3269,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 68%" />
-<col style="width: 32%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>ItemIndexMethod</strong></p></td>
 <td></td>
@@ -3444,7 +3377,7 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QGraphicsItem</span></code></p>
 <p>Class representing Graphic <cite>Socket</cite> in <code class="docutils literal notranslate"><span class="pre">QGraphicsScene</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>socket_type</strong></dt><dd></dd>
 </dl>
@@ -3452,10 +3385,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicsItemFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -3946,10 +3875,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 69%" />
-<col style="width: 31%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheMode</strong></p></td>
 <td></td>
@@ -4067,10 +3992,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <p>Class representing NodeEditor’s <cite>Graphics View</cite></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CacheMode</span></code>(...)</p></td>
 <td><p></p></td>
@@ -5228,10 +5149,6 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheModeFlag</strong></p></td>
 <td></td>
@@ -5393,7 +5310,7 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">addDragEnterListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_view.html#QDMGraphicsView.addDragEnterListener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_view.QDMGraphicsView.addDragEnterListener" title="Permalink to this definition"></a></dt>
 <dd><p>Register callback for <cite>Drag Enter</cite> event</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>callback</strong> – callback function</p>
 </dd>
 </dl>
@@ -5404,7 +5321,7 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <span class="sig-name descname"><span class="pre">addDropListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_graphics_view.html#QDMGraphicsView.addDropListener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_view.QDMGraphicsView.addDropListener" title="Permalink to this definition"></a></dt>
 <dd><p>Register callback for <cite>Drop</cite> event</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>callback</strong> – callback function</p>
 </dd>
 </dl>
@@ -5434,10 +5351,10 @@ in <a class="reference internal" href="#node_editor.node_graphics_edge.QDMGraphi
 <dd><p>Measures if we are too far from the last Mouse button click scene position.
 This is used for detection if we release too far after we clicked on a <cite>Socket</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>event</strong> (<code class="docutils literal notranslate"><span class="pre">QMouseEvent</span></code>) – Qt’s mouse event</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if we released too far from where we clicked before</p>
 </dd>
 </dl>
@@ -5460,10 +5377,10 @@ This is used for detection if we release too far after we clicked on a <cite>Soc
 <span class="sig-name descname"><span class="pre">getItemAtClick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">QEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">QGraphicsItem</span></span></span><a class="reference internal" href="_modules/node_editor/node_graphics_view.html#QDMGraphicsView.getItemAtClick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_graphics_view.QDMGraphicsView.getItemAtClick" title="Permalink to this definition"></a></dt>
 <dd><p>Return the object on which we’ve clicked/release mouse button</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>event</strong> (<code class="docutils literal notranslate"><span class="pre">QEvent</span></code>) – Qt’s mouse or key event</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">QGraphicsItem</span></code> which the mouse event happened or <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </dd>
 </dl>
@@ -5493,10 +5410,10 @@ how to solve the problem when a Node contains Text/LineEdit and we press the <ci
 key (also serving to delete <cite>Node</cite>)</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>event</strong> (<code class="docutils literal notranslate"><span class="pre">QKeyEvent</span></code>) – Qt’s Key event</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -5599,10 +5516,6 @@ key (also serving to delete <cite>Node</cite>)</p>
 <p>Class contains all the code for serialization/deserialization from Clipboard</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_scene_clipboard.SceneClipboard.deserializeFromClipboard" title="node_editor.node_scene_clipboard.SceneClipboard.deserializeFromClipboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deserializeFromClipboard</span></code></a>(data, *args, **kwargs)</p></td>
 <td><p>Deserializes data from Clipboard.</p></td>
@@ -5617,7 +5530,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">deserializeFromClipboard</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_scene_clipboard.html#SceneClipboard.deserializeFromClipboard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_clipboard.SceneClipboard.deserializeFromClipboard" title="Permalink to this definition"></a></dt>
 <dd><p>Deserializes data from Clipboard.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – <code class="docutils literal notranslate"><span class="pre">dict</span></code> data for deserialization to the <code class="xref py py-class docutils literal notranslate"><span class="pre">node_editor.node_scene.Scene</span></code>.</p>
 </dd>
 </dl>
@@ -5628,10 +5541,10 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">serializeSelected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delete</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">OrderedDict</span></span></span><a class="reference internal" href="_modules/node_editor/node_scene_clipboard.html#SceneClipboard.serializeSelected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_clipboard.SceneClipboard.serializeSelected" title="Permalink to this definition"></a></dt>
 <dd><p>Serializes selected items in the Scene into <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>delete</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – True if you want to delete selected items after serialization. Useful for Cut operation</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Serialized data of current selection in NodeEditor <code class="xref py py-class docutils literal notranslate"><span class="pre">Scene</span></code></p>
 </dd>
 </dl>
@@ -5650,10 +5563,6 @@ key (also serving to delete <cite>Node</cite>)</p>
 <p>Class contains all the code for undo/redo operations</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_scene_history.SceneHistory.addHistoryModifiedListener" title="node_editor.node_scene_history.SceneHistory.addHistoryModifiedListener"><code class="xref py py-obj docutils literal notranslate"><span class="pre">addHistoryModifiedListener</span></code></a>(callback)</p></td>
 <td><p>Register callback for <cite>HistoryModified</cite> event</p></td>
@@ -5704,7 +5613,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">addHistoryModifiedListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.addHistoryModifiedListener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.addHistoryModifiedListener" title="Permalink to this definition"></a></dt>
 <dd><p>Register callback for <cite>HistoryModified</cite> event</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>callback</strong> – callback function</p>
 </dd>
 </dl>
@@ -5715,7 +5624,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">addHistoryRestoredListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.addHistoryRestoredListener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.addHistoryRestoredListener" title="Permalink to this definition"></a></dt>
 <dd><p>Register callback for <cite>HistoryRestored</cite> event</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>callback</strong> – callback function</p>
 </dd>
 </dl>
@@ -5726,7 +5635,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">addHistoryStoredListener</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">callback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.addHistoryStoredListener"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.addHistoryStoredListener" title="Permalink to this definition"></a></dt>
 <dd><p>Register callback for <cite>HistoryStored</cite> event</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>callback</strong> – callback function</p>
 </dd>
 </dl>
@@ -5737,7 +5646,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">canRedo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.canRedo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.canRedo" title="Permalink to this definition"></a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if Redo is available for current <cite>History Stack</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -5748,7 +5657,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">canUndo</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.canUndo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.canUndo" title="Permalink to this definition"></a></dt>
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if Undo is available for current <cite>History Stack</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -5773,13 +5682,13 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">createHistoryStamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.createHistoryStamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.createHistoryStamp" title="Permalink to this definition"></a></dt>
 <dd><p>Create History Stamp. Internally serialize whole scene and the current selection</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>desc</strong> – Descriptive label for the History Stamp</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>History stamp serializing state of <cite>Scene</cite> and current selection</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">dict</span></code></p>
 </dd>
 </dl>
@@ -5807,7 +5716,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">restoreHistoryStamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history_stamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.restoreHistoryStamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.restoreHistoryStamp" title="Permalink to this definition"></a></dt>
 <dd><p>Restore History Stamp to current <cite>Scene</cite> with selection of items included</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>history_stamp</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – History Stamp to restore</p>
 </dd>
 </dl>
@@ -5818,7 +5727,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <span class="sig-name descname"><span class="pre">storeHistory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">desc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">setModified</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_scene_history.html#SceneHistory.storeHistory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_scene_history.SceneHistory.storeHistory" title="Permalink to this definition"></a></dt>
 <dd><p>Store History Stamp into History Stack</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>desc</strong> (<code class="docutils literal notranslate"><span class="pre">str</span></code>) – Description of current History Stamp</p></li>
 <li><p><strong>setModified</strong> (<code class="docutils literal notranslate"><span class="pre">bool</span></code>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code> marks <code class="xref py py-class docutils literal notranslate"><span class="pre">Scene</span></code> with <cite>has_been_modified</cite></p></li>
@@ -5856,10 +5765,6 @@ key (also serving to delete <cite>Node</cite>)</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_serializable.Serializable.deserialize" title="node_editor.node_serializable.Serializable.deserialize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">deserialize</span></code></a>(data[, hashmap, restore_id])</p></td>
 <td><p>Deserialization method which take data in python <code class="docutils literal notranslate"><span class="pre">dict</span></code> format with helping <cite>hashmap</cite> containing references to existing entities.</p></td>
@@ -5875,7 +5780,7 @@ key (also serving to delete <cite>Node</cite>)</p>
 <dd><p>Deserialization method which take data in python <code class="docutils literal notranslate"><span class="pre">dict</span></code> format with helping <cite>hashmap</cite> containing
 references to existing entities.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Dictionary containing serialized data</p></li>
 <li><p><strong>hashmap</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Helper dictionary containing references (by id == key) to existing objects</p></li>
@@ -5883,10 +5788,10 @@ references to existing entities.</p>
 Sockets of which we want to keep the existing object’s <cite>id</cite>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if deserialization was successful, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -5898,10 +5803,10 @@ Sockets of which we want to keep the existing object’s <cite>id</cite>.</p></l
 <dd><p>Serialization method to serialize this class data into <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code> which can be easily stored
 in memory or file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>data serialized in <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 </dd>
 </dl>
@@ -5949,10 +5854,6 @@ in memory or file.</p>
 <dd><p>Bases: <a class="reference internal" href="#node_editor.node_serializable.Serializable" title="node_editor.node_serializable.Serializable"><code class="xref py py-class docutils literal notranslate"><span class="pre">Serializable</span></code></a></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_socket.Socket.Socket_GR_Class" title="node_editor.node_socket.Socket.Socket_GR_Class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Socket_GR_Class</span></code></a></p></td>
 <td><p>Class representing Socket.</p></td>
@@ -5974,7 +5875,7 @@ in memory or file.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_socket.Socket.getSocketPosition" title="node_editor.node_socket.Socket.getSocketPosition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">getSocketPosition</span></code></a>()</p></td>
 <td><p><dl class="field-list simple">
-<dt class="field-odd">return</dt>
+<dt class="field-odd">return<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Returns this <cite>Socket</cite> position according to the implementation stored in</p>
 </dd>
 </dl>
@@ -6005,7 +5906,7 @@ in memory or file.</p>
 <span class="sig-name descname"><span class="pre">Socket_GR_Class</span></span><a class="headerlink" href="#node_editor.node_socket.Socket.Socket_GR_Class" title="Permalink to this definition"></a></dt>
 <dd><p>Class representing Socket.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>socket_type</strong></dt><dd></dd>
 </dl>
@@ -6013,10 +5914,6 @@ in memory or file.</p>
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#node_editor.node_socket.Socket.changeSocketType" title="node_editor.node_socket.Socket.changeSocketType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">changeSocketType</span></code></a>(new_socket_type)</p></td>
 <td><p>Change the Socket Type</p></td>
@@ -6027,10 +5924,6 @@ in memory or file.</p>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 69%" />
-<col style="width: 31%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheMode</strong></p></td>
 <td></td>
@@ -6054,7 +5947,7 @@ in memory or file.</p>
 <span class="sig-name descname"><span class="pre">addEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><span class="pre">Edge</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_socket.html#Socket.addEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_socket.Socket.addEdge" title="Permalink to this definition"></a></dt>
 <dd><p>Append an Edge to the list of connected Edges</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>edge</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code>) – <a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> to connect to this <cite>Socket</cite></p>
 </dd>
 </dl>
@@ -6065,13 +5958,13 @@ in memory or file.</p>
 <span class="sig-name descname"><span class="pre">changeSocketType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_socket_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/node_editor/node_socket.html#Socket.changeSocketType"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_socket.Socket.changeSocketType" title="Permalink to this definition"></a></dt>
 <dd><p>Change the Socket Type</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>new_socket_type</strong> (<code class="docutils literal notranslate"><span class="pre">int</span></code>) – new socket type</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the socket type was actually changed</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -6089,7 +5982,7 @@ in memory or file.</p>
 <dd><p>Deserialization method which take data in python <code class="docutils literal notranslate"><span class="pre">dict</span></code> format with helping <cite>hashmap</cite> containing
 references to existing entities.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Dictionary containing serialized data</p></li>
 <li><p><strong>hashmap</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – Helper dictionary containing references (by id == key) to existing objects</p></li>
@@ -6097,10 +5990,10 @@ references to existing entities.</p>
 Sockets of which we want to keep the existing object’s <cite>id</cite>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if deserialization was successful, otherwise <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -6114,10 +6007,10 @@ This function is here to help solve the issue of opening older files in the newe
 If the ‘multi_edges’ param is missing in the dictionary, we determine if this <cite>Socket</cite>
 should support multiple <cite>Edges</cite>.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<code class="docutils literal notranslate"><span class="pre">dict</span></code>) – <cite>Socket</cite> data in <code class="docutils literal notranslate"><span class="pre">dict</span></code> format for deserialization</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if this <cite>Socket</cite> should support multi_edges</p>
 </dd>
 </dl>
@@ -6127,11 +6020,11 @@ should support multiple <cite>Edges</cite>.</p>
 <dt class="sig sig-object py" id="node_editor.node_socket.Socket.getSocketPosition">
 <span class="sig-name descname"><span class="pre">getSocketPosition</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/node_socket.html#Socket.getSocketPosition"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_socket.Socket.getSocketPosition" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Returns this <cite>Socket</cite> position according to the implementation stored in
 <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> position</p>
 </dd>
 </dl>
@@ -6142,10 +6035,10 @@ should support multiple <cite>Edges</cite>.</p>
 <span class="sig-name descname"><span class="pre">hasAnyEdge</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/node_editor/node_socket.html#Socket.hasAnyEdge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_socket.Socket.hasAnyEdge" title="Permalink to this definition"></a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if any <a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> is connected to this socket</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if any <a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> is connected to this socket</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -6156,13 +6049,13 @@ should support multiple <cite>Edges</cite>.</p>
 <span class="sig-name descname"><span class="pre">isConnected</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edge</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><span class="pre">Edge</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="_modules/node_editor/node_socket.html#Socket.isConnected"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.node_socket.Socket.isConnected" title="Permalink to this definition"></a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if <a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> is connected to this <cite>Socket</cite></p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>edge</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code>) – <a class="reference internal" href="#node_editor.node_edge.Edge" title="node_editor.node_edge.Edge"><code class="xref py py-class docutils literal notranslate"><span class="pre">Edge</span></code></a> to check if it is connected to this <cite>Socket</cite></p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <cite>Edge</cite> is connected to this socket</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">bool</span></code></p>
 </dd>
 </dl>
@@ -6188,10 +6081,10 @@ should support multiple <cite>Edges</cite>.</p>
 <dd><p>Serialization method to serialize this class data into <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code> which can be easily stored
 in memory or file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>data serialized in <code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">OrderedDict</span></code></p>
 </dd>
 </dl>
@@ -6215,7 +6108,7 @@ inside <code class="xref py py-class docutils literal notranslate"><span class="
 <span class="sig-prename descclassname"><span class="pre">node_editor.utils.</span></span><span class="sig-name descname"><span class="pre">dumpException</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">e</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/utils.html#dumpException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.utils.dumpException" title="Permalink to this definition"></a></dt>
 <dd><p>Prints out an Exception message with a traceback to the console</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>e</strong> (<em>Exception</em>) – Exception to print out</p>
 </dd>
 </dl>
@@ -6226,7 +6119,7 @@ inside <code class="xref py py-class docutils literal notranslate"><span class="
 <span class="sig-prename descclassname"><span class="pre">node_editor.utils.</span></span><span class="sig-name descname"><span class="pre">loadStylesheet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/utils.html#loadStylesheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.utils.loadStylesheet" title="Permalink to this definition"></a></dt>
 <dd><p>Loads an qss stylesheet to the current QApplication instance</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>str</em>) – Filename of qss stylesheet</p>
 </dd>
 </dl>
@@ -6237,7 +6130,7 @@ inside <code class="xref py py-class docutils literal notranslate"><span class="
 <span class="sig-prename descclassname"><span class="pre">node_editor.utils.</span></span><span class="sig-name descname"><span class="pre">loadStylesheets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/node_editor/utils.html#loadStylesheets"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#node_editor.utils.loadStylesheets" title="Permalink to this definition"></a></dt>
 <dd><p>Loads multiple qss stylesheets. Concatenates them together and applies the final stylesheet to the current QApplication instance</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>args</strong> (<em>str</em><em>, </em><em>str</em><em>,</em><em>...</em>) – variable number of filenames of qss stylesheets</p>
 </dd>
 </dl>

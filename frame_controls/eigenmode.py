@@ -203,6 +203,7 @@ class EigenmodeControl:
 
         # get geometric parameters
         self.shape_space = get_geometric_parameters(self, 'SLANS')
+        ic(self.shape_space)
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(self.shape_space.keys())

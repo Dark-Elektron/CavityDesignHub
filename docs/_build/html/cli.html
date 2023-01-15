@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>cli package &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/plot_directive.css" type="text/css" />
+      <link rel="stylesheet" href="_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="exe package" href="exe.html" />
+    <link rel="prev" title="analysis_modules.wakefield.ABCI package" href="analysis_modules.wakefield.ABCI.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> CavityDesignHub (CaDH)
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Introduction</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Modules:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">cli package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cli.cavity">cli.cavity module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-cli">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="icons_rc.html">icons_rc module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manual_run.html">manual_run package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="node_editor.html">node_editor package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="qss.html">qss package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_plugin.html">test_plugin package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui_files.html">ui_files package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ui_state_files.html">ui_state_files package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils package</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">CavityDesignHub (CaDH)</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">CavityDesignHub</a></li>
+      <li class="breadcrumb-item active">cli package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/cli.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="cli-package">
+<h1>cli package<a class="headerlink" href="#cli-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-cli.cavity">
+<span id="cli-cavity-module"></span><h2>cli.cavity module<a class="headerlink" href="#module-cli.cavity" title="Permalink to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="cli.cavity.Cavities">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">Cavities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cavities_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Cavities object is an object containing several Cavity objects.</p>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.add_cavity" title="cli.cavity.Cavities.add_cavity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_cavity</span></code></a>(cav)</p></td>
+<td><p>Adds cavity to cavities :param cav: Cavity object :type cav: object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.linspace" title="cli.cavity.Cavities.linspace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">linspace</span></code></a>(start, stop[, step])</p></td>
+<td><p>Like np.linspace but uses step instead of num This is inclusive to stop, so if start=1, stop=3, step=0.5 Output is: array([1., 1.5, 2., 2.5, 3.])</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_axis_fields" title="cli.cavity.Cavities.plot_axis_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_axis_fields</span></code></a>()</p></td>
+<td><p>Plot axis fields of cavities</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_cavities_contour" title="cli.cavity.Cavities.plot_cavities_contour"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_cavities_contour</span></code></a>([opt, n_cells])</p></td>
+<td><p>Plot geometric contour of Cavity objects</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_compare_bar" title="cli.cavity.Cavities.plot_compare_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_compare_bar</span></code></a>()</p></td>
+<td><p>Plots bar chart of power quantities of interest</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_compare_fm_bar" title="cli.cavity.Cavities.plot_compare_fm_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_compare_fm_bar</span></code></a>()</p></td>
+<td><p>Plot bar chart of fundamental mode quantities of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_compare_hom_bar" title="cli.cavity.Cavities.plot_compare_hom_bar"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_compare_hom_bar</span></code></a>()</p></td>
+<td><p>Plot bar chart of higher-order mode's quantities of interest</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_cryomodule_comparison" title="cli.cavity.Cavities.plot_cryomodule_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_cryomodule_comparison</span></code></a>()</p></td>
+<td><p>Plot cryomodule power comparison</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_dispersion" title="cli.cavity.Cavities.plot_dispersion"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_dispersion</span></code></a>()</p></td>
+<td><p>Plot dispersion curve for the cavities</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_multipac_triplot" title="cli.cavity.Cavities.plot_multipac_triplot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_multipac_triplot</span></code></a>(folders[, kind])</p></td>
+<td><p>Plot Multipac triplot</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_power_comparison" title="cli.cavity.Cavities.plot_power_comparison"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_power_comparison</span></code></a>([fig, ax_list])</p></td>
+<td><p>Can be called using <code class="docutils literal notranslate"><span class="pre">cavities.plot_power_comparison()</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_ql_vs_pin" title="cli.cavity.Cavities.plot_ql_vs_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_ql_vs_pin</span></code></a>()</p></td>
+<td><p>Plot loaded quality factor versus input power for fundamental power coupler (FPC)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.plot_surface_fields" title="cli.cavity.Cavities.plot_surface_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_surface_fields</span></code></a>()</p></td>
+<td><p>Plot surface fields of cavities</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.ql_pin" title="cli.cavity.Cavities.ql_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ql_pin</span></code></a>(labels, geometry, RF, QOI, Machine[, ...])</p></td>
+<td><p>Calculate the value of input power as a function of loaded quality factor</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.qois" title="cli.cavity.Cavities.qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois</span></code></a>(cavity, op_field, E_acc)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param cavity<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cavity object</p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.qois_fm" title="cli.cavity.Cavities.qois_fm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois_fm</span></code></a>()</p></td>
+<td><p>Retrieves the fundamental mode quantities of interest</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.qois_hom" title="cli.cavity.Cavities.qois_hom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">qois_hom</span></code></a>()</p></td>
+<td><p>Retrieves the higher-order modes quantities of interest</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.remove_cavity" title="cli.cavity.Cavities.remove_cavity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">remove_cavity</span></code></a>(cav)</p></td>
+<td><p>Removes cavity from cavity list :param cav: Cavity object :type cav: object</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.save_all_plots" title="cli.cavity.Cavities.save_all_plots"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_all_plots</span></code></a>(plot_name)</p></td>
+<td><p>Save all plots :param plot_name: Name of saved plot :type plot_name: str</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavities.set_cavities_field" title="cli.cavity.Cavities.set_cavities_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_cavities_field</span></code></a>()</p></td>
+<td><p>Sets cavities analysis field range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavities.write_contour" title="cli.cavity.Cavities.write_contour"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_contour</span></code></a>(cav[, opt, n_cells])</p></td>
+<td><p>Write geometric contour for cavities</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>arcTo</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>arcTo2</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>compare_power</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>lineTo</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>make_excel_summary</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>make_latex_summary_tables</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>run_abci</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>run_multipacting</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>run_slans</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.add_cavity">
+<span class="sig-name descname"><span class="pre">add_cavity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cav</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.add_cavity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.add_cavity" title="Permalink to this definition"></a></dt>
+<dd><p>Adds cavity to cavities
+:param cav: Cavity object
+:type cav: object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.arcTo">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">arcTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.arcTo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.arcTo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.arcTo2">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">arcTo2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_center</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_angle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_angle</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.arcTo2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.arcTo2" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.compare_power">
+<span class="sig-name descname"><span class="pre">compare_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">E_acc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.compare_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.compare_power" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.lineTo">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lineTo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prevPt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nextPt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.lineTo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.lineTo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.linspace">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">linspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.linspace"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.linspace" title="Permalink to this definition"></a></dt>
+<dd><p>Like np.linspace but uses step instead of num
+This is inclusive to stop, so if start=1, stop=3, step=0.5
+Output is: array([1., 1.5, 2., 2.5, 3.])</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.make_excel_summary">
+<span class="sig-name descname"><span class="pre">make_excel_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.make_excel_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.make_excel_summary" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.make_latex_summary_tables">
+<span class="sig-name descname"><span class="pre">make_latex_summary_tables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.make_latex_summary_tables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.make_latex_summary_tables" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_axis_fields">
+<span class="sig-name descname"><span class="pre">plot_axis_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_axis_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_axis_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Plot axis fields of cavities</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_cavities_contour">
+<span class="sig-name descname"><span class="pre">plot_cavities_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_cavities_contour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_cavities_contour" title="Permalink to this definition"></a></dt>
+<dd><p>Plot geometric contour of Cavity objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>opt</strong> (<em>{&quot;mid&quot;</em><em>, </em><em>&quot;end&quot;</em><em>, </em><em>&quot;all&quot;}</em>) – Either plot contour for only mid cells or end cells or the entire cavity</p></li>
+<li><p><strong>n_cells</strong> (<em>int</em>) – Option used only when opt is set to “all”</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_compare_bar">
+<span class="sig-name descname"><span class="pre">plot_compare_bar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_compare_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_compare_bar" title="Permalink to this definition"></a></dt>
+<dd><p>Plots bar chart of power quantities of interest</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_compare_fm_bar">
+<span class="sig-name descname"><span class="pre">plot_compare_fm_bar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_compare_fm_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_compare_fm_bar" title="Permalink to this definition"></a></dt>
+<dd><p>Plot bar chart of fundamental mode quantities of interest</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_compare_hom_bar">
+<span class="sig-name descname"><span class="pre">plot_compare_hom_bar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_compare_hom_bar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_compare_hom_bar" title="Permalink to this definition"></a></dt>
+<dd><p>Plot bar chart of higher-order mode’s quantities of interest</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_cryomodule_comparison">
+<span class="sig-name descname"><span class="pre">plot_cryomodule_comparison</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_cryomodule_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_cryomodule_comparison" title="Permalink to this definition"></a></dt>
+<dd><p>Plot cryomodule power comparison</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_dispersion">
+<span class="sig-name descname"><span class="pre">plot_dispersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_dispersion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_dispersion" title="Permalink to this definition"></a></dt>
+<dd><p>Plot dispersion curve for the cavities</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_multipac_triplot">
+<span class="sig-name descname"><span class="pre">plot_multipac_triplot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folders</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'triplot'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_multipac_triplot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_multipac_triplot" title="Permalink to this definition"></a></dt>
+<dd><p>Plot Multipac triplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>folders</strong> (<em>list</em><em>, </em><em>array like</em>) – List of folder to read multipacting results from</p></li>
+<li><p><strong>kind</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This will be changed later so that the multipac results will be in the same location as the SLANS and ABCI
+results</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_power_comparison">
+<span class="sig-name descname"><span class="pre">plot_power_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fig</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_power_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_power_comparison" title="Permalink to this definition"></a></dt>
+<dd><p>Can be called using <code class="docutils literal notranslate"><span class="pre">cavities.plot_power_comparison()</span></code></p>
+<div class="math notranslate nohighlight">
+\[W^{3 \beta}_{\delta}\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fig</strong> (<em>matplotlib figure</em>) – </p></li>
+<li><p><strong>ax_list</strong> (<em>list of matplotlib axes object</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_ql_vs_pin">
+<span class="sig-name descname"><span class="pre">plot_ql_vs_pin</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_ql_vs_pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_ql_vs_pin" title="Permalink to this definition"></a></dt>
+<dd><p>Plot loaded quality factor versus input power for fundamental power coupler (FPC)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.plot_surface_fields">
+<span class="sig-name descname"><span class="pre">plot_surface_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.plot_surface_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.plot_surface_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Plot surface fields of cavities</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.ql_pin">
+<span class="sig-name descname"><span class="pre">ql_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RF</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">QOI</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Machine</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.ql_pin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.ql_pin" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the value of input power as a function of loaded quality factor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>labels</strong> (<em>list</em><em>, </em><em>array like</em>) – Descriptive labels on matplotlib plot</p></li>
+<li><p><strong>geometry</strong> (<em>list</em><em>, </em><em>array like</em>) – List of grouped geometric input parameters</p></li>
+<li><p><strong>RF</strong> (<em>list</em><em>, </em><em>array like</em>) – List of grouped radio-frequency (RF) properties</p></li>
+<li><p><strong>QOI</strong> – List of quantities of interest for cavities</p></li>
+<li><p><strong>Machine</strong> – List of grouped machine related materials</p></li>
+<li><p><strong>p_data</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.qois">
+<span class="sig-name descname"><span class="pre">qois</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cavity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op_field</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_acc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.qois" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cavity</strong> (<em>object</em>) – Cavity object</p></li>
+<li><p><strong>op_field</strong> (<em>float</em>) – Cavity operating field</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary containing quantities of interest (normed optional).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.qois_fm">
+<span class="sig-name descname"><span class="pre">qois_fm</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.qois_fm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.qois_fm" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieves the fundamental mode quantities of interest</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing fundamental mode quantities of interest (normed optional).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.qois_hom">
+<span class="sig-name descname"><span class="pre">qois_hom</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.qois_hom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.qois_hom" title="Permalink to this definition"></a></dt>
+<dd><p>Retrieves the higher-order modes quantities of interest</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span> <span class="n">x</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;Normal: $\mu=</span><span class="si">%.2f</span><span class="s1">, \sigma=</span><span class="si">%.2f</span><span class="s1">$&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">mean</span><span class="p">(),</span> <span class="n">x</span><span class="o">.</span><span class="n">std</span><span class="p">()))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>(<a class="reference external" href=".//cli-1.py">Source code</a>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing higher-order modes quantities of interest (normed optional).</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.remove_cavity">
+<span class="sig-name descname"><span class="pre">remove_cavity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cav</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.remove_cavity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.remove_cavity" title="Permalink to this definition"></a></dt>
+<dd><p>Removes cavity from cavity list
+:param cav: Cavity object
+:type cav: object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.run_abci">
+<span class="sig-name descname"><span class="pre">run_abci</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.run_abci"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.run_abci" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.run_multipacting">
+<span class="sig-name descname"><span class="pre">run_multipacting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.run_multipacting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.run_multipacting" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.run_slans">
+<span class="sig-name descname"><span class="pre">run_slans</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.run_slans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.run_slans" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.save_all_plots">
+<span class="sig-name descname"><span class="pre">save_all_plots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plot_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.save_all_plots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.save_all_plots" title="Permalink to this definition"></a></dt>
+<dd><p>Save all plots
+:param plot_name: Name of saved plot
+:type plot_name: str</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.set_cavities_field">
+<span class="sig-name descname"><span class="pre">set_cavities_field</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.set_cavities_field"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.set_cavities_field" title="Permalink to this definition"></a></dt>
+<dd><p>Sets cavities analysis field range.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavities.write_contour">
+<span class="sig-name descname"><span class="pre">write_contour</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cav</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavities.write_contour"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavities.write_contour" title="Permalink to this definition"></a></dt>
+<dd><p>Write geometric contour for cavities</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cav</strong> (<em>Cavity object</em>) – Cavity object</p></li>
+<li><p><strong>opt</strong> (<em>str</em>) – </p></li>
+<li><p><strong>n_cells</strong> (<em>int</em>) – Number of cavity cells</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="cli.cavity.Cavity">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">Cavity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beampipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cavity'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Command Line Interface module for running analysis.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Still under development so some functions might not work properly</p>
+</div>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.calc_op_freq" title="cli.cavity.Cavity.calc_op_freq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_op_freq</span></code></a>()</p></td>
+<td><p>Calculates operating frequency.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.get_abci_qois" title="cli.cavity.Cavity.get_abci_qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_abci_qois</span></code></a>([opt])</p></td>
+<td><p>Get the quantities of interest written by the ABCI code</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.get_custom_eig_qois" title="cli.cavity.Cavity.get_custom_eig_qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_custom_eig_qois</span></code></a>()</p></td>
+<td><p>Get quantities of interest written by the native eigenmode analysis code</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.get_slans_qois" title="cli.cavity.Cavity.get_slans_qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_slans_qois</span></code></a>()</p></td>
+<td><p>Get quantities of interest written by the SLANS code</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.get_slans_tune_res" title="cli.cavity.Cavity.get_slans_tune_res"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_slans_tune_res</span></code></a>(tune_variable, cell_type)</p></td>
+<td><p><dl class="field-list simple">
+<dt class="field-odd">param tune_variable<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tune variable. Currently supports only the tuning of the equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> and half-cell length <code class="docutils literal notranslate"><span class="pre">L</span></code></p>
+</dd>
+</dl>
+</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.load" title="cli.cavity.Cavity.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a>()</p></td>
+<td><p>Load existing cavity project folder</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.load_shape_space" title="cli.cavity.Cavity.load_shape_space"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_shape_space</span></code></a>(filepath)</p></td>
+<td><p>Get cavity geometric parameters from shape space</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.run_eigenmode" title="cli.cavity.Cavity.run_eigenmode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_eigenmode</span></code></a>([solver, freq_shift, ...])</p></td>
+<td><p>Run eigenmode analysis on cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.run_tune" title="cli.cavity.Cavity.run_tune"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_tune</span></code></a>(tune_variable[, cell_type, freq, ...])</p></td>
+<td><p>Tune current cavity geometry</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.run_wakefield" title="cli.cavity.Cavity.run_wakefield"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_wakefield</span></code></a>([MROT, MT, NFS, wakelength, ...])</p></td>
+<td><p>Run wakefield analysis on cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.save" title="cli.cavity.Cavity.save"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save</span></code></a>(files_path)</p></td>
+<td><p>Set folder to save cavity analysis results</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.save_shape_space" title="cli.cavity.Cavity.save_shape_space"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_shape_space</span></code></a>([filepath])</p></td>
+<td><p>Save current geometric parameters as shape space</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.set_beampipe" title="cli.cavity.Cavity.set_beampipe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_beampipe</span></code></a>(bp)</p></td>
+<td><p>Set beampipe option of cavity</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.set_boundary_conditions" title="cli.cavity.Cavity.set_boundary_conditions"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_boundary_conditions</span></code></a>(bc)</p></td>
+<td><p>Sets boundary conditions for the beampipes of cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.set_end_cell_left" title="cli.cavity.Cavity.set_end_cell_left"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_end_cell_left</span></code></a>(cell)</p></td>
+<td><p>Set left end cell geometric parameters of cavity</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.set_end_cell_right" title="cli.cavity.Cavity.set_end_cell_right"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_end_cell_right</span></code></a>(cell)</p></td>
+<td><p>Set right end cell geometric parameters of cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.set_mid_cell" title="cli.cavity.Cavity.set_mid_cell"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_mid_cell</span></code></a>(cell)</p></td>
+<td><p>Set mid cell geometric parameters of cavity</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#cli.cavity.Cavity.set_n_cells" title="cli.cavity.Cavity.set_n_cells"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_n_cells</span></code></a>(n_cells)</p></td>
+<td><p>Sets number of cells of cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#cli.cavity.Cavity.set_name" title="cli.cavity.Cavity.set_name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_name</span></code></a>(name)</p></td>
+<td><p>Set cavity name</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><strong>run_tune_slans</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>set_wall_material</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>uq</strong></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.calc_op_freq">
+<span class="sig-name descname"><span class="pre">calc_op_freq</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.calc_op_freq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.calc_op_freq" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates operating frequency. The operating frequency is used for tuning when a frequency is not given.
+It is advisable to always include the desired tune frequency. Example</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.cav.run_tune">
+<span class="sig-prename descclassname"><span class="pre">cav.</span></span><span class="sig-name descname"><span class="pre">run_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">'Req'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq=1300</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#cli.cavity.Cavity.cav.run_tune" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.get_abci_qois">
+<span class="sig-name descname"><span class="pre">get_abci_qois</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">opt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SR'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.get_abci_qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.get_abci_qois" title="Permalink to this definition"></a></dt>
+<dd><p>Get the quantities of interest written by the ABCI code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>opt</strong> (<em>{'SR'</em><em>, </em><em>'BS'}</em>) – SR - Synchrotron radiation bunch length
+BS - Bremsstrahlung</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.get_custom_eig_qois">
+<span class="sig-name descname"><span class="pre">get_custom_eig_qois</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.get_custom_eig_qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.get_custom_eig_qois" title="Permalink to this definition"></a></dt>
+<dd><p>Get quantities of interest written by the native eigenmode analysis code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.get_slans_qois">
+<span class="sig-name descname"><span class="pre">get_slans_qois</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.get_slans_qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.get_slans_qois" title="Permalink to this definition"></a></dt>
+<dd><p>Get quantities of interest written by the SLANS code</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.get_slans_tune_res">
+<span class="sig-name descname"><span class="pre">get_slans_tune_res</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tune_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_type</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.get_slans_tune_res"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.get_slans_tune_res" title="Permalink to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tune_variable</strong> (<em>{'Req'</em><em>, </em><em>'L'}</em>) – Tune variable. Currently supports only the tuning of the equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> and half-cell length <code class="docutils literal notranslate"><span class="pre">L</span></code></p></li>
+<li><p><strong>cell_type</strong> (<em>{'mid cell'</em><em>, </em><em>'end-mid cell'</em><em>, </em><em>'mid-end cell'</em><em>, </em><em>'single cell'}</em>) – Type of cell to tune</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.load">
+<span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.load" title="Permalink to this definition"></a></dt>
+<dd><p>Load existing cavity project folder</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.load_shape_space">
+<span class="sig-name descname"><span class="pre">load_shape_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.load_shape_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.load_shape_space" title="Permalink to this definition"></a></dt>
+<dd><p>Get cavity geometric parameters from shape space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Shape space directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.run_eigenmode">
+<span class="sig-name descname"><span class="pre">run_eigenmode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SLANS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq_shift</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boundary_cond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subdir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">UQ</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.run_eigenmode"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.run_eigenmode" title="Permalink to this definition"></a></dt>
+<dd><p>Run eigenmode analysis on cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>solver</strong> (<em>{'SLANS'</em><em>, </em><em>'Native'}</em>) – Solver to be used. Native solver is still under development. Results are not as accurate as that of SLANS.</p></li>
+<li><p><strong>freq_shift</strong> – Frequency shift. Eigenmode solver searches for eigenfrequencies around this value</p></li>
+<li><p><strong>boundary_cond</strong> (<em>int</em>) – Boundary condition of left and right cell/beampipe ends</p></li>
+<li><p><strong>subdir</strong> (<em>str</em>) – Sub directory to save results to</p></li>
+<li><p><strong>UQ</strong> (<em>bool</em>) – Used to turn on or off uncertainty quantification</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.run_tune">
+<span class="sig-name descname"><span class="pre">run_tune</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tune_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Mid</span> <span class="pre">Cell'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SLANS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">proc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resume</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cells</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.run_tune"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.run_tune" title="Permalink to this definition"></a></dt>
+<dd><p>Tune current cavity geometry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_cells</strong> (<em>int</em>) – Number of cells used for tuning.</p></li>
+<li><p><strong>resume</strong> (<em>bool</em>) – Option to resume tuning or not. Only for shape space with multiple entries.</p></li>
+<li><p><strong>proc</strong> (<em>int</em>) – Processor number</p></li>
+<li><p><strong>solver</strong> (<em>{'SLANS'</em><em>, </em><em>'Native'}</em>) – Solver to be used. Native solver is still under development. Results are not as accurate as that of SLANS.</p></li>
+<li><p><strong>freq</strong> (<em>float</em>) – Reference frequency in MHz</p></li>
+<li><p><strong>cell_type</strong> (<em>{'mid cell'</em><em>, </em><em>'end-mid cell'</em><em>, </em><em>'mid-end cell'</em><em>, </em><em>'single cell'}</em>) – Type of cell to tune</p></li>
+<li><p><strong>tune_variable</strong> (<em>{'Req'</em><em>, </em><em>'L'}</em>) – Tune variable. Currently supports only the tuning of the equator radius <code class="docutils literal notranslate"><span class="pre">Req</span></code> and half-cell length <code class="docutils literal notranslate"><span class="pre">L</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.run_tune_slans">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">run_tune_slans</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resume</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parentDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projectDir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tuner_option</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tune_variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">iter_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convergence_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.run_tune_slans"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.run_tune_slans" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.run_wakefield">
+<span class="sig-name descname"><span class="pre">run_wakefield</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">MROT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">MT</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NFS</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wakelength</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bunch_length</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DDR_SIG</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">DDZ_SIG</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">WG_M</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wp_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ABCI'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.run_wakefield"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.run_wakefield" title="Permalink to this definition"></a></dt>
+<dd><p>Run wakefield analysis on cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>MROT</strong> (<em>{0</em><em>, </em><em>1}</em>) – Polarisation 0 for longitudinal polarization and 1 for transversal polarization</p></li>
+<li><p><strong>MT</strong> (<em>int</em>) – Number of time steps it takes for a beam to move from one mesh cell to the other</p></li>
+<li><p><strong>NFS</strong> (<em>int</em>) – Number of frequency samples</p></li>
+<li><p><strong>wakelength</strong> – Wakelength to be analysed</p></li>
+<li><p><strong>bunch_length</strong> (<em>float</em>) – Length of the bunch</p></li>
+<li><p><strong>DDR_SIG</strong> (<em>float</em>) – Mesh to bunch length ration in the r axis</p></li>
+<li><p><strong>DDZ_SIG</strong> (<em>float</em>) – Mesh to bunch length ration in the z axis</p></li>
+<li><p><strong>WG_M</strong> – For module simulation. Specifies the length of the beampipe between two cavities.</p></li>
+<li><p><strong>marker</strong> (<em>str</em>) – Marker for the cavities. Adds this to the cavity name specified in a shape space json file</p></li>
+<li><p><strong>wp_dict</strong> (<em>dict</em>) – Python dictionary containing relevant parameters for the wakefield analysis for a specific operating point</p></li>
+<li><p><strong>solver</strong> (<em>{'ABCI'}</em>) – Only one solver is currently available</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files_path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.save" title="Permalink to this definition"></a></dt>
+<dd><p>Set folder to save cavity analysis results</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>files_path</strong> (<em>str</em>) – Save project directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.save_shape_space">
+<span class="sig-name descname"><span class="pre">save_shape_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.save_shape_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.save_shape_space" title="Permalink to this definition"></a></dt>
+<dd><p>Save current geometric parameters as shape space</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Directory to save shape space to. If no input is given, it is saved to the Cavities directory</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_beampipe">
+<span class="sig-name descname"><span class="pre">set_beampipe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_beampipe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_beampipe" title="Permalink to this definition"></a></dt>
+<dd><p>Set beampipe option of cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bp</strong> (<em>str</em>) – Beampipe option of cell</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_boundary_conditions">
+<span class="sig-name descname"><span class="pre">set_boundary_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_boundary_conditions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_boundary_conditions" title="Permalink to this definition"></a></dt>
+<dd><p>Sets boundary conditions for the beampipes of cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>bc</strong> (<em>int</em>) – Boundary condition of left and right cell/beampipe ends</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_end_cell_left">
+<span class="sig-name descname"><span class="pre">set_end_cell_left</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_end_cell_left"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_end_cell_left" title="Permalink to this definition"></a></dt>
+<dd><p>Set left end cell geometric parameters of cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cell</strong> (<em>list</em><em>, </em><em>array like</em>) – Geometric parameters of cells</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_end_cell_right">
+<span class="sig-name descname"><span class="pre">set_end_cell_right</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_end_cell_right"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_end_cell_right" title="Permalink to this definition"></a></dt>
+<dd><p>Set right end cell geometric parameters of cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cell</strong> (<em>list</em><em>, </em><em>array like</em>) – Geometric parameters of cells</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_mid_cell">
+<span class="sig-name descname"><span class="pre">set_mid_cell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_mid_cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_mid_cell" title="Permalink to this definition"></a></dt>
+<dd><p>Set mid cell geometric parameters of cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cell</strong> (<em>list</em><em>, </em><em>array like</em>) – Geometric parameters of cells</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_n_cells">
+<span class="sig-name descname"><span class="pre">set_n_cells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_n_cells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_n_cells" title="Permalink to this definition"></a></dt>
+<dd><p>Sets number of cells of cavity</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_cells</strong> (<em>int</em>) – Number of cavity cells</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_name" title="Permalink to this definition"></a></dt>
+<dd><p>Set cavity name</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of cavity</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.set_wall_material">
+<span class="sig-name descname"><span class="pre">set_wall_material</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wm</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.set_wall_material"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.set_wall_material" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="cli.cavity.Cavity.uq">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">uq</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shape_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">objectives</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solver_args_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#Cavity.uq"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.Cavity.uq" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.done">
+<span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">done</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#done"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.done" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.error">
+<span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#error"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.error" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.get_qois_value">
+<span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">get_qois_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">f_fm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R_Q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_loss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_kick</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">I0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Nb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cell</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#get_qois_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.get_qois_value" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.get_surface_resistance">
+<span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">get_surface_resistance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Eacc</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#get_surface_resistance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.get_surface_resistance" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.info">
+<span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">info</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.info" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.running">
+<span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">running</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arg</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#running"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.running" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="cli.cavity.show_valid_operating_point_structure">
+<span class="sig-prename descclassname"><span class="pre">cli.cavity.</span></span><span class="sig-name descname"><span class="pre">show_valid_operating_point_structure</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/cli/cavity.html#show_valid_operating_point_structure"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#cli.cavity.show_valid_operating_point_structure" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-cli">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-cli" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="analysis_modules.wakefield.ABCI.html" class="btn btn-neutral float-left" title="analysis_modules.wakefield.ABCI package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="exe.html" class="btn btn-neutral float-right" title="exe package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Sosoho-abasi Udongwo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

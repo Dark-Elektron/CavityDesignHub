@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>analysis_modules.eigenmode.customEig package &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
@@ -45,6 +45,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
 </ul>
@@ -69,7 +70,7 @@
 <li class="toctree-l3"><a class="reference internal" href="analysis_modules.html#module-analysis_modules">Module contents</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="graphics.html">graphics package</a></li>
@@ -119,21 +120,14 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
 </section>
-<section id="module-analysis_modules.eigenmode.customEig.compute_QoIs">
-<span id="analysis-modules-eigenmode-customeig-compute-qois-module"></span><h2>analysis_modules.eigenmode.customEig.compute_QoIs module<a class="headerlink" href="#module-analysis_modules.eigenmode.customEig.compute_QoIs" title="Permalink to this heading"></a></h2>
-</section>
 <section id="module-analysis_modules.eigenmode.customEig.run_field_solver">
 <span id="analysis-modules-eigenmode-customeig-run-field-solver-module"></span><h2>analysis_modules.eigenmode.customEig.run_field_solver module<a class="headerlink" href="#module-analysis_modules.eigenmode.customEig.run_field_solver" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analysis_modules.eigenmode.customEig.run_field_solver.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">analysis_modules.eigenmode.customEig.run_field_solver.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_U" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_U"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_U</span></code></a>(EE, HH, zz, rr)</p></td>
 <td><p>Calculates the energy <span class="math notranslate nohighlight">\(U_n\)</span> of eigenmode <span class="math notranslate nohighlight">\(n\)</span> from either electric or magnetic field.</p></td>
@@ -147,87 +141,95 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_epk" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_epk"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_epk</span></code></a>(Epk, Eacc)</p></td>
 <td><p>Calculates the peak surface electric field to accelerating field ratio</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_rq" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_rq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_rq</span></code></a>(Vacc, U)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_fields" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_fields</span></code></a>()</p></td>
+<td><p>Calculate the fields from the eigenvectors</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_g" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_g"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_g</span></code></a>()</p></td>
+<td><p>Calculates the geometry or form factor for the cavity</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_loss_factor" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_loss_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_loss_factor</span></code></a>(R_Q)</p></td>
+<td><p>Calculates fundamental mode loss factor</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_rq" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_rq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_rq</span></code></a>(Vacc, U)</p></td>
 <td><p>Calculates the <span class="math notranslate nohighlight">\(R/Q_\parallel\)</span> of the accelerating mode.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_surface_resistance_copper" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_surface_resistance_copper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_surface_resistance_copper</span></code></a>()</p></td>
-<td><p>Calculates the surface resistance for Copper witn conductivity</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_surface_resistance_copper" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_surface_resistance_copper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_surface_resistance_copper</span></code></a>()</p></td>
+<td><p>Calculates the surface resistance for Copper with conductivity</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_vacc" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_vacc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_vacc</span></code></a>(z, E_z_axis)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_vacc" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_vacc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_vacc</span></code></a>(z, E_z_axis)</p></td>
 <td><p>Calculates the accelerating voltage of the accelerating mode</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_volume" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_volume"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_volume</span></code></a>(EE, zz, rr)</p></td>
+<td><p>Calculates the volume of the volume of revolution of the cavity profile</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.create_inputs" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.create_inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_inputs</span></code></a>()</p></td>
+<td><p>Create required inputs</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.define_geometry" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.define_geometry"><code class="xref py py-obj docutils literal notranslate"><span class="pre">define_geometry</span></code></a>(n_cells, mid_cell[, ...])</p></td>
+<td><p>Define geometry</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.eigen" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.eigen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">eigen</span></code></a>(n_modes, freq, req_mode_num, search)</p></td>
+<td><p>Perform eigenmode simulation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.generate_mesh" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.generate_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_mesh</span></code></a>([gridcons, epsr, plot])</p></td>
+<td><p>Generate mesh</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.get_surface_field" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.get_surface_field"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_surface_field</span></code></a>(field_array, zz, rr)</p></td>
 <td><p>Get the surface field values.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_cavity_fields" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_cavity_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_cavity_fields</span></code></a>(ptype)</p></td>
+<td><p>Plots the computed fields on the input geometry</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_mesh" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_mesh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_mesh</span></code></a>()</p></td>
+<td><p>Plot generated mesh</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.save_fields" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.save_fields"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_fields</span></code></a>(wall, job)</p></td>
+<td><p>Save mode fields</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.save_qois" title="analysis_modules.eigenmode.customEig.run_field_solver.Model.save_qois"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_qois</span></code></a>()</p></td>
+<td><p>Save the quantities of interest</p></td>
+</tr>
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 71%" />
-<col style="width: 29%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>calculate_QoI</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>calculate_fields</strong></p></td>
+<tr class="row-even"><td><p><strong>calculate_q</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>calculate_g</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>calculate_loss_factor</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>calculate_q</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>create_inputs</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>define_geometry</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>eee</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>eigen</strong></p></td>
+<tr class="row-odd"><td><p><strong>eee</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p><strong>find_resonance</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>generate_mesh</strong></p></td>
+<tr class="row-odd"><td><p><strong>inttri</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>inttri</strong></p></td>
+<tr class="row-even"><td><p><strong>normalize_u</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>normalize_u</strong></p></td>
+<tr class="row-odd"><td><p><strong>peak_cavity_field</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-even"><td><p><strong>peak_cavity_field</strong></p></td>
+<tr class="row-even"><td><p><strong>plot_FEM_fields</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>plot_FEM_fields</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>plot_cavity_fields</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-odd"><td><p><strong>plot_mesh</strong></p></td>
+<tr class="row-odd"><td><p><strong>run</strong></p></td>
 <td></td>
 </tr>
 <tr class="row-even"><td><p><strong>run_field_solver</strong></p></td>
 <td></td>
 </tr>
-<tr class="row-odd"><td><p><strong>save_fields</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>save_qois</strong></p></td>
-<td></td>
-</tr>
 <tr class="row-odd"><td><p><strong>search</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><strong>set_folder</strong></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><strong>set_name</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -245,7 +247,7 @@
 \[ \begin{align}\begin{aligned}U_n = \frac{1}{2} \int_{z_\min}^{z_\max} \int_{r_\min}^{r_\max} \int_{0}^{2\pi} D_n \cdot E_n \mathrm{d}V
 = \frac{1}{2}\int_{z_\min}^{z_\max} \int_{r_\min}^{r_\max} \int_{0}^{2\pi} B_n \cdot H_n \mathrm{d}V\\D_n \cdot E_n = \epsilon_0 E^2; ~B_n \cdot H_n = \mu_0 H^2\end{aligned}\end{align} \]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>EE</strong> (<em>2D array</em>) – Array of electric field magnitude in 2D space</p></li>
 <li><p><strong>HH</strong> – Array of magnetic field magnitude in 2D space</p></li>
@@ -253,10 +255,10 @@
 <li><p><strong>rr</strong> (<em>2D array</em>) – Grid points r coordinate</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>U</strong> – Energy over the shape volume</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -267,16 +269,16 @@
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_bpk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Hpk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Eacc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_bpk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_bpk" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the peak surface magnetic field to accelerating field ratio</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Hpk</strong> (<em>float</em>) – Peak wall surface magnetic field</p></li>
 <li><p><strong>Eacc</strong> (<em>float</em>) – Accelerating electric field</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Bpk/Eacc</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -287,9 +289,9 @@
 <span class="sig-name descname"><span class="pre">calculate_disspated_power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">H_surf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z_surf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_surf</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_disspated_power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_disspated_power" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the dissipated power from the cavity walls</p>
 <div class="math notranslate nohighlight">
-\[P_\mathrm{ds} = \frac{1}{2} R_\mathrm{s} \int_{z_\min}^{z_\max} \int_{0}^{2\pi} |H_\theta|^2 \mathrm{d}z\]</div>
+\[P_\mathrm{ds} = \frac{1}{2} R_\mathrm{s} \int_{z_\min}^{z_\max} \int_{0}^{2\pi} |H_\theta|^2 \mathrm{d}s\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>H_surf</strong> – </p></li>
 <li><p><strong>z_surf</strong> – </p></li>
@@ -304,16 +306,16 @@
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calculate_epk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Epk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Eacc</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_epk"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_epk" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the peak surface electric field to accelerating field ratio</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Epk</strong> (<em>float</em>) – Peak electric field</p></li>
 <li><p><strong>Eacc</strong> (<em>float</em>) – Accelerating electric field</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Epk/Eacc</strong></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -322,17 +324,35 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_fields">
 <span class="sig-name descname"><span class="pre">calculate_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_fields" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the fields from the eigenvectors</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_g">
 <span class="sig-name descname"><span class="pre">calculate_g</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_g"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_g" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates the geometry or form factor for the cavity</p>
+<div class="math notranslate nohighlight">
+\[G = Q_0 \cdot R_\mathrm{s} = \frac{\omega U_n}{P_\mathrm{ds}}\]</div>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_loss_factor">
 <span class="sig-name descname"><span class="pre">calculate_loss_factor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R_Q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_loss_factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_loss_factor" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculates fundamental mode loss factor</p>
+<div class="math notranslate nohighlight">
+\[k_{\parallel, n}  = \frac{|V_{\parallel, n}(0, 0)|^2}{4 U_n} = \frac{\omega_n}{4} \frac{R}{Q}_n\]</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>R_Q</strong> (<em>float</em>) – R/Q of cavity geometry</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>k_loss</strong> – Mode loss factor</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_q">
@@ -346,7 +366,7 @@
 <div class="math notranslate nohighlight">
 \[R/Q = \frac{|V_{\parallel, n(0, z)}|^2}{\omega_n U_n}\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Vacc</strong> (<em>float</em>) – Accelerating voltage.</p></li>
 <li><p><strong>U</strong> (<em>float</em>) – Stored energy</p></li>
@@ -358,21 +378,16 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_surface_resistance_copper">
 <span class="sig-name descname"><span class="pre">calculate_surface_resistance_copper</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_surface_resistance_copper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_surface_resistance_copper" title="Permalink to this definition"></a></dt>
-<dd><blockquote>
-<div><p>Calculates the surface resistance for Copper witn conductivity</p>
-</div></blockquote>
-<dl>
-<dt>of <span class="math notranslate nohighlight">\(\sigma = 5.96 \times 10^7 \mathrm{S/m}\)</span></dt><dd><p>at eigen frequency</p>
+<dd><p>Calculates the surface resistance for Copper with conductivity</p>
+<p>of <span class="math notranslate nohighlight">\(\sigma = 5.96 \times 10^7 \mathrm{S/m}\)</span> at eigen frequency</p>
 <div class="math notranslate nohighlight">
 \[R_\mathrm{s} = \sqrt{\frac{\mu \omega}{2 \sigma}}\]</div>
-</dd>
-</dl>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><dl class="simple">
-<dt>Rs: float</dt><dd><p>Surface resistance of copper at operating frequency.</p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Rs</strong> – Surface resistance of copper at operating frequency.</p>
 </dd>
-</dl>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>float</p>
 </dd>
 </dl>
 </dd></dl>
@@ -384,16 +399,37 @@
 <div class="math notranslate nohighlight">
 \[V_\mathrm{cav} = \vert \int_{z_\min}^{z_\max} E_z(r=0, z) \mathrm{e}^{jk_0 z}\vert \mathrm{d}z\]</div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>E_z_axis</strong> (<em>array</em>) – <span class="math notranslate nohighlight">\(z\)</span> component of electric field on axis <span class="math notranslate nohighlight">\(r=0\)</span></p></li>
 <li><p><strong>z</strong> (<em>array</em>) – <span class="math notranslate nohighlight">\(z\)</span> coordinate points along axis <span class="math notranslate nohighlight">\(r=0\)</span></p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>Vacc</strong> – Accelerating voltage along axis <span class="math notranslate nohighlight">\(r=0\)</span></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_volume">
+<span class="sig-name descname"><span class="pre">calculate_volume</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">EE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zz</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.calculate_volume"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.calculate_volume" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the volume of the volume of revolution of the cavity profile</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>EE</strong> (<em>array like</em>) – Electric field array</p></li>
+<li><p><strong>zz</strong> (<em>array like</em>) – z coordinates on grid</p></li>
+<li><p><strong>rr</strong> (<em>array like</em>) – r coordinates on grid</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>V</strong> – Volume of revolution of cavity profile</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
 </dd>
 </dl>
@@ -402,12 +438,26 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.create_inputs">
 <span class="sig-name descname"><span class="pre">create_inputs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.create_inputs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.create_inputs" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Create required inputs</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.define_geometry">
 <span class="sig-name descname"><span class="pre">define_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_left</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beampipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'none'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.define_geometry"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.define_geometry" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Define geometry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_cells</strong> (<em>int</em>) – Number of cavity cells</p></li>
+<li><p><strong>mid_cell</strong> (<em>array like</em>) – Mid cell cell geometric parameters</p></li>
+<li><p><strong>end_cell_left</strong> (<em>array like</em>) – Left end cell cell geometric parameters</p></li>
+<li><p><strong>end_cell_right</strong> (<em>array like</em>) – Right end cell cell geometric parameters</p></li>
+<li><p><strong>beampipe</strong> (<em>{&quot;none&quot;</em><em>, </em><em>&quot;both&quot;</em><em>, </em><em>&quot;left&quot;</em><em>, </em><em>&quot;right&quot;}</em>) – Which sides to include beampipes</p></li>
+<li><p><strong>plot</strong> (<em>bool</em>) – Show geometry after definition or not</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.eee">
@@ -417,7 +467,18 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.eigen">
 <span class="sig-name descname"><span class="pre">eigen</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_modes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req_mode_num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.eigen"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.eigen" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Perform eigenmode simulation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_modes</strong> (<em>int</em>) – Number of modes</p></li>
+<li><p><strong>freq</strong> (<em>float</em>) – Frequency to find eigenvalues around</p></li>
+<li><p><strong>req_mode_num</strong> (<em>int</em>) – Required mode number</p></li>
+<li><p><strong>search</strong> (<em>null</em>) – Redundant for now</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.find_resonance">
@@ -427,7 +488,17 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.generate_mesh">
 <span class="sig-name descname"><span class="pre">generate_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gridcons</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.generate_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.generate_mesh" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Generate mesh</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gridcons</strong> (<em>float</em>) – Maximum element width</p></li>
+<li><p><strong>epsr</strong> – Relative permittivity</p></li>
+<li><p><strong>plot</strong> – Show mesh after generation or not</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.get_surface_field">
@@ -435,7 +506,7 @@
 <dd><p>Get the surface field values. Works by looping through the 2D field array and returning the first and last
 non-zero elements in each row</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>rr</strong> (<em>2D array</em>) – r coordinates</p></li>
 <li><p><strong>zz</strong> (<em>2D array</em>) – z coordinates</p></li>
@@ -468,31 +539,63 @@ non-zero elements in each row</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_cavity_fields">
 <span class="sig-name descname"><span class="pre">plot_cavity_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ptype</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.plot_cavity_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_cavity_fields" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Plots the computed fields on the input geometry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ptype</strong> (<em>{'contour'</em><em>, </em><em>'arrow'}</em>) – Plot type</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_mesh">
 <span class="sig-name descname"><span class="pre">plot_mesh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.plot_mesh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.plot_mesh" title="Permalink to this definition"></a></dt>
+<dd><p>Plot generated mesh</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_cells</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_cell</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_cell_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beampipe</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req_mode_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.run" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.run_field_solver">
-<span class="sig-name descname"><span class="pre">run_field_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req_mode_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.run_field_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.run_field_solver" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">run_field_solver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_modes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">req_mode_num</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_plots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.run_field_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.run_field_solver" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.save_fields">
 <span class="sig-name descname"><span class="pre">save_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wall</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">job</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.save_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.save_fields" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Save mode fields</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wall</strong> – </p></li>
+<li><p><strong>job</strong> – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.save_qois">
 <span class="sig-name descname"><span class="pre">save_qois</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.save_qois"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.save_qois" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Save the quantities of interest</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.search">
 <span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">korig</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maara</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raja</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.search" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.set_folder">
+<span class="sig-name descname"><span class="pre">set_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.set_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.set_folder" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="analysis_modules.eigenmode.customEig.run_field_solver.Model.set_name">
+<span class="sig-name descname"><span class="pre">set_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/analysis_modules/eigenmode/customEig/run_field_solver.html#Model.set_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#analysis_modules.eigenmode.customEig.run_field_solver.Model.set_name" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

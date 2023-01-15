@@ -27,6 +27,7 @@ Introduction
 
    introduction
    quickstart
+   command_line_interface
    theory
    get_involved
 

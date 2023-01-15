@@ -5,7 +5,7 @@ CavityDesignHub
    :maxdepth: 4
 
    analysis_modules
-   cavity
+   cli
    exe
    frame_controls
    graphics

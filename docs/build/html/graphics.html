@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>graphics package &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
@@ -44,6 +44,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="get_involved.html">Get Involved</a></li>
 </ul>
@@ -51,7 +52,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">CavityDesignHub</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="analysis_modules.html">analysis_modules package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cavity.html">cavity package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html">cli package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="exe.html">exe package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="frame_controls.html">frame_controls package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">graphics package</a><ul>
@@ -115,7 +116,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphics.graphics_line_2d.</span></span><span class="sig-name descname"><span class="pre">QGraphicsLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#000000'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/graphics_line_2d.html#QGraphicsLine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.graphics_line_2d.QGraphicsLine" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QGraphicsPathItem</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><a class="reference internal" href="#graphics.graphics_line_2d.QGraphicsLine.pen" title="graphics.graphics_line_2d.QGraphicsLine.pen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pen</span></code></a></dt><dd><p>pen(self) -&gt; QPen</p>
 </dd>
@@ -124,10 +125,6 @@
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicsItemFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -555,10 +552,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 71%" />
-<col style="width: 29%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheMode</strong></p></td>
 <td></td>
@@ -703,7 +696,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphics.graphics_line_2d.</span></span><span class="sig-name descname"><span class="pre">QGraphicsLineDirect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IC</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OC</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BP</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/graphics_line_2d.html#QGraphicsLineDirect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.graphics_line_2d.QGraphicsLineDirect" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#graphics.graphics_line_2d.QGraphicsLine" title="graphics.graphics_line_2d.QGraphicsLine"><code class="xref py py-class docutils literal notranslate"><span class="pre">QGraphicsLine</span></code></a></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">pen</span></code></dt><dd><p>pen(self) -&gt; QPen</p>
 </dd>
@@ -712,10 +705,6 @@
 </dl>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">GraphicsItemFlags</span></code>(...)</p></td>
 <td><p></p></td>
@@ -1143,10 +1132,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 71%" />
-<col style="width: 29%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheMode</strong></p></td>
 <td></td>
@@ -1260,10 +1245,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QGraphicsScene</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">SceneLayers</span></code>(...)</p></td>
 <td><p></p></td>
@@ -1611,10 +1592,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 68%" />
-<col style="width: 32%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>ItemIndexMethod</strong></p></td>
 <td></td>
@@ -1693,10 +1670,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QGraphicsView</span></code></p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">CacheMode</span></code>(...)</p></td>
 <td><p></p></td>
@@ -2815,10 +2788,6 @@
 </tbody>
 </table>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 75%" />
-<col style="width: 25%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>CacheModeFlag</strong></p></td>
 <td></td>
@@ -3142,7 +3111,7 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">graphics.object_line.</span></span><span class="sig-name descname"><span class="pre">Line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">main_win</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">0)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">section</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'top'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">IC</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">OC</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BP</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'#ffffff'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/object_line.html#Line"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.object_line.Line" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
-<dt class="field-odd">Attributes</dt>
+<dt class="field-odd">Attributes<span class="colon">:</span></dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>pos</strong></dt><dd></dd>
 </dl>
@@ -3150,10 +3119,6 @@
 </dl>
 <p class="rubric">Methods</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 70%" />
-<col style="width: 30%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>instantiateNodeType</strong></p></td>
 <td></td>
@@ -3197,10 +3162,6 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p class="rubric">Methods</p>
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 73%" />
-<col style="width: 27%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><p><strong>addLine</strong></p></td>
 <td></td>
@@ -3221,9 +3182,6 @@
 <td></td>
 </tr>
 <tr class="row-odd"><td><p><strong>removeLine</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>resetIterationVariables</strong></p></td>
 <td></td>
 </tr>
 </tbody>
@@ -3261,11 +3219,6 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="graphics.scene.Scene.removeLine">
 <span class="sig-name descname"><span class="pre">removeLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/scene.html#Scene.removeLine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.scene.Scene.removeLine" title="Permalink to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="graphics.scene.Scene.resetIterationVariables">
-<span class="sig-name descname"><span class="pre">resetIterationVariables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/graphics/scene.html#Scene.resetIterationVariables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#graphics.scene.Scene.resetIterationVariables" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

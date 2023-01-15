@@ -74,20 +74,14 @@
            <div itemprop="articleBody">
              
   <h1>Source code for analysis_modules.eigenmode.customEig.run_field_solver</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">ast</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
+<span></span><span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">sys</span> <span class="kn">import</span> <span class="n">exit</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span>
 <span class="kn">from</span> <span class="nn">scipy.signal</span> <span class="kn">import</span> <span class="n">find_peaks</span>
-
 <span class="kn">from</span> <span class="nn">utils.shared_functions</span> <span class="kn">import</span> <span class="o">*</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">scipy.integrate</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse</span> <span class="k">as</span> <span class="nn">sps</span>
 <span class="kn">import</span> <span class="nn">scipy.sparse.linalg</span> <span class="k">as</span> <span class="nn">spsl</span>
 <span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">spio</span>
@@ -103,7 +97,7 @@
 
 
 <div class="viewcode-block" id="Model"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.customEig.html#analysis_modules.eigenmode.customEig.run_field_solver.Model">[docs]</a><span class="k">class</span> <span class="nc">Model</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">parent_dir</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">Epk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Hpk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Eacc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Vacc</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">k_loss</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpk</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
@@ -124,6 +118,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">folder</span> <span class="o">=</span> <span class="sa">fr</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">folder</span><span class="si">}</span><span class="s2">\</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geodata</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parent_dir</span> <span class="o">=</span> <span class="n">parent_dir</span>
+
+<div class="viewcode-block" id="Model.set_name"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.customEig.html#analysis_modules.eigenmode.customEig.run_field_solver.Model.set_name">[docs]</a>    <span class="k">def</span> <span class="nf">set_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span></div>
+
+<div class="viewcode-block" id="Model.set_folder"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.customEig.html#analysis_modules.eigenmode.customEig.run_field_solver.Model.set_folder">[docs]</a>    <span class="k">def</span> <span class="nf">set_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">folder</span> <span class="o">=</span> <span class="n">folder</span></div>
 
 <div class="viewcode-block" id="Model.create_inputs"><a class="viewcode-back" href="../../../../analysis_modules.eigenmode.customEig.html#analysis_modules.eigenmode.customEig.run_field_solver.Model.create_inputs">[docs]</a>    <span class="k">def</span> <span class="nf">create_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -223,7 +223,7 @@
 <span class="sd">        -------</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ic</span><span class="p">(</span><span class="n">mid_cell</span><span class="p">,</span> <span class="n">end_cell_left</span><span class="p">,</span> <span class="n">end_cell_right</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span> <span class="o">=</span> <span class="n">n_cells</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mid_cell</span> <span class="o">=</span> <span class="n">mid_cell</span>
 
@@ -340,6 +340,7 @@
                             <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
             <span class="c1"># subprocess.call(fr&quot;{self.parent_dir}\exe\own_exe\2dgen_bin.exe&quot;, cwd=self.folder)</span>
         <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;..\..\..\exe\own_exe\2dgen_bin.exe&quot;</span><span class="p">),</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">))</span>
             <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="sa">fr</span><span class="s2">&quot;..\..\..\exe\own_exe\2dgen_bin.exe&quot;</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="p">,</span>
                             <span class="n">stdout</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">DEVNULL</span><span class="p">,</span> <span class="n">stderr</span><span class="o">=</span><span class="n">subprocess</span><span class="o">.</span><span class="n">STDOUT</span><span class="p">)</span>
             <span class="c1"># subprocess.call(f&quot;{self.folder}/2dgen_bin.exe&quot;, cwd=self.folder)</span>
@@ -463,7 +464,7 @@
             <span class="c1"># calculate freq from mid cell length</span>
             <span class="n">beta</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">freq</span> <span class="o">=</span> <span class="n">beta</span><span class="o">*</span><span class="n">c0</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">mid_cell</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span>
-            <span class="n">ic</span><span class="p">(</span><span class="n">freq</span><span class="p">)</span>
+            <span class="n">ic</span><span class="p">(</span><span class="s2">&quot;calculated freq from length: &quot;</span><span class="p">,</span> <span class="n">freq</span><span class="p">)</span>
 
         <span class="n">eigen_freq</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eigen</span><span class="p">(</span><span class="n">n_modes</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">req_mode_num</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
 
@@ -507,8 +508,8 @@
         <span class="k">if</span> <span class="n">req_mode_num</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">req_mode_num</span> <span class="o">&gt;</span> <span class="n">n_modes</span><span class="p">:</span>
                 <span class="n">req_mode_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     req_mode_num = self.n_cells - 1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">req_mode_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cells</span>
 
         <span class="c1"># maara = 10  Means number of modes in original code</span>
         <span class="n">offset</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;offset&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
@@ -554,7 +555,6 @@
         <span class="n">u2</span> <span class="o">=</span> <span class="n">u2</span><span class="o">.</span><span class="n">real</span>
         <span class="n">d2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
         <span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="n">search</span><span class="p">:</span>
             <span class="n">k2</span> <span class="o">=</span> <span class="n">k</span>
             <span class="n">eigen_frequencies</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">k</span> <span class="o">/</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mu0</span> <span class="o">*</span> <span class="n">eps0</span><span class="p">)))</span>
@@ -570,6 +570,7 @@
                 <span class="n">k</span> <span class="o">=</span> <span class="n">k2</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span>
                 <span class="n">u</span> <span class="o">=</span> <span class="n">u2</span><span class="p">[:,</span> <span class="n">ind</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
+                <span class="n">ic</span><span class="p">(</span><span class="n">req_mode_num</span><span class="p">)</span>
                 <span class="c1"># find eigenvalue with min error.</span>
                 <span class="n">val</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">k0</span> <span class="o">-</span> <span class="n">k2</span><span class="p">))</span>
                 <span class="n">ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">k0</span> <span class="o">-</span> <span class="n">k2</span><span class="p">))</span>
@@ -820,6 +821,7 @@
 
         <span class="c1"># Calculate accelerating field</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis</span> <span class="o">=</span> <span class="n">Ez</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="n">rr</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># &amp; zz&gt;=-L_half_cell &amp; zz &lt;= L_half_cell</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis_abs</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis</span><span class="p">)</span>
         <span class="n">z_slice</span> <span class="o">=</span> <span class="n">zz</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
         <span class="c1"># z_active = z_slice[(z_slice &gt;= -L_half_cell) &amp; (z_slice &lt;= L_half_cell)]</span>
 
@@ -851,8 +853,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">Q0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_q</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_g</span><span class="p">()</span>
 
-        <span class="n">ic</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">eig_freq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">epk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bpk</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R_Q</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_loss</span><span class="p">,</span>
-           <span class="bp">self</span><span class="o">.</span><span class="n">Rs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Pds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">Q0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">)</span>
+        <span class="c1"># ic(self.eig_freq, self.epk, self.bpk, self.R_Q, self.k_loss,</span>
+        <span class="c1">#    self.Rs, self.Pds, self.Q0, self.G)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">save_qois</span><span class="p">()</span></div>
         <span class="c1"># write_cst_paramters(self.name, self.mid_cell, self.end_cell_left, self.end_cell_right,</span>
@@ -1218,9 +1220,9 @@
         <span class="c1"># field flatness</span>
         <span class="c1"># get max in each cell</span>
         <span class="n">peaks</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">find_peaks</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis</span><span class="p">))</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis_abs</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-        <span class="n">E_abs_peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis</span><span class="p">[</span><span class="n">peaks</span><span class="p">]</span>
+        <span class="n">E_abs_peaks</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">E_z_axis_abs</span><span class="p">[</span><span class="n">peaks</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ff</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">E_abs_peaks</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="n">E_abs_peaks</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
 
         <span class="n">d</span> <span class="o">=</span> <span class="p">{</span>
@@ -1243,7 +1245,7 @@
             <span class="s2">&quot;G [Ohm]&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">G</span><span class="p">,</span>
             <span class="s2">&quot;GR/Q [Ohm^2]&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">GR_Q</span>
         <span class="p">}</span>
-
+        <span class="n">ic</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="sa">fr</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">folder</span><span class="si">}</span><span class="s1">\qois.json&#39;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="s1">&#39;: &#39;</span><span class="p">))</span></div>
 
@@ -1888,7 +1890,7 @@
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">folder</span> <span class="o">=</span> <span class="sa">fr</span><span class="s1">&#39;D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\CUSTOM_EIG&#39;</span>
     <span class="n">mod</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="s1">&#39;TESLA&#39;</span><span class="p">)</span>
-    <span class="n">n_cells</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">n_cells</span> <span class="o">=</span> <span class="mi">9</span>
     <span class="n">midC3795</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">62.22222222222222</span><span class="p">,</span> <span class="mf">66.12612612612612</span><span class="p">,</span> <span class="mf">30.22022022022022</span><span class="p">,</span> <span class="mf">23.113113113113116</span><span class="p">,</span>
                          <span class="mf">71.98698698698699</span><span class="p">,</span> <span class="mf">93.5</span><span class="p">,</span> <span class="mf">171.1929</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
     <span class="n">endC3795</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">62.58258258258258</span><span class="p">,</span> <span class="mf">57.53753753753754</span><span class="p">,</span> <span class="mf">17.207207207207208</span><span class="p">,</span> <span class="mf">12.002002002002001</span><span class="p">,</span>
@@ -1896,10 +1898,14 @@
 
     <span class="n">midTESLA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">42</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">19</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mf">57.7</span><span class="p">,</span> <span class="mf">103.3</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
     <span class="n">midFCCUROS5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">67.72</span><span class="p">,</span> <span class="mf">57.45</span><span class="p">,</span> <span class="mf">21.75</span><span class="p">,</span> <span class="mf">35.95</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mf">93.5</span><span class="p">,</span> <span class="mf">166.591</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
+
     <span class="n">midDegen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">50.052</span><span class="p">,</span> <span class="mf">36.5</span><span class="p">,</span> <span class="mf">7.6</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">57.7</span><span class="p">,</span> <span class="mf">98.58</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
     <span class="n">endDegen</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">50.052</span><span class="p">,</span> <span class="mf">36.5</span><span class="p">,</span> <span class="mf">7.6</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">,</span> <span class="mf">30.0</span><span class="p">,</span> <span class="mf">57.7</span><span class="p">,</span> <span class="mf">98.58</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
 
-    <span class="n">mod</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">n_cells</span><span class="p">,</span> <span class="n">midDegen</span><span class="p">,</span> <span class="n">midDegen</span><span class="p">,</span> <span class="n">beampipe</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">midNLSF_RE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">49</span><span class="p">,</span> <span class="mf">35.30</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mf">32.0</span><span class="p">,</span> <span class="mf">57.7</span><span class="p">,</span> <span class="mf">98.58</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
+    <span class="n">endNLSF_RE</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mf">32.0</span><span class="p">,</span> <span class="mf">57.7</span><span class="p">,</span> <span class="mf">98.58</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="mf">1e-3</span>
+
+    <span class="n">mod</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">n_cells</span><span class="p">,</span> <span class="n">midNLSF_RE</span><span class="p">,</span> <span class="n">endNLSF_RE</span><span class="p">,</span> <span class="n">beampipe</span><span class="o">=</span><span class="s1">&#39;both&#39;</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
            </div>

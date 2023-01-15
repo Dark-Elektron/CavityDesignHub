@@ -287,12 +287,21 @@ class Cavities:
         # ax_right2._get_lines.prop_cycler = ax._get_lines.prop_cycler
         # ax_right2.spines["right"].set_position(("axes", 1.2))
         for i, cavity in enumerate(self.cavities_list):
-            ax1.plot(cavity.E_acc * 1e-6, cavity.pstat / cavity.n_cav,
-                     ls=self.ls[i], lw=2, c='tab:orange',
-                     label=r"$P_\mathrm{static/cav}$" + fr"{cavity.name}")
+            # # per cavity
+            # ax1.plot(cavity.E_acc * 1e-6, cavity.pstat / cavity.n_cav,
+            #          ls=self.ls[i], lw=2, c='tab:orange',
+            #          label=r"$P_\mathrm{stat$/cav}" + fr"{cavity.name}")
+            #
+            # ax1.plot(cavity.E_acc * 1e-6, cavity.pdyn / cavity.n_cav,
+            #          ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dyn}/cav$" + fr"{cavity.name}")
 
-            ax1.plot(cavity.E_acc * 1e-6, cavity.pdyn / cavity.n_cav,
-                     ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dynamic/cav}$" + fr"{cavity.name}")
+            # total
+            ax1.plot(cavity.E_acc * 1e-6, cavity.pstat,
+                     ls=self.ls[i], lw=2, c='tab:orange',
+                     label=r"$P_\mathrm{stat$}" + fr"{cavity.name}")
+
+            ax1.plot(cavity.E_acc * 1e-6, cavity.pdyn,
+                     ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dyn}$" + fr"{cavity.name}")
 
             # p1, = ax1.plot(cavity.E_acc * 1e-6, cavity.p_wp/cavity.n_cav,
             #                ls=self.ls[i], lw=2, c='k', label=r"$P_\mathrm{wp/beam}$" + fr"{cavity.name}")
@@ -304,9 +313,9 @@ class Cavities:
                            label=fr"{cavity.name}")
 
             ax1.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
-            ax1.set_ylabel(r"$P_\mathrm{stat, dyn}$/cav [W]")
+            ax1.set_ylabel(r"$P_\mathrm{stat, dyn}$ [W]")
             ax2.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
-            ax2.set_ylabel(r"$N_\mathrm{cav/beam}$")
+            ax2.set_ylabel(r"$N_\mathrm{cav}$")
             ax3.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
             ax3.set_ylabel(r"$P_\mathrm{in/cav}$ [kW]")
 
@@ -1878,6 +1887,7 @@ class Cavity:
         self.p_cryo = 8 / (np.sqrt(self.op_freq / 500e6))  # W/m
 
         ic(self.v_rf, self.l_active, self.R_Q, self.l_cavity)
+        ic(self.E_acc)
         self.pdyn = self.v_rf * (self.E_acc * self.l_active) / (self.R_Q * self.Q0)
         self.pstat = (self.l_cavity * self.v_rf / (self.l_active * self.E_acc)) * self.p_cryo
         self.p_wp = (1 / self.eta) * (self.pdyn + self.pstat)
@@ -2739,43 +2749,29 @@ def mucol_study():
 
 
 def ttbar_study():
-    c3794_H = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
-                     Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794", op_field=11.87e6,
-                     op_temp='4.5K', material='NbCu')
 
-    c3795_H = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
-                     Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795", op_field=24.72e6,
-                     op_temp='2K', material='bulkNb')
-
-    c3795_tt = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9 / 2, R_Q=448.12, G=261.63,
+    c3795_tt = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9, R_Q=448.12, G=261.63,
                       Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795", op_field=24.72e6,
                       op_temp='2K', material='bulkNb')
 
-    cFCCUROS5 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9 / 2, R_Q=521.06, G=272.93,
+    cFCCUROS5 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9, R_Q=521.06, G=272.93,
                        Epk_Eacc=2.05, Bpk_Eacc=4.33, inv_eta=745, name="FCCUROS5", op_field=24.72e6,
                        op_temp='2K', material='bulkNb')
 
-    cTESLA = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9 / 2, R_Q=558.684, G=271.72,
+    cTESLA = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=8.8e9, R_Q=558.684, G=271.72,
                     Epk_Eacc=2.14, Bpk_Eacc=4.54, inv_eta=745, name="TESLA", op_field=24.72e6,
                     op_temp='2K', material='bulkNb')
 
     parent_dir_slans = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"
     parent_dir_abci = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI"
 
-    # # 2 and 5 cell cavities comparison for H
-    # wp = 'H'  # working point
-    # sigma = 'SR_2.5mm'
-    # slans_dirs = [fr"{parent_dir_slans}\Cavity3794", fr"{parent_dir_slans}\CavityC3795"]
-    # abci_dirs = [fr"{parent_dir_abci}\Cavity3794", fr"{parent_dir_abci}\CavityC3795"]
-    # cavities = Cavities([c3794_H, c3795_H])
-
     # 5 cell cavities comparison for ttbar
     wp = 'ttbar'  # working point
     sigma = 'SR_1.67mm'
-    slans_dirs = [fr"{parent_dir_slans}\CavityC3795", fr"{parent_dir_slans}\CavityFCC_UROS5",
-                  fr"{parent_dir_slans}\CavityTESLA_800MHZ"]
-    abci_dirs = [fr"{parent_dir_abci}\CavityC3795", fr"{parent_dir_abci}\CavityFCC_UROS5",
-                 fr"{parent_dir_abci}\CavityTESLA_800MHZ"]
+    slans_dirs = [fr"{parent_dir_slans}\C3795", fr"{parent_dir_slans}\FCC_UROS5",
+                  fr"{parent_dir_slans}\TESLA_800MHZ"]
+    abci_dirs = [fr"{parent_dir_abci}\C3795", fr"{parent_dir_abci}\FCC_UROS5",
+                 fr"{parent_dir_abci}\TESLA_800MHZ"]
     cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], 'Cavities_C3795_FCCUROS5_TESLA')
 
     cavities.set_cavities_slans(slans_dirs)
@@ -2783,7 +2779,7 @@ def ttbar_study():
 
     E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
     cavities.compare_power(E_acc=E_acc)
-    cavities.plot_power_comparison(E)
+    cavities.plot_power_comparison()
     cavities.plot_compare_bar()
     cavities.plot_compare_fm_bar()
     cavities.plot_compare_hom_bar()
@@ -2874,6 +2870,10 @@ def h_study():
 
 
 if __name__ == '__main__':
-    wp = 'MuCol'  # working point
-    sigma = 'SR_23.1mm'
-    mucol_study()
+    # wp = 'MuCol'  # working point
+    # sigma = 'SR_23.1mm'
+    # mucol_study()
+
+    wp = 'ttbar'  # working point
+    sigma = 'SR_1.67mm'
+    ttbar_study()

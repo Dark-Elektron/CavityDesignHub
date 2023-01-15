@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Theory &mdash; CavityDesignHub (CaDH) 0.0 documentation</title>
@@ -23,7 +23,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Get Involved" href="get_involved.html" />
-    <link rel="prev" title="Quick Start Guide" href="quickstart.html" /> 
+    <link rel="prev" title="Command Line Interface" href="command_line_interface.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,6 +45,7 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="command_line_interface.html">Command Line Interface</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Theory</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#aceclerator-cavity-basics">Aceclerator cavity basics</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#figures-of-merit-in-accelerator-cavity-design">Figures of merit in accelerator cavity design</a></li>
@@ -101,7 +102,7 @@ one can understand the different line of codes. This is done so that the user ca
 better understand and interpret exactly what results the program outputs and perhaps
 point out inconsistencies in the theory and code or even ways in which a routine can
 be optimised for speed and accuracy.</p>
-<div class="contents local topic" id="contents-of-this-page">
+<nav class="contents local" id="contents-of-this-page">
 <p class="topic-title">Contents of this Page</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#aceclerator-cavity-basics" id="id1">Aceclerator cavity basics</a></p>
@@ -119,9 +120,9 @@ be optimised for speed and accuracy.</p>
 <li><p><a class="reference internal" href="#sensitivity-analysis-and-uncertainty-quantification" id="id7">Sensitivity analysis and uncertainty quantification</a></p></li>
 <li><p><a class="reference internal" href="#elliptical-cavity-optimization" id="id8">Elliptical Cavity optimization</a></p></li>
 </ul>
-</div>
+</nav>
 <section id="aceclerator-cavity-basics">
-<span id="quick-accelerator-cavity-basics"></span><h2><a class="toc-backref" href="#id1">Aceclerator cavity basics</a><a class="headerlink" href="#aceclerator-cavity-basics" title="Permalink to this heading"></a></h2>
+<span id="quick-accelerator-cavity-basics"></span><h2><a class="toc-backref" href="#id1" role="doc-backlink">Aceclerator cavity basics</a><a class="headerlink" href="#aceclerator-cavity-basics" title="Permalink to this heading"></a></h2>
 <p>Particle accelerators are devices used for the acceleration of charged particles to high
 velocities to serve for various purposes. This is achieved using electromagnetic fields.
 They are specially used for fundamental science research in areas cutting across physics,
@@ -148,7 +149,7 @@ autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-s
 <div class="line"><br /></div>
 </div>
 <section id="figures-of-merit-in-accelerator-cavity-design">
-<h3><a class="toc-backref" href="#id2">Figures of merit in accelerator cavity design</a><a class="headerlink" href="#figures-of-merit-in-accelerator-cavity-design" title="Permalink to this heading"></a></h3>
+<h3><a class="toc-backref" href="#id2" role="doc-backlink">Figures of merit in accelerator cavity design</a><a class="headerlink" href="#figures-of-merit-in-accelerator-cavity-design" title="Permalink to this heading"></a></h3>
 <p>There are several figures of merits that quantify the efficiency and effectiveness of accelerating cavities.
 These include the quality factor, <span class="math notranslate nohighlight">\(Q\)</span>, the shunt impedance, <span class="math notranslate nohighlight">\(R_\mathrm{sh}\)</span>, dissipated power,
 <span class="math notranslate nohighlight">\(P_\mathrm{c}\)</span>, stored energy, <span class="math notranslate nohighlight">\(U\)</span>, etc.</p>
@@ -173,7 +174,7 @@ It is given mathematically as:</p>
 </section>
 </section>
 <section id="electromagnetic-field-theory">
-<span id="quick-electromagnetic-field-theory"></span><h2><a class="toc-backref" href="#id3">Electromagnetic field theory</a><a class="headerlink" href="#electromagnetic-field-theory" title="Permalink to this heading"></a></h2>
+<span id="quick-electromagnetic-field-theory"></span><h2><a class="toc-backref" href="#id3" role="doc-backlink">Electromagnetic field theory</a><a class="headerlink" href="#electromagnetic-field-theory" title="Permalink to this heading"></a></h2>
 <p>Maxwell equations
 Electromagnetic interactions are represented mathematically with the Maxwell equations.</p>
 <div class="math notranslate nohighlight">
@@ -188,7 +189,7 @@ and magnetic fields as follows.</p>
 \[\begin{split}\left(\nabla^2 - \frac{1}{c^2}\frac{\partial^2}{\partial t^2}\right)\bigg\{\begin{matrix} E\\H\end{matrix}\bigg\} = 0.\end{split}\]</div>
 <p>magnetic permeability and <span class="math notranslate nohighlight">\(\epsilon\)</span> electrical permittivity.</p>
 <section id="maxwell-eigenvalue-problem">
-<span id="quick-maxwell-eigenvalue-problem"></span><h3><a class="toc-backref" href="#id4">Maxwell eigenvalue problem</a><a class="headerlink" href="#maxwell-eigenvalue-problem" title="Permalink to this heading"></a></h3>
+<span id="quick-maxwell-eigenvalue-problem"></span><h3><a class="toc-backref" href="#id4" role="doc-backlink">Maxwell eigenvalue problem</a><a class="headerlink" href="#maxwell-eigenvalue-problem" title="Permalink to this heading"></a></h3>
 <p>The Maxwell Eigenvalue Problem (MEVP) is solved using SLANS cite{SLANS} to evaluate
 <span class="math notranslate nohighlight">\(e_\mathrm{pk}\)</span>, <span class="math notranslate nohighlight">\(b_\mathrm{pk}\)</span>, and <span class="math notranslate nohighlight">\(R/Q\)</span>. The MEVP is given as</p>
 <div class="math notranslate nohighlight">
@@ -197,7 +198,7 @@ and magnetic fields as follows.</p>
 <span class="math notranslate nohighlight">\(\partial \Omega\)</span>, <span class="math notranslate nohighlight">\(\mathbf{E}\)</span> is the electric field, <span class="math notranslate nohighlight">\(\lambda\)</span> a vector of eigenvalues, <span class="math notranslate nohighlight">\(\mu\)</span></p>
 </section>
 <section id="wakefield-analysis">
-<span id="quick-wakefield-equations"></span><h3><a class="toc-backref" href="#id5">Wakefield analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
+<span id="quick-wakefield-equations"></span><h3><a class="toc-backref" href="#id5" role="doc-backlink">Wakefield analysis</a><a class="headerlink" href="#wakefield-analysis" title="Permalink to this heading"></a></h3>
 <p>The longitudinal and transverse wake functions <span class="math notranslate nohighlight">\(w_\parallel\)</span> and <span class="math notranslate nohighlight">\(\mathbf{w}_\perp\)</span>, respectively,
 are evaluated using ABCI electromagnetic code cite{ABCI}. They are defined as</p>
 <div class="math notranslate nohighlight">
@@ -211,7 +212,7 @@ Fourier transform of the wake functions thus:</p>
 </section>
 </section>
 <section id="theory-of-multipacting">
-<span id="quick-theory-of-multipacting"></span><h2><a class="toc-backref" href="#id6">Theory of multipacting</a><a class="headerlink" href="#theory-of-multipacting" title="Permalink to this heading"></a></h2>
+<span id="quick-theory-of-multipacting"></span><h2><a class="toc-backref" href="#id6" role="doc-backlink">Theory of multipacting</a><a class="headerlink" href="#theory-of-multipacting" title="Permalink to this heading"></a></h2>
 <p>Multipacting is a phenomenon in resonant frequency structures whereby charged particles are continuously discharged
 at an exponential rate from the conductor walls of the device. Multipacting occurs only at specific conditions
 dependent on the alternating field and the wall’s surface properties. More specifically, the emission properties
@@ -249,7 +250,7 @@ electrons are released in different materials. Figure ref{fig: sey niobium}
 shows a typical SEY curve for Niobium.</p>
 </section>
 <section id="sensitivity-analysis-and-uncertainty-quantification">
-<span id="quick-sensitivity-analysis-and-uq"></span><h2><a class="toc-backref" href="#id7">Sensitivity analysis and uncertainty quantification</a><a class="headerlink" href="#sensitivity-analysis-and-uncertainty-quantification" title="Permalink to this heading"></a></h2>
+<span id="quick-sensitivity-analysis-and-uq"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Sensitivity analysis and uncertainty quantification</a><a class="headerlink" href="#sensitivity-analysis-and-uncertainty-quantification" title="Permalink to this heading"></a></h2>
 <p>Sensitivity analysis is a technique that quantifies the change in a model output induced by an input random variable.
 It can be considered either on a local or a global scale. For instance, variance-based sensitivity analysis is a form
 of global sensitivity that uses a ratio of variances to measure the influence of the input parameter on the output.
@@ -299,7 +300,7 @@ This implies 1260 simulation samples of the geometric model for <span class="mat
 oriented optimization process.</p>
 </section>
 <section id="elliptical-cavity-optimization">
-<span id="quick-cavity-optimization"></span><h2><a class="toc-backref" href="#id8">Elliptical Cavity optimization</a><a class="headerlink" href="#elliptical-cavity-optimization" title="Permalink to this heading"></a></h2>
+<span id="quick-cavity-optimization"></span><h2><a class="toc-backref" href="#id8" role="doc-backlink">Elliptical Cavity optimization</a><a class="headerlink" href="#elliptical-cavity-optimization" title="Permalink to this heading"></a></h2>
 <p>Accelerator cavities consists of cells joined together at either the equator
 or the iris. Figure {} shows a typical elliptical accelerator cavity.
 The geometry could be divided into two groups: the mid-cells and the end-cells
@@ -317,7 +318,7 @@ use different notations.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="command_line_interface.html" class="btn btn-neutral float-left" title="Command Line Interface" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="get_involved.html" class="btn btn-neutral float-right" title="Get Involved" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
