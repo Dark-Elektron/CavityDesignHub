@@ -46,10 +46,14 @@ if __name__ == '__main__':
     rf379408hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_2000MHz\Export'
 
      # plot all
+    # names = ["C3795_4DQW", "C3795_4HC", "C3794_4HC"]
+    # assemblies = [[rf0, rf1, rf2, rf3, rf4], [rf01hc, rf02hc, rf03hc, rf04hc],
+    #               [rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc, rf379406hc, rf379407hc, rf379408hc]]
+    # n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100], [100, 100, 100, 100, 100, 150, 150, 100]]
     names = ["C3795_4DQW", "C3795_4HC", "C3794_4HC"]
-    assemblies = [[rf0, rf1, rf2, rf3, rf4], [rf01hc, rf02hc, rf03hc, rf04hc],
-                  [rf379401hc, rf379402hc, rf379403hc, rf379404hc, rf379405hc, rf379406hc, rf379407hc, rf379408hc]]
-    n_modes_list = [[37, 100, 89, 100, 200], [35, 100, 90, 100], [100, 100, 100, 100, 100, 150, 150, 100]]
+    assemblies = [[rf0, rf1], [rf01hc, rf02hc],
+                  [rf379401hc, rf379402hc, rf379403hc, rf379404hc]]
+    n_modes_list = [[37, 100], [35, 100], [100, 100, 100, 100]]
 
     #  # plot all
     # names = ["C3795_4DQW", "C3795_4HC"]
@@ -169,6 +173,7 @@ if __name__ == '__main__':
         print(len(Z_CST), len(freq_all))
         # po3 = plt.scatter(freq_all, Z_CST, label=fr'$Z_\parallel (CST)$ {names[a]}')
         # po4 = plt.scatter(freq_all, ZT_CST, label=fr'$Z_\perp (CST)$ {names[a]}')
+
         po3 = plt.scatter(freq_all, Z_*1e-3, label=fr'$Z_\parallel (CST)$ {names[a]}', edgecolors='k')
         po4 = plt.scatter(freq_all, Z_T*1e-3, label=fr'$Z_\perp (CST)$ {names[a]}', edgecolors='k')
 

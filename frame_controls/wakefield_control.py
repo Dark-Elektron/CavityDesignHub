@@ -117,6 +117,9 @@ class WakefieldControl:
             lambda: self.ui.le_Req_or.setText(self.ui.le_Req_i.text()))
 
     def initUI(self):
+        # splitter
+        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
+
         df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
         # init shape entry mode
         self.shape_entry_widgets_control()

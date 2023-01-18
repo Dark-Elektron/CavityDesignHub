@@ -2,6 +2,14 @@
 <ui version="4.0">
  <class>w_Tune</class>
  <widget class="QWidget" name="w_Tune">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1342</width>
+    <height>894</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -10,7 +18,7 @@
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <widget class="QSplitter" name="splitter">
+    <widget class="QSplitter" name="sp_Left_Right_Container">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
@@ -22,7 +30,7 @@
        <string notr="true"/>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
-       <item row="0" column="0" alignment="Qt::AlignLeft">
+       <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
           <number>0</number>
@@ -32,7 +40,7 @@
            <string>Tune</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_24">
-           <item row="0" column="1" alignment="Qt::AlignLeft">
+           <item row="0" column="1">
             <widget class="QScrollArea" name="scrollArea">
              <property name="styleSheet">
               <string notr="true"/>
@@ -44,6 +52,14 @@
               <bool>true</bool>
              </property>
              <widget class="QWidget" name="scrollAreaWidgetContents">
+              <property name="geometry">
+               <rect>
+                <x>0</x>
+                <y>-233</y>
+                <width>676</width>
+                <height>1527</height>
+               </rect>
+              </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
@@ -78,7 +94,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="15" column="0" colspan="2">
+               <item row="14" column="0" colspan="2">
                 <spacer name="verticalSpacer_3">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
@@ -104,105 +120,235 @@
                  </property>
                 </widget>
                </item>
-               <item row="8" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
-                <widget class="QWidget" name="w_Postprocess" native="true">
-                 <layout class="QGridLayout" name="gridLayout_5">
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_36">
+               <item row="5" column="0" alignment="Qt::AlignTop">
+                <widget class="QWidget" name="w_Tune_Settings" native="true">
+                 <property name="styleSheet">
+                  <string notr="true">border-radius: 15px;</string>
+                 </property>
+                 <layout class="QGridLayout" name="gridLayout_13">
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_30">
                     <property name="text">
-                     <string>Filename</string>
+                     <string>Save Last</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QLineEdit" name="le_Postprocess_Filename">
-                    <property name="text">
-                     <string>SLANS_Data</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_34">
-                    <property name="text">
-                     <string>Mode</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QSpinBox" name="sb_Mode">
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QComboBox" name="cb_Request">
-                    <item>
-                     <property name="text">
-                      <string>0D Data</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>1D Data</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>2D Data</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_33">
-                    <property name="text">
-                     <string>Request</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="SwitchControl" name="cb_Toggle_Postprocess">
+                  <item row="5" column="1">
+                   <widget class="SwitchControl" name="cb_Save_Last">
                     <property name="checked">
                      <bool>true</bool>
                     </property>
                    </widget>
                   </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="label_35">
+                  <item row="6" column="1">
+                   <widget class="SwitchControl" name="cb_Monitor_Convergence"/>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="label_31">
                     <property name="text">
-                     <string>BC</string>
+                     <string>Monitor Convergence</string>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="1">
-                   <widget class="QComboBox" name="cb_BC">
+                   <widget class="QSpinBox" name="sb_Max_Iteration">
+                    <property name="minimum">
+                     <number>5</number>
+                    </property>
+                    <property name="value">
+                     <number>10</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QComboBox" name="cb_Iterative_Method">
+                    <property name="maximumSize">
+                     <size>
+                      <width>175</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
                     <item>
                      <property name="text">
-                      <string>mm</string>
+                      <string>Linear Interpolation</string>
                      </property>
                     </item>
-                    <item>
-                     <property name="text">
-                      <string>ee</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>me</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>em</string>
-                     </property>
-                    </item>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_14">
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Tolerance</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_20">
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Iterative Method</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_15">
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Max Iteration</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="le_Tolerance">
+                    <property name="maximumSize">
+                     <size>
+                      <width>175</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>1e-4</string>
+                    </property>
                    </widget>
                   </item>
                  </layout>
                 </widget>
                </item>
-               <item row="3" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+               <item row="0" column="0" alignment="Qt::AlignTop">
+                <widget class="QWidget" name="w_Simulation_Controls" native="true">
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <layout class="QGridLayout" name="gl_Simulation_Controls">
+                  <item row="0" column="4">
+                   <widget class="QPushButton" name="pb_Cancel">
+                    <property name="maximumSize">
+                     <size>
+                      <width>32</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../qss/icons.qrc">
+                      <normaloff>:/icons/icons/PNG/stop.png</normaloff>:/icons/icons/PNG/stop.png</iconset>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="3">
+                   <widget class="QPushButton" name="pb_Pause_Resume">
+                    <property name="maximumSize">
+                     <size>
+                      <width>32</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QLineEdit" name="le_Generated_Shape_Space_Name">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Cavity</string>
+                    </property>
+                    <property name="placeholderText">
+                     <string>shape_space_name</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="2">
+                   <widget class="QPushButton" name="pb_Run">
+                    <property name="maximumSize">
+                     <size>
+                      <width>32</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="text">
+                     <string/>
+                    </property>
+                    <property name="icon">
+                     <iconset resource="../qss/icons.qrc">
+                      <normaloff>:/icons/icons/PNG/run.png</normaloff>:/icons/icons/PNG/run.png</iconset>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="flat">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_48">
+                    <property name="minimumSize">
+                     <size>
+                      <width>75</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>75</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Filename</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="3" column="0" alignment="Qt::AlignTop">
                 <widget class="QWidget" name="w_Enter_Shape_Space_Manual" native="true">
                  <property name="styleSheet">
                   <string notr="true"/>
@@ -230,7 +376,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+                  <item row="0" column="0" alignment="Qt::AlignTop">
                    <widget class="QWidget" name="w_Setup" native="true">
                     <property name="styleSheet">
                      <string notr="true">
@@ -727,7 +873,7 @@
                     </layout>
                    </widget>
                   </item>
-                  <item row="3" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+                  <item row="3" column="0" alignment="Qt::AlignTop">
                    <widget class="QWidget" name="w_Cell_Geometric_Parameters" native="true">
                     <layout class="QGridLayout" name="gridLayout_16">
                      <property name="horizontalSpacing">
@@ -735,12 +881,6 @@
                      </property>
                      <item row="4" column="0" alignment="Qt::AlignTop">
                       <widget class="QPushButton" name="pb_Outer_Cell">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
                        <property name="text">
                         <string>Outer Cell</string>
                        </property>
@@ -767,12 +907,6 @@
                      </item>
                      <item row="2" column="0" alignment="Qt::AlignTop">
                       <widget class="QPushButton" name="pb_Inner_Cell">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
                        <property name="text">
                         <string>Inner Cell</string>
                        </property>
@@ -1574,234 +1708,99 @@
                  </layout>
                 </widget>
                </item>
-               <item row="9" column="0" alignment="Qt::AlignLeft">
-                <widget class="QWidget" name="widget_2" native="true">
-                 <layout class="QGridLayout" name="gridLayout_4"/>
-                </widget>
-               </item>
-               <item row="5" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
-                <widget class="QWidget" name="w_Tune_Settings" native="true">
-                 <property name="styleSheet">
-                  <string notr="true">border-radius: 15px;</string>
-                 </property>
-                 <layout class="QGridLayout" name="gridLayout_13">
-                  <item row="5" column="0">
-                   <widget class="QLabel" name="label_30">
+               <item row="8" column="0" alignment="Qt::AlignTop">
+                <widget class="QWidget" name="w_Postprocess" native="true">
+                 <layout class="QGridLayout" name="gridLayout_5">
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_36">
                     <property name="text">
-                     <string>Save Last</string>
+                     <string>Filename</string>
                     </property>
                    </widget>
                   </item>
-                  <item row="5" column="1">
-                   <widget class="SwitchControl" name="cb_Save_Last">
+                  <item row="1" column="1">
+                   <widget class="QLineEdit" name="le_Postprocess_Filename">
+                    <property name="text">
+                     <string>SLANS_Data</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_34">
+                    <property name="text">
+                     <string>Mode</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QSpinBox" name="sb_Mode">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QComboBox" name="cb_Request">
+                    <item>
+                     <property name="text">
+                      <string>0D Data</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>1D Data</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>2D Data</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_33">
+                    <property name="text">
+                     <string>Request</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="SwitchControl" name="cb_Toggle_Postprocess">
                     <property name="checked">
                      <bool>true</bool>
                     </property>
                    </widget>
                   </item>
-                  <item row="6" column="1">
-                   <widget class="SwitchControl" name="cb_Monitor_Convergence"/>
-                  </item>
-                  <item row="6" column="0">
-                   <widget class="QLabel" name="label_31">
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_35">
                     <property name="text">
-                     <string>Monitor Convergence</string>
+                     <string>BC</string>
                     </property>
                    </widget>
                   </item>
                   <item row="4" column="1">
-                   <widget class="QSpinBox" name="sb_Max_Iteration">
-                    <property name="minimum">
-                     <number>5</number>
-                    </property>
-                    <property name="value">
-                     <number>10</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QComboBox" name="cb_Iterative_Method">
-                    <property name="maximumSize">
-                     <size>
-                      <width>175</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
+                   <widget class="QComboBox" name="cb_BC">
                     <item>
                      <property name="text">
-                      <string>Linear Interpolation</string>
+                      <string>mm</string>
                      </property>
                     </item>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_14">
-                    <property name="maximumSize">
-                     <size>
-                      <width>150</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Tolerance</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_20">
-                    <property name="maximumSize">
-                     <size>
-                      <width>150</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Iterative Method</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="label_15">
-                    <property name="maximumSize">
-                     <size>
-                      <width>150</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Max Iteration</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QLineEdit" name="le_Tolerance">
-                    <property name="maximumSize">
-                     <size>
-                      <width>175</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>1e-4</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="0" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
-                <widget class="QWidget" name="w_Simulation_Controls" native="true">
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <layout class="QGridLayout" name="gl_Simulation_Controls">
-                  <item row="0" column="4">
-                   <widget class="QPushButton" name="pb_Cancel">
-                    <property name="maximumSize">
-                     <size>
-                      <width>32</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="../qss/icons.qrc">
-                      <normaloff>:/icons/icons/PNG/stop.png</normaloff>:/icons/icons/PNG/stop.png</iconset>
-                    </property>
-                    <property name="iconSize">
-                     <size>
-                      <width>24</width>
-                      <height>24</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="3">
-                   <widget class="QPushButton" name="pb_Pause_Resume">
-                    <property name="maximumSize">
-                     <size>
-                      <width>32</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="iconSize">
-                     <size>
-                      <width>24</width>
-                      <height>24</height>
-                     </size>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QLineEdit" name="le_Generated_Shape_Space_Name">
-                    <property name="minimumSize">
-                     <size>
-                      <width>150</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Cavity</string>
-                    </property>
-                    <property name="placeholderText">
-                     <string>shape_space_name</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="2">
-                   <widget class="QPushButton" name="pb_Run">
-                    <property name="maximumSize">
-                     <size>
-                      <width>32</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
-                    <property name="text">
-                     <string/>
-                    </property>
-                    <property name="icon">
-                     <iconset resource="../qss/icons.qrc">
-                      <normaloff>:/icons/icons/PNG/run.png</normaloff>:/icons/icons/PNG/run.png</iconset>
-                    </property>
-                    <property name="iconSize">
-                     <size>
-                      <width>24</width>
-                      <height>24</height>
-                     </size>
-                    </property>
-                    <property name="flat">
-                     <bool>false</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_48">
-                    <property name="minimumSize">
-                     <size>
-                      <width>75</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>75</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Filename</string>
-                    </property>
+                    <item>
+                     <property name="text">
+                      <string>ee</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>me</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>em</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
@@ -1828,8 +1827,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>410</width>
-                <height>1240</height>
+                <width>674</width>
+                <height>1368</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">

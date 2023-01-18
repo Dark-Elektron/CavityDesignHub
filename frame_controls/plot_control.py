@@ -9,6 +9,7 @@ import pandas as pd
 from utils.file_reader import FileReader
 from utils.shared_classes import *
 from utils.shared_functions import *
+import scipy.io as spio
 
 fr = FileReader()
 
@@ -24,6 +25,7 @@ class PlotControl:
     """
     Controls plotting
     """
+
     def __init__(self, parent):
         self.w_Plot = QWidget()
 
@@ -220,9 +222,14 @@ class PlotControl:
     def make_plot_object(self, PTS, plotID):
         """
 
-        :param PTS:
-        :param plotID:
-        :return:
+        Parameters
+        ----------
+        PTS
+        plotID
+
+        Returns
+        -------
+
         """
         if PTS.cb_code.currentText() == "abci":
             self.make_abci_plot_object(plotID)
@@ -1161,69 +1168,22 @@ class PlotControl:
         # data = df[sheet_name]
 
         sheets = [a.strip() for a in args["plot inputs"]['Id'].currentText().split(',')]
-        for sh in sheets:
-            for id_ in ids:
-                args["plot data"][id_] = {}
-                args["plot object"][id_] = {}
-                if requestY != [] and requestX != []:
-                    if filename.split('.')[-1] == 'xlsx':
-                        # get sheets
-                        if filter_ == "None" or value == "":
-                            self.other_data_filtered = self.other_data[key][sh]
-                        else:
-                            self.other_data_filtered = self.other_data[key][sh][
-                                self.other_data[key][sh][filter_] == value]
-
-                        x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
-                        self.freq_glob = x_data
-
-                        for j in range(len(requestY)):
-                            y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
-                            args["plot data"][id_].update({j: {"x": x_data, "y": y}})
-
-                            if axis == 'Left':
-                                if type_ == 'Line':
-                                    args["plot object"][id_].update(
-                                        {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
-                                else:
-                                    args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
-                                                                                     marker=style, markersize=10.0,
-                                                                                     markeredgecolor="black",
-                                                                                     label=requestY[j], picker=True)})
-                                # mplcursors.cursor(args["plot object"][id_][j])
-                                self.ax.set_ylabel('$Y$ []')
-                                self.ax.set_xlabel('$X$ []')
-                            else:
-                                if type_ == 'Line':
-                                    args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, label=requestY[j],
-                                                                                           linewidth=2,
-                                                                                           linestyle=style,
-                                                                                           picker=True)})
-                                else:
-                                    args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, linestyle='None',
-                                                                                           marker=style,
-                                                                                           markeredgecolor="black",
-                                                                                           markersize=10.0,
-                                                                                           label="Legend",
-                                                                                           picker=True)})
-                                # mplcursors.cursor(args["plot object"][id_][j])
-                                self.ax_right.set_ylabel('$Y$ [dB]')
-                else:
-                    # try to filter self.other_data
-                    # try:
-                    filter_ = args["plot inputs"]['Filter'][0].currentText()
-                    value = args["plot inputs"]['Filter'][1].text()
+    # for sh in sheets:
+        for id_ in ids:
+            args["plot data"][id_] = {}
+            args["plot object"][id_] = {}
+            if requestY != [] and requestX != []:
+                if filename.split('.')[-1] == 'xlsx':
+                    # get sheets
                     if filter_ == "None" or value == "":
-                        self.other_data_filtered = self.other_data[key]
+                        self.other_data_filtered = self.other_data[key][id_]
                     else:
-                        self.other_data_filtered = self.other_data[key][self.other_data[key][filter_] == value]
-                    # except Exception as e:
-                    #     print_("plot_control: Exception::", e)
-                    #     self.other_data_filtered = self.other_data[key]
+                        self.other_data_filtered = self.other_data[key][id_][
+                            self.other_data[key][id_][filter_] == value]
 
                     x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                     self.freq_glob = x_data
-
+                    # print("Len req y", len(requestY), id_)
                     for j in range(len(requestY)):
                         y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
                         args["plot data"][id_].update({j: {"x": x_data, "y": y}})
@@ -1233,27 +1193,84 @@ class PlotControl:
                                 args["plot object"][id_].update(
                                     {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
                             else:
-                                args["plot object"][id_].update(
-                                    {j: self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
-                                                     markeredgecolor="black",
-                                                     label="Legend", picker=True)})
+                                args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
+                                                                                 marker=style, markersize=10.0,
+                                                                                 markeredgecolor="black",
+                                                                                 label=requestY[j], picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
                             self.ax.set_ylabel('$Y$ []')
                             self.ax.set_xlabel('$X$ []')
                         else:
                             if type_ == 'Line':
-                                args["plot object"][id_].update(
-                                    {j: self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                                args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, label=requestY[j],
+                                                                                       linewidth=2,
+                                                                                       linestyle=style,
+                                                                                       picker=True)})
                             else:
-                                args["plot object"][id_].update(
-                                    {j: self.ax_right.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
-                                                           markeredgecolor="black",
-                                                           label="Legend", picker=True)})
+                                args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, linestyle='None',
+                                                                                       marker=style,
+                                                                                       markeredgecolor="black",
+                                                                                       markersize=10.0,
+                                                                                       label="Legend",
+                                                                                       picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
                             self.ax_right.set_ylabel('$Y$ [dB]')
-                pass
             else:
-                print_("Please specify columns to plot")
+                # try to filter self.other_data
+                # try:
+                filter_ = args["plot inputs"]['Filter'][0].currentText()
+                value = args["plot inputs"]['Filter'][1].text()
+                if filter_ == "None" or value == "":
+                    self.other_data_filtered = self.other_data[key]
+                else:
+                    self.other_data_filtered = self.other_data[key][self.other_data[key][filter_] == value]
+                # except Exception as e:
+                #     print_("plot_control: Exception::", e)
+                #     self.other_data_filtered = self.other_data[key]
+
+                x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
+                self.freq_glob = x_data
+
+                for j in range(len(requestY)):
+                    y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
+                    args["plot data"][id_].update({j: {"x": x_data, "y": y}})
+
+                    if axis == 'Left':
+                        if type_ == 'Line':
+                            args["plot object"][id_].update(
+                                {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                        else:
+                            args["plot object"][id_].update(
+                                {j: self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
+                                                 markeredgecolor="black",
+                                                 label="Legend", picker=True)})
+                        # mplcursors.cursor(args["plot object"][id_][j])
+                        self.ax.set_ylabel('$Y$ []')
+                        self.ax.set_xlabel('$X$ []')
+                    else:
+                        if type_ == 'Line':
+                            args["plot object"][id_].update(
+                                {j: self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                        else:
+                            args["plot object"][id_].update(
+                                {j: self.ax_right.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
+                                                       markeredgecolor="black",
+                                                       label="Legend", picker=True)})
+                        # mplcursors.cursor(args["plot object"][id_][j])
+                        self.ax_right.set_ylabel('$Y$ [dB]')
+            pass
+        else:
+            print_("Please specify columns to plot")
+
+    def plot_mat(self, filepath):
+        # load mat file
+        data = {}
+        # files_folder = "D:\Dropbox\multipacting\MPGUI21"
+        for f in filepath:
+            if ".mat" in f:
+                data[f] = spio.loadmat(fr"{filepath}")
+
+        print(data)
 
     def table_control(self):
         # fill the first line
@@ -1595,6 +1612,7 @@ class PlotControl:
                 dd = json.load(file)
 
             # populate checkboxes with key
+            self.ui.ccb_Operation_Points.clear()
             self.ui.ccb_Operation_Points.addItem("All")
             for col in dd.keys():
                 self.ui.ccb_Operation_Points.addItem(fr'{col}')
@@ -1685,21 +1703,24 @@ class PlotControl:
 
                         f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
                                              self.ui.dsb_Frange_Max.value(),
-                                             num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
+                                             num=1000) * unit[self.ui.cb_Frange_Unit.currentText()]
                         Z_le = []
                         try:
                             for i, n in enumerate(n_cav):
                                 Z = [(2 * E0[i] * 1e9 * nu_s[i])
-                                     / (n * I0[i]*1e-3 * alpha_c[i]*1e-5 * tau_z[i]*1e-3 * f)
+                                     / (n * I0[i] * 1e-3 * alpha_c[i] * 1e-5 * tau_z[i] * 1e-3 * f)
                                      if f > 1e-8 else 1e5 for f in f_list]
 
                                 Z_le.append(round((2 * E0[i] * 1e9 * nu_s[i])
-                                                  / (n * I0[i]*1e-3 * alpha_c[i]*1e-5
-                                                     * tau_z[i]*1e-3)*1e-9*1e-3, 2))
+                                                  / (n * I0[i] * 1e-3 * alpha_c[i] * 1e-5
+                                                     * tau_z[i] * 1e-3) * 1e-9 * 1e-3, 2))
                                 Z_list.append(Z)
 
-                            self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
-                                                np.array(Z_list)*1e-3, mode, labels=selection.split(', '))  # to kOhm
+                            # note that plotted values are normalised to the number of cavities required per module
+                            # but the values printed on the line editor are for one cavity
+                            self.plot_baselines(f_list / unit[self.ui.cb_Frange_Unit.currentText()],
+                                                self.ui.sb_Ncav_per_Mod.value()*np.array(Z_list) * 1e-3,
+                                                mode, labels=selection.split(', '))  # to kOhm
 
                             self.ui.le_Zth_Long.setText(f"[{Z_le}]")
                         except ZeroDivisionError:
@@ -1712,15 +1733,20 @@ class PlotControl:
 
                         f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
                                              self.ui.dsb_Frange_Max.value(),
-                                             num=1000)*unit[self.ui.cb_Frange_Unit.currentText()]
+                                             num=1000) * unit[self.ui.cb_Frange_Unit.currentText()]
                         try:
                             for i, n in enumerate(n_cav):
-                                ZT = (2 * E0[i]) * 1e9 / (n * I0[i]*1e-3 * beta_xy[i] * tau_xy[i]*1e-3 * f_rev[i]*1e3)
-                                ZT_le.append(ZT*1e-3)
+                                ZT = (2 * E0[i]) * 1e9 / (
+                                            n * I0[i] * 1e-3 * beta_xy[i] * tau_xy[i] * 1e-3 * f_rev[i] * 1e3)
+                                ZT_le.append(round(ZT * 1e-3, 2))
+
+                                # note that plotted values are normalised to the number of cavities required per module
+                                # but the values printed on the line editor are for one cavity
                                 Z_list.append(ZT)
                             self.ui.le_Zth_Trans.setText(f"[{ZT_le}]")
-                            self.plot_baselines(f_list/unit[self.ui.cb_Frange_Unit.currentText()],
-                                                np.array(Z_list)*1e-3, mode, labels=selection.split(', '))  # to kOhm
+                            self.plot_baselines(f_list / unit[self.ui.cb_Frange_Unit.currentText()],
+                                                self.ui.sb_Ncav_per_Mod.value()*np.array(Z_list) * 1e-3,
+                                                mode, labels=selection.split(', '))  # to kOhm
 
                         except ZeroDivisionError:
                             print("ZeroDivisionError, check input")
@@ -1751,11 +1777,8 @@ class PlotControl:
 
                 pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
                 pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
-                print(pos, pos2)
                 indx = np.argmin(abs(f_list - pos[0]))
-                print((f_list[indx], z[indx]))
                 x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
-                print(x, y)
 
                 ab = self.plt.add_text(r"$\mathrm{" + fr"{labels[i]}" + r"}$",
                                        box="Round4", xy=(x, y),
@@ -1774,15 +1797,18 @@ class PlotControl:
             for i, z in enumerate(Z_list):
                 aa = self.ax.axhline(z, ls='--', c='k')
 
-                # transform axes coordinates to data coordinates
-                pos = self.ax.transData.transform((0.01, 0))
-                ab = self.plt.add_text(r"$\mathrm{" + fr"{labels[i]}" + r"}$",
-                                       box="Round4", xy=(pos[0], z),
-                                       xycoords='data', size=14)
+                # # transform axes coordinates to data coordinates
+                # pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
+                # pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
+                # indx = np.argmin(abs(f_list - pos[0]))
+                # x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
+                # ab = self.plt.add_text(r"$\mathrm{" + fr"{labels[i]}" + r"}$",
+                #                        box="Round4", xy=(x, y),
+                #                        xycoords='axes fraction', size=14)
 
                 # keep record
                 self.baseline_line_objects.append(aa)
-                self.baseline_line_objects.append(ab)
+                # self.baseline_line_objects.append(ab)
 
             self.ax.autoscale(True, axis='y')
             self.fig.canvas.draw()
@@ -1800,14 +1826,14 @@ class PlotControl:
             x_delta = xlim[1] - xlim[0]
             y_delta = ylim[1] - ylim[0]
             if not inverse:
-                x_out = xlim[0] + ((np.e**xin - 1)/(np.e-1)) * x_delta
-                y_out = ylim[0] + ((np.e**yin - 1)/(np.e-1)) * y_delta
+                x_out = xlim[0] + ((np.e ** xin - 1) / (np.e - 1)) * x_delta
+                y_out = ylim[0] + ((np.e ** yin - 1) / (np.e - 1)) * y_delta
                 print("\t", x_out, y_out)
             else:
                 x_delta2 = xin - xlim[0]
                 y_delta2 = yin - ylim[0]
-                x_out = np.log(1 + (np.e - 1)*x_delta2 / x_delta)
-                y_out = np.log(1 + (np.e - 1)*y_delta2 / y_delta)
+                x_out = np.log(1 + (np.e - 1) * x_delta2 / x_delta)
+                y_out = np.log(1 + (np.e - 1) * y_delta2 / y_delta)
                 print("\t", x_out, y_out)
 
         else:
@@ -1908,10 +1934,12 @@ class PlotControl:
 
                 vl = self.ax.axvline(freq, label=f"{sc[0]} cutoff (Ri={sc[1]})", ls='--', c='k')
 
+                pos = self.axis_data_coords_sys_transform(self.ax, freq, 0.5)
+
                 ab = self.plt.add_text(r"$f_\mathrm{c," + f"{sc[0]}" + r"} (R_\mathrm{i} = "
                                        + f"{sc[1]}" + r" ~\mathrm{mm}) $",
-                                       box="None", xy=(freq, 0.02),
-                                       xycoords='data', size=14, rotation=90)
+                                       box="None", xy=(pos[0], 0.1),
+                                       xycoords='axes fraction', size=14, rotation=90)
 
                 # update axes object dictionary
                 self.ax_obj_dict.update({f"{sc}": [vl, ab]})
@@ -2057,8 +2085,8 @@ class PlotControl:
     #         # self.ui.vl_X_Axis_Combobox.addWidget(cb_X_Axis)
     #         # self.ui.vl_X_Axis_Combobox.addWidget(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
-        # except Exception as e:
-        #     self.log.error(f'Failed to plot:: {e}')
+    # except Exception as e:
+    #     self.log.error(f'Failed to plot:: {e}')
 
     def set_table_size(self):
         self.ui.tableWidget.setColumnWidth(0, 50)

@@ -824,6 +824,48 @@ class Model:
 
         return U
 
+    @staticmethod
+    def calculate_lorentz_force(EE, HH, zz, rr):
+        """
+        Calculates the pressure  :math:`p` induced on the cavity walls due to the Lorentz force of
+        eigenmode :math:`n` from the electric or magnetic field.
+
+        .. math::
+           p = \\frac{1}{4} \mu_0H^2 - \epsilon_0 E^2
+
+        Parameters
+        ----------
+        EE: 2D array
+            Array of electric field magnitude in 2D space
+        HH:
+            Array of magnetic field magnitude in 2D space
+        zz: 2D array
+            Grid points z coordinate
+        rr: 2D array
+            Grid points r coordinate
+
+        Returns
+        -------
+        U: float
+            Energy over the shape volume
+
+        """
+
+        # calculate volume which is area under contour curve
+        z = zz[0, :]
+        r = rr[:, 0]
+        # ic(z, r)
+
+        U = np.pi * mu0 * np.trapz(np.trapz(HH ** 2 * rr, r, axis=0), z)
+        UE = np.pi * eps0 * np.trapz(np.trapz(EE ** 2 * rr, r, axis=0), z)
+        ic(U, UE)
+
+        return U
+
+    @staticmethod
+    def frequency_shift(EE, HH, zz, rr, U):
+        pass
+
     def calculate_surface_resistance_copper(self):
         """
         Calculates the surface resistance for Copper with conductivity
@@ -1498,10 +1540,10 @@ class Model:
             kama_n = {'index': index, 'u': u, 'k': k}
             spio.savemat(fr'{self.folder}\kama_n.mat', kama_n, format='4')
 
-    def run(self, n_cells, mid_cell, end_cell_left, end_cell_right=None, beampipe=None,
-            req_mode_num=None, plot=False):
+    def run(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None, beampipe=None,
+            req_mode_num=None, plot=False, gridcons=0.005):
         self.define_geometry(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=beampipe, plot=plot)
-        self.generate_mesh()
+        self.generate_mesh(plot=True, gridcons=gridcons)
         self.run_field_solver(req_mode_num=req_mode_num, show_plots=True)
         ic("Analysis ended.")
 
@@ -1812,15 +1854,16 @@ class Model:
 
 
 if __name__ == '__main__':
-    folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\CUSTOM_EIG'
+    folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\NativeEig'
     mod = Model(folder, 'TESLA')
-    n_cells = 9
+    n_cells = 1
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
                          71.98698698698699, 93.5, 171.1929]) * 1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
                          80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
 
     midTESLA = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
+    midTESLA_800 = np.array([68.12, 68.12, 19.46, 30.81, 56.76, 93.5, 167.646]) * 1e-3
     midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591]) * 1e-3
 
     midDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
@@ -1829,4 +1872,4 @@ if __name__ == '__main__':
     midNLSF_RE = np.array([49, 35.30, 10.5, 17, 32.0, 57.7, 98.58, 0]) * 1e-3
     endNLSF_RE = np.array([50, 35, 10, 15, 32.0, 57.7, 98.58, 0]) * 1e-3
 
-    mod.run(n_cells, midNLSF_RE, endNLSF_RE, beampipe='both', plot=True)
+    mod.run(n_cells, midTESLA, beampipe='none', gridcons=0.0009)

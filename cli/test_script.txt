@@ -1,5 +1,8 @@
 import numpy as np
-from cli.cavity import Cavity
+import matplotlib.pyplot as plt
+plt.ion()
+from cli.cavity import Cavity, Cavities, OperationPoints
+
 midcell = np.array([42, 42, 12, 19, 35, 57.7, 103.3])
 cav = Cavity(2, midcell)
 cav.save(files_path='D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\ConsoleTest')
@@ -8,19 +11,13 @@ cav.run_wakefield()
 cav.run_eigenmode(solver='custom')
 cav.run_tune('Req', freq=1300)
 
-wp = {
-            'H': {
-                'I0 [mA]': '26.7',
-                'Nb [1e11]': '1.51',
-                'sigma_z (SR/BS) [mm]': '2.5/4.45'
-            }
-        }
-cav.run_wakefield(wp_dict=wp)
+op_points = OperationPoints
+op_points.get_default_operation_points()
 
-from cli.cavity import Cavities
+
+cav.run_wakefield(wp_dict=op_points['W'])
+
 cavs = Cavities([])
 cavs.add_cavity(cav)
-import matplotlib.pyplot as plt
-plt.ion()
 cavs.plot_compare_fm_bar()
 cavs.plot_compare_hom_bar()

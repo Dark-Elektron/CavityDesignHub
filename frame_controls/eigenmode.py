@@ -77,9 +77,11 @@ class EigenmodeControl:
         self.show_progress_bar = False
 
         # ui effects
-        self.ui_effects()
+        # self.ui_effects()
 
     def initUI(self):
+        # splitter
+        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
 
         # init shape entry mode
         self.shape_entry_widgets_control()
@@ -203,7 +205,6 @@ class EigenmodeControl:
 
         # get geometric parameters
         self.shape_space = get_geometric_parameters(self, 'SLANS')
-        ic(self.shape_space)
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(self.shape_space.keys())
@@ -410,39 +411,38 @@ class EigenmodeControl:
 
                 ci += 1
 
-    def ui_effects(self):
+    # def ui_effects(self):
+    #
+    #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+    #     shadow.setColor(QColor(0, 0, 0, 77))
 
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Settings.setGraphicsEffect(shadow)
+        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        # shadow.setColor(QColor(0, 0, 0, 77))
+        # self.ui.w_Inner_Cell.setGraphicsEffect(shadow)
+        #
+        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        # shadow.setColor(QColor(0, 0, 0, 77))
+        # self.ui.w_Outer_Cell_L.setGraphicsEffect(shadow)
+        #
+        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        # shadow.setColor(QColor(0, 0, 0, 77))
+        # self.ui.w_Outer_Cell_R.setGraphicsEffect(shadow)
+        #
+        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        # shadow.setColor(QColor(0, 0, 0, 77))
+        # self.ui.w_Expansion.setGraphicsEffect(shadow)
 
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Inner_Cell.setGraphicsEffect(shadow)
+        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        # shadow.setColor(QColor(0, 0, 0, 77))
+        # self.ui.w_Simulation_Controls.setGraphicsEffect(shadow)
 
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Outer_Cell_L.setGraphicsEffect(shadow)
+        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        # shadow.setColor(QColor(0, 0, 0, 77))
+        # self.ui.w_Show_Cavity.setGraphicsEffect(shadow)
 
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Outer_Cell_R.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Expansion.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Simulation_Controls.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Show_Cavity.setGraphicsEffect(shadow)
-
-        shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        shadow.setColor(QColor(0, 0, 0, 77))
-        self.ui.w_Load_Manual.setGraphicsEffect(shadow)
+        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
+        # shadow.setColor(QColor(0, 0, 0, 77))
+        # self.ui.w_Load_Manual.setGraphicsEffect(shadow)
 
     def serialize(self, state_dict):
         # update state file

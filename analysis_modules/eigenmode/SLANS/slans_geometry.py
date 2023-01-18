@@ -83,7 +83,7 @@ class SLANSGeometry(Geometry):
 
         self.slans = SLANS(self.left_beam_pipe, self.left_end_cell, self.mid_cell, self.right_end_cell,
                            self.right_beam_pipe, self.Jxy_all, self.Jxy_all_bp)
-        ic(projectDir, parentDir)
+
         n = no_of_cells  # Number of cells
         axi_sym = 2  # 1: flat, 2: axis-symmetric
         unit = 3  # 1:m, 2:cm, 3:mm, 4:mkm

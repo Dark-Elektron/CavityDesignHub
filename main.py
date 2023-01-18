@@ -210,7 +210,8 @@ class MainWindow:
         """
         Initialise class variables and initial GUI state
         """
-        # hidden widgets
+        # splitter default size
+        self.ui.sp_File_Folder_Main.setStretchFactor(1, 4)
 
         # hold last frame
         self.last_frame = None
@@ -309,11 +310,7 @@ class MainWindow:
         self.frames_dict['Misc'].append(self.misc_widget.w_Misc)
 
     def change_frame(self, key):
-        """
-        Switch between GUI frames
-        :param key:
-        :return:
-        """
+
         # remove existing widgets
         index = self.ui.g_Display.count() - 1
         # save last frame
@@ -466,9 +463,6 @@ class MainWindow:
                     self.file_system(self.projectDir)
             except FileNotFoundError:
                 pass
-
-            else:
-                print('Please select a valid project directory')
         else:
             print('Please select a valid project directory')
 
@@ -599,24 +593,11 @@ class MainWindow:
         -------
 
         """
-        # msg = QMessageBox()
-        # msg.setWindowTitle("Folder Exist")
-        # msg.setText("Do you wish to load the last saved project?")
-        # msg.setIcon(QMessageBox.Question)
-        # msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
-        # msg.setDefaultButton(QMessageBox.Yes)
-        #
-        # msg.buttonClicked.connect(self.button_clicked)
-        #
-        # x = msg.exec_()
-        #
-        # if x == msg.Yes:
-        #     self.deserialize('ui_state_files/state_file.json')
 
-        try:
-            self.deserialize('ui_state_files/state_file.json')
-        except AttributeError as e:
-            print("Could not deserialize state file: ", e)
+        # try:
+        self.deserialize('ui_state_files/state_file.json')
+        # except AttributeError as e:
+        #     print("Could not deserialize state file: ", e)
 
     def checkIfPathExist(self, directory, folder):
         path = f"{directory}/{folder}"

@@ -251,8 +251,68 @@
           </layout>
          </widget>
         </item>
+        <item row="1" column="1">
+         <widget class="QWidget" name="widget_2" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>40</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>40</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <layout class="QGridLayout" name="gridLayout_10">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="pb_Expand_Collapse_Log">
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset resource="../qss/icons.qrc">
+               <normaloff>:/icons/icons/PNG/go-previous-symbolic.symbolic.png</normaloff>:/icons/icons/PNG/go-previous-symbolic.symbolic.png</iconset>
+             </property>
+             <property name="iconSize">
+              <size>
+               <width>24</width>
+               <height>24</height>
+              </size>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </widget>
+        </item>
         <item row="1" column="0">
-         <widget class="QSplitter" name="splitter_2">
+         <widget class="QSplitter" name="sp_File_Folder_Main">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
@@ -260,12 +320,6 @@
            <number>2</number>
           </property>
           <widget class="QWidget" name="widget_7" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
            <property name="minimumSize">
             <size>
              <width>200</width>
@@ -286,275 +340,6 @@
           </widget>
           <widget class="QWidget" name="widget_8" native="true">
            <layout class="QGridLayout" name="gridLayout_4">
-            <item row="0" column="0">
-             <widget class="QWidget" name="w_Pane" native="true">
-              <property name="minimumSize">
-               <size>
-                <width>90</width>
-                <height>0</height>
-               </size>
-              </property>
-              <property name="maximumSize">
-               <size>
-                <width>90</width>
-                <height>16777215</height>
-               </size>
-              </property>
-              <layout class="QGridLayout" name="gridLayout_8">
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item row="0" column="0">
-                <spacer name="verticalSpacer_4">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="10" column="0">
-                <spacer name="verticalSpacer_3">
-                 <property name="orientation">
-                  <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>20</width>
-                   <height>40</height>
-                  </size>
-                 </property>
-                </spacer>
-               </item>
-               <item row="3" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rTune">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>T</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rPlot">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>P</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="4" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rEigenmode">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>E</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rMultipacting">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>M</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rMisc">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>M</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="2" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rHome">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>H</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="1" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rBack">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>&lt;-</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="5" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rWakefield">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>W</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="0" alignment="Qt::AlignLeft">
-                <widget class="QPushButton" name="pb_rPostprocess">
-                 <property name="minimumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>50</width>
-                   <height>50</height>
-                  </size>
-                 </property>
-                 <property name="styleSheet">
-                  <string notr="true"/>
-                 </property>
-                 <property name="text">
-                  <string>PP</string>
-                 </property>
-                 <property name="checkable">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
             <item row="0" column="1">
              <widget class="QWidget" name="widget" native="true">
               <layout class="QGridLayout" name="gridLayout_12">
@@ -630,7 +415,7 @@
                            <x>0</x>
                            <y>0</y>
                            <width>878</width>
-                           <height>963</height>
+                           <height>945</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -960,8 +745,8 @@ P R O C E S S</string>
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>399</width>
-                        <height>922</height>
+                        <width>385</width>
+                        <height>898</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_3">
@@ -1002,68 +787,277 @@ P R O C E S S</string>
               </layout>
              </widget>
             </item>
+            <item row="0" column="0">
+             <widget class="QWidget" name="w_Pane" native="true">
+              <property name="minimumSize">
+               <size>
+                <width>90</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>90</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_8">
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item row="0" column="0">
+                <spacer name="verticalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item row="5" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rWakefield">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>W</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rHome">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>H</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rPlot">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>P</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rMisc">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>M</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="6" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rMultipacting">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>M</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rPostprocess">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>PP</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rEigenmode">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>E</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rBack">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>&lt;-</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0" alignment="Qt::AlignLeft">
+                <widget class="QPushButton" name="pb_rTune">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true"/>
+                 </property>
+                 <property name="text">
+                  <string>T</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="10" column="0">
+                <spacer name="verticalSpacer_3">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </widget>
+            </item>
            </layout>
           </widget>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QWidget" name="widget_2" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>40</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>40</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_10">
-           <property name="leftMargin">
-            <number>0</number>
-           </property>
-           <property name="topMargin">
-            <number>0</number>
-           </property>
-           <property name="rightMargin">
-            <number>0</number>
-           </property>
-           <property name="bottomMargin">
-            <number>0</number>
-           </property>
-           <item row="0" column="0">
-            <widget class="QPushButton" name="pb_Expand_Collapse_Log">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="icon">
-              <iconset resource="../qss/icons.qrc">
-               <normaloff>:/icons/icons/PNG/go-previous-symbolic.symbolic.png</normaloff>:/icons/icons/PNG/go-previous-symbolic.symbolic.png</iconset>
-             </property>
-             <property name="iconSize">
-              <size>
-               <width>24</width>
-               <height>24</height>
-              </size>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
          </widget>
         </item>
        </layout>
@@ -1115,7 +1109,7 @@ P R O C E S S</string>
      <x>0</x>
      <y>0</y>
      <width>1661</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>

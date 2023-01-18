@@ -55,6 +55,7 @@ class Cavity:
 
        Still under development so some functions might not work properly
     """
+
     def __init__(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none', name='cavity'):
         """
         Initialise cavity object. A cavity object is defined by the number of cells, the cell geometric parameters,
@@ -474,7 +475,7 @@ class Cavity:
 
             if solver.lower() == 'slans':
                 self._run_slans(self.name, self.n_cells, self.n_modules, self.shape_space, self.n_modes, freq_shift,
-                               self.bc, SOFTWARE_DIRECTORY, self.folder, sub_dir='', UQ=UQ)
+                                self.bc, SOFTWARE_DIRECTORY, self.folder, sub_dir='', UQ=UQ)
 
                 # load quantities of interest
                 try:
@@ -483,8 +484,8 @@ class Cavity:
                     error("Could not find the tune results. Please rerun eigenmode analysis.")
             else:
                 self._run_custom_eig(self.name, self.folder, self.n_cells,
-                                    self.mid_cell, self.end_cell_left, self.end_cell_right,
-                                    beampipe=self.beampipe, plot=False)
+                                     self.mid_cell, self.end_cell_left, self.end_cell_right,
+                                     beampipe=self.beampipe, plot=False)
                 # load quantities of interest
                 self.get_custom_eig_qois()
 
@@ -562,10 +563,10 @@ class Cavity:
                 if solver == 'ABCI':
                     info(">> Running wakefield simulation")
                     self._run_abci(self.name, self.n_cells, self.n_modules, self.shape_space,
-                                  MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
-                                  DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
-                                  parentDir=SOFTWARE_DIRECTORY, projectDir=fr'{self.folder}', WG_M=WG_M, marker=marker,
-                                  wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
+                                   MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
+                                   DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
+                                   parentDir=SOFTWARE_DIRECTORY, projectDir=fr'{self.folder}', WG_M=WG_M, marker=marker,
+                                   wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
 
                     try:
                         self.get_abci_qois()
@@ -622,9 +623,9 @@ class Cavity:
 
     @staticmethod
     def _run_abci(name, n_cells, n_modules, shape, MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
-                 DDR_SIG=0.1, DDZ_SIG=0.1,
-                 parentDir=None, projectDir=None,
-                 WG_M=None, marker='', wp_dict=None, freq=0, R_Q=0):
+                  DDR_SIG=0.1, DDZ_SIG=0.1,
+                  parentDir=None, projectDir=None,
+                  WG_M=None, marker='', wp_dict=None, freq=0, R_Q=0):
 
         # run abci code
         if WG_M is None:
@@ -681,14 +682,16 @@ class Cavity:
                                 try:
                                     for m in range(2):
                                         abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
+                                                         bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
                                                          WG_M=ii, marker=ii, sub_dir=f"{name}")
                                 except KeyError:
                                     for m in range(2):
                                         abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
+                                                         bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
                                                          WG_M=ii, marker=ii, sub_dir=f"{name}")
@@ -1249,17 +1252,6 @@ class Cavities:
     def qois_hom(self):
         """
         Retrieves the higher-order modes quantities of interest
-
-        .. plot::
-           :include-source:
-
-           import matplotlib.pyplot as plt
-           import numpy as np
-           x = np.random.randn(1000)
-           plt.hist( x, 20)
-           plt.grid()
-           plt.title(r'Normal: $\mu=%.2f, \sigma=%.2f$'%(x.mean(), x.std()))
-           plt.show()
 
         Returns
         -------
@@ -2696,6 +2688,178 @@ class Cavities:
         return fr"{self.cavities_list}"
 
 
+class OperationPoints:
+    def __init__(self, filepath):
+        self.op_points = {}
+
+        if os.path.exists(filepath):
+            self.op_points = self.load_operation_point(filepath)
+
+    def load_operation_point(self, filepath):
+        with open(filepath, 'r') as f:
+            op_points = json.load(f)
+
+        self.op_points = op_points
+        return op_points
+
+    def get_default_operation_points(self):
+        self.op_points = {
+            "Z": {
+                "freq [MHz]": 400.79,
+                "E [GeV]": 45.6,
+                "I0 [mA]": 1400,
+                "V [GV]": 0.12,
+                "Eacc [MV/m]": 5.72,
+                "nu_s []": 0.0025,
+                "alpha_p [1e-5]": 1.48,
+                "tau_z [ms]": 424.6,
+                "tau_xy [ms]": 849.2,
+                "f_rev [kHz]": 3.07,
+                "beta_xy [m]": 50,
+                "N_c []": 56,
+                "T [K]": 4.5,
+                "sigma_SR [mm]": 4.32,
+                "sigma_BS [mm]": 15.2
+            },
+            "W": {
+                "freq [MHz]": 400.79,
+                "E [GeV]": 80,
+                "I0 [mA]": 135,
+                "V [GV]": 1.0,
+                "Eacc [MV/m]": 11.91,
+                "nu_s []": 0.0506,
+                "alpha_p [1e-5]": 1.48,
+                "tau_z [ms]": 78.7,
+                "tau_xy [ms]": 157.4,
+                "f_rev [kHz]": 3.07,
+                "beta_xy [m]": 50,
+                "N_c []": 112,
+                "T [K]": 4.5,
+                "sigma_SR [mm]": 3.55,
+                "sigma_BS [mm]": 7.02
+            },
+            "H": {
+                "freq [MHz]": 400.79,
+                "E [GeV]": 120,
+                "I0 [mA]": 53.4,
+                "V [GV]": 2.1,
+                "Eacc [MV/m]": 11.87,
+                "nu_s []": 0.036,
+                "alpha_p [1e-5]": 0.73,
+                "tau_z [ms]": 23.4,
+                "tau_xy [ms]": 46.8,
+                "f_rev [kHz]": 3.07,
+                "beta_xy [m]": 50,
+                "N_c []": 118,
+                "T [K]": 4.5,
+                "sigma_SR [mm]": 2.5,
+                "sigma_BS [mm]": 4.45
+            },
+            "ttbar": {
+                "freq [MHz]": 801.58,
+                "E [GeV]": 182.5,
+                "I0 [mA]": 10,
+                "V [GV]": 8.8,
+                "Eacc [MV/m]": 24.72,
+                "nu_s []": 0.087,
+                "alpha_p [1e-5]": 0.73,
+                "tau_z [ms]": 6.8,
+                "tau_xy [ms]": 13.6,
+                "f_rev [kHz]": 3.07,
+                "beta_xy [m]": 50,
+                "N_c []": 140,
+                "T [K]": 2,
+                "sigma_SR [mm]": 1.67,
+                "sigma_BS [mm]": 2.54
+            },
+            "MuCol RCS Stage 1": {
+                "freq [MHz]": 1300,
+                "E [GeV]": 250.835,
+                "I0 [mA]": 20.38,
+                "V [GV]": 20.87,
+                "Eacc [MV/m]": 30,
+                "nu_s []": 0.68,
+                "alpha_p [1e-5]": 240,
+                "tau_z [ms]": 78.7,
+                "tau_xy [ms]": 157.4,
+                "f_rev [kHz]": 50.08,
+                "beta_xy [m]": 0.005,
+                "N_c []": 696,
+                "T [K]": 2,
+                "sigma_SR [mm]": 23.1,
+                "sigma_BS [mm]": 23.1
+            },
+            "MuCol hybrid RCS Stage 2": {
+                "freq [MHz]": 1300,
+                "E [GeV]": 436.15,
+                "I0 [mA]": 18.78,
+                "V [GV]": 11.22,
+                "Eacc [MV/m]": 30,
+                "nu_s []": 0.32,
+                "alpha_p [1e-5]": 240,
+                "tau_z [ms]": 0,
+                "tau_xy [ms]": 0,
+                "f_rev [kHz]": 50.08,
+                "beta_xy [m]": 0.005,
+                "N_c []": 374,
+                "T [K]": 2,
+                "sigma_SR [mm]": 23.1,
+                "sigma_BS [mm]": 23.1
+            },
+            "MuCol hybrid RCS Stage 3": {
+                "freq [MHz]": 1300,
+                "E [GeV]": 750.024,
+                "I0 [mA]": 9.97,
+                "V [GV]": 16.07,
+                "Eacc [MV/m]": 30,
+                "nu_s []": 0.24,
+                "alpha_p [1e-5]": 240,
+                "tau_z [ms]": 0,
+                "tau_xy [ms]": 0,
+                "f_rev [kHz]": 28.04,
+                "beta_xy [m]": 0.005,
+                "N_c []": 536,
+                "T [K]": 2,
+                "sigma_SR [mm]": 23.1,
+                "sigma_BS [mm]": 23.1
+            },
+            "MuCol hybrid RCS Stage 5TeV": {
+                "freq [MHz]": 1300,
+                "E [GeV]": 3500,
+                "I0 [mA]": 3.05,
+                "V [GV]": 90,
+                "Eacc [MV/m]": 30,
+                "nu_s []": 0.57,
+                "alpha_p [1e-5]": 240,
+                "tau_z [ms]": 0,
+                "tau_xy [ms]": 0,
+                "f_rev [kHz]": 8.57,
+                "beta_xy [m]": 0.005,
+                "N_c []": 3000,
+                "T [K]": 2,
+                "sigma_SR [mm]": 23.1,
+                "sigma_BS [mm]": 23.1
+            },
+            "MuCol hybrid RCS Stage 5TeV LHC": {
+                "freq [MHz]": 1300,
+                "E [GeV]": 3500,
+                "I0 [mA]": 4,
+                "V [GV]": 68.75,
+                "Eacc [MV/m]": 30,
+                "nu_s []": 0.43,
+                "alpha_p [1e-5]": 240,
+                "tau_z [ms]": 0,
+                "tau_xy [ms]": 0,
+                "f_rev [kHz]": 11.25,
+                "beta_xy [m]": 0.005,
+                "N_c []": 2292,
+                "T [K]": 2,
+                "sigma_SR [mm]": 23.1,
+                "sigma_BS [mm]": 23.1
+            }
+        }
+
+
 def get_qois_value(f_fm, R_Q, k_loss, k_kick, sigma_z, I0, Nb, n_cell):
     c = 299792458
     w_fm = 2 * np.pi * f_fm * 1e6
@@ -2722,17 +2886,17 @@ def get_qois_value(f_fm, R_Q, k_loss, k_kick, sigma_z, I0, Nb, n_cell):
 
 def show_valid_operating_point_structure():
     dd = {
-            '<wp1>': {
-                'I0 [mA]': '<value>',
-                'Nb [1e11]': '<value>',
-                'sigma_z (SR/BS) [mm]': '<value>'
-            },
-            '<wp2>': {
-                'I0 [mA]': '<value>',
-                'Nb [1e11]': '<value>',
-                'sigma_z (SR/BS) [mm]': '<value>'
-            }
+        '<wp1>': {
+            'I0 [mA]': '<value>',
+            'Nb [1e11]': '<value>',
+            'sigma_z (SR/BS) [mm]': '<value>'
+        },
+        '<wp2>': {
+            'I0 [mA]': '<value>',
+            'Nb [1e11]': '<value>',
+            'sigma_z (SR/BS) [mm]': '<value>'
         }
+    }
 
     info(dd)
 

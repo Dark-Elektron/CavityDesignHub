@@ -48,8 +48,8 @@ class TuneControl:
         self.pseudo_shape_space = None
         self.w_Tune = QWidget()
 
-        self.tuneUI = Ui_w_Tune()
-        self.tuneUI.setupUi(self.w_Tune)
+        self.ui = Ui_w_Tune()
+        self.ui.setupUi(self.w_Tune)
 
         # Create main window object
         self.win = parent
@@ -77,24 +77,27 @@ class TuneControl:
         # self.ui_effects()
 
         # evolution algorithm
-        self.opt_control = OptimizationControl(self.tuneUI)
+        self.opt_control = OptimizationControl(self.ui)
 
     def initUI(self):
-        self.tuneUI.cb_Inner_Cell.setCheckState(2)
-        self.tuneUI.cb_Inner_Cell.setEnabled(False)
-        self.tuneUI.w_Tune_Multiple.setVisible(False)
-        self.tuneUI.w_Outer_Cell.setVisible(False)
-        self.tuneUI.w_Expansion.setVisible(False)
-        self.tuneUI.pb_Expansion.setEnabled(False)
-        self.tuneUI.w_Tune_Settings.setVisible(False)
-        self.tuneUI.w_Postprocess.setVisible(False)
+        # splitter
+        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
+        
+        self.ui.cb_Inner_Cell.setCheckState(2)
+        self.ui.cb_Inner_Cell.setEnabled(False)
+        self.ui.w_Tune_Multiple.setVisible(False)
+        self.ui.w_Outer_Cell.setVisible(False)
+        self.ui.w_Expansion.setVisible(False)
+        self.ui.pb_Expansion.setEnabled(False)
+        self.ui.w_Tune_Settings.setVisible(False)
+        self.ui.w_Postprocess.setVisible(False)
 
-        self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.tuner_routine())
-        self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.tuner_routine())
-        self.tuneUI.cb_Tune_Option.currentTextChanged.connect(lambda: self.tuner_routine())
+        self.ui.cb_Tuner.currentTextChanged.connect(lambda: self.tuner_routine())
+        self.ui.cb_Cell_Type.currentTextChanged.connect(lambda: self.tuner_routine())
+        self.ui.cb_Tune_Option.currentTextChanged.connect(lambda: self.tuner_routine())
 
         # disable expansion section for now. Feature to come later
-        self.tuneUI.cb_Expansion.setEnabled(False)
+        self.ui.cb_Expansion.setEnabled(False)
 
         # tuner initial state
         self.tuner_routine()
@@ -103,7 +106,7 @@ class TuneControl:
         self.show_hide()
 
         # show/hide convergence plot
-        # animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True)
+        # animate_width(self.ui.cb_Monitor_Convergence, self.ui.w_PyqtGraph, 0, 500, True)
 
         # create pause and resume icons to avoid creating them over and over again
         self.pause_icon = QIcon()
@@ -112,85 +115,85 @@ class TuneControl:
         self.resume_icon.addPixmap(QPixmap(f":/icons/icons/PNG/resume.png"), QIcon.Normal, QIcon.Off)
 
         # # initially set pause icon
-        # self.tuneUI.pb_Pause_Resume.setIcon(self.pause_icon)
+        # self.ui.pb_Pause_Resume.setIcon(self.pause_icon)
 
         # process state
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
 
         # set default boundary condition to magnetic wall at both ends
-        self.tuneUI.cb_LBC.setCurrentIndex(2)
-        self.tuneUI.cb_RBC.setCurrentIndex(2)
+        self.ui.cb_LBC.setCurrentIndex(2)
+        self.ui.cb_RBC.setCurrentIndex(2)
 
         # create progress bar object and add to widget
-        self.progress_bar = QProgressBar(self.tuneUI.w_Simulation_Controls)
+        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
         self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.tuneUI.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
         self.progress_bar.hide()
 
         # disable convergence monitor checkbox
-        self.tuneUI.cb_Monitor_Convergence.setEnabled(False)
+        self.ui.cb_Monitor_Convergence.setEnabled(False)
 
     def signals(self):
 
         # signals/slots
-        self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentIndexChanged.connect(lambda: self.show_hide())
-        self.tuneUI.pb_Run.clicked.connect(lambda: self.generate_shape_space())
+        self.ui.cb_Shape_Space_Generation_Algorithm.currentIndexChanged.connect(lambda: self.show_hide())
+        self.ui.pb_Run.clicked.connect(lambda: self.generate_shape_space())
 
         # change cavity display image
-        self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.change_cavity_image())
-        self.tuneUI.cb_LBP.stateChanged.connect(lambda: self.change_cavity_image())
-        self.tuneUI.cb_RBP.stateChanged.connect(lambda: self.change_cavity_image())
-        self.tuneUI.cb_Outer_Cell.stateChanged.connect(lambda: self.change_cavity_image())
+        self.ui.cb_Cell_Type.currentTextChanged.connect(lambda: self.change_cavity_image())
+        self.ui.cb_LBP.stateChanged.connect(lambda: self.change_cavity_image())
+        self.ui.cb_RBP.stateChanged.connect(lambda: self.change_cavity_image())
+        self.ui.cb_Outer_Cell.stateChanged.connect(lambda: self.change_cavity_image())
 
         # # collapse other settings
-        # self.tuneUI.pb_Tune_Settings.clicked.connect(
-        #     lambda: animate_height(self.tuneUI.w_Tune_Settings, 0, 200, True))
+        # self.ui.pb_Tune_Settings.clicked.connect(
+        #     lambda: animate_height(self.ui.w_Tune_Settings, 0, 200, True))
 
         # control to ensure that SLANS mid cell tuner is always set to tune for Req
         # and end cell tuner is always set to L
-        self.tuneUI.cb_Tuner.currentTextChanged.connect(lambda: self.slans_tuners_control())
-        self.tuneUI.cb_Cell_Type.currentTextChanged.connect(lambda: self.slans_tuners_control())
+        self.ui.cb_Tuner.currentTextChanged.connect(lambda: self.slans_tuners_control())
+        self.ui.cb_Cell_Type.currentTextChanged.connect(lambda: self.slans_tuners_control())
 
         # # expand/collapse convergence plot
-        # self.tuneUI.cb_Monitor_Convergence.stateChanged.connect(
-        #     lambda: animate_width(self.tuneUI.cb_Monitor_Convergence, self.tuneUI.w_PyqtGraph, 0, 500, True))
+        # self.ui.cb_Monitor_Convergence.stateChanged.connect(
+        #     lambda: animate_width(self.ui.cb_Monitor_Convergence, self.ui.w_PyqtGraph, 0, 500, True))
 
         # cancel
-        self.tuneUI.pb_Cancel.clicked.connect(lambda: self.cancel())
-        self.tuneUI.pb_Pause_Resume.clicked.connect(
+        self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
+        self.ui.pb_Pause_Resume.clicked.connect(
             lambda: self.pause() if self.process_state == 'running' else self.resume())
 
     def tuner_routine(self):
-        if self.tuneUI.cb_Cell_Type.currentText() == 'Mid Cell':
-            self.tuneUI.cb_Outer_Cell.setCheckState(0)
-            self.tuneUI.cb_Outer_Cell.setEnabled(False)
-            self.tuneUI.cb_LBP.setCheckState(0)
-            self.tuneUI.cb_LBP.setEnabled(False)
-            # self.tuneUI.w_End_Cell_Tune_Extra_Variable.hide()
-        elif self.tuneUI.cb_Cell_Type.currentText() == 'End Cell':
-            self.tuneUI.cb_Outer_Cell.setCheckState(2)
-            self.tuneUI.cb_Outer_Cell.setEnabled(False)
-            self.tuneUI.cb_LBP.setCheckState(2)
-            self.tuneUI.cb_LBP.setEnabled(False)
+        if self.ui.cb_Cell_Type.currentText() == 'Mid Cell':
+            self.ui.cb_Outer_Cell.setCheckState(0)
+            self.ui.cb_Outer_Cell.setEnabled(False)
+            self.ui.cb_LBP.setCheckState(0)
+            self.ui.cb_LBP.setEnabled(False)
+            # self.ui.w_End_Cell_Tune_Extra_Variable.hide()
+        elif self.ui.cb_Cell_Type.currentText() == 'End Cell':
+            self.ui.cb_Outer_Cell.setCheckState(2)
+            self.ui.cb_Outer_Cell.setEnabled(False)
+            self.ui.cb_LBP.setCheckState(2)
+            self.ui.cb_LBP.setEnabled(False)
 
-            # if self.tuneUI.cb_Tune_Option.currentText() == 'L':
-            #     self.tuneUI.w_End_Cell_Tune_Extra_Variable.show()
+            # if self.ui.cb_Tune_Option.currentText() == 'L':
+            #     self.ui.w_End_Cell_Tune_Extra_Variable.show()
             # else:
-            #     self.tuneUI.w_End_Cell_Tune_Extra_Variable.hide()
+            #     self.ui.w_End_Cell_Tune_Extra_Variable.hide()
         else:
-            self.tuneUI.cb_LBP.setEnabled(True)
-            self.tuneUI.cb_Outer_Cell.setEnabled(True)
+            self.ui.cb_LBP.setEnabled(True)
+            self.ui.cb_Outer_Cell.setEnabled(True)
 
     def generate_shape_space(self):
         # check if filename is entered or not
-        if self.tuneUI.le_Generated_Shape_Space_Name.text() == '':
+        if self.ui.le_Generated_Shape_Space_Name.text() == '':
             self.log.error("Hey chief, seems you forgot to give a name to the shape_space file.")
             # print_("Hey chief, seems you forgot to give a name to the shape_space file.")
             return
         else:
-            self.filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+            self.filename = self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())
             # check if shape space already generated
             resume = self.continue_check()
 
@@ -208,30 +211,30 @@ class TuneControl:
             elif resume == "Cancel":
                 return
 
-        self.freq = float(self.tuneUI.le_Freq.text())
-        marker = self.tuneUI.le_Generated_Shape_Space_Name.text()
+        self.freq = float(self.ui.le_Freq.text())
+        marker = self.ui.le_Generated_Shape_Space_Name.text()
 
         # get variables from ui or from pseudo shape space
-        A_i = self.check_input(self.tuneUI.le_A_i.text())
-        B_i = self.check_input(self.tuneUI.le_B_i.text())
-        a_i = self.check_input(self.tuneUI.le_a_i.text())
-        b_i = self.check_input(self.tuneUI.le_b_i.text())
-        Ri_i = self.check_input(self.tuneUI.le_Ri_i.text())
-        L_i = self.check_input(self.tuneUI.le_L_i.text())
-        Req_i = self.check_input(self.tuneUI.le_Req_i.text())
+        A_i = self.check_input(self.ui.le_A_i.text())
+        B_i = self.check_input(self.ui.le_B_i.text())
+        a_i = self.check_input(self.ui.le_a_i.text())
+        b_i = self.check_input(self.ui.le_b_i.text())
+        Ri_i = self.check_input(self.ui.le_Ri_i.text())
+        L_i = self.check_input(self.ui.le_L_i.text())
+        Req_i = self.check_input(self.ui.le_Req_i.text())
 
         inner_half_cell_parameters = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i]
         # print(inner_half_cell_parameters)
 
         # ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list)
 
-        if self.tuneUI.cb_Outer_Cell.checkState() == 2:
-            A_o = self.check_input(self.tuneUI.le_A_o.text())
-            B_o = self.check_input(self.tuneUI.le_B_o.text())
-            a_o = self.check_input(self.tuneUI.le_a_o.text())
-            b_o = self.check_input(self.tuneUI.le_b_o.text())
-            Ri_o = self.check_input(self.tuneUI.le_Ri_o.text())
-            L_o = self.check_input(self.tuneUI.le_L_o.text())
+        if self.ui.cb_Outer_Cell.checkState() == 2:
+            A_o = self.check_input(self.ui.le_A_o.text())
+            B_o = self.check_input(self.ui.le_B_o.text())
+            a_o = self.check_input(self.ui.le_a_o.text())
+            b_o = self.check_input(self.ui.le_b_o.text())
+            Ri_o = self.check_input(self.ui.le_Ri_o.text())
+            L_o = self.check_input(self.ui.le_L_o.text())
             Req_o = Req_i
 
             outer_half_cell_parameters = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o]
@@ -242,12 +245,12 @@ class TuneControl:
         # print(outer_half_cell_parameters)
         lock_list = [False, False, False, False, False, False, False]
 
-        if self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == "Grid":
+        if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Grid":
             ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
             ohc = self.create_pseudo_shape_space(outer_half_cell_parameters, lock_list, "End Cell")
 
             pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
-        elif self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == "Monte Carlo":
+        elif self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Monte Carlo":
             pseudo_shape_space = self.create_shape_space_mc(self.freq, inner_half_cell_parameters,
                                                             outer_half_cell_parameters, marker)
 
@@ -256,27 +259,27 @@ class TuneControl:
 
     def run_tune(self, pseudo_shape_space, resume):
         # set tuner
-        tuner_option = self.tuneUI.cb_Tuner.currentText()
-        proc_count = self.tuneUI.sb_No_Of_Processors_Tune.value()
-        tune_variable = self.tuneUI.cb_Tune_Option.currentText().split(' ')[-1]
+        tuner_option = self.ui.cb_Tuner.currentText()
+        proc_count = self.ui.sb_No_Of_Processors_Tune.value()
+        tune_variable = self.ui.cb_Tune_Option.currentText().split(' ')[-1]
 
         # get iteration settings
-        iter_method = self.tuneUI.cb_Iterative_Method.currentText()
-        tolerance = self.check_input(self.tuneUI.le_Tolerance.text())[0]
-        max_iter = self.check_input(self.tuneUI.sb_Max_Iteration.text())[0]
+        iter_method = self.ui.cb_Iterative_Method.currentText()
+        tolerance = self.check_input(self.ui.le_Tolerance.text())[0]
+        max_iter = self.check_input(self.ui.sb_Max_Iteration.text())[0]
         iter_set = [iter_method, tolerance, max_iter]
 
         # cell type
-        n_cells = self.tuneUI.sb_Tune_N_Cells.value()
-        cell_type = self.tuneUI.cb_Cell_Type.currentText()
+        n_cells = self.ui.sb_Tune_N_Cells.value()
+        cell_type = self.ui.cb_Cell_Type.currentText()
 
         # boundary conditions
-        lbc = self.tuneUI.cb_LBC.currentIndex() + 1
-        rbc = self.tuneUI.cb_RBC.currentIndex() + 1
+        lbc = self.ui.cb_LBC.currentIndex() + 1
+        rbc = self.ui.cb_RBC.currentIndex() + 1
         bc = 10 * lbc + rbc
 
         # save last
-        save_last = self.tuneUI.cb_Save_Last.isChecked()
+        save_last = self.ui.cb_Save_Last.isChecked()
 
         # try:
         if True:
@@ -292,8 +295,8 @@ class TuneControl:
             shape_space_len = len(keys)
             share = floor(shape_space_len / proc_count)
 
-            # for i in reversed(range(self.tuneUI.gl_PyqtGraph.count())):
-            #     self.tuneUI.gl_PyqtGraph.itemAt(i).widget().setParent(None)
+            # for i in reversed(range(self.ui.gl_PyqtGraph.count())):
+            #     self.ui.gl_PyqtGraph.itemAt(i).widget().setParent(None)
             #
             # # insert graphs for convergence monitor
             # self.pg_list = []
@@ -382,7 +385,7 @@ class TuneControl:
         pg_ = pg
         pygraph = pg_.PlotWidget()
         pygraph.setBackground('w')
-        self.tuneUI.gl_PyqtGraph.addWidget(pygraph, row, column, 1, 1)
+        self.ui.gl_PyqtGraph.addWidget(pygraph, row, column, 1, 1)
 
         self.pg_list.append(pg_)
         self.pygraph_list.append(pygraph)
@@ -395,7 +398,7 @@ class TuneControl:
             if p:
                 p.clear()
 
-        if self.tuneUI.cb_Monitor_Convergence.checkState() == 2:
+        if self.ui.cb_Monitor_Convergence.checkState() == 2:
             for i in range(n):
                 self.pygraph_list[i].addLine(x=None, y=self.freq, pen=pg.mkPen('r', width=1))
 
@@ -417,30 +420,30 @@ class TuneControl:
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
             # change pause/resume icon to pause icon
-            self.tuneUI.pb_Pause_Resume.setIcon(self.pause_icon)
+            self.ui.pb_Pause_Resume.setIcon(self.pause_icon)
 
             # disable pause/resume and cancel buttons
-            self.tuneUI.pb_Pause_Resume.setEnabled(False)
-            self.tuneUI.pb_Cancel.setEnabled(False)
+            self.ui.pb_Pause_Resume.setEnabled(False)
+            self.ui.pb_Cancel.setEnabled(False)
 
             # enable run button in case it was disabled
-            self.tuneUI.pb_Run.setEnabled(True)
+            self.ui.pb_Run.setEnabled(True)
 
         if self.process_state == "running":
             # enable run, pause/resume and cancel buttons
-            self.tuneUI.pb_Pause_Resume.setEnabled(True)
-            self.tuneUI.pb_Cancel.setEnabled(True)
-            self.tuneUI.pb_Run.setEnabled(False)
+            self.ui.pb_Pause_Resume.setEnabled(True)
+            self.ui.pb_Cancel.setEnabled(True)
+            self.ui.pb_Run.setEnabled(False)
 
             # change pause/resume icon to pause icon
-            self.tuneUI.pb_Pause_Resume.setIcon(self.pause_icon)
+            self.ui.pb_Pause_Resume.setIcon(self.pause_icon)
 
         if self.process_state == 'paused':
             # disable run button
-            self.tuneUI.pb_Run.setEnabled(False)
+            self.ui.pb_Run.setEnabled(False)
 
             # change pause/resume button icon to resume icon
-            self.tuneUI.pb_Pause_Resume.setIcon(self.resume_icon)
+            self.ui.pb_Pause_Resume.setIcon(self.resume_icon)
 
     def pause(self):
         # self.log.info("Pausing...")
@@ -535,37 +538,37 @@ class TuneControl:
     def change_cell_parameters(self, d, key, par):
         try:
             if par == 'inner':
-                self.tuneUI.le_A_i.setText(fr"{d[key]['IC'][0]}")
-                self.tuneUI.le_B_i.setText(fr"{d[key]['IC'][1]}")
-                self.tuneUI.le_a_i.setText(fr"{d[key]['IC'][2]}")
-                self.tuneUI.le_b_i.setText(fr"{d[key]['IC'][3]}")
-                self.tuneUI.le_Ri_i.setText(fr"{d[key]['IC'][4]}")
+                self.ui.le_A_i.setText(fr"{d[key]['IC'][0]}")
+                self.ui.le_B_i.setText(fr"{d[key]['IC'][1]}")
+                self.ui.le_a_i.setText(fr"{d[key]['IC'][2]}")
+                self.ui.le_b_i.setText(fr"{d[key]['IC'][3]}")
+                self.ui.le_Ri_i.setText(fr"{d[key]['IC'][4]}")
                 # check tune variable
-                if self.tuneUI.cb_Tune_Option.currentText() == 'Req':
-                    self.tuneUI.le_Tune_Variable.setText(fr"{d[key]['IC'][5]}")
+                if self.ui.cb_Tune_Option.currentText() == 'Req':
+                    self.ui.le_Tune_Variable.setText(fr"{d[key]['IC'][5]}")
                 else:
-                    self.tuneUI.le_Tune_Variable.setText(fr"{d[key]['IC'][6]}")
+                    self.ui.le_Tune_Variable.setText(fr"{d[key]['IC'][6]}")
             else:
-                self.tuneUI.le_A_o.setText(fr"{d[key]['OC'][0]}")
-                self.tuneUI.le_B_o.setText(fr"{d[key]['OC'][1]}")
-                self.tuneUI.le_a_o.setText(fr"{d[key]['OC'][2]}")
-                self.tuneUI.le_b_o.setText(fr"{d[key]['OC'][3]}")
-                self.tuneUI.le_Ri_o.setText(fr"{d[key]['OC'][4]}")
-                self.tuneUI.le_Tune_Variable_End_Cell.setText(fr"{d[key]['OC'][5]}")
+                self.ui.le_A_o.setText(fr"{d[key]['OC'][0]}")
+                self.ui.le_B_o.setText(fr"{d[key]['OC'][1]}")
+                self.ui.le_a_o.setText(fr"{d[key]['OC'][2]}")
+                self.ui.le_b_o.setText(fr"{d[key]['OC'][3]}")
+                self.ui.le_Ri_o.setText(fr"{d[key]['OC'][4]}")
+                self.ui.le_Tune_Variable_End_Cell.setText(fr"{d[key]['OC'][5]}")
         except Exception as e:
             print('Exception: ', e)
 
     def generate_pseudo_shape_space(self, freq, ihc, ohc):
-        marker = self.tuneUI.le_Generated_Shape_Space_Name.text()
+        marker = self.ui.le_Generated_Shape_Space_Name.text()
 
         BP = 'none'
-        if self.tuneUI.cb_LBP.checkState() == 2:
+        if self.ui.cb_LBP.checkState() == 2:
             BP = 'left'
 
-        if self.tuneUI.cb_LBP.checkState() == 2 and self.tuneUI.cb_RBP.checkState() == 2:
+        if self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
             BP = 'both'
 
-        if self.tuneUI.cb_Inner_Cell.isChecked() and self.tuneUI.cb_Outer_Cell.isChecked():
+        if self.ui.cb_Inner_Cell.isChecked() and self.ui.cb_Outer_Cell.isChecked():
             key = 0
             for indx1, inner_cell in ihc.iterrows():
                 inner_cell = inner_cell.tolist()
@@ -577,7 +580,7 @@ class TuneControl:
                     self.pseudo_shape_space[f'{marker}_{key}'] = {'IC': inner_cell, 'OC': other_cell, 'BP': BP, 'FREQ': freq}
                     key += 1
 
-        elif self.tuneUI.cb_Inner_Cell.isChecked() and not self.tuneUI.cb_Outer_Cell.isChecked():
+        elif self.ui.cb_Inner_Cell.isChecked() and not self.ui.cb_Outer_Cell.isChecked():
             key = 0
             for indx, inner_cell in ihc.iterrows():
                 self.pseudo_shape_space[f'{marker}_{key}'] = {'IC': inner_cell.tolist(),
@@ -588,7 +591,7 @@ class TuneControl:
         # remove duplicates from generated space
         self.pseudo_shape_space = self.remove_duplicate_values(self.pseudo_shape_space)
 
-        filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+        filename = self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())
         pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
         with open(pseudo_shape_space_name, 'w') as file:
             file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
@@ -596,7 +599,7 @@ class TuneControl:
         return self.pseudo_shape_space
 
     def create_shape_space_mc(self, freq, ihc, ohc, marker):
-        n_shapes = self.tuneUI.sb_No_Of_Shapes_Monte_Carlo.value()
+        n_shapes = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
         # pseudo_shape_space = {}
 
         # check input to avoid an infinite loop
@@ -620,8 +623,8 @@ class TuneControl:
                 b_i = self.process_range(ihc[3])
             Ri_i = self.process_range(ihc[4])
 
-            if self.tuneUI.cb_Tune_Option.currentText() == 'L':
-                if self.tuneUI.cb_Outer_Cell.checkState() == 2:
+            if self.ui.cb_Tune_Option.currentText() == 'L':
+                if self.ui.cb_Outer_Cell.checkState() == 2:
                     L_i = self.process_range(ihc[5])
                 else:
                     L_i = A_i + a_i
@@ -634,7 +637,7 @@ class TuneControl:
 
             inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0, 0]
 
-            if self.tuneUI.cb_Outer_Cell.checkState() == 2:
+            if self.ui.cb_Outer_Cell.checkState() == 2:
                 # This also checks if the right and left bounds are equal in which case it returns a single value
                 A_o = self.process_range(ohc[0])
                 if ohc[1] == "A":
@@ -650,7 +653,7 @@ class TuneControl:
 
                 Ri_o = self.process_range(ohc[4])
 
-                if self.tuneUI.cb_Tune_Option.currentText() == 'L':
+                if self.ui.cb_Tune_Option.currentText() == 'L':
                     L_o = A_o + a_o
                 else:
                     L_o = self.process_range(ohc[5])
@@ -658,7 +661,7 @@ class TuneControl:
                 Req_o = Req_i
 
                 # update L_i
-                # L_i = self.process_range(self.text_to_list(self.tuneUI.le_Tune_Variable_End_Cell.text()))
+                # L_i = self.process_range(self.text_to_list(self.ui.le_Tune_Variable_End_Cell.text()))
                 # inner_cell[5] = L_i
 
                 other_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0, 0]
@@ -676,7 +679,7 @@ class TuneControl:
             #     continue
 
             # print_('6e')
-            if self.tuneUI.cb_LBP.checkState() == 2:
+            if self.ui.cb_LBP.checkState() == 2:
                 key = f"{marker}_{count}"
                 if key not in self.existing_keys:
                     self.pseudo_shape_space[key] = {'IC': inner_cell, 'OC': other_cell, 'BP': 'left',
@@ -689,7 +692,7 @@ class TuneControl:
             count += 1
             loop_escape = 0  # reset loop escape
 
-        filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+        filename = self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())
         pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
         with open(pseudo_shape_space_name, 'w') as file:
             file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
@@ -700,7 +703,7 @@ class TuneControl:
         A, B, a, b, Ri, L, Req = var_list
         A_LOCKED, B_LOCKED, a_LOCKED, b_LOCKED, Ri_LOCKED, L_LOCKED, Req_LOCKED = lock_list
 
-        if self.tuneUI.cb_Tune_Option.currentText() == "Req":
+        if self.ui.cb_Tune_Option.currentText() == "Req":
             if Req[0] == 0:
                 AA, BB, aa, bb, RiRi, LL = np.meshgrid(A, B, a, b, Ri, L)
 
@@ -738,7 +741,7 @@ class TuneControl:
                                                               LL[i][j][k][m][n][o][p],
                                                               ReqReq[i][j][k][m][n][o][p], 0, 0])
 
-        elif self.tuneUI.cb_Tune_Option.currentText() == "L":
+        elif self.ui.cb_Tune_Option.currentText() == "L":
             if L[0] == 0:
                 AA, BB, aa, bb, RiRi, ReqReq = np.meshgrid(A, B, a, b, Ri, Req)
 
@@ -874,30 +877,30 @@ class TuneControl:
         return res
 
     def show_hide(self):
-        if self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentText() == 'Monte Carlo':
-            self.tuneUI.w_No_Of_Shapes_Monte_Carlo.show()
+        if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == 'Monte Carlo':
+            self.ui.w_No_Of_Shapes_Monte_Carlo.show()
         else:
-            self.tuneUI.w_No_Of_Shapes_Monte_Carlo.hide()
+            self.ui.w_No_Of_Shapes_Monte_Carlo.hide()
 
-        if self.tuneUI.cb_Tuner.currentText() == 'PyTune':
-            self.tuneUI.w_BC.show()
+        if self.ui.cb_Tuner.currentText() == 'PyTune':
+            self.ui.w_BC.show()
         else:
-            self.tuneUI.w_BC.hide()
+            self.ui.w_BC.hide()
 
     def change_cavity_image(self):
-        if self.tuneUI.cb_Cell_Type.currentText() == 'Mid Cell':
-            self.tuneUI.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
-        elif self.tuneUI.cb_Cell_Type.currentText() == 'End Cell':
-            self.tuneUI.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
+        if self.ui.cb_Cell_Type.currentText() == 'Mid Cell':
+            self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
+        elif self.ui.cb_Cell_Type.currentText() == 'End Cell':
+            self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
         else:
-            if self.tuneUI.cb_LBP.checkState() == 0 and self.tuneUI.cb_Outer_Cell.checkState() == 0:
-                self.tuneUI.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
-            elif self.tuneUI.cb_LBP.checkState() == 2 and self.tuneUI.cb_Outer_Cell.checkState() == 2:
-                self.tuneUI.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
-            elif self.tuneUI.cb_LBP.checkState() == 2 and self.tuneUI.cb_RBP.checkState() == 2:
-                self.tuneUI.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/one_cell.png"))
-            elif self.tuneUI.cb_LBP.checkState() == 2 and self.tuneUI.cb_Outer_Cell.checkState() == 0:
-                self.tuneUI.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_same_cell.png"))
+            if self.ui.cb_LBP.checkState() == 0 and self.ui.cb_Outer_Cell.checkState() == 0:
+                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
+            elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_Outer_Cell.checkState() == 2:
+                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
+            elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
+                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/one_cell.png"))
+            elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_Outer_Cell.checkState() == 0:
+                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_same_cell.png"))
 
     def check_input(self, s):
         # s = "range(16, 23, 10)"
@@ -934,14 +937,14 @@ class TuneControl:
 
     def check_input_old(self):
         x = True
-        A_i = self.text_to_list(self.tuneUI.le_A_i.text())
-        a_i = self.text_to_list(self.tuneUI.le_a_i.text())
-        B_i = self.text_to_list(self.tuneUI.le_B_i.text())
-        b_i = self.text_to_list(self.tuneUI.le_b_i.text())
-        Ri_i = self.text_to_list(self.tuneUI.le_Ri_i.text())
-        tune_var = self.text_to_list(self.tuneUI.le_Tune_Variable.text())
+        A_i = self.text_to_list(self.ui.le_A_i.text())
+        a_i = self.text_to_list(self.ui.le_a_i.text())
+        B_i = self.text_to_list(self.ui.le_B_i.text())
+        b_i = self.text_to_list(self.ui.le_b_i.text())
+        Ri_i = self.text_to_list(self.ui.le_Ri_i.text())
+        tune_var = self.text_to_list(self.ui.le_Tune_Variable.text())
 
-        if self.tuneUI.cb_Tune_Option.currentText() == "Req":
+        if self.ui.cb_Tune_Option.currentText() == "Req":
             L = tune_var
             if A_i[0] + a_i[0] > L[0]:
                 x = False
@@ -962,189 +965,189 @@ class TuneControl:
         return x
 
     def slans_tuners_control(self):
-        if self.tuneUI.cb_Tuner.currentText() == 'SLANS':
-            if self.tuneUI.cb_Cell_Type.currentText() == 'Mid Cell':
-                self.tuneUI.cb_Tune_Option.setCurrentIndex(0)
-                # self.tuneUI.l_Tune_Alternate_Variable.setText('L')
-                self.tuneUI.cb_Tune_Option.setEnabled(False)
+        if self.ui.cb_Tuner.currentText() == 'SLANS':
+            if self.ui.cb_Cell_Type.currentText() == 'Mid Cell':
+                self.ui.cb_Tune_Option.setCurrentIndex(0)
+                # self.ui.l_Tune_Alternate_Variable.setText('L')
+                self.ui.cb_Tune_Option.setEnabled(False)
             else:
-                self.tuneUI.cb_Tune_Option.setCurrentIndex(1)
-                # self.tuneUI.l_Tune_Alternate_Variable.setText('Req')
-                self.tuneUI.cb_Tune_Option.setEnabled(False)
+                self.ui.cb_Tune_Option.setCurrentIndex(1)
+                # self.ui.l_Tune_Alternate_Variable.setText('Req')
+                self.ui.cb_Tune_Option.setEnabled(False)
 
             # disable monitor convergence
-            if self.tuneUI.cb_Monitor_Convergence.checkState() == 2:
-                self.tuneUI.cb_Monitor_Convergence.setCheckState(0)
-            self.tuneUI.cb_Monitor_Convergence.setEnabled(False)
+            if self.ui.cb_Monitor_Convergence.checkState() == 2:
+                self.ui.cb_Monitor_Convergence.setCheckState(0)
+            self.ui.cb_Monitor_Convergence.setEnabled(False)
 
             # hide boundary condition
-            self.tuneUI.w_BC.hide()
+            self.ui.w_BC.hide()
         else:
-            self.tuneUI.cb_Tune_Option.setEnabled(True)
+            self.ui.cb_Tune_Option.setEnabled(True)
 
             # enable monitor convergence
-            self.tuneUI.cb_Monitor_Convergence.setEnabled(True)
+            self.ui.cb_Monitor_Convergence.setEnabled(True)
 
             # show boundary conditions
-            self.tuneUI.w_BC.show()
+            self.ui.w_BC.show()
 
     def serialize(self, state_dict):
-        state_dict['Filename'] = self.tuneUI.le_Generated_Shape_Space_Name.text()
+        state_dict['Filename'] = self.ui.le_Generated_Shape_Space_Name.text()
         # update state file
-        state_dict["Frequency"] = self.tuneUI.le_Freq.text()
-        state_dict["Cell_Type"] = self.tuneUI.cb_Cell_Type.currentIndex()
-        state_dict["Tune_Option"] = self.tuneUI.cb_Tune_Option.currentIndex()
-        state_dict["Method"] = self.tuneUI.cb_Shape_Space_Generation_Algorithm.currentIndex()
+        state_dict["Frequency"] = self.ui.le_Freq.text()
+        state_dict["Cell_Type"] = self.ui.cb_Cell_Type.currentIndex()
+        state_dict["Tune_Option"] = self.ui.cb_Tune_Option.currentIndex()
+        state_dict["Method"] = self.ui.cb_Shape_Space_Generation_Algorithm.currentIndex()
 
-        state_dict["No_Of_Shapes_Monte_Carlo"] = self.tuneUI.sb_No_Of_Shapes_Monte_Carlo.value()
+        state_dict["No_Of_Shapes_Monte_Carlo"] = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
 
-        state_dict["Tuner"] = self.tuneUI.cb_Tuner.currentIndex()
-        state_dict["LBC"] = self.tuneUI.cb_LBC.currentIndex()
-        state_dict["RBC"] = self.tuneUI.cb_RBC.currentIndex()
+        state_dict["Tuner"] = self.ui.cb_Tuner.currentIndex()
+        state_dict["LBC"] = self.ui.cb_LBC.currentIndex()
+        state_dict["RBC"] = self.ui.cb_RBC.currentIndex()
 
-        state_dict["Inner_Cell"] = self.tuneUI.cb_Inner_Cell.checkState()
-        state_dict["Outer_Cell"] = self.tuneUI.cb_Outer_Cell.checkState()
-        state_dict["Expansion"] = self.tuneUI.cb_Expansion.checkState()
-        state_dict["LBP"] = self.tuneUI.cb_LBP.checkState()
+        state_dict["Inner_Cell"] = self.ui.cb_Inner_Cell.checkState()
+        state_dict["Outer_Cell"] = self.ui.cb_Outer_Cell.checkState()
+        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
+        state_dict["LBP"] = self.ui.cb_LBP.checkState()
 
         # cell parameters
-        state_dict["A_i"] = self.tuneUI.le_A_i.text()
-        state_dict["B_i"] = self.tuneUI.le_B_i.text()
-        state_dict["a_i"] = self.tuneUI.le_a_i.text()
-        state_dict["b_i"] = self.tuneUI.le_b_i.text()
-        state_dict["Ri_i"] = self.tuneUI.le_Ri_i.text()
-        state_dict["L_i"] = self.tuneUI.le_L_i.text()
-        state_dict["Req_i"] = self.tuneUI.le_Req_i.text()
+        state_dict["A_i"] = self.ui.le_A_i.text()
+        state_dict["B_i"] = self.ui.le_B_i.text()
+        state_dict["a_i"] = self.ui.le_a_i.text()
+        state_dict["b_i"] = self.ui.le_b_i.text()
+        state_dict["Ri_i"] = self.ui.le_Ri_i.text()
+        state_dict["L_i"] = self.ui.le_L_i.text()
+        state_dict["Req_i"] = self.ui.le_Req_i.text()
 
-        state_dict["A_o"] = self.tuneUI.le_A_o.text()
-        state_dict["B_o"] = self.tuneUI.le_B_o.text()
-        state_dict["a_o"] = self.tuneUI.le_a_o.text()
-        state_dict["b_o"] = self.tuneUI.le_b_o.text()
-        state_dict["Ri_o"] = self.tuneUI.le_Ri_o.text()
-        state_dict["L_o"] = self.tuneUI.le_L_o.text()
+        state_dict["A_o"] = self.ui.le_A_o.text()
+        state_dict["B_o"] = self.ui.le_B_o.text()
+        state_dict["a_o"] = self.ui.le_a_o.text()
+        state_dict["b_o"] = self.ui.le_b_o.text()
+        state_dict["Ri_o"] = self.ui.le_Ri_o.text()
+        state_dict["L_o"] = self.ui.le_L_o.text()
 
         # settings
-        state_dict["No_Of_Processors"] = self.tuneUI.sb_No_Of_Processors_Tune.value()
-        state_dict["Iterative_Method"] = self.tuneUI.cb_Iterative_Method.currentIndex()
-        state_dict["Tolerance"] = self.tuneUI.le_Tolerance.text()
-        state_dict["Max_Iteration"] = self.tuneUI.sb_Max_Iteration.value()
+        state_dict["No_Of_Processors"] = self.ui.sb_No_Of_Processors_Tune.value()
+        state_dict["Iterative_Method"] = self.ui.cb_Iterative_Method.currentIndex()
+        state_dict["Tolerance"] = self.ui.le_Tolerance.text()
+        state_dict["Max_Iteration"] = self.ui.sb_Max_Iteration.value()
 
         # Optimization control
-        state_dict["Optimization_Algorithm"] = self.tuneUI.cb_Optimization_Algorithm.currentText()
-        state_dict["Cell_Type_Optimization"] = self.tuneUI.cb_Cell_Type_Optimization.currentText()
-        state_dict["UQ_Check"] = self.tuneUI.cb_UQ.checkState()
+        state_dict["Optimization_Algorithm"] = self.ui.cb_Optimization_Algorithm.currentText()
+        state_dict["Cell_Type_Optimization"] = self.ui.cb_Cell_Type_Optimization.currentText()
+        state_dict["UQ_Check"] = self.ui.cb_UQ.checkState()
 
         # mid cell parameters
-        state_dict["A_i_opt"] = self.tuneUI.le_A_i_opt.text()
-        state_dict["B_i_opt"] = self.tuneUI.le_B_i_opt.text()
-        state_dict["a_i_opt"] = self.tuneUI.le_a_i_opt.text()
-        state_dict["b_i_opt"] = self.tuneUI.le_b_i_opt.text()
-        state_dict["Ri_i_opt"] = self.tuneUI.le_Ri_i_opt.text()
-        state_dict["L_i_opt"] = self.tuneUI.le_L_i_opt.text()
-        state_dict["Req_i_opt"] = self.tuneUI.le_Req_i_opt.text()
+        state_dict["A_i_opt"] = self.ui.le_A_i_opt.text()
+        state_dict["B_i_opt"] = self.ui.le_B_i_opt.text()
+        state_dict["a_i_opt"] = self.ui.le_a_i_opt.text()
+        state_dict["b_i_opt"] = self.ui.le_b_i_opt.text()
+        state_dict["Ri_i_opt"] = self.ui.le_Ri_i_opt.text()
+        state_dict["L_i_opt"] = self.ui.le_L_i_opt.text()
+        state_dict["Req_i_opt"] = self.ui.le_Req_i_opt.text()
 
-        state_dict["Tune_Variable"] = self.tuneUI.cb_Tune_Variable.currentText()
-        state_dict["Tune_Frequency"] = self.tuneUI.dsb_Tune_Frequency.value()
-        state_dict["Norm_Length"] = self.tuneUI.db_Norm_Length.value()
-        state_dict["N_Cells"] = self.tuneUI.sb_Norm_Length_N_Cells.value()
-        state_dict["Processors_Count"] = self.tuneUI.sb_Processors_Count.value()
+        state_dict["Tune_Variable"] = self.ui.cb_Tune_Variable.currentText()
+        state_dict["Tune_Frequency"] = self.ui.dsb_Tune_Frequency.value()
+        state_dict["Norm_Length"] = self.ui.db_Norm_Length.value()
+        state_dict["N_Cells"] = self.ui.sb_Norm_Length_N_Cells.value()
+        state_dict["Processors_Count"] = self.ui.sb_Processors_Count.value()
 
-        state_dict["Initial_Points"] = self.tuneUI.sb_Initial_Points.value()
-        state_dict["Max_Table_Size"] = self.tuneUI.sb_Max_Table_Size.value()
-        state_dict["N_Generation"] = self.tuneUI.sb_N_Generation.value()
+        state_dict["Initial_Points"] = self.ui.sb_Initial_Points.value()
+        state_dict["Max_Table_Size"] = self.ui.sb_Max_Table_Size.value()
+        state_dict["N_Generation"] = self.ui.sb_N_Generation.value()
 
-        state_dict["Init_Generation_Method"] = self.tuneUI.cb_Init_Generation_Method.currentText()
-        state_dict["Sobol_Sequence_Index"] = self.tuneUI.sb_Sobol_Sequence_Index.value()
-        state_dict["Optimize_By"] = self.tuneUI.cb_Optimize_By.currentText()
-        state_dict["Crossover_Factor"] = self.tuneUI.sb_Crossover_Factor.value()
-        state_dict["N_Elites_To_Cross"] = self.tuneUI.sb_N_Elites_To_Cross.value()
-        state_dict["Mutation_Factor"] = self.tuneUI.sb_Mutation_Factor.value()
-        state_dict["Chaos_Factor"] = self.tuneUI.sb_Chaos_Factor.value()
+        state_dict["Init_Generation_Method"] = self.ui.cb_Init_Generation_Method.currentText()
+        state_dict["Sobol_Sequence_Index"] = self.ui.sb_Sobol_Sequence_Index.value()
+        state_dict["Optimize_By"] = self.ui.cb_Optimize_By.currentText()
+        state_dict["Crossover_Factor"] = self.ui.sb_Crossover_Factor.value()
+        state_dict["N_Elites_To_Cross"] = self.ui.sb_N_Elites_To_Cross.value()
+        state_dict["Mutation_Factor"] = self.ui.sb_Mutation_Factor.value()
+        state_dict["Chaos_Factor"] = self.ui.sb_Chaos_Factor.value()
 
-        state_dict["Populate_Objectives"] = self.tuneUI.ccb_Populate_Objectives.currentText()
-        state_dict["Populate_Constraints"] = self.tuneUI.ccb_Populate_Constraints.currentText()
+        state_dict["Populate_Objectives"] = self.ui.ccb_Populate_Objectives.currentText()
+        state_dict["Populate_Constraints"] = self.ui.ccb_Populate_Constraints.currentText()
 
-        state_dict["Expansion"] = self.tuneUI.cb_Expansion.checkState()
-        state_dict["LBP"] = self.tuneUI.cb_LBP.checkState()
+        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
+        state_dict["LBP"] = self.ui.cb_LBP.checkState()
 
     def deserialize(self, state_dict):
         try:
-            self.tuneUI.le_Generated_Shape_Space_Name.setText(state_dict['Filename'])
+            self.ui.le_Generated_Shape_Space_Name.setText(state_dict['Filename'])
             # update state file
-            self.tuneUI.le_Freq.setText(state_dict["Frequency"])
-            self.tuneUI.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
-            self.tuneUI.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
-            self.tuneUI.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
+            self.ui.le_Freq.setText(state_dict["Frequency"])
+            self.ui.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
+            self.ui.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
+            self.ui.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
 
-            self.tuneUI.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
+            self.ui.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
 
-            self.tuneUI.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
-            self.tuneUI.cb_LBC.setCurrentIndex(state_dict["LBC"])
-            self.tuneUI.cb_RBC.setCurrentIndex(state_dict["RBC"])
+            self.ui.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
+            self.ui.cb_LBC.setCurrentIndex(state_dict["LBC"])
+            self.ui.cb_RBC.setCurrentIndex(state_dict["RBC"])
 
-            self.tuneUI.cb_Inner_Cell.setCheckState(state_dict["Inner_Cell"])
-            self.tuneUI.cb_Outer_Cell.setCheckState(state_dict["Outer_Cell"])
-            self.tuneUI.cb_Expansion.setCheckState(state_dict["Expansion"])
-            self.tuneUI.cb_LBP.setCheckState(state_dict["LBP"])
+            self.ui.cb_Inner_Cell.setCheckState(state_dict["Inner_Cell"])
+            self.ui.cb_Outer_Cell.setCheckState(state_dict["Outer_Cell"])
+            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
+            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
 
             # cell parameters
-            self.tuneUI.le_A_i.setText(state_dict["A_i"])
-            self.tuneUI.le_B_i.setText(state_dict["B_i"])
-            self.tuneUI.le_a_i.setText(state_dict["a_i"])
-            self.tuneUI.le_b_i.setText(state_dict["b_i"])
-            self.tuneUI.le_Ri_i.setText(state_dict["Ri_i"])
-            self.tuneUI.le_L_i.setText(state_dict["L_i"])
-            self.tuneUI.le_Req_i.setText(state_dict["Req_i"])
+            self.ui.le_A_i.setText(state_dict["A_i"])
+            self.ui.le_B_i.setText(state_dict["B_i"])
+            self.ui.le_a_i.setText(state_dict["a_i"])
+            self.ui.le_b_i.setText(state_dict["b_i"])
+            self.ui.le_Ri_i.setText(state_dict["Ri_i"])
+            self.ui.le_L_i.setText(state_dict["L_i"])
+            self.ui.le_Req_i.setText(state_dict["Req_i"])
 
-            self.tuneUI.le_A_o.setText(state_dict["A_o"])
-            self.tuneUI.le_B_o.setText(state_dict["B_o"])
-            self.tuneUI.le_a_o.setText(state_dict["a_o"])
-            self.tuneUI.le_b_o.setText(state_dict["b_o"])
-            self.tuneUI.le_Ri_o.setText(state_dict["Ri_o"])
-            self.tuneUI.le_L_o.setText(state_dict["L_i"])
+            self.ui.le_A_o.setText(state_dict["A_o"])
+            self.ui.le_B_o.setText(state_dict["B_o"])
+            self.ui.le_a_o.setText(state_dict["a_o"])
+            self.ui.le_b_o.setText(state_dict["b_o"])
+            self.ui.le_Ri_o.setText(state_dict["Ri_o"])
+            self.ui.le_L_o.setText(state_dict["L_i"])
 
             # settings
-            self.tuneUI.sb_No_Of_Processors_Tune.setValue(state_dict["No_Of_Processors"])
-            self.tuneUI.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
-            self.tuneUI.le_Tolerance.setText(state_dict["Tolerance"])
-            self.tuneUI.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
+            self.ui.sb_No_Of_Processors_Tune.setValue(state_dict["No_Of_Processors"])
+            self.ui.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
+            self.ui.le_Tolerance.setText(state_dict["Tolerance"])
+            self.ui.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
 
             # Optimization control
-            self.tuneUI.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
-            self.tuneUI.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
-            self.tuneUI.cb_UQ.setCheckState(state_dict["UQ_Check"])
+            self.ui.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
+            self.ui.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
+            self.ui.cb_UQ.setCheckState(state_dict["UQ_Check"])
 
             # mid cell parameters
-            self.tuneUI.le_A_i_opt.setText(state_dict["A_i_opt"])
-            self.tuneUI.le_B_i_opt.setText(state_dict["B_i_opt"])
-            self.tuneUI.le_a_i_opt.setText(state_dict["a_i_opt"])
-            self.tuneUI.le_b_i_opt.setText(state_dict["b_i_opt"])
-            self.tuneUI.le_Ri_i_opt.setText(state_dict["Ri_i_opt"])
-            self.tuneUI.le_L_i_opt.setText(state_dict["L_i_opt"])
-            self.tuneUI.le_Req_i_opt.setText(state_dict["Req_i_opt"])
+            self.ui.le_A_i_opt.setText(state_dict["A_i_opt"])
+            self.ui.le_B_i_opt.setText(state_dict["B_i_opt"])
+            self.ui.le_a_i_opt.setText(state_dict["a_i_opt"])
+            self.ui.le_b_i_opt.setText(state_dict["b_i_opt"])
+            self.ui.le_Ri_i_opt.setText(state_dict["Ri_i_opt"])
+            self.ui.le_L_i_opt.setText(state_dict["L_i_opt"])
+            self.ui.le_Req_i_opt.setText(state_dict["Req_i_opt"])
 
-            self.tuneUI.cb_Tune_Variable.setCurrentText(state_dict["Tune_Variable"])
-            self.tuneUI.dsb_Tune_Frequency.setValue(state_dict["Tune_Frequency"])
-            self.tuneUI.db_Norm_Length.setValue(state_dict["Norm_Length"])
-            self.tuneUI.sb_Norm_Length_N_Cells.setValue(state_dict["N_Cells"])
-            self.tuneUI.sb_Processors_Count.setValue(state_dict["Processors_Count"])
+            self.ui.cb_Tune_Variable.setCurrentText(state_dict["Tune_Variable"])
+            self.ui.dsb_Tune_Frequency.setValue(state_dict["Tune_Frequency"])
+            self.ui.db_Norm_Length.setValue(state_dict["Norm_Length"])
+            self.ui.sb_Norm_Length_N_Cells.setValue(state_dict["N_Cells"])
+            self.ui.sb_Processors_Count.setValue(state_dict["Processors_Count"])
 
-            self.tuneUI.sb_Initial_Points.setValue(state_dict["Initial_Points"])
-            self.tuneUI.sb_Max_Table_Size.setValue(state_dict["Max_Table_Size"])
-            self.tuneUI.sb_N_Generation.setValue(state_dict["N_Generation"])
-            self.tuneUI.cb_Init_Generation_Method.setCurrentText(state_dict["Init_Generation_Method"])
-            self.tuneUI.sb_Sobol_Sequence_Index.setValue(state_dict["Sobol_Sequence_Index"])
-            self.tuneUI.cb_Optimize_By.setCurrentText(state_dict["Optimize_By"])
-            self.tuneUI.sb_Crossover_Factor.setValue(state_dict["Crossover_Factor"])
-            self.tuneUI.sb_N_Elites_To_Cross.setValue(state_dict["N_Elites_To_Cross"])
-            self.tuneUI.sb_Mutation_Factor.setValue(state_dict["Mutation_Factor"])
-            self.tuneUI.sb_Chaos_Factor.setValue(state_dict["Chaos_Factor"])
+            self.ui.sb_Initial_Points.setValue(state_dict["Initial_Points"])
+            self.ui.sb_Max_Table_Size.setValue(state_dict["Max_Table_Size"])
+            self.ui.sb_N_Generation.setValue(state_dict["N_Generation"])
+            self.ui.cb_Init_Generation_Method.setCurrentText(state_dict["Init_Generation_Method"])
+            self.ui.sb_Sobol_Sequence_Index.setValue(state_dict["Sobol_Sequence_Index"])
+            self.ui.cb_Optimize_By.setCurrentText(state_dict["Optimize_By"])
+            self.ui.sb_Crossover_Factor.setValue(state_dict["Crossover_Factor"])
+            self.ui.sb_N_Elites_To_Cross.setValue(state_dict["N_Elites_To_Cross"])
+            self.ui.sb_Mutation_Factor.setValue(state_dict["Mutation_Factor"])
+            self.ui.sb_Chaos_Factor.setValue(state_dict["Chaos_Factor"])
 
-            self.tuneUI.ccb_Populate_Objectives.setCurrentText(state_dict["Populate_Objectives"])
-            self.tuneUI.ccb_Populate_Constraints.setCurrentText(state_dict["Populate_Constraints"])
+            self.ui.ccb_Populate_Objectives.setCurrentText(state_dict["Populate_Objectives"])
+            self.ui.ccb_Populate_Constraints.setCurrentText(state_dict["Populate_Constraints"])
 
-            self.tuneUI.cb_Expansion.setCheckState(state_dict["Expansion"])
-            self.tuneUI.cb_LBP.setCheckState(state_dict["LBP"])
+            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
+            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
 
         except KeyError:
             print("Could not deserialize tune_control.py")
@@ -1154,22 +1157,22 @@ class TuneControl:
     #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
     #     shadow.setColor(QColor(0, 0, 0, 77))
     #
-    #     self.tuneUI.w_Tune_Input.setGraphicsEffect(shadow)
+    #     self.ui.w_Tune_Input.setGraphicsEffect(shadow)
     #
     #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
     #     shadow.setColor(QColor(0, 0, 0, 77))
     #
-    #     self.tuneUI.w_Simulation_Controls.setGraphicsEffect(shadow)
+    #     self.ui.w_Simulation_Controls.setGraphicsEffect(shadow)
     #
     #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
     #     shadow.setColor(QColor(0, 0, 0, 77))
     #
-    #     self.tuneUI.w_Inner_Cell.setGraphicsEffect(shadow)
+    #     self.ui.w_Inner_Cell.setGraphicsEffect(shadow)
     #
     #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
     #     shadow.setColor(QColor(0, 0, 0, 77))
     #
-    #     self.tuneUI.w_Outer_Cell.setGraphicsEffect(shadow)
+    #     self.ui.w_Outer_Cell.setGraphicsEffect(shadow)
     #
     #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
     #     shadow.setColor(QColor(0, 0, 0, 77))
@@ -1235,7 +1238,7 @@ class TuneControl:
                 return list(ll)
 
     def continue_check(self):
-        filename = self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())
+        filename = self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())
         path = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
 
         if os.path.exists(path):
@@ -1319,16 +1322,16 @@ class TuneControl:
 
     def change_tune_option(self, txt):
         if txt == 'Req':
-            self.tuneUI.l_Tune_Alternate_Variable.setText("L")
-            self.tuneUI.l_Tune_Alternate_Variable_End_Cell.setText('L')
-            # self.tuneUI.le_Tune_Variable_End_Cell.setEnabled(True)
+            self.ui.l_Tune_Alternate_Variable.setText("L")
+            self.ui.l_Tune_Alternate_Variable_End_Cell.setText('L')
+            # self.ui.le_Tune_Variable_End_Cell.setEnabled(True)
         else:
-            self.tuneUI.l_Tune_Alternate_Variable.setText("Req")
-            self.tuneUI.l_Tune_Alternate_Variable_End_Cell.setText("Req")
+            self.ui.l_Tune_Alternate_Variable.setText("Req")
+            self.ui.l_Tune_Alternate_Variable_End_Cell.setText("Req")
 
             # set end cell Req equal to mid cell Req
-            # self.tuneUI.le_Tune_Variable_End_Cell.setText(self.tuneUI.le_Tune_Variable.text())
-            # self.tuneUI.le_Tune_Variable_End_Cell.setEnabled(False)
+            # self.ui.le_Tune_Variable_End_Cell.setText(self.ui.le_Tune_Variable.text())
+            # self.ui.le_Tune_Variable_End_Cell.setEnabled(False)
 
     @staticmethod
     def process_range(l):
@@ -1399,12 +1402,12 @@ class OptimizationControl:
     def __init__(self, tuneUI):
         self.tune_freq = None
         self.df_global = pd.DataFrame()
-        self.tuneUI = tuneUI
+        self.ui = tuneUI
 
         self.objs_dict = {}
         self.constraints_dict = {}
 
-        self.ng_max = self.tuneUI.sb_N_Generation.value()
+        self.ng_max = self.ui.sb_N_Generation.value()
         self.objectives = []
         self.constraints = []
         self.weights = []
@@ -1420,45 +1423,45 @@ class OptimizationControl:
 
     def initUI(self):
         self.populate_parameters()
-        self.tuneUI.w_Mid_Cell_Opt.hide()
-        if self.tuneUI.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
-            self.tuneUI.w_Mid_Cell_Opt.show()
+        self.ui.w_Mid_Cell_Opt.hide()
+        if self.ui.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
+            self.ui.w_Mid_Cell_Opt.show()
 
-        self.tuneUI.w_Sobol_Sequence_Parameters.hide()
-        if self.tuneUI.cb_Init_Generation_Method.currentText() == 'Sobol Sequence':
-            self.tuneUI.w_Sobol_Sequence_Parameters.show()
+        self.ui.w_Sobol_Sequence_Parameters.hide()
+        if self.ui.cb_Init_Generation_Method.currentText() == 'Sobol Sequence':
+            self.ui.w_Sobol_Sequence_Parameters.show()
 
     def signals(self):
         # add signal to show mid cell parameters for end-mid-cell optimization
-        self.tuneUI.cb_Cell_Type_Optimization.currentTextChanged.connect(lambda: self.show_hide_mid_cell_params())
+        self.ui.cb_Cell_Type_Optimization.currentTextChanged.connect(lambda: self.show_hide_mid_cell_params())
 
         # populate objective
-        self.tuneUI.ccb_Populate_Objectives.currentTextChanged.connect(lambda: self.populate_objectives(
-            self.tuneUI.ccb_Populate_Objectives.currentText().split(', '), self.tuneUI.ccb_Populate_Objectives,
-            self.tuneUI.tw_Objectives, self.objs_dict))
+        self.ui.ccb_Populate_Objectives.currentTextChanged.connect(lambda: self.populate_objectives(
+            self.ui.ccb_Populate_Objectives.currentText().split(', '), self.ui.ccb_Populate_Objectives,
+            self.ui.tw_Objectives, self.objs_dict))
 
         # add signal to update parameter influence combobox
-        self.tuneUI.ccb_Populate_Objectives.currentTextChanged.connect(lambda: self.update_influence_ccb())
+        self.ui.ccb_Populate_Objectives.currentTextChanged.connect(lambda: self.update_influence_ccb())
 
         # populate constraints
-        self.tuneUI.ccb_Populate_Constraints.currentTextChanged.connect(lambda: self.populate_constraints(
-            self.tuneUI.ccb_Populate_Constraints.currentText().split(', '), self.tuneUI.ccb_Populate_Constraints,
-            self.tuneUI.tw_Constraints, self.constraints_dict))
+        self.ui.ccb_Populate_Constraints.currentTextChanged.connect(lambda: self.populate_constraints(
+            self.ui.ccb_Populate_Constraints.currentText().split(', '), self.ui.ccb_Populate_Constraints,
+            self.ui.tw_Constraints, self.constraints_dict))
 
-        self.tuneUI.pb_Run_Optimization.clicked.connect(lambda: self.ea(0))
+        self.ui.pb_Run_Optimization.clicked.connect(lambda: self.ea(0))
 
-        self.tuneUI.cb_Init_Generation_Method.currentTextChanged.connect(
-            lambda: self.tuneUI.w_Sobol_Sequence_Parameters.show()
-            if self.tuneUI.cb_Init_Generation_Method.currentText() == 'Sobol Sequence'
-            else self.tuneUI.w_Sobol_Sequence_Parameters.hide())
+        self.ui.cb_Init_Generation_Method.currentTextChanged.connect(
+            lambda: self.ui.w_Sobol_Sequence_Parameters.show()
+            if self.ui.cb_Init_Generation_Method.currentText() == 'Sobol Sequence'
+            else self.ui.w_Sobol_Sequence_Parameters.hide())
 
         # sobol sequence
-        self.tuneUI.sb_Sobol_Sequence_Index.valueChanged.connect(lambda: self.tuneUI.sb_Initial_Points.setValue(int(2**self.tuneUI.sb_Sobol_Sequence_Index.value())))
+        self.ui.sb_Sobol_Sequence_Index.valueChanged.connect(lambda: self.ui.sb_Initial_Points.setValue(int(2**self.ui.sb_Sobol_Sequence_Index.value())))
 
     def ea(self, n):
         if n == 0:
             # update lists
-            self.ng_max = self.tuneUI.sb_N_Generation.value()
+            self.ng_max = self.ui.sb_N_Generation.value()
             self.get_constraints()
             self.get_objectives()
             self.df = self.generate_first_men()
@@ -1485,7 +1488,7 @@ class OptimizationControl:
             df = df.loc[~df.set_index(compared_cols).index.isin(
                 self.df_global.set_index(compared_cols).index)]  # this line of code removes duplicates
 
-        # if self.tuneUI.cb_Optimize_By.currentText() == "Page Rankf":
+        # if self.ui.cb_Optimize_By.currentText() == "Page Rankf":
         #     if len(self.df) > 15:
         #         df = self.df.iloc[:, 0:15]
         #     else:
@@ -1497,20 +1500,20 @@ class OptimizationControl:
         # first_shapes dictionary
         # convert dataframe to tune dictionary style
         pseudo_shape_space = {}
-        self.tune_freq = self.tuneUI.dsb_Tune_Frequency.value()
+        self.tune_freq = self.ui.dsb_Tune_Frequency.value()
         for i, row in df.iterrows():
             # key, A, B, a, b, Ri, L, Req, alpha =
             rr = row.tolist()
-            if self.tuneUI.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
+            if self.ui.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
 
-                A_i = self.check_input(self.tuneUI.le_A_i_opt.text())[0]
-                B_i = self.check_input(self.tuneUI.le_B_i_opt.text())[0]
-                a_i = self.check_input(self.tuneUI.le_a_i_opt.text())[0]
-                b_i = self.check_input(self.tuneUI.le_b_i_opt.text())[0]
-                Ri_i = self.check_input(self.tuneUI.le_Ri_i_opt.text())[0]
-                L_i = self.check_input(self.tuneUI.le_L_i_opt.text())[0]
-                Req_i = self.check_input(self.tuneUI.le_Req_i_opt.text())[0]
-                alpha_i = self.check_input(self.tuneUI.le_Alpha_opt.text())[0]
+                A_i = self.check_input(self.ui.le_A_i_opt.text())[0]
+                B_i = self.check_input(self.ui.le_B_i_opt.text())[0]
+                a_i = self.check_input(self.ui.le_a_i_opt.text())[0]
+                b_i = self.check_input(self.ui.le_b_i_opt.text())[0]
+                Ri_i = self.check_input(self.ui.le_Ri_i_opt.text())[0]
+                L_i = self.check_input(self.ui.le_L_i_opt.text())[0]
+                Req_i = self.check_input(self.ui.le_Req_i_opt.text())[0]
+                alpha_i = self.check_input(self.ui.le_Alpha_opt.text())[0]
 
                 IC = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, alpha_i, alpha_i]
                 # print(type(IC))
@@ -1530,8 +1533,8 @@ class OptimizationControl:
 
         ############################
         # run tune
-        n_cells = self.tuneUI.sb_Norm_Length_N_Cells.value()
-        norm_length = self.tuneUI.db_Norm_Length.value()
+        n_cells = self.ui.sb_Norm_Length_N_Cells.value()
+        norm_length = self.ui.db_Norm_Length.value()
 
         self.run_tune_parallel(pseudo_shape_space, n_cells)
 
@@ -1593,19 +1596,19 @@ class OptimizationControl:
                 break
 
         # apply UQ
-        if self.tuneUI.cb_UQ.isChecked():
+        if self.ui.cb_UQ.isChecked():
             solver_dict = {'slans': slans_geom_seq, 'abci': abci_geom}
             beampipes = {'Mid Cell': 'none', 'End-End Cell': 'left', 'End-Mid Cell': 'left', 'Single Cell': 'both'}
-            beampipe = beampipes[self.tuneUI.cb_Cell_Type_Optimization.currentText()]
+            beampipe = beampipes[self.ui.cb_Cell_Type_Optimization.currentText()]
 
-            # if self.tuneUI.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
+            # if self.ui.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
             #     n_cells = 5
             # else:
             #     n_cells = 5
 
             solver_args_dict = {'slans': {'n_cells': n_cells, 'n_modules': 1, 'f_shift': 0, 'bc': 33,
                                           'beampipes': beampipe,
-                                          'norm_length': self.tuneUI.db_Norm_Length.value(),
+                                          'norm_length': self.ui.db_Norm_Length.value(),
                                           'parentDir': self.parentDir, 'projectDir': self.projectDir},
                                 'abci': {'n_cells': n_cells, 'n_modules': 1,
                                          'MROT': 2, 'MT': 4, 'NFS': 10000, 'UBT': 50, 'bunch_length': 25,
@@ -1706,7 +1709,7 @@ class OptimizationControl:
 
         # rank shapes by objectives
         for i, obj in enumerate(self.objectives):
-            if self.tuneUI.cb_UQ.isChecked():
+            if self.ui.cb_UQ.isChecked():
                 if obj[0] == "min":
                     df[f'rank_E[{obj[1]}] + 6*std[{obj[1]}]'] = df[fr'E[{obj[1]}] + 6*std[{obj[1]}]'].rank() * self.weights[i]
                     ic(df[f'rank_E[{obj[1]}] + 6*std[{obj[1]}]'])
@@ -1763,8 +1766,8 @@ class OptimizationControl:
         ic(df)
 
         # update global
-        if len(df) > self.tuneUI.sb_Max_Table_Size.value():
-            # self.df_global = df.loc[0:self.tuneUI.cb_Max_Table_Size.value(), :]
+        if len(df) > self.ui.sb_Max_Table_Size.value():
+            # self.df_global = df.loc[0:self.ui.cb_Max_Table_Size.value(), :]
             self.df_global = df
         else:
             self.df_global = df
@@ -1784,17 +1787,17 @@ class OptimizationControl:
         # birth next generation
         # crossover
         print("Crossover")
-        df_cross = self.crossover(df, n, self.tuneUI.sb_Crossover_Factor.value())  # , elites["GR/Q
+        df_cross = self.crossover(df, n, self.ui.sb_Crossover_Factor.value())  # , elites["GR/Q
         # ic(df_cross)
 
         # mutation
         print("Mutation")
-        df_mutation = self.mutation(df, n, self.tuneUI.sb_Mutation_Factor.value())
+        df_mutation = self.mutation(df, n, self.ui.sb_Mutation_Factor.value())
         ic(df_mutation)
 
         # chaos
         print("Chaos")
-        df_chaos = self.chaos(self.tuneUI.sb_Chaos_Factor.value(), n)
+        df_chaos = self.chaos(self.ui.sb_Chaos_Factor.value(), n)
         # ic(df_chaos)
 
         # take elites from previous generation over to next generation
@@ -1812,7 +1815,7 @@ class OptimizationControl:
             return
 
     def uq_parallel(self, df, objectives, solver_dict, solver_args_dict):
-        proc_count = self.tuneUI.sb_Processors_Count.value()
+        proc_count = self.ui.sb_Processors_Count.value()
 
         # get geometric parameters
         df = df.loc[:, ['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req', "alpha_i", "alpha_o"]]
@@ -1821,16 +1824,16 @@ class OptimizationControl:
         df = df.set_index('key')
         for index, row in df.iterrows():
             rw = row.tolist()
-            if self.tuneUI.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
+            if self.ui.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
 
-                A_i = self.check_input(self.tuneUI.le_A_i_opt.text())[0]
-                B_i = self.check_input(self.tuneUI.le_B_i_opt.text())[0]
-                a_i = self.check_input(self.tuneUI.le_a_i_opt.text())[0]
-                b_i = self.check_input(self.tuneUI.le_b_i_opt.text())[0]
-                Ri_i = self.check_input(self.tuneUI.le_Ri_i_opt.text())[0]
-                L_i = self.check_input(self.tuneUI.le_L_i_opt.text())[0]
-                Req_i = self.check_input(self.tuneUI.le_Req_i_opt.text())[0]
-                alpha_i = self.check_input(self.tuneUI.le_Alpha_opt.text())[0]
+                A_i = self.check_input(self.ui.le_A_i_opt.text())[0]
+                B_i = self.check_input(self.ui.le_B_i_opt.text())[0]
+                a_i = self.check_input(self.ui.le_a_i_opt.text())[0]
+                b_i = self.check_input(self.ui.le_b_i_opt.text())[0]
+                Ri_i = self.check_input(self.ui.le_Ri_i_opt.text())[0]
+                L_i = self.check_input(self.ui.le_L_i_opt.text())[0]
+                Req_i = self.check_input(self.ui.le_Req_i_opt.text())[0]
+                alpha_i = self.check_input(self.ui.le_Alpha_opt.text())[0]
 
                 IC = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, alpha_i]
 
@@ -2153,7 +2156,7 @@ class OptimizationControl:
         return list(expe.T[0]), list(stdDev.T[0])
 
     def run_tune_parallel(self, pseudo_shape_space, n_cells):
-        proc_count = self.tuneUI.sb_Processors_Count.value()
+        proc_count = self.ui.sb_Processors_Count.value()
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(pseudo_shape_space.keys())
@@ -2183,12 +2186,12 @@ class OptimizationControl:
                         if not os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'):
                             processor_shape_space[key] = val
 
-                if 'End' in self.tuneUI.cb_Cell_Type_Optimization.currentText():
+                if 'End' in self.ui.cb_Cell_Type_Optimization.currentText():
                     cell_type = 'End Cell'
                 else:
                     cell_type = 'Mid Cell'
 
-                tune_variable = self.tuneUI.cb_Tune_Variable.currentText()
+                tune_variable = self.ui.cb_Tune_Variable.currentText()
                 service = mp.Process(target=self.run_sequential,
                                      args=(processor_shape_space, "Yes", p, 33, r"D:\Dropbox\CavityDesignHub",
                                            r"D:\Dropbox\CavityDesignHub\Cavity800", "EA.json", 'PyTuner',
@@ -2219,7 +2222,7 @@ class OptimizationControl:
         UBT = 50  # Wakelength in m
         DDZ_SIG = 0.1
         DDR_SIG = 0.1
-        proc_count = self.tuneUI.sb_Processors_Count.value()
+        proc_count = self.ui.sb_Processors_Count.value()
 
         # get geometric parameters
         df = df.loc[:, ['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req', "alpha_i", "alpha_o"]]
@@ -2228,16 +2231,16 @@ class OptimizationControl:
         df = df.set_index('key')
         for index, row in df.iterrows():
             rw = row.tolist()
-            if self.tuneUI.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
+            if self.ui.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
 
-                A_i = self.check_input(self.tuneUI.le_A_i_opt.text())[0]
-                B_i = self.check_input(self.tuneUI.le_B_i_opt.text())[0]
-                a_i = self.check_input(self.tuneUI.le_a_i_opt.text())[0]
-                b_i = self.check_input(self.tuneUI.le_b_i_opt.text())[0]
-                Ri_i = self.check_input(self.tuneUI.le_Ri_i_opt.text())[0]
-                L_i = self.check_input(self.tuneUI.le_L_i_opt.text())[0]
-                Req_i = self.check_input(self.tuneUI.le_Req_i_opt.text())[0]
-                alpha_i = self.check_input(self.tuneUI.le_Alpha_opt.text())[0]
+                A_i = self.check_input(self.ui.le_A_i_opt.text())[0]
+                B_i = self.check_input(self.ui.le_B_i_opt.text())[0]
+                a_i = self.check_input(self.ui.le_a_i_opt.text())[0]
+                b_i = self.check_input(self.ui.le_b_i_opt.text())[0]
+                Ri_i = self.check_input(self.ui.le_Ri_i_opt.text())[0]
+                L_i = self.check_input(self.ui.le_L_i_opt.text())[0]
+                Req_i = self.check_input(self.ui.le_Req_i_opt.text())[0]
+                alpha_i = self.check_input(self.ui.le_Alpha_opt.text())[0]
 
                 IC = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, alpha_i]
 
@@ -2289,13 +2292,13 @@ class OptimizationControl:
 
     def generate_first_men(self):
         # get range from table
-        tw = self.tuneUI.tw_Parameters
-        for i in range(self.tuneUI.tw_Parameters.rowCount()):
+        tw = self.ui.tw_Parameters
+        for i in range(self.ui.tw_Parameters.rowCount()):
             self.sbd[i] = [tw.cellWidget(i, 1).value(), tw.cellWidget(i, 2).value()]
 
         # populate
-        initial_points = self.tuneUI.sb_Initial_Points.value()
-        if self.tuneUI.cb_Init_Generation_Method.currentText() == "Uniform":
+        initial_points = self.ui.sb_Initial_Points.value()
+        if self.ui.cb_Init_Generation_Method.currentText() == "Uniform":
             data = {'key': [f"G0_C{i}_P" for i in range(initial_points)],
                     'A': np.linspace(self.sbd[0][0], self.sbd[0][1], initial_points),
                     'B': np.linspace(self.sbd[1][0], self.sbd[1][1], initial_points),
@@ -2307,7 +2310,7 @@ class OptimizationControl:
                     'alpha_i': np.zeros(initial_points),
                     'alpha_o': np.zeros(initial_points)}
             return pd.DataFrame.from_dict(data)
-        elif self.tuneUI.cb_Init_Generation_Method.currentText() == "Random":
+        elif self.ui.cb_Init_Generation_Method.currentText() == "Random":
             data = {'key': [f"G0_C{i}_P" for i in range(initial_points)],
                     'A': random.sample(list(np.linspace(self.sbd[0][0], self.sbd[0][1], initial_points * 2)),
                                        initial_points),
@@ -2330,7 +2333,7 @@ class OptimizationControl:
             ic(self.sbd.values())
             columns = ['A', 'B', 'a', 'b', 'Ri', 'L', 'Req']
             dim = len(columns)
-            index = self.tuneUI.sb_Sobol_Sequence_Index.value()
+            index = self.ui.sb_Sobol_Sequence_Index.value()
             l_bounds = np.array(list(self.sbd.values()))[:, 0]
             u_bounds = np.array(list(self.sbd.values()))[:, 1]
 
@@ -2367,22 +2370,22 @@ class OptimizationControl:
     def get_objectives(self):
         # objectives, weights, constraints, n, ng_max = [["min", "Epk/Eacc"], ["min", "Bpk/Eacc"], ["max", "R/Q"]], [5, 1, 1], \
         #                                               ["Bpk/Eacc < 6.5", "freq > 400.58", 'freq < 400.99'], 1, 4
-        obj_vars = self.tuneUI.ccb_Populate_Objectives.currentText().split(', ')
+        obj_vars = self.ui.ccb_Populate_Objectives.currentText().split(', ')
         self.objectives = []
         self.weights = []
 
         for i, obj_var in enumerate(obj_vars):
             if obj_var == "ZL" or obj_var == "ZT":
-                goal = self.tuneUI.tw_Objectives.cellWidget(i, 1).currentText()
+                goal = self.ui.tw_Objectives.cellWidget(i, 1).currentText()
                 freq_ranges = self.process_interval(
-                    self.text_to_list(self.tuneUI.tw_Objectives.cellWidget(i, 2).text()))
+                    self.text_to_list(self.ui.tw_Objectives.cellWidget(i, 2).text()))
                 for f in freq_ranges:
                     self.objectives.append([goal, f"{obj_var} [max({f[0]}<f<{f[1]})]", f])
                     self.weights.append(1)
             else:
-                goal = self.tuneUI.tw_Objectives.cellWidget(i, 1).currentText()
+                goal = self.ui.tw_Objectives.cellWidget(i, 1).currentText()
                 if goal == 'equal':
-                    value = np.float(self.tuneUI.tw_Objectives.item(i, 2).text())
+                    value = np.float(self.ui.tw_Objectives.item(i, 2).text())
                     self.objectives.append([goal, obj_var, value])
                 else:
                     self.objectives.append([goal, obj_var])
@@ -2392,13 +2395,13 @@ class OptimizationControl:
         ic(self.weights)
 
     def get_constraints(self):
-        const_vars = self.tuneUI.ccb_Populate_Constraints.currentText().split(', ')
+        const_vars = self.ui.ccb_Populate_Constraints.currentText().split(', ')
         self.constraints = []
 
         if not (const_vars == ['All'] or const_vars == ['']):
             for i, const_var in enumerate(const_vars):
-                lower_bound = self.tuneUI.tw_Constraints.cellWidget(i, 1).value()
-                upper_bound = self.tuneUI.tw_Constraints.cellWidget(i, 2).value()
+                lower_bound = self.ui.tw_Constraints.cellWidget(i, 1).value()
+                upper_bound = self.ui.tw_Constraints.cellWidget(i, 2).value()
 
                 if upper_bound != lower_bound:
                     self.constraints.append(fr'{const_var} > {lower_bound}')
@@ -2407,7 +2410,7 @@ class OptimizationControl:
                     self.constraints.append(fr'{const_var} = {lower_bound}')
 
         # parameter bounds as constraints
-        tw = self.tuneUI.tw_Parameters
+        tw = self.ui.tw_Parameters
         for i in range(tw.rowCount()):
             par = tw.cellWidget(i, 0).text()
             lower_bound = tw.cellWidget(i, 1).value()
@@ -2460,7 +2463,7 @@ class OptimizationControl:
         # tune_result = []
 
         # # append freq and Req
-        # if self.tuneUI.cb_Tune_Variable.currentText() == "Req":
+        # if self.ui.cb_Tune_Variable.currentText() == "Req":
         #     tune_result.append(Req)
         # else:
         #     tune_result.append(L)
@@ -2693,7 +2696,7 @@ class OptimizationControl:
                 k_loss_array_longitudinal.append(k_loss_HOM)
                 k_loss_array_transverse.append(k_loss_trans)
 
-        obj = self.tuneUI.ccb_Populate_Objectives.currentText().split(', ')
+        obj = self.ui.ccb_Populate_Objectives.currentText().split(', ')
         ZL, ZT = [], []
         df_ZL, df_ZT = pd.DataFrame(), pd.DataFrame()
         # print("here here here")
@@ -2701,7 +2704,7 @@ class OptimizationControl:
             # print("print ptint pting")
             if "ZL" in o:
                 # print("1")
-                freq_range = self.process_interval(self.text_to_list(self.tuneUI.tw_Objectives.cellWidget(i, 2).text()))
+                freq_range = self.process_interval(self.text_to_list(self.ui.tw_Objectives.cellWidget(i, 2).text()))
                 for i in range(len(freq_range)):
                     Zmax_mon_list.append([])
                     xmax_mon_list.append([])
@@ -2710,7 +2713,7 @@ class OptimizationControl:
                 ZL = get_Zmax_L(freq_range)
 
             elif "ZT" in o:
-                freq_range = self.process_interval(self.text_to_list(self.tuneUI.tw_Objectives.cellWidget(i, 2).text()))
+                freq_range = self.process_interval(self.text_to_list(self.ui.tw_Objectives.cellWidget(i, 2).text()))
 
                 for i in range(len(freq_range)):
                     Zmax_dip_list.append([])
@@ -2756,7 +2759,7 @@ class OptimizationControl:
         elites = {}
         for i, o in enumerate(self.objectives):
 
-            if self.tuneUI.cb_UQ.isChecked():
+            if self.ui.cb_UQ.isChecked():
                 if o[0] == "min":
                     elites[f'E[{o[1]}] + 6*std[{o[1]}]'] = df.sort_values(f'E[{o[1]}] + 6*std[{o[1]}]')
                 elif o[0] == "max":
@@ -2773,7 +2776,7 @@ class OptimizationControl:
         ic(elites)
         obj_dict = {}
         for o in self.objectives:
-            if self.tuneUI.cb_UQ.isChecked():
+            if self.ui.cb_UQ.isChecked():
                 if o[0] == 'min':
                     obj_dict[fr'E[{o[1]}] + 6*std[{o[1]}]'] = elites[fr'E[{o[1]}] + 6*std[{o[1]}]']
                 elif o[0] == 'max':
@@ -2798,19 +2801,19 @@ class OptimizationControl:
         df_co = pd.DataFrame(columns=["key", 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req', "alpha_i", "alpha_o"])
 
         # select only best characteristics
-        A_inf = self.tuneUI.tw_Parameters.cellWidget(0, 3).currentText().split(', ')
-        B_inf = self.tuneUI.tw_Parameters.cellWidget(1, 3).currentText().split(', ')
-        a_inf = self.tuneUI.tw_Parameters.cellWidget(2, 3).currentText().split(', ')
-        b_inf = self.tuneUI.tw_Parameters.cellWidget(3, 3).currentText().split(', ')
-        Ri_inf = self.tuneUI.tw_Parameters.cellWidget(4, 3).currentText().split(', ')
-        L_inf = self.tuneUI.tw_Parameters.cellWidget(5, 3).currentText().split(', ')
-        Req_inf = self.tuneUI.tw_Parameters.cellWidget(6, 3).currentText().split(', ')
+        A_inf = self.ui.tw_Parameters.cellWidget(0, 3).currentText().split(', ')
+        B_inf = self.ui.tw_Parameters.cellWidget(1, 3).currentText().split(', ')
+        a_inf = self.ui.tw_Parameters.cellWidget(2, 3).currentText().split(', ')
+        b_inf = self.ui.tw_Parameters.cellWidget(3, 3).currentText().split(', ')
+        Ri_inf = self.ui.tw_Parameters.cellWidget(4, 3).currentText().split(', ')
+        L_inf = self.ui.tw_Parameters.cellWidget(5, 3).currentText().split(', ')
+        Req_inf = self.ui.tw_Parameters.cellWidget(6, 3).currentText().split(', ')
 
         ic(elites)
         inf_dict = {"A": A_inf, "B": B_inf, "a": a_inf, "b": b_inf, "Ri": Ri_inf, "L": L_inf, "Req": Req_inf}
         for key, influence in inf_dict.items():
             if influence == [''] or influence == ['All']:
-                if self.tuneUI.cb_UQ.isChecked():
+                if self.ui.cb_UQ.isChecked():
                     ll = []
                     for o in self.objectives:
                         if o[0] == 'min':
@@ -2824,7 +2827,7 @@ class OptimizationControl:
                     inf_dict[key] = [o[1] for o in self.objectives if o[0] != 'equal']
 
         ic(elites.keys())
-        n_elites_to_cross = self.tuneUI.sb_N_Elites_To_Cross.value()
+        n_elites_to_cross = self.ui.sb_N_Elites_To_Cross.value()
         ic(n_elites_to_cross, len(elites))
         for i in range(f):
             # (<obj>[<rank>][<variable>] -> (b[c[1]][0]
@@ -2844,8 +2847,8 @@ class OptimizationControl:
 
     def mutation(self, df, n, f):
         # get range from table
-        tw = self.tuneUI.tw_Parameters
-        for i in range(self.tuneUI.tw_Parameters.rowCount()):
+        tw = self.ui.tw_Parameters
+        for i in range(self.ui.tw_Parameters.rowCount()):
             self.sbd[i] = [tw.cellWidget(i, 1).value(), tw.cellWidget(i, 2).value()]
 
         # get list based on mutation length
@@ -2989,7 +2992,7 @@ class OptimizationControl:
               'Req': [170, 170], }
         # dd = {'A': [10, 60], 'B': [10, 60], 'a': [5, 40], 'b': [5, 40], 'Ri': [35, 35], 'L': [57.7, 57.7],
         #       'Req': [103, 103], }
-        tw = self.tuneUI.tw_Parameters
+        tw = self.ui.tw_Parameters
 
         tw.setRowCount(len(dd))  # and one row in the table
         i = 0
@@ -3027,7 +3030,7 @@ class OptimizationControl:
         for ccb in self.influence_ccb.values():
             ccb.clear()
             ccb.addItem('All')
-            ccb.addItems(self.tuneUI.ccb_Populate_Objectives.currentText().split(', '))
+            ccb.addItems(self.ui.ccb_Populate_Objectives.currentText().split(', '))
 
     def pareto_front(self, df):
 
@@ -3035,7 +3038,7 @@ class OptimizationControl:
         # reverse list or not based on objective goal: minimize or maximize
         # datapoints = [self.negate_list(df.loc[:, o[1]], o[0]) for o in self.objectives]
 
-        if self.tuneUI.cb_UQ.isChecked():
+        if self.ui.cb_UQ.isChecked():
             obj = []
             for o in self.objectives:
                 if o[0] == 'min':
@@ -3053,12 +3056,12 @@ class OptimizationControl:
         # ic(datapoints)
         for o in self.objectives:
             if o[0] == 'min':
-                if self.tuneUI.cb_UQ.isChecked():
+                if self.ui.cb_UQ.isChecked():
                     datapoints[fr'E[{o[1]}] + 6*std[{o[1]}]'] = datapoints[fr'E[{o[1]}] + 6*std[{o[1]}]'] * (-1)
                 else:
                     datapoints[o[1]] = datapoints[o[1]] * (-1)
             elif o[0] == "equal":
-                if self.tuneUI.cb_UQ.isChecked():
+                if self.ui.cb_UQ.isChecked():
                     datapoints[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] = datapoints[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] * (-1)
         # ic(datapoints)
         # convert datapoints to numpy array
@@ -3170,7 +3173,7 @@ class OptimizationControl:
         return interval
 
     # def continue_check(self):
-    #     path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.tuneUI.le_Generated_Shape_Space_Name.text())}'
+    #     path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())}'
     #     print(path)
     #     if os.path.exists(path):
     #         msg = QMessageBox()
@@ -3219,10 +3222,10 @@ class OptimizationControl:
         return styler
 
     def show_hide_mid_cell_params(self):
-        if self.tuneUI.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
-            self.tuneUI.w_Mid_Cell_Opt.show()
+        if self.ui.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
+            self.ui.w_Mid_Cell_Opt.show()
         else:
-            self.tuneUI.w_Mid_Cell_Opt.hide()
+            self.ui.w_Mid_Cell_Opt.hide()
 
 
 def run_sequential_wakefield(n_cells, n_modules, processor_shape_space,

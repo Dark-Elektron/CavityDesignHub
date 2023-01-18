@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1327</width>
-    <height>1087</height>
+    <width>1655</width>
+    <height>1248</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -816,8 +816,8 @@
                                    <rect>
                                     <x>0</x>
                                     <y>0</y>
-                                    <width>877</width>
-                                    <height>140</height>
+                                    <width>976</width>
+                                    <height>185</height>
                                    </rect>
                                   </property>
                                   <layout class="QGridLayout" name="gridLayout_27">
@@ -930,8 +930,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>303</width>
-                        <height>1064</height>
+                        <width>462</width>
+                        <height>1242</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_14">
@@ -962,7 +962,7 @@
                           </size>
                          </property>
                          <property name="currentIndex">
-                          <number>0</number>
+                          <number>1</number>
                          </property>
                          <widget class="QWidget" name="pg_Plot_Decorations">
                           <layout class="QGridLayout" name="gridLayout_2">
@@ -979,8 +979,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>261</width>
-                                <height>730</height>
+                                <width>420</width>
+                                <height>690</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1333,8 +1333,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>436</width>
-                                <height>989</height>
+                                <width>438</width>
+                                <height>1178</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
@@ -1654,6 +1654,13 @@
                                   <item row="4" column="0">
                                    <widget class="QWidget" name="widget_26" native="true">
                                     <layout class="QGridLayout" name="gridLayout_32">
+                                     <item row="0" column="0">
+                                      <widget class="QLabel" name="label_2">
+                                       <property name="text">
+                                        <string>frange</string>
+                                       </property>
+                                      </widget>
+                                     </item>
                                      <item row="0" column="3">
                                       <widget class="QComboBox" name="cb_Frange_Unit">
                                        <item>
@@ -1694,10 +1701,20 @@
                                        </property>
                                       </widget>
                                      </item>
-                                     <item row="0" column="0">
-                                      <widget class="QLabel" name="label_2">
+                                     <item row="1" column="0">
+                                      <widget class="QLabel" name="label_9">
                                        <property name="text">
-                                        <string>frange</string>
+                                        <string>Ncav/mod</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="1" column="1">
+                                      <widget class="QSpinBox" name="sb_Ncav_per_Mod">
+                                       <property name="minimum">
+                                        <number>1</number>
+                                       </property>
+                                       <property name="maximum">
+                                        <number>15</number>
                                        </property>
                                       </widget>
                                      </item>
@@ -1723,8 +1740,8 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>381</width>
-                                          <height>324</height>
+                                          <width>383</width>
+                                          <height>408</height>
                                          </rect>
                                         </property>
                                         <layout class="QGridLayout" name="gridLayout_31">

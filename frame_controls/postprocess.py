@@ -51,8 +51,8 @@ class PostprocessControl:
         # pp -> postprocess
         self.w_Postprocess = QWidget()
 
-        self.ppUI = Ui_Postprocess()
-        self.ppUI.setupUi(self.w_Postprocess)
+        self.ui = Ui_Postprocess()
+        self.ui.setupUi(self.w_Postprocess)
 
         # Create main window object
         self.win = parent
@@ -69,8 +69,8 @@ class PostprocessControl:
         self.ppplot_statistics = PPPlot(self)
         self.pppUI_Stat = self.ppplot_statistics.pppUI
 
-        self.w_dict = {'Dataset': [self.ppUI.pb_CEM, self.ppUI.w_Dataset_From_Simulation],
-                       'Combine': [self.ppUI.pb_CST, self.ppUI.w_Combine_Dataset]}
+        self.w_dict = {'Dataset': [self.ui.pb_CEM, self.ui.w_Dataset_From_Simulation],
+                       'Combine': [self.ui.pb_CST, self.ui.w_Combine_Dataset]}
 
         # combine dictionaries list
         self.combine_dict_dict = {}
@@ -107,119 +107,123 @@ class PostprocessControl:
         self.MDI_DATAFRAME_COUNT = 0
 
     def signals(self):
-        self.ppUI.pb_Clear.clicked.connect(self.clear_plots)
+        self.ui.pb_Clear.clicked.connect(self.clear_plots)
         # widget display signals
-        self.ppUI.pb_CEM.clicked.connect(lambda: self.toggle_page('CEM'))
-        self.ppUI.pb_CST.clicked.connect(lambda: self.toggle_page('CST'))
+        self.ui.pb_CEM.clicked.connect(lambda: self.toggle_page('CEM'))
+        self.ui.pb_CST.clicked.connect(lambda: self.toggle_page('CST'))
 
         # load dir
-        self.ppUI.pb_Load_Doc1.clicked.connect(lambda: self.load_dir(self.ppUI.le_Dir1.text(),
-                                                                     self.ppUI.lw_Doc1,
-                                                                     self.ppUI.lw_Selected_Columns_Doc1,
+        self.ui.pb_Load_Doc1.clicked.connect(lambda: self.load_dir(self.ui.le_Dir1.text(),
+                                                                     self.ui.lw_Doc1,
+                                                                     self.ui.lw_Selected_Columns_Doc1,
                                                                      self.column_list_1, 0))
-        self.ppUI.pb_Load_Doc2.clicked.connect(lambda: self.load_dir(self.ppUI.le_Dir2.text(),
-                                                                     self.ppUI.lw_Doc2,
-                                                                     self.ppUI.lw_Selected_Columns_Doc2,
+        self.ui.pb_Load_Doc2.clicked.connect(lambda: self.load_dir(self.ui.le_Dir2.text(),
+                                                                     self.ui.lw_Doc2,
+                                                                     self.ui.lw_Selected_Columns_Doc2,
                                                                      self.column_list_2, 1))
 
         # add items to combine
         self.column_list_1 = []  # list to hold added columns
         self.column_list_2 = []  # list to hold added columns
-        self.ppUI.pb_Add_Doc1.clicked.connect(
-            lambda: self.add_to_list_widget(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Add_Doc2.clicked.connect(
-            lambda: self.add_to_list_widget(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.ui.pb_Add_Doc1.clicked.connect(
+            lambda: self.add_to_list_widget(self.ui.lw_Doc1, self.ui.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ui.pb_Add_Doc2.clicked.connect(
+            lambda: self.add_to_list_widget(self.ui.lw_Doc2, self.ui.lw_Selected_Columns_Doc2, self.column_list_2))
         # add all
-        self.ppUI.pb_Add_All_Doc1.clicked.connect(
-            lambda: self.add_all(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Add_All_Doc2.clicked.connect(
-            lambda: self.add_all(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.ui.pb_Add_All_Doc1.clicked.connect(
+            lambda: self.add_all(self.ui.lw_Doc1, self.ui.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ui.pb_Add_All_Doc2.clicked.connect(
+            lambda: self.add_all(self.ui.lw_Doc2, self.ui.lw_Selected_Columns_Doc2, self.column_list_2))
 
         # combine from folder parallel run
-        self.ppUI.pb_Combine_Parallel.clicked.connect(
-            lambda: self.combine_files_parallel_run(self.ppUI.sb_Proc_Count.value(),
-                                                    self.ppUI.le_Folder.text(), self.ppUI.le_Filename_Parallel.text()))
+        self.ui.pb_Combine_Parallel.clicked.connect(
+            lambda: self.combine_files_parallel_run(self.ui.sb_Proc_Count.value(),
+                                                    self.ui.le_Folder.text(), self.ui.le_Filename_Parallel.text()))
 
         # remove items
-        self.ppUI.pb_Remove_Doc1.clicked.connect(
-            lambda: self.remove_from_list_widget(self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Remove_Doc2.clicked.connect(
-            lambda: self.remove_from_list_widget(self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.ui.pb_Remove_Doc1.clicked.connect(
+            lambda: self.remove_from_list_widget(self.ui.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ui.pb_Remove_Doc2.clicked.connect(
+            lambda: self.remove_from_list_widget(self.ui.lw_Selected_Columns_Doc2, self.column_list_2))
         # remove all
-        self.ppUI.pb_Remove_All_Doc1.clicked.connect(
-            lambda: self.remove_all(self.ppUI.lw_Doc1, self.ppUI.lw_Selected_Columns_Doc1, self.column_list_1))
-        self.ppUI.pb_Remove_All_Doc2.clicked.connect(
-            lambda: self.remove_all(self.ppUI.lw_Doc2, self.ppUI.lw_Selected_Columns_Doc2, self.column_list_2))
+        self.ui.pb_Remove_All_Doc1.clicked.connect(
+            lambda: self.remove_all(self.ui.lw_Doc1, self.ui.lw_Selected_Columns_Doc1, self.column_list_1))
+        self.ui.pb_Remove_All_Doc2.clicked.connect(
+            lambda: self.remove_all(self.ui.lw_Doc2, self.ui.lw_Selected_Columns_Doc2, self.column_list_2))
 
         # combine files
-        self.ppUI.pb_Combine.clicked.connect(lambda: self.combine_files(self.ppUI.le_Filename.text()))
+        self.ui.pb_Combine.clicked.connect(lambda: self.combine_files(self.ui.le_Filename.text()))
 
         # load excel file
-        self.ppUI.pb_Select_File.clicked.connect(lambda: self.load_file())
-        self.ppUI.pb_Select_File.clicked.connect(lambda: self.add_new_dataset())
+        self.ui.pb_Select_File.clicked.connect(lambda: self.load_file())
+        self.ui.pb_Select_File.clicked.connect(lambda: self.add_new_dataset())
 
         # objective function/pareto
-        self.ppUI.pb_Plot_Objective.clicked.connect(lambda: self.plot_objective_function_3D() if self.ppUI.sc_Toggle_3D.isChecked() else
+        self.ui.pb_Plot_Objective.clicked.connect(lambda: self.plot_objective_function_3D() if self.ui.sc_Toggle_3D.isChecked() else
                                                     self.plot_objective_function())
 
-        self.ppUI.cb_Pareto.stateChanged.connect(lambda: self.plot_pareto_3D() if self.ppUI.sc_Toggle_3D.isChecked() else
+        self.ui.cb_Pareto.stateChanged.connect(lambda: self.plot_pareto_3D() if self.ui.sc_Toggle_3D.isChecked() else
                                                     self.plot_pareto())
 
         # mdi signals
-        self.ppUI.pb_MDI_Tiled.clicked.connect(lambda: self.ppUI.mdiArea.tileSubWindows())
-        self.ppUI.pb_MDI_Cascade.clicked.connect(lambda: self.ppUI.mdiArea.cascadeSubWindows())
+        self.ui.pb_MDI_Tiled.clicked.connect(lambda: self.ui.mdiArea.tileSubWindows())
+        self.ui.pb_MDI_Cascade.clicked.connect(lambda: self.ui.mdiArea.cascadeSubWindows())
 
         # add/remove filter
-        self.ppUI.pb_Add_DFFilter.clicked.connect(lambda: self.add_filter())
-        self.ppUI.pb_Remove_Filter.clicked.connect(lambda: self.remove_filter(self.ppUI.pb_Remove_Filter))
+        self.ui.pb_Add_DFFilter.clicked.connect(lambda: self.add_filter())
+        self.ui.pb_Remove_Filter.clicked.connect(lambda: self.remove_filter(self.ui.pb_Remove_Filter))
 
         # enable/disable filter
-        self.ppUI.cb_Filter_Toggle_0.clicked.connect(lambda: self.apply_filter())
-        self.ppUI.hs_Alpha.valueChanged.connect(lambda: self.change_alpha(self.ppUI.hs_Alpha.value() / 100))
+        self.ui.cb_Filter_Toggle_0.clicked.connect(lambda: self.apply_filter())
+        self.ui.hs_Alpha.valueChanged.connect(lambda: self.change_alpha(self.ui.hs_Alpha.value() / 100))
 
         # enable interactive
-        self.ppUI.cb_Interactive.clicked.connect(lambda: self.toggle_interactive())
+        self.ui.cb_Interactive.clicked.connect(lambda: self.toggle_interactive())
 
         # load shape space
-        self.ppUI.pb_Select_Shape_Space.clicked.connect(
-            lambda: self.open_file(self.ppUI.le_Shape_Space, self.cb_Shape_Space_Keys))
+        self.ui.pb_Select_Shape_Space.clicked.connect(
+            lambda: self.open_file(self.ui.le_Shape_Space, self.cb_Shape_Space_Keys))
 
         # select folder
-        self.ppUI.pb_Select_Folder.clicked.connect(lambda: self.open_folder(self.ppUI.le_SimulationData_Folder))
+        self.ui.pb_Select_Folder.clicked.connect(lambda: self.open_folder(self.ui.le_SimulationData_Folder))
 
         # extract data
-        self.ppUI.pb_Extract.clicked.connect(lambda: self.process_folder_data())
+        self.ui.pb_Extract.clicked.connect(lambda: self.process_folder_data())
 
         # ABCI/SLANS inputs
-        self.ppUI.cb_Code.currentTextChanged.connect(lambda: self.code_change_control())
+        self.ui.cb_Code.currentTextChanged.connect(lambda: self.code_change_control())
 
         # sequential vs parallel
-        self.ppUI.cb_Run_Mode.currentTextChanged.connect(lambda: self.run_mode_control())
+        self.ui.cb_Run_Mode.currentTextChanged.connect(lambda: self.run_mode_control())
 
         #
         self.f1_dict = {}
         self.f2_dict = {}
         self.f3_dict = {}
-        self.ppUI.ccb_Objective_Function_F1.currentTextChanged.connect(lambda: self.populate_objective_function(
-            self.ppUI.ccb_Objective_Function_F1.currentText().split(', '), self.ppUI.ccb_Objective_Function_F1,
-            self.ppUI.tw_Objective_Function_F1, self.f1_dict))
+        self.ui.ccb_Objective_Function_F1.currentTextChanged.connect(lambda: self.populate_objective_function(
+            self.ui.ccb_Objective_Function_F1.currentText().split(', '), self.ui.ccb_Objective_Function_F1,
+            self.ui.tw_Objective_Function_F1, self.f1_dict))
 
-        self.ppUI.ccb_Objective_Function_F2.currentTextChanged.connect(lambda: self.populate_objective_function(
-            self.ppUI.ccb_Objective_Function_F2.currentText().split(', '), self.ppUI.ccb_Objective_Function_F2,
-            self.ppUI.tw_Objective_Function_F2, self.f2_dict))
+        self.ui.ccb_Objective_Function_F2.currentTextChanged.connect(lambda: self.populate_objective_function(
+            self.ui.ccb_Objective_Function_F2.currentText().split(', '), self.ui.ccb_Objective_Function_F2,
+            self.ui.tw_Objective_Function_F2, self.f2_dict))
 
-        self.ppUI.ccb_Objective_Function_F3.currentTextChanged.connect(lambda: self.populate_objective_function(
-            self.ppUI.ccb_Objective_Function_F3.currentText().split(', '), self.ppUI.ccb_Objective_Function_F3,
-            self.ppUI.tw_Objective_Function_F3, self.f3_dict))
+        self.ui.ccb_Objective_Function_F3.currentTextChanged.connect(lambda: self.populate_objective_function(
+            self.ui.ccb_Objective_Function_F3.currentText().split(', '), self.ui.ccb_Objective_Function_F3,
+            self.ui.tw_Objective_Function_F3, self.f3_dict))
 
     def initUI(self):
-        # hide code
-        self.ppUI.w_SLANS.hide()
 
-        self.ppUI.w_Toggle_F3.hide()
+        # splitter
+        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
+        
+        # hide code
+        self.ui.w_SLANS.hide()
+
+        self.ui.w_Toggle_F3.hide()
 
         # diable combine button
-        self.ppUI.pb_Combine.setEnabled(False)
+        self.ui.pb_Combine.setEnabled(False)
 
         # initial table dataframe
         # self.df = None
@@ -227,8 +231,8 @@ class PostprocessControl:
 
         # dataframe filters dict
         self.df_filter_dict = {
-            0: [self.ppUI.w_Filter_0, self.ppUI.le_LB_0, self.ppUI.le_RB_0, self.ppUI.cb_DFFilter_0,
-                self.ppUI.cb_Filter_Toggle_0, self.ppUI.pb_Remove_Filter]}
+            0: [self.ui.w_Filter_0, self.ui.le_LB_0, self.ui.le_RB_0, self.ui.cb_DFFilter_0,
+                self.ui.cb_Filter_Toggle_0, self.ui.pb_Remove_Filter]}
         self.filter_count = 1
 
         # plot variables
@@ -239,7 +243,7 @@ class PostprocessControl:
         # add checkable combobox
         self.cb_Shape_Space_Keys = QCheckableComboBox()
         self.cb_Shape_Space_Keys.setMinimumWidth(75)
-        self.ppUI.gl_Selected_Shapes.addWidget(self.cb_Shape_Space_Keys)
+        self.ui.gl_Selected_Shapes.addWidget(self.cb_Shape_Space_Keys)
 
         # shape space initialization
         self._shape_space = {}
@@ -254,31 +258,31 @@ class PostprocessControl:
         self.cid_pick = self.ppplot.fig.canvas.mpl_connect('pick_event', self.onpick)
         self.ppplot.fig.canvas.mpl_connect("motion_notify_event", self.hover)
 
-        self.ppUI.w_Constraints.setVisible(self.ppUI.pb_Constraints.isChecked())
-        self.ppUI.w_Save_Sub_Data.setVisible(self.ppUI.pb_Save_Sub_Data.isChecked())
+        self.ui.w_Constraints.setVisible(self.ui.pb_Constraints.isChecked())
+        self.ui.w_Save_Sub_Data.setVisible(self.ui.pb_Save_Sub_Data.isChecked())
 
     def run_mode_control(self):
-        if self.ppUI.cb_Run_Mode.currentText() == "Sequential":
-            self.ppUI.w_No_Of_Processors.setMinimumWidth(0)
-            self.ppUI.w_No_Of_Processors.setMaximumWidth(0)
+        if self.ui.cb_Run_Mode.currentText() == "Sequential":
+            self.ui.w_No_Of_Processors.setMinimumWidth(0)
+            self.ui.w_No_Of_Processors.setMaximumWidth(0)
         else:
-            self.ppUI.w_No_Of_Processors.setMinimumWidth(0)
-            self.ppUI.w_No_Of_Processors.setMaximumWidth(0)
-            animate_width(self.ppUI.w_No_Of_Processors, 0, 300, True)
+            self.ui.w_No_Of_Processors.setMinimumWidth(0)
+            self.ui.w_No_Of_Processors.setMaximumWidth(0)
+            animate_width(self.ui.w_No_Of_Processors, 0, 300, True)
 
     def code_change_control(self):
-        if self.ppUI.cb_Code.currentText() == 'ABCI':
-            self.ppUI.w_Intervals.show()
-            self.ppUI.w_SLANS.hide()
+        if self.ui.cb_Code.currentText() == 'ABCI':
+            self.ui.w_Intervals.show()
+            self.ui.w_SLANS.hide()
 
             # set default post processing folder to project directory
-            self.ppUI.le_SimulationData_Folder.setText(fr"{self.main_control.projectDir}\SimulationData\ABCI")
+            self.ui.le_SimulationData_Folder.setText(fr"{self.main_control.projectDir}\SimulationData\ABCI")
         else:
-            self.ppUI.w_Intervals.hide()
-            self.ppUI.w_SLANS.show()
+            self.ui.w_Intervals.hide()
+            self.ui.w_SLANS.show()
 
             # set default post processing folder to project directory
-            self.ppUI.le_SimulationData_Folder.setText(fr"{self.main_control.projectDir}\SimulationData\SLANS")
+            self.ui.le_SimulationData_Folder.setText(fr"{self.main_control.projectDir}\SimulationData\SLANS")
 
     def process_ABCI_data(self, shape_space_dir, abci_data_dir, folder_list, request, save_excel=None):
         if not os.path.exists(f'{save_excel}.xlsx'):
@@ -542,8 +546,8 @@ class PostprocessControl:
             f1 = self.combine_dict_dict[0]
             f2 = self.combine_dict_dict[1]
 
-            f3 = f1[self.column_list_1].merge(f2[self.column_list_2], on=self.ppUI.cb_On.currentText(),
-                                              how=self.ppUI.cb_How.currentText())
+            f3 = f1[self.column_list_1].merge(f2[self.column_list_2], on=self.ui.cb_On.currentText(),
+                                              how=self.ui.cb_How.currentText())
             if save_excel.split('.')[-1] != 'xlsx':
                 save_excel = f'{save_excel}.xlsx'
 
@@ -629,8 +633,8 @@ class PostprocessControl:
         self.check_for_common_key()
 
     def check_for_common_key(self):
-        lw1 = self.ppUI.lw_Selected_Columns_Doc1
-        lw2 = self.ppUI.lw_Selected_Columns_Doc2
+        lw1 = self.ui.lw_Selected_Columns_Doc1
+        lw2 = self.ui.lw_Selected_Columns_Doc2
 
         # get item text list from list widgets
         itemsTextList1 = [str(lw1.item(i).text()) for i in range(lw1.count())]
@@ -642,15 +646,15 @@ class PostprocessControl:
         # check if intersection_list empty, populate cb_On and disable combine button if yes
         if intersection_list:
             # clear cb_On
-            self.ppUI.cb_On.clear()
+            self.ui.cb_On.clear()
             # populate cb_On
             for key in intersection_list:
-                self.ppUI.cb_On.addItem(key)
+                self.ui.cb_On.addItem(key)
 
             # enable combine button
-            self.ppUI.pb_Combine.setEnabled(True)
+            self.ui.pb_Combine.setEnabled(True)
         else:
-            self.ppUI.pb_Combine.setEnabled(False)
+            self.ui.pb_Combine.setEnabled(False)
 
     def show_hide_(self, wid1, wid2):
         if wid1.currentText().lower() == 'parallel':
@@ -667,14 +671,14 @@ class PostprocessControl:
 
     def toggle_page(self, key):
         if key == 'CEM':
-            self.ppUI.stackedWidget.setCurrentIndex(0)
+            self.ui.stackedWidget.setCurrentIndex(0)
 
         if key == 'CST':
-            self.ppUI.stackedWidget.setCurrentIndex(1)
+            self.ui.stackedWidget.setCurrentIndex(1)
 
     def load_file(self):
         filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Excel Files (*.xlsx)")
-        self.ppUI.le_Pandas_Filename.setText(filename)
+        self.ui.le_Pandas_Filename.setText(filename)
 
         self.dataset_filename = filename
         try:
@@ -698,16 +702,16 @@ class PostprocessControl:
                     sub = QMdiSubWindow()
                     sub.setWidget(pandas_object.w_Pandas)
                     sub.setWindowTitle(f'Dataframe: {filename}')
-                    self.ppUI.mdiArea.addSubWindow(sub)
+                    self.ui.mdiArea.addSubWindow(sub)
                     sub.show()
                     self.sub_window_dict[filename] = sub
                     # self.MDI_DATAFRAME_COUNT += 1
 
                 # populate first objective functions combo bozed and filter
                 for val in self.df_filter_dict.values():
-                    self.populate_filter(self.ppUI.ccb_Objective_Function_F1, df)
-                    self.populate_filter(self.ppUI.ccb_Objective_Function_F2, df)
-                    self.populate_filter(self.ppUI.ccb_Objective_Function_F3, df)
+                    self.populate_filter(self.ui.ccb_Objective_Function_F1, df)
+                    self.populate_filter(self.ui.ccb_Objective_Function_F2, df)
+                    self.populate_filter(self.ui.ccb_Objective_Function_F3, df)
                     self.populate_filter(val[3], df)
 
                 # print("datasets: ", self.datasets)
@@ -732,7 +736,7 @@ class PostprocessControl:
         pb.clicked.connect(lambda: print('Cancel clicked'))
         gl.addWidget(pb, 0, 2, 1, 1)
 
-        self.ppUI.gl_Datasets_Widgets.addWidget(w)
+        self.ui.gl_Datasets_Widgets.addWidget(w)
 
     def process_objective_function_input(self, key, df, exp, norm, weight):
         if df is not None:
@@ -775,19 +779,19 @@ class PostprocessControl:
 
     def plot_objective_function(self, alpha=1.0):
         # get operands
-        exp_x = self.ppUI.ccb_Objective_Function_F1.currentText().split(', ')
-        exp_y = self.ppUI.ccb_Objective_Function_F2.currentText().split(', ')
+        exp_x = self.ui.ccb_Objective_Function_F1.currentText().split(', ')
+        exp_y = self.ui.ccb_Objective_Function_F2.currentText().split(', ')
 
         x_norm, y_norm, x_weight, y_weight = [], [], [], []
         if exp_x != [''] and exp_y != ['']:
             # get norms
             for i in range(len(exp_x)):
-                x_norm.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 1).value())
-                x_weight.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 2).value())
+                x_norm.append(self.ui.tw_Objective_Function_F1.cellWidget(i, 1).value())
+                x_weight.append(self.ui.tw_Objective_Function_F1.cellWidget(i, 2).value())
 
             for i in range(len(exp_y)):
-                y_norm.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 1).value())
-                y_weight.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 2).value())
+                y_norm.append(self.ui.tw_Objective_Function_F2.cellWidget(i, 1).value())
+                y_weight.append(self.ui.tw_Objective_Function_F2.cellWidget(i, 2).value())
 
             # check if norm count equal operand count
             if len(exp_x) == len(x_norm) and len(exp_y) == len(y_norm):
@@ -845,7 +849,7 @@ class PostprocessControl:
                     sub = QMdiSubWindow()
                     sub.setWidget(self.ppplot.w_PPPlot)
                     sub.setWindowTitle('Plot')
-                    self.ppUI.mdiArea.addSubWindow(sub)
+                    self.ui.mdiArea.addSubWindow(sub)
                     sub.show()
                     self.MDI_PLOT_COUNT += 1
             else:
@@ -855,24 +859,24 @@ class PostprocessControl:
 
     def plot_objective_function_3D(self, alpha=1.0):
         # get operands
-        exp_x = self.ppUI.ccb_Objective_Function_F1.currentText().split(', ')
-        exp_y = self.ppUI.ccb_Objective_Function_F2.currentText().split(', ')
-        exp_z = self.ppUI.ccb_Objective_Function_F3.currentText().split(', ')
+        exp_x = self.ui.ccb_Objective_Function_F1.currentText().split(', ')
+        exp_y = self.ui.ccb_Objective_Function_F2.currentText().split(', ')
+        exp_z = self.ui.ccb_Objective_Function_F3.currentText().split(', ')
 
         x_norm, y_norm, x_weight, y_weight, z_norm, z_weight = [], [], [], [], [], []
         if exp_x != [''] and exp_y != [''] and exp_z != ['']:
             # get norms
             for i in range(len(exp_x)):
-                x_norm.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 1).value())
-                x_weight.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 2).value())
+                x_norm.append(self.ui.tw_Objective_Function_F1.cellWidget(i, 1).value())
+                x_weight.append(self.ui.tw_Objective_Function_F1.cellWidget(i, 2).value())
 
             for i in range(len(exp_y)):
-                y_norm.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 1).value())
-                y_weight.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 2).value())
+                y_norm.append(self.ui.tw_Objective_Function_F2.cellWidget(i, 1).value())
+                y_weight.append(self.ui.tw_Objective_Function_F2.cellWidget(i, 2).value())
 
             for i in range(len(exp_z)):
-                z_norm.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 1).value())
-                z_weight.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 2).value())
+                z_norm.append(self.ui.tw_Objective_Function_F3.cellWidget(i, 1).value())
+                z_weight.append(self.ui.tw_Objective_Function_F3.cellWidget(i, 2).value())
 
             # check if norm count equal operand count
             if len(exp_x) == len(x_norm) and len(exp_y) == len(y_norm) and len(exp_z) == len(z_norm):
@@ -946,7 +950,7 @@ class PostprocessControl:
                     sub = QMdiSubWindow()
                     sub.setWidget(self.ppplot.w_PPPlot)
                     sub.setWindowTitle('Plot')
-                    self.ppUI.mdiArea.addSubWindow(sub)
+                    self.ui.mdiArea.addSubWindow(sub)
                     sub.show()
                     self.MDI_PLOT_COUNT += 1
 
@@ -958,24 +962,24 @@ class PostprocessControl:
 
     # def plot_objective_function_3D_mayavi(self, alpha=1.0):
     #     # get operands
-    #     exp_x = self.ppUI.ccb_Objective_Function_F1.currentText().split(', ')
-    #     exp_y = self.ppUI.ccb_Objective_Function_F2.currentText().split(', ')
-    #     exp_z = self.ppUI.ccb_Objective_Function_F3.currentText().split(', ')
+    #     exp_x = self.ui.ccb_Objective_Function_F1.currentText().split(', ')
+    #     exp_y = self.ui.ccb_Objective_Function_F2.currentText().split(', ')
+    #     exp_z = self.ui.ccb_Objective_Function_F3.currentText().split(', ')
     #
     #     x_norm, y_norm, x_weight, y_weight, z_norm, z_weight = [], [], [], [], [], []
     #     if exp_x != [''] and exp_y != [''] and exp_z != ['']:
     #         # get norms
     #         for i in range(len(exp_x)):
-    #             x_norm.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 1).value())
-    #             x_weight.append(self.ppUI.tw_Objective_Function_F1.cellWidget(i, 2).value())
+    #             x_norm.append(self.ui.tw_Objective_Function_F1.cellWidget(i, 1).value())
+    #             x_weight.append(self.ui.tw_Objective_Function_F1.cellWidget(i, 2).value())
     #
     #         for i in range(len(exp_y)):
-    #             y_norm.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 1).value())
-    #             y_weight.append(self.ppUI.tw_Objective_Function_F2.cellWidget(i, 2).value())
+    #             y_norm.append(self.ui.tw_Objective_Function_F2.cellWidget(i, 1).value())
+    #             y_weight.append(self.ui.tw_Objective_Function_F2.cellWidget(i, 2).value())
     #
     #         for i in range(len(exp_z)):
-    #             z_norm.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 1).value())
-    #             z_weight.append(self.ppUI.tw_Objective_Function_F3.cellWidget(i, 2).value())
+    #             z_norm.append(self.ui.tw_Objective_Function_F3.cellWidget(i, 1).value())
+    #             z_weight.append(self.ui.tw_Objective_Function_F3.cellWidget(i, 2).value())
     #
     #         # check if norm count equal operand count
     #         if len(exp_x) == len(x_norm) and len(exp_y) == len(y_norm) and len(exp_z) == len(z_norm):
@@ -1011,7 +1015,7 @@ class PostprocessControl:
     #                 #     sub = QMdiSubWindow()
     #                 #     sub.setWidget(self.ppplot.w_PPPlot)
     #                 #     sub.setWindowTitle('Plot')
-    #                 #     self.ppUI.mdiArea.addSubWindow(sub)
+    #                 #     self.ui.mdiArea.addSubWindow(sub)
     #                 #     sub.show()
     #                 #     self.MDI_PLOT_COUNT += 1
     #         else:
@@ -1042,8 +1046,8 @@ class PostprocessControl:
     def plot_pareto(self, key, data):
         x, y, x_inv, y_inv, x_global, y_global = data
 
-        if self.ppUI.cb_Pareto.checkState() == 2:
-            if self.ppUI.cb_Pareto_Setting.currentText().lower() == "global":
+        if self.ui.cb_Pareto.checkState() == 2:
+            if self.ui.cb_Pareto_Setting.currentText().lower() == "global":
                 x_pareto, y_pareto = self.pareto_front(x_global, y_global)
             else:
                 x_pareto, y_pareto = self.pareto_front(x, y)
@@ -1059,14 +1063,14 @@ class PostprocessControl:
                                                                  markersize=6, mec='k',
                                                                  picker=True, label="Pareto Front")
 
-            if not self.ppUI.sc_Toggle_3D.isChecked():
+            if not self.ui.sc_Toggle_3D.isChecked():
                 self.ppplot.plt.toggle_ax(True)
 
                 # print pareto shapes
                 pareto_list = []
                 plotted_pareto_pts = []
                 for x, y in zip(x_pareto, y_pareto):
-                    if self.ppUI.cb_Pareto_Setting.currentText().lower() == 'global':
+                    if self.ui.cb_Pareto_Setting.currentText().lower() == 'global':
                         xvalues = x_global
                         yvalues = y_global
                     else:
@@ -1119,9 +1123,9 @@ class PostprocessControl:
 
     def plot_pareto_3D(self, key, data):
         x, y, z, x_inv, y_inv, z_inv, x_global, y_global, z_global = data
-        # if self.ppUI.cb_Pareto.checkState() == 2:
+        # if self.ui.cb_Pareto.checkState() == 2:
         if True:
-            if self.ppUI.cb_Pareto_Setting.currentText().lower() == "global":
+            if self.ui.cb_Pareto_Setting.currentText().lower() == "global":
                 x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x_global, y_global, z_global)
             else:
                 x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x, y, z)
@@ -1174,7 +1178,7 @@ class PostprocessControl:
             pareto_list = []
             plotted_pareto_pts = []
             for x, y, z in zip(x_pareto, y_pareto, z_pareto):
-                if self.ppUI.cb_Pareto_Setting.currentText().lower() == 'global':
+                if self.ui.cb_Pareto_Setting.currentText().lower() == 'global':
                     xvalues = x_global
                     yvalues = y_global
                     zvalues = z_global
@@ -1230,7 +1234,7 @@ class PostprocessControl:
 
     # def plot_pareto_3D_mayavi(self, key, data):
     #     x, y, z, x_inv, y_inv, z_inv, x_global, y_global, z_global = data
-    #     if self.ppUI.cb_Pareto_Setting.currentText().lower() == "global":
+    #     if self.ui.cb_Pareto_Setting.currentText().lower() == "global":
     #         x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x_global, y_global, z_global)
     #     else:
     #         x_pareto, y_pareto, z_pareto = self.pareto_front_3D(x, y, z)
@@ -1271,7 +1275,7 @@ class PostprocessControl:
     #     pareto_list = []
     #     plotted_pareto_pts = []
     #     for x, y, z in zip(x_pareto, y_pareto, z_pareto):
-    #         if self.ppUI.cb_Pareto_Setting.currentText().lower() == 'global':
+    #         if self.ui.cb_Pareto_Setting.currentText().lower() == 'global':
     #             xvalues = x_global
     #             yvalues = y_global
     #             zvalues = z_global
@@ -1299,7 +1303,7 @@ class PostprocessControl:
             else:
                 return [-x for x in l]  # to find the pareto minima
 
-        datapoints = np.array([reverse_list(x, self.ppUI.cb_Goal_F1.currentText()), reverse_list(y, self.ppUI.cb_Goal_F2.currentText())])
+        datapoints = np.array([reverse_list(x, self.ui.cb_Goal_F1.currentText()), reverse_list(y, self.ui.cb_Goal_F2.currentText())])
 
         pareto = oapackage.ParetoDoubleLong()
 
@@ -1312,7 +1316,7 @@ class PostprocessControl:
 
         optimal_datapoints = datapoints[:, lst]
 
-        return reverse_list(optimal_datapoints[0, :], self.ppUI.cb_Goal_F1.currentText()), reverse_list(optimal_datapoints[1, :], self.ppUI.cb_Goal_F2.currentText())
+        return reverse_list(optimal_datapoints[0, :], self.ui.cb_Goal_F1.currentText()), reverse_list(optimal_datapoints[1, :], self.ui.cb_Goal_F2.currentText())
 
     def pareto_front_3D(self, x, y, z):
         def reverse_list(l, r):
@@ -1321,9 +1325,9 @@ class PostprocessControl:
             else:
                 return [-x for x in l]
 
-        datapoints = np.array([reverse_list(x, self.ppUI.cb_Goal_F1.currentText()),
-                               reverse_list(y, self.ppUI.cb_Goal_F2.currentText()),
-                               reverse_list(z, self.ppUI.cb_Goal_F3.currentText())])
+        datapoints = np.array([reverse_list(x, self.ui.cb_Goal_F1.currentText()),
+                               reverse_list(y, self.ui.cb_Goal_F2.currentText()),
+                               reverse_list(z, self.ui.cb_Goal_F3.currentText())])
 
         pareto = oapackage.ParetoDoubleLong()
 
@@ -1336,9 +1340,9 @@ class PostprocessControl:
 
         optimal_datapoints = datapoints[:, lst]
 
-        return reverse_list(optimal_datapoints[0, :], self.ppUI.cb_Goal_F1.currentText()), \
-               reverse_list(optimal_datapoints[1, :], self.ppUI.cb_Goal_F2.currentText()), \
-               reverse_list(optimal_datapoints[2, :], self.ppUI.cb_Goal_F3.currentText())
+        return reverse_list(optimal_datapoints[0, :], self.ui.cb_Goal_F1.currentText()), \
+               reverse_list(optimal_datapoints[1, :], self.ui.cb_Goal_F2.currentText()), \
+               reverse_list(optimal_datapoints[2, :], self.ui.cb_Goal_F3.currentText())
 
     def plot_cavity(self, key, mid_cell, ax):
         # clear axis (improve later
@@ -1418,10 +1422,10 @@ class PostprocessControl:
         # add signal
         pb.clicked.connect(lambda: self.remove_filter(pb))
 
-        self.ppUI.gl_Filter.addWidget(w)
+        self.ui.gl_Filter.addWidget(w)
 
         # add to UI
-        self.ppUI.gl_Filter.addWidget(w)
+        self.ui.gl_Filter.addWidget(w)
 
         # populate combobox
         if self.df is not None:
@@ -1487,7 +1491,7 @@ class PostprocessControl:
                 self.pandas_model_dict[key].pandasUI.tv_Pandas.setModel(self.pandas_model_dict[key])
 
         # update plot if any
-        self.plot_objective_function(self.ppUI.hs_Alpha.value()/100)
+        self.plot_objective_function(self.ui.hs_Alpha.value()/100)
 
     def add_handle(self, i, var, val):
         # combo box
@@ -1507,10 +1511,10 @@ class PostprocessControl:
         cb = QCheckBox()
 
         # add to widget
-        self.ppUI.gl_Handles.addWidget(cbb, i, 0)
-        self.ppUI.gl_Handles.addWidget(dsb, i, 1)
-        self.ppUI.gl_Handles.addWidget(cb, i, 2)
-        self.ppUI.gl_Handles.addWidget(hs, i, 3)
+        self.ui.gl_Handles.addWidget(cbb, i, 0)
+        self.ui.gl_Handles.addWidget(dsb, i, 1)
+        self.ui.gl_Handles.addWidget(cb, i, 2)
+        self.ui.gl_Handles.addWidget(hs, i, 3)
 
         self.OF_slider_dict[var] = [cbb, dsb, cb, hs]
 
@@ -1589,15 +1593,15 @@ class PostprocessControl:
                             self.ppplot.fig.canvas.draw_idle()
 
     def toggle_interactive(self):
-        if self.ppUI.cb_Interactive.checkState() == 2:
+        if self.ui.cb_Interactive.checkState() == 2:
             self.cid_pick = self.ppplot.fig.canvas.mpl_connect("motion_notify_event", self.hover)
         else:
             self.ppplot.fig.canvas.mpl_disconnect(self.cid_pick)
 
     def process_folder_data(self):
-        folder = self.ppUI.le_SimulationData_Folder.text()
-        filename = fr"{self.main_control.projectDir}\PostprocessingData\Data\{self.ppUI.le_Save_Filename.text()}"
-        proc_count = self.ppUI.sb_No_Of_Processors.value()
+        folder = self.ui.le_SimulationData_Folder.text()
+        filename = fr"{self.main_control.projectDir}\PostprocessingData\Data\{self.ui.le_Save_Filename.text()}"
+        proc_count = self.ui.sb_No_Of_Processors.value()
 
         temp_folder = fr"{self.main_control.projectDir}\PostprocessingData\Data\_temp"
         # create temp folder
@@ -1609,34 +1613,34 @@ class PostprocessControl:
             os.mkdir(temp_folder)
 
         # if len(list(self._shape_space.keys())) != 0:
-        if self.ppUI.cb_Run_Mode.currentText() == 'Sequential':
-            if self.ppUI.cb_Code.currentText() == "ABCI":
-                mon_interval = text_to_list(self.ppUI.le_Longitudinal_Intervals.text())
-                dip_interval = text_to_list(self.ppUI.le_Transverse_Intervals.text())
+        if self.ui.cb_Run_Mode.currentText() == 'Sequential':
+            if self.ui.cb_Code.currentText() == "ABCI":
+                mon_interval = text_to_list(self.ui.le_Longitudinal_Intervals.text())
+                dip_interval = text_to_list(self.ui.le_Transverse_Intervals.text())
 
                 abci_data_ex.multiple_folders_data(self._shape_space, folder, "all", filename, mon_interval,
                                                    dip_interval)
 
             else:
-                request = self.ppUI.cb_SLANS_Request.currentText()
-                mode = self.ppUI.sb_SLANS_Mode.value()
-                bc = self.ppUI.cb_BC.currentText()
+                request = self.ui.cb_SLANS_Request.currentText()
+                mode = self.ui.sb_SLANS_Mode.value()
+                bc = self.ui.cb_BC.currentText()
                 bc = bc.replace('m', '3')
                 bc = bc.replace('e', '2')
 
                 slans_data_ex.multiple_folders_data(folder, mode, bc, request, filename)
 
         else:
-            if self.ppUI.cb_Code.currentText() == "ABCI":
-                mon_interval = text_to_list(self.ppUI.le_Longitudinal_Intervals.text())
-                dip_interval = text_to_list(self.ppUI.le_Transverse_Intervals.text())
+            if self.ui.cb_Code.currentText() == "ABCI":
+                mon_interval = text_to_list(self.ui.le_Longitudinal_Intervals.text())
+                dip_interval = text_to_list(self.ui.le_Transverse_Intervals.text())
                 abci_data_ex.multiple_folders_data_parallel(self._shape_space, folder, proc_count, 'all', filename,
                                                             temp_folder, mon_interval, dip_interval)
             else:
-                request = self.ppUI.cb_SLANS_Request.currentText()
-                mode = self.ppUI.sb_SLANS_Mode.value()
+                request = self.ui.cb_SLANS_Request.currentText()
+                mode = self.ui.sb_SLANS_Mode.value()
 
-                bc = self.ppUI.cb_BC.currentText()
+                bc = self.ui.cb_BC.currentText()
                 bc = bc.replace('m', '3')
                 bc = bc.replace('e', '2')
                 slans_data_ex.multiple_folders_data_parallel(self._shape_space, folder, proc_count, mode, bc, request,

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1063</width>
+    <width>1139</width>
     <height>862</height>
    </rect>
   </property>
@@ -19,45 +19,15 @@
   <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="2">
     <widget class="QWidget" name="widget" native="true">
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QSplitter" name="splitter">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QSplitter" name="sp_Left_Right_Container">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
         <widget class="QWidget" name="widget_5" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>500</width>
-           <height>0</height>
-          </size>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="1" column="0">
-           <widget class="QWidget" name="w_Settings" native="true">
-            <property name="minimumSize">
-             <size>
-              <width>300</width>
-              <height>0</height>
-             </size>
-            </property>
-            <property name="styleSheet">
-             <string notr="true">border-radius: 15px;</string>
-            </property>
-            <layout class="QGridLayout" name="gridLayout_22">
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="0" alignment="Qt::AlignLeft">
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
            <widget class="QScrollArea" name="scrollArea">
             <property name="styleSheet">
              <string notr="true"/>
@@ -76,8 +46,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>391</width>
-               <height>1493</height>
+               <width>745</width>
+               <height>1737</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -110,7 +80,7 @@
                 </property>
                </widget>
               </item>
-              <item row="12" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+              <item row="12" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_UQ" native="true">
                 <layout class="QGridLayout" name="gridLayout_7">
                  <item row="1" column="1">
@@ -185,7 +155,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="10" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+              <item row="10" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_Analysis_Settings" native="true">
                 <layout class="QGridLayout" name="gridLayout_2">
                  <item row="5" column="1">
@@ -396,7 +366,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="2" column="0" alignment="Qt::AlignLeft">
+              <item row="2" column="0">
                <widget class="QWidget" name="w_Cell_Geometric_Parameters" native="true">
                 <layout class="QGridLayout" name="gridLayout_9">
                  <item row="1" column="0">
@@ -405,53 +375,27 @@
                     <string notr="true"/>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_33">
-                    <item row="1" column="1" colspan="2">
-                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
-                    </item>
-                    <item row="1" column="4">
+                    <item row="2" column="4">
                      <widget class="SwitchControl" name="sc_Create_Summary"/>
                     </item>
-                    <item row="1" column="3">
+                    <item row="2" column="3">
                      <widget class="QLabel" name="label_4">
                       <property name="text">
                        <string>Summary</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="1" column="0">
+                    <item row="2" column="0">
                      <widget class="QLabel" name="label_17">
                       <property name="text">
                        <string>Select Shape</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="0" colspan="2">
-                     <widget class="QComboBox" name="cb_Shape_Entry_Mode">
-                      <property name="minimumSize">
-                       <size>
-                        <width>50</width>
-                        <height>50</height>
-                       </size>
-                      </property>
-                      <property name="maximumSize">
-                       <size>
-                        <width>150</width>
-                        <height>100</height>
-                       </size>
-                      </property>
-                      <item>
-                       <property name="text">
-                        <string>Load Shape Space</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Enter Shape Manually</string>
-                       </property>
-                      </item>
-                     </widget>
+                    <item row="2" column="1" colspan="2">
+                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
                     </item>
-                    <item row="0" column="2" colspan="3">
+                    <item row="1" column="1" colspan="4">
                      <widget class="QWidget" name="w_Select_Shape_Space" native="true">
                       <layout class="QGridLayout" name="gridLayout_86">
                        <property name="leftMargin">
@@ -485,20 +429,8 @@
                          </property>
                         </widget>
                        </item>
-                       <item row="0" column="1">
+                       <item row="0" column="0" colspan="2">
                         <widget class="QLineEdit" name="le_Shape_Space">
-                         <property name="minimumSize">
-                          <size>
-                           <width>150</width>
-                           <height>0</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>150</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
                          <property name="text">
                           <string>test</string>
                          </property>
@@ -508,6 +440,27 @@
                         </widget>
                        </item>
                       </layout>
+                     </widget>
+                    </item>
+                    <item row="1" column="0">
+                     <widget class="QComboBox" name="cb_Shape_Entry_Mode">
+                      <item>
+                       <property name="text">
+                        <string>Load</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Manual</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLabel" name="label_18">
+                      <property name="text">
+                       <string>Shape Space</string>
+                      </property>
                      </widget>
                     </item>
                    </layout>
@@ -1210,7 +1163,7 @@
                          </layout>
                         </widget>
                        </item>
-                       <item row="1" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+                       <item row="1" column="0" alignment="Qt::AlignTop">
                         <widget class="QWidget" name="w_Inner_Cell" native="true">
                          <property name="styleSheet">
                           <string notr="true">#w_Inner_Cell{
@@ -1812,7 +1765,7 @@
         </widget>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item>
        <widget class="QWidget" name="widget_7" native="true">
         <property name="maximumSize">
          <size>

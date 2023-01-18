@@ -1306,3 +1306,27 @@ def jac(z, *data):
 #
 # plt.show()
 
+import scipy.io as spio
+def plot_mat(filepath):
+    # load mat file
+    data = {}
+    # files_folder = "D:\Dropbox\multipacting\MPGUI21"
+
+    if ".mat" in filepath:
+        writer = pd.ExcelWriter(r'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\multiple.xlsx', engine='openpyxl')
+        data = spio.loadmat(fr"{filepath}")
+
+        del data['__header__']
+        del data['__version__']
+        del data['__globals__']
+
+        for key, vals in data.items():
+            df = pd.DataFrame(np.array(vals).T)
+
+            df.to_excel(writer, sheet_name=key)
+
+        writer.save()
+
+
+filepath = r'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\Impedance_all_Fig_6.20.mat'
+plot_mat(filepath)

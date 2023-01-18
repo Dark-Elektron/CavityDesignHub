@@ -58,22 +58,19 @@
             </property>
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="0" column="0">
-              <widget class="QSplitter" name="splitter">
+              <widget class="QSplitter" name="sp_Left_Right_Container">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
+               <property name="handleWidth">
+                <number>2</number>
+               </property>
                <widget class="QWidget" name="widget_28" native="true">
-                <property name="minimumSize">
-                 <size>
-                  <width>500</width>
-                  <height>0</height>
-                 </size>
-                </property>
                 <layout class="QGridLayout" name="gridLayout_22">
                  <item row="0" column="0">
                   <widget class="QTabWidget" name="tabWidget_2">
                    <property name="currentIndex">
-                    <number>2</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="tab_3">
                     <attribute name="title">
@@ -91,7 +88,7 @@
                           <x>0</x>
                           <y>0</y>
                           <width>456</width>
-                          <height>805</height>
+                          <height>858</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_48">
@@ -561,15 +558,15 @@
                      <item row="0" column="0">
                       <widget class="QToolBox" name="toolBox">
                        <property name="currentIndex">
-                        <number>0</number>
+                        <number>1</number>
                        </property>
                        <widget class="QWidget" name="page">
                         <property name="geometry">
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>442</width>
-                          <height>783</height>
+                          <width>458</width>
+                          <height>790</height>
                          </rect>
                         </property>
                         <attribute name="label">
@@ -586,8 +583,8 @@
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>414</width>
-                              <height>755</height>
+                              <width>438</width>
+                              <height>770</height>
                              </rect>
                             </property>
                             <layout class="QGridLayout" name="gridLayout_11">
@@ -881,8 +878,8 @@
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>133</width>
-                          <height>133</height>
+                          <width>232</width>
+                          <height>790</height>
                          </rect>
                         </property>
                         <attribute name="label">
@@ -899,8 +896,8 @@
                              <rect>
                               <x>0</x>
                               <y>0</y>
-                              <width>451</width>
-                              <height>310</height>
+                              <width>436</width>
+                              <height>753</height>
                              </rect>
                             </property>
                             <layout class="QGridLayout" name="gridLayout_27">
@@ -1071,12 +1068,6 @@
                     <layout class="QGridLayout" name="gridLayout_51">
                      <item row="0" column="0">
                       <widget class="QScrollArea" name="scrollArea_6">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
                        <property name="widgetResizable">
                         <bool>true</bool>
                        </property>
@@ -1084,20 +1075,14 @@
                         <property name="geometry">
                          <rect>
                           <x>0</x>
-                          <y>0</y>
-                          <width>426</width>
-                          <height>1307</height>
+                          <y>-62</y>
+                          <width>439</width>
+                          <height>1089</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_50">
                          <item row="7" column="0" alignment="Qt::AlignTop">
                           <widget class="QWidget" name="w_Constraints" native="true">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
                            <layout class="QGridLayout" name="gridLayout_31">
                             <item row="3" column="1">
                              <spacer name="verticalSpacer_4">
@@ -1256,12 +1241,6 @@
                          </item>
                          <item row="4" column="0" alignment="Qt::AlignTop">
                           <widget class="QWidget" name="w_Objective_Function" native="true">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
                            <layout class="QGridLayout" name="gridLayout_37">
                             <item row="6" column="0" colspan="2">
                              <widget class="QWidget" name="widget_15" native="true">
@@ -1574,12 +1553,6 @@
                          </item>
                          <item row="9" column="0" alignment="Qt::AlignTop">
                           <widget class="QWidget" name="w_Save_Sub_Data" native="true">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
                            <layout class="QGridLayout" name="gridLayout_17">
                             <item row="0" column="1">
                              <widget class="QLineEdit" name="lineEdit_2"/>
@@ -1596,24 +1569,6 @@
                          </item>
                          <item row="0" column="0">
                           <widget class="QWidget" name="widget_20" native="true">
-                           <property name="sizePolicy">
-                            <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                             <horstretch>0</horstretch>
-                             <verstretch>0</verstretch>
-                            </sizepolicy>
-                           </property>
-                           <property name="minimumSize">
-                            <size>
-                             <width>400</width>
-                             <height>0</height>
-                            </size>
-                           </property>
-                           <property name="maximumSize">
-                            <size>
-                             <width>800</width>
-                             <height>16777215</height>
-                            </size>
-                           </property>
                            <layout class="QGridLayout" name="gridLayout_35">
                             <item row="0" column="1">
                              <widget class="QPushButton" name="pb_Select_File">

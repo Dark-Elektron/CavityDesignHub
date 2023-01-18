@@ -23,10 +23,10 @@ WP = {
           'I0 [mA]': 147
           },
     'H': {'E [GeV]': 120,
-          'I0 [mA]': 26.7
+          'I0 [mA]': 54.3
           },
     'ttbar': {'E [GeV]': 182.5,
-              'I0 [mA]': 5
+              'I0 [mA]': 10
               }
 }
 
@@ -158,26 +158,30 @@ class Cavities:
 
         ind = np.where((E_acc >= 0.99 * op_field * 1e6) & (E_acc <= 1.01 * op_field * 1e6))
         qois = {
-            r"N_cav/beam": np.average(cavity.n_cav[ind]),
+            r"N_cav": np.average(cavity.n_cav[ind]),
             r"Q0 [10^8]$": np.average(cavity.Q0[ind] * 1e-8),
             r"Rs [Ohm]$": np.average(cavity.Rs[ind]),
-            r"P_stat/cav [W]": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
-            r"P_dyn/cav [W]": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
-            # r"P_\mathrm{wp/cav}$ [W]": np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),
-            r"P_in/beam [kW]": np.average(cavity.p_in[ind]) * 1e-3,
+            # r"P_stat/cav [W]": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
+            # r"P_dyn/cav [W]": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
+            r"P_stat [W]": np.average(cavity.pstat[ind]),
+            r"P_dyn [W]": np.average(cavity.pdyn[ind]),
+            # r"P_\mathrm{wp}$ [W]": np.average(cavity.p_wp[ind]),
+            r"P_in [kW]/\mathrm{cav}": np.average(cavity.p_in[ind]) * 1e-3,
             # r"$Q_\mathrm{0} \mathrm{[10^8]}$": np.average(cavity.Q0[ind] * 1e-8),
             # r"$Rs_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Rs[ind])
         }
         self.p_qois.append(qois)
 
         qois_norm_units = {
-            r"$n_\mathrm{cav/beam}$": np.average(cavity.n_cav[ind]),
+            r"$n_\mathrm{cav}$": np.average(cavity.n_cav[ind]),
             # r"$q_\mathrm{0}$": np.average(cavity.Q0[ind]),
             # r"$r_\mathrm{s}$": np.average(cavity.Rs[ind]),
-            r"$p_\mathrm{stat/cav}$": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
-            r"$p_\mathrm{dyn/cav}$": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
+            # r"$p_\mathrm{stat/cav}$": np.average(cavity.pstat[ind] / cavity.n_cav[ind]),
+            # r"$p_\mathrm{dyn/cav}$": np.average(cavity.pdyn[ind] / cavity.n_cav[ind]),
+            r"$p_\mathrm{stat}$": np.average(cavity.pstat[ind]),
+            r"$p_\mathrm{dyn}$": np.average(cavity.pdyn[ind]),
             # r"$p_\mathrm{wp/cav}$": np.average(cavity.p_wp[ind]/cavity.n_cav[ind]),
-            r"$p_\mathrm{in/beam}$": np.average(cavity.p_in[ind]),
+            r"$p_\mathrm{in}/\mathrm{cav}$": np.average(cavity.p_in[ind]),
             # r"$Q_\mathrm{0} \mathrm{[10^8]}$": np.average(cavity.Q0[ind] * 1e-8),
             # r"$Rs_\mathrm{0} \mathrm{[10^7]}$": np.average(cavity.Rs[ind])
         }
@@ -207,8 +211,8 @@ class Cavities:
         results_norm_units = []
         for cav in self.cavities_list:
             results_norm_units.append({
-                r"$e_\mathrm{pk}$": cav.e,
-                r"$b_\mathrm{pk}$": cav.b,
+                r"$e_\mathrm{pk}/e_\mathrm{acc}$": cav.e,
+                r"$b_\mathrm{pk}/e_\mathrm{acc}$": cav.b,
                 r"$k_\mathrm{cc}$": cav.k_cc,
                 r"$r/q$": cav.R_Q,
                 r"$g$": cav.G,
@@ -221,16 +225,6 @@ class Cavities:
         """
         Retrieves the higher-order modes quantities of interest
 
-        .. plot::
-           :include-source:
-
-           import matplotlib.pyplot as plt
-           import numpy as np
-           x = np.random.randn(1000)
-           plt.hist( x, 20)
-           plt.grid()
-           plt.title(r'Normal: $\mu=%.2f, \sigma=%.2f$'%(x.mean(), x.std()))
-           plt.show()
 
         Returns
         -------
@@ -304,7 +298,7 @@ class Cavities:
                      ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dyn}$" + fr"{cavity.name}")
 
             # p1, = ax1.plot(cavity.E_acc * 1e-6, cavity.p_wp/cavity.n_cav,
-            #                ls=self.ls[i], lw=2, c='k', label=r"$P_\mathrm{wp/beam}$" + fr"{cavity.name}")
+            #                ls=self.ls[i], lw=2, c='k', label=r"$P_\mathrm{wp}$" + fr"{cavity.name}")
 
             p2, = ax2.plot(cavity.E_acc * 1e-6, cavity.n_cav, ls=self.ls[i], lw=2, c='tab:red',
                            label=fr"{cavity.name}")
@@ -317,7 +311,7 @@ class Cavities:
             ax2.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
             ax2.set_ylabel(r"$N_\mathrm{cav}$")
             ax3.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
-            ax3.set_ylabel(r"$P_\mathrm{in/cav}$ [kW]")
+            ax3.set_ylabel(r"$P_\mathrm{in}/\mathrm{cav}$ [kW]")
 
             ax1.axvline(cavity.op_field * 1e-6, ls=':', c='k')
             ax1.text(cavity.op_field * 1e-6 - 1, 0.3, f"{cavity.op_field * 1e-6} MV/m",
@@ -1355,7 +1349,7 @@ class Cavities:
 
         # plot decorations
         ax.set_xlabel(r"$Q_{L,0}$")
-        ax.set_ylabel(r"$P_\mathrm{in} ~[\mathrm{kW}]$")
+        ax.set_ylabel(r"$P_\mathrm{in}/\mathrm{cav} ~[\mathrm{kW}]$")
         ax.set_xscale('log')
         ax.set_xlim(5e3, 1e9)
         ax.set_ylim(0, 3000)
@@ -1546,14 +1540,14 @@ class Cavities:
             l27 = r"\midrule"
             l28 = r"\midrule"
 
-            l29 = r"$N_\mathrm{cav/beam}$ " + "".join(
-                [fr"& {round(qoi[r'N_cav/beam'], 2)} " for qoi in self.p_qois]) + r" \\"
+            l29 = r"$N_\mathrm{cav}$ " + "".join(
+                [fr"& {round(qoi[r'N_cav'], 2)} " for qoi in self.p_qois]) + r" \\"
             l29a = r"$P_\mathrm{in}\mathrm{/cav} [\mathrm{kW}]$ " + "".join(
-                [fr"& {round(qoi[r'P_in/beam [kW]'], 2)} " for qoi in self.p_qois]) + r" \\"
-            l30 = r"$P_\mathrm{stat}\mathrm{/cav} [\mathrm{W}]$ " + "".join(
-                [fr"& {round(qoi[r'P_stat/cav [W]'], 2)} " for qoi in self.p_qois]) + r" \\"
-            l31 = r"$P_\mathrm{dyn}\mathrm{/cav} [\mathrm{W}]$ " + "".join(
-                [fr"& {round(qoi[r'P_dyn/cav [W]'], 2)} " for qoi in self.p_qois]) + r" \\"
+                [fr"& {round(qoi[r'P_in [kW]'], 2)} " for qoi in self.p_qois]) + r" \\"
+            l30 = r"$P_\mathrm{stat} [\mathrm{W}]$ " + "".join(
+                [fr"& {round(qoi[r'P_stat [W]'], 2)} " for qoi in self.p_qois]) + r" \\"
+            l31 = r"$P_\mathrm{dyn} [\mathrm{W}]$ " + "".join(
+                [fr"& {round(qoi[r'P_dyn [W]'], 2)} " for qoi in self.p_qois]) + r" \\"
             l32 = r"$P_\mathrm{HOM}\mathrm{/cav} \mathrm{[SR/BS]} [\mathrm{kW}]$ " + "".join(
                 [fr"& {round(cav.phom, 2)} " for cav in self.cavities_list]) + r" \\"
             l33 = r"\bottomrule"
@@ -2167,9 +2161,9 @@ class Cavity:
             ic(l_active)
             txt = f"{labels[i]}, " \
                   f"{n_cells[i]}-Cell {int(f0[i] / 1e6)} MHz {int(np.ceil(Vrf[i] / (E_acc[i] * l_active[i])))} " \
-                  f"cav/beam" + " V$_\mathrm{RF}\mathrm{/beam}$ =" + f"{round(Vrf[i] * 1e-9, 2)} GV " \
+                  f"cav" + " V$_\mathrm{RF}$ =" + f"{round(Vrf[i] * 1e-9, 2)} GV " \
                   + " V$_\mathrm{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV " \
-                                            "P$_{\mathrm{in}}/\mathrm{beam}$ = " + f"{round(min(pin) * 1e-3, 1)} kW" \
+                                            "P$_{\mathrm{in}}$ = " + f"{round(min(pin) * 1e-3, 1)} kW" \
                                                                                    "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
                 QL_0_x[i])
 
@@ -2191,7 +2185,7 @@ class Cavity:
 
         # plot decorations
         ax.set_xlabel(r"$Q_{L,0}$")
-        ax.set_ylabel(r"$P_\mathrm{in} ~[\mathrm{kW}]$")
+        ax.set_ylabel(r"$P_\mathrm{in}/\mathrm{cav} ~[\mathrm{kW}]$")
         ax.set_xscale('log')
         ax.set_xlim(5e3, 1e9)
         ax.set_ylim(100, 2000)
@@ -2451,10 +2445,10 @@ class OperatingPoint:
 
 
 op_folder = fr"D:\Dropbox\CavityDesignHub\Cavity800\OperatingPoints\fcc.json"
-Z_op_point = OperatingPoint([op_folder, "Z"])
-W_op_point = OperatingPoint([op_folder, "W"])
-H_op_point = OperatingPoint([op_folder, "H"])
-ttbar_op_point = OperatingPoint([op_folder, "ttbar"])
+Z_op_point = OperatingPoint([op_folder, "Z_2022"])
+W_op_point = OperatingPoint([op_folder, "W_2022"])
+H_op_point = OperatingPoint([op_folder, "H_2022"])
+ttbar_op_point = OperatingPoint([op_folder, "ttbar_2022"])
 
 H_op_point.add_cavities([3])
 
@@ -2535,8 +2529,8 @@ H_op_point.add_cavities([3])
 #             l = ax.plot(QL_0, pin * 1e-3, label=f"${round(E_acc[i] * 1e-6, 2)}" + " ~[\mathrm{MV/m}]$", lw=4)
 #
 #         # add annotations
-#         txt = f"{labels[i]}, {n_cells[i]}-Cell 400 MHz \n {int(np.ceil(Vrf[i] / (2 * E_acc[i] * l_active[i]) / 2) * 2)} cav/beam" \
-#               + "\n V$_\mathbf{RF}\mathbf{/beam}$ =" + f"{round(Vrf[i] / 2 * 1e-9, 2)} GV " \
+#         txt = f"{labels[i]}, {n_cells[i]}-Cell 400 MHz \n {int(np.ceil(Vrf[i] / (2 * E_acc[i] * l_active[i]) / 2) * 2)} cav" \
+#               + "\n V$_\mathbf{RF}$ =" + f"{round(Vrf[i] / 2 * 1e-9, 2)} GV " \
 #               + "\n V$_\mathbf{cav}$ =" + f"{round(v_cav[i] * 1e-6, 1)} MV \n " \
 #                                           "P$_{\mathrm{in}}$ = " + f"{round(min(pin) * 1e-3, 1)} kW \n" \
 #                                                                    "Q$_{\mathrm{L, 0}}^*$ = " + "{:.2e}".format(
@@ -2557,7 +2551,7 @@ H_op_point.add_cavities([3])
 #
 #     # plot decorations
 #     ax.set_xlabel("$Q_{L,0}$")
-#     ax.set_ylabel("$P_\mathrm{in} ~[\mathrm{kW}]$")
+#     ax.set_ylabel("$P_\mathrm{in}/\mathrm{cav} ~[\mathrm{kW}]$")
 #     ax.set_xscale('log')
 #     # ax.set_xlim(5e3, 5e7)
 #     # ax.set_ylim(100, 2000)
@@ -2809,11 +2803,15 @@ def ttbar_study():
 
 
 def h_study():
-    c3794_H_400 = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
+    c3794_H_400 = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9, R_Q=152.8, G=198.42,
                          Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_400", op_field=11.87e6,
                          op_temp='4.5K', material='NbCu')
 
-    c3794_H_800 = Cavity(2, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=152.8, G=198.42,
+    # c3794_H_400_bulkNb = Cavity(2, l_cell_mid=187e-3, freq=400.79e6, vrf=2.1e9, R_Q=152.8, G=198.42,
+    #                      Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_400_bulkNb", op_field=11.87e6,
+    #                      op_temp='2K', material='bulkNb')
+
+    c3794_H_800 = Cavity(2, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9, R_Q=152.8, G=198.42,
                          Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_800", op_field=11.87e6,
                          op_temp='2K', material='bulkNb')
 
@@ -2821,7 +2819,7 @@ def h_study():
     #                      Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795", op_field=24.72e6,
     #                      op_temp='4.5K', material='NbCu')
 
-    c3795_H_800 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
+    c3795_H_800 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9, R_Q=448.12, G=261.63,
                          Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795_800", op_field=24.72e6,
                          op_temp='2K', material='bulkNb')
 
@@ -2874,6 +2872,10 @@ if __name__ == '__main__':
     # sigma = 'SR_23.1mm'
     # mucol_study()
 
-    wp = 'ttbar'  # working point
-    sigma = 'SR_1.67mm'
-    ttbar_study()
+    # wp = 'ttbar'  # working point
+    # sigma = 'SR_1.67mm'
+    # ttbar_study()
+
+    wp = 'H'  # working point
+    sigma = 'SR_2.5mm'
+    h_study()

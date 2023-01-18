@@ -696,12 +696,8 @@ def get_geometric_parameters(frame_control, code):
                         or frame_control.ui.cb_Shape_Space_Keys.currentText() == "All":
                     pass
                 else:
-                    if isinstance(frame_control.selected_keys, str):
-                        if key != frame_control.selected_keys:
-                            continue
-                    else:
-                        if key not in frame_control.selected_keys:
-                            continue
+                    if key not in frame_control.selected_keys.split(', '):
+                        continue
 
                 if not to_all:
                     ans = frame_control.prompt(code, key)

@@ -86,6 +86,8 @@ class MultipactingControl:
         # self.ui_effects()
 
     def initUI(self):
+        # splitter
+        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
 
         # init shape entry mode
         self.shape_entry_widgets_control()

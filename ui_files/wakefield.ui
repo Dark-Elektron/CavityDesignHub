@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1581</width>
-    <height>1465</height>
+    <width>1350</width>
+    <height>989</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,19 +24,16 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="0" column="0">
-       <widget class="QSplitter" name="splitter">
+       <widget class="QSplitter" name="sp_Left_Right_Container">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
+        <property name="handleWidth">
+         <number>2</number>
+        </property>
         <widget class="QWidget" name="widget_6" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>500</width>
-           <height>0</height>
-          </size>
-         </property>
          <layout class="QGridLayout" name="gridLayout_3">
-          <item row="0" column="0" alignment="Qt::AlignLeft">
+          <item row="0" column="0">
            <widget class="QScrollArea" name="scrollArea">
             <property name="styleSheet">
              <string notr="true">/*background-color: rgb(255, 255, 255);;*/</string>
@@ -51,9 +48,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-544</y>
-               <width>451</width>
-               <height>1899</height>
+               <y>0</y>
+               <width>1096</width>
+               <height>2137</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -73,7 +70,7 @@
                 </property>
                </widget>
               </item>
-              <item row="18" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+              <item row="18" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_Mesh" native="true">
                 <layout class="QGridLayout" name="gridLayout_17">
                  <property name="leftMargin">
@@ -157,7 +154,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="2" column="0" alignment="Qt::AlignLeft">
+              <item row="2" column="0">
                <widget class="QWidget" name="w_Cell_Geometric_Parameters" native="true">
                 <layout class="QGridLayout" name="gridLayout_16">
                  <item row="2" column="0">
@@ -1282,7 +1279,7 @@
                 </property>
                </widget>
               </item>
-              <item row="22" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+              <item row="22" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_UQ" native="true">
                 <layout class="QGridLayout" name="gridLayout_10">
                  <item row="1" column="1">
@@ -1405,7 +1402,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="16" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+              <item row="16" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_Settings" native="true">
                 <property name="styleSheet">
                  <string notr="true"/>
@@ -1553,7 +1550,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="13" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+              <item row="13" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_Cell_Parameters" native="true">
                 <property name="styleSheet">
                  <string notr="true"/>
@@ -1709,7 +1706,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="20" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
+              <item row="20" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_Operating_Points_QOIs" native="true">
                 <property name="minimumSize">
                  <size>
@@ -1725,7 +1722,17 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="0">
+                 <item row="1" column="0">
+                  <widget class="SwitchControl" name="sc_Operating_Points_QOI"/>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QPushButton" name="pb_Load_Operation_Points">
+                   <property name="text">
+                    <string>...</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0" colspan="2">
                   <widget class="QTableWidget" name="tw_Operating_Points_Input">
                    <row>
                     <property name="text">
@@ -1864,7 +1871,7 @@
                    </item>
                    <item row="2" column="1">
                     <property name="text">
-                     <string>26.7</string>
+                     <string>53.4</string>
                     </property>
                    </item>
                    <item row="2" column="2">
@@ -1899,7 +1906,7 @@
                    </item>
                    <item row="3" column="1">
                     <property name="text">
-                     <string>5</string>
+                     <string>10</string>
                     </property>
                    </item>
                    <item row="3" column="2">
@@ -1964,13 +1971,10 @@
                    </item>
                   </widget>
                  </item>
-                 <item row="1" column="0">
-                  <widget class="SwitchControl" name="sc_Operating_Points_QOI"/>
-                 </item>
                 </layout>
                </widget>
               </item>
-              <item row="0" column="0" alignment="Qt::AlignLeft">
+              <item row="0" column="0">
                <widget class="QWidget" name="w_Simulation_Controls" native="true">
                 <property name="styleSheet">
                  <string notr="true"/>
