@@ -134,7 +134,7 @@
     "Wakefield_Polarization": 2,
     "Wakefield_No_Of_Processors": 6,
     "Wakefield_Wakelength": "100",
-    "Wakefield_Bunch_Length": "25",
+    "Wakefield_Bunch_Length": "50",
     "Wakefield_NFS": "10000",
     "Wakefield_MT": "10",
     "Wakefield_DDz/SIG": "0.1",

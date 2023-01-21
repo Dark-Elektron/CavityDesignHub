@@ -9,24 +9,54 @@
   MORE 'E CAVITY STRUCTURE                              '
   TITLE BOTTOM 'Z-axis (m)'
   TITLE LEFT   'R-axis (m)'
-  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  11:38:49'
-  TITLE 2.00 8.3 SIZE 1.40 'DDZ= 0.000 mm,  DDR= 0.000 mm'
-  SET LIMITS X  -0.84180E-01   1.7678     Y  -0.85600E-02  0.17976    
+  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  23:31:46'
+  TITLE 2.00 8.3 SIZE 1.40 'DDZ= 0.432 mm,  DDR= 0.432 mm'
+  SET LIMITS X  -0.84175E-01   1.7677     Y  -0.85536E-02  0.17963    
    0.00000E+00  0.00000E+00
    0.00000E+00  0.80000E-01
   JOIN 1 DOTS
    0.00000E+00  0.80000E-01
    0.37400      0.80000E-01
-   0.39054      0.88679E-01
-    1.6836      0.80000E-01
-    1.6836      0.00000E+00
+   0.37411      0.80000E-01
+   0.47900      0.16999    
+   0.47911      0.16997    
+   0.47923      0.16995    
+   0.56103      0.72001E-01
+   0.56116      0.72000E-01
+   0.56129      0.72000E-01
+   0.64312      0.16990    
+   0.64324      0.16992    
+   0.64336      0.16995    
+   0.72602      0.79490E-01
+   0.72611      0.79417E-01
+   0.72620      0.79344E-01
+   0.80882      0.16104    
+   0.80892      0.16111    
+   0.80903      0.16118    
+   0.90337      0.11455    
+   0.90339      0.11443    
+   0.90340      0.11430    
+   0.97898      0.14462    
+   0.97905      0.14472    
+   0.97912      0.14482    
+    1.0830      0.13752    
+    1.0830      0.13741    
+    1.0831      0.13730    
+    1.1559      0.12284    
+    1.1559      0.12297    
+    1.1559      0.12309    
+    1.2505      0.16144    
+    1.2506      0.16139    
+    1.2507      0.16133    
+    1.6835      0.80000E-01
+    1.6835      0.00000E+00
   JOIN 1 DOTS
-    1.6836      0.00000E+00
+    1.6835      0.00000E+00
    0.00000E+00  0.00000E+00
   JOIN 1 DOTDASH
-   0.00000E+00  0.79101E-01
-   0.52959      0.79101E-01
-   0.52959      0.71101E-01
+   0.00000E+00  0.79102E-01
+   0.52900      0.79102E-01
+   0.52900      0.71246E-01
   NEW FRAME
 Plot #0 ends.
  Invalid command "FRAME". Igonred.
@@ -39,11 +69,329 @@ Plot #0 ends.
   MORE 'E CAVITY STRUCTURE                              '
   TITLE BOTTOM 'Z-axis (m)'
   TITLE LEFT   'R-axis (m)'
-  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  11:38:49'
-  TITLE 2.00 8.3 SIZE 1.40 'DDZ= 0.000 mm,  DDR= 0.000 mm'
-  SET LIMITS X  -0.84180E-01   1.7678     Y  -0.85600E-02  0.17976    
+  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  23:31:46'
+  TITLE 2.00 8.3 SIZE 1.40 'DDZ= 0.432 mm,  DDR= 0.432 mm'
+  SET LIMITS X  -0.84175E-01   1.7677     Y  -0.85536E-02  0.17963    
    0.00000E+00  0.00000E+00
    0.00000E+00  0.80000E-01
   JOIN 1 DOTS
+   0.00000E+00  0.79920E-01
+   0.43200E-03  0.79920E-01
+   0.86400E-03  0.79920E-01
+  PLOT
+   0.41083      0.13781    
+   0.41126      0.13824    
+   0.41126      0.13867    
+  PLOT
+   0.71798      0.93312E-01
+   0.71842      0.92880E-01
+   0.71842      0.92448E-01
+  PLOT
+    1.0165      0.16978    
+    1.0169      0.16978    
+    1.0174      0.16978    
+  PLOT
+    1.3327      0.79920E-01
+    1.3332      0.79920E-01
+    1.3336      0.79920E-01
+  PLOT
+    1.6835      0.80000E-01
+    1.6835      0.00000E+00
+  JOIN 1 DOTS
+    1.6835      0.00000E+00
+   0.00000E+00  0.00000E+00
+  JOIN 1 DOTDASH
+   0.00000E+00  0.79102E-01
+   0.52900      0.79102E-01
+   0.52900      0.71246E-01
+  NEW FRAME
 Plot #1 ends.
-Input file D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI\C3795\Z_2022_SR_0.00432mm\Cavity_MROT_1.top ends.
+ Invalid command "FRAME". Igonred.
+  SET FONT DUPLEX
+  SET SIZE 13 BY 10              
+  SET WINDOW X FROM 2 12 Y FROM 1.75 TO 8
+  SET TICKS SIZE 0.05
+  TITLE 7.0 9.0 CENTER SIZE 2.2  'Wake Potentials'
+  TITLE 2.0 8.6 SIZE 1.50 'ABCI_MP 12.5 :  SAMPLE INPUT #1 A SIMPL'
+  MORE 'E CAVITY STRUCTURE                              '
+  TITLE BOTTOM 'Distance from Bunch Head S (m)'
+  TITLE LEFT   'Scaled Wake Potential W (S)'
+  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  23:31:46'
+  TITLE 10.1 9.1 SIZE 1.25 'Cpu Time Used: 7.445E-01(s)'
+  TITLE 2.00 8.3 SIZE 1.40 'MROT= 0,  SIG= 0.432 cm,'
+  MORE '  DDZ= 0.432 mm,  DDR= 0.432 mm'
+  SET LIMITS X   0.00000E+00  0.21600E-01 Y   -1.0000       1.0000    
+   0.00000E+00  0.37267E-05
+   0.43200E-03  0.61136E-05
+   0.86400E-03  0.99295E-05
+   0.10800E-02  0.80000    
+   0.32400E-02  0.80000    
+  JOIN 1 DOTS    
+  TITLE   0.37800E-02  0.80000     DATA SIZE 1.5 'Charge Density'
+   0.00000E+00 -0.57449E-05
+   0.43200E-03 -0.37891E-05
+   0.86400E-03 -0.71134E-05
+   0.10800E-02  0.70000    
+   0.32400E-02  0.70000    
+  JOIN 1 SOLID   
+  TITLE   0.37800E-02  0.70000     DATA SIZE 1.5 'Longitudinal  '
+  TITLE  2.00 0.70 SIZE 1.40 'Longitudinal Wake '
+  TITLE  4.00 0.70 SIZE 1.40 'Min/Max= -1.970E+00/ 0.000E+00 V/pC,     '
+  TITLE  8.70 0.70 SIZE 1.40 'Loss Factor=  -Infinity V/pC     '
+  NEW FRAME
+Plot #2 ends.
+ Invalid command "FRAME". Igonred.
+  SET FONT DUPLEX
+  SET SIZE 13 BY 10              
+  SET WINDOW X FROM 2 12 Y FROM 1.00 TO 8
+  SET TICKS SIZE 0.05
+  TITLE 3.4 9.0 SIZE 2.2  ' '
+  MORE '  Real Part of Longitudinal Impedance   '
+  TITLE 2.0 8.6 SIZE 1.5  'ABCI_MP 12.5 :  SAMPLE INPUT #1 A SIMPL'
+  MORE 'E CAVITY STRUCTURE                              '
+  TITLE BOTTOM 'Frequency f (GHz)'
+  TITLE LEFT   '               Real Z2L1  (kW)    '
+  CASE         '                     V V    F     '
+  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  23:31:46'
+  TITLE 2.00 8.3 SIZE 1.40 'MROT= 0,  SIG= 0.432 cm,'
+  MORE '  DDZ= 0.432 mm,  DDR= 0.432 mm'
+  SET LIMIT X   0.00000E+00   27.054    
+   0.00000E+00  0.00000E+00
+   0.00000E+00 Infinity    
+  JOIN 
+   0.00000E+00 Infinity    
+   0.27054E-02 Infinity    
+   0.54107E-02 Infinity    
+    2.7622     Infinity    
+    2.7649     Infinity    
+    2.7676     Infinity    
+    5.5243     Infinity    
+    5.5270     Infinity    
+    5.5297     Infinity    
+    8.2865     Infinity    
+    8.2892     Infinity    
+    8.2919     Infinity    
+    11.049     Infinity    
+    11.051     Infinity    
+    11.054     Infinity    
+    13.811     -Infinity   
+    13.814     -Infinity   
+    13.816     -Infinity   
+    16.573     -Infinity   
+    16.576     -Infinity   
+    16.578     -Infinity   
+    19.335     -Infinity   
+    19.338     -Infinity   
+    19.341     -Infinity   
+    22.097     -Infinity   
+    22.100     -Infinity   
+    22.103     -Infinity   
+    24.859     -Infinity   
+    24.862     -Infinity   
+    24.865     -Infinity   
+  SET ORDER X Y 
+   0.00000E+00  0.00000E+00
+    27.054      0.00000E+00
+  JOIN DOTDASH 
+  NEW FRAME
+Plot #3 ends.
+ Invalid command "FRAME". Igonred.
+  SET FONT DUPLEX
+  SET SIZE 13 BY 10              
+  SET WINDOW X FROM 2 12 Y FROM 1.00 TO 8
+  SET TICKS SIZE 0.05
+  TITLE 3.4 9.0 SIZE 2.2  ' '
+  MORE 'Imaginary Part of Longitudinal Impedance'
+  TITLE 2.0 8.6 SIZE 1.5  'ABCI_MP 12.5 :  SAMPLE INPUT #1 A SIMPL'
+  MORE 'E CAVITY STRUCTURE                              '
+  TITLE BOTTOM 'Frequency f (GHz)'
+  TITLE LEFT   '               Imag Z2L1  (kW)    '
+  CASE         '                     V V    F     '
+  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  23:31:46'
+  TITLE 2.00 8.3 SIZE 1.40 'MROT= 0,  SIG= 0.432 cm,'
+  MORE '  DDZ= 0.432 mm,  DDR= 0.432 mm'
+  SET LIMIT X   0.00000E+00   27.054    
+   0.00000E+00 -Infinity   
+   0.00000E+00 Infinity    
+  JOIN 
+   0.00000E+00  0.00000E+00
+   0.27054E-02 Infinity    
+   0.54107E-02 Infinity    
+    2.7622     Infinity    
+    2.7649     Infinity    
+    2.7676     Infinity    
+    5.5243     Infinity    
+    5.5270     Infinity    
+    5.5297     Infinity    
+    8.2865     Infinity    
+    8.2892     Infinity    
+    8.2919     Infinity    
+    11.049     Infinity    
+    11.051     Infinity    
+    11.054     Infinity    
+    13.811     Infinity    
+    13.814     Infinity    
+    13.816     Infinity    
+    16.573     Infinity    
+    16.576     Infinity    
+    16.578     Infinity    
+    19.335     Infinity    
+    19.338     Infinity    
+    19.341     Infinity    
+    22.097     Infinity    
+    22.100     Infinity    
+    22.103     Infinity    
+    24.859     -Infinity   
+    24.862     -Infinity   
+    24.865     -Infinity   
+  SET ORDER X Y 
+   0.00000E+00  0.00000E+00
+    27.054      0.00000E+00
+  JOIN DOTDASH 
+  NEW FRAME
+Plot #4 ends.
+ Invalid command "FRAME". Igonred.
+  SET FONT DUPLEX
+  SET SIZE 13 BY 10              
+  SET WINDOW X FROM 2 12 Y FROM 1.00 TO 8
+  SET TICKS SIZE 0.05
+  TITLE 3.4 9.0 SIZE 2.2  ' '
+  MORE '   Frequency Spectrum of Loss Factor    '
+  TITLE 2.0 8.6 SIZE 1.5  'ABCI_MP 12.5 :  SAMPLE INPUT #1 A SIMPL'
+  MORE 'E CAVITY STRUCTURE                              '
+  TITLE BOTTOM 'Frequency f (GHz)'
+  TITLE LEFT   '             dk2L1/df  (V/pC/GHz) '
+  CASE         '               V V                '
+  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  23:31:46'
+  TITLE 2.00 8.3 SIZE 1.40 'MROT= 0,  SIG= 0.432 cm,'
+  MORE '  DDZ= 0.432 mm,  DDR= 0.432 mm'
+  SET LIMIT X   0.00000E+00   27.054    
+   0.00000E+00  0.00000E+00
+   0.00000E+00 Infinity    
+  JOIN 
+   0.00000E+00 Infinity    
+   0.27054E-02 Infinity    
+   0.54107E-02 Infinity    
+    2.7622     Infinity    
+    2.7649     Infinity    
+    2.7676     Infinity    
+    5.5243     Infinity    
+    5.5270     Infinity    
+    5.5297     Infinity    
+    8.2865     Infinity    
+    8.2892     Infinity    
+    8.2919     Infinity    
+    11.049     Infinity    
+    11.051     Infinity    
+    11.054     Infinity    
+    13.811     -Infinity   
+    13.814     -Infinity   
+    13.816     -Infinity   
+    16.573     -Infinity   
+    16.576     -Infinity   
+    16.578     -Infinity   
+    19.335     -Infinity   
+    19.338     -Infinity   
+    19.341     -Infinity   
+    22.097     -Infinity   
+    22.100     -Infinity   
+    22.103     -Infinity   
+    24.859     -Infinity   
+    24.862     -Infinity   
+    24.865     -Infinity   
+   0.00000E+00 Infinity    
+   0.27054E-02 Infinity    
+   0.54107E-02 Infinity    
+    2.7622     Infinity    
+    2.7649     Infinity    
+    2.7676     Infinity    
+    5.5243     Infinity    
+    5.5270     Infinity    
+    5.5297     Infinity    
+    8.2865     Infinity    
+    8.2892     Infinity    
+    8.2919     Infinity    
+    11.049     Infinity    
+    11.051     Infinity    
+    11.054     Infinity    
+    13.811     Infinity    
+    13.814     Infinity    
+    13.816     Infinity    
+    16.573     Infinity    
+    16.576     Infinity    
+    16.578     Infinity    
+    19.335     Infinity    
+    19.338     Infinity    
+    19.341     Infinity    
+    22.097     Infinity    
+    22.100     Infinity    
+    22.103     Infinity    
+    24.859     Infinity    
+    24.862     Infinity    
+    24.865     Infinity    
+    16.232     Infinity    
+    20.290     Infinity    
+  JOIN DOTS 
+  TITLE    20.966     Infinity     DATA SIZE 1.5 'Bunch Spectrum'
+[errmsgkw] keyword Infinity is invalid
+  SET ORDER X Y 
+   0.00000E+00  0.00000E+00
+    27.054      0.00000E+00
+  JOIN DOTDASH 
+  NEW FRAME
+Plot #5 ends.
+ Invalid command "FRAME". Igonred.
+  SET FONT DUPLEX
+  SET SIZE 13 BY 10              
+  SET WINDOW X FROM 2 12 Y FROM 1.00 TO 8
+  SET TICKS SIZE 0.05
+  TITLE 3.4 9.0 SIZE 2.2  ' '
+  MORE ' Loss Factor Spectrum Integrated upto F '
+  TITLE 2.0 8.6 SIZE 1.5  'ABCI_MP 12.5 :  SAMPLE INPUT #1 A SIMPL'
+  MORE 'E CAVITY STRUCTURE                              '
+  TITLE BOTTOM 'Frequency F (GHz)'
+  TITLE LEFT   '                  k2L1(F)  (V/pC) '
+  CASE         '                   V V            '
+  TITLE 10.9 8.9 SIZE 1.25 '21/ 1/23  23:31:46'
+  TITLE 2.00 8.3 SIZE 1.40 'MROT= 0,  SIG= 0.432 cm,'
+  MORE '  DDZ= 0.432 mm,  DDR= 0.432 mm'
+  SET LIMIT X   0.00000E+00   27.054    
+   0.00000E+00  0.00000E+00
+   0.00000E+00 NaN         
+  JOIN 
+   0.00000E+00 Infinity    
+   0.27054E-02 Infinity    
+   0.54107E-02 Infinity    
+    2.7622     Infinity    
+    2.7649     Infinity    
+    2.7676     Infinity    
+    5.5243     Infinity    
+    5.5270     Infinity    
+    5.5297     Infinity    
+    8.2865     Infinity    
+    8.2892     Infinity    
+    8.2919     Infinity    
+    11.049     Infinity    
+    11.051     Infinity    
+    11.054     Infinity    
+    13.811     NaN         
+    13.814     NaN         
+    13.816     NaN         
+    16.573     NaN         
+    16.576     NaN         
+    16.578     NaN         
+    19.335     NaN         
+    19.338     NaN         
+    19.341     NaN         
+    22.097     NaN         
+    22.100     NaN         
+    22.103     NaN         
+    24.859     NaN         
+    24.862     NaN         
+    24.865     NaN         
+  SET ORDER X Y 
+   0.00000E+00  0.00000E+00
+    27.054      0.00000E+00
+  JOIN DOTDASH 
+Plot #6 ends.
+Input file D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI\C3795\Z_2022_SR_4.32mm\Cavity_MROT_0.top ends.

@@ -223,12 +223,12 @@ class WakefieldControl:
             multiplier = 2  # when longitudinal and transverse is run, two simulations are run for each cavity
         else:
             multiplier = 1
-        num_sims = shape_space_len
+        num_sims = len(keys)
         if qoi_dict is not None:
-            for k, v in qoi_dict:
+            for k, v in qoi_dict.items():
                 num_sims += len(v[0])
 
-        num_sims = multiplier*num_sims
+        num_sims = multiplier * num_sims
         self.progress_bar.setMaximum(num_sims)
 
         # progress list
@@ -451,23 +451,6 @@ class WakefieldControl:
             else:
                 ccb.addItem(fr'{k}')
 
-    def operation_points_selection(self, selection):
-        cols = selection.split(', ')
-        if not self.operation_points.empty:
-            if selection is None or selection == '':
-                pass
-            else:
-                # update machine parameters in View Machine(s)
-                self.ui.le_E0.setText(f'{list(self.operation_points.loc["E [GeV]", cols])}')
-                self.ui.le_Nu_S.setText(f'{list(self.operation_points.loc["nu_s []", cols])}')
-                self.ui.le_I0.setText(f'{list(self.operation_points.loc["I0 [mA]", cols])}')
-                self.ui.le_Alpha_P.setText(f'{list(self.operation_points.loc["alpha_p [1e-5]", cols])}')
-                self.ui.le_Tau_Z.setText(f'{list(self.operation_points.loc["tau_z [ms]", cols])}')
-                self.ui.le_Tau_XY.setText(f'{list(self.operation_points.loc["tau_xy [ms]", cols])}')
-                self.ui.le_F_Rev.setText(f'{list(self.operation_points.loc["f_rev [kHz]", cols])}')
-                self.ui.le_Beta_XY.setText(f'{list(self.operation_points.loc["beta_xy [m]", cols])}')
-                self.ui.le_N_Cav.setText(f'{list(self.operation_points.loc["N_c []", cols])}')
-
     def get_eigenmode_results(self):
         for key in self.cav_operating_points.keys():
             try:
@@ -486,6 +469,7 @@ class WakefieldControl:
                       "k_FM and P_HOM")
 
     def get_table_entries(self):
+        dd = {}
         for key, val in self.cav_operating_points.items():
             op_points = val['Operating Point'].currentText().split(', ')
             n_cells = int(val['N Cells'].value())
@@ -496,8 +480,9 @@ class WakefieldControl:
             Nb = ast.literal_eval(val['Nb [1e11]'].text())
             freq = val['freq [MHz]'].value()
 
-            dd = {key: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]}
-            return dd
+            dd.update({key: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
+
+        return dd
 
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
@@ -851,15 +836,18 @@ class WakefieldControl:
                                 fid = f"{WP}_{bl_diff[j]}_{s}mm{ii}"
                                 try:
                                     for m in range(2):
-                                        abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=5 * s * 1e-3, bunch_length=s,
+                                        abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'],
+                                                         shape['OC_R'],
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
+                                                         bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
                                                          WG_M=ii, marker=ii, sub_dir=f"{key}")
                                 except KeyError:
                                     for m in range(2):
                                         abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=5 * s * 1e-3, bunch_length=s,
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
+                                                         bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
                                                          WG_M=ii, marker=ii, sub_dir=f"{key}")
