@@ -48,6 +48,12 @@
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
+             <property name="verticalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOn</enum>
+             </property>
+             <property name="horizontalScrollBarPolicy">
+              <enum>Qt::ScrollBarAlwaysOn</enum>
+             </property>
              <property name="widgetResizable">
               <bool>true</bool>
              </property>
@@ -55,9 +61,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-233</y>
+                <y>0</y>
                 <width>676</width>
-                <height>1527</height>
+                <height>1368</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -244,6 +250,9 @@
                       <height>16777215</height>
                      </size>
                     </property>
+                    <property name="toolTip">
+                     <string>Stop</string>
+                    </property>
                     <property name="styleSheet">
                      <string notr="true"/>
                     </property>
@@ -270,6 +279,9 @@
                       <height>16777215</height>
                      </size>
                     </property>
+                    <property name="toolTip">
+                     <string>Pause</string>
+                    </property>
                     <property name="text">
                      <string/>
                     </property>
@@ -289,6 +301,9 @@
                       <height>0</height>
                      </size>
                     </property>
+                    <property name="toolTip">
+                     <string>Filename</string>
+                    </property>
                     <property name="text">
                      <string>Cavity</string>
                     </property>
@@ -304,6 +319,9 @@
                       <width>32</width>
                       <height>16777215</height>
                      </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>Run tuner</string>
                     </property>
                     <property name="styleSheet">
                      <string notr="true"/>
@@ -387,6 +405,9 @@
                     <layout class="QGridLayout" name="gridLayout_21">
                      <item row="2" column="1">
                       <widget class="QSpinBox" name="sb_Tune_N_Cells">
+                       <property name="toolTip">
+                        <string>Number of cells</string>
+                       </property>
                        <property name="minimum">
                         <number>1</number>
                        </property>
@@ -421,6 +442,9 @@
                          <width>200</width>
                          <height>0</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Variable to tune</string>
                        </property>
                        <property name="styleSheet">
                         <string notr="true"/>
@@ -493,6 +517,9 @@
                          <height>0</height>
                         </size>
                        </property>
+                       <property name="toolTip">
+                        <string>Target frequency</string>
+                       </property>
                        <property name="text">
                         <string>400.79</string>
                        </property>
@@ -524,6 +551,53 @@
                      <item row="7" column="0" colspan="2">
                       <widget class="QWidget" name="w_Tune_Multiple" native="true">
                        <layout class="QGridLayout" name="gridLayout_11">
+                        <item row="2" column="0">
+                         <widget class="QLabel" name="label_89">
+                          <property name="minimumSize">
+                           <size>
+                            <width>150</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>150</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string>Processors</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="1">
+                         <widget class="QSpinBox" name="sb_No_Of_Processors_Tune">
+                          <property name="minimumSize">
+                           <size>
+                            <width>200</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>200</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>Number of processors</string>
+                          </property>
+                          <property name="minimum">
+                           <number>1</number>
+                          </property>
+                          <property name="maximum">
+                           <number>999</number>
+                          </property>
+                          <property name="value">
+                           <number>1</number>
+                          </property>
+                         </widget>
+                        </item>
                         <item row="0" column="0">
                          <widget class="QLabel" name="label_23">
                           <property name="minimumSize">
@@ -558,7 +632,7 @@
                            </size>
                           </property>
                           <property name="toolTip">
-                           <string/>
+                           <string>Shape space initialization method</string>
                           </property>
                           <property name="currentText">
                            <string>Grid</string>
@@ -607,6 +681,9 @@
                                <height>16777215</height>
                               </size>
                              </property>
+                             <property name="toolTip">
+                              <string>Number of shapes</string>
+                             </property>
                              <property name="minimum">
                               <number>1</number>
                              </property>
@@ -640,50 +717,6 @@
                           </layout>
                          </widget>
                         </item>
-                        <item row="2" column="0">
-                         <widget class="QLabel" name="label_89">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>Processors</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="2" column="1">
-                         <widget class="QSpinBox" name="sb_No_Of_Processors_Tune">
-                          <property name="minimumSize">
-                           <size>
-                            <width>200</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>200</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="minimum">
-                           <number>1</number>
-                          </property>
-                          <property name="maximum">
-                           <number>999</number>
-                          </property>
-                          <property name="value">
-                           <number>1</number>
-                          </property>
-                         </widget>
-                        </item>
                        </layout>
                       </widget>
                      </item>
@@ -694,6 +727,9 @@
                          <width>200</width>
                          <height>0</height>
                         </size>
+                       </property>
+                       <property name="toolTip">
+                        <string>Type of cell to tune</string>
                        </property>
                        <property name="frame">
                         <bool>false</bool>
@@ -738,6 +774,9 @@
                             <height>0</height>
                            </size>
                           </property>
+                          <property name="toolTip">
+                           <string>Right boundary condition</string>
+                          </property>
                           <item>
                            <property name="text">
                             <string>Inner Contour</string>
@@ -772,6 +811,9 @@
                             <width>200</width>
                             <height>0</height>
                            </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>Left boundary condition</string>
                           </property>
                           <item>
                            <property name="text">
@@ -813,6 +855,9 @@
                             <width>150</width>
                             <height>16777215</height>
                            </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>Left boundary condition</string>
                           </property>
                           <property name="text">
                            <string>Left BC </string>
@@ -1204,50 +1249,6 @@
 }</string>
                        </property>
                        <layout class="QGridLayout" name="gridLayout_2">
-                        <item row="2" column="4">
-                         <widget class="QLineEdit" name="le_B_i">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
-                          </property>
-                          <property name="text">
-                           <string>100</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="4" column="2">
-                         <widget class="QLineEdit" name="le_a_i">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
-                          </property>
-                          <property name="text">
-                           <string>45</string>
-                          </property>
-                         </widget>
-                        </item>
                         <item row="5" column="3">
                          <widget class="QLabel" name="l_Tune_Alternate_Variable">
                           <property name="minimumSize">
@@ -1264,28 +1265,6 @@
                           </property>
                           <property name="text">
                            <string>L</string>
-                          </property>
-                          <property name="alignment">
-                           <set>Qt::AlignCenter</set>
-                          </property>
-                         </widget>
-                        </item>
-                        <item row="5" column="1">
-                         <widget class="QLabel" name="label_10">
-                          <property name="minimumSize">
-                           <size>
-                            <width>30</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>27</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="text">
-                           <string>Ri</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignCenter</set>
@@ -1336,19 +1315,113 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="3">
-                         <widget class="QLabel" name="label_7">
+                        <item row="2" column="4">
+                         <widget class="QLineEdit" name="le_B_i">
+                          <property name="minimumSize">
+                           <size>
+                            <width>150</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>150</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
+                          </property>
+                          <property name="text">
+                           <string>100</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="2">
+                         <widget class="QLineEdit" name="le_a_i">
+                          <property name="minimumSize">
+                           <size>
+                            <width>150</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>150</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
+                          </property>
+                          <property name="text">
+                           <string>45</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="5" column="1">
+                         <widget class="QLabel" name="label_10">
                           <property name="minimumSize">
                            <size>
                             <width>30</width>
                             <height>0</height>
                            </size>
                           </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>27</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
                           <property name="text">
-                           <string>B</string>
+                           <string>Ri</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="4" column="1">
+                         <widget class="QLabel" name="label_8">
+                          <property name="minimumSize">
+                           <size>
+                            <width>30</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>27</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="text">
+                           <string>a</string>
+                          </property>
+                          <property name="alignment">
+                           <set>Qt::AlignCenter</set>
+                          </property>
+                         </widget>
+                        </item>
+                        <item row="2" column="2">
+                         <widget class="QLineEdit" name="le_A_i">
+                          <property name="minimumSize">
+                           <size>
+                            <width>150</width>
+                            <height>0</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>150</width>
+                            <height>16777215</height>
+                           </size>
+                          </property>
+                          <property name="toolTip">
+                           <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
+                          </property>
+                          <property name="text">
+                           <string>120</string>
                           </property>
                          </widget>
                         </item>
@@ -1412,48 +1485,67 @@
                           </property>
                          </widget>
                         </item>
-                        <item row="4" column="1">
-                         <widget class="QLabel" name="label_8">
+                        <item row="2" column="3">
+                         <widget class="QLabel" name="label_7">
                           <property name="minimumSize">
                            <size>
                             <width>30</width>
                             <height>0</height>
                            </size>
                           </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>27</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="text">
-                           <string>a</string>
+                           <string>B</string>
                           </property>
                           <property name="alignment">
                            <set>Qt::AlignCenter</set>
                           </property>
                          </widget>
                         </item>
-                        <item row="2" column="2">
-                         <widget class="QLineEdit" name="le_A_i">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
-                          <property name="toolTip">
-                           <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
-                          </property>
-                          <property name="text">
-                           <string>120</string>
-                          </property>
+                        <item row="0" column="1" colspan="4">
+                         <widget class="QWidget" name="widget_13" native="true">
+                          <layout class="QGridLayout" name="gridLayout_37">
+                           <item row="0" column="0">
+                            <widget class="SwitchControl" name="cb_Inner_Cell">
+                             <property name="checked">
+                              <bool>true</bool>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="0">
+                            <widget class="QLabel" name="label_29">
+                             <property name="toolTip">
+                              <string>Check to include left beam pipe</string>
+                             </property>
+                             <property name="text">
+                              <string>Left Beampipe</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="0">
+                            <widget class="QLabel" name="label_32">
+                             <property name="toolTip">
+                              <string>Check to include right beam pipe</string>
+                             </property>
+                             <property name="text">
+                              <string>Right Beampipe</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="2" column="1">
+                            <widget class="SwitchControl" name="cb_RBP">
+                             <property name="toolTip">
+                              <string>Check to include right beam pipe</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="1">
+                            <widget class="SwitchControl" name="cb_LBP">
+                             <property name="toolTip">
+                              <string>Check to include left beam pipe</string>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
                          </widget>
                         </item>
                         <item row="6" column="1" colspan="2">
@@ -1511,39 +1603,6 @@
                               <string>300</string>
                              </property>
                             </widget>
-                           </item>
-                          </layout>
-                         </widget>
-                        </item>
-                        <item row="0" column="1" colspan="4">
-                         <widget class="QWidget" name="widget_13" native="true">
-                          <layout class="QGridLayout" name="gridLayout_37">
-                           <item row="0" column="4">
-                            <widget class="QLabel" name="label_32">
-                             <property name="text">
-                              <string>Right Beampipe</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="0">
-                            <widget class="SwitchControl" name="cb_Inner_Cell">
-                             <property name="checked">
-                              <bool>true</bool>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1">
-                            <widget class="QLabel" name="label_29">
-                             <property name="text">
-                              <string>Left Beampipe</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="2">
-                            <widget class="SwitchControl" name="cb_LBP"/>
-                           </item>
-                           <item row="0" column="5">
-                            <widget class="SwitchControl" name="cb_RBP"/>
                            </item>
                           </layout>
                          </widget>
@@ -1775,7 +1834,7 @@
                   <item row="4" column="0">
                    <widget class="QLabel" name="label_35">
                     <property name="text">
-                     <string>BC</string>
+                     <string>Boundary Condition</string>
                     </property>
                    </widget>
                   </item>
@@ -1828,32 +1887,32 @@
                 <x>0</x>
                 <y>0</y>
                 <width>674</width>
-                <height>1368</height>
+                <height>1301</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
-               <item row="5" column="0">
-                <widget class="QLabel" name="label_37">
-                 <property name="text">
-                  <string>Objectives</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
+               <item row="10" column="0">
                 <widget class="QLabel" name="label_38">
                  <property name="text">
                   <string>Parameters</string>
                  </property>
                 </widget>
                </item>
-               <item row="11" column="0">
+               <item row="12" column="0">
                 <widget class="QLabel" name="label_39">
                  <property name="text">
                   <string>Constraints</string>
                  </property>
                 </widget>
                </item>
-               <item row="12" column="0">
+               <item row="6" column="0">
+                <widget class="QLabel" name="label_37">
+                 <property name="text">
+                  <string>Objectives</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="13" column="0">
                 <widget class="QWidget" name="widget_6" native="true">
                  <layout class="QGridLayout" name="gridLayout_29">
                   <item row="0" column="0">
@@ -1943,8 +2002,8 @@
                  </layout>
                 </widget>
                </item>
-               <item row="3" column="0">
-                <widget class="QWidget" name="widget_7" native="true">
+               <item row="4" column="0">
+                <widget class="QWidget" name="w_Optimization_Settings" native="true">
                  <layout class="QGridLayout" name="gridLayout_30">
                   <item row="7" column="1">
                    <widget class="QSpinBox" name="sb_Chaos_Factor">
@@ -2157,23 +2216,10 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="3">
-                   <spacer name="horizontalSpacer_5">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
-                  </item>
                  </layout>
                 </widget>
                </item>
-               <item row="10" column="0">
+               <item row="11" column="0">
                 <widget class="QWidget" name="widget_4" native="true">
                  <layout class="QGridLayout" name="gridLayout_28">
                   <item row="0" column="0" rowspan="2">
@@ -2214,7 +2260,7 @@
                  </layout>
                 </widget>
                </item>
-               <item row="7" column="0">
+               <item row="8" column="0">
                 <widget class="QWidget" name="widget_3" native="true">
                  <layout class="QGridLayout" name="gridLayout_25">
                   <item row="1" column="0" rowspan="2">
@@ -2327,60 +2373,21 @@
                <item row="2" column="0">
                 <widget class="QWidget" name="widget_8" native="true">
                  <layout class="QGridLayout" name="gridLayout_31">
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_61">
-                    <property name="text">
-                     <string>Tune Frequency</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QSpinBox" name="sb_Processors_Count">
+                  <item row="2" column="3">
+                   <widget class="QSpinBox" name="sb_Norm_Length_N_Cells">
                     <property name="minimum">
                      <number>1</number>
                     </property>
-                    <property name="value">
+                    <property name="singleStep">
                      <number>1</number>
                     </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_45">
-                    <property name="text">
-                     <string>Processes</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_60">
-                    <property name="text">
-                     <string>Tune Variable</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_44">
-                    <property name="text">
-                     <string>Normalization Cell Length</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="cb_Tune_Variable">
-                    <item>
-                     <property name="text">
-                      <string>Req</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>L</string>
-                     </property>
-                    </item>
                    </widget>
                   </item>
                   <item row="2" column="1">
                    <widget class="QDoubleSpinBox" name="db_Norm_Length">
+                    <property name="toolTip">
+                     <string>Usually length of the middle cell</string>
+                    </property>
                     <property name="decimals">
                      <number>4</number>
                     </property>
@@ -2397,19 +2404,6 @@
                      <double>115.400000000000006</double>
                     </property>
                    </widget>
-                  </item>
-                  <item row="2" column="4">
-                   <spacer name="horizontalSpacer_6">
-                    <property name="orientation">
-                     <enum>Qt::Horizontal</enum>
-                    </property>
-                    <property name="sizeHint" stdset="0">
-                     <size>
-                      <width>40</width>
-                      <height>20</height>
-                     </size>
-                    </property>
-                   </spacer>
                   </item>
                   <item row="1" column="1">
                    <widget class="QDoubleSpinBox" name="dsb_Tune_Frequency">
@@ -2431,12 +2425,57 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="3">
-                   <widget class="QSpinBox" name="sb_Norm_Length_N_Cells">
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_44">
+                    <property name="text">
+                     <string>Normalization Cell Length</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_60">
+                    <property name="text">
+                     <string>Tune Variable</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="cb_Tune_Variable">
+                    <property name="toolTip">
+                     <string>Variable to tune</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Req</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>L</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_61">
+                    <property name="text">
+                     <string>Tune Frequency</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_45">
+                    <property name="text">
+                     <string>Processes</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QSpinBox" name="sb_Processors_Count">
                     <property name="minimum">
                      <number>1</number>
                     </property>
-                    <property name="singleStep">
+                    <property name="value">
                      <number>1</number>
                     </property>
                    </widget>
@@ -2455,6 +2494,9 @@
                       <height>16777215</height>
                      </size>
                     </property>
+                    <property name="toolTip">
+                     <string>Check to enable robust optimization with uncertainty quantification.</string>
+                    </property>
                     <property name="layoutDirection">
                      <enum>Qt::RightToLeft</enum>
                     </property>
@@ -2465,6 +2507,9 @@
                   </item>
                   <item row="0" column="1">
                    <widget class="QComboBox" name="cb_Cell_Type_Optimization">
+                    <property name="toolTip">
+                     <string>Cell type</string>
+                    </property>
                     <item>
                      <property name="text">
                       <string>Mid Cell</string>
@@ -2489,6 +2534,9 @@
                   </item>
                   <item row="0" column="0">
                    <widget class="QComboBox" name="cb_Optimization_Algorithm">
+                    <property name="toolTip">
+                     <string>Optimization method</string>
+                    </property>
                     <item>
                      <property name="text">
                       <string>Evolutionary algorithm</string>
@@ -2503,6 +2551,9 @@
                   </item>
                   <item row="0" column="3">
                    <widget class="QPushButton" name="pb_Run_Optimization">
+                    <property name="toolTip">
+                     <string>Run optimization</string>
+                    </property>
                     <property name="text">
                      <string>Run</string>
                     </property>
@@ -2712,6 +2763,9 @@
                             <height>0</height>
                            </size>
                           </property>
+                          <property name="toolTip">
+                           <string>Mid cell variable</string>
+                          </property>
                           <property name="text">
                            <string>51.05</string>
                           </property>
@@ -2796,23 +2850,17 @@
                        </layout>
                       </widget>
                      </item>
-                     <item row="0" column="1">
-                      <spacer name="horizontalSpacer_8">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>40</width>
-                         <height>20</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
                     </layout>
                    </widget>
                   </item>
                  </layout>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QPushButton" name="pb_Optimization_Settings">
+                 <property name="text">
+                  <string>Optimization Settings</string>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -3042,6 +3090,22 @@
     <hint type="destinationlabel">
      <x>298</x>
      <y>1122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Optimization_Settings</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Optimization_Settings</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>366</x>
+     <y>434</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>574</y>
     </hint>
    </hints>
   </connection>

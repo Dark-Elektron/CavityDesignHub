@@ -473,12 +473,16 @@ class Model:
         BB = sps.csr_matrix((Barvot, (ia, ja)), shape=(n, n))
 
         k0 = 2 * np.pi * freq * np.sqrt(mu0 * eps0)
-        d2, u2 = spsl.eigs(AA, M=BB, k=n_modes, sigma=k0)
-
+        plt.spy(AA)
+        plt.show()
+        d2, u2 = spsl.eigs(AA, M=BB, k=4, sigma=k0**2)
+        ic(k0)
+        ic(d2)
         # imaginary component of eigenvectors are zero
         u2 = u2.real
         d2 = np.absolute(d2)
         k = np.sqrt(d2)
+        ic(k)
         if search:
             k2 = k
             eigen_frequencies = np.array(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
@@ -1872,4 +1876,4 @@ if __name__ == '__main__':
     midNLSF_RE = np.array([49, 35.30, 10.5, 17, 32.0, 57.7, 98.58, 0]) * 1e-3
     endNLSF_RE = np.array([50, 35, 10, 15, 32.0, 57.7, 98.58, 0]) * 1e-3
 
-    mod.run(n_cells, midTESLA, beampipe='none', gridcons=0.0009)
+    mod.run(n_cells, midTESLA, beampipe='none', gridcons=0.005)

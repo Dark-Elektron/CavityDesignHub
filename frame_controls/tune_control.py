@@ -81,7 +81,7 @@ class TuneControl:
 
     def initUI(self):
         # splitter
-        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
+        self.ui.sp_Left_Right_Container.setStretchFactor(1, 4)
         
         self.ui.cb_Inner_Cell.setCheckState(2)
         self.ui.cb_Inner_Cell.setEnabled(False)

@@ -30,7 +30,6 @@ class EigenmodeControl:
     def __init__(self, parent):
 
         self.animation = None
-        self.progress_bar = None
         self.pause_icon = None
         self.resume_icon = None
         self.process_state = None
@@ -42,6 +41,8 @@ class EigenmodeControl:
 
         self.ui = Ui_Eigenmode()
         self.ui.setupUi(self.w_Eigenmode)
+
+        self.progress_bar = self.ui.pb_Progress_Bar
 
         # Create main window object
         self.win = parent
@@ -108,10 +109,7 @@ class EigenmodeControl:
         self.ui.cb_RBC.setCurrentIndex(2)
 
         # create progress bar object and add to widget
-        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
-        self.progress_bar.setMaximum(100)
         self.progress_bar.setValue(0)
-        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 4, 1, 1)
         self.progress_bar.hide()
 
     def signals(self):
@@ -145,7 +143,7 @@ class EigenmodeControl:
         self.ui.pb_Pause_Resume.clicked.connect(lambda: self.pause() if self.process_state == 'running' else self.resume())
 
         # uncomment to draw again
-        # self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
+        self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
 
         #
         self.ui.le_Alpha.editingFinished.connect(lambda: self.update_alpha())
@@ -211,7 +209,9 @@ class EigenmodeControl:
         shape_space_len = len(keys)
         share = round(shape_space_len / proc_count)
 
-        # show progress bar
+        # get the total number of simulations to be run
+        num_sims = shape_space_len
+        self.progress_bar.setMaximum(num_sims)
         self.progress_bar.show()
 
         # progress list
@@ -338,7 +338,7 @@ class EigenmodeControl:
     def update_progress_bar(self, val):
         self.progress_bar.setValue(val)
 
-        if val == 100 or not self.show_progress_bar:
+        if val == self.progress_bar.maximum() or not self.show_progress_bar:
             # reset progress bar
             self.progress_bar.setValue(0)
             self.progress_bar.hide()
@@ -388,28 +388,23 @@ class EigenmodeControl:
         t.start()
 
     def draw_shape_from_shape_space(self):
-        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255],
-                  [109, 144, 79, 255], [139, 139, 139, 255]]
+        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255], [109, 144, 79, 255],
+                  [139, 139, 139, 255]]
         ci = 0
 
         # remove existing cells
         self.graphicsView.removeCells()
         for key in self.loaded_shape_space.keys():
-            if isinstance(self.ui.cb_Shape_Space_Keys.currentText(), str):
-                if key == self.ui.cb_Shape_Space_Keys.currentText():
-                    IC = self.loaded_shape_space[key]["IC"]
-                    OC = self.loaded_shape_space[key]["OC"]
-                    BP = self.loaded_shape_space[key]["BP"]
-                    self.graphicsView.drawCells(IC, OC, BP,
-                                                QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
-            else:
-                if key in self.ui.cb_Shape_Space_Keys.currentText():
-                    IC = self.loaded_shape_space[key]["IC"]
-                    OC = self.loaded_shape_space[key]["OC"]
-                    BP = self.loaded_shape_space[key]["BP"]
-                    self.graphicsView.drawCells(IC, OC, BP, QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
+            if key in self.ui.cb_Shape_Space_Keys.currentText():
+                IC = self.loaded_shape_space[key]["IC"]
+                OC = self.loaded_shape_space[key]["OC"]
+                BP = self.loaded_shape_space[key]["BP"]
+                self.graphicsView.drawCells(IC, OC, BP,
+                                            QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
 
                 ci += 1
+            if ci > 4:  # maximum of only 10 plots
+                break
 
     # def ui_effects(self):
     #
@@ -584,7 +579,7 @@ class EigenmodeControl:
                 print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
 
                 # update progress
-                progress_list.append((progress+1)/total_no_of_shapes)
+                progress_list.append(progress + 1)
 
             else:
                 # run own eigenmode code

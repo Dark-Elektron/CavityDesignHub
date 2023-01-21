@@ -27,10 +27,11 @@ def print_(*arg):
 
 class WakefieldControl:
     def __init__(self, parent):
+        self.operating_points = pd.DataFrame()
+        self.cav_operating_points = {}
         self.end_routine_thread = None
         self.progress_monitor_thread = None
         self.progress_list = None
-        self.progress_bar = None
         self.process_state = None
         self.resume_icon = None
         self.pause_icon = None
@@ -38,6 +39,8 @@ class WakefieldControl:
 
         self.ui = Ui_Wakefield()
         self.ui.setupUi(self.w_Wakefield)
+
+        self.progress_bar = self.ui.pb_Progress_Bar
 
         # Create main window object
         self.win = parent
@@ -91,16 +94,11 @@ class WakefieldControl:
             lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
                               start_folder=f"{self.main_control.projectDir}/Cavities"))
 
+        self.ui.pb_Load_Machine_Parameters.clicked.connect(
+            lambda: self.load_operating_points(self.ui.ccb_Operation_Points))
+
         # control shape entry mode
         self.ui.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
-
-        # # cell parameters control signals
-        # self.ui.cb_Outer_Cell_L.stateChanged.connect(lambda: animate_height(
-        #     self.ui.cb_Outer_Cell_L, self.ui.w_Outer_Cell_L, 0, 160, True))
-        # self.ui.cb_Outer_Cell_R.stateChanged.connect(lambda: animate_height(
-        #     self.ui.cb_Outer_Cell_R, self.ui.w_Outer_Cell_R, 0, 160, True))
-        # self.ui.cb_Expansion.stateChanged.connect(lambda: animate_height(
-        #     self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160, True))
 
         # cancel
         self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -109,6 +107,8 @@ class WakefieldControl:
 
         #
         self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
+        self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(
+            lambda: self.add_row(self.ui.cb_Shape_Space_Keys.currentText().split(', ')))
 
         #
         self.ui.le_Req_i.editingFinished.connect(
@@ -116,7 +116,11 @@ class WakefieldControl:
         self.ui.le_Req_i.editingFinished.connect(
             lambda: self.ui.le_Req_or.setText(self.ui.le_Req_i.text()))
 
+        self.ui.pb_Get_Eigenmode_Results.clicked.connect(lambda: self.get_eigenmode_results())
+
     def initUI(self):
+        self.ui.w_Save_Folder.setVisible(False)
+        self.ui.w_Machine_Parameters.setEnabled(False)
         # splitter
         self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
 
@@ -131,26 +135,6 @@ class WakefieldControl:
         self.ui.cb_Inner_Cell.setCheckState(2)
         self.ui.cb_Inner_Cell.setEnabled(False)
 
-        # # expand/collapse sections widgets
-        # if self.ui.cb_Expansion.checkState() == 2:
-        #     self.ui.w_Expansion.setMinimumHeight(160)
-        # else:
-        #     self.ui.w_Expansion.setMinimumHeight(0)
-        #     self.ui.w_Expansion.setMaximumHeight(0)
-        #
-        # if self.ui.cb_Outer_Cell_L.checkState() == 2:
-        #     self.ui.w_Outer_Cell_L.setMinimumHeight(160)
-        # else:
-        #     self.ui.w_Outer_Cell_L.setMinimumHeight(0)
-        #     self.ui.w_Outer_Cell_L.setMaximumHeight(0)
-        #
-        # if self.ui.cb_Outer_Cell_R.checkState() == 2:
-        #     self.ui.w_Outer_Cell_R.setMinimumHeight(160)
-        # else:
-        #     self.ui.w_Outer_Cell_R.setMinimumHeight(0)
-        #     self.ui.w_Outer_Cell_R.setMaximumHeight(0)
-
-        # wakefield analysis always uses beam pipes
         self.ui.cb_LBP.setCheckState(2)
         self.ui.cb_RBP.setCheckState(2)
         self.ui.cb_LBP.setEnabled(False)
@@ -166,11 +150,6 @@ class WakefieldControl:
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
 
-        # create progress bar object and add to widget
-        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
-        self.progress_bar.setMaximum(100)
-        self.progress_bar.setValue(0)
-        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 4, 1, 1)
         self.progress_bar.hide()
 
         # hide
@@ -180,30 +159,21 @@ class WakefieldControl:
 
     def shape_entry_widgets_control(self):
         if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-            # animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
-            #
-            # self.ui.w_Enter_Geometry_Manual.setMinimumHeight(0)
-            # self.ui.w_Enter_Geometry_Manual.setMaximumHeight(0)
             self.ui.w_Enter_Geometry_Manual.setEnabled(False)
             self.ui.w_Select_Shape_Space.show()
 
             # clear cells from graphics view
             self.graphicsView.removeCells()
         else:
-            # animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
-            #
-            # self.ui.w_Select_Shape_Space.setMinimumHeight(0)
-            # self.ui.w_Select_Shape_Space.setMaximumHeight(0)
-
             self.ui.w_Enter_Geometry_Manual.setEnabled(True)
             self.ui.w_Select_Shape_Space.hide()
 
             # uncomment following lines to draw
-            # # clear cells from graphics view
-            # self.graphicsView.removeCells()
-            #
-            # # draw new cell
-            # self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
+            # clear cells from graphics view
+            self.graphicsView.removeCells()
+
+            # draw new cell
+            self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
 
     def run_abci(self):
         # get analysis parameters
@@ -232,9 +202,11 @@ class WakefieldControl:
         marker = self.ui.le_Marker.text()
 
         if self.ui.sc_Operating_Points_QOI.checkState() == 2:
-            qoi_df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
+            # qoi_df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
+            qoi_dict = self.get_table_entries()
         else:
-            qoi_df = None
+            # qoi_df = None
+            qoi_dict = None
 
         # get geometric parameters
         shape_space = get_geometric_parameters(self, 'ABCI')
@@ -246,6 +218,18 @@ class WakefieldControl:
 
         # show progress bar
         self.progress_bar.show()
+        # get the total number of simulations to be run
+        if MROT == 2:
+            multiplier = 2  # when longitudinal and transverse is run, two simulations are run for each cavity
+        else:
+            multiplier = 1
+        num_sims = shape_space_len
+        if qoi_dict is not None:
+            for k, v in qoi_dict:
+                num_sims += len(v[0])
+
+        num_sims = multiplier*num_sims
+        self.progress_bar.setMaximum(num_sims)
 
         # progress list
         manager = mp.Manager()
@@ -270,7 +254,7 @@ class WakefieldControl:
                                                                    DDR_SIG, DDZ_SIG,
                                                                    self.main_control.parentDir,
                                                                    self.main_control.projectDir, self.progress_list,
-                                                                   WG_M, marker, qoi_df
+                                                                   WG_M, marker, qoi_dict
                                                                    ))
 
             service.start()
@@ -293,6 +277,227 @@ class WakefieldControl:
 
         self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
         self.end_routine_thread.start()
+
+    def add_row(self, cavities):
+        if 'All' in cavities or '' in cavities:
+            pass
+        else:
+            # get current number of rows
+            n = self.ui.tw_Operating_Points_Input.rowCount()
+
+            # add new row
+            self.ui.tw_Operating_Points_Input.setRowCount(n + 1)  # and one row in the table
+
+            keys = list(self.cav_operating_points.keys())
+
+            # add if len of current list greater than prevous list
+            if len(cavities) < len(keys):
+                for key in keys:
+                    if key not in cavities:
+                        # get row index
+                        row = self.cav_operating_points[key]['row index']
+                        self.remove_row(key, row)
+            else:
+                # remove otherwise
+                for cav in cavities:
+                    if cav not in self.cav_operating_points.keys():
+                        self.create_new_row(n, self.ui.tw_Operating_Points_Input, cav)
+
+    def create_new_row(self, row_ind, table, cavity):
+        """
+
+        Parameters
+        ----------
+        op_dict
+        row_ind
+        table
+
+        Returns
+        -------
+
+        """
+        ic(row_ind, cavity, self.ui.tw_Operating_Points_Input.rowCount())
+        # Cavity
+        l_cavity = QLabel()
+        l_cavity.setText(f"{cavity}")
+        table.setCellWidget(row_ind, 0, l_cavity)
+
+        # Operating point
+        ccb_OperatingPoint = QCheckableComboBox()
+        ccb_OperatingPoint.addItem('All')
+        for key, val in self.operating_points:
+            ccb_OperatingPoint.addItem(f'{key}')
+
+        table.setCellWidget(row_ind, 1, ccb_OperatingPoint)
+        # signal to disable polarisation when cb_code item is 'Other'
+        self.ui.ccb_Operation_Points.currentTextChanged.connect(
+            lambda: self.update_cav_operating_points(ccb_OperatingPoint))
+
+        # Number of cells
+        sb_n_cells = QSpinBox()
+        sb_n_cells.setMaximum(9999)
+        sb_n_cells.setMinimum(1)
+        table.setCellWidget(row_ind, 2, sb_n_cells)
+
+        # R/Q
+        dsb_R_Q = QDoubleSpinBox()
+        dsb_R_Q.setMaximum(999999.99)
+        dsb_R_Q.setMinimum(1)
+        table.setCellWidget(row_ind, 3, dsb_R_Q)
+
+        # sigma (SR)
+        le_sigma_sr = QLineEdit()
+        le_sigma_sr.setReadOnly(True)
+        table.setCellWidget(row_ind, 4, le_sigma_sr)
+        ccb_OperatingPoint.currentTextChanged.connect(
+            lambda: self.update_operating_points_widgets(le_sigma_sr, ccb_OperatingPoint, 'sigma_SR [mm]'))
+
+        # sigma (BS)
+        le_sigma_bs = QLineEdit()
+        le_sigma_bs.setReadOnly(True)
+        table.setCellWidget(row_ind, 5, le_sigma_bs)
+        ccb_OperatingPoint.currentTextChanged.connect(
+            lambda: self.update_operating_points_widgets(le_sigma_bs, ccb_OperatingPoint, 'sigma_BS [mm]'))
+
+        # I0
+        le_I0 = QLineEdit()
+        le_I0.setReadOnly(True)
+        table.setCellWidget(row_ind, 6, le_I0)
+        ccb_OperatingPoint.currentTextChanged.connect(
+            lambda: self.update_operating_points_widgets(le_I0, ccb_OperatingPoint, 'I0 [mA]'))
+
+        # Number of bunches Nb
+        le_Nb = QLineEdit()
+        table.setCellWidget(row_ind, 7, le_Nb)
+        ccb_OperatingPoint.currentTextChanged.connect(
+            lambda: self.update_operating_points_widgets(le_Nb, ccb_OperatingPoint, 'Nb [1e11]'))
+
+        # Number of bunches Nb
+        dsb_freq = QDoubleSpinBox()
+        dsb_freq.setMaximum(999999.99)
+        dsb_freq.setMinimum(0.0001)
+        table.setCellWidget(row_ind, 8, dsb_freq)
+
+        args_dict = {'row index': row_ind, 'Cavity': l_cavity, 'Operating Point': ccb_OperatingPoint,
+                     'N Cells': sb_n_cells, 'R/Q [Ohm]': dsb_R_Q,
+                     'sigma (SR) [mm]': le_sigma_sr, 'sigma (BS) [mm]': le_sigma_bs,
+                     'I0 [mA]': le_I0, 'Nb [1e11]': le_Nb, 'freq [MHz]': dsb_freq}
+
+        self.cav_operating_points[l_cavity.text()] = args_dict
+
+    def remove_row(self, key, row):
+        # current number of rows
+        n = self.ui.tw_Operating_Points_Input.rowCount()
+
+        # remove row from table
+        self.ui.tw_Operating_Points_Input.removeRow(row)
+
+        # remove key from dictionary
+        del self.cav_operating_points[key]
+
+        # reset number of rows
+        self.ui.tw_Operating_Points_Input.setRowCount(n - 2)
+
+        # adjust other row elements
+        d = self.cav_operating_points
+        tab_col = ['Cavity', 'Operating Point', 'N Cells', 'R/Q [Ohm]',
+                   'sigma (SR) [mm]', 'sigma (BS) [mm]',
+                   'I0 [mA]', 'Nb [1e11]', 'freq [MHz]']
+
+        for i, (key, val) in enumerate(d.items()):
+            for j, tc in enumerate(tab_col):
+                self.ui.tw_Operating_Points_Input.setCellWidget(i, j, val[tc])
+
+            # update row index
+            val['row index'] = i
+
+        self.cav_operating_points = d
+
+    def load_operating_points(self, ccb):
+        filename, _ = QFileDialog.getOpenFileName(
+            None, "Open File", fr"{self.main_control.projectDir}/Cavities", "Json Files (*.json)")
+        try:
+            self.ui.le_Machine_Parameters_Filename.setText(filename)
+            with open(filename, 'r') as file:
+                dd = json.load(file)
+
+            # populate checkboxes with key
+            ccb.clear()
+            ccb.addItem("All")
+            for col in dd.keys():
+                self.ui.ccb_Operation_Points.addItem(fr'{col}')
+
+            self.operating_points = pd.DataFrame(dd)
+            ic(self.operating_points)
+
+        except Exception as e:
+            print('Failed to open file:: ', e)
+
+    def update_operating_points_widgets(self, le, ccb, var):
+        op_points = ccb.currentText().split(', ')
+        if 'All' in op_points or '' in op_points:
+            pass
+        else:
+            txt = list(self.operating_points.loc[var, op_points])
+            le.setText(str(txt))
+
+    def update_cav_operating_points(self, ccb):
+        # populate checkboxes with key
+        ccb.clear()
+        ccb.addItem("All")
+        for k in self.ui.ccb_Operation_Points.currentText().split(', '):
+            if k == 'All' or k == '':
+                pass
+            else:
+                ccb.addItem(fr'{k}')
+
+    def operation_points_selection(self, selection):
+        cols = selection.split(', ')
+        if not self.operation_points.empty:
+            if selection is None or selection == '':
+                pass
+            else:
+                # update machine parameters in View Machine(s)
+                self.ui.le_E0.setText(f'{list(self.operation_points.loc["E [GeV]", cols])}')
+                self.ui.le_Nu_S.setText(f'{list(self.operation_points.loc["nu_s []", cols])}')
+                self.ui.le_I0.setText(f'{list(self.operation_points.loc["I0 [mA]", cols])}')
+                self.ui.le_Alpha_P.setText(f'{list(self.operation_points.loc["alpha_p [1e-5]", cols])}')
+                self.ui.le_Tau_Z.setText(f'{list(self.operation_points.loc["tau_z [ms]", cols])}')
+                self.ui.le_Tau_XY.setText(f'{list(self.operation_points.loc["tau_xy [ms]", cols])}')
+                self.ui.le_F_Rev.setText(f'{list(self.operation_points.loc["f_rev [kHz]", cols])}')
+                self.ui.le_Beta_XY.setText(f'{list(self.operation_points.loc["beta_xy [m]", cols])}')
+                self.ui.le_N_Cav.setText(f'{list(self.operation_points.loc["N_c []", cols])}')
+
+    def get_eigenmode_results(self):
+        for key in self.cav_operating_points.keys():
+            try:
+                with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\{key}\qois.json') as json_file:
+                    qois_slans = json.load(json_file)
+                n_cells = qois_slans['N Cells']
+                R_Q = qois_slans['R/Q [Ohm]']
+                freq = qois_slans['freq [MHz]']
+                print("Found a corresponding SLANS file")
+                self.cav_operating_points[key]['N Cells'].setValue(int(n_cells))
+                self.cav_operating_points[key]['R/Q [Ohm]'].setValue(R_Q)
+                self.cav_operating_points[key]['freq [MHz]'].setValue(freq)
+            except FileNotFoundError:
+                # Run eigenmode analysis
+                print("Did not find a corresponding SLANS file. Please check the R/Q used to calculate the"
+                      "k_FM and P_HOM")
+
+    def get_table_entries(self):
+        for key, val in self.cav_operating_points.items():
+            op_points = val['Operating Point'].currentText().split(', ')
+            n_cells = int(val['N Cells'].value())
+            R_Q = val['R/Q [Ohm]'].value()
+            sigma_SR = ast.literal_eval(val['sigma (SR) [mm]'].text())
+            sigma_BS = ast.literal_eval(val['sigma (BS) [mm]'].text())
+            I0 = ast.literal_eval(val['I0 [mA]'].text())
+            Nb = ast.literal_eval(val['Nb [1e11]'].text())
+            freq = val['freq [MHz]'].value()
+
+            dd = {key: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]}
+            return dd
 
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
@@ -621,63 +826,56 @@ class WakefieldControl:
                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
                                          WG_M=ii, marker=ii)
 
-            print_(f'Cavity {key}. Time: {time.time() - start_time}')
+                # update progress
+                progress_list.append(progress + 1)
 
-            # update progress
-            progress_list.append((progress + 1) / total_no_of_shapes)
+            print_(f'Cavity {key}. Time: {time.time() - start_time}')
 
             if qoi_df is not None:
                 d = {}
                 # # save qois
-                for index, row in qoi_df.iterrows():
-                    WP = row['WP']
-                    I0 = float(row['I0 [mA]'])
-                    Nb = float(row['Nb [1e11]'])
-                    sigma_z = [float(x) for x in row['sigma_z (SR/BS) [mm]'].split('/')]
-                    freq = float(row['f [MHz]'])
+                for indx, val in qoi_df.items():
+                    op_points, no_of_cells, R_Q, sigma_SR_list, sigma_BS_list, I0_list, Nb_list, freq = val
 
-                    # try getting  R_Q from corresponding SLANS folder
-                    try:
-                        with open(fr'{projectDir}\SimulationData\SLANS\{key}\qois.json') as json_file:
-                            qois_slans = json.load(json_file)
-                        R_Q = qois_slans['R/Q [Ohm]']
-                        print("Found a corresponding SLANS file")
-                    except:
-                        R_Q = float(row['R/Q [Ohm]'])
-                        print("Did not find a corresponding SLANS file. Please check the R/Q used to calculate the"
-                              "k_FM and P_HOM")
+                    for i, op_point in enumerate(op_points):
+                        WP = op_point
+                        I0 = I0_list[i]
+                        Nb = Nb_list[i]
+                        sigma_z = [sigma_SR_list[i], sigma_BS_list[i]]
+                        freq = freq
 
-                    n_cell = int(row['n cell'])
+                        bl_diff = ['SR', 'BS']
 
-                    bl_diff = ['SR', 'BS']
+                        for j, s in enumerate(sigma_z):
+                            for ii in WG_M:
+                                fid = f"{WP}_{bl_diff[j]}_{s}mm{ii}"
+                                try:
+                                    for m in range(2):
+                                        abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=5 * s * 1e-3, bunch_length=s,
+                                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
+                                                         projectDir=projectDir,
+                                                         WG_M=ii, marker=ii, sub_dir=f"{key}")
+                                except KeyError:
+                                    for m in range(2):
+                                        abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=5 * s * 1e-3, bunch_length=s,
+                                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
+                                                         projectDir=projectDir,
+                                                         WG_M=ii, marker=ii, sub_dir=f"{key}")
 
-                    for i, s in enumerate(sigma_z):
-                        for ii in WG_M:
-                            fid = f"{WP}_{bl_diff[i]}_{s}mm{ii}"
-                            try:
-                                for m in range(2):
-                                    abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                                     fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
-                                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                                     projectDir=projectDir,
-                                                     WG_M=ii, marker=ii, sub_dir=f"{key}")
-                            except KeyError:
-                                for m in range(2):
-                                    abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                                     fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3, bunch_length=s,
-                                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                                     projectDir=projectDir,
-                                                     WG_M=ii, marker=ii, sub_dir=f"{key}")
+                                dirc = fr'{projectDir}\SimulationData\ABCI\{key}{marker}'
+                                # try:
+                                k_loss = abs(ABCIData(dirc, f'{fid}', 0).loss_factor['Longitudinal'])
+                                k_kick = abs(ABCIData(dirc, f'{fid}', 1).loss_factor['Transverse'])
+                                # except:
+                                #     k_loss = 0
+                                #     k_kick = 0
 
-                            dirc = fr'{projectDir}\SimulationData\ABCI\{key}{marker}'
-                            # try:
-                            k_loss = abs(ABCIData(dirc, f'{fid}', 0).loss_factor['Longitudinal'])
-                            k_kick = abs(ABCIData(dirc, f'{fid}', 1).loss_factor['Transverse'])
-                            # except:
-                            #     k_loss = 0
-                            #     k_kick = 0
+                                d[fid] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, no_of_cells)
 
-                            d[fid] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, n_cell)
+                                # update progress
+                                progress_list.append(progress + 1)
 
                 # save qoi dictionary
                 run_save_directory = fr'{projectDir}\SimulationData\ABCI\{key}{marker}'

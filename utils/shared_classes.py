@@ -82,16 +82,22 @@ class QCheckableComboBox(QComboBox):
                     if item == self.model().item(0):
                         # deselect all items if item check a maximum of 25 elements
                         for i in range(1, 25):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Unchecked)
+                            try:
+                                item = self.model().item(i)
+                                item.setCheckState(Qt.Unchecked)
+                            except AttributeError:
+                                break
                 else:
                     item.setCheckState(Qt.Checked)
 
                     if item == self.model().item(0):
                         # deselect all items if item check a maximum of 25 elements
                         for i in range(1, 25):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Checked)
+                            try:
+                                item = self.model().item(i)
+                                item.setCheckState(Qt.Checked)
+                            except AttributeError:
+                                break
 
                 return True
         return False
@@ -165,13 +171,12 @@ class ProgressMonitor(QThread):
         self.projectDir = projectDir
 
     def run(self):
-        self.progress_monitor(self.proc_ids)
+        self.progress_monitor()
 
-    def progress_monitor(self, proc_ids):
-        proc_count = len(proc_ids)
+    def progress_monitor(self):
         while self.frame.show_progress_bar:
-            progress = sum(self.frame.progress_list) / proc_count
-            self.sig.emit(round(progress * 100, 10))
+            progress = len(self.frame.progress_list)
+            self.sig.emit(progress)
 
 
 class EndRoutine(QThread):

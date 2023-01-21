@@ -23,17 +23,6 @@ class GraphicsView(QGraphicsView):
         # self.scene = Scene()
         super().__init__(parent)
         self.win = win
-
-        # if widg == 'Wakefield':
-        #     self.ui = win.ui
-        #     self.geom_in = win.ui
-        # elif widg == "Eigenmode":
-        #     self.ui = win.ui
-        #     self.geom_in = win.geom_in
-        # else:
-        #     self.ui = win.ui
-        #     self.geom_in = win.ui
-
         self.ui = win.ui
 
         self.scene = win.scene

@@ -169,7 +169,7 @@ class ABCIData:
                         y += line[1]
 
                 if key in [r'Cavity Shape Input', r'Cavity Shape Used']:
-                    x = np.array(x)-np.amax(x)/2
+                    x = np.array(x) - np.amax(x)/2
 
                     # # insert values to complete shape
                     # x = np.insert(x, 0, x[0])

@@ -297,6 +297,7 @@ class SLANSGeometry(Geometry):
             d = {
                 "Req [mm]": Req,
                 "Normalization Length [mm]": norm_length,
+                "N cells": no_of_cells,
                 "freq [MHz]": Freq,
                 "Q []": Q,
                 "E [MV/m]": E_stored,

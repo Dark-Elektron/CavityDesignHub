@@ -58,6 +58,9 @@
            </property>
            <item row="0" column="11">
             <widget class="QPushButton" name="pb_Apply_Theme">
+             <property name="toolTip">
+              <string>Apply theme</string>
+             </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 0, 0);</string>
              </property>
@@ -81,6 +84,9 @@
            </item>
            <item row="0" column="0">
             <widget class="QPushButton" name="pb_New_Project">
+             <property name="toolTip">
+              <string>Create new project</string>
+             </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -91,6 +97,9 @@
            </item>
            <item row="0" column="3">
             <widget class="QPushButton" name="pb_Save_State">
+             <property name="toolTip">
+              <string>Save project state</string>
+             </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -101,6 +110,9 @@
            </item>
            <item row="0" column="10">
             <widget class="QComboBox" name="cb_Theme">
+             <property name="toolTip">
+              <string>Theme selection</string>
+             </property>
              <item>
               <property name="text">
                <string>Light VS</string>
@@ -166,10 +178,16 @@
                <height>16777215</height>
               </size>
              </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter project name without spaces. &lt;/p&gt;&lt;p&gt; Click enter to create project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
             </widget>
            </item>
            <item row="0" column="5">
             <widget class="QLabel" name="l_Project_Name">
+             <property name="toolTip">
+              <string>Project name</string>
+             </property>
              <property name="styleSheet">
               <string notr="true">background-color: rgb(255, 184, 83);</string>
              </property>
@@ -183,6 +201,9 @@
            </item>
            <item row="0" column="2">
             <widget class="QPushButton" name="pb_Open_Project">
+             <property name="toolTip">
+              <string>Open project</string>
+             </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -203,6 +224,9 @@
            </item>
            <item row="0" column="4">
             <widget class="QPushButton" name="pb_Load_State_File">
+             <property name="toolTip">
+              <string>Load project state file</string>
+             </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
@@ -415,7 +439,7 @@
                            <x>0</x>
                            <y>0</y>
                            <width>878</width>
-                           <height>945</height>
+                           <height>963</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -449,6 +473,9 @@
                               <italic>false</italic>
                               <bold>false</bold>
                              </font>
+                            </property>
+                            <property name="toolTip">
+                             <string>Run Wakefield Analysis</string>
                             </property>
                             <property name="styleSheet">
                              <string notr="true"/>
@@ -487,6 +514,9 @@ A N A L Y S I S</string>
                               <bold>false</bold>
                              </font>
                             </property>
+                            <property name="toolTip">
+                             <string>Tune Cavity</string>
+                            </property>
                             <property name="text">
                              <string>T U N E</string>
                             </property>
@@ -519,6 +549,9 @@ A N A L Y S I S</string>
                               <italic>false</italic>
                               <bold>false</bold>
                              </font>
+                            </property>
+                            <property name="toolTip">
+                             <string>Run Eigenmode Analysis</string>
                             </property>
                             <property name="styleSheet">
                              <string notr="true"/>
@@ -557,6 +590,9 @@ A N A L Y S I S</string>
                               <bold>false</bold>
                              </font>
                             </property>
+                            <property name="toolTip">
+                             <string>Plot Results</string>
+                            </property>
                             <property name="styleSheet">
                              <string notr="true"/>
                             </property>
@@ -593,6 +629,9 @@ A N A L Y S I S</string>
                               <bold>false</bold>
                              </font>
                             </property>
+                            <property name="toolTip">
+                             <string>Postprocess Results</string>
+                            </property>
                             <property name="styleSheet">
                              <string notr="true"/>
                             </property>
@@ -621,6 +660,9 @@ P R O C E S S</string>
                               <width>200</width>
                               <height>200</height>
                              </size>
+                            </property>
+                            <property name="toolTip">
+                             <string>Run Multipacting Analysis</string>
                             </property>
                             <property name="text">
                              <string>M U L T I P A C T I N G</string>
@@ -671,6 +713,9 @@ P R O C E S S</string>
                               <height>200</height>
                              </size>
                             </property>
+                            <property name="toolTip">
+                             <string>Miscellaneous</string>
+                            </property>
                             <property name="text">
                              <string>S T A T I S T I C S</string>
                             </property>
@@ -707,6 +752,9 @@ P R O C E S S</string>
                      <layout class="QGridLayout" name="gridLayout_11">
                       <item row="0" column="1">
                        <widget class="QPushButton" name="pb_Save_Log">
+                        <property name="toolTip">
+                         <string>Save log</string>
+                        </property>
                         <property name="text">
                          <string>Save</string>
                         </property>
@@ -727,6 +775,9 @@ P R O C E S S</string>
                       </item>
                       <item row="0" column="2">
                        <widget class="QPushButton" name="pb_Clear_Log">
+                        <property name="toolTip">
+                         <string>Clear log</string>
+                        </property>
                         <property name="text">
                          <string>Clear</string>
                         </property>
@@ -746,7 +797,7 @@ P R O C E S S</string>
                         <x>0</x>
                         <y>0</y>
                         <width>385</width>
-                        <height>898</height>
+                        <height>922</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_3">
@@ -835,6 +886,9 @@ P R O C E S S</string>
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Run wakefield simulation</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -859,6 +913,9 @@ P R O C E S S</string>
                    <width>50</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Home button</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
@@ -885,6 +942,9 @@ P R O C E S S</string>
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Plot results</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -909,6 +969,9 @@ P R O C E S S</string>
                    <width>50</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Miscellaneous</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
@@ -935,6 +998,9 @@ P R O C E S S</string>
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Run multipacting simulation</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -956,6 +1022,9 @@ P R O C E S S</string>
                    <width>50</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Postprocess results</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
@@ -982,6 +1051,9 @@ P R O C E S S</string>
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Run eigenmode analysis</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -1007,6 +1079,9 @@ P R O C E S S</string>
                    <height>50</height>
                   </size>
                  </property>
+                 <property name="toolTip">
+                  <string>Go to previous frame</string>
+                 </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
@@ -1028,6 +1103,9 @@ P R O C E S S</string>
                    <width>50</width>
                    <height>50</height>
                   </size>
+                 </property>
+                 <property name="toolTip">
+                  <string>Rune cavity</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
@@ -1109,7 +1187,7 @@ P R O C E S S</string>
      <x>0</x>
      <y>0</y>
      <width>1661</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

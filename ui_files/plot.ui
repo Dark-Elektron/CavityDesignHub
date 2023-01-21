@@ -282,6 +282,9 @@
                      <property name="orientation">
                       <enum>Qt::Vertical</enum>
                      </property>
+                     <property name="handleWidth">
+                      <number>2</number>
+                     </property>
                      <widget class="QWidget" name="widget_14" native="true">
                       <property name="minimumSize">
                        <size>
@@ -332,6 +335,9 @@
                         <widget class="QSplitter" name="splitter_3">
                          <property name="orientation">
                           <enum>Qt::Vertical</enum>
+                         </property>
+                         <property name="handleWidth">
+                          <number>2</number>
                          </property>
                          <widget class="QWidget" name="widget_13" native="true">
                           <layout class="QGridLayout" name="gridLayout_15">
@@ -696,6 +702,9 @@
                                 <property name="orientation">
                                  <enum>Qt::Vertical</enum>
                                 </property>
+                                <property name="handleWidth">
+                                 <number>2</number>
+                                </property>
                                 <widget class="QWidget" name="widget_25" native="true">
                                  <layout class="QGridLayout" name="gridLayout_29">
                                   <item row="1" column="0">
@@ -817,7 +826,7 @@
                                     <x>0</x>
                                     <y>0</y>
                                     <width>976</width>
-                                    <height>185</height>
+                                    <height>188</height>
                                    </rect>
                                   </property>
                                   <layout class="QGridLayout" name="gridLayout_27">
@@ -1334,7 +1343,7 @@
                                 <x>0</x>
                                 <y>0</y>
                                 <width>438</width>
-                                <height>1178</height>
+                                <height>1184</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
@@ -1741,7 +1750,7 @@
                                           <x>0</x>
                                           <y>0</y>
                                           <width>383</width>
-                                          <height>408</height>
+                                          <height>324</height>
                                          </rect>
                                         </property>
                                         <layout class="QGridLayout" name="gridLayout_31">

@@ -192,9 +192,14 @@ class PlotControl:
     def init_other(self, PTS, plotID):
         """
 
-        :param PTS:
-        :param plotID:
-        :return:
+        Parameters
+        ----------
+        PTS
+        plotID
+
+        Returns
+        -------
+
         """
         # other
         PTS.pb_Open_File_Other.clicked.connect(lambda: self.open_(PTS.le_Filename, mode='File'))
@@ -203,11 +208,6 @@ class PlotControl:
                                                PTS.le_Filename.text(), plotID))
 
     def make_abci_data(self, PTS):
-        """
-
-        :param PTS:
-        :return:
-        """
         self.open_(PTS.le_Folder_ABCI, PTS.cb_Polarization_ABCI, PTS.ccb_Id_ABCI, mode='Folder')
 
         # abci data is not made on opening because it would be memory consuming to load all simulation results
@@ -441,7 +441,7 @@ class PlotControl:
                 ax_selected.set_xlim(min(xr), max(xr))
 
     def signals(self):
-        self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
+        # self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
 
         # plot abci impedance
         self.ui.pb_Plot.clicked.connect(lambda: self.plot())
@@ -462,7 +462,7 @@ class PlotControl:
         # self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda: animate_height(self.ui.w_Plot_Args, 0, 200, True))
 
         # signal for threshold
-        self.ui.pb_Load_Machine_Parameters.clicked.connect(lambda: self.load_operation_points())
+        self.ui.pb_Load_Machine_Parameters.clicked.connect(lambda: self.load_operating_points())
         self.ui.cb_Longitudinal_Threshold.stateChanged.connect(
             lambda: self.calc_limits('monopole', self.ui.ccb_Operation_Points.currentText()))
         self.ui.cb_Transverse_Threshold.stateChanged.connect(
@@ -507,7 +507,7 @@ class PlotControl:
             lambda: self.operation_points_selection(self.ui.ccb_Operation_Points.currentText()))
 
     def initUI(self):
-        self.createPlotTypeWidget()
+        # self.createPlotTypeWidget()
 
         # add row to table
         self.ui.tableWidget.setRowCount(1)  # and one row in the table
@@ -1322,6 +1322,7 @@ class PlotControl:
 
         # Folder widget
         w_Folder = QWidget()
+        w_Folder.setContentsMargins(0, 0, 0, 0)
         l_Folder_Widget = QHBoxLayout()
         w_Folder.setLayout(l_Folder_Widget)
         le_Folder = QLineEdit()
@@ -1374,8 +1375,8 @@ class PlotControl:
         # Request widget
         w_Request = QWidget()
         l_Request_Widget = QHBoxLayout()
-        l_Request_Widget.setSpacing(0)
         l_Request_Widget.setContentsMargins(0, 0, 0, 0)
+        l_Request_Widget.setSpacing(0)
         w_Request.setLayout(l_Request_Widget)
 
         request_dict_long = {0: 'Longitudinal Impedance Magnitude',
@@ -1407,6 +1408,7 @@ class PlotControl:
         cb_request = QComboBox()
         for req in request_dict_long.values():
             cb_request.addItem(req)
+        # cb_request.setStyleSheet('background-color: yellow;')
 
         # create widget with two comboboxes
         cb_X = QComboBox()
@@ -1422,12 +1424,14 @@ class PlotControl:
         cb_Y.hide()
 
         # add widget to table
+        # w_Request.setStyleSheet('background-color: blue;')
         table.setCellWidget(row_ind, 5, w_Request)
 
         # Filter
         # Filter widget
         w_Filter = QWidget()
         l_Filter_Widget = QHBoxLayout()
+        l_Filter_Widget.addStretch(1)
         l_Filter_Widget.setSpacing(0)
         l_Filter_Widget.setContentsMargins(0, 0, 0, 0)
         w_Filter.setLayout(l_Filter_Widget)
@@ -1495,6 +1499,7 @@ class PlotControl:
 
         line_style = ['-', '--', ':', '-.']
         scatter_marker = ['x', 'o', '+', 'P', 'X', 'd', '>', '^', 'v', 'H']
+
         # fill default
         for a in line_style:
             cb_style.addItem(a)
@@ -1603,7 +1608,7 @@ class PlotControl:
             row = self.ui.tableWidget.currentRow()
             self.row = row
 
-    def load_operation_points(self):
+    def load_operating_points(self):
         filename, _ = QFileDialog.getOpenFileName(
             None, "Open File", fr"{self.main_control.projectDir}/Cavities", "Json Files (*.json)")
         try:
@@ -1651,19 +1656,7 @@ class PlotControl:
                     tau_xy = [849.2, 157.4, 46.8, 13.6]  # [ms] Transverse damping time
                     f_rev = [3.07, 3.07, 3.07, 3.07]  # [kHz] Revolution frequency
                     beta_xy = 50
-
-                    #     n_cav = [52, 52, 136, 584] # Number of cavities per beam
                     n_cav = [56, 112, 128, 140]  # 1_2_2_25
-
-                    # E0 = ast.literal_eval(self.ui.le_E0.text())
-                    # nu_s = ast.literal_eval(self.ui.le_Nu_S.text())
-                    # I0 = ast.literal_eval(self.ui.le_I0.text())
-                    # alpha_c = ast.literal_eval(self.ui.le_Alpha_S.text())
-                    # tau_z = ast.literal_eval(self.ui.le_Tau_Z.text())
-                    # tau_xy = ast.literal_eval(self.ui.le_Tau_XY.text())
-                    # f_rev = ast.literal_eval(self.ui.le_F_Rev.text())
-                    # beta_xy = ast.literal_eval(self.ui.le_Beta_XY.text())
-                    # n_cav = ast.literal_eval(self.ui.le_N_Cav.text())
 
                     if selection is None or selection == '':
                         if self.operation_points.empty:

@@ -4,6 +4,7 @@ import time
 from distutils import dir_util
 from pathlib import Path
 
+import pandas as pd
 from termcolor import colored
 from tqdm import tqdm
 import time
