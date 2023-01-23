@@ -1666,15 +1666,15 @@ class Cavities:
         -------
 
         """
-        if self.save_folder != '':
-            # check if folder exists
-            if os.path.exists(fr"D:\Dropbox\Quick presentation files\{self.save_folder}"):
-                save_folder = fr"D:\Dropbox\Quick presentation files\{self.save_folder}"
-                plt.savefig(f"{save_folder}/{plot_name}")
-            else:
-                save_folder = fr"D:\Dropbox\Quick presentation files\{self.save_folder}"
-                os.mkdir(save_folder)
-                plt.savefig(f"{save_folder}/{plot_name}")
+        # if self.save_folder != '':
+        #     # check if folder exists
+        #     if os.path.exists(fr"D:\Dropbox\Quick presentation files\{self.save_folder}"):
+        #         save_folder = fr"D:\Dropbox\Quick presentation files\{self.save_folder}"
+        #         plt.savefig(f"{save_folder}/{plot_name}")
+        #     else:
+        #         save_folder = fr"D:\Dropbox\Quick presentation files\{self.save_folder}"
+        #         os.mkdir(save_folder)
+        #         plt.savefig(f"{save_folder}/{plot_name}")
 
     def __str__(self):
         return fr"{self.cavities_list}"
@@ -1938,7 +1938,7 @@ class Cavity:
             d_geom_params.update(json.load(json_file))
 
         # ic(d_geom_params)
-
+        ic(d_qois)
         d_qois = d_qois[f'{working_point}_{bunch_length}']
 
         self.k_fm = d_qois['k_FM [V/pC]']
@@ -2815,6 +2815,10 @@ def h_study():
                          Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_800", op_field=11.87e6,
                          op_temp='2K', material='bulkNb')
 
+    c3794_H_800_2 = Cavity(2, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9, R_Q=152.8, G=198.42,
+                         Epk_Eacc=2.05, Bpk_Eacc=6.39, inv_eta=219, name="C3794_800$_\mathrm{23.74 MV/m}$", op_field=2*11.87e6,
+                         op_temp='2K', material='bulkNb')
+
     # c3795_H_400 = Cavity(5, l_cell_mid=93.5e-3, freq=801.58e6, vrf=2.1e9 / 2, R_Q=448.12, G=261.63,
     #                      Epk_Eacc=2.43, Bpk_Eacc=4.88, inv_eta=745, name="C3795", op_field=24.72e6,
     #                      op_temp='4.5K', material='NbCu')
@@ -2829,11 +2833,11 @@ def h_study():
     # 2 and 5 cell, 400MHz, 800MHz cavities comparison for H
     wp = 'H'  # working point
     sigma = 'SR_2.5mm'
-    slans_dirs = [fr"{parent_dir_slans}\3794_400", fr"{parent_dir_slans}\3794_800",
+    slans_dirs = [fr"{parent_dir_slans}\3794_400", fr"{parent_dir_slans}\3794_800", fr"{parent_dir_slans}\3794_800",
                   fr"{parent_dir_slans}\C3795_800"]
-    abci_dirs = [fr"{parent_dir_abci}\3794_400", fr"{parent_dir_abci}\3794_800",
+    abci_dirs = [fr"{parent_dir_abci}\3794_400", fr"{parent_dir_abci}\3794_800", fr"{parent_dir_abci}\3794_800",
                  fr"{parent_dir_abci}\C3795_800"]
-    cavities = Cavities([c3794_H_400, c3794_H_800, c3795_H_800], 'Cavities_C3794_400_800_C3795_800')
+    cavities = Cavities([c3794_H_400, c3794_H_800, c3794_H_800_2, c3795_H_800], 'Cavities_C3794_400_800_C3795_800')
 
     cavities.set_cavities_slans(slans_dirs)
     cavities.set_cavities_abci(abci_dirs)
@@ -2872,10 +2876,10 @@ if __name__ == '__main__':
     # sigma = 'SR_23.1mm'
     # mucol_study()
 
-    # wp = 'ttbar'  # working point
-    # sigma = 'SR_1.67mm'
-    # ttbar_study()
+    wp = 'ttbar_2022'  # working point
+    sigma = 'SR_1.67mm'
+    ttbar_study()
 
-    wp = 'H'  # working point
-    sigma = 'SR_2.5mm'
-    h_study()
+    # wp = 'H'  # working point
+    # sigma = 'SR_2.5mm'
+    # h_study()

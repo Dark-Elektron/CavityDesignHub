@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1350</width>
+    <width>1033</width>
     <height>1031</height>
    </rect>
   </property>
@@ -49,8 +49,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>1096</width>
-               <height>2346</height>
+               <width>736</width>
+               <height>2504</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -1231,30 +1231,6 @@
                     <string notr="true"/>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_35">
-                    <item row="2" column="3">
-                     <widget class="QLabel" name="label_11">
-                      <property name="text">
-                       <string>Summary</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="1" colspan="2">
-                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
-                    </item>
-                    <item row="2" column="4">
-                     <widget class="SwitchControl" name="sc_Create_Summary">
-                      <property name="toolTip">
-                       <string>Check to create a summary of analysed cavities</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_16">
-                      <property name="text">
-                       <string>Select Shape</string>
-                      </property>
-                     </widget>
-                    </item>
                     <item row="0" column="0">
                      <widget class="QComboBox" name="cb_Shape_Entry_Mode">
                       <property name="toolTip">
@@ -1272,7 +1248,38 @@
                       </item>
                      </widget>
                     </item>
-                    <item row="0" column="1" colspan="4">
+                    <item row="2" column="5">
+                     <widget class="QLabel" name="label_11">
+                      <property name="text">
+                       <string>Summary</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1" colspan="2">
+                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_16">
+                      <property name="text">
+                       <string>Select Shape</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="6">
+                     <widget class="SwitchControl" name="sc_Create_Summary">
+                      <property name="toolTip">
+                       <string>Check to create a summary of analysed cavities</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="3">
+                     <widget class="QLabel" name="label_17">
+                      <property name="text">
+                       <string>Scale</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="1" colspan="6">
                      <widget class="QWidget" name="w_Select_Shape_Space" native="true">
                       <layout class="QGridLayout" name="gridLayout_86">
                        <property name="leftMargin">
@@ -1306,6 +1313,9 @@
                        </item>
                       </layout>
                      </widget>
+                    </item>
+                    <item row="2" column="4">
+                     <widget class="QDoubleSpinBox" name="dsb_Scale_Cavity"/>
                     </item>
                    </layout>
                   </widget>
@@ -1637,6 +1647,9 @@
                  </item>
                  <item row="3" column="1">
                   <widget class="QComboBox" name="cb_Polarization_ABCI">
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                   </property>
                    <item>
                     <property name="text">
                      <string>Monopole</string>

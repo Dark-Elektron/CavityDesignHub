@@ -1,6 +1,6 @@
 {
     "Project Directory": "D:\\Dropbox\\CavityDesignHub\\Cavity800",
-    "Theme": "Solarized Dark",
+    "Theme": "Light VS",
     "Frequency": "400.79",
     "Cell_Type": 0,
     "Tune_Option": 0,
@@ -96,7 +96,7 @@
     "Eigen_No_Of_Modes": "5",
     "Eigen_LBC": 2,
     "Eigen_RBC": 2,
-    "Eigen_No_Of_Processors": 6,
+    "Eigen_No_Of_Processors": 5,
     "Wakefield_Shape_Entry_Mode": 0,
     "Wakefield_Shape_Space": "D:/Dropbox/CavityDesignHub/Cavity800/Cavities/selected_shapes_800MHz_mid_end_comparison.json",
     "Wakefield_Mid_Cell_CB": 2,
