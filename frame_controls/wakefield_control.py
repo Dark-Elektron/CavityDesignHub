@@ -118,6 +118,8 @@ class WakefieldControl:
 
         self.ui.pb_Get_Eigenmode_Results.clicked.connect(lambda: self.get_eigenmode_results())
 
+        self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
+
     def initUI(self):
         self.ui.w_Save_Folder.setVisible(False)
         self.ui.w_Machine_Parameters.setEnabled(False)
@@ -209,7 +211,7 @@ class WakefieldControl:
             qoi_dict = None
 
         # get geometric parameters
-        shape_space = get_geometric_parameters(self, 'ABCI')
+        shape_space = get_geometric_parameters(self, 'ABCI', float(self.ui.le_Scale.text()))
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(shape_space.keys())

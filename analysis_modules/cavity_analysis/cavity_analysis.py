@@ -324,20 +324,6 @@ class Cavities:
                      size=14, rotation=90,
                      transform=ax3.get_xaxis_transform())
 
-            # ax.axvline(7.13, ls='--', c='k')
-            # ax.axvline(10, ls='--', c='k')
-            # ax.axvline(15, ls='--', c='k')
-            # ax_right2.axhline(500, ls='--', c='k')
-            # ax_right2.axhline(1000, ls='--', c='k')
-            # ax.xaxis.set_major_locator(ticker.MultipleLocator(2))
-            # ax.yaxis.set_major_locator(ticker.MultipleLocator(2))
-            # ax_right.yaxis.set_major_locator(ticker.MultipleLocator(100))
-            # ax_right2.yaxis.set_major_locator(ticker.MultipleLocator(200))
-
-            # ax.yaxis.label.set_color(p1.get_color())
-            # ax_right.yaxis.label.set_color(p2.get_color())
-            # ax_right2.yaxis.label.set_color(p3.get_color())
-
             ax1.set_xlim(min(cavity.E_acc) * 1e-6, max(cavity.E_acc) * 1e-6)
             ax2.set_xlim(min(cavity.E_acc) * 1e-6, max(cavity.E_acc) * 1e-6)
             ax3.set_xlim(min(cavity.E_acc) * 1e-6, max(cavity.E_acc) * 1e-6)
@@ -2617,8 +2603,8 @@ def plot_surface_resistance():
     sr_list = [Rs_NbCu_2k_400Mhz, Rs_NbCu_4_5k_400Mhz, Rs_bulkNb_2k_400Mhz, Rs_bulkNb_4_5k_400Mhz,
                Rs_NbCu_2k_800Mhz, Rs_NbCu_4_5k_800Mhz, Rs_bulkNb_2k_800Mhz, Rs_bulkNb_4_5k_800Mhz]
 
-    sr_labels = ['Rs_NbCu_2k_400Mhz', 'Rs_NbCu_4_5k_400Mhz', 'Rs_bulkNb_2k_400Mhz', 'Rs_bulkNb_4_5k_400Mhz',
-                 'Rs_NbCu_2k_800Mhz', 'Rs_NbCu_4_5k_800Mhz', 'Rs_bulkNb_2k_800Mhz', 'Rs_bulkNb_4_5k_800Mhz']
+    sr_labels = ['Rs_Nb/Cu_2k_400MHz', 'Rs_Nb/Cu_4_5k_400MHz', 'Rs_bulkNb_2k_400MHz', 'Rs_bulkNb_4_5k_400MHz',
+                 'Rs_Nb/Cu_2k_800MHz', 'Rs_Nb/Cu_4_5k_800MHz', 'Rs_bulkNb_2k_800MHz', 'Rs_bulkNb_4_5k_800MHz']
 
     for i, sr in enumerate(sr_list):
         if '400Mhz' in sr_labels[i]:
@@ -2649,7 +2635,7 @@ def plot_surface_resistance():
     plt.tight_layout()
     plt.yscale('log')
     plt.show()
-
+plot_surface_resistance()
 
 def mucol_study():
     # MUCOL STUDY

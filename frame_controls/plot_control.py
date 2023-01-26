@@ -1168,7 +1168,7 @@ class PlotControl:
         # data = df[sheet_name]
 
         sheets = [a.strip() for a in args["plot inputs"]['Id'].currentText().split(',')]
-    # for sh in sheets:
+        # for sh in sheets:
         for id_ in ids:
             args["plot data"][id_] = {}
             args["plot object"][id_] = {}
@@ -1468,8 +1468,8 @@ class PlotControl:
         le_ScaleY = QLineEdit()
         le_ScaleY.setText('1')
         table.setCellWidget(row_ind, 7, le_ScaleY)
-        le_ScaleX.textChanged.connect(lambda: self.validating(le_ScaleX))
-        le_ScaleY.textChanged.connect(lambda: self.validating(le_ScaleY))
+        le_ScaleX.editingFinished.connect(lambda: validating(le_ScaleX, default='1'))
+        le_ScaleY.editingFinished.connect(lambda: validating(le_ScaleY, default='1'))
 
         # axis
         axis_list = ['Left', 'Right', 'Top', 'Bottom']
@@ -1712,7 +1712,7 @@ class PlotControl:
                             # note that plotted values are normalised to the number of cavities required per module
                             # but the values printed on the line editor are for one cavity
                             self.plot_baselines(f_list / unit[self.ui.cb_Frange_Unit.currentText()],
-                                                self.ui.sb_Ncav_per_Mod.value()*np.array(Z_list) * 1e-3,
+                                                self.ui.sb_Ncav_per_Mod.value() * np.array(Z_list) * 1e-3,
                                                 mode, labels=selection.split(', '))  # to kOhm
 
                             self.ui.le_Zth_Long.setText(f"[{Z_le}]")
@@ -1730,7 +1730,7 @@ class PlotControl:
                         try:
                             for i, n in enumerate(n_cav):
                                 ZT = (2 * E0[i]) * 1e9 / (
-                                            n * I0[i] * 1e-3 * beta_xy[i] * tau_xy[i] * 1e-3 * f_rev[i] * 1e3)
+                                        n * I0[i] * 1e-3 * beta_xy[i] * tau_xy[i] * 1e-3 * f_rev[i] * 1e3)
                                 ZT_le.append(round(ZT * 1e-3, 2))
 
                                 # note that plotted values are normalised to the number of cavities required per module
@@ -1738,7 +1738,7 @@ class PlotControl:
                                 Z_list.append(ZT)
                             self.ui.le_Zth_Trans.setText(f"[{ZT_le}]")
                             self.plot_baselines(f_list / unit[self.ui.cb_Frange_Unit.currentText()],
-                                                self.ui.sb_Ncav_per_Mod.value()*np.array(Z_list) * 1e-3,
+                                                self.ui.sb_Ncav_per_Mod.value() * np.array(Z_list) * 1e-3,
                                                 mode, labels=selection.split(', '))  # to kOhm
 
                         except ZeroDivisionError:
@@ -2048,38 +2048,6 @@ class PlotControl:
                 if txt in dir_list:
                     item = ccb.model().item(dir_list.index(txt) + 1)  # +1 because 'all' takes position 0
                     item.setCheckState(2)
-
-    # def open_file(self):
-    #     filename, _ = QFileDialog.getOpenFileName(None, "Open File", "", "Excel Files (*.xlsx)")
-    #
-    #     try:
-    #         self.ui.le_Filename.setText(filename)
-    #         df = pd.read_excel(filename)
-    #
-    #         # get header
-    #         header = df.columns
-    #
-    #         # create combobox for x checkbox list for y
-    #         cb_X_Axis = QComboBox()
-    #         cb_Y_Axis = QCheckableComboBox()
-    #         cb_Y_Axis_List = []
-    #
-    #         # populate x and y with checkboxes
-    #         for col in header:
-    #             cb_X_Axis.addItem(col)
-    #             cb_Y_Axis.addItem(col)
-    #
-    #             cb = QCheckBox(col)
-    #             cb_Y_Axis_List.append(cb)
-    #
-    #         # self.ui.vl_Y_Axis_Checkbox.addWidget(cb_Y_Axis)
-    #         #
-    #         # # add to layout
-    #         # self.ui.vl_X_Axis_Combobox.addWidget(cb_X_Axis)
-    #         # self.ui.vl_X_Axis_Combobox.addWidget(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-
-    # except Exception as e:
-    #     self.log.error(f'Failed to plot:: {e}')
 
     def set_table_size(self):
         self.ui.tableWidget.setColumnWidth(0, 50)

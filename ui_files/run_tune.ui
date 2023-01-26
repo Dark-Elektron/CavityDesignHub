@@ -62,8 +62,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>676</width>
-                <height>1368</height>
+                <width>522</width>
+                <height>1657</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -246,8 +246,8 @@
                    <widget class="QPushButton" name="pb_Cancel">
                     <property name="maximumSize">
                      <size>
-                      <width>32</width>
-                      <height>16777215</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                     <property name="toolTip">
@@ -265,8 +265,8 @@
                     </property>
                     <property name="iconSize">
                      <size>
-                      <width>24</width>
-                      <height>24</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                    </widget>
@@ -275,8 +275,8 @@
                    <widget class="QPushButton" name="pb_Pause_Resume">
                     <property name="maximumSize">
                      <size>
-                      <width>32</width>
-                      <height>16777215</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                     <property name="toolTip">
@@ -287,8 +287,8 @@
                     </property>
                     <property name="iconSize">
                      <size>
-                      <width>24</width>
-                      <height>24</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                    </widget>
@@ -316,8 +316,8 @@
                    <widget class="QPushButton" name="pb_Run">
                     <property name="maximumSize">
                      <size>
-                      <width>32</width>
-                      <height>16777215</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                     <property name="toolTip">
@@ -335,8 +335,8 @@
                     </property>
                     <property name="iconSize">
                      <size>
-                      <width>24</width>
-                      <height>24</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                     <property name="flat">
@@ -1886,8 +1886,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>674</width>
-                <height>1301</height>
+                <width>520</width>
+                <height>1414</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
@@ -2963,6 +2963,7 @@
  </customwidgets>
  <resources>
   <include location="../qss/icons.qrc"/>
+  <include location="C:/Users/sosoho/.designer/qss/icons.qrc"/>
  </resources>
  <connections>
   <connection>

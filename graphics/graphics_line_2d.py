@@ -15,7 +15,7 @@ class QGraphicsLine(QGraphicsPathItem):
         self._color = QColor(self._color)
         self._pen = QPen(self._color)
         self._pen_dragging = QPen(self._color)
-        self._pen.setWidthF(15)
+        self._pen.setWidthF(5)
         self.pen.setColor(self._color)
 
         self.posSource = [0, 0]
@@ -170,10 +170,9 @@ class QGraphicsLineDirect(QGraphicsLine):
 
         # calculate angles outside loop
         # CALCULATE x1_el, y1_el, x2_el, y2_el
-        data = ([0+L_bp_l, Ri_el+b_el, L_el+L_bp_l, Req_el-B_el], [a_el, b_el, A_el, B_el])
-        x1el, y1el, x2el, y2el = fsolve(ellipse_tangent,
-                                        np.array([0.5*a_el+L_bp_l, Ri_el + 0.5*b_el,
-                                                  L_el-A_el + L_bp_l, Req_el-0.5*B_el]), args=data)
+        df = tangent_coords(A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, L_bp_l)
+        x1el, y1el, x2el, y2el = df[0]
+
         # calculate iris angle
         alpha1_el = np.arctan((Ri_el+b_el-y1el)/(x1el-L_bp_l))
         alpha1_el = np.rad2deg(alpha1_el)
@@ -182,9 +181,9 @@ class QGraphicsLineDirect(QGraphicsLine):
         alpha2_el = np.rad2deg(alpha2_el)
 
         # CALCULATE x1, y1, x2, y2
-        data = ([0+L_bp_l, Ri_m+b_m, L_m+L_bp_l, Req_m-B_m], [a_m, b_m, A_m, B_m])
-        x1, y1, x2, y2 = fsolve(ellipse_tangent, np.array([0.5*a_m+L_bp_l, Ri_m+0.5*b_m,
-                                                           L_m-A_m + L_bp_l, Req_m - 0.5*B_m]), args=data)
+        df = tangent_coords(A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp_l)
+        x1, y1, x2, y2 = df[0]
+
         # calculate angle
         alpha1 = np.arctan((Ri_m+b_m-y1)/(x1-L_bp_l))
         alpha1 = np.rad2deg(alpha1)
@@ -193,9 +192,9 @@ class QGraphicsLineDirect(QGraphicsLine):
         alpha2 = np.rad2deg(alpha2)
 
         # CALCULATE x1_er, y1_er, x2_er, y2_er
-        data = ([0+L_bp_l, Ri_er+b_er, L_er+L_bp_l, Req_er-B_er], [a_er, b_er, A_er, B_er])
-        x1er, y1er, x2er, y2er = fsolve(ellipse_tangent, np.array([0.5*a_er+L_bp_l, Ri_er+0.5*b_er,
-                                                                   L_er-A_er + L_bp_l, Req_er-0.5*B_er]), args=data)
+        df = tangent_coords(A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, L_bp_r)
+        x1er, y1er, x2er, y2er = df[0]
+
         # calculate angle
         alpha1_er = np.arctan((Ri_er+b_er-y1er)/(x1er-L_bp_l))
         alpha1_er = np.rad2deg(alpha1_er)

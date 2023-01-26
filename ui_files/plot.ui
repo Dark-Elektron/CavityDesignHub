@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1655</width>
+    <width>1901</width>
     <height>1248</height>
    </rect>
   </property>
@@ -127,16 +127,10 @@
                       <verstretch>50</verstretch>
                      </sizepolicy>
                     </property>
-                    <property name="minimumSize">
-                     <size>
-                      <width>40</width>
-                      <height>40</height>
-                     </size>
-                    </property>
                     <property name="maximumSize">
                      <size>
-                      <width>40</width>
-                      <height>40</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                     <property name="text">
@@ -148,24 +142,18 @@
                     </property>
                     <property name="iconSize">
                      <size>
-                      <width>38</width>
-                      <height>38</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                    </widget>
                   </item>
                   <item>
                    <widget class="QPushButton" name="pb_Machine_Parameters">
-                    <property name="minimumSize">
-                     <size>
-                      <width>40</width>
-                      <height>40</height>
-                     </size>
-                    </property>
                     <property name="maximumSize">
                      <size>
-                      <width>40</width>
-                      <height>40</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                     <property name="text">
@@ -177,8 +165,8 @@
                     </property>
                     <property name="iconSize">
                      <size>
-                      <width>38</width>
-                      <height>38</height>
+                      <width>18</width>
+                      <height>18</height>
                      </size>
                     </property>
                    </widget>
@@ -207,16 +195,10 @@
                    <verstretch>40</verstretch>
                   </sizepolicy>
                  </property>
-                 <property name="minimumSize">
-                  <size>
-                   <width>40</width>
-                   <height>40</height>
-                  </size>
-                 </property>
                  <property name="maximumSize">
                   <size>
-                   <width>40</width>
-                   <height>40</height>
+                   <width>18</width>
+                   <height>18</height>
                   </size>
                  </property>
                  <property name="text">
@@ -228,8 +210,8 @@
                  </property>
                  <property name="iconSize">
                   <size>
-                   <width>38</width>
-                   <height>38</height>
+                   <width>18</width>
+                   <height>18</height>
                   </size>
                  </property>
                 </widget>
@@ -282,9 +264,6 @@
                      <property name="orientation">
                       <enum>Qt::Vertical</enum>
                      </property>
-                     <property name="handleWidth">
-                      <number>2</number>
-                     </property>
                      <widget class="QWidget" name="widget_14" native="true">
                       <property name="minimumSize">
                        <size>
@@ -336,9 +315,6 @@
                          <property name="orientation">
                           <enum>Qt::Vertical</enum>
                          </property>
-                         <property name="handleWidth">
-                          <number>2</number>
-                         </property>
                          <widget class="QWidget" name="widget_13" native="true">
                           <layout class="QGridLayout" name="gridLayout_15">
                            <property name="leftMargin">
@@ -369,20 +345,33 @@
                              </property>
                              <property name="minimumSize">
                               <size>
-                               <width>0</width>
-                               <height>100</height>
+                               <width>125</width>
+                               <height>125</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>125</width>
+                               <height>125</height>
                               </size>
                              </property>
                              <item>
                               <property name="text">
-                               <string>Left</string>
+                               <string>Left Axis</string>
                               </property>
                              </item>
                              <item>
                               <property name="text">
-                               <string>Right</string>
+                               <string>Right Axis</string>
                               </property>
                              </item>
+                            </widget>
+                           </item>
+                           <item row="1" column="9">
+                            <widget class="QPushButton" name="pb_Apply_Axis_Labels">
+                             <property name="text">
+                              <string>Apply</string>
+                             </property>
                             </widget>
                            </item>
                            <item row="3" column="5">
@@ -398,58 +387,23 @@
                              </property>
                             </widget>
                            </item>
-                           <item row="1" column="9">
-                            <widget class="QPushButton" name="pb_Apply_Axis_Labels">
+                           <item row="1" column="3" colspan="2">
+                            <widget class="QLineEdit" name="le_Ylabel">
                              <property name="text">
-                              <string>Apply</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="10">
-                            <spacer name="horizontalSpacer_2">
-                             <property name="orientation">
-                              <enum>Qt::Horizontal</enum>
-                             </property>
-                             <property name="sizeHint" stdset="0">
-                              <size>
-                               <width>40</width>
-                               <height>20</height>
-                              </size>
-                             </property>
-                            </spacer>
-                           </item>
-                           <item row="3" column="1">
-                            <widget class="QSpinBox" name="sb_XLabel_Size">
-                             <property name="toolTip">
-                              <string>X axis label size</string>
-                             </property>
-                             <property name="minimum">
-                              <number>8</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="value">
-                              <number>18</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="5">
-                            <widget class="QLineEdit" name="le_Title">
-                             <property name="minimumSize">
-                              <size>
-                               <width>200</width>
-                               <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>200</width>
-                               <height>16777215</height>
-                              </size>
+                              <string/>
                              </property>
                              <property name="placeholderText">
-                              <string>Plot Title</string>
+                              <string>Y axis label</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="1" colspan="2">
+                            <widget class="QLabel" name="label_4">
+                             <property name="text">
+                              <string>x-label</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -488,6 +442,84 @@
                              </property>
                             </widget>
                            </item>
+                           <item row="1" column="1" colspan="2">
+                            <widget class="QLineEdit" name="le_Xlabel">
+                             <property name="text">
+                              <string/>
+                             </property>
+                             <property name="placeholderText">
+                              <string>X axis label</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="1">
+                            <widget class="QSpinBox" name="sb_XLabel_Size">
+                             <property name="toolTip">
+                              <string>X axis label size</string>
+                             </property>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="1" column="5">
+                            <widget class="QLineEdit" name="le_Title">
+                             <property name="minimumSize">
+                              <size>
+                               <width>200</width>
+                               <height>0</height>
+                              </size>
+                             </property>
+                             <property name="maximumSize">
+                              <size>
+                               <width>200</width>
+                               <height>16777215</height>
+                              </size>
+                             </property>
+                             <property name="placeholderText">
+                              <string>Plot Title</string>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="7" colspan="2">
+                            <widget class="QLabel" name="label_7">
+                             <property name="text">
+                              <string>Legend labels</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="0" column="5">
+                            <widget class="QLabel" name="label_6">
+                             <property name="text">
+                              <string>Plot title</string>
+                             </property>
+                             <property name="alignment">
+                              <set>Qt::AlignCenter</set>
+                             </property>
+                            </widget>
+                           </item>
+                           <item row="3" column="8">
+                            <widget class="QSpinBox" name="sb_Legend_Marker_Size">
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
+                             </property>
+                            </widget>
+                           </item>
                            <item row="2" column="3" colspan="2">
                             <widget class="QCheckableComboBox" name="ccb_Freq_Used_Ylabel">
                              <item>
@@ -510,32 +542,6 @@
                                <string>$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$</string>
                               </property>
                              </item>
-                            </widget>
-                           </item>
-                           <item row="1" column="3" colspan="2">
-                            <widget class="QLineEdit" name="le_Ylabel">
-                             <property name="text">
-                              <string/>
-                             </property>
-                             <property name="placeholderText">
-                              <string>Y axis label</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="2">
-                            <widget class="QSpinBox" name="sb_XLabel_Tick_Size">
-                             <property name="toolTip">
-                              <string>X axis xtick size</string>
-                             </property>
-                             <property name="minimum">
-                              <number>8</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="value">
-                              <number>18</number>
-                             </property>
                             </widget>
                            </item>
                            <item row="3" column="3">
@@ -564,49 +570,6 @@
                              </property>
                              <property name="value">
                               <number>18</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="1" column="1" colspan="2">
-                            <widget class="QLineEdit" name="le_Xlabel">
-                             <property name="text">
-                              <string/>
-                             </property>
-                             <property name="placeholderText">
-                              <string>X axis label</string>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="3" column="8">
-                            <widget class="QSpinBox" name="sb_Legend_Marker_Size">
-                             <property name="minimum">
-                              <number>8</number>
-                             </property>
-                             <property name="maximum">
-                              <number>99</number>
-                             </property>
-                             <property name="value">
-                              <number>18</number>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="1" colspan="2">
-                            <widget class="QLabel" name="label_4">
-                             <property name="text">
-                              <string>x-label</string>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignCenter</set>
-                             </property>
-                            </widget>
-                           </item>
-                           <item row="0" column="7" colspan="2">
-                            <widget class="QLabel" name="label_7">
-                             <property name="text">
-                              <string>Legend labels</string>
-                             </property>
-                             <property name="alignment">
-                              <set>Qt::AlignCenter</set>
                              </property>
                             </widget>
                            </item>
@@ -639,13 +602,19 @@
                              </item>
                             </widget>
                            </item>
-                           <item row="0" column="5">
-                            <widget class="QLabel" name="label_6">
-                             <property name="text">
-                              <string>Plot title</string>
+                           <item row="3" column="2">
+                            <widget class="QSpinBox" name="sb_XLabel_Tick_Size">
+                             <property name="toolTip">
+                              <string>X axis xtick size</string>
                              </property>
-                             <property name="alignment">
-                              <set>Qt::AlignCenter</set>
+                             <property name="minimum">
+                              <number>8</number>
+                             </property>
+                             <property name="maximum">
+                              <number>99</number>
+                             </property>
+                             <property name="value">
+                              <number>18</number>
                              </property>
                             </widget>
                            </item>
@@ -701,9 +670,6 @@
                                <widget class="QSplitter" name="splitter_4">
                                 <property name="orientation">
                                  <enum>Qt::Vertical</enum>
-                                </property>
-                                <property name="handleWidth">
-                                 <number>2</number>
                                 </property>
                                 <widget class="QWidget" name="widget_25" native="true">
                                  <layout class="QGridLayout" name="gridLayout_29">
@@ -825,8 +791,8 @@
                                    <rect>
                                     <x>0</x>
                                     <y>0</y>
-                                    <width>976</width>
-                                    <height>188</height>
+                                    <width>1148</width>
+                                    <height>185</height>
                                    </rect>
                                   </property>
                                   <layout class="QGridLayout" name="gridLayout_27">
@@ -939,8 +905,8 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>462</width>
-                        <height>1242</height>
+                        <width>507</width>
+                        <height>1239</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_14">
@@ -988,8 +954,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>420</width>
-                                <height>690</height>
+                                <width>250</width>
+                                <height>126</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1342,15 +1308,15 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>438</width>
-                                <height>1184</height>
+                                <width>472</width>
+                                <height>1156</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
                                <item row="3" column="0">
-                                <widget class="QWidget" name="widget_19" native="true">
+                                <widget class="QWidget" name="w_Annotations" native="true">
                                  <layout class="QGridLayout" name="gridLayout_16">
-                                  <item row="1" column="0">
+                                  <item row="0" column="0">
                                    <widget class="QWidget" name="widget_12" native="true">
                                     <property name="minimumSize">
                                      <size>
@@ -1362,7 +1328,7 @@
                                      <item row="0" column="0" colspan="6">
                                       <widget class="QLabel" name="label_32">
                                        <property name="text">
-                                        <string>Cutoff</string>
+                                        <string>Plot Beam Pipe Cutoff</string>
                                        </property>
                                        <property name="alignment">
                                         <set>Qt::AlignCenter</set>
@@ -1412,17 +1378,10 @@
                                     </layout>
                                    </widget>
                                   </item>
-                                  <item row="0" column="0">
-                                   <widget class="QLabel" name="label_8">
-                                    <property name="text">
-                                     <string>Annotations</string>
-                                    </property>
-                                   </widget>
-                                  </item>
-                                  <item row="2" column="0">
+                                  <item row="1" column="0">
                                    <widget class="QWidget" name="widget_21" native="true">
                                     <layout class="QGridLayout" name="gridLayout_25">
-                                     <item row="0" column="2">
+                                     <item row="1" column="3">
                                       <widget class="QSpinBox" name="sb_Annotation_Text_Size">
                                        <property name="minimumSize">
                                         <size>
@@ -1444,10 +1403,10 @@
                                        </property>
                                       </widget>
                                      </item>
-                                     <item row="0" column="3">
+                                     <item row="1" column="4">
                                       <widget class="QSpinBox" name="sb_Rotation"/>
                                      </item>
-                                     <item row="0" column="1">
+                                     <item row="1" column="2">
                                       <widget class="QComboBox" name="cb_Text_Box">
                                        <item>
                                         <property name="text">
@@ -1471,24 +1430,34 @@
                                        </item>
                                       </widget>
                                      </item>
-                                     <item row="0" column="0">
-                                      <widget class="QLineEdit" name="le_Plot_Text_2">
-                                       <property name="text">
-                                        <string>Text</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="0" column="4">
+                                     <item row="1" column="5">
                                       <widget class="QPushButton" name="pb_Add_Textt">
                                        <property name="text">
                                         <string>Add Text</string>
                                        </property>
                                       </widget>
                                      </item>
+                                     <item row="1" column="0">
+                                      <widget class="QLineEdit" name="le_Plot_Text_2">
+                                       <property name="text">
+                                        <string>Text</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="0" column="0" colspan="6">
+                                      <widget class="QLabel" name="label_8">
+                                       <property name="text">
+                                        <string>Text Annotation</string>
+                                       </property>
+                                       <property name="alignment">
+                                        <set>Qt::AlignCenter</set>
+                                       </property>
+                                      </widget>
+                                     </item>
                                     </layout>
                                    </widget>
                                   </item>
-                                  <item row="5" column="0">
+                                  <item row="4" column="0">
                                    <widget class="QWidget" name="widget_22" native="true">
                                     <layout class="QGridLayout" name="gridLayout_26">
                                      <item row="1" column="0">
@@ -1530,10 +1499,13 @@
                                        </property>
                                       </widget>
                                      </item>
-                                     <item row="0" column="0">
+                                     <item row="0" column="0" colspan="3">
                                       <widget class="QLabel" name="label">
                                        <property name="text">
-                                        <string>Axvline</string>
+                                        <string>Add Vertical Line</string>
+                                       </property>
+                                       <property name="alignment">
+                                        <set>Qt::AlignCenter</set>
                                        </property>
                                       </widget>
                                      </item>
@@ -1749,8 +1721,8 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>383</width>
-                                          <height>324</height>
+                                          <width>392</width>
+                                          <height>365</height>
                                          </rect>
                                         </property>
                                         <layout class="QGridLayout" name="gridLayout_31">
@@ -2087,6 +2059,19 @@
                                  </layout>
                                 </widget>
                                </item>
+                               <item row="2" column="0">
+                                <widget class="QPushButton" name="pb_Annotation">
+                                 <property name="text">
+                                  <string>Annotations</string>
+                                 </property>
+                                 <property name="checkable">
+                                  <bool>true</bool>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>true</bool>
+                                 </property>
+                                </widget>
+                               </item>
                               </layout>
                              </widget>
                             </widget>
@@ -2167,6 +2152,22 @@
     <hint type="destinationlabel">
      <x>1642</x>
      <y>338</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Annotation</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Annotations</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1588</x>
+     <y>820</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1588</x>
+     <y>980</y>
     </hint>
    </hints>
   </connection>

@@ -152,6 +152,8 @@ class EigenmodeControl:
         self.ui.le_Req_i.editingFinished.connect(lambda: self.ui.le_Req_ol.setText(self.ui.le_Req_i.text()))
         self.ui.le_Req_i.editingFinished.connect(lambda: self.ui.le_Req_or.setText(self.ui.le_Req_i.text()))
 
+        self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
+
     def shape_entry_widgets_control(self):
         if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
             # animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
@@ -202,7 +204,8 @@ class EigenmodeControl:
             UQ = False
 
         # get geometric parameters
-        self.shape_space = get_geometric_parameters(self, 'SLANS')
+        self.shape_space = get_geometric_parameters(self, 'SLANS', float(self.ui.le_Scale.text()))
+        ic(self.shape_space)
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(self.shape_space.keys())

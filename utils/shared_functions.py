@@ -1,6 +1,8 @@
 import ast
 import json
 import os
+
+from PyQt5.QtGui import QDoubleValidator, QValidator
 from PyQt5.QtWidgets import QFileDialog
 from icecream import ic
 from matplotlib import pyplot as plt
@@ -84,7 +86,7 @@ def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
     if error_msg == 4:
         df = fsolve(ellipse_tangent, np.array([a + L_bp, Ri + 1.15 * b, L - A + L_bp, Req - 1.15 * B]),
                     args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
-        ic(df)
+        # ic(df)
 
     if tangent_check:
         h, k, p, q = data[0]
@@ -679,7 +681,7 @@ def text_to_list(txt):
             return list(ll)
 
 
-def get_geometric_parameters(frame_control, code):
+def get_geometric_parameters(frame_control, code, scale=1):
     shape_space = {}
     if frame_control.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
         try:
@@ -702,30 +704,45 @@ def get_geometric_parameters(frame_control, code):
                 if not to_all:
                     ans = frame_control.prompt(code, key)
                     if ans == 'Yes':
-                        shape_space[key] = val
+                        if scale == 1 or scale == 0:
+                            shape_space[key] = val
+                        else:
+                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
 
                     if ans == 'No':
                         continue
 
                     if ans == 'YesToAll':
-                        shape_space[key] = val
+                        if scale == 1 or scale == 0:
+                            shape_space[key] = val
+                        else:
+                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
                         to_all = 'YesToAll'
 
                     if ans == 'NoToAll':
                         to_all = 'NoToAll'
 
                     if ans == "Does not exist":
-                        shape_space[key] = val
+                        if scale == 1 or scale == 0:
+                            shape_space[key] = val
+                        else:
+                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
                         to_all = None
                 else:
                     if to_all == 'YesToAll':
-                        shape_space[key] = val
+                        if scale == 1 or scale == 0:
+                            shape_space[key] = val
+                        else:
+                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
                     else:
                         path = f'{frame_control.main_control.projectDir}/SimulationData/{code}/{key}'
                         if os.path.exists(path):
                             continue
                         else:
-                            shape_space[key] = val
+                            if scale == 1 or scale == 0:
+                                shape_space[key] = val
+                            else:
+                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
 
             return shape_space
         except Exception as e:
@@ -841,7 +858,38 @@ def get_geometric_parameters(frame_control, code):
                                                                                                 shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
 
                                                                                             count += 1
+
+
+        # scale geometry
+        if scale != 1 or scale != 0:
+            scaled_shape_space = {}
+            for key, val in shape_space.items():
+                scaled_shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+
+            shape_space = scaled_shape_space
+
         return shape_space
+
+
+def scale_cavity_geometry(shape, scale):
+
+    shape['IC'] = list(np.array(shape['IC']) * scale)
+    shape['OC'] = list(np.array(shape['OC']) * scale)
+    shape['FREQ'] = shape['FREQ'] / scale
+    try:
+        shape['OC_R'] = list(np.array(shape['OC_R']) * scale)
+    except KeyError:
+        pass
+
+    return shape
+
+
+def validating(le, default='1'):
+    validation_rule = QDoubleValidator(0, 1e12, 10)
+    if validation_rule.validate(le.text(), 20)[0] == QValidator.Acceptable:
+        le.setFocus()
+    else:
+        le.setText(default)
 
 # def mid_only():
 #

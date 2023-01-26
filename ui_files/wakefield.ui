@@ -50,7 +50,7 @@
                <x>0</x>
                <y>0</y>
                <width>736</width>
-               <height>2504</height>
+               <height>2562</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -1231,55 +1231,44 @@
                     <string notr="true"/>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_35">
-                    <item row="0" column="0">
-                     <widget class="QComboBox" name="cb_Shape_Entry_Mode">
-                      <property name="toolTip">
-                       <string>Load cavities from json file or enter cavity dimensions manually.</string>
+                    <item row="3" column="1">
+                     <widget class="QLineEdit" name="le_Scale">
+                      <property name="maximumSize">
+                       <size>
+                        <width>75</width>
+                        <height>16777215</height>
+                       </size>
                       </property>
-                      <item>
-                       <property name="text">
-                        <string>Load</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>Manual</string>
-                       </property>
-                      </item>
+                      <property name="toolTip">
+                       <string>Cavity geometry scale</string>
+                      </property>
+                      <property name="text">
+                       <string>1</string>
+                      </property>
                      </widget>
                     </item>
-                    <item row="2" column="5">
+                    <item row="3" column="2">
                      <widget class="QLabel" name="label_11">
                       <property name="text">
                        <string>Summary</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1" colspan="2">
-                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_16">
-                      <property name="text">
-                       <string>Select Shape</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="6">
+                    <item row="3" column="3">
                      <widget class="SwitchControl" name="sc_Create_Summary">
                       <property name="toolTip">
                        <string>Check to create a summary of analysed cavities</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="3">
+                    <item row="3" column="0">
                      <widget class="QLabel" name="label_17">
                       <property name="text">
                        <string>Scale</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="0" column="1" colspan="6">
+                    <item row="1" column="0" colspan="4">
                      <widget class="QWidget" name="w_Select_Shape_Space" native="true">
                       <layout class="QGridLayout" name="gridLayout_86">
                        <property name="leftMargin">
@@ -1311,11 +1300,35 @@
                          </property>
                         </widget>
                        </item>
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="label_16">
+                         <property name="text">
+                          <string>Select Shape</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="1" column="1" colspan="3">
+                        <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
+                       </item>
                       </layout>
                      </widget>
                     </item>
-                    <item row="2" column="4">
-                     <widget class="QDoubleSpinBox" name="dsb_Scale_Cavity"/>
+                    <item row="0" column="0" colspan="4">
+                     <widget class="QComboBox" name="cb_Shape_Entry_Mode">
+                      <property name="toolTip">
+                       <string>Load cavities from json file or enter cavity dimensions manually.</string>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>Load</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Manual</string>
+                       </property>
+                      </item>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
@@ -1902,8 +1915,8 @@
               <widget class="QPushButton" name="pb_Run">
                <property name="maximumSize">
                 <size>
-                 <width>75</width>
-                 <height>16777215</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="styleSheet">
@@ -1918,8 +1931,8 @@
                </property>
                <property name="iconSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="flat">
@@ -1929,6 +1942,12 @@
              </item>
              <item row="0" column="6">
               <widget class="QPushButton" name="pb_Cancel">
+               <property name="maximumSize">
+                <size>
+                 <width>18</width>
+                 <height>18</height>
+                </size>
+               </property>
                <property name="styleSheet">
                 <string notr="true"/>
                </property>
@@ -1941,14 +1960,20 @@
                </property>
                <property name="iconSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
               </widget>
              </item>
              <item row="0" column="5">
               <widget class="QPushButton" name="pb_Pause_Resume">
+               <property name="maximumSize">
+                <size>
+                 <width>18</width>
+                 <height>18</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -1958,8 +1983,8 @@
                </property>
                <property name="iconSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
               </widget>

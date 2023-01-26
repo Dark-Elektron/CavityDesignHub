@@ -384,6 +384,7 @@ class Model:
 
         # if self.epsr > 1:
         #     ic('Relative permittivity > 1?')
+        ic(n_modes)
         if freq is None:
             # calculate freq from mid cell length
             beta = 1
@@ -473,16 +474,11 @@ class Model:
         BB = sps.csr_matrix((Barvot, (ia, ja)), shape=(n, n))
 
         k0 = 2 * np.pi * freq * np.sqrt(mu0 * eps0)
-        plt.spy(AA)
-        plt.show()
-        d2, u2 = spsl.eigs(AA, M=BB, k=4, sigma=k0**2)
-        ic(k0)
-        ic(d2)
+        d2, u2 = spsl.eigs(AA, M=BB, k=n_modes, sigma=k0**2)
         # imaginary component of eigenvectors are zero
         u2 = u2.real
         d2 = np.absolute(d2)
         k = np.sqrt(d2)
-        ic(k)
         if search:
             k2 = k
             eigen_frequencies = np.array(k / (2 * np.pi * np.sqrt(mu0 * eps0)))
@@ -498,7 +494,6 @@ class Model:
                 k = k2[ind]
                 u = u2[:, ind]
             else:
-                ic(req_mode_num)
                 # find eigenvalue with min error.
                 val = np.min(abs(k0 - k2))
                 ind = np.argmin(abs(k0 - k2))

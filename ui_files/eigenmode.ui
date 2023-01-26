@@ -35,6 +35,12 @@
             <layout class="QGridLayout" name="gl_Simulation_Controls">
              <item row="0" column="5">
               <widget class="QPushButton" name="pb_Pause_Resume">
+               <property name="maximumSize">
+                <size>
+                 <width>18</width>
+                 <height>18</height>
+                </size>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -44,8 +50,8 @@
                </property>
                <property name="iconSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
               </widget>
@@ -64,8 +70,8 @@
               <widget class="QPushButton" name="pb_Run">
                <property name="maximumSize">
                 <size>
-                 <width>75</width>
-                 <height>16777215</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="styleSheet">
@@ -80,8 +86,8 @@
                </property>
                <property name="iconSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
                <property name="flat">
@@ -91,6 +97,12 @@
              </item>
              <item row="0" column="6">
               <widget class="QPushButton" name="pb_Cancel">
+               <property name="maximumSize">
+                <size>
+                 <width>18</width>
+                 <height>18</height>
+                </size>
+               </property>
                <property name="styleSheet">
                 <string notr="true"/>
                </property>
@@ -103,8 +115,8 @@
                </property>
                <property name="iconSize">
                 <size>
-                 <width>24</width>
-                 <height>24</height>
+                 <width>18</width>
+                 <height>18</height>
                 </size>
                </property>
               </widget>
@@ -151,8 +163,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>732</width>
-               <height>1788</height>
+               <width>761</width>
+               <height>1783</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -480,7 +492,27 @@
                     <string notr="true"/>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_33">
-                    <item row="1" column="1" colspan="6">
+                    <item row="2" column="4">
+                     <widget class="SwitchControl" name="sc_Create_Summary"/>
+                    </item>
+                    <item row="2" column="3">
+                     <widget class="QLabel" name="label_4">
+                      <property name="text">
+                       <string>Summary</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0">
+                     <widget class="QLabel" name="label_17">
+                      <property name="text">
+                       <string>Select Shape</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="1" colspan="2">
+                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
+                    </item>
+                    <item row="1" column="1" colspan="4">
                      <widget class="QWidget" name="w_Select_Shape_Space" native="true">
                       <layout class="QGridLayout" name="gridLayout_86">
                        <property name="leftMargin">
@@ -547,36 +579,6 @@
                        <string>Shape Space</string>
                       </property>
                      </widget>
-                    </item>
-                    <item row="2" column="1" colspan="2">
-                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
-                    </item>
-                    <item row="2" column="6">
-                     <widget class="SwitchControl" name="sc_Create_Summary"/>
-                    </item>
-                    <item row="2" column="5">
-                     <widget class="QLabel" name="label_4">
-                      <property name="text">
-                       <string>Summary</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_17">
-                      <property name="text">
-                       <string>Select Shape</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="3">
-                     <widget class="QLabel" name="label_23">
-                      <property name="text">
-                       <string>Scale</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="4">
-                     <widget class="QDoubleSpinBox" name="dsb_Scale"/>
                     </item>
                    </layout>
                   </widget>
