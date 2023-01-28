@@ -14,7 +14,6 @@ from utils.shared_functions import *
 
 fr = FileReader()
 
-
 file_color = 'green'
 DEBUG = False
 
@@ -116,7 +115,7 @@ class SLANSGeometry(Geometry):
             zr12_BPR, alpha_BPR = self.slans.rz_conjug('right')  # zr12_R first column is z , second column is r
 
         # Set boundary conditions
-        BC_Left = floor(bc/10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        BC_Left = floor(bc / 10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
         BC_Right = bc % 10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
 
         filename = f'cavity_{bc}'
@@ -186,7 +185,7 @@ class SLANSGeometry(Geometry):
                                                               self.L_R, -self.Jy0, BC_Right))
 
                 f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.Jxy_bp * (
-                            (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
+                        (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
                                                                 1 if self.WG_L > 0 else 0) * self.WG_mesh + (
                                                                 1 if self.WG_R > 0 else 0) * self.WG_mesh)))
                 f.write('0 0 0 0 0 0 0 0 0')
@@ -224,28 +223,29 @@ class SLANSGeometry(Geometry):
                 f.write('1 {:g} 0 0 1 0 {:.0f} {:.0f} 0\n'.format(
                     self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, -self.Jy0, BC_Right))
 
-                # # gradual mesh decrease
-                # if self.WG_R > 0:
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L +
-                #                   self.L_R + 2 * (n - 1) * self.L_M,
-                #                                                  -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
-                #
-                # f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
-                #                                              -(self.Jxy * 1)))
-                #
-                # for i in range(n - 1, 1, -1):
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L +
-                #     self.L_L + 2 * (i - 1) * self.L_M - self.L_M, -(self.Jxy * 1)))
-                #
-                # f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
-                #
-                # if self.WG_L > 0:
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+                # gradual mesh decrease
+                if self.WG_R > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L +
+                                                                 self.L_R + 2 * (n - 1) * self.L_M,
+                                                                 -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
 
-                # direct mesh decrease
-                f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(
-                    -(self.Jxy*n+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2) +
-                      (1 if self.WG_L > 0 else 0)*self.WG_mesh+(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
+                                                             -(self.Jxy * 1)))
+
+                for i in range(n - 1, 1, -1):
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L +
+                                                                 self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
+                                                                 -(self.Jxy * 1)))
+
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
+
+                if self.WG_L > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+
+                # # direct mesh decrease
+                # f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(
+                #     -(self.Jxy*n+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2) +
+                #       (1 if self.WG_L > 0 else 0)*self.WG_mesh+(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
 
                 f.write('0 0 0 0 0 0 0 0 0')
 
@@ -276,7 +276,8 @@ class SLANSGeometry(Geometry):
         # print(cwd)
         # check if corresponding file exists at before the executable is called
         if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.geo'):
-            subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)  # settings, number of modes, etc
+            subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd,
+                            startupinfo=startupinfo)  # settings, number of modes, etc
 
             if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.gem'):
                 subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
@@ -315,9 +316,9 @@ class SLANSGeometry(Geometry):
             Vacc = np.sqrt(
                 2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
             # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
-            norm_length = 2*mid_cells_par[5]
+            norm_length = 2 * mid_cells_par[5]
             Eacc = Vacc / (
-                        no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
+                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
             Epk_Eacc = Epk / Eacc
             Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
             Bpk_Eacc = Bpk / Eacc
@@ -325,14 +326,14 @@ class SLANSGeometry(Geometry):
             # cel to cell coupling factor
             f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
             f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
-            kcc = 2*f_diff/f_add * 100
+            kcc = 2 * f_diff / f_add * 100
 
             # field flatness
             ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
             # get max in each cell
             peaks, _ = find_peaks(ax_field['y_abs'])
             E_abs_peaks = ax_field['y_abs'][peaks]
-            ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
+            ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
 
             d = {
                 "Req [mm]": Req,
@@ -377,8 +378,8 @@ class SLANSGeometry(Geometry):
         cells_par = pd.DataFrame(cells_par, columns=["A", "B", "a", "b", "Ri", "L", "Req", "alpha"])
 
         left_cell = cells_par.loc[0, :].tolist()
-        mid_cells = cells_par.loc[1:no_of_cells-2, :].to_numpy().T
-        right_cell = cells_par.loc[no_of_cells-1, :].tolist()
+        mid_cells = cells_par.loc[1:no_of_cells - 2, :].to_numpy().T
+        right_cell = cells_par.loc[no_of_cells - 1, :].tolist()
 
         # this checks whether input is from gui or from the optimisation
         print(type(cells_par))
@@ -421,7 +422,7 @@ class SLANSGeometry(Geometry):
             zr12_BPR, alpha_BPR = self.slans.rz_conjug('right')  # zr12_R first column is z , second column is r
 
         # Set boundary conditions
-        BC_Left = floor(bc/10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        BC_Left = floor(bc / 10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
         BC_Right = bc % 10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
 
         filename = f'cavity_{bc}'
@@ -459,9 +460,10 @@ class SLANSGeometry(Geometry):
 
                 self.slans.slans_n1_L(zr12_L, self.WG_L, f)
 
-                for i in range(1, n-1):
-                    zr12_M, alpha_M = self.slans.rz_conjug('mid', i-1)  # zr12_R first column is z , second column is r
-                    self.slans.slans_M(n, zr12_M, self.WG_L, f, i-1, end_type)
+                for i in range(1, n - 1):
+                    zr12_M, alpha_M = self.slans.rz_conjug('mid',
+                                                           i - 1)  # zr12_R first column is z , second column is r
+                    self.slans.slans_M(n, zr12_M, self.WG_L, f, i - 1, end_type)
 
                 self.slans.slans_n1_R(n, zr12_R, self.WG_L, f)
 
@@ -506,8 +508,8 @@ class SLANSGeometry(Geometry):
 
                 # direct mesh decrease
                 f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(
-                    -(self.Jxy*n+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2) +
-                      (1 if self.WG_L > 0 else 0)*self.WG_mesh+(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
+                    -(self.Jxy * n + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
+                      (1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh)))
 
                 f.write('0 0 0 0 0 0 0 0 0')
 
@@ -577,9 +579,9 @@ class SLANSGeometry(Geometry):
         Vacc = np.sqrt(
             2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
         # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
-        norm_length = 2*mid_cells_par[5]
+        norm_length = 2 * mid_cells_par[5]
         Eacc = Vacc / (
-                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
+                no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
         Epk_Eacc = Epk / Eacc
         Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
         Bpk_Eacc = Bpk / Eacc
@@ -587,14 +589,14 @@ class SLANSGeometry(Geometry):
         # cel to cell coupling factor
         f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
         f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
-        kcc = 2*f_diff/f_add * 100
+        kcc = 2 * f_diff / f_add * 100
 
         # field flatness
         ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
         # get max in each cell
         peaks, _ = find_peaks(ax_field['y_abs'])
         E_abs_peaks = ax_field['y_abs'][peaks]
-        ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
+        ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
 
         d = {
             "Req [mm]": Req,
@@ -620,25 +622,26 @@ class SLANSGeometry(Geometry):
             json.dump(d, f, indent=4, separators=(',', ': '))
 
     def cavity_multicell_full(self, no_of_modules=1, cells_par=None, fid=None, bc=33,
-                         f_shift='default', beta=1, n_modes=None, beampipes="None",
-                         parentDir=None, projectDir=None, subdir=''):
+                              f_shift='default', beta=1, n_modes=None, beampipes="None",
+                              parentDir=None, projectDir=None, subdir=''):
 
-        no_of_cells = int(len(cells_par)/2)
+        no_of_cells = int(len(cells_par) / 2)
         no_of_half_cells = int(len(cells_par))
 
         if not n_modes:
-            n_modes = int(no_of_half_cells/2) + 1  # intentional because the accuracy of the last mode is always low
+            n_modes = int(no_of_half_cells / 2) + 1  # intentional because the accuracy of the last mode is always low
 
         # perform geometric checks
         # length of cells_par must be even
         assert no_of_half_cells % 2 == 0
         # Req of adjacent cells must match
-        Req_pairs = [[2*i, 2*i+1] for i in range(int(no_of_cells))]
-        Ri_pairs = [[2*i-1, 2*i] for i in range(1, int(no_of_cells))]
+        Req_pairs = [[2 * i, 2 * i + 1] for i in range(int(no_of_cells))]
+        Ri_pairs = [[2 * i - 1, 2 * i] for i in range(1, int(no_of_cells))]
 
         a = np.array(cells_par)
 
-        Req_check = np.all([a[:, 6][Req_pairs][i][0] == a[:, 6][Req_pairs][i][1] for i in range(len(a[:, 6][Req_pairs]))])
+        Req_check = np.all(
+            [a[:, 6][Req_pairs][i][0] == a[:, 6][Req_pairs][i][1] for i in range(len(a[:, 6][Req_pairs]))])
         Ri_check = np.all([a[:, 4][Ri_pairs][i][0] == a[:, 4][Ri_pairs][i][1] for i in range(len(a[:, 4][Ri_pairs]))])
         # print(a)
         # print(Ri_pairs)
@@ -648,8 +651,8 @@ class SLANSGeometry(Geometry):
         cells_par = pd.DataFrame(cells_par, columns=["A", "B", "a", "b", "Ri", "L", "Req", "alpha"])
 
         left_cell = cells_par.loc[0, :].tolist()
-        mid_cells = cells_par.loc[1:no_of_half_cells-2, :].to_numpy().T
-        right_cell = cells_par.loc[no_of_half_cells-1, :].tolist()
+        mid_cells = cells_par.loc[1:no_of_half_cells - 2, :].to_numpy().T
+        right_cell = cells_par.loc[no_of_half_cells - 1, :].tolist()
 
         # this checks whether input is from gui or from the optimisation
         if isinstance(cells_par, pd.DataFrame):
@@ -691,7 +694,7 @@ class SLANSGeometry(Geometry):
             zr12_BPR, alpha_BPR = self.slans.rz_conjug('right')  # zr12_R first column is z , second column is r
 
         # Set boundary conditions
-        BC_Left = floor(bc/10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        BC_Left = floor(bc / 10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
         BC_Right = bc % 10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
 
         filename = f'cavity_{bc}'
@@ -707,7 +710,7 @@ class SLANSGeometry(Geometry):
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
-                self.Jxy * n/2 + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
+                self.Jxy * n / 2 + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
                 (1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh,
                 self.Jxy, unit))
 
@@ -730,7 +733,7 @@ class SLANSGeometry(Geometry):
 
                 self.slans.slans_n1_L(zr12_L, self.WG_L, f)
 
-                for i in range(0, n-2):
+                for i in range(0, n - 2):
                     zr12_M, alpha_M = self.slans.rz_conjug('mid', i)  # zr12_R first column is z , second column is r
                     self.slans.slans_M(n, zr12_M, self.WG_L, f, i, end_type)
 
@@ -777,8 +780,8 @@ class SLANSGeometry(Geometry):
 
                 # direct mesh decrease
                 f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(
-                    -(self.Jxy*n/2+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2) +
-                      (1 if self.WG_L > 0 else 0)*self.WG_mesh+(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
+                    -(self.Jxy * n / 2 + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
+                      (1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh)))
 
                 f.write('0 0 0 0 0 0 0 0 0')
 
@@ -849,9 +852,9 @@ class SLANSGeometry(Geometry):
             2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
         # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
         cells_par_list = cells_par.values.tolist()
-        norm_length = 2*cells_par_list[1][5]
+        norm_length = 2 * cells_par_list[1][5]
         Eacc = Vacc / (
-                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
+                no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
         Epk_Eacc = Epk / Eacc
         Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
         Bpk_Eacc = Bpk / Eacc
@@ -859,14 +862,14 @@ class SLANSGeometry(Geometry):
         # cel to cell coupling factor
         f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
         f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
-        kcc = 2*f_diff/f_add * 100
+        kcc = 2 * f_diff / f_add * 100
 
         # field flatness
         ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
         # get max in each cell
         peaks, _ = find_peaks(ax_field['y_abs'])
         E_abs_peaks = ax_field['y_abs'][peaks]
-        ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
+        ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
 
         d = {
             "Req [mm]": Req,
@@ -964,16 +967,16 @@ if __name__ == '__main__':
     slg = SLANSGeometry()
 
     cell_pars = [
-            [60, 60, 20, 20, 72, 97.9485, 172.041, 0],
-            [50, 58, 30, 30, 80, 93.5, 172.041, 0],
-            [30, 58, 30, 30, 80, 93.5, 172.041, 0],
-            [50, 58, 30, 30, 70, 93.5, 172.041, 0],
-            [50, 58, 30, 30, 70, 93.5, 172.041, 0],
-            [50, 58, 30, 30, 70, 93.5, 172.041, 0],
-            [30, 58, 30, 30, 70, 93.5, 172.041, 0],
-            [50, 30, 30, 30, 70, 93.5, 172.041, 0],
-            [70, 58, 30, 30, 70, 93.5, 172.041, 0],
-            [60, 60, 20, 20, 72, 97.9485, 172.041, 0]]
+        [60, 60, 20, 20, 72, 97.9485, 172.041, 0],
+        [50, 58, 30, 30, 80, 93.5, 172.041, 0],
+        [30, 58, 30, 30, 80, 93.5, 172.041, 0],
+        [50, 58, 30, 30, 70, 93.5, 172.041, 0],
+        [50, 58, 30, 30, 70, 93.5, 172.041, 0],
+        [50, 58, 30, 30, 70, 93.5, 172.041, 0],
+        [30, 58, 30, 30, 70, 93.5, 172.041, 0],
+        [50, 30, 30, 30, 70, 93.5, 172.041, 0],
+        [70, 58, 30, 30, 70, 93.5, 172.041, 0],
+        [60, 60, 20, 20, 72, 97.9485, 172.041, 0]]
 
     # cell_pars = [
     #         [62, 66, 30, 23, 72, 93.5, 172.041, 0],

@@ -40,14 +40,14 @@ class Geometry:
 
         self.WG_L, self.WG_R = 0, 0
         if beampipes.lower() == 'both':
-            self.WG_L = 4 * self.L_L
-            self.WG_R = 4 * self.L_R
+            self.WG_L = 4 * self.L_M
+            self.WG_R = 4 * self.L_M
 
         if beampipes == 'left':
-            self.WG_L = 4 * self.L_L  # self.ui.dsb_Lbp_L.value()*self.u   # Length of the beam pipe connecting to the cavity
+            self.WG_L = 4 * self.L_M  # self.ui.dsb_Lbp_L.value()*self.u   # Length of the beam pipe connecting to the cavity
 
         if beampipes == 'right':
-            self.WG_R = 4 * self.L_R  # Right Waveguide
+            self.WG_R = 4 * self.L_M  # Right Waveguide
 
         if l_end_cell_par is None:
             l_end_cell_par = []

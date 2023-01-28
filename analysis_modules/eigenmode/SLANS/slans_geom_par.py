@@ -180,28 +180,28 @@ class SLANSGeometry(Geometry):
                 f.write('1 {:g} 0 0 1 0 {:.0f} {:.0f} 0\n'.format(
                     self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, -self.Jy0, BC_Right))
 
-                # # gradual mesh decrease
-                # if self.WG_R > 0:
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
-                #                                                  -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
-                #
-                # f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
-                #                                              -(self.Jxy * 1)))
-                #
-                # for i in range(n - 1, 1, -1):
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
-                #                                                  -(self.Jxy * 1)))
-                #
-                # f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
-                #
-                # if self.WG_L > 0:
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+                # gradual mesh decrease
+                if self.WG_R > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
+                                                                 -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
 
-                # direct mesh decrease
-                f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy*n + self.Jxy_bp *
-                                                            ((1 if end_R == 2 else 0)/2 + (1 if end_L == 2 else 0)/2)
-                                                            + (1 if self.WG_L > 0 else 0)*self.WG_mesh
-                                                            +(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
+                                                             -(self.Jxy * 1)))
+
+                for i in range(n - 1, 1, -1):
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
+                                                                 -(self.Jxy * 1)))
+
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
+
+                if self.WG_L > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+
+                # # direct mesh decrease
+                # f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy*n + self.Jxy_bp *
+                #                                             ((1 if end_R == 2 else 0)/2 + (1 if end_L == 2 else 0)/2)
+                #                                             + (1 if self.WG_L > 0 else 0)*self.WG_mesh
+                #                                             +(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
 
                 f.write('0 0 0 0 0 0 0 0 0')
 

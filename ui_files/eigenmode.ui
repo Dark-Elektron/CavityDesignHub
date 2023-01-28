@@ -164,7 +164,7 @@
                <x>0</x>
                <y>0</y>
                <width>761</width>
-               <height>1783</height>
+               <height>1841</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -492,27 +492,31 @@
                     <string notr="true"/>
                    </property>
                    <layout class="QGridLayout" name="gridLayout_33">
-                    <item row="2" column="4">
-                     <widget class="SwitchControl" name="sc_Create_Summary"/>
-                    </item>
-                    <item row="2" column="3">
+                    <item row="3" column="2">
                      <widget class="QLabel" name="label_4">
                       <property name="text">
                        <string>Summary</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_17">
+                    <item row="3" column="3">
+                     <widget class="SwitchControl" name="sc_Create_Summary"/>
+                    </item>
+                    <item row="3" column="0">
+                     <widget class="QLabel" name="label_19">
                       <property name="text">
-                       <string>Select Shape</string>
+                       <string>Scale</string>
                       </property>
                      </widget>
                     </item>
-                    <item row="2" column="1" colspan="2">
-                     <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
+                    <item row="3" column="1">
+                     <widget class="QLineEdit" name="le_Scale">
+                      <property name="text">
+                       <string>1</string>
+                      </property>
+                     </widget>
                     </item>
-                    <item row="1" column="1" colspan="4">
+                    <item row="2" column="1" colspan="3">
                      <widget class="QWidget" name="w_Select_Shape_Space" native="true">
                       <layout class="QGridLayout" name="gridLayout_86">
                        <property name="leftMargin">
@@ -527,6 +531,16 @@
                        <property name="bottomMargin">
                         <number>0</number>
                        </property>
+                       <item row="0" column="0" colspan="2">
+                        <widget class="QLineEdit" name="le_Shape_Space">
+                         <property name="text">
+                          <string>test</string>
+                         </property>
+                         <property name="placeholderText">
+                          <string/>
+                         </property>
+                        </widget>
+                       </item>
                        <item row="0" column="3">
                         <widget class="QPushButton" name="pb_Select_Shape_Space">
                          <property name="minimumSize">
@@ -546,20 +560,20 @@
                          </property>
                         </widget>
                        </item>
-                       <item row="0" column="0" colspan="2">
-                        <widget class="QLineEdit" name="le_Shape_Space">
+                       <item row="1" column="0">
+                        <widget class="QLabel" name="label_17">
                          <property name="text">
-                          <string>test</string>
-                         </property>
-                         <property name="placeholderText">
-                          <string/>
+                          <string>Select Shape</string>
                          </property>
                         </widget>
+                       </item>
+                       <item row="1" column="1">
+                        <widget class="QCheckableComboBox" name="cb_Shape_Space_Keys"/>
                        </item>
                       </layout>
                      </widget>
                     </item>
-                    <item row="1" column="0">
+                    <item row="1" column="1" colspan="3">
                      <widget class="QComboBox" name="cb_Shape_Entry_Mode">
                       <item>
                        <property name="text">
@@ -573,7 +587,7 @@
                       </item>
                      </widget>
                     </item>
-                    <item row="0" column="0">
+                    <item row="0" column="1" colspan="2">
                      <widget class="QLabel" name="label_18">
                       <property name="text">
                        <string>Shape Space</string>

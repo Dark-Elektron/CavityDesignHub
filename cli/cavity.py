@@ -13,12 +13,13 @@ from analysis_modules.data_module.abci_data import ABCIData
 import numpy as np
 import multiprocessing as mp
 from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
+from manual_run.slans.slansEigen import SLANSEigen
 from analysis_modules.eigenmode.customEig.run_field_solver import Model
 from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from utils.shared_functions import *
 import psutil
 
-slans_geom = SLANSGeometry()
+slans_geom = SLANSEigen()
 abci_geom = ABCIGeometry()
 custom_eig = Model()
 tuner = Tuner()

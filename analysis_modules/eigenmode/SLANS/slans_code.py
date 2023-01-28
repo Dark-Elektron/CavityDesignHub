@@ -121,7 +121,6 @@ class SLANS:
         -------
 
         """
-        # print("\t\tSLANS_N1_L::It got here")
 
         f.write(
             '6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L - zr12_L[1][0], zr12_L[1][1], self.Jxy_all[3]))
@@ -155,8 +154,6 @@ class SLANS:
 
         """
 
-        # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
-        # print("\t\tSLANS_N1_R::It got here")
         if n == 1:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + zr12_R[0][0], zr12_R[0][1],
                                                                self.Jxy_all[2]))

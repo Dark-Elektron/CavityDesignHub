@@ -11,7 +11,7 @@ DEBUG = False
 
 class SLANSEigen(Geometry):
     def run(self, no_of_cells, no_of_modules, mid_cells_par, l_end_cell_par, r_end_cell_par,
-               name, bc=33, f_shift=0, beta=1, n_modes=None, beampipes=None, path=None):
+            name, bc=33, f_shift=0, beta=1, n_modes=None, beampipes=None, path=None):
         """
         :param no_of_cells: Number of cells in cavity <type: int>
         :param no_of_modules: Number of cavity analysis_modules <type: int>
@@ -41,7 +41,7 @@ class SLANSEigen(Geometry):
         self.slans = SLANS(self.left_beam_pipe, self.left_end_cell, self.mid_cell, self.right_end_cell,
                            self.right_beam_pipe, self.Jxy_all, self.Jxy_all_bp)
 
-        n = no_of_cells # Number of cells
+        n = no_of_cells  # Number of cells
         axi_sym = 2  # 1: flat, 2: axisymmetric
         self.unit = 3  # 1:m, 2:cm, 3:mm, 4:mkm
         name_index = 1
@@ -172,30 +172,28 @@ class SLANSEigen(Geometry):
                 f.write('1 {:g} 0 0 1 0 {:.0f} {:.0f} 0\n'.format(
                     self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, -self.Jy0, BC_Right))
 
-                # I've never had need for this portion of the code I originally translated from the MATLAB codes you
-                # gave me
-                # # gradual mesh decrease
-                # if self.WG_R > 0:
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
-                #                                                  -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
-                #
-                # f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
-                #                                              -(self.Jxy * 1)))
-                #
-                # for i in range(n - 1, 1, -1):
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
-                #                                                  -(self.Jxy * 1)))
-                #
-                # f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
-                #
-                # if self.WG_L > 0:
-                #     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+                # gradual mesh decrease
+                if self.WG_R > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
+                                                                 -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
 
-                # direct mesh decrease
-                f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.Jxy_bp * (
-                            (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
-                                                                1 if self.WG_L > 0 else 0) * self.WG_mesh + (
-                                                                1 if self.WG_R > 0 else 0) * self.WG_mesh)))
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
+                                                             -(self.Jxy * 1)))
+
+                for i in range(n - 1, 1, -1):
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
+                                                                 -(self.Jxy * 1)))
+
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
+
+                if self.WG_L > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+
+                # # direct mesh decrease
+                # f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.Jxy_bp * (
+                #         (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
+                #                                                 1 if self.WG_L > 0 else 0) * self.WG_mesh + (
+                #                                                 1 if self.WG_R > 0 else 0) * self.WG_mesh)))
 
                 f.write('0 0 0 0 0 0 0 0 0')
 
@@ -266,11 +264,12 @@ if __name__ == '__main__':
     slanseigen = SLANSEigen()
 
     # initialize input arguments
-    mid_cell_parameters = [67.72, 67.72, 21.75, 21.75, 60, 93.5, 171.381] # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
-    left_end_cell_parameters = [67.72, 67.72, 21.75, 21.75, 60, 93.5, 171.381] # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
-    right_end_cell_paramters = left_end_cell_parameters
-    beampipes = "both" # other options:: "right", "both", "none"
-    boundary_condition = 33 # other options: 12, 13, 23, 32, etc. See description in run function
+    mid_cell_parameters = [42, 42, 12, 19, 35, 57.6524, 103.353]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
+    left_end_cell_parameters = [40.34, 40.34, 10, 13.5, 39, 55.716, 103.353]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
+    right_end_cell_paramters = [42, 42, 9, 12.8, 39, 56.815, 103.353]
+    beampipes = "both"  # other options:: "right", "both", "none"
+    boundary_condition = 33  # other options: 12, 13, 23, 32, etc. See description in run function
 
     # run eigenmode analysis
-    slanseigen.run(2, 1, mid_cell_parameters, left_end_cell_parameters, right_end_cell_paramters, "Cavity", 33, 0, 1, 2, beampipes)
+    slanseigen.run(3, 1, mid_cell_parameters, left_end_cell_parameters, right_end_cell_paramters, "Cavity", 33, 0, 1, 2,
+                   beampipes)
