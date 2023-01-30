@@ -162,9 +162,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-659</y>
                <width>761</width>
-               <height>1841</height>
+               <height>1901</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -887,413 +887,6 @@
                          </layout>
                         </widget>
                        </item>
-                       <item row="8" column="0" alignment="Qt::AlignTop">
-                        <widget class="QWidget" name="w_Expansion" native="true">
-                         <property name="styleSheet">
-                          <string notr="true">#w_Expansion{
-	border-radius: 15px;
-}</string>
-                         </property>
-                         <layout class="QGridLayout" name="gridLayout_30">
-                          <item row="3" column="0">
-                           <widget class="QLabel" name="label_33">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>c</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="1">
-                           <widget class="QLineEdit" name="le_c">
-                            <property name="minimumSize">
-                             <size>
-                              <width>75</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>75</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="6">
-                           <widget class="QLabel" name="label_28">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>Rbp/Lbp</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="7">
-                           <widget class="QLineEdit" name="le_Rbp_Lbp">
-                            <property name="minimumSize">
-                             <size>
-                              <width>75</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>75</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="0">
-                           <widget class="QLabel" name="label_27">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>at</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="2" column="0">
-                           <widget class="QLabel" name="label_32">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>bt</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="2" column="1">
-                           <widget class="QLineEdit" name="le_b_t">
-                            <property name="minimumSize">
-                             <size>
-                              <width>75</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>75</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="1">
-                           <widget class="QLineEdit" name="le_a_t">
-                            <property name="minimumSize">
-                             <size>
-                              <width>75</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>75</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="5" column="1">
-                           <spacer name="verticalSpacer_3">
-                            <property name="orientation">
-                             <enum>Qt::Vertical</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                             <size>
-                              <width>20</width>
-                              <height>40</height>
-                             </size>
-                            </property>
-                           </spacer>
-                          </item>
-                          <item row="0" column="0">
-                           <widget class="SwitchControl" name="cb_Expansion"/>
-                          </item>
-                         </layout>
-                        </widget>
-                       </item>
-                       <item row="6" column="0" alignment="Qt::AlignTop">
-                        <widget class="QWidget" name="w_Outer_Cell_R" native="true">
-                         <property name="styleSheet">
-                          <string notr="true">#w_Outer_Cell_R{
-	border-radius: 15px;
-}</string>
-                         </property>
-                         <layout class="QGridLayout" name="gridLayout_31">
-                          <item row="5" column="1">
-                           <widget class="QLineEdit" name="le_Req_or">
-                            <property name="text">
-                             <string>345</string>
-                            </property>
-                            <property name="readOnly">
-                             <bool>true</bool>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="4" column="2">
-                           <widget class="QLabel" name="l_Tune_Alternate_Variable_End_Cell_2">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>25</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>L</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="5" column="0">
-                           <widget class="QLabel" name="label_55">
-                            <property name="text">
-                             <string>Req</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="3">
-                           <widget class="QLineEdit" name="le_B_or">
-                            <property name="minimumSize">
-                             <size>
-                              <width>70</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>98</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="4" column="1">
-                           <widget class="QLineEdit" name="le_Ri_or">
-                            <property name="minimumSize">
-                             <size>
-                              <width>70</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>160</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="5" column="3">
-                           <widget class="QLineEdit" name="le_Alpha_or">
-                            <property name="text">
-                             <string>90</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="0">
-                           <widget class="QLabel" name="label_40">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>25</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>a</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="1">
-                           <widget class="QLineEdit" name="le_A_or">
-                            <property name="minimumSize">
-                             <size>
-                              <width>70</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>110</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="4" column="0">
-                           <widget class="QLabel" name="label_38">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>25</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>Ri</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="5" column="2">
-                           <widget class="QLabel" name="label_53">
-                            <property name="text">
-                             <string>alp</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="2">
-                           <widget class="QLabel" name="label_48">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>25</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>B</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="1" column="0">
-                           <widget class="QLabel" name="label_45">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>25</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>A</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="4" column="3">
-                           <widget class="QLineEdit" name="le_L_or">
-                            <property name="minimumSize">
-                             <size>
-                              <width>70</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>187</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="1">
-                           <widget class="QLineEdit" name="le_a_or">
-                            <property name="minimumSize">
-                             <size>
-                              <width>70</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>37</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="3">
-                           <widget class="QLineEdit" name="le_b_or">
-                            <property name="minimumSize">
-                             <size>
-                              <width>70</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>28</string>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="3" column="2">
-                           <widget class="QLabel" name="label_39">
-                            <property name="minimumSize">
-                             <size>
-                              <width>25</width>
-                              <height>0</height>
-                             </size>
-                            </property>
-                            <property name="maximumSize">
-                             <size>
-                              <width>25</width>
-                              <height>16777215</height>
-                             </size>
-                            </property>
-                            <property name="text">
-                             <string>b</string>
-                            </property>
-                            <property name="alignment">
-                             <set>Qt::AlignCenter</set>
-                            </property>
-                           </widget>
-                          </item>
-                          <item row="0" column="0">
-                           <widget class="SwitchControl" name="cb_Outer_Cell_R"/>
-                          </item>
-                         </layout>
-                        </widget>
-                       </item>
                        <item row="1" column="0" alignment="Qt::AlignTop">
                         <widget class="QWidget" name="w_Inner_Cell" native="true">
                          <property name="styleSheet">
@@ -1608,16 +1201,6 @@
                          </layout>
                         </widget>
                        </item>
-                       <item row="7" column="0" alignment="Qt::AlignTop">
-                        <widget class="QPushButton" name="pb_Expansion">
-                         <property name="text">
-                          <string>Expansion</string>
-                         </property>
-                         <property name="checkable">
-                          <bool>true</bool>
-                         </property>
-                        </widget>
-                       </item>
                        <item row="0" column="0" alignment="Qt::AlignTop">
                         <widget class="QPushButton" name="pb_Mid_Cell">
                          <property name="text">
@@ -1629,6 +1212,755 @@
                          <property name="checked">
                           <bool>true</bool>
                          </property>
+                        </widget>
+                       </item>
+                       <item row="6" column="0" colspan="3">
+                        <widget class="QWidget" name="w_Outer_Cell_R" native="true">
+                         <property name="styleSheet">
+                          <string notr="true">#w_Outer_Cell_R{
+	border-radius: 15px;
+}</string>
+                         </property>
+                         <layout class="QGridLayout" name="gridLayout_31">
+                          <item row="5" column="1">
+                           <widget class="QLineEdit" name="le_Req_or">
+                            <property name="text">
+                             <string>345</string>
+                            </property>
+                            <property name="readOnly">
+                             <bool>true</bool>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="2">
+                           <widget class="QLabel" name="l_Tune_Alternate_Variable_End_Cell_2">
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>25</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>L</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="0">
+                           <widget class="QLabel" name="label_55">
+                            <property name="text">
+                             <string>Req</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="3">
+                           <widget class="QLineEdit" name="le_B_or">
+                            <property name="minimumSize">
+                             <size>
+                              <width>70</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>98</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="1">
+                           <widget class="QLineEdit" name="le_Ri_or">
+                            <property name="minimumSize">
+                             <size>
+                              <width>70</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>160</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="3">
+                           <widget class="QLineEdit" name="le_Alpha_or">
+                            <property name="text">
+                             <string>90</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="0">
+                           <widget class="QLabel" name="label_40">
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>25</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>a</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="1">
+                           <widget class="QLineEdit" name="le_A_or">
+                            <property name="minimumSize">
+                             <size>
+                              <width>70</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>110</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="0">
+                           <widget class="QLabel" name="label_38">
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>25</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>Ri</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="5" column="2">
+                           <widget class="QLabel" name="label_53">
+                            <property name="text">
+                             <string>alp</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="2">
+                           <widget class="QLabel" name="label_48">
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>25</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>B</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="1" column="0">
+                           <widget class="QLabel" name="label_45">
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>25</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>A</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="4" column="3">
+                           <widget class="QLineEdit" name="le_L_or">
+                            <property name="minimumSize">
+                             <size>
+                              <width>70</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>187</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="1">
+                           <widget class="QLineEdit" name="le_a_or">
+                            <property name="minimumSize">
+                             <size>
+                              <width>70</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>37</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="3">
+                           <widget class="QLineEdit" name="le_b_or">
+                            <property name="minimumSize">
+                             <size>
+                              <width>70</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>28</string>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="3" column="2">
+                           <widget class="QLabel" name="label_39">
+                            <property name="minimumSize">
+                             <size>
+                              <width>25</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>25</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
+                            <property name="text">
+                             <string>b</string>
+                            </property>
+                            <property name="alignment">
+                             <set>Qt::AlignCenter</set>
+                            </property>
+                           </widget>
+                          </item>
+                          <item row="0" column="0">
+                           <widget class="SwitchControl" name="cb_Outer_Cell_R"/>
+                          </item>
+                         </layout>
+                        </widget>
+                       </item>
+                       <item row="7" column="0" colspan="3">
+                        <widget class="QPushButton" name="pb_Expansion">
+                         <property name="text">
+                          <string>Expansion</string>
+                         </property>
+                         <property name="checkable">
+                          <bool>true</bool>
+                         </property>
+                        </widget>
+                       </item>
+                       <item row="8" column="0">
+                        <widget class="QWidget" name="w_Expansion" native="true">
+                         <layout class="QGridLayout" name="gridLayout_3">
+                          <item row="0" column="0">
+                           <widget class="QWidget" name="w_Expansion_l" native="true">
+                            <property name="styleSheet">
+                             <string notr="true">#w_Expansion{
+	border-radius: 15px;
+}</string>
+                            </property>
+                            <layout class="QGridLayout" name="gridLayout_30">
+                             <item row="2" column="0">
+                              <widget class="QLabel" name="label_27">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>a</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="6" column="1">
+                              <spacer name="verticalSpacer_3">
+                               <property name="orientation">
+                                <enum>Qt::Vertical</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>20</width>
+                                 <height>40</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                             <item row="0" column="0">
+                              <widget class="SwitchControl" name="cb_Expansion_l"/>
+                             </item>
+                             <item row="1" column="1">
+                              <widget class="QLineEdit" name="le_A_exp_l">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>36</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="2">
+                              <widget class="QLabel" name="label_32">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>b</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="0">
+                              <widget class="QLabel" name="label_29">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>A</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="3">
+                              <widget class="QLineEdit" name="le_b_exp_l">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>6</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="2">
+                              <widget class="QLabel" name="label_30">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>B</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="3">
+                              <widget class="QLineEdit" name="le_B_exp_l">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>36</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="1">
+                              <widget class="QLineEdit" name="le_a_exp_l">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>6</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="0">
+                              <widget class="QLabel" name="label_33">
+                               <property name="text">
+                                <string>Ri</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="1">
+                              <widget class="QLineEdit" name="le_Ri_exp_l">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="readOnly">
+                                <bool>true</bool>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="2">
+                              <widget class="QLabel" name="label_34">
+                               <property name="text">
+                                <string>L</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="3">
+                              <widget class="QLineEdit" name="le_L_exp_l">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>42</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="4" column="0">
+                              <widget class="QLabel" name="label_28">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>Rbp</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="4" column="1">
+                              <widget class="QLineEdit" name="le_Rbp_l">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>55</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                          <item row="0" column="1">
+                           <widget class="QWidget" name="w_Expansion_r" native="true">
+                            <property name="styleSheet">
+                             <string notr="true">#w_Expansion{
+	border-radius: 15px;
+}</string>
+                            </property>
+                            <layout class="QGridLayout" name="gridLayout_32">
+                             <item row="2" column="0">
+                              <widget class="QLabel" name="label_36">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>a</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="6" column="1">
+                              <spacer name="verticalSpacer_4">
+                               <property name="orientation">
+                                <enum>Qt::Vertical</enum>
+                               </property>
+                               <property name="sizeHint" stdset="0">
+                                <size>
+                                 <width>20</width>
+                                 <height>40</height>
+                                </size>
+                               </property>
+                              </spacer>
+                             </item>
+                             <item row="0" column="0">
+                              <widget class="SwitchControl" name="cb_Expansion_r"/>
+                             </item>
+                             <item row="1" column="1">
+                              <widget class="QLineEdit" name="le_A_exp_r">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>36</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="2">
+                              <widget class="QLabel" name="label_37">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>b</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="0">
+                              <widget class="QLabel" name="label_41">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>A</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="3">
+                              <widget class="QLineEdit" name="le_b_exp_r">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>6</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="2">
+                              <widget class="QLabel" name="label_42">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>B</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="1" column="3">
+                              <widget class="QLineEdit" name="le_B_exp_r">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>36</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="2" column="1">
+                              <widget class="QLineEdit" name="le_a_exp_r">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>6</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="0">
+                              <widget class="QLabel" name="label_43">
+                               <property name="text">
+                                <string>Ri</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="1">
+                              <widget class="QLineEdit" name="le_Ri_exp_r">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="readOnly">
+                                <bool>true</bool>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="2">
+                              <widget class="QLabel" name="label_44">
+                               <property name="text">
+                                <string>L</string>
+                               </property>
+                               <property name="alignment">
+                                <set>Qt::AlignCenter</set>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="3" column="3">
+                              <widget class="QLineEdit" name="le_L_exp_r">
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>42</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="4" column="0">
+                              <widget class="QLabel" name="label_46">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>25</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>Rbp</string>
+                               </property>
+                              </widget>
+                             </item>
+                             <item row="4" column="1">
+                              <widget class="QLineEdit" name="le_Rbp_r">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>75</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
+                               <property name="text">
+                                <string>55</string>
+                               </property>
+                              </widget>
+                             </item>
+                            </layout>
+                           </widget>
+                          </item>
+                         </layout>
                         </widget>
                        </item>
                       </layout>
@@ -2113,7 +2445,7 @@
   <connection>
    <sender>pb_Expansion</sender>
    <signal>clicked(bool)</signal>
-   <receiver>w_Expansion</receiver>
+   <receiver>w_Expansion_l</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">

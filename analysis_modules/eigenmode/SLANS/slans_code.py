@@ -57,45 +57,15 @@ class SLANS:
         self.Rbp_R, self.at_R, self.bt_R, self.c_R, self.x_R = self.right_beam_pipe
 
     def slans_bp_L(self, n, zr12_BPL, WG_L, f):
-        """Writes the left beam pipe dimensions to a geometry file
-
-        Parameters
-        ----------
-        n: int
-            Number of cavity cells
-
-        zr12_BPL: list, array like
-
-        WG_L: float
-            Length of left beam pipe
-
-        f: file
-            Geometry <filename>.geo file to be written to
-        Note
-        -----
-            Consider renaming zr12_BPL to reflect what the variable is.
-            Variable n is unused by the function. Consider removing
-
-        Returns
-        -------
-
-        """
-
         # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
-        f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[0][0], zr12_BPL[0][1],
-                                                           self.Jxy_all[2]))
 
-        f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L, self.Rbp_L - self.c_L, self.c_L,
-                                                             - self.Jxy_all[5]))
+        # print("\t\tSLANS_BPL::It got here")
 
-        f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[1][0], zr12_BPL[1][1],
-                                                         - self.Jxy_all[6]))
-
-        f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L, - self.Jxy_all[7]))
-
-        f.write(
-            '7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L + self.bt_L, self.bt_L,
-                                                         self.Jxy_all[3]))
+        f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[0][0], zr12_BPL[0][1], self.Jxy_all_bp[2]))
+        f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L, self.Rbp_L - self.c_L, self.c_L, -self.Jxy_all_bp[5]))
+        f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[1][0], zr12_BPL[1][1], -self.Jxy_all_bp[6]))
+        f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L, -self.Jxy_all_bp[7]))
+        f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L + self.bt_L, self.bt_L, self.Jxy_all_bp[3]))
 
     def slans_n1_L(self, n, zr12_L, WG_L, f):
         """Writes the left end cup dimensions to a geometry file
@@ -179,56 +149,34 @@ class SLANS:
                                                                  self.ri_R + self.b_R, self.b_R, self.Jxy_all[3]))
 
     def slans_bp_R(self, n, zr12_BPR, WG_L, f):
-        """Writes the right beam pipe dimensions to a geometry file
-
-        Parameters
-        ----------
-        n: int
-            Number of cavity cells.
-
-        zr12_BPR: list, array like
-
-        WG_L: float
-            Length of left beam pipe
-
-        f: file
-            Geometry <filename>.geo file to be written to
-        Note
-        -----
-            Consider renaming zr12_BPR to reflect what the variable is.
-
-        Returns
-        -------
-
-        """
         # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
         # print("\t\tSLANS_BPR::It got here")
         if n == 1:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[1][0],
-                                                               zr12_BPR[2, 2], self.Jxy_all[3]))
+                                                               zr12_BPR[2, 2], self.Jxy_all_bp[3]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.bt_R,
-                                                                 self.bt_R, self.Jxy_all[7]))
+                                                                 self.bt_R, self.Jxy_all_bp[7]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[0][0],
-                                                             zr12_BPR[0][1], self.Jxy_all[6]))
+                                                             zr12_BPR[0][1], self.Jxy_all_bp[6]))
             f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R, self.Rbp_R,
-                                                               self.Jxy_all[5]))
+                                                               self.Jxy_all_bp[5]))
             f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R,
-                                                                 self.Rbp_R - self.c_R, self.c_R, self.Jxy_all[2]))
+                                                                 self.Rbp_R - self.c_R, self.c_R, self.Jxy_all_bp[2]))
 
         if n > 1:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(
                 WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[1][0] + 2 * (n - 1) * self.L_M, zr12_BPR[1][1],
-                self.Jxy_all[3]))
+                self.Jxy_all_bp[3]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
-                                                                 self.ri_R + self.bt_R, self.bt_R, self.Jxy_all[7]))
+                                                                 self.ri_R + self.bt_R, self.bt_R, self.Jxy_all_bp[7]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(
                 WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[0][0] + 2 * (n - 1) * self.L_M, zr12_BPR[0][1],
-                self.Jxy_all[6]))
+                self.Jxy_all_bp[6]))
             f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(
-                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.Jxy_all[5]))
+                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.Jxy_all_bp[5]))
             f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(
-                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, - self.c_R,
-                self.Jxy_all[2]))
+                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R - self.c_R, self.c_R,
+                self.Jxy_all_bp[2]))
 
     def slans_M(self, n, zr12_M, WG_L, f, i, end_type):
         """Writes the mid cup dimensions to a geometry file
@@ -367,8 +315,12 @@ class SLANS:
             data = [self.A_L, self.B_L, self.Req_L, self.ri_L, self.L_L, self.a_L, self.b_L]
         elif cell == 'right':
             data = [self.A_R, self.B_R, self.Req_R, self.ri_R, self.L_R, self.a_R, self.b_R]
-        else:
+        elif cell == 'mid':
             data = [self.A_M, self.B_M, self.Req_M, self.ri_M, self.L_M, self.a_M, self.b_M]
+        elif cell == 'expansion':
+            data = [self.c_L, self.c_L, self.Rbp_L, self.ri_L, self.x_L, self.at_L, self.bt_L]
+        elif cell == 'expansion_r':
+            data = [self.c_R, self.c_R, self.Rbp_R, self.ri_R, self.x_R, self.at_R, self.bt_R]
 
         A = data[0]  # ellipse x
         B = data[1]  # ellipse y
@@ -380,8 +332,17 @@ class SLANS:
 
         df = tangent_coords(A, B, a, b, ri, L, Req, 0)
         x1, y1, x2, y2 = df[0]
-        xy_cross = np.array([x1, y1, x2, y2])
+        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
 
+        print("alpha", alpha)
+        if 90 < alpha < 180:
+            pass
+        else:
+            df = tangent_coords(A, B, a, b, ri, L, Req, 0, f=0.45)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+            x1, y1, x2, y2 = df[0]
+            alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+        print("alpha recalcultated", alpha)
+        xy_cross = np.array([x1, y1, x2, y2])
         xy_L_ell = np.zeros(shape=(4, 2))
 
         xy_L_ell[0][:] = xy_cross[0:2]
@@ -390,7 +351,7 @@ class SLANS:
         xy_L_ell[3][:] = [-xy_cross[0] + 2 * L, xy_cross[1]]
 
         rz_coor = xy_L_ell
-        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+        # alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
         zr12 = [[rz_coor[2][0] - L, rz_coor[2][1]], [rz_coor[3][0] - L, rz_coor[3][1]]]
 
         return zr12, alpha

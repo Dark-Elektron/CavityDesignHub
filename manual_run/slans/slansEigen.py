@@ -11,7 +11,7 @@ DEBUG = False
 
 class SLANSEigen(Geometry):
     def run(self, no_of_cells, no_of_modules, mid_cells_par, l_end_cell_par, r_end_cell_par,
-            name, bc=33, f_shift=0, beta=1, n_modes=None, beampipes=None, path=None):
+            name, bc=33, f_shift=0, beta=1, n_modes=None, beampipes=None, path=None, expansion=None, expansion_r=None):
         """
         :param no_of_cells: Number of cells in cavity <type: int>
         :param no_of_modules: Number of cavity analysis_modules <type: int>
@@ -36,7 +36,8 @@ class SLANSEigen(Geometry):
             n_modes = no_of_cells + 1  # intentional because the accuracy of the last mode is always low
 
         self.name = name
-        self.set_geom_parameters(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
+        self.set_geom_parameters(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par,
+                                 beampipes, expansion=expansion, expansion_r=None)
 
         self.slans = SLANS(self.left_beam_pipe, self.left_end_cell, self.mid_cell, self.right_end_cell,
                            self.right_beam_pipe, self.Jxy_all, self.Jxy_all_bp)
@@ -50,12 +51,17 @@ class SLANSEigen(Geometry):
         end_L = 1  # if end_L = 1 the type of end cell is type a (without iris) if end_L = 2 the type of end cell is type b
         end_R = 1
 
-        # Beam pipe length
-        if end_L == 1:
-            self.Rbp_L = self.ri_L
+        if expansion is not None:
+            end_L = 2
+        if expansion_r is not None:
+            end_R = 2
 
-        if end_R == 1:
-            self.Rbp_R = self.ri_R
+        # # Beam pipe length
+        # if end_L == 1:
+        #     self.Rbp_L = self.ri_L
+        #
+        # if end_R == 1:
+        #     self.Rbp_R = self.ri_R
 
         # Ellipse conjugate points x,y
         zr12_L, alpha_L = self.slans.rz_conjug('left')  # zr12_R first column is z , second column is r
@@ -63,10 +69,12 @@ class SLANSEigen(Geometry):
         zr12_M, alpha_M = self.slans.rz_conjug('mid')  # zr12_R first column is z , second column is r
 
         if end_L == 2:
-            zr12_BPL, alpha_BPL = self.slans.rz_conjug('left')  # zr12_R first column is z , second column is r
+            zr12_BPL, alpha_BPL = self.slans.rz_conjug('expansion')  # zr12_R first column is z , second column is r
+            # zr12_EL, alpha_EL = self.slans.rz_conjug('expansion')  # zr12_R first column is z , second column is r
 
         if end_R == 2:
-            zr12_BPR, alpha_BPR = self.slans.rz_conjug('right')  # zr12_R first column is z , second column is r
+            zr12_BPR, alpha_BPR = self.slans.rz_conjug('expansion_r')  # zr12_R first column is z , second column is r
+            # zr12_ER, alpha_ER = self.slans.rz_conjug('expansion_r')  # zr12_R first column is z , second column is r
 
         # Set boundary conditions
         BC_Left = floor(bc / 10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
@@ -84,7 +92,7 @@ class SLANSEigen(Geometry):
                     1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh, self.Jxy,
                 self.unit))
             f.write('10 0 0 0 0 0 0 0 0\n')
-            f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.ri_L, self.Jy0, BC_Left))
+            f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.Rbp_L, self.Jy0, BC_Left))
 
             if end_L == 2:
                 f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.Rbp_L, self.Jxy_all_bp[5] + self.Jxy_all_bp[6] +
@@ -94,7 +102,12 @@ class SLANSEigen(Geometry):
                 if end_L == 2:
                     f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L - self.x_L, self.Rbp_L, self.WG_mesh))
                 else:
-                    f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L, self.Rbp_L, self.WG_mesh))
+                    f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L - self.x_L, self.Rbp_L, self.WG_mesh))
+
+            # # add expansion
+            # if expansion is not None:
+            #     if expansion[7] == 'left':
+            #         self.slans.slans_n1_EL(n, zr12_E, self.WG_L, f)
 
             # n == 1
             if n == 1:
@@ -142,6 +155,7 @@ class SLANSEigen(Geometry):
             # n>1
             if n > 1:
                 if end_L == 2:
+                    # self.slans.slans_bp_L(n, zr12_BPL, self.WG_L, f)
                     self.slans.slans_bp_L(n, zr12_BPL, self.WG_L, f)
 
                 self.slans.slans_n1_L(n, zr12_L, self.WG_L, f)
@@ -187,7 +201,7 @@ class SLANSEigen(Geometry):
                 f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
 
                 if self.WG_L > 0:
-                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))))
 
                 # # direct mesh decrease
                 # f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.Jxy_bp * (
@@ -267,9 +281,11 @@ if __name__ == '__main__':
     mid_cell_parameters = [42, 42, 12, 19, 35, 57.6524, 103.353]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
     left_end_cell_parameters = [40.34, 40.34, 10, 13.5, 39, 55.716, 103.353]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
     right_end_cell_paramters = [42, 42, 9, 12.8, 39, 56.815, 103.353]
+    expansion = [36, 36, 6, 6, 50, 55, 0]
+    # expansion = None
     beampipes = "both"  # other options:: "right", "both", "none"
     boundary_condition = 33  # other options: 12, 13, 23, 32, etc. See description in run function
 
     # run eigenmode analysis
-    slanseigen.run(3, 1, mid_cell_parameters, left_end_cell_parameters, right_end_cell_paramters, "Cavity", 33, 0, 1, 2,
-                   beampipes)
+    slanseigen.run(2, 1, mid_cell_parameters, left_end_cell_parameters, right_end_cell_paramters, "Cavity", 33, 0, 1, 2,
+                   beampipes, expansion=expansion)

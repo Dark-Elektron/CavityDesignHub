@@ -22,7 +22,7 @@ class Geometry:
             self.ui = win.ui
 
     def set_geom_parameters(self, n_cells, mid_cells_par=None, l_end_cell_par=None,
-                            r_end_cell_par=None, beampipes=None):
+                            r_end_cell_par=None, beampipes=None, expansion=None, expansion_r=None):
         self.u = 1
         self.n = n_cells
 
@@ -39,26 +39,34 @@ class Geometry:
         # print(self.mid_cell, self.left_end_cell)
 
         # auxiliary
-        self.c_L = 0 * self.u
-        self.c_R = 0 * self.u
         self.Rbp_L = self.ri_L
         self.Rbp_R = self.ri_R
         self.at_L, self.bt_L, self.x_L = 0, 0, 0
         self.at_R, self.bt_R, self.x_R = 0, 0, 0
+        self.c_L = 0 * self.u
+        self.c_R = 0 * self.u
+
+        if expansion_r is not None:
+            self.c_R, self.c_R, self.at_R, self.bt_R, self.x_R, self.Rbp_R, _ = expansion_r
+
+        if expansion is not None:
+            self.c_L, self.c_L, self.at_L, self.bt_L, self.x_L, self.Rbp_L, _ = expansion
 
         self.left_beam_pipe = [self.Rbp_L, self.at_L, self.bt_L, self.c_L, self.x_L]
         self.right_beam_pipe = [self.Rbp_R, self.at_R, self.bt_R, self.c_R, self.x_R]
+        print(self.left_beam_pipe)
+        print(self.right_beam_pipe)
 
         self.WG_L, self.WG_R = 0, 0
         if beampipes.lower() == 'both':
-            self.WG_L = 4 * self.L_M
-            self.WG_R = 4 * self.L_M
+            self.WG_L = 4 * self.L_M + self.x_L
+            self.WG_R = 4 * self.L_M + self.x_R
 
         if beampipes == 'left':
-            self.WG_L = 4 * self.L_M  # Length of the beam pipe connecting to the cavity
+            self.WG_L = 4 * self.L_M + self.x_L  # self.ui.dsb_Lbp_L.value()*self.u   # Length of the beam pipe connecting to the cavity
 
         if beampipes == 'right':
-            self.WG_R = 4 * self.L_M  # Right Waveguide
+            self.WG_R = 4 * self.L_M + self.x_R  # Right Waveguide
 
         if l_end_cell_par is None:
             l_end_cell_par = []

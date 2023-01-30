@@ -3,8 +3,6 @@ from scipy import optimize as scopt
 import numpy as np
 import sympy as sym
 
-from utils.shared_functions import ellipse_tangent
-
 
 class SLANS:
     def __init__(self, left_beam_pipe, left_end_cell, mid_cell, right_end_cell, right_beam_pipe, jxy_all, jxy_all_bp):
@@ -37,20 +35,49 @@ class SLANS:
 
         # print("\t\tSLANS_BPL::It got here")
 
-        f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[0][0], zr12_BPL[0][1],
-                                                           self.Jxy_all[2]))
-
-        f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L, self.Rbp_L - self.c_L, self.c_L,
-                                                             -self.Jxy_all[5]))
-
-        f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[1][0], zr12_BPL[1][1],
-                                                         -self.Jxy_all[6]))
-
-        f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L, -self.Jxy_all[7]))
-
-        f.write(
-            '7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L + self.bt_L, self.bt_L,
-                                                         self.Jxy_all[3]))
+        f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[0][0], zr12_BPL[0][1], self.Jxy_all_bp[2]))
+        f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L, self.Rbp_L - self.c_L, self.c_L, -self.Jxy_all_bp[5]))
+        f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + zr12_BPL[1][0], zr12_BPL[1][1], -self.Jxy_all_bp[6]))
+        f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L, -self.Jxy_all_bp[7]))
+        f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + self.x_L, self.ri_L + self.bt_L, self.bt_L, self.Jxy_all_bp[3]))
+    #
+    # def slans_n1_EL(self, n, zr12_E, WG_L, f):
+    #     """Writes the left end cup dimensions to a geometry file
+    #
+    #     Parameters
+    #     ----------
+    #     n: int
+    #         Number of cavity cells.
+    #
+    #     zr12_L:
+    #
+    #     WG_L: float
+    #         Length of left beam pipe
+    #
+    #     f: file
+    #         Geometry <filename>.geo file to be written to
+    #     Note
+    #     -----
+    #         Consider renaming zr12_R to reflect what the variable is.
+    #         Variable n is unused by the function. Consider removing
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #
+    #     # f.write(
+    #     #     '6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L - zr12_E[1][0], zr12_E[1][1], self.Jxy_all[3]))
+    #     # f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L, self.ri_L + self.b_L, self.b_L, self.Jxy_all[7]))
+    #     # f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L - zr12_E[0][0], zr12_E[0][1], self.Jxy_all[6]))
+    #     # f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L, self.Req_L, self.Jxy_all[5]))
+    #     # f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L, self.Req_L - self.B_L, self.B_L,
+    #     #                                                      self.Jxy_all[2]))
+    #     f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L - self.x_L + zr12_E[0][0], zr12_E[0][1], self.Jxy_all_bp[2]))
+    #     f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L, self.Rbp_L - self.c_L, self.c_L, -self.Jxy_all_bp[5]))
+    #     f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L - self.x_L + zr12_E[1][0], zr12_E[1][1], -self.Jxy_all_bp[6]))
+    #     f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L, self.ri_L, -self.Jxy_all_bp[7]))
+    #     f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L, self.ri_L + self.bt_L, self.bt_L, self.Jxy_all_bp[3]))
 
     def slans_n1_L(self, n, zr12_L, WG_L, f):
         # print("\t\tSLANS_N1_L::It got here")
@@ -95,30 +122,48 @@ class SLANS:
         # print("\t\tSLANS_BPR::It got here")
         if n == 1:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[1][0],
-                                                               zr12_BPR[2, 2], self.Jxy_all[3]))
+                                                               zr12_BPR[2, 2], self.Jxy_all_bp[3]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.bt_R,
-                                                                 self.bt_R, self.Jxy_all[7]))
+                                                                 self.bt_R, self.Jxy_all_bp[7]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[0][0],
-                                                             zr12_BPR[0][1], self.Jxy_all[6]))
+                                                             zr12_BPR[0][1], self.Jxy_all_bp[6]))
             f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R, self.Rbp_R,
-                                                               self.Jxy_all[5]))
+                                                               self.Jxy_all_bp[5]))
             f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R,
-                                                                 self.Rbp_R - self.c_R, self.c_R, self.Jxy_all[2]))
+                                                                 self.Rbp_R - self.c_R, self.c_R, self.Jxy_all_bp[2]))
 
         if n > 1:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(
                 WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[1][0] + 2 * (n - 1) * self.L_M, zr12_BPR[1][1],
-                self.Jxy_all[3]))
+                self.Jxy_all_bp[3]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
-                                                                 self.ri_R + self.bt_R, self.bt_R, self.Jxy_all[7]))
+                                                                 self.ri_R + self.bt_R, self.bt_R, self.Jxy_all_bp[7]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(
                 WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[0][0] + 2 * (n - 1) * self.L_M, zr12_BPR[0][1],
-                self.Jxy_all[6]))
+                self.Jxy_all_bp[6]))
             f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(
-                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.Jxy_all[5]))
+                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.Jxy_all_bp[5]))
             f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(
-                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, - self.c_R,
-                self.Jxy_all[2]))
+                WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R - self.c_R, self.c_R,
+                self.Jxy_all_bp[2]))
+    #
+    # def slans_n1_ER(self, n, zr12_ER, WG_L, f):
+    #     # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
+    #     # print("\t\tSLANS_BPR::It got here")
+    #     if n == 1:
+    #         f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[1][0], zr12_ER[2, 2], self.Jxy_all_bp[3]))
+    #         f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.bt_R, self.bt_R, self.Jxy_all_bp[7]))
+    #         f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[0][0], zr12_ER[0][1], self.Jxy_all_bp[6]))
+    #         f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R, self.Rbp_R, self.Jxy_all_bp[5]))
+    #         f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R, self.Rbp_R - self.c_R, self.c_R, self.Jxy_all_bp[2]))
+    #
+    #     if n > 1:
+    #         f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(
+    #             WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[1][0] + 2 * (n - 1) * self.L_M, zr12_ER[1][1], self.Jxy_all_bp[3]))
+    #         f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, self.ri_R + self.bt_R, self.bt_R, self.Jxy_all_bp[7]))
+    #         f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[0][0] + 2 * (n - 1) * self.L_M, zr12_ER[0][1], self.Jxy_all_bp[6]))
+    #         f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.Jxy_all_bp[5]))
+    #         f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R - self.c_R, self.c_R, self.Jxy_all_bp[2]))
 
     def slans_M(self, n, zr12_M, WG_L, f, i, end_type):
         # print("\t\tSLANS_M::It got here")
@@ -212,6 +257,10 @@ class SLANS:
             data = [self.A_R, self.B_R, self.Req_R, self.ri_R, self.L_R, self.a_R, self.b_R]
         elif cell == 'mid':
             data = [self.A_M, self.B_M, self.Req_M, self.ri_M, self.L_M, self.a_M, self.b_M]
+        elif cell == 'expansion':
+            data = [self.c_L, self.c_L, self.Rbp_L, self.ri_L, self.x_L, self.at_L, self.bt_L]
+        elif cell == 'expansion_r':
+            data = [self.c_R, self.c_R, self.Rbp_R, self.ri_R, self.x_R, self.at_R, self.bt_R]
 
         A = data[0]  # ellipse x
         B = data[1]  # ellipse y
@@ -260,44 +309,185 @@ class SLANS:
         # plot_cavity(xy_cross, data)
 
         data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        xy_cross = scopt.fsolve(ellipse_tangent, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
-                                args=data)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        df = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+                          args=data, fprime=jac, xtol=1.49012e-12,
+                          full_output=True)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
         # print("\tXY_CROSS2::", xy_cross)
 
+        # if cell == 'left':
+        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        # elif cell == 'right':
+        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        # elif cell == 'expansion':
+        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+        # else:
+        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
+        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+
         # #
+        x1, y1, x2, y2 = df[0]
+        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+
+        if 90 < alpha < 180:
+            pass
+        else:
+            df = scopt.fsolve(func, np.array([a, ri + 0.45 * b, L - A, Req - 0.45 * B]),
+                              args=data, fprime=jac, xtol=1.49012e-12,
+                              full_output=True)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+            x1, y1, x2, y2 = df[0]
+            alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+
+        xy_cross = np.array([x1, y1, x2, y2])
         xy_L_ell = np.zeros(shape=(4, 2))
 
-        xy_L_ell[0][:] = xy_cross[0:1]
-        xy_L_ell[1][:] = xy_cross[2:3]
+        xy_L_ell[0][:] = xy_cross[0:2]
+        xy_L_ell[1][:] = xy_cross[2:4]
         xy_L_ell[2][:] = [-xy_cross[2] + 2 * L, xy_cross[3]]
         xy_L_ell[3][:] = [-xy_cross[0] + 2 * L, xy_cross[1]]
 
         rz_coor = xy_L_ell
-        alpha = np.arctan((xy_L_ell[3][1] - xy_L_ell[2][1]) / (xy_L_ell[3][0] - xy_L_ell[2][0])) + 180
+
         zr12 = [[rz_coor[2][0] - L, rz_coor[2][1]], [rz_coor[3][0] - L, rz_coor[3][1]]]
 
         return zr12, alpha
 
-    def func(self, x_in):
-        A = data[0]  # ellipse x
-        B = data[1]  # ellipse y
-        Req = data[2]  # equator radius
-        ri = data[3]  # iris radius
-        L = data[4]  # quarter length
-        a = data[5]  # cone ellipse x
-        b = data[6]  # cone ellipse y
+    # def func(self, x_in):
+    #     A = data[0]  # ellipse x
+    #     B = data[1]  # ellipse y
+    #     Req = data[2]  # equator radius
+    #     ri = data[3]  # iris radius
+    #     L = data[4]  # quarter length
+    #     a = data[5]  # cone ellipse x
+    #     b = data[6]  # cone ellipse y
+    #
+    #     x1 = 0
+    #     y1 = ri + b
+    #     x2 = L
+    #     y2 = Req - B
+    #
+    #     # F(1) = (b^2/a^2)*cot(x(1))-(B^2/A^2)*cot(x(2))
+    #     # F(2) = B*sin(x(2))+y2-b*sin(x(1))-y1+(b^2/a^2)*cot(x(1))*(A*cos(x(2))+x2-(a*cos(x(1))+x1))
+    #
+    #     f1 = (x_in[0] - x1) ** 2 / (a ** 2) + (x_in[1] - y1) ** 2 / b ** 2 - 1  # already adjusted indices for python
+    #     f2 = (x_in[2] - x2) ** 2 / (A ** 2) + (x_in[3] - y2) ** 2 / B ** 2 - 1
+    #     f3 = (x_in[2] - x_in[0]) * (x_in[0] - x1) / (a ** 2) + (x_in[3] - x_in[1]) * (x_in[1] - y1) / b ** 2
+    #     f4 = (x_in[2] - x_in[0]) * (x_in[2] - x2) / (A ** 2) + (x_in[3] - x_in[1]) * (x_in[3] - y2) / B ** 2
+    #
+    #     return [f1, f2, f3, f4]
 
-        x1 = 0
-        y1 = ri + b
-        x2 = L
-        y2 = Req - B
 
-        # F(1) = (b^2/a^2)*cot(x(1))-(B^2/A^2)*cot(x(2))
-        # F(2) = B*sin(x(2))+y2-b*sin(x(1))-y1+(b^2/a^2)*cot(x(1))*(A*cos(x(2))+x2-(a*cos(x(1))+x1))
+def func(z, *data):
+    """
+    Calculates the coordinates of the tangent line that connects two ellipses
 
-        f1 = (x_in[0] - x1) ** 2 / (a ** 2) + (x_in[1] - y1) ** 2 / b ** 2 - 1  # already adjusted indices for python
-        f2 = (x_in[2] - x2) ** 2 / (A ** 2) + (x_in[3] - y2) ** 2 / B ** 2 - 1
-        f3 = (x_in[2] - x_in[0]) * (x_in[0] - x1) / (a ** 2) + (x_in[3] - x_in[1]) * (x_in[1] - y1) / b ** 2
-        f4 = (x_in[2] - x_in[0]) * (x_in[2] - x2) / (A ** 2) + (x_in[3] - x_in[1]) * (x_in[3] - y2) / B ** 2
+    .. _ellipse tangent:
 
-        return [f1, f2, f3, f4]
+    .. figure:: ../images/ellipse_tangent.png
+       :alt: ellipse tangent
+       :align: center
+       :width: 200px
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+
+    Returns
+    -------
+    list of four non-linear functions
+
+    Note
+    -----
+    The four returned non-linear functions are
+
+    .. math::
+
+       f_1 = \\frac{A^2b^2(x_1 - h)(y_2-q)}{a^2B^2(x_2-p)(y_1-k)} - 1
+
+       f_2 = \\frac{(x_1 - h)^2}{a^2} + \\frac{(y_1-k)^2}{b^2} - 1
+
+       f_3 = \\frac{(x_2 - p)^2}{A^2} + \\frac{(y_2-q)^2}{B^2} - 1
+
+       f_4 = \\frac{-b^2(x_1-x_2)(x_1-h)}{a^2(y_1-y_2)(y_1-k)} - 1
+    """
+
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    return f1, f2, f3, f4
+
+
+def jac(z, *data):
+    """
+    Computes the Jacobian of the non-linear system of ellipse tangent equations
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+    Returns
+    -------
+    J: array like
+        Array of the Jacobian
+
+    """
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    # f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    # f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    # f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    # f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    df1_dx1 = A ** 2 * b ** 2 * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k) ** 2)
+    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) ** 2 * (y1 - k))
+    df1_dy2 = A ** 2 * b ** 2 * (x1 - h) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+
+    df2_dx1 = 2 * (x1 - h) / a ** 2
+    df2_dy1 = 2 * (y1 - k) / b ** 2
+    df2_dx2 = 0
+    df2_dy2 = 0
+
+    df3_dx1 = 0
+    df3_dy1 = 0
+    df3_dx2 = 2 * (x2 - p) / A ** 2
+    df3_dy2 = 2 * (y2 - q) / B ** 2
+
+    df4_dx1 = -b ** 2 * ((x1 - x2) + (x1 - h)) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k)) ** 2)
+    df4_dx2 = b ** 2 * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) ** 2 * (y1 - k))
+
+    J = [[df1_dx1, df1_dy1, df1_dx2, df1_dy2],
+         [df2_dx1, df2_dy1, df2_dx2, df2_dy2],
+         [df3_dx1, df3_dy1, df3_dx2, df3_dy2],
+         [df4_dx1, df4_dy1, df4_dx2, df4_dy2]]
+
+    return J

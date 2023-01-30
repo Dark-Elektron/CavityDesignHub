@@ -3,8 +3,11 @@ import matplotlib.pyplot as plt
 plt.ion()
 from cli.cavity import Cavity, Cavities, OperationPoints
 
-midcell = np.array([42, 42, 12, 19, 35, 57.7, 103.3])
-cav = Cavity(2, midcell)
+midcell = np.array([42, 42, 12, 19, 35, 57.7, 103.353])
+endcell_l = np.array([40.34, 40.34, 10, 13.5, 39, 55.716, 103.353])
+endcell_r = np.array([42, 42, 9, 12.8, 39, 56.815, 103.353])
+
+cav = Cavity(9, midcell, endcell_l, endcell_r, beampipe='both')
 cav.save(files_path='D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\ConsoleTest')
 cav.run_eigenmode()
 cav.run_wakefield()

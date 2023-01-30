@@ -74,12 +74,12 @@ def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
     return alpha, error_msg
 
 
-def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
+def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False, f=0.85):
     data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
             [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
 
     df = fsolve(ellipse_tangent,
-                np.array([a + L_bp, Ri + 0.85 * b, L - A + L_bp, Req - 0.85 * B]),
+                np.array([a + L_bp, Ri + f * b, L - A + L_bp, Req - f * B]),
                 args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
 
     error_msg = df[-2]

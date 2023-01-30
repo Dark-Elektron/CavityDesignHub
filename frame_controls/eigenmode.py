@@ -87,9 +87,6 @@ class EigenmodeControl:
         # init shape entry mode
         self.shape_entry_widgets_control()
 
-        # disable expansion section for now. Feature to come later
-        self.ui.cb_Expansion.setEnabled(False)
-
         # inner cell
         self.ui.cb_Inner_Cell.setCheckState(2)
         self.ui.cb_Inner_Cell.setEnabled(False)
@@ -564,14 +561,25 @@ class EigenmodeControl:
 
                 # run SLANS code
                 start_time = time.time()
-                try:
+                expansion = None
+                expansion_r = None
+
+                if "EXPANSION" in shape.keys():
+                    expansion = shape['EXPANSION']
+
+                if 'EXPANSION_R' in shape.keys():
+                    expansion_r = shape['EXPANSION_R']
+
+                if 'OC_R' in shape.keys():
                     slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
                                       n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
-                except KeyError:
+                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                      expansion=expansion, expansion_r=expansion_r)
+                else:
                     slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
                                       n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                      expansion=expansion, expansion_r=expansion_r)
 
                 # run UQ
                 if UQ:

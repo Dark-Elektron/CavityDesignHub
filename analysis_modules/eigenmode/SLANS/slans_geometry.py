@@ -34,12 +34,13 @@ class SLANSGeometry(Geometry):
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir=''):
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None):
         """
         Write geometry file and run eigenmode analysis with SLANS
 
         Parameters
         ----------
+        expansion
         no_of_cells: int
             Number of cells
         no_of_modules: int
@@ -76,7 +77,8 @@ class SLANSGeometry(Geometry):
 
         # this checks whether input is from gui or from the optimisation
         if mid_cells_par is not None:
-            self.set_geom_parameters(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
+            self.set_geom_parameters(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par,
+                                     beampipes, expansion=expansion, expansion_r=expansion_r)
         else:
             self.set_geom_parameters(no_of_cells)
 
@@ -94,12 +96,17 @@ class SLANSGeometry(Geometry):
         # if end_L = 2 the type of end cell is type b
         end_R = 1
 
-        # Beam pipe length
-        if end_L == 1:
-            self.Rbp_L = self.ri_L
+        if expansion is not None:
+            end_L = 2
+        if expansion_r is not None:
+            end_R = 2
 
-        if end_R == 1:
-            self.Rbp_R = self.ri_R
+        # # Beam pipe length
+        # if end_L == 1:
+        #     self.Rbp_L = self.ri_L
+        #
+        # if end_R == 1:
+        #     self.Rbp_R = self.ri_R
 
         # print_(self.WG_L, self.WG_R)
 
@@ -109,10 +116,10 @@ class SLANSGeometry(Geometry):
         zr12_M, alpha_M = self.slans.rz_conjug('mid')  # zr12_R first column is z , second column is r
 
         if end_L == 2:
-            zr12_BPL, alpha_BPL = self.slans.rz_conjug('left')  # zr12_R first column is z , second column is r
+            zr12_BPL, alpha_BPL = self.slans.rz_conjug('expansion')  # zr12_R first column is z , second column is r
 
         if end_R == 2:
-            zr12_BPR, alpha_BPR = self.slans.rz_conjug('right')  # zr12_R first column is z , second column is r
+            zr12_BPR, alpha_BPR = self.slans.rz_conjug('expansion_r')  # zr12_R first column is z , second column is r
 
         # Set boundary conditions
         BC_Left = floor(bc / 10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
@@ -240,7 +247,7 @@ class SLANSGeometry(Geometry):
                 f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
 
                 if self.WG_L > 0:
-                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh)))
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))))
 
                 # # direct mesh decrease
                 # f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(
