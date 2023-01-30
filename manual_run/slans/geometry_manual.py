@@ -38,7 +38,7 @@ class Geometry:
         self.at_R, self.bt_R, self.x_R = 0, 0, 0
 
         if expansion_r is not None:
-            self.c_R, self.c_R, self.at_R, self.bt_R, self.x_R, self.Rbp_R, _ = expansion
+            self.c_R, self.c_R, self.at_R, self.bt_R, self.x_R, self.Rbp_R, _ = expansion_r
 
         if expansion is not None:
             self.c_L, self.c_L, self.at_L, self.bt_L, self.x_L, self.Rbp_L, _ = expansion

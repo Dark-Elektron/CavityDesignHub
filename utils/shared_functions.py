@@ -74,19 +74,48 @@ def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
     return alpha, error_msg
 
 
-def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False, f=0.85):
-    data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
-            [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
 
-    df = fsolve(ellipse_tangent,
-                np.array([a + L_bp, Ri + f * b, L - A + L_bp, Req - f * B]),
-                args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+    # data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
+    #         [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    #
+    # df = fsolve(ellipse_tangent,
+    #             np.array([a + L_bp, Ri + f[0] * b, L - A + L_bp, Req - f[1] * B]),
+    #             args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+    #
+    #     # ic(df)
 
-    error_msg = df[-2]
-    if error_msg == 4:
-        df = fsolve(ellipse_tangent, np.array([a + L_bp, Ri + 1.15 * b, L - A + L_bp, Req - 1.15 * B]),
+    data = ([0, Ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    checks = {"non-reentrant": [0.45, -0.45],
+              "reentrant": [0.85, -0.85],
+              "expansion": [0.45, -0.1]}
+
+    for key, ch in checks.items():
+        # check for non-reentrant cavity
+        df = fsolve(ellipse_tangent,
+                    np.array([a + L_bp, Ri + ch[0] * b, L - A + L_bp, Req - ch[1] * B]),
                     args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
-        # ic(df)
+
+        x1, y1, x2, y2 = df[0]
+        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+
+        if key == 'non-reentrant':
+            print('non reentrant')
+            if 90 < alpha < 180:
+                continue
+        if key == 'reentrant':
+            print('reentrant')
+            if 0 < alpha < 90:
+                continue
+        if key == 'expansion':
+            print('expansion')
+            if 90 < alpha < 180:
+                continue
+
+    # error_msg = df[-2]
+    # if error_msg == 4:
+    #     df = fsolve(ellipse_tangent, np.array([a + L_bp, Ri + 1.15 * b, L - A + L_bp, Req - 1.15 * B]),
+    #                 args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
 
     if tangent_check:
         h, k, p, q = data[0]

@@ -153,7 +153,7 @@ class SLANS:
         # print("\t\tSLANS_BPR::It got here")
         if n == 1:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[1][0],
-                                                               zr12_BPR[2, 2], self.Jxy_all_bp[3]))
+                                                               zr12_BPR[1][1], self.Jxy_all_bp[3]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.bt_R,
                                                                  self.bt_R, self.Jxy_all_bp[7]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[0][0],
@@ -334,14 +334,6 @@ class SLANS:
         x1, y1, x2, y2 = df[0]
         alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
 
-        print("alpha", alpha)
-        if 90 < alpha < 180:
-            pass
-        else:
-            df = tangent_coords(A, B, a, b, ri, L, Req, 0, f=0.45)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
-            x1, y1, x2, y2 = df[0]
-            alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
-        print("alpha recalcultated", alpha)
         xy_cross = np.array([x1, y1, x2, y2])
         xy_L_ell = np.zeros(shape=(4, 2))
 

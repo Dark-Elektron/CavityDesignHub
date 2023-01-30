@@ -122,7 +122,7 @@ class SLANS:
         # print("\t\tSLANS_BPR::It got here")
         if n == 1:
             f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[1][0],
-                                                               zr12_BPR[2, 2], self.Jxy_all_bp[3]))
+                                                               zr12_BPR[1][1], self.Jxy_all_bp[3]))
             f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.bt_R,
                                                                  self.bt_R, self.Jxy_all_bp[7]))
             f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[0][0],
@@ -146,24 +146,6 @@ class SLANS:
             f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(
                 WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R - self.c_R, self.c_R,
                 self.Jxy_all_bp[2]))
-    #
-    # def slans_n1_ER(self, n, zr12_ER, WG_L, f):
-    #     # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
-    #     # print("\t\tSLANS_BPR::It got here")
-    #     if n == 1:
-    #         f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[1][0], zr12_ER[2, 2], self.Jxy_all_bp[3]))
-    #         f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.bt_R, self.bt_R, self.Jxy_all_bp[7]))
-    #         f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[0][0], zr12_ER[0][1], self.Jxy_all_bp[6]))
-    #         f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R, self.Rbp_R, self.Jxy_all_bp[5]))
-    #         f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R, self.Rbp_R - self.c_R, self.c_R, self.Jxy_all_bp[2]))
-    #
-    #     if n > 1:
-    #         f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(
-    #             WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[1][0] + 2 * (n - 1) * self.L_M, zr12_ER[1][1], self.Jxy_all_bp[3]))
-    #         f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, self.ri_R + self.bt_R, self.bt_R, self.Jxy_all_bp[7]))
-    #         f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_ER[0][0] + 2 * (n - 1) * self.L_M, zr12_ER[0][1], self.Jxy_all_bp[6]))
-    #         f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R, self.Jxy_all_bp[5]))
-    #         f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R + 2 * (n - 1) * self.L_M, self.Rbp_R - self.c_R, self.c_R, self.Jxy_all_bp[2]))
 
     def slans_M(self, n, zr12_M, WG_L, f, i, end_type):
         # print("\t\tSLANS_M::It got here")
@@ -308,41 +290,32 @@ class SLANS:
         # print(np.shape(xy_cross))
         # plot_cavity(xy_cross, data)
 
-        data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        df = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
-                          args=data, fprime=jac, xtol=1.49012e-12,
-                          full_output=True)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
-        # print("\tXY_CROSS2::", xy_cross)
+        checks = {"non-reentrant": [0.45, -0.45],
+                  "reentrant": [0.85, -0.85],
+                  "expansion": [0.45, -0.1]}
 
-        # if cell == 'left':
-        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
-        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
-        # elif cell == 'right':
-        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
-        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
-        # elif cell == 'expansion':
-        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
-        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
-        # else:
-        #     data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-        #     xy_cross = scopt.fsolve(func, np.array([a, ri + 0.85 * b, L - A, Req - 0.85 * B]),
-        #                             args=data, fprime=jac)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
-
-        # #
-        x1, y1, x2, y2 = df[0]
-        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
-
-        if 90 < alpha < 180:
-            pass
-        else:
-            df = scopt.fsolve(func, np.array([a, ri + 0.45 * b, L - A, Req - 0.45 * B]),
+        for key, ch in checks.items():
+            # check for non-reentrant cavity
+            data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+            df = scopt.fsolve(func, np.array([a, ri + ch[0] * b, L - A, Req + ch[1] * B]),
                               args=data, fprime=jac, xtol=1.49012e-12,
                               full_output=True)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+
             x1, y1, x2, y2 = df[0]
             alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+
+            if key == 'non-reentrant':
+                if 90 < alpha < 180:
+                    continue
+            if key == 'reentrant':
+                if 0 < alpha < 90:
+                    continue
+            if key == 'expansion':
+                if 90 < alpha < 180:
+                    continue
+
+        if cell == 'expansion':
+            print(alpha, df[-2])
 
         xy_cross = np.array([x1, y1, x2, y2])
         xy_L_ell = np.zeros(shape=(4, 2))
