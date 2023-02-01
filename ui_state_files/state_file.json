@@ -48,7 +48,7 @@
     "Initial_Points": 100,
     "Max_Table_Size": 30,
     "N_Generation": 5,
-    "Init_Generation_Method": "Uniform",
+    "Init_Generation_Method": "LHS",
     "Sobol_Sequence_Index": 2,
     "Optimize_By": "Pareto",
     "Crossover_Factor": 50,

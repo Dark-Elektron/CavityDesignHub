@@ -872,7 +872,7 @@ class WakefieldControl:
                 with open(fr'{run_save_directory}\qois.json', "w") as f:
                     json.dump(d, f, indent=4, separators=(',', ': '))
 
-            print("Done with the secondary analysis for working points")
+            print_("Done with the secondary analysis for working points")
 
     @staticmethod
     def uq(shape_space, objectives, solver_dict, solver_args_dict):

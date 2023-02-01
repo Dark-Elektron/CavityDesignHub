@@ -244,15 +244,20 @@ class TuneControl:
 
         # print(outer_half_cell_parameters)
         lock_list = [False, False, False, False, False, False, False]
+        if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == 'LHS':
+            pseudo_shape_space = self.generate_pseudo_shape_space_lhc()
 
-        if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Grid":
-            ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
-            ohc = self.create_pseudo_shape_space(outer_half_cell_parameters, lock_list, "End Cell")
-
-            pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
         elif self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Monte Carlo":
             pseudo_shape_space = self.create_shape_space_mc(self.freq, inner_half_cell_parameters,
                                                             outer_half_cell_parameters, marker)
+        elif self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Grid":
+            ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
+            ohc = self.create_pseudo_shape_space(outer_half_cell_parameters, lock_list, "End Cell")
+            pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
+        else:
+            ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
+            ohc = self.create_pseudo_shape_space(outer_half_cell_parameters, lock_list, "End Cell")
+            pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
 
         if pseudo_shape_space:
             self.run_tune(pseudo_shape_space, resume)
@@ -698,6 +703,9 @@ class TuneControl:
             file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
 
         return self.pseudo_shape_space
+
+    def generate_pseudo_shape_space_lhc(self):
+        pass
 
     def create_pseudo_shape_space(self, var_list, lock_list, cell):
         A, B, a, b, Ri, L, Req = var_list
@@ -2290,26 +2298,88 @@ class OptimizationControl:
         self.processes = []
         return shape_space
 
-    def generate_first_men(self):
+    def generate_first_men(self, f=None, n=None):
         # get range from table
         tw = self.ui.tw_Parameters
         for i in range(self.ui.tw_Parameters.rowCount()):
             self.sbd[i] = [tw.cellWidget(i, 1).value(), tw.cellWidget(i, 2).value()]
 
         # populate
-        initial_points = self.ui.sb_Initial_Points.value()
-        if self.ui.cb_Init_Generation_Method.currentText() == "Uniform":
-            data = {'key': [f"G0_C{i}_P" for i in range(initial_points)],
-                    'A': np.linspace(self.sbd[0][0], self.sbd[0][1], initial_points),
-                    'B': np.linspace(self.sbd[1][0], self.sbd[1][1], initial_points),
-                    'a': np.linspace(self.sbd[2][0], self.sbd[2][1], initial_points),
-                    'b': np.linspace(self.sbd[3][0], self.sbd[3][1], initial_points),
-                    'Ri': np.linspace(self.sbd[4][0], self.sbd[4][1], initial_points),
-                    'L': np.linspace(self.sbd[5][0], self.sbd[5][1], initial_points),
-                    'Req': np.linspace(self.sbd[6][0], self.sbd[6][1] + 1, initial_points),
-                    'alpha_i': np.zeros(initial_points),
-                    'alpha_o': np.zeros(initial_points)}
-            return pd.DataFrame.from_dict(data)
+        if f is None:
+            initial_points = self.ui.sb_Initial_Points.value()
+            n = 0
+        else:
+            initial_points = f
+
+        if self.ui.cb_Init_Generation_Method.currentText() == "LHS":
+            columns = ['A', 'B', 'a', 'b', 'Ri', 'L', 'Req']
+            dim = len(columns)
+            # index = self.ui.sb_Sobol_Sequence_Index.value()
+            l_bounds = np.array(list(self.sbd.values()))[:, 0]
+            u_bounds = np.array(list(self.sbd.values()))[:, 1]
+
+            const_var = []
+            for i in range(dim-1, -1, -1):
+                if l_bounds[i] == u_bounds[i]:
+                    const_var.append([columns[i], l_bounds[i]])
+                    del columns[i]
+                    l_bounds = np.delete(l_bounds, i)
+                    u_bounds = np.delete(u_bounds, i)
+
+            reduced_dim = len(columns)
+            sampler = qmc.LatinHypercube(d=reduced_dim)
+            _ = sampler.reset()
+            sample = sampler.random(n=initial_points)
+            # ic(qmc.discrepancy(sample))
+
+            sample = qmc.scale(sample, l_bounds, u_bounds)
+
+            df = pd.DataFrame()
+            df['key'] = [f"G{n}_C{i}_P" for i in range(initial_points)]
+            df[columns] = sample
+
+            for i in range(len(const_var)-1, -1, -1):
+                df[const_var[i][0]] = np.ones(initial_points)*const_var[i][1]
+
+            df['alpha_i'] = np.zeros(initial_points)
+            df['alpha_o'] = np.zeros(initial_points)
+
+            return df
+
+        elif self.ui.cb_Init_Generation_Method.currentText() == "Sobol Sequence":
+            columns = ['A', 'B', 'a', 'b', 'Ri', 'L', 'Req']
+            dim = len(columns)
+            index = self.ui.sb_Sobol_Sequence_Index.value()
+            l_bounds = np.array(list(self.sbd.values()))[:, 0]
+            u_bounds = np.array(list(self.sbd.values()))[:, 1]
+
+            const_var = []
+            for i in range(dim-1, -1, -1):
+                if l_bounds[i] == u_bounds[i]:
+                    const_var.append([columns[i], l_bounds[i]])
+                    del columns[i]
+                    l_bounds = np.delete(l_bounds, i)
+                    u_bounds = np.delete(u_bounds, i)
+
+            reduced_dim = len(columns)
+            sampler = qmc.Sobol(d=reduced_dim, scramble=False)
+            _ = sampler.reset()
+            sample = sampler.random_base2(m=index)
+            # ic(qmc.discrepancy(sample))
+            # ic(l_bounds, u_bounds)
+            sample = qmc.scale(sample, l_bounds, u_bounds)
+
+            df = pd.DataFrame()
+            df['key'] = [f"G0_C{i}_P" for i in range(initial_points)]
+            df[columns] = sample
+
+            for i in range(len(const_var)-1, -1, -1):
+                df[const_var[i][0]] = np.ones(initial_points)*const_var[i][1]
+
+            df['alpha_i'] = np.zeros(initial_points)
+            df['alpha_o'] = np.zeros(initial_points)
+
+            return df
         elif self.ui.cb_Init_Generation_Method.currentText() == "Random":
             data = {'key': [f"G0_C{i}_P" for i in range(initial_points)],
                     'A': random.sample(list(np.linspace(self.sbd[0][0], self.sbd[0][1], initial_points * 2)),
@@ -2329,43 +2399,18 @@ class OptimizationControl:
                     'alpha_i': np.zeros(initial_points),
                     'alpha_o': np.zeros(initial_points)}
             return pd.DataFrame.from_dict(data)
-        else:
-            ic(self.sbd.values())
-            columns = ['A', 'B', 'a', 'b', 'Ri', 'L', 'Req']
-            dim = len(columns)
-            index = self.ui.sb_Sobol_Sequence_Index.value()
-            l_bounds = np.array(list(self.sbd.values()))[:, 0]
-            u_bounds = np.array(list(self.sbd.values()))[:, 1]
-
-            const_var = []
-            for i in range(dim-1, -1, -1):
-                if l_bounds[i] == u_bounds[i]:
-                    print("it got here")
-                    const_var.append([columns[i], l_bounds[i]])
-                    del columns[i]
-                    l_bounds = np.delete(l_bounds, i)
-                    u_bounds = np.delete(u_bounds, i)
-
-            reduced_dim = len(columns)
-            sampler = qmc.Sobol(d=reduced_dim, scramble=False)
-            _ = sampler.reset()
-            sample = sampler.random_base2(m=index)
-            ic(qmc.discrepancy(sample))
-            ic(l_bounds, u_bounds)
-            sample = qmc.scale(sample, l_bounds, u_bounds)
-
-            df = pd.DataFrame()
-            df['key'] = [f"G0_C{i}_P" for i in range(initial_points)]
-            df[columns] = sample
-
-            for i in range(len(const_var)-1, -1, -1):
-                df[const_var[i][0]] = np.ones(initial_points)*const_var[i][1]
-
-            df['alpha_i'] = np.zeros(initial_points)
-            df['alpha_o'] = np.zeros(initial_points)
-            ic("sobol seq", df)
-
-            return df
+        elif self.ui.cb_Init_Generation_Method.currentText() == "Uniform":
+            data = {'key': [f"G0_C{i}_P" for i in range(initial_points)],
+                    'A': np.linspace(self.sbd[0][0], self.sbd[0][1], initial_points),
+                    'B': np.linspace(self.sbd[1][0], self.sbd[1][1], initial_points),
+                    'a': np.linspace(self.sbd[2][0], self.sbd[2][1], initial_points),
+                    'b': np.linspace(self.sbd[3][0], self.sbd[3][1], initial_points),
+                    'Ri': np.linspace(self.sbd[4][0], self.sbd[4][1], initial_points),
+                    'L': np.linspace(self.sbd[5][0], self.sbd[5][1], initial_points),
+                    'Req': np.linspace(self.sbd[6][0], self.sbd[6][1] + 1, initial_points),
+                    'alpha_i': np.zeros(initial_points),
+                    'alpha_o': np.zeros(initial_points)}
+            return pd.DataFrame.from_dict(data)
 
     def get_objectives(self):
         # objectives, weights, constraints, n, ng_max = [["min", "Epk/Eacc"], ["min", "Bpk/Eacc"], ["max", "R/Q"]], [5, 1, 1], \
@@ -2906,18 +2951,20 @@ class OptimizationControl:
         return df_ng_mut
 
     def chaos(self, f, n):
-        data = {'key': [f"G{n}_C{i}_CH" for i in range(f)],
-                'A': random.sample(list(np.linspace(self.sbd[0][0], self.sbd[0][1], f * 10)), f),
-                'B': random.sample(list(np.linspace(self.sbd[1][0], self.sbd[1][1], f * 10)), f),
-                'a': random.sample(list(np.linspace(self.sbd[2][0], self.sbd[2][1], f * 10)), f),
-                'b': random.sample(list(np.linspace(self.sbd[3][0], self.sbd[3][1], f * 10)), f),
-                'Ri': random.sample(list(np.linspace(self.sbd[4][0], self.sbd[4][1], f * 10)), f),
-                'L': random.sample(list(np.linspace(self.sbd[5][0], self.sbd[5][1], f * 10)), f),
-                'Req': random.sample(list(np.linspace(self.sbd[6][0], self.sbd[6][1], f * 10)), f),
-                'alpha_i': np.zeros(f),
-                'alpha_o': np.zeros(f)}
-
-        df = pd.DataFrame.from_dict(data)
+        # data = {'key': [f"G{n}_C{i}_CH" for i in range(f)],
+        #         'A': random.sample(list(np.linspace(self.sbd[0][0], self.sbd[0][1], f * 10)), f),
+        #         'B': random.sample(list(np.linspace(self.sbd[1][0], self.sbd[1][1], f * 10)), f),
+        #         'a': random.sample(list(np.linspace(self.sbd[2][0], self.sbd[2][1], f * 10)), f),
+        #         'b': random.sample(list(np.linspace(self.sbd[3][0], self.sbd[3][1], f * 10)), f),
+        #         'Ri': random.sample(list(np.linspace(self.sbd[4][0], self.sbd[4][1], f * 10)), f),
+        #         'L': random.sample(list(np.linspace(self.sbd[5][0], self.sbd[5][1], f * 10)), f),
+        #         'Req': random.sample(list(np.linspace(self.sbd[6][0], self.sbd[6][1], f * 10)), f),
+        #         'alpha_i': np.zeros(f),
+        #         'alpha_o': np.zeros(f)}
+        #
+        # df = pd.DataFrame.from_dict(data)
+        # return df
+        df = self.generate_first_men(f, n)
         return df
 
     def remove_duplicate_values(self, d):

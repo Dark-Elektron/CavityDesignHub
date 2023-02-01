@@ -33,7 +33,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
@@ -62,8 +62,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>522</width>
-                <height>1657</height>
+                <width>676</width>
+                <height>1293</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -1886,8 +1886,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>520</width>
-                <height>1414</height>
+                <width>674</width>
+                <height>1269</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
@@ -2083,7 +2083,12 @@
                    <widget class="QComboBox" name="cb_Init_Generation_Method">
                     <item>
                      <property name="text">
-                      <string>Uniform</string>
+                      <string>LHS</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Sobol Sequence</string>
                      </property>
                     </item>
                     <item>
@@ -2093,7 +2098,7 @@
                     </item>
                     <item>
                      <property name="text">
-                      <string>Sobol Sequence</string>
+                      <string>Uniform</string>
                      </property>
                     </item>
                    </widget>

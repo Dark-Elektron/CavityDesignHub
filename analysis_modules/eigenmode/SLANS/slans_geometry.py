@@ -133,7 +133,7 @@ class SLANSGeometry(Geometry):
         else:
             run_save_directory = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
 
-        # Write Slans Geometry
+        # Write SLANS Geometry
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
@@ -366,8 +366,8 @@ class SLANSGeometry(Geometry):
 
             with open(fr'{run_save_directory}\qois.json', "w") as f:
                 json.dump(d, f, indent=4, separators=(',', ': '))
-        except FileNotFoundError:
-            print("Simulation failed")
+        except FileNotFoundError as e:
+            print("Simulation failed", e)
 
     def cavity_multicell(self, no_of_modules=1, cells_par=None, fid=None, bc=33,
                          f_shift='default', beta=1, n_modes=None, beampipes="None",

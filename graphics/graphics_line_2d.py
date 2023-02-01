@@ -176,6 +176,8 @@ class QGraphicsLineDirect(QGraphicsLine):
         # calculate iris angle
         alpha1_el = np.arctan((Ri_el+b_el-y1el)/(x1el-L_bp_l))
         alpha1_el = np.rad2deg(alpha1_el)
+
+        # alpha1_el = 180 - np.arctan2(y2el - y1el, (x2el - x1el)) * 180 / np.pi
         # calculate equator angle
         alpha2_el = np.arctan((B_el - (Req_el-y2el))/(L_el + L_bp_l - x2el))
         alpha2_el = np.rad2deg(alpha2_el)

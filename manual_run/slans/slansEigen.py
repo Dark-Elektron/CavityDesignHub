@@ -92,7 +92,7 @@ class SLANSEigen(Geometry):
                     1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh, self.Jxy,
                 self.unit))
             f.write('10 0 0 0 0 0 0 0 0\n')
-            f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.Rbp_L, self.Jy0, BC_Left))
+            f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.ri_L, self.Jy0, BC_Left))
 
             if end_L == 2:
                 f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.Rbp_L, self.Jxy_all_bp[5] + self.Jxy_all_bp[6] +
@@ -188,22 +188,25 @@ class SLANSEigen(Geometry):
 
                 # gradual mesh decrease
                 if self.WG_R > 0:
-                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
-                                                                 -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
+                    f.write(
+                        '1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + self.L_R + 2 * (n - 1) * self.L_M,
+                                                             -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
 
                 f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
                                                              -(self.Jxy * 1)))
 
                 for i in range(n - 1, 1, -1):
-                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
-                                                                 -(self.Jxy * 1)))
+                    f.write(
+                        '1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
+                                                             -(self.Jxy * 1)))
 
                 f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
 
                 if self.WG_L > 0:
                     f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh
                                                                       + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2
-                                                                                       + (1 if end_L == 2 else 0) / 2))))
+                                                                                       + (
+                                                                                           1 if end_L == 2 else 0) / 2))))
 
                 # # direct mesh decrease
                 # f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.Jxy_bp * (
@@ -281,17 +284,35 @@ if __name__ == '__main__':
 
     # initialize input arguments
     mid_cell_parameters = [43.99, 35.06, 12.53, 20.95, 35, 57.6524, 101.205]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
-    left_end_cell_parameters = [50.9, 45.3, 8.4, 11.5, 39, 55.716, 101.205]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
-    right_end_cell_paramters = [42, 42, 9, 12.8, 39, 56.815, 101.205]
-    # mid_cell_parameters = [49, 35.30, 10.5, 17, 32, 57.6524, 98.58]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
-    # left_end_cell_parameters = [50, 35.0, 10.0, 15, 32, 57.7, 98.58]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
-    # right_end_cell_paramters = [50, 35.0, 10.0, 15, 32, 57.7, 98.58]
-    expansion = [36, 36, 6, 6, 42, 55, 0]
-    expansion_r = [36, 36, 16, 16, 70, 70, 0]
+    left_end_cell_parameters = [50.9, 45.3, 8.4, 11.5, 39, 59.988, 101.205]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
+    right_end_cell_paramters = [52.1, 47.9, 9.9, 11.3, 37, 62.665, 101.205]
+
+    # midNLSF_RE = [49, 35.30, 10.5, 17, 32.0, 57.7, 98.58]
+    # endNLSF_RE = [50, 35, 10, 15, 32.0, 57.7, 98.58]
+
+    at_L, c_L, c_R = 6, 2*(55 - 39), 2*(55 - 37)
+    x_L = 1.01*(c_L + at_L)
+    x_R = 1.01*(c_R + at_L)
+    expansion = [c_L, c_L, 6, 6, x_L, 55, 0]
+    expansion_r = [c_R, c_R, 6, 6, x_R, 55, 0]
+
+    # mid_cell_parameters = [42, 42, 12, 19, 35, 57.6524, 103.353]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
+    # left_end_cell_parameters = [40.34, 40.34, 10, 13.5, 39, 55.716, 103.353]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
+    # right_end_cell_paramters = [42, 42, 9, 12.8, 39, 56.815, 103.353]
+    #
+    # # x_L = 1.01*(c_L + at_L)
+    # expansion = [25, 25, 10, 10, 36, 55, 0]
+    # expansion_r = [25, 25, 10, 10, 36, 55, 0]
+
     # expansion_r = None
+    expansion = None
     beampipes = "both"  # other options:: "right", "both", "none"
     boundary_condition = 33  # other options: 12, 13, 23, 32, etc. See description in run function
 
     # run eigenmode analysis
-    slanseigen.run(3, 1, mid_cell_parameters, left_end_cell_parameters, right_end_cell_paramters, "Cavity", 33, 0, 1, 9,
+    slanseigen.run(2, 1, mid_cell_parameters, left_end_cell_parameters, left_end_cell_parameters, "Cavity", 33, 0, 1, 3,
                    beampipes, expansion=expansion, expansion_r=expansion_r)
+
+    # # run eigenmode analysis
+    # slanseigen.run(3, 1, midNLSF_RE, endNLSF_RE, endNLSF_RE, "Cavity", 33, 0, 1, 9,
+    #                beampipes, expansion=expansion, expansion_r=expansion_r)

@@ -88,29 +88,26 @@ def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
     data = ([0, Ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     checks = {"non-reentrant": [0.45, -0.45],
               "reentrant": [0.85, -0.85],
-              "expansion": [0.45, -0.1]}
+              "expansion": [0.45, -0.45]}
 
     for key, ch in checks.items():
         # check for non-reentrant cavity
         df = fsolve(ellipse_tangent,
-                    np.array([a + L_bp, Ri + ch[0] * b, L - A + L_bp, Req - ch[1] * B]),
+                    np.array([a + L_bp, Ri + ch[0] * b, L - A + L_bp, Req + ch[1] * B]),
                     args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
 
         x1, y1, x2, y2 = df[0]
         alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
 
         if key == 'non-reentrant':
-            print('non reentrant')
             if 90 < alpha < 180:
-                continue
+                return df
         if key == 'reentrant':
-            print('reentrant')
             if 0 < alpha < 90:
-                continue
+                return df
         if key == 'expansion':
-            print('expansion')
             if 90 < alpha < 180:
-                continue
+                return df
 
     # error_msg = df[-2]
     # if error_msg == 4:

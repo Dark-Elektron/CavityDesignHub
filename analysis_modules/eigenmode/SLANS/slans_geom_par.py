@@ -318,8 +318,8 @@ class SLANSGeometry(Geometry):
 
             with open(fr'{run_save_directory}\qois.json', "w") as f:
                 json.dump(d, f, indent=4, separators=(',', ': '))
-        except FileNotFoundError:
-            print("Simulation failed")
+        except FileNotFoundError as e:
+            print("Simulation failed", e)
 
     def write_dtr(self, path, filename, beta, f_shift, n_modes):
         with open("{}\{}.dtr".format(path, filename), 'w') as f:

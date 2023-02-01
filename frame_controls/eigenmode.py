@@ -114,7 +114,7 @@ class EigenmodeControl:
         self.ui.w_Outer_Cell_L.hide()
         self.ui.w_Outer_Cell_R.hide()
         self.ui.w_Expansion.hide()
-        self.ui.pb_Expansion.setEnabled(False)
+        # self.ui.pb_Expansion.setEnabled(False)
 
         # run eigenmode solver
         self.ui.pb_Run.clicked.connect(lambda: self.run_slans())

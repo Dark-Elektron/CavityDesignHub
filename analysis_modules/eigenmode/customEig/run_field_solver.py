@@ -1855,7 +1855,7 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\NativeEig'
     mod = Model(folder, 'TESLA')
-    n_cells = 1
+    n_cells = 6
     midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
                          71.98698698698699, 93.5, 171.1929]) * 1e-3
     endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
@@ -1871,4 +1871,8 @@ if __name__ == '__main__':
     midNLSF_RE = np.array([49, 35.30, 10.5, 17, 32.0, 57.7, 98.58, 0]) * 1e-3
     endNLSF_RE = np.array([50, 35, 10, 15, 32.0, 57.7, 98.58, 0]) * 1e-3
 
-    mod.run(n_cells, midTESLA, beampipe='none', gridcons=0.005)
+    mid_cell_parameters = [43.99, 35.06, 12.53, 20.95, 35, 57.6524, 101.205]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
+    left_end_cell_parameters = [50.9, 45.3, 8.4, 11.5, 39, 59.988, 101.205]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
+    right_end_cell_paramters = [52.1, 47.9, 9.9, 11.3, 37, 62.665, 101.205]
+
+    mod.run(n_cells, mid_cell_parameters, left_end_cell_parameters, right_end_cell_paramters, beampipe='none', gridcons=0.005, plot=True)

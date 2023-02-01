@@ -54,7 +54,7 @@ class GraphicsView(QGraphicsView):
         self.line_list = []
 
         # self.drawCells()
-        self.update_signal()
+        # self.update_signal()
 
     def initUi(self):
         # Housekeeping QGraphicsView
