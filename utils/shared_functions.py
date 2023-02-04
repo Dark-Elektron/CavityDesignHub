@@ -1391,7 +1391,7 @@ def linspace(start, stop, step=1.):
     Like np.linspace but uses step instead of num
     This is inclusive to stop, so if start=1, stop=3, step=0.5
     Output is: array([1., 1.5, 2., 2.5, 3.])
-  """
+    """
     if start < stop:
         ll = np.linspace(start, stop, int((stop - start) / abs(step) + 1))
         if stop not in ll:
@@ -1408,7 +1408,7 @@ def linspace(start, stop, step=1.):
 def lineTo(prevPt, nextPt, step, plot=False):
     if prevPt[0] == nextPt[0]:
         # vertical line
-        # chwxk id nextPt is greater
+        # check id nextPt is greater
         if prevPt[1] < nextPt[1]:
             py = linspace(prevPt[1], nextPt[1], step)
         else:

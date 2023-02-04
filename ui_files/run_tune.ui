@@ -33,7 +33,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
@@ -63,7 +63,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>676</width>
-                <height>1293</height>
+                <height>1568</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -635,11 +635,16 @@
                            <string>Shape space initialization method</string>
                           </property>
                           <property name="currentText">
-                           <string>Grid</string>
+                           <string>LHS</string>
                           </property>
                           <property name="frame">
                            <bool>false</bool>
                           </property>
+                          <item>
+                           <property name="text">
+                            <string>LHS</string>
+                           </property>
+                          </item>
                           <item>
                            <property name="text">
                             <string>Grid</string>
@@ -668,7 +673,7 @@
                             <number>0</number>
                            </property>
                            <item row="1" column="1">
-                            <widget class="QSpinBox" name="sb_No_Of_Shapes_Monte_Carlo">
+                            <widget class="QSpinBox" name="sb_No_Of_Shapes">
                              <property name="minimumSize">
                               <size>
                                <width>200</width>
@@ -1887,7 +1892,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>674</width>
-                <height>1269</height>
+                <height>1403</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">

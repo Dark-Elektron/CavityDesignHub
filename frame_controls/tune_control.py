@@ -21,8 +21,10 @@ from utils.shared_classes import *
 from utils.shared_functions import *
 
 from analysis_modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
+
 slans_geom = SLANSGeometry()  # parallel implementaion of code, consider making the two separate classes 1
 from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
+
 slans_geom_seq = SLANSGeometry()
 
 file_color = 'green'
@@ -82,7 +84,7 @@ class TuneControl:
     def initUI(self):
         # splitter
         self.ui.sp_Left_Right_Container.setStretchFactor(1, 4)
-        
+
         self.ui.cb_Inner_Cell.setCheckState(2)
         self.ui.cb_Inner_Cell.setEnabled(False)
         self.ui.w_Tune_Multiple.setVisible(False)
@@ -245,7 +247,8 @@ class TuneControl:
         # print(outer_half_cell_parameters)
         lock_list = [False, False, False, False, False, False, False]
         if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == 'LHS':
-            pseudo_shape_space = self.generate_pseudo_shape_space_lhc()
+            pseudo_shape_space = self.generate_pseudo_shape_space_lhc(self.freq, inner_half_cell_parameters,
+                                                                      outer_half_cell_parameters, marker)
 
         elif self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Monte Carlo":
             pseudo_shape_space = self.create_shape_space_mc(self.freq, inner_half_cell_parameters,
@@ -582,7 +585,8 @@ class TuneControl:
                     other_cell = other_cell.tolist()
                     other_cell[-2] = inner_cell[-2]
 
-                    self.pseudo_shape_space[f'{marker}_{key}'] = {'IC': inner_cell, 'OC': other_cell, 'BP': BP, 'FREQ': freq}
+                    self.pseudo_shape_space[f'{marker}_{key}'] = {'IC': inner_cell, 'OC': other_cell, 'BP': BP,
+                                                                  'FREQ': freq}
                     key += 1
 
         elif self.ui.cb_Inner_Cell.isChecked() and not self.ui.cb_Outer_Cell.isChecked():
@@ -704,8 +708,44 @@ class TuneControl:
 
         return self.pseudo_shape_space
 
-    def generate_pseudo_shape_space_lhc(self):
-        pass
+    def generate_pseudo_shape_space_lhc(self, freq, ihc, ohc, marker):
+        no_of_shapes = self.ui.sb_No_Of_Shapes.value()
+        columns = ['A', 'B', 'a', 'b', 'Ri', 'L', 'Req']
+        dim = len(columns)
+        # index = self.ui.sb_Sobol_Sequence_Index.value()
+        l_bounds = np.array(list(self.sbd.values()))[:, 0]
+        u_bounds = np.array(list(self.sbd.values()))[:, 1]
+
+        const_var = []
+        for i in range(dim - 1, -1, -1):
+            if l_bounds[i] == u_bounds[i]:
+                const_var.append([columns[i], l_bounds[i]])
+                del columns[i]
+                l_bounds = np.delete(l_bounds, i)
+                u_bounds = np.delete(u_bounds, i)
+
+        reduced_dim = len(columns)
+        sampler = qmc.LatinHypercube(d=reduced_dim)
+        _ = sampler.reset()
+        sample = sampler.random(n=no_of_shapes)
+        # ic(qmc.discrepancy(sample))
+
+        sample = qmc.scale(sample, l_bounds, u_bounds)
+
+        df = pd.DataFrame()
+        df['key'] = [f"{0}" for i in range(no_of_shapes)]
+        df[columns] = sample
+
+        for i in range(len(const_var) - 1, -1, -1):
+            df[const_var[i][0]] = np.ones(no_of_shapes) * const_var[i][1]
+
+        df['alpha_i'] = np.zeros(no_of_shapes)
+        df['alpha_o'] = np.zeros(no_of_shapes)
+
+        if self.ui.cb_Outer_Cell.checkState() == 2:
+            pass
+
+        return df
 
     def create_pseudo_shape_space(self, var_list, lock_list, cell):
         A, B, a, b, Ri, L, Req = var_list
@@ -1159,6 +1199,7 @@ class TuneControl:
 
         except KeyError:
             print("Could not deserialize tune_control.py")
+
     #
     # def ui_effects(self):
     #
@@ -1192,7 +1233,8 @@ class TuneControl:
         tuner.tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p,
                    tuner_option=tuner_option, tune_variable=tune_variable, iter_set=iter_set,
                    cell_type=cell_type, progress_list=progress_list, convergence_list=convergence_list,
-                   save_last=save_last, n_cell_last_run=n_cells)  # last_key=last_key This would have to be tested again #val2
+                   save_last=save_last,
+                   n_cell_last_run=n_cells)  # last_key=last_key This would have to be tested again #val2
 
     @staticmethod
     def overwriteFolder(invar, projectDir):
@@ -1464,7 +1506,8 @@ class OptimizationControl:
             else self.ui.w_Sobol_Sequence_Parameters.hide())
 
         # sobol sequence
-        self.ui.sb_Sobol_Sequence_Index.valueChanged.connect(lambda: self.ui.sb_Initial_Points.setValue(int(2**self.ui.sb_Sobol_Sequence_Index.value())))
+        self.ui.sb_Sobol_Sequence_Index.valueChanged.connect(
+            lambda: self.ui.sb_Initial_Points.setValue(int(2 ** self.ui.sb_Sobol_Sequence_Index.value())))
 
     def ea(self, n):
         if n == 0:
@@ -1589,7 +1632,7 @@ class OptimizationControl:
                 # print("In here to evaluate wakfield1")
                 # process wakefield results
                 df_wake, processed_keys = self.get_wakefield_objectives_value(wake_shape_space,
-                                                                                 fr'{self.projectDir}\SimulationData\ABCI')
+                                                                              fr'{self.projectDir}\SimulationData\ABCI')
                 ic(df_wake)
                 df = df.merge(df_wake, on='key', how='inner')
                 ic(df)
@@ -1621,7 +1664,8 @@ class OptimizationControl:
                                 'abci': {'n_cells': n_cells, 'n_modules': 1,
                                          'MROT': 2, 'MT': 4, 'NFS': 10000, 'UBT': 50, 'bunch_length': 25,
                                          'DDR_SIG': 0.1, 'DDZ_SIG': 0.1,
-                                         'parentDir': self.parentDir, 'projectDir': self.projectDir, 'progress_list': None,
+                                         'parentDir': self.parentDir, 'projectDir': self.projectDir,
+                                         'progress_list': None,
                                          'WG_M': None, 'marker': ''}
                                 }
 
@@ -1633,7 +1677,7 @@ class OptimizationControl:
             for key in shape_space.keys():
                 filename_slans = fr'{self.projectDir}\SimulationData\SLANS\{key}\uq.json'
                 filename_abci = fr'{self.projectDir}\SimulationData\ABCI\{key}\uq.json'
-                if os.path.exists(filename_slans):# and os.path.exists(filename_abci):
+                if os.path.exists(filename_slans):  # and os.path.exists(filename_abci):
                     uq_result_dict[key] = []
                     with open(filename_slans, "r") as infile:
                         uq_d = json.load(infile)
@@ -1642,12 +1686,13 @@ class OptimizationControl:
                                 uq_result_dict[key].append(uq_d[o[1]]['expe'][0])
                                 uq_result_dict[key].append(uq_d[o[1]]['stdDev'][0])
                                 if o[0] == 'min':
-                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] + 6*uq_d[o[1]]['stdDev'][0])
+                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] + 6 * uq_d[o[1]]['stdDev'][0])
                                 elif o[0] == 'max':
-                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] - 6*uq_d[o[1]]['stdDev'][0])
+                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] - 6 * uq_d[o[1]]['stdDev'][0])
                                 else:
                                     # for equal, calculate |expected_value - design_value| + 6sigma
-                                    uq_result_dict[key].append(np.abs(uq_d[o[1]]['expe'][0] - o[2]) + uq_d[o[1]]['stdDev'][0])
+                                    uq_result_dict[key].append(
+                                        np.abs(uq_d[o[1]]['expe'][0] - o[2]) + uq_d[o[1]]['stdDev'][0])
 
                                 # ic(uq_result_dict)
 
@@ -1663,9 +1708,9 @@ class OptimizationControl:
                                 uq_result_dict[key].append(uq_d[o[1]]['expe'][0])
                                 uq_result_dict[key].append(uq_d[o[1]]['stdDev'][0])
                                 if o[0] == 'min':
-                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] + 6*uq_d[o[1]]['stdDev'][0])
+                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] + 6 * uq_d[o[1]]['stdDev'][0])
                                 elif o[0] == 'max':
-                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] - 6*uq_d[o[1]]['stdDev'][0])
+                                    uq_result_dict[key].append(uq_d[o[1]]['expe'][0] - 6 * uq_d[o[1]]['stdDev'][0])
 
             # ic(uq_result_dict)
             uq_column_names = []
@@ -1719,15 +1764,19 @@ class OptimizationControl:
         for i, obj in enumerate(self.objectives):
             if self.ui.cb_UQ.isChecked():
                 if obj[0] == "min":
-                    df[f'rank_E[{obj[1]}] + 6*std[{obj[1]}]'] = df[fr'E[{obj[1]}] + 6*std[{obj[1]}]'].rank() * self.weights[i]
+                    df[f'rank_E[{obj[1]}] + 6*std[{obj[1]}]'] = df[fr'E[{obj[1]}] + 6*std[{obj[1]}]'].rank() * \
+                                                                self.weights[i]
                     ic(df[f'rank_E[{obj[1]}] + 6*std[{obj[1]}]'])
                 elif obj[0] == "max":
-                    df[f'rank_E[{obj[1]}] - 6*std[{obj[1]}]'] = df[fr'E[{obj[1]}] - 6*std[{obj[1]}]'].rank(ascending=False) * self.weights[i]
+                    df[f'rank_E[{obj[1]}] - 6*std[{obj[1]}]'] = df[fr'E[{obj[1]}] - 6*std[{obj[1]}]'].rank(
+                        ascending=False) * self.weights[i]
                     ic(df[f'rank_E[{obj[1]}] - 6*std[{obj[1]}]'])
                 elif obj[0] == "equal":
-                    df[fr'rank_|E[{obj[1]}] - {obj[2]}| + std[{obj[1]}]'] = df[fr'|E[{obj[1]}] - {obj[2]}| + std[{obj[1]}]'].rank() * self.weights[i]
+                    df[fr'rank_|E[{obj[1]}] - {obj[2]}| + std[{obj[1]}]'] = df[
+                                                                                fr'|E[{obj[1]}] - {obj[2]}| + std[{obj[1]}]'].rank() * \
+                                                                            self.weights[i]
                     ic(df[fr'rank_|E[{obj[1]}] - {obj[2]}| + std[{obj[1]}]'])
-    
+
                 # if 'total_rank' in df.columns:
                 if obj[0] == 'min':
                     df[f'total_rank'] = df[f'total_rank'] + df[f'rank_E[{obj[1]}] + 6*std[{obj[1]}]']
@@ -1749,7 +1798,7 @@ class OptimizationControl:
                     df[f'rank_{obj[1]}'] = df[obj[1]].rank(ascending=False) * self.weights[i]
                 elif obj[0] == "equal":  # define properly later
                     continue
-    
+
                 # if 'total_rank' in df.columns:
                 df[f'total_rank'] = df[f'total_rank'] + df[f'rank_{obj[1]}']
                 # else:
@@ -1759,7 +1808,7 @@ class OptimizationControl:
         ic(df)
         tot = df.pop(f'total_rank')
         ic(tot)
-        df[f'total_rank'] = tot/sum(self.weights)  # normalize by sum of weights
+        df[f'total_rank'] = tot / sum(self.weights)  # normalize by sum of weights
         ic(df)
 
         # order shapes by rank
@@ -1780,7 +1829,7 @@ class OptimizationControl:
         else:
             self.df_global = df
         ic(self.df_global)
-        
+
         # check if df_global is empty
         if self.df_global.shape[0] == 0:
             ic("Unfortunately, none survived the constraints and the program has to end. "
@@ -1967,7 +2016,8 @@ class OptimizationControl:
                         # # create folders for all keys
                         solver.createFolder(fid, projectDir, subdir=sub_dir)
 
-                        solver.cavity(n_cells, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, fid=fid,
+                        solver.cavity(n_cells, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes,
+                                      fid=fid,
                                       parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
                     filename = fr'{projectDir}\SimulationData\SLANS\{key}\{fid}\cavity_33.svl'
 
@@ -1995,7 +2045,7 @@ class OptimizationControl:
                 # params = fr.svl_reader(filename)
                 # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
                 # tab_val_f = obj_result
-                    # Ttab_val_f.append(tab_val_f)
+                # Ttab_val_f.append(tab_val_f)
 
                 if err:
                     break
@@ -2154,8 +2204,8 @@ class OptimizationControl:
             outvar = np.zeros((cols, 1))
             for i in range(cols):
                 expe[i, 0] = np.dot(tab_var[:, i], weights)
-                outvar[i, 0] = np.dot(tab_var[:, i]**2, weights)
-            stdDev = np.sqrt(outvar - expe**2)
+                outvar[i, 0] = np.dot(tab_var[:, i] ** 2, weights)
+            stdDev = np.sqrt(outvar - expe ** 2)
         else:
             expe = 0
             stdDev = 0
@@ -2319,7 +2369,7 @@ class OptimizationControl:
             u_bounds = np.array(list(self.sbd.values()))[:, 1]
 
             const_var = []
-            for i in range(dim-1, -1, -1):
+            for i in range(dim - 1, -1, -1):
                 if l_bounds[i] == u_bounds[i]:
                     const_var.append([columns[i], l_bounds[i]])
                     del columns[i]
@@ -2338,8 +2388,8 @@ class OptimizationControl:
             df['key'] = [f"G{n}_C{i}_P" for i in range(initial_points)]
             df[columns] = sample
 
-            for i in range(len(const_var)-1, -1, -1):
-                df[const_var[i][0]] = np.ones(initial_points)*const_var[i][1]
+            for i in range(len(const_var) - 1, -1, -1):
+                df[const_var[i][0]] = np.ones(initial_points) * const_var[i][1]
 
             df['alpha_i'] = np.zeros(initial_points)
             df['alpha_o'] = np.zeros(initial_points)
@@ -2354,7 +2404,7 @@ class OptimizationControl:
             u_bounds = np.array(list(self.sbd.values()))[:, 1]
 
             const_var = []
-            for i in range(dim-1, -1, -1):
+            for i in range(dim - 1, -1, -1):
                 if l_bounds[i] == u_bounds[i]:
                     const_var.append([columns[i], l_bounds[i]])
                     del columns[i]
@@ -2373,8 +2423,8 @@ class OptimizationControl:
             df['key'] = [f"G0_C{i}_P" for i in range(initial_points)]
             df[columns] = sample
 
-            for i in range(len(const_var)-1, -1, -1):
-                df[const_var[i][0]] = np.ones(initial_points)*const_var[i][1]
+            for i in range(len(const_var) - 1, -1, -1):
+                df[const_var[i][0]] = np.ones(initial_points) * const_var[i][1]
 
             df['alpha_i'] = np.zeros(initial_points)
             df['alpha_o'] = np.zeros(initial_points)
@@ -2480,7 +2530,7 @@ class OptimizationControl:
         # Vacc = dict['ACCELERATION'][n_cells - 1]
         Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells - 1]  # MV/m
         r_Q = d['EFFECTIVE IMPEDANCE'][n_cells - 1]  # Ohm
-        G = 0.00948*Q*(Freq/1300)
+        G = 0.00948 * Q * (Freq / 1300)
         GR_Q = G * 2 * r_Q
 
         Vacc = np.sqrt(
@@ -2520,7 +2570,7 @@ class OptimizationControl:
             if o[1] in d.keys():
                 objective.append(d[o[1]])
 
-        return objective #, tune_result
+        return objective  # , tune_result
 
     def get_wakefield_objectives_value(self, d, abci_data_dir):
         k_loss_array_transverse = []
@@ -2810,7 +2860,8 @@ class OptimizationControl:
                 elif o[0] == "max":
                     elites[f'E[{o[1]}] - 6*std[{o[1]}]'] = df.sort_values(f'E[{o[1]}] - 6*std[{o[1]}]', ascending=False)
                 elif o[0] == "equal":
-                    elites[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] = df.sort_values(fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]')
+                    elites[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] = df.sort_values(
+                        fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]')
             else:
                 if o[0] == "min":
                     elites[f'{o[1]}'] = df.sort_values(f'{o[1]}')
@@ -2878,13 +2929,27 @@ class OptimizationControl:
             # (<obj>[<rank>][<variable>] -> (b[c[1]][0]
 
             df_co.loc[i] = [f"G{generation}_C{i}_CO",
-                            sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0]-1)]["A"] for key in inf_dict["A"]]) / len(inf_dict["A"]),  # A
-                            sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0]-1)]["B"] for key in inf_dict["B"]]) / len(inf_dict["B"]),  # B
-                            sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0]-1)]["a"] for key in inf_dict["a"]]) / len(inf_dict["a"]),  # a
-                            sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0]-1)]["b"] for key in inf_dict["b"]]) / len(inf_dict["b"]),  # b
-                            sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0]-1)]["Ri"] for key in inf_dict["Ri"]]) / len(inf_dict["Ri"]),  # Ri
-                            sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0]-1)]["L"] for key in inf_dict["L"]]) / len(inf_dict["L"]),  # L
-                            sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0]-1)]["Req"] for key in inf_dict["Req"]]) / len(inf_dict["Req"]),
+                            sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["A"] for key
+                                 in inf_dict["A"]]) / len(inf_dict["A"]),  # A
+                            sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["B"] for key
+                                 in inf_dict["B"]]) / len(inf_dict["B"]),  # B
+                            sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["a"] for key
+                                 in inf_dict["a"]]) / len(inf_dict["a"]),  # a
+                            sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["b"] for key
+                                 in inf_dict["b"]]) / len(inf_dict["b"]),  # b
+                            sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["Ri"] for
+                                 key in inf_dict["Ri"]]) / len(inf_dict["Ri"]),  # Ri
+                            sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["L"] for key
+                                 in inf_dict["L"]]) / len(inf_dict["L"]),  # L
+                            sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["Req"] for
+                                 key in inf_dict["Req"]]) / len(inf_dict["Req"]),
                             0,
                             0
                             ]
@@ -3109,7 +3174,9 @@ class OptimizationControl:
                     datapoints[o[1]] = datapoints[o[1]] * (-1)
             elif o[0] == "equal":
                 if self.ui.cb_UQ.isChecked():
-                    datapoints[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] = datapoints[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] * (-1)
+                    datapoints[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] = datapoints[
+                                                                             fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] * (
+                                                                             -1)
         # ic(datapoints)
         # convert datapoints to numpy array
 
@@ -3198,7 +3265,8 @@ class OptimizationControl:
         tuner.tune(pseudo_shape_space_proc, bc, parentDir, projectDir, filename, resume=resume, proc=p,
                    tuner_option=tuner_option, tune_variable=tune_variable, iter_set=iter_set,
                    cell_type=cell_type, progress_list=progress_list, convergence_list=convergence_list,
-                   save_last=save_last, n_cell_last_run=n_cells)  # last_key=last_key This would have to be tested again #val2
+                   save_last=save_last,
+                   n_cell_last_run=n_cells)  # last_key=last_key This would have to be tested again #val2
 
     @staticmethod
     def text_to_list(l):
@@ -3322,7 +3390,7 @@ def run_sequential_wakefield(n_cells, n_modules, processor_shape_space,
 
         print_(f'Cavity {key}. Time: {time.time() - start_time}')
 
-            # update progress
+        # update progress
         progress_list.append((progress + 1) / total_no_of_shapes)
 
 
@@ -3408,13 +3476,13 @@ def get_objectives_value(d, obj, norm_length, n_cells):
     # Vacc = dict['ACCELERATION'][n_cells - 1]
     Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells - 1]  # MV/m
     r_Q = d['EFFECTIVE IMPEDANCE'][n_cells - 1]  # Ohm
-    G = 0.00948*Q*(Freq/1300)
+    G = 0.00948 * Q * (Freq / 1300)
     GR_Q = G * 2 * r_Q
 
     Vacc = np.sqrt(
         2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
     # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
-    Eacc = Vacc / (n_cells*norm_length * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
+    Eacc = Vacc / (n_cells * norm_length * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
     Epk_Eacc = Epk / Eacc
     Bpk_Eacc = (Hpk * 4 * np.pi * 1e-7) * 1e3 / Eacc
 
@@ -3433,7 +3501,6 @@ def get_objectives_value(d, obj, norm_length, n_cells):
     objective = []
     # append freq and Req
     tune_result = [Req, Freq]
-
 
     # append objective functions
     for o in obj:
@@ -3697,8 +3764,8 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
 
 def process_interval(interval_list):
-        interval = []
-        for i in range(len(interval_list) - 1):
-            interval.append([interval_list[i], interval_list[i + 1]])
+    interval = []
+    for i in range(len(interval_list) - 1):
+        interval.append([interval_list[i], interval_list[i + 1]])
 
-        return interval
+    return interval
