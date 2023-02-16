@@ -132,8 +132,8 @@ class EigenmodeControl:
             self.ui.cb_Outer_Cell_L, self.ui.w_Outer_Cell_L, 0, 160, True))
         self.ui.cb_Outer_Cell_R.stateChanged.connect(lambda: animate_height(
             self.ui.cb_Outer_Cell_R, self.ui.w_Outer_Cell_R, 0, 160, True))
-        self.ui.cb_Expansion.stateChanged.connect(lambda: animate_height(
-            self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160, True))
+        # self.ui.cb_Expansion_l.stateChanged.connect(lambda: animate_height(
+        #     self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160, True))
 
         # cancel
         self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -149,7 +149,7 @@ class EigenmodeControl:
         self.ui.le_Req_i.editingFinished.connect(lambda: self.ui.le_Req_ol.setText(self.ui.le_Req_i.text()))
         self.ui.le_Req_i.editingFinished.connect(lambda: self.ui.le_Req_or.setText(self.ui.le_Req_i.text()))
 
-        self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
+        # self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
 
     def shape_entry_widgets_control(self):
         if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
@@ -181,6 +181,7 @@ class EigenmodeControl:
     def run_slans(self):
         # get analysis parameters
         n_cells = self.ui.sb_N_Cells.value()
+        n_cells = text_to_list(self.ui.le_N_Cells.text())
         n_modules = self.ui.sb_N_Modules.value()
         f_shift = float(self.ui.le_Freq_Shift.text())
         n_modes = float(self.ui.le_No_Of_Modes.text())
@@ -201,8 +202,9 @@ class EigenmodeControl:
             UQ = False
 
         # get geometric parameters
-        self.shape_space = get_geometric_parameters(self, 'SLANS', float(self.ui.le_Scale.text()))
-        ic(self.shape_space)
+        ic(self.loaded_shape_space)
+        self.shape_space = get_geometric_parameters(self, 'SLANS', text_to_list(self.ui.le_Scale.text()))
+        ic(self.shape_space, self.loaded_shape_space)
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(self.shape_space.keys())
@@ -210,7 +212,7 @@ class EigenmodeControl:
         share = round(shape_space_len / proc_count)
 
         # get the total number of simulations to be run
-        num_sims = shape_space_len
+        num_sims = shape_space_len*len(n_cells)
         self.progress_bar.setMaximum(num_sims)
         self.progress_bar.show()
 
@@ -446,7 +448,7 @@ class EigenmodeControl:
         state_dict["Eigen_Mid_Cell_CB"] = self.ui.cb_Inner_Cell.checkState()
         state_dict["Eigen_Left_Cell_CB"] = self.ui.cb_Outer_Cell_L.checkState()
         state_dict["Eigen_Right_Cell_CB"] = self.ui.cb_Outer_Cell_R.checkState()
-        state_dict["Eigen_Expansion_CB"] = self.ui.cb_Expansion.checkState()
+        # state_dict["Eigen_Expansion_CB"] = self.ui.cb_Expansion.checkState()
         state_dict["Eigen_LBP_CB"] = self.ui.cb_LBP.checkState()
         state_dict["Eigen_RBP_CB"] = self.ui.cb_RBP.checkState()
 
@@ -480,6 +482,8 @@ class EigenmodeControl:
 
         # settings
         state_dict["Eigen_N_Cells"] = self.ui.sb_N_Cells.value()
+        state_dict["Eigen_N_Cells_"] = self.ui.le_N_Cells.text()
+        state_dict["Eigen_Scale"] = self.ui.le_Scale.text()
         state_dict["Eigen_N_Modules"] = self.ui.sb_N_Modules.value()
         state_dict["Eigen_Polarization"] = self.ui.cb_Polarization_SLANS.currentIndex()
 
@@ -496,7 +500,7 @@ class EigenmodeControl:
         self.ui.cb_Inner_Cell.setCheckState(state_dict["Eigen_Mid_Cell_CB"])
         self.ui.cb_Outer_Cell_L.setCheckState(state_dict["Eigen_Left_Cell_CB"])
         self.ui.cb_Outer_Cell_R.setCheckState(state_dict["Eigen_Right_Cell_CB"])
-        self.ui.cb_Expansion.setCheckState(state_dict["Eigen_Expansion_CB"])
+        # self.ui.cb_Expansion.setCheckState(state_dict["Eigen_Expansion_CB"])
         self.ui.cb_LBP.setCheckState(state_dict["Eigen_LBP_CB"])
         self.ui.cb_RBP.setCheckState(state_dict["Eigen_RBP_CB"])
 
@@ -530,6 +534,8 @@ class EigenmodeControl:
 
         # settings
         self.ui.sb_N_Cells.setValue(state_dict["Eigen_N_Cells"])
+        self.ui.le_N_Cells.setText(state_dict["Eigen_N_Cells_"])
+        self.ui.le_Scale.setText(state_dict["Eigen_Scale"])
         self.ui.sb_N_Modules.setValue(state_dict["Eigen_N_Modules"])
         self.ui.cb_Polarization_SLANS.setCurrentIndex(state_dict["Eigen_Polarization"])
         self.ui.le_Freq_Shift.setText(state_dict["Eigen_Freq_Shift"])
@@ -554,10 +560,6 @@ class EigenmodeControl:
 
         for key, shape in processor_shape_space.items():
             if solver.lower() == 'slans':
-                # # create folders for all keys
-                slans_geom.createFolder(key, projectDir, subdir=sub_dir)
-
-                write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
 
                 # run SLANS code
                 start_time = time.time()
@@ -569,17 +571,39 @@ class EigenmodeControl:
 
                 if 'EXPANSION_R' in shape.keys():
                     expansion_r = shape['EXPANSION_R']
+                if len(n_cells) == 1:
+                    # # create folders for all keys
+                    slans_geom.createFolder(key, projectDir, subdir=sub_dir)
 
-                if 'OC_R' in shape.keys():
-                    slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                      n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                      expansion=expansion, expansion_r=expansion_r)
+                    write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+
+                    if 'OC_R' in shape.keys():
+                        slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                          n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                          expansion=expansion, expansion_r=expansion_r)
+                    else:
+                        slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                          n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                          expansion=expansion, expansion_r=expansion_r)
                 else:
-                    slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                      n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                      expansion=expansion, expansion_r=expansion_r)
+                    for n_cell in n_cells:
+                        # # create folders for all keys
+                        slans_geom.createFolder(f"{key}_{n_cell}", projectDir, subdir=sub_dir)
+
+                        write_cst_paramters(f"{key}_{n_cell}", shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+
+                        if 'OC_R' in shape.keys():
+                            slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                              n_modes=n_modes, fid=f"{key}_{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                              parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                              expansion=expansion, expansion_r=expansion_r)
+                        else:
+                            slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                              n_modes=n_modes, fid=f"{key}_{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                              parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                              expansion=expansion, expansion_r=expansion_r)
 
                 # run UQ
                 if UQ:

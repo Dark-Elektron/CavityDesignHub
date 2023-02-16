@@ -48,9 +48,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
-               <width>736</width>
-               <height>2562</height>
+               <y>-1546</y>
+               <width>770</width>
+               <height>2414</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -1612,8 +1612,41 @@
                  <property name="bottomMargin">
                   <number>0</number>
                  </property>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="le_LBP"/>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>Lbp</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_85">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Processors</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2">
+                  <widget class="QSpinBox" name="sb_N_Cells">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="value">
+                    <number>2</number>
+                   </property>
+                  </widget>
                  </item>
                  <item row="1" column="0">
                   <widget class="QLabel" name="label_35">
@@ -1631,65 +1664,6 @@
                    </property>
                    <property name="text">
                     <string>No. of Modules</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QSpinBox" name="sb_N_Modules">
-                   <property name="value">
-                    <number>1</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QSpinBox" name="sb_N_Cells">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="value">
-                    <number>2</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_9">
-                   <property name="text">
-                    <string>Lbp</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="1">
-                  <widget class="QComboBox" name="cb_Polarization_ABCI">
-                   <property name="focusPolicy">
-                    <enum>Qt::NoFocus</enum>
-                   </property>
-                   <item>
-                    <property name="text">
-                     <string>Monopole</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Dipole</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Both</string>
-                    </property>
-                   </item>
-                  </widget>
-                 </item>
-                 <item row="4" column="1">
-                  <widget class="QSpinBox" name="sb_No_Of_Processors_ABCI">
-                   <property name="minimum">
-                    <number>1</number>
-                   </property>
-                   <property name="maximum">
-                    <number>999</number>
-                   </property>
-                   <property name="value">
-                    <number>1</number>
                    </property>
                   </widget>
                  </item>
@@ -1731,22 +1705,55 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_85">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="le_N_Cells">
                    <property name="text">
-                    <string>Processors</string>
+                    <string>2</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1" colspan="2">
+                  <widget class="QSpinBox" name="sb_N_Modules">
+                   <property name="value">
+                    <number>1</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1" colspan="2">
+                  <widget class="QLineEdit" name="le_LBP"/>
+                 </item>
+                 <item row="3" column="1" colspan="2">
+                  <widget class="QComboBox" name="cb_Polarization_ABCI">
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>Monopole</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Dipole</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Both</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="4" column="1" colspan="2">
+                  <widget class="QSpinBox" name="sb_No_Of_Processors_ABCI">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="value">
+                    <number>1</number>
                    </property>
                   </widget>
                  </item>
@@ -1775,7 +1782,27 @@
                     <item row="1" column="0" colspan="2">
                      <widget class="QCheckableComboBox" name="ccb_Operation_Points"/>
                     </item>
-                    <item row="3" column="0" colspan="2">
+                    <item row="0" column="1">
+                     <widget class="QPushButton" name="pb_Load_Machine_Parameters">
+                      <property name="toolTip">
+                       <string>Load operation points</string>
+                      </property>
+                      <property name="text">
+                       <string>...</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="0" column="0">
+                     <widget class="QLineEdit" name="le_Machine_Parameters_Filename">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
+                      <property name="placeholderText">
+                       <string>Loaded json file containing operation points</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item row="2" column="0" colspan="2">
                      <widget class="QTableWidget" name="tw_Operating_Points_Input">
                       <column>
                        <property name="text">
@@ -1785,16 +1812,6 @@
                       <column>
                        <property name="text">
                         <string>Operating Point(s)</string>
-                       </property>
-                      </column>
-                      <column>
-                       <property name="text">
-                        <string>n cells</string>
-                       </property>
-                      </column>
-                      <column>
-                       <property name="text">
-                        <string>R/Q [Ohm]</string>
                        </property>
                       </column>
                       <column>
@@ -1817,38 +1834,6 @@
                         <string>Nb [1e11]</string>
                        </property>
                       </column>
-                      <column>
-                       <property name="text">
-                        <string>Freq [MHz]</string>
-                       </property>
-                      </column>
-                     </widget>
-                    </item>
-                    <item row="0" column="1">
-                     <widget class="QPushButton" name="pb_Load_Machine_Parameters">
-                      <property name="toolTip">
-                       <string>Load operation points</string>
-                      </property>
-                      <property name="text">
-                       <string>...</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="0" column="0">
-                     <widget class="QLineEdit" name="le_Machine_Parameters_Filename">
-                      <property name="readOnly">
-                       <bool>true</bool>
-                      </property>
-                      <property name="placeholderText">
-                       <string>Loaded json file containing operation points</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QPushButton" name="pb_Get_Eigenmode_Results">
-                      <property name="text">
-                       <string>Get Eigenmode Results</string>
-                      </property>
                      </widget>
                     </item>
                    </layout>

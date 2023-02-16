@@ -5,6 +5,8 @@ from scipy import optimize as scopt
 import numpy as np
 import sympy as sym
 
+from utils.shared_functions import tangent_coords
+
 
 class SLANS:
     def __init__(self, left_beam_pipe, left_end_cell, mid_cell, right_end_cell, right_beam_pipe, jxy_all, jxy_all_bp):
@@ -193,7 +195,25 @@ class SLANS:
                                                                  self.Req_M - self.B_M, self.B_M, self.Jxy_all[2]))
 
     def rz_conjug(self, cell):
-        global data
+        """Calculate shift in geoemetric values
+
+        Parameters
+        ----------
+        cell: {"left", "right", "mid"}
+            Specifies the cell cup type.
+
+        Returns
+        -------
+        zr12: list
+            Maybe it's a shift of some sort calculated from the coordinates of the tangent of the ellipses
+            comprising the cavity
+
+        alpha: float
+            Angle of the line tangent to the iris and equator ellipses.
+
+        """
+
+        # global data
         if cell == 'left':
             data = [self.A_L, self.B_L, self.Req_L, self.ri_L, self.L_L, self.a_L, self.b_L]
         elif cell == 'right':
@@ -213,91 +233,9 @@ class SLANS:
         a = data[5]  # cone ellipse x
         b = data[6]  # cone ellipse y
 
-        # OLD CODE STILL KEPT HERE IN CASE MINE RUNS INTO A PROBLEM, HAHA!
-        # x1 = 0
-        # y1 = ri + b
-        # x2 = L
-        # y2 = Req - B
-
-        # ell_1 = np.array([[x1, ri], [x1 + a, ri+b], [x1, ri+2*b], [x1 - a, ri + b]])
-        # ell_2 = np.array([[L, Req - 2 * B], [L + A, Req - B], [L, Req], [L - A, Req - B]])
-        # # print("ELL_1::", ell_1, np.shape(ell_1)[-1])
-        # # print("ELL_2::", ell_2, np.shape(ell_2)[-1])
-        #
-        # k = 0
-        # # initialize x0
-        # x0 = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))
-        # # print(np.shape(x0))
-        #
-        # for i in range(len(ell_1)):
-        #     for j in range(len(ell_2)):
-        #         x0[k][:] = np.concatenate([ell_1[i][:], ell_2[j][:]])
-        #         k = k + 1
-        #
-        # x = np.zeros(shape=(np.shape(ell_1)[0] * np.shape(ell_2)[0], np.shape(ell_1)[-1] + np.shape(ell_2)[-1]))
-        # import time as t
-        # for k in range(len(x0)):
-        #     x[k][:] = scopt.fsolve(self.func, x0[k][:])
-        #
-        # ind_x0 = np.zeros(shape=(np.shape(x0)[0], 1))
-        # for i in range(len(x)):
-        #     ind_x0[i] = (x[i][3] > x[i][1]) and (x[i][0] > x1) and (L > x[i][2]) #already adjusted index
-        # # print(ind_x0)
-        # # print(np.shape(ind_x0))
-        #
-        # # print("After ind_x0")
-        # xy_cross = x[np.where(ind_x0 == 1)[0]][-1] # x1 y1 x2 y2
-        # print("\tXY_CROSS::", xy_cross)
-        # print(np.shape(xy_cross))
-        # plot_cavity(xy_cross, data)
-
-        checks = {"non-reentrant": [0.45, -0.45],
-                  "reentrant": [0.85, -0.85],
-                  "expansion": [0.15, -0.01]}
-
-        for key, ch in checks.items():
-            # check for non-reentrant cavity
-
-            data = ([0, ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
-            df = scopt.fsolve(func, np.array([a, ri + ch[0] * b, L - A, Req + ch[1] * B]),
-                              args=data, fprime=jac, xtol=1.49012e-12,
-                              full_output=True)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
-
-            if df[-2] == 1:
-                x1, y1, x2, y2 = df[0]
-
-            alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
-
-            # if True:
-            #     print(cell, alpha, A, B, a, b, ri, L, Req, df[-2])
-            #     h, k, p, q = data[0]
-            #     a, b, A, B = data[1]
-            #     el_ab = Ellipse((h, k), 2 * a, 2 * b, alpha=0.5)
-            #     el_AB = Ellipse((p, q), 2 * A, 2 * B, alpha=0.5)
-            #
-            #     fig, ax = plt.subplots()
-            #     ax.add_artist(el_ab)
-            #     ax.add_artist(el_AB)
-            #
-            #     x1, y1, x2, y2 = df[0]
-            #     ax.set_xlim(-1.1 * a, 1.1 * L)
-            #     ax.set_ylim(ri, 1.1 * Req)
-            #     ax.plot([x1, x2], [y1, y2])
-            #
-            #     plt.show()
-
-            if key == 'non-reentrant':
-                if 90 < alpha < 180:
-                    break
-            if key == 'reentrant':
-                if 0 < alpha < 90:
-                    break
-            if key == 'expansion':
-                if 90 < alpha < 180:
-                    break
-
-        if cell == 'expansion':
-            print(alpha, df[-2])
+        df = tangent_coords(A, B, a, b, ri, L, Req, 0)
+        x1, y1, x2, y2 = df[0]
+        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
 
         xy_cross = np.array([x1, y1, x2, y2])
         xy_L_ell = np.zeros(shape=(4, 2))
@@ -308,9 +246,10 @@ class SLANS:
         xy_L_ell[3][:] = [-xy_cross[0] + 2 * L, xy_cross[1]]
 
         rz_coor = xy_L_ell
-
+        # alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
         zr12 = [[rz_coor[2][0] - L, rz_coor[2][1]], [rz_coor[3][0] - L, rz_coor[3][1]]]
 
+        print(zr12, alpha)
         return zr12, alpha
 
 

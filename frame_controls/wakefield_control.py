@@ -116,9 +116,9 @@ class WakefieldControl:
         self.ui.le_Req_i.editingFinished.connect(
             lambda: self.ui.le_Req_or.setText(self.ui.le_Req_i.text()))
 
-        self.ui.pb_Get_Eigenmode_Results.clicked.connect(lambda: self.get_eigenmode_results())
+        # self.ui.pb_Get_Eigenmode_Results.clicked.connect(lambda: self.get_eigenmode_results())
 
-        self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
+        # self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
 
     def initUI(self):
         self.ui.w_Save_Folder.setVisible(False)
@@ -180,6 +180,7 @@ class WakefieldControl:
     def run_abci(self):
         # get analysis parameters
         n_cells = self.ui.sb_N_Cells.value()
+        n_cells = text_to_list(self.ui.le_N_Cells.text())
         n_modules = self.ui.sb_N_Modules.value()
 
         WG_M = self.ui.le_LBP.text()  # half-length of beam pipe between cavities in module
@@ -211,10 +212,12 @@ class WakefieldControl:
             qoi_dict = None
 
         # get geometric parameters
-        shape_space = get_geometric_parameters(self, 'ABCI', float(self.ui.le_Scale.text()))
+        ic(self.loaded_shape_space)
+        self.shape_space = get_geometric_parameters(self, 'ABCI', text_to_list(self.ui.le_Scale.text()))
+        ic(self.shape_space, self.loaded_shape_space)
 
         # split shape_space for different processes/ MPI share process by rank
-        keys = list(shape_space.keys())
+        keys = list(self.shape_space.keys())
         shape_space_len = len(keys)
         share = round(shape_space_len / proc_count)
 
@@ -230,7 +233,7 @@ class WakefieldControl:
             for k, v in qoi_dict.items():
                 num_sims += len(v[0])
 
-        num_sims = multiplier * num_sims
+        num_sims = multiplier * num_sims * len(n_cells)
         self.progress_bar.setMaximum(num_sims)
 
         # progress list
@@ -247,7 +250,7 @@ class WakefieldControl:
                 proc_keys_list = keys[p * share:]
 
             processor_shape_space = {}
-            for key, val in shape_space.items():
+            for key, val in self.shape_space.items():
                 if key in proc_keys_list:
                     processor_shape_space[key] = val
 
@@ -335,55 +338,54 @@ class WakefieldControl:
         self.ui.ccb_Operation_Points.currentTextChanged.connect(
             lambda: self.update_cav_operating_points(ccb_OperatingPoint))
 
-        # Number of cells
-        sb_n_cells = QSpinBox()
-        sb_n_cells.setMaximum(9999)
-        sb_n_cells.setMinimum(1)
-        table.setCellWidget(row_ind, 2, sb_n_cells)
-
-        # R/Q
-        dsb_R_Q = QDoubleSpinBox()
-        dsb_R_Q.setMaximum(999999.99)
-        dsb_R_Q.setMinimum(1)
-        table.setCellWidget(row_ind, 3, dsb_R_Q)
+        # # Number of cells
+        # sb_n_cells = QSpinBox()
+        # sb_n_cells.setMaximum(9999)
+        # sb_n_cells.setMinimum(1)
+        # table.setCellWidget(row_ind, 2, sb_n_cells)
+        #
+        # # R/Q
+        # dsb_R_Q = QDoubleSpinBox()
+        # dsb_R_Q.setMaximum(999999.99)
+        # dsb_R_Q.setMinimum(1)
+        # table.setCellWidget(row_ind, 3, dsb_R_Q)
 
         # sigma (SR)
         le_sigma_sr = QLineEdit()
         le_sigma_sr.setReadOnly(True)
-        table.setCellWidget(row_ind, 4, le_sigma_sr)
+        table.setCellWidget(row_ind, 2, le_sigma_sr)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_sigma_sr, ccb_OperatingPoint, 'sigma_SR [mm]'))
 
         # sigma (BS)
         le_sigma_bs = QLineEdit()
         le_sigma_bs.setReadOnly(True)
-        table.setCellWidget(row_ind, 5, le_sigma_bs)
+        table.setCellWidget(row_ind, 3, le_sigma_bs)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_sigma_bs, ccb_OperatingPoint, 'sigma_BS [mm]'))
 
         # I0
         le_I0 = QLineEdit()
         le_I0.setReadOnly(True)
-        table.setCellWidget(row_ind, 6, le_I0)
+        table.setCellWidget(row_ind, 4, le_I0)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_I0, ccb_OperatingPoint, 'I0 [mA]'))
 
         # Number of bunches Nb
         le_Nb = QLineEdit()
-        table.setCellWidget(row_ind, 7, le_Nb)
+        table.setCellWidget(row_ind, 5, le_Nb)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_Nb, ccb_OperatingPoint, 'Nb [1e11]'))
 
-        # Number of bunches Nb
-        dsb_freq = QDoubleSpinBox()
-        dsb_freq.setMaximum(999999.99)
-        dsb_freq.setMinimum(0.0001)
-        table.setCellWidget(row_ind, 8, dsb_freq)
+        # # Number of bunches Nb
+        # dsb_freq = QDoubleSpinBox()
+        # dsb_freq.setMaximum(999999.99)
+        # dsb_freq.setMinimum(0.0001)
+        # table.setCellWidget(row_ind, 8, dsb_freq)
 
         args_dict = {'row index': row_ind, 'Cavity': l_cavity, 'Operating Point': ccb_OperatingPoint,
-                     'N Cells': sb_n_cells, 'R/Q [Ohm]': dsb_R_Q,
                      'sigma (SR) [mm]': le_sigma_sr, 'sigma (BS) [mm]': le_sigma_bs,
-                     'I0 [mA]': le_I0, 'Nb [1e11]': le_Nb, 'freq [MHz]': dsb_freq}
+                     'I0 [mA]': le_I0, 'Nb [1e11]': le_Nb}
 
         self.cav_operating_points[l_cavity.text()] = args_dict
 
@@ -455,35 +457,55 @@ class WakefieldControl:
 
     def get_eigenmode_results(self):
         for key in self.cav_operating_points.keys():
-            try:
-                with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\{key}\qois.json') as json_file:
-                    qois_slans = json.load(json_file)
-                n_cells = qois_slans['N Cells']
-                R_Q = qois_slans['R/Q [Ohm]']
-                freq = qois_slans['freq [MHz]']
-                print("Found a corresponding SLANS file")
-                self.cav_operating_points[key]['N Cells'].setValue(int(n_cells))
-                self.cav_operating_points[key]['R/Q [Ohm]'].setValue(R_Q)
-                self.cav_operating_points[key]['freq [MHz]'].setValue(freq)
-            except FileNotFoundError:
-                # Run eigenmode analysis
-                print("Did not find a corresponding SLANS file. Please check the R/Q used to calculate the"
-                      "k_FM and P_HOM")
+            ic(key)
+            if len(self.ui.le_N_Cells) == 1:
+                try:
+                    with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\{key}\qois.json') as json_file:
+                        qois_slans = json.load(json_file)
+                    n_cells = qois_slans['N Cells']
+                    R_Q = qois_slans['R/Q [Ohm]']
+                    freq = qois_slans['freq [MHz]']
+                    print("Found a corresponding SLANS file")
+                    # self.cav_operating_points[key]['N Cells'].setValue(int(n_cells))
+                    # self.cav_operating_points[key]['R/Q [Ohm]'].setValue(R_Q)
+                    # self.cav_operating_points[key]['freq [MHz]'].setValue(freq)
+                except FileNotFoundError as e:
+                    # Run eigenmode analysis
+                    print("Did not find a corresponding SLANS file. Please check the R/Q used to calculate the"
+                          "k_FM and P_HOM", e)
 
     def get_table_entries(self):
         dd = {}
         for key, val in self.cav_operating_points.items():
-            op_points = val['Operating Point'].currentText().split(', ')
-            n_cells = int(val['N Cells'].value())
-            R_Q = val['R/Q [Ohm]'].value()
-            sigma_SR = ast.literal_eval(val['sigma (SR) [mm]'].text())
-            sigma_BS = ast.literal_eval(val['sigma (BS) [mm]'].text())
-            I0 = ast.literal_eval(val['I0 [mA]'].text())
-            Nb = ast.literal_eval(val['Nb [1e11]'].text())
-            freq = val['freq [MHz]'].value()
+            for scale in text_to_list(self.ui.le_Scale.text()):
+                for n_cell in text_to_list(self.ui.le_N_Cells.text()):
 
-            dd.update({key: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
+                    if scale == 1 or scale == 0:
+                        if len(text_to_list(self.ui.le_N_Cells.text())) == 1:
+                            folder_name = key
+                        else:
+                            folder_name = f"{key}_{n_cell}"
+                    else:
+                        if len(text_to_list(self.ui.le_N_Cells.text())) == 1:
+                            folder_name = f"{key}_scale_{scale}"
+                        else:
+                            folder_name = f"{key}_scale_{scale}_{n_cell}"
 
+                    with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\{folder_name}\qois.json') as json_file:
+                        qois_slans = json.load(json_file)
+
+                    op_points = val['Operating Point'].currentText().split(', ')
+                    n_cells = qois_slans['N Cells']
+                    R_Q = qois_slans['R/Q [Ohm]']
+                    sigma_SR = ast.literal_eval(val['sigma (SR) [mm]'].text())
+                    sigma_BS = ast.literal_eval(val['sigma (BS) [mm]'].text())
+                    I0 = ast.literal_eval(val['I0 [mA]'].text())
+                    Nb = ast.literal_eval(val['Nb [1e11]'].text())
+                    # freq = val['freq [MHz]'].value()
+                    freq = qois_slans['freq [MHz]']
+                    dd.update({folder_name: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
+
+        ic(dd)
         return dd
 
     def run_pause_resume_stop_routine(self):
@@ -685,6 +707,8 @@ class WakefieldControl:
 
         # settings
         state_dict["Wakefield_N_Cells"] = self.ui.sb_N_Cells.value()
+        state_dict["Wakefield_N_Cells_"] = self.ui.le_N_Cells.text()
+        state_dict["Wakefield_Scale"] = self.ui.le_Scale.text()
         state_dict["Wakefield_N_Modules"] = self.ui.sb_N_Modules.value()
         state_dict["Wakefield_Polarization"] = self.ui.cb_Polarization_ABCI.currentIndex()
         state_dict["Wakefield_No_Of_Processors"] = self.ui.sb_No_Of_Processors_ABCI.value()
@@ -736,6 +760,8 @@ class WakefieldControl:
 
         # settings
         self.ui.sb_N_Cells.setValue(state_dict["Wakefield_N_Cells"])
+        self.ui.le_N_Cells.setText(state_dict["Wakefield_N_Cells_"])
+        self.ui.le_Scale.setText(state_dict["Wakefield_Scale"])
         self.ui.sb_N_Modules.setValue(state_dict["Wakefield_N_Modules"])
         self.ui.cb_Polarization_ABCI.setCurrentIndex(state_dict["Wakefield_Polarization"])
         self.ui.sb_No_Of_Processors_ABCI.setValue(state_dict["Wakefield_No_Of_Processors"])
@@ -785,58 +811,61 @@ class WakefieldControl:
             start_time = time.time()
             # run both polarizations if MROT == 2
             for ii in WG_M:
-                try:
+                if "OC_R" in list(shape.keys()):
+                    OC_R = "OC_R"
+                else:
+                    OC_R = "OC"
+                for n_cell in n_cells:
+                    if len(n_cells) == 1:
+                        fid = key
+                    else:
+                        fid = f"{key}_{n_cell}"
+
                     if MROT == 2:
                         for m in range(2):
-                            abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                             fid=key, MROT=m, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                            abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape[OC_R],
+                                             fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=UBT,
+                                             bunch_length=bunch_length,
                                              DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                              projectDir=projectDir,
                                              WG_M=ii, marker=ii)
 
                     else:
-                        abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                         fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
-                                         WG_M=ii, marker=ii)
-                except KeyError:
-                    if MROT == 2:
-                        for m in range(2):
-                            abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                             fid=key, MROT=m, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                             DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                             projectDir=projectDir,
-                                             WG_M=ii, marker=ii)
-                    else:
-                        abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                         fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                        abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                         fid=f"{key}_{n_cell}", MROT=MROT, MT=MT, NFS=NFS, UBT=UBT,
+                                         bunch_length=bunch_length,
                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
                                          WG_M=ii, marker=ii)
 
-                # update progress
-                progress_list.append(progress + 1)
+                    # update progress
+                    progress_list.append(progress + 1)
 
-            print_(f'Cavity {key}. Time: {time.time() - start_time}')
+                    print_(f'Cavity {fid}. Time: {time.time() - start_time}')
+                    ic(qoi_df)
+                    if qoi_df is not None:
+                        d = {}
+                        ic(qoi_df[fid])
+                        #  # save qois
+                    # for indx, val in qoi_df[key].items():
+                        op_points, no_of_cells, R_Q, sigma_SR_list, sigma_BS_list, I0_list, Nb_list, freq = qoi_df[fid]
 
-            if qoi_df is not None:
-                d = {}
-                # # save qois
-                for indx, val in qoi_df.items():
-                    op_points, no_of_cells, R_Q, sigma_SR_list, sigma_BS_list, I0_list, Nb_list, freq = val
+                        for i, op_point in enumerate(op_points):
+                            WP = op_point
+                            I0 = I0_list[i]
+                            Nb = Nb_list[i]
+                            sigma_z = [sigma_SR_list[i], sigma_BS_list[i]]
+                            freq = freq
+                            ic(freq)
 
-                    for i, op_point in enumerate(op_points):
-                        WP = op_point
-                        I0 = I0_list[i]
-                        Nb = Nb_list[i]
-                        sigma_z = [sigma_SR_list[i], sigma_BS_list[i]]
-                        freq = freq
+                            bl_diff = ['SR', 'BS']
 
-                        bl_diff = ['SR', 'BS']
-
-                        for j, s in enumerate(sigma_z):
-                            for ii in WG_M:
-                                fid = f"{WP}_{bl_diff[j]}_{s}mm{ii}"
-                                try:
+                            for j, s in enumerate(sigma_z):
+                                for ii in WG_M:
+                                    fid_op = f"{WP}_{bl_diff[j]}_{s}mm{ii}"
+                                    if "OC_R" in list(shape.keys()):
+                                        OC_R = "OC_R"
+                                    else:
+                                        OC_R = "OC"
                                     for m in range(2):
                                         abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'],
                                                          shape['OC_R'],
@@ -844,33 +873,25 @@ class WakefieldControl:
                                                          bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
-                                                         WG_M=ii, marker=ii, sub_dir=f"{key}")
-                                except KeyError:
-                                    for m in range(2):
-                                        abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
-                                                         bunch_length=s,
-                                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                                         projectDir=projectDir,
-                                                         WG_M=ii, marker=ii, sub_dir=f"{key}")
+                                                         WG_M=ii, marker=ii, sub_dir=fid)
 
-                                dirc = fr'{projectDir}\SimulationData\ABCI\{key}{marker}'
-                                # try:
-                                k_loss = abs(ABCIData(dirc, f'{fid}', 0).loss_factor['Longitudinal'])
-                                k_kick = abs(ABCIData(dirc, f'{fid}', 1).loss_factor['Transverse'])
-                                # except:
-                                #     k_loss = 0
-                                #     k_kick = 0
+                                        dirc = fr'{projectDir}\SimulationData\ABCI\{fid}{marker}'
+                                        # try:
+                                        k_loss = abs(ABCIData(dirc, f'{fid_op}', 0).loss_factor['Longitudinal'])
+                                        k_kick = abs(ABCIData(dirc, f'{fid_op}', 1).loss_factor['Transverse'])
+                                        # except:
+                                        #     k_loss = 0
+                                        #     k_kick = 0
 
-                                d[fid] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, no_of_cells)
+                                        d[fid_op] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, no_of_cells)
 
-                                # update progress
-                                progress_list.append(progress + 1)
+                                        # update progress
+                                        progress_list.append(progress + 1)
 
-                # save qoi dictionary
-                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{key}{marker}'
-                with open(fr'{run_save_directory}\qois.json', "w") as f:
-                    json.dump(d, f, indent=4, separators=(',', ': '))
+                        # save qoi dictionary
+                        run_save_directory = fr'{projectDir}\SimulationData\ABCI\{fid}{marker}'
+                        with open(fr'{run_save_directory}\qois.json', "w") as f:
+                            json.dump(d, f, indent=4, separators=(',', ': '))
 
             print_("Done with the secondary analysis for working points")
 
@@ -1017,7 +1038,7 @@ def get_qois_value(f_fm, R_Q, k_loss, k_kick, sigma_z, I0, Nb, n_cell):
 
     d = {
         "n cell": n_cell,
-        # "freq [MHz]": f_fm,
+        "freq [MHz]": f_fm,
         "R/Q [Ohm]": R_Q,
         "k_FM [V/pC]": k_fm,
         "I0 [mA]": I0,

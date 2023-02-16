@@ -285,16 +285,20 @@ class SLANSGeometry(Geometry):
         if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.geo'):
             subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd,
                             startupinfo=startupinfo)  # settings, number of modes, etc
+            ic("Done with slansc")
 
             if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.gem'):
                 subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                ic("Done with slansm")
 
                 if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\aslans.mtx') \
                         and os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\bslans.mtx'):
                     subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                    ic("Done with slanss")
 
                     if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.res'):
                         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                        ic("Done with slansre")
 
         # save json file
         shape = {'IC': update_alpha(mid_cells_par),
@@ -335,12 +339,15 @@ class SLANSGeometry(Geometry):
             f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
             kcc = 2 * f_diff / f_add * 100
 
-            # field flatness
-            ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
-            # get max in each cell
-            peaks, _ = find_peaks(ax_field['y_abs'])
-            E_abs_peaks = ax_field['y_abs'][peaks]
-            ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+            try:
+                # field flatness
+                ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
+                # get max in each cell
+                peaks, _ = find_peaks(ax_field['y_abs'])
+                E_abs_peaks = ax_field['y_abs'][peaks]
+                ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+            except FileNotFoundError:
+                ff = 0
 
             d = {
                 "Req [mm]": Req,

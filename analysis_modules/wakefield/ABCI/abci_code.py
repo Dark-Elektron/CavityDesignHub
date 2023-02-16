@@ -362,8 +362,12 @@ class ABCI:
             data = [self.A_L, self.B_L, self.Req_L, self.ri_L, self.L_L, self.a_L, self.b_L]
         elif cell == 'right':
             data = [self.A_R, self.B_R, self.Req_R, self.ri_R, self.L_R, self.a_R, self.b_R]
-        else:
+        elif cell == 'mid':
             data = [self.A_M, self.B_M, self.Req_M, self.ri_M, self.L_M, self.a_M, self.b_M]
+        elif cell == 'expansion':
+            data = [self.c_L, self.c_L, self.Rbp_L, self.ri_L, self.x_L, self.at_L, self.bt_L]
+        elif cell == 'expansion_r':
+            data = [self.c_R, self.c_R, self.Rbp_R, self.ri_R, self.x_R, self.at_R, self.bt_R]
 
         A = data[0]  # ellipse x
         B = data[1]  # ellipse y
@@ -375,8 +379,9 @@ class ABCI:
 
         df = tangent_coords(A, B, a, b, ri, L, Req, 0)
         x1, y1, x2, y2 = df[0]
-        xy_cross = np.array([x1, y1, x2, y2])
+        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
 
+        xy_cross = np.array([x1, y1, x2, y2])
         xy_L_ell = np.zeros(shape=(4, 2))
 
         xy_L_ell[0][:] = xy_cross[0:2]
@@ -385,7 +390,8 @@ class ABCI:
         xy_L_ell[3][:] = [-xy_cross[0] + 2 * L, xy_cross[1]]
 
         rz_coor = xy_L_ell
-        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+        # alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
         zr12 = [[rz_coor[2][0] - L, rz_coor[2][1]], [rz_coor[3][0] - L, rz_coor[3][1]]]
 
+        # ic(zr12, alpha, df[-2])
         return zr12, alpha

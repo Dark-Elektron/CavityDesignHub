@@ -1,4 +1,5 @@
 import ast
+import copy
 import json
 import os
 
@@ -88,16 +89,34 @@ def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
     data = ([0, Ri + b, L, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     checks = {"non-reentrant": [0.45, -0.45],
               "reentrant": [0.85, -0.85],
-              "expansion": [0.45, -0.45]}
+              "expansion": [0.15, -0.01]}
 
     for key, ch in checks.items():
         # check for non-reentrant cavity
         df = fsolve(ellipse_tangent,
                     np.array([a + L_bp, Ri + ch[0] * b, L - A + L_bp, Req + ch[1] * B]),
                     args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
-
+        # ic(df)
         x1, y1, x2, y2 = df[0]
         alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+
+        # ic(data)
+        if tangent_check:
+            h, k, p, q = data[0]
+            a, b, A, B = data[1]
+            el_ab = Ellipse((h, k), 2 * a, 2 * b, alpha=0.5)
+            el_AB = Ellipse((p, q), 2 * A, 2 * B, alpha=0.5)
+
+            fig, ax = plt.subplots()
+            ax.add_artist(el_ab)
+            ax.add_artist(el_AB)
+
+            x1, y1, x2, y2 = df[0]
+            ax.set_xlim(-1.1 * a, 1.1 * L)
+            ax.set_ylim(Ri, 1.1 * Req)
+            ax.plot([x1, x2], [y1, y2])
+
+            plt.show()
 
         if key == 'non-reentrant':
             if 90 < alpha < 180:
@@ -113,23 +132,6 @@ def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
     # if error_msg == 4:
     #     df = fsolve(ellipse_tangent, np.array([a + L_bp, Ri + 1.15 * b, L - A + L_bp, Req - 1.15 * B]),
     #                 args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
-
-    if tangent_check:
-        h, k, p, q = data[0]
-        a, b, A, B = data[1]
-        el_ab = Ellipse((h, k), 2 * a, 2 * b, alpha=0.5)
-        el_AB = Ellipse((p, q), 2 * A, 2 * B, alpha=0.5)
-
-        fig, ax = plt.subplots()
-        ax.add_artist(el_ab)
-        ax.add_artist(el_AB)
-
-        x1, y1, x2, y2 = df[0]
-        # ax.set_xlim(-1.1 * a, 1.1 * L)
-        # ax.set_ylim(Ri, 1.1 * Req)
-        ax.plot([x1, x2], [y1, y2])
-
-        plt.show()
 
     return df
 
@@ -707,194 +709,200 @@ def text_to_list(txt):
             return list(ll)
 
 
-def get_geometric_parameters(frame_control, code, scale=1):
+def get_geometric_parameters(frame_control, code, scales=None):
+    if scales is None:
+        scales = [1]
+    ic(scales)
     shape_space = {}
-    if frame_control.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-        try:
-            # get selected keys
-            frame_control.selected_keys = frame_control.ui.cb_Shape_Space_Keys.currentText()
-            print("selected keys: ", frame_control.ui.cb_Shape_Space_Keys.currentText())
-            # print("Selected keys: ", frame_control.selected_keys, type(frame_control.selected_keys[0]))
+    for scale in scales:
+        loaded_shape_space = copy.deepcopy(frame_control.loaded_shape_space)  # have to copy it otherwise the dict is updated
+        if frame_control.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
+            try:
+                # get selected keys
+                frame_control.selected_keys = frame_control.ui.cb_Shape_Space_Keys.currentText()
+                ic("selected keys: ", frame_control.ui.cb_Shape_Space_Keys.currentText())
+                # print("Selected keys: ", frame_control.selected_keys, type(frame_control.selected_keys[0]))
 
-            # check keys of shape space if results already exist
-            to_all = None
-            for key, val in frame_control.loaded_shape_space.items():
-                # process for only keys selected in combobox
-                if frame_control.ui.cb_Shape_Space_Keys.currentText() == "" \
-                        or frame_control.ui.cb_Shape_Space_Keys.currentText() == "All":
-                    pass
-                else:
-                    if key not in frame_control.selected_keys.split(', '):
-                        continue
-
-                if not to_all:
-                    ans = frame_control.prompt(code, key)
-                    if ans == 'Yes':
-                        if scale == 1 or scale == 0:
-                            shape_space[key] = val
-                        else:
-                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
-
-                    if ans == 'No':
-                        continue
-
-                    if ans == 'YesToAll':
-                        if scale == 1 or scale == 0:
-                            shape_space[key] = val
-                        else:
-                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
-                        to_all = 'YesToAll'
-
-                    if ans == 'NoToAll':
-                        to_all = 'NoToAll'
-
-                    if ans == "Does not exist":
-                        if scale == 1 or scale == 0:
-                            shape_space[key] = val
-                        else:
-                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
-                        to_all = None
-                else:
-                    if to_all == 'YesToAll':
-                        if scale == 1 or scale == 0:
-                            shape_space[key] = val
-                        else:
-                            shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                # check keys of shape space if results already exist
+                to_all = None
+                for key, val in loaded_shape_space.items():
+                    # process for only keys selected in combobox
+                    if frame_control.ui.cb_Shape_Space_Keys.currentText() == "" \
+                            or frame_control.ui.cb_Shape_Space_Keys.currentText() == "All":
+                        pass
                     else:
-                        path = f'{frame_control.main_control.projectDir}/SimulationData/{code}/{key}'
-                        if os.path.exists(path):
+                        if key not in frame_control.selected_keys.split(', '):
                             continue
-                        else:
+
+                    if not to_all:
+                        ans = frame_control.prompt(code, key)
+                        if ans == 'Yes':
                             if scale == 1 or scale == 0:
                                 shape_space[key] = val
                             else:
                                 shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
 
-            return shape_space
-        except Exception as e:
-            print(f"File not found, check path:: {e}")
-    else:
-        if frame_control.ui.cb_Inner_Cell.checkState() == 2:
-            # Middle Ellipse data
-            A_i_space = text_to_list(frame_control.ui.le_A_i.text())
-            B_i_space = text_to_list(frame_control.ui.le_B_i.text())
-            a_i_space = text_to_list(frame_control.ui.le_a_i.text())
-            b_i_space = text_to_list(frame_control.ui.le_b_i.text())
-            Ri_i_space = text_to_list(frame_control.ui.le_Ri_i.text())
-            L_i_space = text_to_list(frame_control.ui.le_L_i.text())
-            Req_i_space = text_to_list(frame_control.ui.le_Req_i.text())
-            alpha_i_space = text_to_list(frame_control.ui.le_Alpha.text())
+                        if ans == 'No':
+                            continue
 
-            inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, alpha_i_space]
+                        if ans == 'YesToAll':
+                            if scale == 1 or scale == 0:
+                                shape_space[key] = val
+                            else:
+                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                            to_all = 'YesToAll'
+
+                        if ans == 'NoToAll':
+                            to_all = 'NoToAll'
+
+                        if ans == "Does not exist":
+                            if scale == 1 or scale == 0:
+                                shape_space[key] = val
+                            else:
+                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                            to_all = None
+                    else:
+                        if to_all == 'YesToAll':
+                            if scale == 1 or scale == 0:
+                                shape_space[key] = val
+                            else:
+                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                        else:
+                            path = f'{frame_control.main_control.projectDir}/SimulationData/{code}/{key}'
+                            if os.path.exists(path):
+                                continue
+                            else:
+                                if scale == 1 or scale == 0:
+                                    shape_space[key] = val
+                                else:
+                                    shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+
+            except Exception as e:
+                print(f"File not found, check path:: {e}")
         else:
-            inner_cell_space = [[0], [0], [0], [0], [0], [0], [0], [0]]
+            if frame_control.ui.cb_Inner_Cell.checkState() == 2:
+                # Middle Ellipse data
+                A_i_space = text_to_list(frame_control.ui.le_A_i.text())
+                B_i_space = text_to_list(frame_control.ui.le_B_i.text())
+                a_i_space = text_to_list(frame_control.ui.le_a_i.text())
+                b_i_space = text_to_list(frame_control.ui.le_b_i.text())
+                Ri_i_space = text_to_list(frame_control.ui.le_Ri_i.text())
+                L_i_space = text_to_list(frame_control.ui.le_L_i.text())
+                Req_i_space = text_to_list(frame_control.ui.le_Req_i.text())
+                alpha_i_space = text_to_list(frame_control.ui.le_Alpha.text())
 
-        if frame_control.ui.cb_Outer_Cell_L.checkState() == 2:
-            # Middle Ellipse data
-            A_ol_space = text_to_list(frame_control.ui.le_A_ol.text())
-            B_ol_space = text_to_list(frame_control.ui.le_B_ol.text())
-            a_ol_space = text_to_list(frame_control.ui.le_a_ol.text())
-            b_ol_space = text_to_list(frame_control.ui.le_b_ol.text())
-            Ri_ol_space = text_to_list(frame_control.ui.le_Ri_ol.text())
-            L_ol_space = text_to_list(frame_control.ui.le_L_ol.text())
-            Req_ol_space = text_to_list(frame_control.ui.le_Req_ol.text())
-            alpha_ol_space = text_to_list(frame_control.ui.le_Alpha_ol.text())
+                inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, alpha_i_space]
+            else:
+                inner_cell_space = [[0], [0], [0], [0], [0], [0], [0], [0]]
 
-            outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space, Req_ol_space, alpha_ol_space]
-        else:
-            outer_cell_L_space = inner_cell_space
+            if frame_control.ui.cb_Outer_Cell_L.checkState() == 2:
+                # Middle Ellipse data
+                A_ol_space = text_to_list(frame_control.ui.le_A_ol.text())
+                B_ol_space = text_to_list(frame_control.ui.le_B_ol.text())
+                a_ol_space = text_to_list(frame_control.ui.le_a_ol.text())
+                b_ol_space = text_to_list(frame_control.ui.le_b_ol.text())
+                Ri_ol_space = text_to_list(frame_control.ui.le_Ri_ol.text())
+                L_ol_space = text_to_list(frame_control.ui.le_L_ol.text())
+                Req_ol_space = text_to_list(frame_control.ui.le_Req_ol.text())
+                alpha_ol_space = text_to_list(frame_control.ui.le_Alpha_ol.text())
 
-        if frame_control.ui.cb_Outer_Cell_R.checkState() == 2:
-            # Middle Ellipse data
-            A_or_space = text_to_list(frame_control.ui.le_A_or.text())
-            B_or_space = text_to_list(frame_control.ui.le_B_or.text())
-            a_or_space = text_to_list(frame_control.ui.le_a_or.text())
-            b_or_space = text_to_list(frame_control.ui.le_b_or.text())
-            Ri_or_space = text_to_list(frame_control.ui.le_Ri_or.text())
-            L_or_space = text_to_list(frame_control.ui.le_L_or.text())
-            Req_or_space = text_to_list(frame_control.ui.le_Req_or.text())
-            alpha_or_space = text_to_list(frame_control.ui.le_Alpha_or.text())
+                outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space, Req_ol_space, alpha_ol_space]
+            else:
+                outer_cell_L_space = inner_cell_space
 
-            outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space, Req_or_space, alpha_or_space]
-        else:
-            outer_cell_R_space = inner_cell_space
-        count = 0
+            if frame_control.ui.cb_Outer_Cell_R.checkState() == 2:
+                # Middle Ellipse data
+                A_or_space = text_to_list(frame_control.ui.le_A_or.text())
+                B_or_space = text_to_list(frame_control.ui.le_B_or.text())
+                a_or_space = text_to_list(frame_control.ui.le_a_or.text())
+                b_or_space = text_to_list(frame_control.ui.le_b_or.text())
+                Ri_or_space = text_to_list(frame_control.ui.le_Ri_or.text())
+                L_or_space = text_to_list(frame_control.ui.le_L_or.text())
+                Req_or_space = text_to_list(frame_control.ui.le_Req_or.text())
+                alpha_or_space = text_to_list(frame_control.ui.le_Alpha_or.text())
 
-        for A_i in inner_cell_space[0]:
-            for B_i in inner_cell_space[1]:
-                for a_i in inner_cell_space[2]:
-                    for b_i in inner_cell_space[3]:
-                        for Ri_i in inner_cell_space[4]:
-                            for L_i in inner_cell_space[5]:
-                                for Req_i in inner_cell_space[6]:
-                                    if outer_cell_L_space == inner_cell_space:
-                                        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                                        outer_cell_L = inner_cell
+                outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space, Req_or_space, alpha_or_space]
+            else:
+                outer_cell_R_space = inner_cell_space
+            count = 0
 
-                                        if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
-                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'both', 'FREQ': None}
-                                        elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
-                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'left', 'FREQ': None}
-                                        elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
-                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'right', 'FREQ': None}
+            for A_i in inner_cell_space[0]:
+                for B_i in inner_cell_space[1]:
+                    for a_i in inner_cell_space[2]:
+                        for b_i in inner_cell_space[3]:
+                            for Ri_i in inner_cell_space[4]:
+                                for L_i in inner_cell_space[5]:
+                                    for Req_i in inner_cell_space[6]:
+                                        if outer_cell_L_space == inner_cell_space:
+                                            inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
+                                            outer_cell_L = inner_cell
+
+                                            if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'both', 'FREQ': None}
+                                            elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'left', 'FREQ': None}
+                                            elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'right', 'FREQ': None}
+                                            else:
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'none', 'FREQ': None}
+
+                                            count += 1
                                         else:
-                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'none', 'FREQ': None}
+                                            for A_ol in outer_cell_L_space[0]:
+                                                for B_ol in outer_cell_L_space[1]:
+                                                    for a_ol in outer_cell_L_space[2]:
+                                                        for b_ol in outer_cell_L_space[3]:
+                                                            for Ri_ol in outer_cell_L_space[4]:
+                                                                for L_ol in outer_cell_L_space[5]:
+                                                                    # for Req_ol in outer_cell_L_space[6]:
+                                                                    if outer_cell_L_space == outer_cell_R_space:
+                                                                        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
+                                                                        outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
+                                                                        outer_cell_R = outer_cell_L
+                                                                        if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
+                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
+                                                                        elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
+                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
+                                                                        elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
+                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
+                                                                        else:
+                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
 
-                                        count += 1
-                                    else:
-                                        for A_ol in outer_cell_L_space[0]:
-                                            for B_ol in outer_cell_L_space[1]:
-                                                for a_ol in outer_cell_L_space[2]:
-                                                    for b_ol in outer_cell_L_space[3]:
-                                                        for Ri_ol in outer_cell_L_space[4]:
-                                                            for L_ol in outer_cell_L_space[5]:
-                                                                # for Req_ol in outer_cell_L_space[6]:
-                                                                if outer_cell_L_space == outer_cell_R_space:
-                                                                    inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                                                                    outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
-                                                                    outer_cell_R = outer_cell_L
-                                                                    if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
-                                                                        shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
-                                                                    elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                        shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
-                                                                    elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                        shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
+                                                                        count += 1
                                                                     else:
-                                                                        shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
+                                                                        for A_or in outer_cell_R_space[0]:
+                                                                            for B_or in outer_cell_R_space[1]:
+                                                                                for a_or in outer_cell_R_space[2]:
+                                                                                    for b_or in outer_cell_R_space[3]:
+                                                                                        for Ri_or in outer_cell_R_space[4]:
+                                                                                            for L_or in outer_cell_R_space[5]:
+                                                                                                # for Req_or in outer_cell_R_space[6]:
+                                                                                                inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
+                                                                                                outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
+                                                                                                outer_cell_R = [A_or, B_or, a_or, b_or, Ri_or, L_or, Req_i, 0]
+                                                                                                if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
+                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
+                                                                                                elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
+                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
+                                                                                                elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
+                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
+                                                                                                else:
+                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
 
-                                                                    count += 1
-                                                                else:
-                                                                    for A_or in outer_cell_R_space[0]:
-                                                                        for B_or in outer_cell_R_space[1]:
-                                                                            for a_or in outer_cell_R_space[2]:
-                                                                                for b_or in outer_cell_R_space[3]:
-                                                                                    for Ri_or in outer_cell_R_space[4]:
-                                                                                        for L_or in outer_cell_R_space[5]:
-                                                                                            # for Req_or in outer_cell_R_space[6]:
-                                                                                            inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                                                                                            outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
-                                                                                            outer_cell_R = [A_or, B_or, a_or, b_or, Ri_or, L_or, Req_i, 0]
-                                                                                            if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
-                                                                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
-                                                                                            elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
-                                                                                            elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
-                                                                                            else:
-                                                                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
-
-                                                                                            count += 1
+                                                                                                count += 1
 
 
-        # scale geometry
-        if scale != 1 or scale != 0:
-            scaled_shape_space = {}
-            for key, val in shape_space.items():
-                scaled_shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+            # scale geometry
+            if scale != 1 or scale != 0:
+                scaled_shape_space = {}
+                for key, val in shape_space.items():
+                    scaled_shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
 
-            shape_space = scaled_shape_space
+                shape_space = scaled_shape_space
 
-        return shape_space
+            return shape_space
+
+    return shape_space
 
 
 def scale_cavity_geometry(shape, scale):

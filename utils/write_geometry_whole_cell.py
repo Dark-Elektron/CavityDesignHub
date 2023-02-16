@@ -329,7 +329,7 @@ def drawCavity_flat_top():
     A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, alpha_el, lft_el = endJlab
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, alpha_er, lft_er = endJlab
 
-    n_cell = 5
+    n_cell = 1
     step = 2  # step in boundary points in mm
     L_bp_l = 4 * L_m  # 0.0001  #
     L_bp_r = 4 * L_m  # 0.0001  #
@@ -424,17 +424,17 @@ def drawCavity_flat_top():
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
-                    pt = [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
+                    lineTo(pt, [L_el + lft_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
+                    pt = [L_el + lft_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # ARC
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
-                    pts = arcTo(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
-                                [L_bp_l + L_el + L_er - shift, y1er])
+                    pts = arcTo(L_el + lft_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
+                                [L_bp_l + L_el + lft_el + L_er - shift, y1er])
 
-                    pt = [L_bp_l + L_el + L_er - shift, Ri_er]
+                    pt = [L_bp_l + lft_el + L_el + L_er - shift, Ri_er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
                             fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -766,8 +766,9 @@ def arcTo(x_center, y_center, a, b, step, start, end):
 
     return inbox
 
+
 if __name__ == '__main__':
 
-    drawCavity()
-    # drawCavity_flat_top()
+    # drawCavity()
+    drawCavity_flat_top()
     # drawCapacitor()

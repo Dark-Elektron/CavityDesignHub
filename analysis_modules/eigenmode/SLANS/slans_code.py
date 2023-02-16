@@ -346,6 +346,7 @@ class SLANS:
         # alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
         zr12 = [[rz_coor[2][0] - L, rz_coor[2][1]], [rz_coor[3][0] - L, rz_coor[3][1]]]
 
+        ic(zr12, alpha)
         return zr12, alpha
 
 

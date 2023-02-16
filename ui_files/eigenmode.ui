@@ -162,9 +162,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-659</y>
-               <width>761</width>
-               <height>1901</height>
+               <y>-444</y>
+               <width>774</width>
+               <height>1525</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -1975,39 +1975,13 @@
               <item row="7" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
                <widget class="QWidget" name="w_Cell_Parameters" native="true">
                 <layout class="QGridLayout" name="gridLayout_17">
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_35">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>No. of Modules</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
+                 <item row="0" column="2">
                   <widget class="QSpinBox" name="sb_N_Cells">
                    <property name="minimum">
                     <number>1</number>
                    </property>
                    <property name="value">
                     <number>2</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QSpinBox" name="sb_N_Modules">
-                   <property name="value">
-                    <number>1</number>
                    </property>
                   </widget>
                  </item>
@@ -2027,6 +2001,39 @@
                    </property>
                    <property name="text">
                     <string>No. of Cells</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_35">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>No. of Modules</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QSpinBox" name="sb_N_Modules">
+                   <property name="value">
+                    <number>1</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="1">
+                  <widget class="QLineEdit" name="le_N_Cells">
+                   <property name="text">
+                    <string>2</string>
                    </property>
                   </widget>
                  </item>

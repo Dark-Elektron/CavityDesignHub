@@ -1,10 +1,17 @@
+import json
 import os
 import shutil
 import subprocess
 from math import floor
+
+import numpy as np
+from scipy.signal import find_peaks
+from utils.file_reader import FileReader
 from geometry_manual import Geometry
 from slans_code import SLANS
+from utils.shared_functions import update_alpha
 
+fr = FileReader()
 file_color = 'yellow'
 DEBUG = False
 
@@ -249,6 +256,79 @@ class SLANSEigen(Geometry):
         subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=write_folder, startupinfo=startupinfo)
         subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=write_folder, startupinfo=startupinfo)
         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=write_folder, startupinfo=startupinfo)
+        # save json file
+        shape = {'IC': update_alpha(mid_cells_par),
+                 'OC': update_alpha(l_end_cell_par),
+                 'OC_R': update_alpha(r_end_cell_par)}
+
+        with open(fr"{write_folder}\geometric_parameters.json", 'w') as f:
+            json.dump(shape, f, indent=4, separators=(',', ': '))
+        try:
+            filename = fr'{write_folder}\cavity_33.svl'
+            d = fr.svl_reader(filename)
+
+            Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
+            Freq = d['FREQUENCY'][no_of_cells - 1]
+            E_stored = d['STORED ENERGY'][no_of_cells - 1]
+            Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
+            Q = d['QUALITY FACTOR'][no_of_cells - 1]
+            Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
+            Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
+            # Vacc = dict['ACCELERATION'][no_of_cells - 1]
+            Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
+            r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
+            G = 0.00948 * Q * np.sqrt(Freq / 1300)
+            GR_Q = G * 2 * r_Q
+
+            Vacc = np.sqrt(
+                2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
+            # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+            norm_length = 2 * mid_cells_par[5]
+            Eacc = Vacc / (
+                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
+            Epk_Eacc = Epk / Eacc
+            Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
+            Bpk_Eacc = Bpk / Eacc
+
+            # cel to cell coupling factor
+            f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
+            f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
+            kcc = 2 * f_diff / f_add * 100
+
+            # # field flatness
+            # ax_field = self.get_axis_field_data(write_folder, no_of_cells)
+            # # get max in each cell
+            # peaks, _ = find_peaks(ax_field['y_abs'])
+            # E_abs_peaks = ax_field['y_abs'][peaks]
+            # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+
+            d = {
+                "Req [mm]": Req,
+                "Normalization Length [mm]": norm_length,
+                "N Cells": no_of_cells,
+                "freq [MHz]": Freq,
+                "Q []": Q,
+                "E [MV/m]": E_stored,
+                "Vacc [MV]": Vacc,
+                "Eacc [MV/m]": Eacc,
+                "Epk [MV/m]": Epk,
+                "Hpk [A/m]": Hpk,
+                "Bpk [mT]": Bpk,
+                "kcc [%]": kcc,
+                # "ff [%]": ff,
+                "Rsh [Ohm]": Rsh,
+                "R/Q [Ohm]": 2 * r_Q,
+                "Epk/Eacc []": Epk_Eacc,
+                "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
+                "G [Ohm]": G,
+                "GR/Q [Ohm^2]": GR_Q
+            }
+
+            with open(fr'{write_folder}\qois.json', "w") as f:
+                json.dump(d, f, indent=4, separators=(',', ': '))
+            print(d)
+        except FileNotFoundError as e:
+            print("Simulation failed", e)
 
     @staticmethod
     def write_dtr(path, name, filename, beta, f_shift, n_modes):
@@ -277,6 +357,29 @@ class SLANSEigen(Geometry):
         else:
             os.mkdir(path)
 
+    @staticmethod
+    def get_axis_field_data(folder, mode):
+        axis_field_data = {}
+
+        x, y = [], []
+        path = os.path.join(fr"{folder}\cavity_33_{mode}.af")
+        with open(path, 'r') as f:
+            for ll in f.readlines():
+                ll = ll.strip()
+                x.append(float(ll.split(' ')[0]))
+                y.append(float(ll.split(' ')[1]))
+
+        # get avg x
+        # avg_x = sum(x) / len(x)
+        # x_shift = [t - avg_x for t in x]
+
+        y_abs = [abs(e) for e in y]
+
+        # RETURN ABSOLUTE FIELD VALUE
+        axis_field_data['x'], axis_field_data['y'], axis_field_data['y_abs'] = np.array(x), np.array(y), np.array(y_abs)
+
+        return axis_field_data
+
 
 if __name__ == '__main__':
     # create SLANSEigen object
@@ -284,15 +387,17 @@ if __name__ == '__main__':
 
     # initialize input arguments
     mid_cell_parameters = [43.99, 35.06, 12.53, 20.95, 35, 57.6524, 101.205]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
-    left_end_cell_parameters = [50.9, 45.3, 8.4, 11.5, 39, 59.988, 101.205]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
-    right_end_cell_paramters = [52.1, 47.9, 9.9, 11.3, 37, 62.665, 101.205]
+    left_end_cell_parameters = [52.1, 47.9, 9.9, 11.3, 37, 62.665, 101.205]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
+    right_end_cell_paramters = [50.9, 45.3, 8.4, 11.5, 39, 59.988, 101.205]
 
     # midNLSF_RE = [49, 35.30, 10.5, 17, 32.0, 57.7, 98.58]
     # endNLSF_RE = [50, 35, 10, 15, 32.0, 57.7, 98.58]
 
-    at_L, c_L, c_R = 6, 2*(55 - 39), 2*(55 - 37)
-    x_L = 1.01*(c_L + at_L)
+    at_L, c_L, c_R = 6, 2*(55 - 37), 2*(55 - 37)
+    print(at_L, c_L, c_R)
+    x_L = max(1.01*(c_L + at_L), 42.002244034809)
     x_R = 1.01*(c_R + at_L)
+    print(x_L, x_R)
     expansion = [c_L, c_L, 6, 6, x_L, 55, 0]
     expansion_r = [c_R, c_R, 6, 6, x_R, 55, 0]
 
@@ -304,13 +409,14 @@ if __name__ == '__main__':
     # expansion = [25, 25, 10, 10, 36, 55, 0]
     # expansion_r = [25, 25, 10, 10, 36, 55, 0]
 
-    # expansion_r = None
-    expansion = None
+    expansion_r = None
+    # expansion = None
     beampipes = "both"  # other options:: "right", "both", "none"
     boundary_condition = 33  # other options: 12, 13, 23, 32, etc. See description in run function
 
     # run eigenmode analysis
-    slanseigen.run(2, 1, mid_cell_parameters, left_end_cell_parameters, left_end_cell_parameters, "Cavity", 33, 0, 1, 3,
+    n_cells = 9
+    slanseigen.run(n_cells, 1, mid_cell_parameters, left_end_cell_parameters, left_end_cell_parameters, "Cavity", 33, 0, 1, n_cells,
                    beampipes, expansion=expansion, expansion_r=expansion_r)
 
     # # run eigenmode analysis
