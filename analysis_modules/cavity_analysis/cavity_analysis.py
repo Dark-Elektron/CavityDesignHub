@@ -27,7 +27,10 @@ WP = {
           },
     'ttbar': {'E [GeV]': 182.5,
               'I0 [mA]': 10
-              }
+              },
+    'MuCol RCS Stage 1': {"E [GeV]": 250.835,
+                          "I0 [mA]": 20.38
+                          }
 }
 
 MACHINE = {'rho [m]': 9937}
@@ -39,7 +42,7 @@ def plot_settings():
 
     mpl.rcParams['axes.labelsize'] = 16
     mpl.rcParams['axes.titlesize'] = 16
-    mpl.rcParams['legend.fontsize'] = 16
+    mpl.rcParams['legend.fontsize'] = 10
     mpl.rcParams['legend.title_fontsize'] = 14
 
     mpl.rcParams['figure.figsize'] = [12, 6]
@@ -300,19 +303,19 @@ class Cavities:
             # total
             ax1.plot(cavity.E_acc * 1e-6, cavity.pstat,
                      ls=self.ls[i], lw=2, c='tab:orange',
-                     label=r"$P_\mathrm{stat$}" + fr"{cavity.name}")
+                     label=r"$P_\mathrm{stat$}" + fr"{cavity.plot_label}")
 
             ax1.plot(cavity.E_acc * 1e-6, cavity.pdyn,
-                     ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dyn}$" + fr"{cavity.name}")
+                     ls=self.ls[i], lw=2, c='tab:blue', label=r"$P_\mathrm{dyn}$" + fr"{cavity.plot_label}")
 
             # p1, = ax1.plot(cavity.E_acc * 1e-6, cavity.p_wp/cavity.n_cav,
             #                ls=self.ls[i], lw=2, c='k', label=r"$P_\mathrm{wp}$" + fr"{cavity.name}")
 
             p2, = ax2.plot(cavity.E_acc * 1e-6, cavity.n_cav, ls=self.ls[i], lw=2, c='tab:red',
-                           label=fr"{cavity.name}")
+                           label=fr"{cavity.plot_label}")
 
             p3, = ax3.plot(cavity.E_acc * 1e-6, cavity.p_in * 1e-3, ls=self.ls[i], lw=2, c='tab:purple',
-                           label=fr"{cavity.name}")
+                           label=fr"{cavity.plot_label}")
 
             ax1.set_xlabel(r"$E_\mathrm{acc}$ [MV/m]")
             ax1.set_ylabel(r"$P_\mathrm{stat, dyn}$ [W]")
@@ -399,21 +402,22 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 0.15  # 1 / len(x)
+        width = min(0.15, 1 / (len(x) + 10))
         for i, cav in enumerate(self.cavities_list):
             print(cav.name)
-            ax.bar(X + i * width, data[i] / data_col_max, width=width, label=cav.name)
+            ax.bar(X + i * width, data[i] / data_col_max, width=width, label=cav.plot_label)
 
         ax.set_xticks([r + width for r in range(len(x))], x)
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
 
         ax.axhline(1.05, c='k')
         ax.set_ylim(-0.01, 1.5 * ax.get_ylim()[-1])
-        ax.legend(loc='upper center', ncol=len(self.cavities_list))
+        ax.legend(loc='upper center', ncol=min(3, len(self.cavities_list)))
         plt.tight_layout()
 
         # save plots
         fname = [cav.name for cav in self.cavities_list]
+        ic(fname)
         fname = '_'.join(fname)
 
         self.save_all_plots(f"{fname}_power_comparison_bar.png")
@@ -437,10 +441,10 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 0.15  # 1 / (len(x)+10)
+        width = min(0.15, 1 / (len(x) + 10))
         for i, cav in enumerate(self.cavities_list):
             print(type(X), type(i), type(width), type(data[i]), data)
-            ax.bar(X + i * width, data[i] / data_col_max, width=width, label=cav.name)
+            ax.bar(X + i * width, data[i] / data_col_max, width=width, label=cav.plot_label)
 
         ax.set_xticks([r + width for r in range(len(x))], x)
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
@@ -448,7 +452,7 @@ class Cavities:
         # ax.legend(label, loc="upper left")
         ax.axhline(1.05, c='k')
         ax.set_ylim(-0.01, 1.5 * ax.get_ylim()[-1])
-        ax.legend(loc='upper center', ncol=len(self.cavities_list))
+        ax.legend(loc='upper center', ncol=min(3, len(self.cavities_list)))
         plt.tight_layout()
 
         # save plots
@@ -476,10 +480,10 @@ class Cavities:
         X = np.arange(len(x))
 
         fig, ax = plt.subplots()
-        width = 0.15  # 1 / (len(x)+10)
+        width = min(0.15, 1 / (len(x) + 10))
         for i, cav in enumerate(self.cavities_list):
             print(type(X), type(i), type(width), type(data[i]), data)
-            ax.bar(X + i * width, data[i] / data_col_max, width=width, label=self.cavities_list[i].name)
+            ax.bar(X + i * width, data[i] / data_col_max, width=width, label=self.cavities_list[i].plot_label)
 
         ax.set_xticks([r + width for r in range(len(x))], x)
         # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
@@ -487,7 +491,7 @@ class Cavities:
         # ax.legend(label, loc="upper left")
         ax.axhline(1.05, c='k')
         ax.set_ylim(-0.01, 1.5 * ax.get_ylim()[-1])
-        ax.legend(loc='upper center', ncol=len(self.cavities_list))
+        ax.legend(loc='upper center', ncol=min(3, len(self.cavities_list)))
         plt.tight_layout()
 
         # save plots
@@ -560,8 +564,8 @@ class Cavities:
                 n_cryomodules_list.append(n_cryomodules)
 
             # ic(cryomodules_len_list)
-            axs[0].plot(n_cav_per_cryomodule, cryomodules_len_list, marker='o', mec='k', label=f'{cav.name}')
-            axs[1].plot(n_cav_per_cryomodule, n_cryomodules_list, marker='o', mec='k', label=f'{cav.name}')
+            axs[0].plot(n_cav_per_cryomodule, cryomodules_len_list, marker='o', mec='k', label=f'{cav.plot_label}')
+            axs[1].plot(n_cav_per_cryomodule, n_cryomodules_list, marker='o', mec='k', label=f'{cav.plot_label}')
             ic(n_cav_per_cryomodule)
             ic(cryomodules_len_list, n_cryomodules_list)
             ic(n_cav_per_cryomodule)
@@ -611,7 +615,7 @@ class Cavities:
 
             data = pd.read_csv(fr"{cav.slans_dir}\contour.txt", sep=r'\s+', header=None)
 
-            plt.plot(data[1] * 1000, data[0] * 1000, lw=3., label=cav.name)
+            plt.plot(data[1] * 1000, data[0] * 1000, lw=3., label=cav.plot_label)
             plt.legend(loc='lower left')
 
             x_label = "z [mm]"
@@ -656,7 +660,7 @@ class Cavities:
             # shift to mid
             z = cav.axis_field['0']
             z_shift = z - z.max() / 2
-            plt.plot(z_shift, e_axis_norm, label=cav.name)
+            plt.plot(z_shift, e_axis_norm, label=cav.plot_label)
 
         plt.xlabel('$z$ [mm]')
         plt.ylabel('$|E_\mathrm{axis}|/|E_\mathrm{axis}|_\mathrm{max}$')
@@ -686,7 +690,7 @@ class Cavities:
             e_surf = np.abs(cav.surface_field['0'])
             e_surf_norm = e_surf / e_surf.max()
 
-            plt.plot(e_surf_norm, label=cav.name)
+            plt.plot(e_surf_norm, label=cav.plot_label)
 
         plt.axhline(1.02, c='k')
         plt.ylim(-0.01, 1.5)
@@ -879,7 +883,7 @@ class Cavities:
         for cav in self.cavities_list:
             x = range(1, cav.n_cells + 1)
             ax.plot(x, cav.d_slans_all_results['FREQUENCY'][0:cav.n_cells], marker='o', mec='k',
-                    label=f'{cav.name} (kcc={round(cav.k_cc, 2)} %)')
+                    label=f'{cav.plot_label} (kcc={round(cav.k_cc, 2)} %)')
             ax.set_xlabel('Mode Number')
             ax.set_ylabel('Frequency [MHz]')
 
@@ -1530,17 +1534,17 @@ class Cavities:
                 [fr"& {round(cav.e, 2)} " for cav in self.cavities_list]) + r" \\"
             l23 = r"$B_{\mathrm{pk}}/E_{\mathrm{acc}} [\mathrm{\frac{mT}{MV/m}}]$ " + "".join(
                 [fr"& {round(cav.b, 2)} " for cav in self.cavities_list]) + r" \\"
-            l24 = r"$|k_\mathrm{FM}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join(
+            l24 = r"$|k_\mathrm{FM}| (\sigma = " + f"{self.cavities_list[0].bunch_length} " + "~\mathrm{mm}) [\mathrm{V/pC}]$ " + "".join(
                 [fr"& {round(cav.k_fm, 4)} " for cav in self.cavities_list]) + r" \\"
-            l25 = r"$|k_\mathrm{\parallel}| \mathrm{[SR/BS]} [\mathrm{V/pC}]$ " + "".join(
+            l25 = r"$|k_\mathrm{\parallel}| (\sigma = " + f"{self.cavities_list[0].bunch_length} " + "~\mathrm{mm}) [\mathrm{V/pC}]$ " + "".join(
                 [fr"& {round(cav.k_loss, 4)} " for cav in self.cavities_list]) + r" \\"
-            l26 = r"$k_\mathrm{\perp} \mathrm{[SR/BS]} [\mathrm{V/pC/m}]$ " + "".join(
+            l26 = r"$k_\mathrm{\perp} (\sigma = " + f"{self.cavities_list[0].bunch_length}" + "~\mathrm{mm}) [\mathrm{V/pC/m}]$ " + "".join(
                 [fr"& {round(cav.k_kick, 4)} " for cav in self.cavities_list]) + r" \\"
             l27 = r"\midrule"
             l28 = r"\midrule"
 
             l29 = r"$N_\mathrm{cav}$ " + "".join(
-                [fr"& {round(qoi[r'N_cav'], 2)} " for qoi in self.p_qois]) + r" \\"
+                [fr"& {int(np.ceil(qoi[r'N_cav']))} " for qoi in self.p_qois]) + r" \\"
             # l29a = r"$P_\mathrm{in}\mathrm{/cav} [\mathrm{kW}]$ " + "".join(
             #     [fr"& {round(qoi[r'P_in [kW]'], 2)} " for qoi in self.p_qois]) + r" \\"
             l30 = r"$P_\mathrm{stat} [\mathrm{W}]$ " + "".join(
@@ -1690,7 +1694,7 @@ class Cavity:
     Cavity class defines cavity parameters and operation settings for several cavity analysis
     """
 
-    def __init__(self, slans_dir, abci_dir, vrf, inv_eta=219, name="Unnamed",
+    def __init__(self, slans_dir, abci_dir, vrf, inv_eta=219, name="Unnamed", plot_label=None,
                  op_field=1e6, wp='Z', sigma='', op_temp='2K', material='bulkNb', project=''):
         """Constructs all the necessary attributes of the Cavity object
 
@@ -1727,6 +1731,12 @@ class Cavity:
         """
         # geometric parameters
         # input
+        if plot_label is None:
+            self.plot_label = name
+        else:
+            self.plot_label = plot_label
+
+        self.bunch_length = None
         self.d_slans_all_results = None
         self.abci_dir = None
         self.ff = ''
@@ -1956,6 +1966,7 @@ class Cavity:
         ic(d_qois)
         d_qois = d_qois[f'{working_point}_{bunch_length}']
 
+        self.bunch_length = d_qois["sigma_z [mm]"]
         self.k_fm = d_qois['k_FM [V/pC]']
         self.k_loss = d_qois['|k_loss| [V/pC]']
         self.k_kick = d_qois['|k_kick| [V/pC/m]']
@@ -2753,41 +2764,41 @@ def mucol_study_2():
     #                 op_temp='2K', material='bulkNb')
 
     NLSF5_0_8GHz = Cavity(vrf=V, inv_eta=745, name="NLSF5_0.8GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                          wp=wp, sigma=sigma,
+                          wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{5-cell, 0.8~GHz}$",
                           slans_dir=fr"{parent_dir_slans}\NLSF_scale_1.621797_5",
                           abci_dir=fr"{parent_dir_abci}\NLSF_scale_1.621797_5")
     NLSF7_0_8GHz = Cavity(vrf=V, inv_eta=745, name="NLSF7_0.8GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                          wp=wp, sigma=sigma,
+                          wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{7-cell, 0.8~GHz}$",
                           slans_dir=fr"{parent_dir_slans}\NLSF_scale_1.621797_7",
                           abci_dir=fr"{parent_dir_abci}\NLSF_scale_1.621797_7")
     NLSF9_0_8GHz = Cavity(vrf=V, inv_eta=745, name="NLSF9_0.8GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                          wp=wp, sigma=sigma,
+                          wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{9-cell, 0.8~GHz}$",
                           slans_dir=fr"{parent_dir_slans}\NLSF_scale_1.621797_9",
                           abci_dir=fr"{parent_dir_abci}\NLSF_scale_1.621797_9")
 
     NLSF5_1GHz = Cavity(vrf=V, inv_eta=745, name="NLSF5_1.0GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                        wp=wp, sigma=sigma,
+                        wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{5-cell, 1.0~GHz}$",
                         slans_dir=fr"{parent_dir_slans}\NLSF_scale_1.3_5",
                         abci_dir=fr"{parent_dir_abci}\NLSF_scale_1.3_5")
     NLSF7_1GHz = Cavity(vrf=V, inv_eta=745, name="NLSF7_1.0GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                        wp=wp, sigma=sigma,
+                        wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{7-cell, 1.0~GHz}$",
                         slans_dir=fr"{parent_dir_slans}\NLSF_scale_1.3_7",
                         abci_dir=fr"{parent_dir_abci}\NLSF_scale_1.3_7")
     NLSF9_1GHz = Cavity(vrf=V, inv_eta=745, name="NLSF9_1.0GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                        wp=wp, sigma=sigma,
+                        wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{9-cell, 1.0~GHz}$",
                         slans_dir=fr"{parent_dir_slans}\NLSF_scale_1.3_9",
                         abci_dir=fr"{parent_dir_abci}\NLSF_scale_1.3_9")
 
     NLSF5_1_3GHz = Cavity(vrf=V, inv_eta=745, name="NLSF5_1.3GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                          wp=wp, sigma=sigma,
+                          wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{5-cell, 1.3~GHz}$",
                           slans_dir=fr"{parent_dir_slans}\NLSF_5",
                           abci_dir=fr"{parent_dir_abci}\NLSF_5")
     NLSF7_1_3GHz = Cavity(vrf=V, inv_eta=745, name="NLSF7_1.3GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                          wp=wp, sigma=sigma,
+                          wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{7-cell, 1.3~GHz}$",
                           slans_dir=fr"{parent_dir_slans}\NLSF_7",
                           abci_dir=fr"{parent_dir_abci}\NLSF_7")
     NLSF9_1_3GHz = Cavity(vrf=V, inv_eta=745, name="NLSF9_1.3GHz", op_field=30e6, op_temp='2K', material='bulkNb',
-                          wp=wp, sigma=sigma,
+                          wp=wp, sigma=sigma, plot_label="NLSF$_\mathrm{9-cell, 1.3~GHz}$",
                           slans_dir=fr"{parent_dir_slans}\NLSF_9",
                           abci_dir=fr"{parent_dir_abci}\NLSF_9")
 
@@ -2805,7 +2816,7 @@ def mucol_study_2():
 
     cavities = Cavities([NLSF5_0_8GHz, NLSF7_0_8GHz, NLSF9_0_8GHz,
                          NLSF5_1GHz, NLSF7_1GHz, NLSF9_1GHz,
-                         NLSF5_1_3GHz, NLSF7_1_3GHz, NLSF9_1_3GHz], 'NLSF_Cavities_freq')
+                         NLSF5_1_3GHz, NLSF7_1_3GHz, NLSF9_1_3GHz], save_folder='NLSF_Cavities_freq')
 
     # cavities.set_cavities_slans(slans_dirs)
     # cavities.set_cavities_abci(abci_dirs)

@@ -869,7 +869,7 @@ class WakefieldControl:
                                     for m in range(2):
                                         abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'],
                                                          shape['OC_R'],
-                                                         fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
+                                                         fid=fid_op, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
                                                          bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
