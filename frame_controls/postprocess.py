@@ -64,10 +64,10 @@ class PostprocessControl:
 
         # initialise ppplot object
         self.ppplot = PPPlot(self)
-        self.pppUI = self.ppplot.pppUI
+        self.pppUI = self.ppplot.ui
 
         self.ppplot_statistics = PPPlot(self)
-        self.pppUI_Stat = self.ppplot_statistics.pppUI
+        self.pppUI_Stat = self.ppplot_statistics.ui
 
         self.w_dict = {'Dataset': [self.ui.pb_CEM, self.ui.w_Dataset_From_Simulation],
                        'Combine': [self.ui.pb_CST, self.ui.w_Combine_Dataset]}

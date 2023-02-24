@@ -8,12 +8,12 @@ class PPPlot:
     def __init__(self, parent):
         self.w_PPPlot = QWidget()
 
-        self.pppUI = Ui_PPPlot()
-        self.pppUI.setupUi(self.w_PPPlot)
+        self.ui = Ui_PPPlot()
+        self.ui.setupUi(self.w_PPPlot)
 
         # Plot
-        self.plt = Plot(self.pppUI)
-        self.pppUI.gl_Plot_Area.addWidget(self.plt)
+        self.plt = Plot(self)
+        self.ui.gl_Plot_Area.addWidget(self.plt)
         self.fig = self.plt.fig
         self.ax = self.plt.ax
 

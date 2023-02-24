@@ -41,7 +41,7 @@ class PlotControl:
         self.log = self.main_control.log
 
         # Plot objects and variables
-        self.plt = Plot(self.ui)
+        self.plt = Plot(self)
         self.ui.gl_Plot_Area.addWidget(self.plt)
         self.fig = self.plt.fig
         self.ax = self.plt.ax
@@ -49,6 +49,7 @@ class PlotControl:
         self.axins = None
         self.indicate_inset = None
         self.leg = None
+        self.ui.vl_Color.addWidget(self.plt.w_Color)
 
         # class variables
         self.plotID_count = 0
@@ -498,10 +499,10 @@ class PlotControl:
         self.ui.cb_Active_Axis.currentTextChanged.connect(lambda: self.switch_axis())
 
         # frequently used plot labels combobox signal
-        self.ui.ccb_Freq_Used_Xlabel.currentTextChanged.connect(lambda: self.ui.le_Xlabel.setText(
-            self.ui.ccb_Freq_Used_Xlabel.currentText()))
-        self.ui.ccb_Freq_Used_Ylabel.currentTextChanged.connect(lambda: self.ui.le_Ylabel.setText(
-            self.ui.ccb_Freq_Used_Ylabel.currentText()))
+        # self.ui.ccb_Freq_Used_Xlabel.currentTextChanged.connect(lambda: self.le_Xlabel.setText(
+        #     self.ui.ccb_Freq_Used_Xlabel.currentText()))
+        # self.ui.ccb_Freq_Used_Ylabel.currentTextChanged.connect(lambda: self.le_Ylabel.setText(
+        #     self.ui.ccb_Freq_Used_Ylabel.currentText()))
 
         self.ui.ccb_Operation_Points.currentTextChanged.connect(
             lambda: self.operation_points_selection(self.ui.ccb_Operation_Points.currentText()))
@@ -536,6 +537,8 @@ class PlotControl:
         cutoff.currentTextChanged.connect(lambda: self.plot_cutoff(cutoff))
 
         self.ui.w_Machines_View.hide()
+
+        self.populate_plot_elements_table()
 
     def plot(self):
         # try:
@@ -601,6 +604,7 @@ class PlotControl:
         #     self.log.error("Please enter a valid argument: Exception: ", e)
 
     def clear_plots(self):
+
         self.ax.cla()
         self.ax_right.cla()
 
@@ -1288,6 +1292,8 @@ class PlotControl:
         -------
 
         """
+
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         # Toggle on/off
         w_Toggle_Close = QWidget()
         l_Toggle_Close_Widget = QHBoxLayout()
@@ -1323,13 +1329,16 @@ class PlotControl:
         # Folder widget
         w_Folder = QWidget()
         w_Folder.setContentsMargins(0, 0, 0, 0)
+
         l_Folder_Widget = QHBoxLayout()
         w_Folder.setLayout(l_Folder_Widget)
         le_Folder = QLineEdit()
         le_Folder.setReadOnly(True)
+        le_Folder.setSizePolicy(sizePolicy)
         pb_Open_Folder = QPushButton('...')
         pb_Open_Folder.setMaximumWidth(100)
         pb_Open_Folder.setMinimumWidth(50)
+        pb_Open_Folder.setSizePolicy(sizePolicy)
         # signal to change place holder text is 'Other'
         cb_code.currentIndexChanged.connect(lambda: le_Folder.setPlaceholderText(
             'Select file') if cb_code.currentText() == 'Other' else le_Folder.setPlaceholderText('Select Folder'))
@@ -1406,6 +1415,7 @@ class PlotControl:
                               }
 
         cb_request = QComboBox()
+        cb_request.setSizePolicy(sizePolicy)
         for req in request_dict_long.values():
             cb_request.addItem(req)
         # cb_request.setStyleSheet('background-color: yellow;')
@@ -1413,6 +1423,8 @@ class PlotControl:
         # create widget with two comboboxes
         cb_X = QComboBox()
         cb_Y = QCheckableComboBox()
+        cb_X.setSizePolicy(sizePolicy)
+        cb_Y.setSizePolicy(sizePolicy)
 
         # place cb_request and le_request in request widget layout
         l_Request_Widget.addWidget(cb_request)
@@ -1431,20 +1443,20 @@ class PlotControl:
         # Filter widget
         w_Filter = QWidget()
         l_Filter_Widget = QHBoxLayout()
-        l_Filter_Widget.addStretch(1)
         l_Filter_Widget.setSpacing(0)
         l_Filter_Widget.setContentsMargins(0, 0, 0, 0)
         w_Filter.setLayout(l_Filter_Widget)
 
         # checkable combo box
         ccb_Filter = QCheckableComboBox()
+        ccb_Filter.setSizePolicy(sizePolicy)
         ccb_Filter.addItem("None")
-        ccb_Filter.setMinimumWidth(75)
         l_Filter_Widget.addWidget(ccb_Filter)
 
         # line edit
         le_Value = QLineEdit()
         l_Filter_Widget.addWidget(le_Value)
+        le_Value.setSizePolicy(sizePolicy)
 
         table.setCellWidget(row_ind, 10, w_Filter)
 
@@ -1489,12 +1501,14 @@ class PlotControl:
 
         # check box
         cb_type = QComboBox()
+        cb_type.setSizePolicy(sizePolicy)
         for a in type_list:
             cb_type.addItem(a)
 
         l_Type_Widget.addWidget(cb_type)
         # check box
         cb_style = QComboBox()
+        cb_style.setSizePolicy(sizePolicy)
         l_Type_Widget.addWidget(cb_style)
 
         line_style = ['-', '--', ':', '-.']
@@ -1583,6 +1597,35 @@ class PlotControl:
         del self.plot_dict[key]
 
         self.plot()
+
+    def populate_plot_elements_table(self):
+        self.le_Xlabel = QLineEdit("$f [MHz]$")
+        self.ui.tw_Plot_Elements.setCellWidget(0, 2, self.le_Xlabel)
+        self.sb_XLabel_Size = QSpinBox()
+        self.ui.tw_Plot_Elements.setCellWidget(0, 0, self.sb_XLabel_Size)
+        self.sb_XLabel_Tick_Size = QSpinBox()
+        self.ui.tw_Plot_Elements.setCellWidget(0, 1, self.sb_XLabel_Tick_Size)
+
+        self.le_Ylabel = QLineEdit("$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$")
+        self.ui.tw_Plot_Elements.setCellWidget(1, 2, self.le_Ylabel)
+        self.sb_YLabel_Size = QSpinBox()
+        self.ui.tw_Plot_Elements.setCellWidget(1, 0, self.sb_YLabel_Size)
+        self.sb_YLabel_Tick_Size = QSpinBox()
+        self.ui.tw_Plot_Elements.setCellWidget(1, 1, self.sb_YLabel_Tick_Size)
+        self.ui.tw_Plot_Elements.setColumnWidth(0, 150)
+
+        self.le_Legend = QLineEdit()
+        self.ui.tw_Plot_Elements.setCellWidget(2, 2, self.le_Legend)
+        self.sb_Legend_Size = QSpinBox()
+        self.ui.tw_Plot_Elements.setCellWidget(2, 0, self.sb_Legend_Size)
+        self.sb_Legend_Marker_Size = QSpinBox()
+        self.ui.tw_Plot_Elements.setCellWidget(2, 1, self.sb_Legend_Marker_Size)
+        self.ui.tw_Plot_Elements.setColumnWidth(1, 150)
+
+        self.le_Title = QLineEdit()
+        self.ui.tw_Plot_Elements.setCellWidget(3, 2, self.le_Title)
+        self.sb_Title_Size = QSpinBox()
+        self.ui.tw_Plot_Elements.setCellWidget(3, 0, self.sb_Title_Size)
 
     @staticmethod
     def switchRequest(cb_Request, request_dict_long, request_dict_trans, cb_Code):
@@ -2184,24 +2227,24 @@ class PlotControl:
 
     def update_labels(self):
         # select axes to update
-        if self.ui.cb_Active_Axis.currentText() == 'Left':
+        if "left" in self.ui.cb_Active_Axis.currentText().lower():
             ax_current = self.ax
             ax_other = self.ax_right
         else:
             ax_current = self.ax_right
             ax_other = self.ax
 
-        xlabel = self.ui.le_Xlabel.text()
-        ylabel = self.ui.le_Ylabel.text()
-        title = self.ui.le_Title.text()
-        xsize = self.ui.sb_XLabel_Size.value()
-        ysize = self.ui.sb_YLabel_Size.value()
-        title_size = self.ui.sb_Title_Size.value()
-        xtick_size = self.ui.sb_XLabel_Tick_Size.value()
-        ytick_size = self.ui.sb_YLabel_Tick_Size.value()
-        legend_size = self.ui.sb_Legend_Size.value()
+        xlabel = self.le_Xlabel.text()
+        ylabel = self.le_Ylabel.text()
+        title = self.le_Title.text()
+        xsize = self.sb_XLabel_Size.value()
+        ysize = self.sb_YLabel_Size.value()
+        title_size = self.sb_Title_Size.value()
+        xtick_size = self.sb_XLabel_Tick_Size.value()
+        ytick_size = self.sb_YLabel_Tick_Size.value()
+        legend_size = self.sb_Legend_Size.value()
 
-        legend_labels = self.ui.le_Legend.text().split("%%")
+        legend_labels = self.le_Legend.text().split("%%")
 
         # update plot
         ax_current.set_xlabel(xlabel, fontsize=xsize)
@@ -2266,15 +2309,15 @@ class PlotControl:
         state_dict["Threshold Line Color"] = self.ui.cb_Threshold_Line_Color.currentText()
         state_dict["Threshold Linestyle"] = self.ui.cb_Threshold_Linestyle.currentText()
 
-        state_dict["xlabel"] = self.ui.le_Xlabel.text()
-        state_dict["ylabel"] = self.ui.le_Ylabel.text()
-        state_dict["title"] = self.ui.le_Title.text()
-        state_dict["xlabel_size"] = self.ui.sb_XLabel_Size.value()
-        state_dict["ylabel_size"] = self.ui.sb_YLabel_Size.value()
-        state_dict["title_size"] = self.ui.sb_Title_Size.value()
-        state_dict["xlabeltick_size"] = self.ui.sb_XLabel_Tick_Size.value()
-        state_dict["ylabeltick_size"] = self.ui.sb_YLabel_Tick_Size.value()
-        state_dict["legend_size"] = self.ui.sb_Legend_Size.value()
+        state_dict["xlabel"] = self.le_Xlabel.text()
+        state_dict["ylabel"] = self.le_Ylabel.text()
+        state_dict["title"] = self.le_Title.text()
+        state_dict["xlabel_size"] = self.sb_XLabel_Size.value()
+        state_dict["ylabel_size"] = self.sb_YLabel_Size.value()
+        state_dict["title_size"] = self.sb_Title_Size.value()
+        state_dict["xlabeltick_size"] = self.sb_XLabel_Tick_Size.value()
+        state_dict["ylabeltick_size"] = self.sb_YLabel_Tick_Size.value()
+        state_dict["legend_size"] = self.sb_Legend_Size.value()
 
     def deserialize(self, state_dict):
         self.ui.le_Inset_Position.setText(state_dict["Inlet_Position"])
@@ -2303,12 +2346,12 @@ class PlotControl:
         self.ui.cb_Threshold_Line_Color.setCurrentText(state_dict["Threshold Line Color"])
         self.ui.cb_Threshold_Linestyle.setCurrentText(state_dict["Threshold Linestyle"])
 
-        self.ui.le_Xlabel.setText(state_dict["xlabel"])
-        self.ui.le_Ylabel.setText(state_dict["ylabel"])
-        self.ui.le_Title.setText(state_dict["title"])
-        self.ui.sb_XLabel_Size.setValue(state_dict["xlabel_size"])
-        self.ui.sb_YLabel_Size.setValue(state_dict["ylabel_size"])
-        self.ui.sb_Title_Size.setValue(state_dict["title_size"])
-        self.ui.sb_XLabel_Tick_Size.setValue(state_dict["xlabeltick_size"])
-        self.ui.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
-        self.ui.sb_Legend_Size.setValue(state_dict["legend_size"])
+        self.le_Xlabel.setText(state_dict["xlabel"])
+        self.le_Ylabel.setText(state_dict["ylabel"])
+        self.le_Title.setText(state_dict["title"])
+        self.sb_XLabel_Size.setValue(state_dict["xlabel_size"])
+        self.sb_YLabel_Size.setValue(state_dict["ylabel_size"])
+        self.sb_Title_Size.setValue(state_dict["title_size"])
+        self.sb_XLabel_Tick_Size.setValue(state_dict["xlabeltick_size"])
+        self.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
+        self.sb_Legend_Size.setValue(state_dict["legend_size"])

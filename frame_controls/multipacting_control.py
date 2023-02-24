@@ -58,7 +58,7 @@ class MultipactingControl:
 
         # ##########################
         # Add 2d graph
-        self.plt = Plot(self.ui)
+        self.plt = Plot(self)
         self.fig = self.plt.fig
         self.ax = self.plt.ax
         self.ui.gl_Plot_Area.addWidget(self.plt)

@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from termcolor import colored
 from frame_controls.edit_line2d import EditALine2DDialog
 from utils.file_reader import FileReader
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg  # NavigationToolbar2QT as NavigationToolbar
 from utils.CustomNavBar import MyCustomToolbar as NavigationToolbar
 from matplotlib.figure import Figure
@@ -44,7 +44,8 @@ class Plot(FigureCanvasQTAgg):
         self.fig.set_tight_layout("True")
         self.fig_size = self.fig.get_size_inches()*self.fig.dpi
 
-        self.parentUI = parent
+        self.parent = parent
+        self.parentUI = parent.ui
 
         # new feature
         # add gridspec
@@ -75,7 +76,7 @@ class Plot(FigureCanvasQTAgg):
 
         super(Plot, self).__init__(self.fig)
 
-        self.widgetUI = parent
+        self.widgetUI = parent.ui
         # self.plotUI = self.plot_widget.plotUI
         # self.MROT = self.ui.cb_Polarization_ABCI.currentIndex()
 
@@ -113,6 +114,8 @@ class Plot(FigureCanvasQTAgg):
 
         # # create new widgets
         # self.create_new_widgets()
+        self.w_Color = QColorDialog()
+        self.w_Color.currentColorChanged.connect(lambda: self.update_object_color())
 
         # redefine save_image function
         self.toolbar.sizeHint()
@@ -185,7 +188,7 @@ class Plot(FigureCanvasQTAgg):
             mpl.rcParams['axes.titlesize'] = 24
             mpl.rcParams['legend.fontsize'] = 'large'
 
-            mpl.rcParams['figure.figsize'] = [9.8, 6]
+            mpl.rcParams['figure.figsize'] = [11, 10]
             mpl.rcParams['figure.dpi'] = 100
 
         if mode.lower() == 'square':
@@ -197,7 +200,7 @@ class Plot(FigureCanvasQTAgg):
             mpl.rcParams['axes.titlesize'] = 24
             mpl.rcParams['legend.fontsize'] = 'large'
 
-            mpl.rcParams['figure.figsize'] = [6, 6]
+            mpl.rcParams['figure.figsize'] = [10, 10]
             mpl.rcParams['figure.dpi'] = 100
 
     def create_secondary_axes(self):
@@ -228,12 +231,122 @@ class Plot(FigureCanvasQTAgg):
         self.PRESS = True
 
         # handle identifying objects
-        if event.button == 1:
+        if event.button == 1:  # LEFT
+            if event.dblclick:
+                if isinstance(self.selected_object, matplotlib.legend.Legend):
+                    pass
+
+                if isinstance(self.selected_object, matplotlib.text.Annotation):
+                    self.text_dict[id(self.selected_object)].connect()
+                    pass
+
+                if isinstance(self.selected_object, matplotlib.collections.PathCollection):
+                    obj_id = id(self.selected_object)
+                    if obj_id in self.picked_points_annotext_id_dict.keys():
+                        annotext_id = self.picked_points_annotext_id_dict[obj_id]
+
+                        # remove annotated text object from axes
+                        self.text_dict[annotext_id].remove()
+                        # remove annotated text object from dictionary
+                        del self.text_dict[annotext_id]
+
+                        # remove scatter object from axes
+                        self.selected_object.remove()
+                        # remove scatter object form dictionary
+                        del self.picked_points_annotext_id_dict[obj_id]
+
+                        self.draw_idle()
+                        self.flush_events()
+                        # return
+                elif isinstance(self.selected_object, matplotlib.lines.Line2D):
+                    ind = self.event.ind
+                    x_picked = self.selected_object.get_xdata()[min(ind)]
+                    y_picked = self.selected_object.get_ydata()[min(ind)]
+
+                    # add annotated text at picked point
+                    # calculate location of annotation from axes extents and event position
+                    if "left" in self.parentUI.cb_Active_Axis.currentText().lower():
+                        ax = self.ax
+                    else:
+                        ax = self.ax_right
+
+                    xlim, ylim = ax.get_xlim(), ax.get_ylim()
+                    # pos_x, pos_y = (x_picked - xlim[0])/(xlim[1] - xlim[0]), (y_picked - ylim[0])/(ylim[1] - ylim[0])
+                    pos_x, pos_y = x_picked, y_picked
+
+                    # check if newly selected points is close to any of the old selected points
+                    for i in range(len(self.selected_points_list)):
+                        pl = self.selected_points_list[i]
+                        if (pl[0] - x_picked) / pl[0] < 0.2 and (pl[1] - y_picked) / pl[1] < 0.2:
+                            # delete point from list
+                            del self.selected_points_list[i]
+                            return
+
+                    # plot circle around the point
+                    scatter_obj = ax.scatter(pos_x, pos_y, s=100, marker='o', facecolors="None",
+                                             edgecolor='red', picker=True, zorder=5)
+
+                    x_scale, y_scale = ax.get_xscale(), ax.get_yscale()
+
+                    # get x_axis title
+                    xlbl = self.ax.xaxis.get_label().get_text()
+                    ylbl = self.ax.yaxis.get_label().get_text()
+
+                    if xlim[0] <= pos_x <= xlim[1] / 2:
+                        if x_scale == 'linear':
+                            text_x = pos_x + (xlim[1] - xlim[0]) / 20
+                        else:
+                            text_x = pos_x + np.log((xlim[1] - xlim[0]) / 20)
+                    else:
+                        if x_scale == 'linear':
+                            text_size = 30 * len(f"{xlbl}: {round(x_picked, 4)}") / self.fig_size[1]
+                            text_x = pos_x - (xlim[1] - xlim[0]) / 20 - (text_size - xlim[0]) / (xlim[1] - xlim[0])
+                        else:
+                            text_size = 30 * len(f"{xlbl}: {round(x_picked, 4)}") / self.fig_size[1]
+                            text_x = pos_x - np.log((xlim[1] - xlim[0]) / 20) - (text_size - xlim[0]) / (
+                                        xlim[1] - xlim[0])
+
+                    if ylim[0] <= pos_y <= ylim[1] / 2:
+                        if y_scale == 'linear':
+                            text_y = pos_y + (ylim[1] - ylim[0]) / 5
+                        else:
+                            text_y = pos_y
+                    else:
+                        if y_scale == 'linear':
+                            text_y = pos_y - (ylim[1] - ylim[0]) / 5
+                        else:
+                            text_y = pos_y
+
+                    text = f"{xlbl}: {round(x_picked, 4)}\n {ylbl}: {round(y_picked, 4)}"
+                    annotext = self.add_text(text, "Round4", xy=(x_picked, y_picked), xycoords='data',
+                                             xytext=(text_x, text_y), textcoords='data',
+                                             size=14, rotation=0,
+                                             arrowprops=dict(arrowstyle='-', facecolor='black'))
+
+                    self.picked_points_annotext_id_dict[id(scatter_obj)] = id(annotext)
+                    self.selected_points_list.append([x_picked, y_picked])
+
+                    # self.axvline_dict[f"{id(self.selected_object)}"].connect()
+
+                    # xmouse, ymouse = event.mouseevent.xdata, event.mouseevent.ydata
+                    # x, y = artist.get_xdata(), artist.get_ydata()
+                    # ind = event.ind
+
+                self.draw()
+            else:
+                # update color and properties
+                if isinstance(self.selected_object, matplotlib.lines.Line2D):
+                    # set color picker color
+                    self.w_Color.setCurrentColor(QtGui.QColor(self.selected_object.get_color()))
+                    self.parentUI.dsb_Line_Width.setValue(self.selected_object.get_linewidth())
+                    self.parentUI.cb_Line_Style.setCurrentText(self.selected_object.get_linestyle())
+                    self.parentUI.cb_Marker.setCurrentText(self.selected_object.get_marker())
+                    self.parentUI.db_Marker_Size.setValue(self.selected_object.get_markersize())
+
+        if event.button == 2:  # MMB
             pass
 
-        if event.button == 2:
-            pass
-        if event.button == 3:
+        if event.button == 3:  # RIGHT
             # selecting objects right click
             if isinstance(self.selected_object, matplotlib.text.Annotation):
                 self.draggableTextContextMenuEvent(event)
@@ -244,11 +357,12 @@ class Plot(FigureCanvasQTAgg):
 
     def on_release(self, event):
         # reset selected object to none
-        self.selected_object = None
+        # self.selected_object = None
         self.PRESS = False
         # set press to false
 
     def on_pick(self, event):
+
         ########################################################
         # # legend toggle
         # # on the pick event, find the orig line corresponding to the
@@ -266,106 +380,10 @@ class Plot(FigureCanvasQTAgg):
         # else:
         #     legline.set_alpha(0.2)
         #############################################################
-        self.selected_object = event.artist
 
-        if isinstance(event.artist, matplotlib.legend.Legend):
-            pass
-
-        if isinstance(self.selected_object, matplotlib.text.Annotation):
-            self.text_dict[id(self.selected_object)].connect()
-            pass
-
-        if isinstance(event.artist, matplotlib.collections.PathCollection):
-            obj_id = id(event.artist)
-            if obj_id in self.picked_points_annotext_id_dict.keys():
-                annotext_id = self.picked_points_annotext_id_dict[obj_id]
-
-                # remove annotated text object from axes
-                self.text_dict[annotext_id].remove()
-                # remove annotated text object from dictionary
-                del self.text_dict[annotext_id]
-
-                # remove scatter object from axes
-                event.artist.remove()
-                # remove scatter object form dictionary
-                del self.picked_points_annotext_id_dict[obj_id]
-
-                self.fig.canvas.draw()
-                # return
-        elif isinstance(self.selected_object, matplotlib.lines.Line2D):
-            ind = event.ind
-            x_picked = self.selected_object.get_xdata()[min(ind)]
-            y_picked = self.selected_object.get_ydata()[min(ind)]
-
-            # add annotated text at picked point
-            # calculate location of annotation from axes extents and event position
-            if self.parentUI.cb_Active_Axis.currentText() == "Left":
-                ax = self.ax
-            else:
-                ax = self.ax_right
-
-            xlim, ylim = ax.get_xlim(), ax.get_ylim()
-            # pos_x, pos_y = (x_picked - xlim[0])/(xlim[1] - xlim[0]), (y_picked - ylim[0])/(ylim[1] - ylim[0])
-            pos_x, pos_y = x_picked, y_picked
-
-            # check if newly selected points is close to any of the old selected points
-            for i in range(len(self.selected_points_list)):
-                pl = self.selected_points_list[i]
-                if (pl[0] - x_picked)/pl[0] < 0.2 and (pl[1] - y_picked)/pl[1] < 0.2:
-                    # delete point from list
-                    del self.selected_points_list[i]
-                    return
-
-            # plot circle around the point
-            scatter_obj = ax.scatter(pos_x, pos_y, s=100, marker='o', facecolors="None",
-                                     edgecolor='red', picker=True, zorder=5)
-
-            x_scale, y_scale = ax.get_xscale(), ax.get_yscale()
-
-            # get x_axis title
-            xlbl = self.ax.xaxis.get_label().get_text()
-            ylbl = self.ax.yaxis.get_label().get_text()
-
-            if xlim[0] <= pos_x <= xlim[1]/2:
-                if x_scale == 'linear':
-                    text_x = pos_x + (xlim[1] - xlim[0])/20
-                else:
-                    text_x = pos_x + np.log((xlim[1] - xlim[0])/20)
-            else:
-                if x_scale == 'linear':
-                    text_size = 30*len(f"{xlbl}: {round(x_picked, 4)}")/self.fig_size[1]
-                    text_x = pos_x - (xlim[1] - xlim[0])/20 - (text_size - xlim[0])/(xlim[1] - xlim[0])
-                else:
-                    text_size = 30*len(f"{xlbl}: {round(x_picked, 4)}")/self.fig_size[1]
-                    text_x = pos_x - np.log((xlim[1] - xlim[0])/20) - (text_size - xlim[0])/(xlim[1] - xlim[0])
-
-            if ylim[0] <= pos_y <= ylim[1]/2:
-                if y_scale == 'linear':
-                    text_y = pos_y + (ylim[1] - ylim[0])/5
-                else:
-                    text_y = pos_y
-            else:
-                if y_scale == 'linear':
-                    text_y = pos_y - (ylim[1] - ylim[0])/5
-                else:
-                    text_y = pos_y
-
-            text = f"{xlbl}: {round(x_picked, 4)}\n {ylbl}: {round(y_picked, 4)}"
-            annotext = self.add_text(text, "Round4", xy=(x_picked, y_picked), xycoords='data',
-                                     xytext=(text_x, text_y), textcoords='data',
-                                     size=14, rotation=0,
-                                     arrowprops=dict(arrowstyle='-', facecolor='black'))
-
-            self.picked_points_annotext_id_dict[id(scatter_obj)] = id(annotext)
-            self.selected_points_list.append([x_picked, y_picked])
-
-            # self.axvline_dict[f"{id(self.selected_object)}"].connect()
-
-            # xmouse, ymouse = event.mouseevent.xdata, event.mouseevent.ydata
-            # x, y = artist.get_xdata(), artist.get_ydata()
-            # ind = event.ind
-
-        self.draw()
+        if event.artist is not None:
+            self.selected_object = event.artist
+            self.event = event
 
     def on_motion(self, event):
         # vis = self.annot.get_visible()
@@ -415,6 +433,13 @@ class Plot(FigureCanvasQTAgg):
         self.annot.set_text(f'{text}')
         self.annot.get_bbox_patch().set_facecolor((167 / 255, 222 / 255, 255 / 255))
         # self.annot.get_bbox_patch().set_alpha(1)
+
+    def update_object_color(self):
+        if self.selected_object is not None:
+            self.selected_object.set_color(self.w_Color.currentColor().name())
+            # copy the image to the GUI state, but screen might not be changed yet
+            self.draw_idle()
+            self.flush_events()
 
     def contextMenuEvent(self, event):
         contextMenu = QMenu(self)
@@ -498,7 +523,7 @@ class Plot(FigureCanvasQTAgg):
         if text.strip("") == "":
             return
 
-        if self.parentUI.cb_Active_Axis.currentText() == "Left":
+        if "left" in self.parentUI.cb_Active_Axis.currentText().lower():
             ax = self.ax
         else:
             ax = self.ax_right
@@ -518,7 +543,8 @@ class Plot(FigureCanvasQTAgg):
                 annotext = ax.annotate(text, xy=xy, xycoords=xycoords, bbox=bbox_props, fontsize=size,
                                        rotation=rotation, arrowprops=arrowprops)
 
-        self.draw()
+        self.draw_idle()
+        self.flush_events()
 
         dt = DraggableText(annotext)
         dt.connect()
@@ -532,13 +558,15 @@ class Plot(FigureCanvasQTAgg):
         # remove key from dictionary
         del self.text_dict[selected_obj_id]
 
-        self.draw()
+        self.draw_idle()
+        self.flush_events()
 
     def add_axvline(self, x):
 
         # add vertical line
         axvline = self.ax_right.axvline(x, label=f"{x}", ls='--', c='gray', picker=True)
-        self.draw()
+        self.draw_idle()
+        self.flush_events()
 
         dt = DraggableAxvline(axvline)
         dt.connect()
@@ -581,8 +609,8 @@ class Plot(FigureCanvasQTAgg):
     def change_background(self, color='white'):
         self.ax.set_facecolor(color)
         self.fig.patch.set_facecolor(color)
-        self.fig.canvas.draw()
-        self.fig.canvas.flush_events()
+        self.draw_idle()
+        self.flush_events()
 
 
 class ZoomPan:

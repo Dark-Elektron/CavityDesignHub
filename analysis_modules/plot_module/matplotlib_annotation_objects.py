@@ -134,7 +134,8 @@ class DraggableText:
         canvas = self.text.figure.canvas
         axes = self.text.axes
         self.text.set_animated(True)
-        canvas.draw()
+        canvas.draw_idle()
+        canvas.flush_events()
         self.background = canvas.copy_from_bbox(self.text.axes.bbox)
 
         # now redraw just the Text
@@ -265,7 +266,8 @@ class DraggableSquare:
         canvas = self.text.figure.canvas
         axes = self.text.axes
         self.text.set_animated(True)
-        canvas.draw()
+        canvas.draw_idle()
+        canvas.flush_events()
         self.background = canvas.copy_from_bbox(self.text.axes.bbox)
 
         # now redraw just the Text
