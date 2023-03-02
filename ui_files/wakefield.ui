@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1033</width>
-    <height>1031</height>
+    <height>860</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -48,175 +48,19 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-1546</y>
-               <width>770</width>
-               <height>2414</height>
+               <y>-1925</y>
+               <width>736</width>
+               <height>2651</height>
               </rect>
              </property>
              <property name="styleSheet">
               <string notr="true"/>
              </property>
              <layout class="QGridLayout" name="gridLayout_9">
-              <item row="21" column="0" alignment="Qt::AlignTop">
-               <widget class="QWidget" name="w_Mesh" native="true">
-                <layout class="QGridLayout" name="gridLayout_17">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item row="2" column="0">
-                  <widget class="QLabel" name="label_8">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>DDr/SIG</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="1">
-                  <widget class="QLineEdit" name="le_DDZ_SIG">
-                   <property name="text">
-                    <string>0.1</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="2">
-                  <widget class="QLabel" name="label_22">
-                   <property name="text">
-                    <string>mm/mm</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="2" column="1">
-                  <widget class="QLineEdit" name="le_DDR_SIG">
-                   <property name="text">
-                    <string>0.1</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="2">
-                  <widget class="QLabel" name="label_21">
-                   <property name="text">
-                    <string>mm/mm</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="1" column="0">
-                  <widget class="QLabel" name="label_7">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>DDz/SIG</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item row="4" column="0" alignment="Qt::AlignTop">
-               <widget class="QPushButton" name="pb_Cell_Geometric_Parameters">
+              <item row="27" column="0" alignment="Qt::AlignTop">
+               <widget class="QPushButton" name="pb_EXE">
                 <property name="text">
-                 <string>Cell Geometric Parameters</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="26" column="0">
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>20</width>
-                  <height>40</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="22" column="0" alignment="Qt::AlignTop">
-               <widget class="QPushButton" name="pb_Operating_Points_QOIs">
-                <property name="text">
-                 <string>Operating Point(s) QOIs</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="18" column="0">
-               <widget class="QPushButton" name="pb_Settings">
-                <property name="text">
-                 <string>Settings</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="15" column="0" alignment="Qt::AlignTop">
-               <widget class="QPushButton" name="pb_Cell_Parameters">
-                <property name="text">
-                 <string>Cell Parameters</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="20" column="0" alignment="Qt::AlignTop">
-               <widget class="QPushButton" name="pb_Mesh">
-                <property name="text">
-                 <string>Mesh</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item row="24" column="0" alignment="Qt::AlignTop">
-               <widget class="QPushButton" name="pb_UQ">
-                <property name="text">
-                 <string>Uncertainty Quantification</string>
+                 <string>EXE</string>
                 </property>
                 <property name="checkable">
                  <bool>true</bool>
@@ -1336,7 +1180,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="25" column="0" alignment="Qt::AlignTop">
+              <item row="26" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_UQ" native="true">
                 <layout class="QGridLayout" name="gridLayout_10">
                  <item row="3" column="0" colspan="2">
@@ -1446,7 +1290,7 @@
                 </layout>
                </widget>
               </item>
-              <item row="19" column="0" alignment="Qt::AlignTop">
+              <item row="20" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_Settings" native="true">
                 <property name="styleSheet">
                  <string notr="true"/>
@@ -1464,14 +1308,58 @@
                  <property name="bottomMargin">
                   <number>0</number>
                  </property>
-                 <item row="0" column="2">
-                  <widget class="QLabel" name="label_12">
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="le_MT">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Stability condition:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/imgs/images/stability_condition_wakefield.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
                    <property name="text">
-                    <string>m</string>
+                    <string>4</string>
                    </property>
                   </widget>
                  </item>
+                 <item row="0" column="1">
+                  <widget class="QComboBox" name="cb_Polarization_ABCI">
+                   <property name="focusPolicy">
+                    <enum>Qt::NoFocus</enum>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>Monopole</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Dipole</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>Both</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
                  <item row="0" column="0">
+                  <widget class="QLabel" name="label_14">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Polarity</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
                   <widget class="QLabel" name="label_2">
                    <property name="minimumSize">
                     <size>
@@ -1490,60 +1378,28 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="3" column="1">
-                  <widget class="QLineEdit" name="le_MT">
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Stability condition:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/imgs/images/stability_condition_wakefield.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="text">
-                    <string>4</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="0" column="1">
-                  <widget class="QLineEdit" name="le_Wakelength">
-                   <property name="text">
-                    <string>50</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_5">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="toolTip">
-                    <string>No of time steps it takes for a beam to move one cal to another.</string>
-                   </property>
-                   <property name="text">
-                    <string>MT</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="1" column="2">
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>m</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
                   <widget class="QLabel" name="label_13">
                    <property name="text">
                     <string>mm</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="1">
+                 <item row="2" column="1">
                   <widget class="QLineEdit" name="le_Bunch_Length">
                    <property name="text">
                     <string>50</string>
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="0">
+                 <item row="3" column="0">
                   <widget class="QLabel" name="label_4">
                    <property name="minimumSize">
                     <size>
@@ -1565,7 +1421,36 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="1" column="0">
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_5">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="toolTip">
+                    <string>No of time steps it takes for a beam to move one cal to another.</string>
+                   </property>
+                   <property name="text">
+                    <string>MT</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="le_Wakelength">
+                   <property name="text">
+                    <string>50</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
                   <widget class="QLabel" name="label_3">
                    <property name="minimumSize">
                     <size>
@@ -1584,10 +1469,42 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="2" column="1">
+                 <item row="3" column="1">
                   <widget class="QLineEdit" name="le_NFS">
                    <property name="text">
                     <string>10000</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0">
+                  <widget class="QLabel" name="label_85">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Processors</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="1">
+                  <widget class="QSpinBox" name="sb_No_Of_Processors_ABCI">
+                   <property name="minimum">
+                    <number>1</number>
+                   </property>
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="value">
+                    <number>1</number>
                    </property>
                   </widget>
                  </item>
@@ -1619,25 +1536,6 @@
                    </property>
                   </widget>
                  </item>
-                 <item row="4" column="0">
-                  <widget class="QLabel" name="label_85">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Processors</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item row="0" column="2">
                   <widget class="QSpinBox" name="sb_N_Cells">
                    <property name="minimum">
@@ -1664,25 +1562,6 @@
                    </property>
                    <property name="text">
                     <string>No. of Modules</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item row="3" column="0">
-                  <widget class="QLabel" name="label_14">
-                   <property name="minimumSize">
-                    <size>
-                     <width>100</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>100</width>
-                     <height>16777215</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>Polarity</string>
                    </property>
                   </widget>
                  </item>
@@ -1722,45 +1601,186 @@
                  <item row="2" column="1" colspan="2">
                   <widget class="QLineEdit" name="le_LBP"/>
                  </item>
-                 <item row="3" column="1" colspan="2">
-                  <widget class="QComboBox" name="cb_Polarization_ABCI">
-                   <property name="focusPolicy">
-                    <enum>Qt::NoFocus</enum>
+                </layout>
+               </widget>
+              </item>
+              <item row="22" column="0" alignment="Qt::AlignTop">
+               <widget class="QWidget" name="w_Mesh" native="true">
+                <layout class="QGridLayout" name="gridLayout_17">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_8">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
                    </property>
-                   <item>
-                    <property name="text">
-                     <string>Monopole</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Dipole</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>Both</string>
-                    </property>
-                   </item>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>DDr/SIG</string>
+                   </property>
                   </widget>
                  </item>
-                 <item row="4" column="1" colspan="2">
-                  <widget class="QSpinBox" name="sb_No_Of_Processors_ABCI">
-                   <property name="minimum">
-                    <number>1</number>
+                 <item row="1" column="1">
+                  <widget class="QLineEdit" name="le_DDZ_SIG">
+                   <property name="text">
+                    <string>0.1</string>
                    </property>
-                   <property name="maximum">
-                    <number>999</number>
+                  </widget>
+                 </item>
+                 <item row="2" column="2">
+                  <widget class="QLabel" name="label_22">
+                   <property name="text">
+                    <string>mm/mm</string>
                    </property>
-                   <property name="value">
-                    <number>1</number>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="le_DDR_SIG">
+                   <property name="text">
+                    <string>0.1</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2">
+                  <widget class="QLabel" name="label_21">
+                   <property name="text">
+                    <string>mm/mm</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QLabel" name="label_7">
+                   <property name="minimumSize">
+                    <size>
+                     <width>100</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>100</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>DDz/SIG</string>
                    </property>
                   </widget>
                  </item>
                 </layout>
                </widget>
               </item>
+              <item row="25" column="0" alignment="Qt::AlignTop">
+               <widget class="QPushButton" name="pb_UQ">
+                <property name="text">
+                 <string>Uncertainty Quantification</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="29" column="0">
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item row="21" column="0" alignment="Qt::AlignTop">
+               <widget class="QPushButton" name="pb_Mesh">
+                <property name="text">
+                 <string>Mesh</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="18" column="0">
+               <widget class="QPushButton" name="pb_Settings">
+                <property name="text">
+                 <string>Settings</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="4" column="0" alignment="Qt::AlignTop">
+               <widget class="QPushButton" name="pb_Cell_Geometric_Parameters">
+                <property name="text">
+                 <string>Cell Geometric Parameters</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="15" column="0" alignment="Qt::AlignTop">
+               <widget class="QPushButton" name="pb_Cell_Parameters">
+                <property name="text">
+                 <string>Cell Parameters</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
               <item row="23" column="0" alignment="Qt::AlignTop">
+               <widget class="QPushButton" name="pb_Operating_Points_QOIs">
+                <property name="text">
+                 <string>Operating Point(s) QOIs</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="pb_Save_Folder">
+                <property name="text">
+                 <string>Save Folder</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="24" column="0" alignment="Qt::AlignTop">
                <widget class="QWidget" name="w_Operating_Points_QOIs" native="true">
                 <property name="minimumSize">
                  <size>
@@ -1842,16 +1862,6 @@
                 </layout>
                </widget>
               </item>
-              <item row="2" column="0">
-               <widget class="QPushButton" name="pb_Save_Folder">
-                <property name="text">
-                 <string>Save Folder</string>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
               <item row="3" column="0">
                <widget class="QWidget" name="w_Save_Folder" native="true">
                 <layout class="QGridLayout" name="gridLayout_8">
@@ -1880,6 +1890,35 @@
                   <widget class="QLineEdit" name="le_Marker">
                    <property name="toolTip">
                     <string>To be used when running module simulation for more than one cavity.</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="28" column="0" alignment="Qt::AlignTop">
+               <widget class="QWidget" name="w_EXE" native="true">
+                <layout class="QGridLayout" name="gridLayout_18">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item row="0" column="0">
+                  <widget class="QPushButton" name="pb_Top_Drawer">
+                   <property name="text">
+                    <string>TOP Drawer</string>
+                   </property>
+                   <property name="icon">
+                    <iconset resource="../qss/icons.qrc">
+                     <normaloff>:/icons/icons/PNG/top_drawer.png</normaloff>:/icons/icons/PNG/top_drawer.png</iconset>
                    </property>
                   </widget>
                  </item>
@@ -2085,67 +2124,6 @@
         </widget>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QWidget" name="widget_10" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>50</height>
-         </size>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_18">
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item row="0" column="2">
-          <spacer name="horizontalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="pb_Top_Drawer">
-           <property name="text">
-            <string>TOP Drawer</string>
-           </property>
-           <property name="icon">
-            <iconset resource="../qss/icons.qrc">
-             <normaloff>:/icons/icons/PNG/top_drawer.png</normaloff>:/icons/icons/PNG/top_drawer.png</iconset>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
@@ -2340,6 +2318,22 @@
     <hint type="destinationlabel">
      <x>574</x>
      <y>647</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_EXE</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_EXE</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>406</x>
+     <y>737</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>406</x>
+     <y>781</y>
     </hint>
    </hints>
   </connection>

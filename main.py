@@ -122,9 +122,10 @@ class MainWindow:
         # check if last state should be loaded
         self.load_last_state()
 
-        # Add stylesheet
+        # # Add stylesheet
         # self.stylesheet_filename = 'qss/aqua.qss'
         # self.loadStylesheet(self.stylesheet_filename)
+
         self.theme_dict = {'Light VS': qtvsc.Theme.LIGHT_VS,
                            'Quiet Light': qtvsc.Theme.QUIET_LIGHT,
                            'Solarized Light': qtvsc.Theme.SOLARIZED_LIGHT,
@@ -157,7 +158,7 @@ class MainWindow:
 
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.last_saved_theme])
         QApplication.instance().setStyleSheet(stylesheet)
-        # self.main_win.setStyleSheet("*{font-size: 8px;}")
+        # self.main_win.setStyleSheet("*{font-size: 13px;}")
 
         # self.ui.pb_rHome.enterEvent = self.tray_animation
         # self.ui.pb_rHome.leaveEvent = self.tray_animation

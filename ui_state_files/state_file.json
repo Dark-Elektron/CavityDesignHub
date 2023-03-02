@@ -1,6 +1,6 @@
 {
     "Project Directory": "D:\\Dropbox\\CavityDesignHub\\MuCol_Study",
-    "Theme": "Light VS",
+    "Theme": "Monokai Dimmed",
     "Frequency": "1300",
     "Cell_Type": 1,
     "Tune_Option": 1,
@@ -173,5 +173,130 @@
     "Scale": "1",
     "Eigen_Scale": "1, 1.3, 1.621797",
     "Wakefield_N_Cells_": "[5, 7, 9]",
-    "Wakefield_Scale": "1, 1.3, 1.621797"
+    "Wakefield_Scale": "1, 1.3, 1.621797",
+    "plot_table_widget": {
+        "0": {
+            "Code": "ABCI",
+            "Folder": "D:/Dropbox/CavityDesignHub/MuCol_Study/SimulationData/ABCI",
+            "Polarization": "Trans",
+            "Id": [
+                [
+                    "All",
+                    "C3795_1300MHZ",
+                    "ICHIRO",
+                    "ILC-LL",
+                    "NLSF",
+                    "NLSF-A",
+                    "NLSF-B",
+                    "NLSF_5",
+                    "NLSF_7",
+                    "NLSF_9",
+                    "NLSF_scale_1.3",
+                    "NLSF_scale_1.3_5",
+                    "NLSF_scale_1.3_7",
+                    "NLSF_scale_1.3_9",
+                    "NLSF_scale_1.621797",
+                    "NLSF_scale_1.621797_5",
+                    "NLSF_scale_1.621797_7",
+                    "NLSF_scale_1.621797_9",
+                    "TESLA"
+                ],
+                "C3795_1300MHZ, ILC-LL"
+            ],
+            "Request": [
+                "Transverse Impedance Magnitude",
+                "",
+                ""
+            ],
+            "Toggle": 2,
+            "ScaleX": "1000",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Line",
+                "-"
+            ],
+            "Filter": [
+                "",
+                ""
+            ]
+        },
+        "1": {
+            "Code": "ABCI",
+            "Folder": "D:/Dropbox/CavityDesignHub/MuCol_Study/SimulationData/ABCI",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "C3795_1300MHZ",
+                    "ICHIRO",
+                    "ILC-LL",
+                    "NLSF",
+                    "NLSF-A",
+                    "NLSF-B",
+                    "NLSF_5",
+                    "NLSF_7",
+                    "NLSF_9",
+                    "NLSF_scale_1.3",
+                    "NLSF_scale_1.3_5",
+                    "NLSF_scale_1.3_7",
+                    "NLSF_scale_1.3_9",
+                    "NLSF_scale_1.621797",
+                    "NLSF_scale_1.621797_5",
+                    "NLSF_scale_1.621797_7",
+                    "NLSF_scale_1.621797_9",
+                    "TESLA"
+                ],
+                "NLSF"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "",
+                ""
+            ],
+            "Toggle": 2,
+            "ScaleX": "1000",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Line",
+                "-"
+            ],
+            "Filter": [
+                "",
+                ""
+            ]
+        },
+        "2": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/MuCol_Study/Assembly/Eigenmode/NLSF_Lossy_Eigenmode_results_.xlsx",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "Sheet1",
+                    "Sheet1",
+                    "Sheet1"
+                ],
+                "Sheet1, Sheet1"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "Frequency (Multiple Modes)",
+                "Z_T_kOhm_m"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "o"
+            ],
+            "Filter": [
+                "",
+                ""
+            ]
+        }
+    }
 }

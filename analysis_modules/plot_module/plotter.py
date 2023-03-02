@@ -436,10 +436,13 @@ class Plot(FigureCanvasQTAgg):
 
     def update_object_color(self):
         if self.selected_object is not None:
-            self.selected_object.set_color(self.w_Color.currentColor().name())
-            # copy the image to the GUI state, but screen might not be changed yet
-            self.draw_idle()
-            self.flush_events()
+            if isinstance(self.selected_object, matplotlib.legend.Legend):
+                pass
+            else:
+                self.selected_object.set_color(self.w_Color.currentColor().name())
+                # copy the image to the GUI state, but screen might not be changed yet
+                self.draw_idle()
+                self.flush_events()
 
     def contextMenuEvent(self, event):
         contextMenu = QMenu(self)

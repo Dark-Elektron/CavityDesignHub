@@ -1,3 +1,5 @@
+import pickle
+
 from PyQt5 import QtGui
 from labellines import labelLines
 from scipy.special import jn_zeros, jnp_zeros
@@ -2284,6 +2286,7 @@ class PlotControl:
         self.fig.canvas.draw_idle()
 
     def serialize(self, state_dict):
+
         # update state file
         state_dict["Inlet_Position"] = self.ui.le_Inset_Position.text()
         state_dict["Inset_Window"] = self.ui.le_Inset_Window.text()
@@ -2319,7 +2322,39 @@ class PlotControl:
         state_dict["ylabeltick_size"] = self.sb_YLabel_Tick_Size.value()
         state_dict["legend_size"] = self.sb_Legend_Size.value()
 
+        # args_dict = {'Code': cb_code, 'Folder': [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget],
+        #              'Polarization': cb_pol, 'Id': ccb_Id,
+        #              'Request': [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget], 'Toggle': cb_toggle,
+        #              'Remove': pb_Delete_Row, 'ScaleX': le_ScaleX, 'ScaleY': le_ScaleY, 'Axis': cb_axis,
+        #              'Type': [cb_type, cb_style], 'Filter': [ccb_Filter, le_Value]}
+
+        # serialize table widget
+        table_widget_state = {}
+        for k, v in self.plot_dict.items():
+            table_widget_state.update(
+                {k:
+                    {
+                        "Code": v['plot inputs']["Code"].currentText(),
+                        "Folder": v['plot inputs']["Folder"][0].text(),
+                        "Polarization": v['plot inputs']["Polarization"].currentText(),
+                        "Id": [[v['plot inputs']["Id"].itemText(i) for i in range(v['plot inputs']["Id"].count())], v['plot inputs']["Id"].currentText()],
+                        "Request": [v['plot inputs']["Request"][0].currentText(),
+                                    v['plot inputs']["Request"][1].currentText(),
+                                    v['plot inputs']["Request"][2].currentText()],
+                        "Toggle": v['plot inputs']["Toggle"].checkState(),
+                        "ScaleX": v['plot inputs']["ScaleX"].text(),
+                        "ScaleY": v['plot inputs']["ScaleY"].text(),
+                        "Axis": v['plot inputs']["Axis"].currentText(),
+                        "Type": [v['plot inputs']["Type"][0].currentText(), v['plot inputs']["Type"][1].currentText()],
+                        "Filter": [v['plot inputs']["Filter"][0].currentText(), v['plot inputs']["Filter"][1].text()],
+                    }
+                }
+            )
+
+        state_dict['plot_table_widget'] = table_widget_state
+
     def deserialize(self, state_dict):
+
         self.ui.le_Inset_Position.setText(state_dict["Inlet_Position"])
         self.ui.le_Inset_Window.setText(state_dict["Inset_Window"])
 
@@ -2355,3 +2390,59 @@ class PlotControl:
         self.sb_XLabel_Tick_Size.setValue(state_dict["xlabeltick_size"])
         self.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
         self.sb_Legend_Size.setValue(state_dict["legend_size"])
+
+        # for k, v in self.plot_dict.items():
+        #     table_widget_state.update(
+        #         {k:
+        #              {
+        #                  "Code": v['plot inputs']["Code"].currentText(),
+        #                  "Folder": v['plot inputs']["Folder"][0].text(),
+        #                  "Polarization": v['plot inputs']["Polarization"].currentText(),
+        #                  "Id": v['plot inputs']["Id"].currentText(),
+        #                  "Request": [v['plot inputs']["Request"][0].currentText(),
+        #                              v['plot inputs']["Request"][1].currentText(),
+        #                              v['plot inputs']["Request"][2].currentText()],
+        #                  "Toggle": v['plot inputs']["Toggle"].checkState(),
+        #                  "ScaleX": v['plot inputs']["ScaleX"].text(),
+        #                  "ScaleY": v['plot inputs']["ScaleY"].text(),
+        #                  "Axis": v['plot inputs']["Axis"].currentText(),
+        #                  "Type": [v['plot inputs']["Type"][0].currentText(), v['plot inputs']["Type"][1].currentText()],
+        #                  "Filter": [v['plot inputs']["Filter"][0].currentText(), v['plot inputs']["Filter"][1].text()],
+        #             }
+        #         }
+        #     )
+
+        table_widget_state = state_dict['plot_table_widget']
+        for i, (k, v) in enumerate(table_widget_state.items()):
+            if i > 0:
+                self.add_row()
+            args_dict = self.plot_dict[i]['plot inputs']
+
+            args_dict['Code'].setCurrentText(v["Code"])
+            args_dict['Folder'][0].setText(v["Folder"])  # [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget]
+
+            args_dict['Polarization'].setCurrentText(v["Polarization"])
+
+            # check checked items
+            for r, text in enumerate(v["Id"][0]):
+                if r != 0:
+                    args_dict['Id'].addItem(text)
+                    if args_dict['Id'].model().item(r).text() in v["Id"][1]:
+                        args_dict['Id'].model().item(r).setCheckState(Qt.Checked)
+
+            print(args_dict['Id'].model().rowCount())
+
+            args_dict['Request'][0].setCurrentText(v["Request"][0])  # [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget],
+            args_dict['Request'][1].setCurrentText(v["Request"][1])
+
+            # check checked items
+            for r in range(args_dict['Request'][2].model().rowCount()):
+                if args_dict['Request'][2].model().item(r).text() in v["Request"][2]:
+                    args_dict['Request'][2].model().item(r).setCheckState(Qt.Checked)
+
+            args_dict['Toggle'].setCheckState(v["Toggle"])  # cb_toggle,
+            args_dict['ScaleX'].setText(v["ScaleX"])  # : le_ScaleX,
+            args_dict['ScaleY'].setText(v["ScaleY"])  # : le_ScaleY,
+            args_dict['Axis'].setCurrentText(v["Axis"])  # cb_axis,
+            args_dict['Type'][0].setCurrentText(v["Type"][0])  # [cb_type, cb_style], 'Filter': [ccb_Filter, le_Value]}
+            args_dict['Type'][1].setCurrentText(v["Type"][1])

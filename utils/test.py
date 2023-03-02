@@ -49,6 +49,7 @@ fr = FileReader()
 # import numba as nb
 import pandas as pd
 
+
 # fig = plt.figure(figsize=(12, 6))
 # ax = fig.add_subplot(projection='3d')
 
@@ -838,7 +839,7 @@ def create_cst_sweep_import_random(p, v, v_int):
 
     # calculate number of random points needed
     n = len(v)
-    n_rand = 2 * int((n - 1)*math.factorial(n + p)/(math.factorial(n)*math.factorial(p)))
+    n_rand = 2 * int((n - 1) * math.factorial(n + p) / (math.factorial(n) * math.factorial(p)))
     ic(p, n, n_rand)
 
     d = {}
@@ -920,7 +921,6 @@ def plot_bar_single():
             for pair in product(*t):
                 yield pair
 
-
     filename = r'D:\CST Studio\Hook Coupler Study\3. Optimize Hook Coupler Geometry\Angle_sweep_2hc_1fpc.xlsx'
     data = pd.read_excel(filename, sheet_name='Sheet1')
 
@@ -936,7 +936,7 @@ def plot_bar_single():
     print(len(angle_pair))
     ic(angle_pair)
     # ic(f_multi)
-    fig, ax = plt.subplots(3,sharex=True)
+    fig, ax = plt.subplots(3, sharex=True)
     Qext_max, RQT_max, ZT_max = [], [], []
     for i, f in enumerate(f_multi):
         # ax[0].scatter(f, Qext_multi[i], label=angle_pair[i], marker='o', ec='k')
@@ -952,11 +952,10 @@ def plot_bar_single():
     ind = np.arange(N)
     width = 0.25
 
-
     bars = ax[0].bar(ind, Qext_max, label='$Q_{ext}$', color='lightcoral', edgecolor='k')
     ax[0].plot(ind, Qext_max, lw=2, marker='o', mec='k')
     ax[0].set_ylabel('max($Q_\mathrm{ext})$ $[\cdot]$')
-    bars1 = ax[1].bar(ind, RQT_max, label='$(R/Q)_T$', color='tab:blue',  edgecolor='k')
+    bars1 = ax[1].bar(ind, RQT_max, label='$(R/Q)_T$', color='tab:blue', edgecolor='k')
     ax[1].plot(ind, RQT_max, lw=2, marker='o', color='lightcoral', mec='k')
     ax[1].set_ylabel('max($(R/Q)_\mathrm{T}$ $ ~\mathrm{[\Omega]}$')
     bars2 = ax[2].bar(ind, ZT_max, label='$Z_T$', color='black', edgecolor='k')
@@ -973,14 +972,12 @@ def plot_bar_single():
     ax[2].set_xticklabels(angle_pair, rotation=90)
     ax[2].set_xlabel(r'($\alpha_\mathrm{HC, FPC}, \alpha_\mathrm{HC}$)')
 
-
     ax[0].set_yscale('log')
     # ax[1].set_yscale('log')
     ax[2].set_yscale('log')
     # ax.set_ylim(0, 3e6)
     # ax.legend(loc="upper center", ncol=10, bbox_to_anchor=(0.5, 1.65))
     # ax.legend(loc="upper right")
-
 
     plt.show()
 
@@ -1024,7 +1021,8 @@ def plot_bar_double():
             ax[2].bar(f, ZT, alpha=0.5)
             ax[2].set_ylabel('$Z_\mathrm{T}$ $\mathrm{[k \Omega/m]}$')
 
-            ax[2].set_xlabel(r'$\alpha_\mathrm{HC, FPC} = ' + fr'{aa[0]}' + r'^\circ, \alpha_\mathrm{HC} = ' + fr'{aa[0]}' + '^\circ$')
+            ax[2].set_xlabel(
+                r'$\alpha_\mathrm{HC, FPC} = ' + fr'{aa[0]}' + r'^\circ, \alpha_\mathrm{HC} = ' + fr'{aa[0]}' + '^\circ$')
 
             ax[0].set_yscale('log')
             ax[2].set_yscale('log')
@@ -1048,10 +1046,11 @@ def plot_bar_double():
             ax[1].set_ylabel('$(R/Q)_\mathrm{T}$ $ ~\mathrm{[\Omega]}$')
 
             ax[2].stem(f, ZT, linefmt='k')
-            ax[2].scatter(f, ZT,  marker='o', linewidth=1, edgecolor='k', zorder=10)
+            ax[2].scatter(f, ZT, marker='o', linewidth=1, edgecolor='k', zorder=10)
             ax[2].set_ylabel('$Z_\mathrm{T}$ $\mathrm{[k \Omega/m]}$')
 
-            ax[2].set_xlabel(r'$\alpha_\mathrm{HC, FPC} = ' + fr'{aa[0]}' + r'^\circ, \alpha_\mathrm{HC} = ' + fr'{aa[0]}' + '^\circ$')
+            ax[2].set_xlabel(
+                r'$\alpha_\mathrm{HC, FPC} = ' + fr'{aa[0]}' + r'^\circ, \alpha_\mathrm{HC} = ' + fr'{aa[0]}' + '^\circ$')
 
             ax[0].set_yscale('log')
             ax[2].set_yscale('log')
@@ -1146,7 +1145,7 @@ def plot_bar_double():
 
 #########################################
 def func(x):
-    return 1/x
+    return 1 / x
 
 
 # def monte_carlo():
@@ -1165,7 +1164,6 @@ def func(x):
 #
 #
 # monte_carlo()
-
 
 
 def ellipse_tangent_(z, *data):
@@ -1214,9 +1212,9 @@ def ellipse_tangent_(z, *data):
     x1, y1, x2, y2 = z
 
     for i in range(10):
-        x1 = h + (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))/(A ** 2 * b ** 2 * (y2 - q))
+        x1 = h + (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) / (A ** 2 * b ** 2 * (y2 - q))
         y1 = k + np.sqrt(b ** 2 * (1 - (x1 - h) ** 2 / a ** 2))
-        x2 = x1 - (a ** 2 * (y1 - y2) * (y1 - k))/(-b ** 2 * (x1 - h))
+        x2 = x1 - (a ** 2 * (y1 - y2) * (y1 - k)) / (-b ** 2 * (x1 - h))
         y2 = q + np.sqrt(B ** 2 * (1 - (x2 - p) ** 2 / A ** 2))
 
     return x1, y1, x2, y2
@@ -1234,8 +1232,8 @@ def jac(z, *data):
     # f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
 
     df1_dx1 = A ** 2 * b ** 2 * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
-    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)**2)
-    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p)**2 * (y1 - k))
+    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k) ** 2)
+    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) ** 2 * (y1 - k))
     df1_dy2 = A ** 2 * b ** 2 * (x1 - h) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
 
     df2_dx1 = 2 * (x1 - h) / a ** 2
@@ -1249,9 +1247,9 @@ def jac(z, *data):
     df3_dy2 = 2 * (y2 - q) / B ** 2
 
     df4_dx1 = -b ** 2 * ((x1 - x2) + (x1 - h)) / (a ** 2 * (y1 - y2) * (y1 - k))
-    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k))**2)
+    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k)) ** 2)
     df4_dx2 = b ** 2 * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k))
-    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2)**2 * (y1 - k))
+    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) ** 2 * (y1 - k))
 
     J = [[df1_dx1, df1_dy1, df1_dx2, df1_dy2],
          [df2_dx1, df2_dy1, df2_dx2, df2_dy2],
@@ -1307,6 +1305,8 @@ def jac(z, *data):
 # plt.show()
 
 import scipy.io as spio
+
+
 def plot_mat(filepath):
     # load mat file
     data = {}
@@ -1329,71 +1329,22 @@ def plot_mat(filepath):
 
 
 filepath = r'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\Impedance_all_Fig_6.20.mat'
-plot_mat(filepath)
+# plot_mat(filepath)
 
-# importing libraries
-from PyQt5.QtWidgets import *
-from PyQt5 import QtCore, QtGui
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-import sys
+from math import cos, exp, pi
+from scipy.integrate import quad
 
 
-class Window(QMainWindow):
-
-    def __init__(self):
-        super().__init__()
-
-        # setting title
-        self.setWindowTitle("Python ")
-
-        # setting geometry
-        self.setGeometry(100, 100, 500, 400)
-
-        # calling method
-        self.UiComponents()
-
-        # showing all the widgets
-        self.show()
-
-    # method for components
-    def UiComponents(self):
-        # opening color dialog
-        color = QColorDialog.getColor()
-
-        # creating label to display the color
-        label = QLabel(self)
-
-        # setting geometry to the label
-        label.setGeometry(100, 100, 200, 60)
-
-        # making label multi line
-        label.setWordWrap(True)
-
-        # setting stylesheet of the label
-        label.setStyleSheet("QLabel"
-                            "{"
-                            "border : 5px solid black;"
-                            "}")
-
-        # setting text to the label
-        label.setText(str(color))
-
-        # setting graphic effect to the label
-        graphic = QGraphicsColorizeEffect(self)
-
-        # setting color to the graphic
-        graphic.setColor(color)
-
-        # setting graphic to the label
-        label.setGraphicsEffect(graphic)
+# function we want to integrate
+def f(x):
+    k = 1/(2*np.pi*8.854e-12)
+    b = 0.1
+    d = 0.15
+    lamda = 5/(2*np.pi*b)
+    return k*lamda*1/np.sqrt(b**2+d**2 - 2*b*d*np.cos(x))
 
 
-# create pyqt5 app
-App = QApplication(sys.argv)
+# call quad to integrate f from -2 to 2
+res, err = quad(f, 0, 2*np.pi)
 
-# create the instance of our Window
-window = Window()
-
-# start the app
-sys.exit(App.exec())
+print("The numerical result is {:2e} (+-{:g})".format(res, err))
