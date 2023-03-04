@@ -1,4 +1,5 @@
 import pickle
+import time
 
 from PyQt5 import QtGui
 from labellines import labelLines
@@ -17,6 +18,44 @@ fr = FileReader()
 
 file_color = 'yellow'
 DEBUG = True
+
+MATPLOTLIB_COLORS = {'Default': plt.rcParams['axes.prop_cycle'].by_key()['color'],
+                     'fivethirtyeight': ["#008fd5", "#fc4f30", "#e5ae38", "#6d904f", "#8b8b8b", "#810f7c"],
+                     'ggplot': ['#E24A33', '#348ABD', '#988ED5', '#777777', '#FBC15E', '#8EBA42', '#FFB5B8'],
+                     'science': ['#0C5DA5', '#00B945', '#FF9500', '#FF2C00', '#845B97', '#474747', '#9e9e9e'],
+                     'seaborn': ['#4C72B0', '#55A868', '#C44E52', '#8172B2', '#CCB974', '#64B5CD'],
+                     'seaborn-bright': ['#003FFF', '#03ED3A', '#E8000B', '#8A2BE2', '#FFC400', '#00D7FF'],
+                     'seaborn-colorblind': ['#0072B2', '#009E73', '#D55E00', '#CC79A7', '#F0E442', '#56B4E9'],
+                     'seaborn-dark-palette': ['#001C7F', '#017517', '#8C0900', '#7600A1', '#B8860B', '#006374'],
+                     'seaborn-deep': ['#4C72B0', '#55A868', '#C44E52', '#8172B2', '#CCB974', '#64B5CD'],
+                     'seaborn-muted': ['#4878CF', '#6ACC65', '#D65F5F', '#B47CC7', '#C4AD66', '#77BEDB'],
+                     'seaborn-pastel': ['#92C6FF', '#97F0AA', '#FF9F9A', '#D0BBFF', '#FFFEA3', '#B0E0E6'],
+                     'Solarize_Light2': ['#268BD2', '#2AA198', '#859900', '#B58900', '#CB4B16', '#DC322F', '#D33682',
+                                         '#6C71C4'],
+                     'bmh': ['#348ABD', '#A60628', '#7A68A6', '#467821', '#D55E00', '#CC79A7', '#56B4E9', '#009E73',
+                             '#F0E442',
+                             '#0072B2'],
+                     'bright': ['#4477AA', '#EE6677', '#228833', '#CCBB44', '#66CCEE', '#AA3377', '#BBBBBB'],
+                     'classic': ['b', 'g', 'r', 'c', 'm', 'y', 'k'],
+                     'dark_background': ['#8dd3c7', '#feffb3', '#bfbbd9', '#fa8174', '#81b1d2', '#fdb462', '#b3de69',
+                                         '#bc82bd',
+                                         '#ccebc4', '#ffed6f'],
+                     'grayscale': ['0.00', '0.40', '0.60', '0.70'],
+                     'high-contrast': ['#004488', '#DDAA33', '#BB5566'],
+                     'high-vis': ['#0d49fb', '#e6091c', '#26eb47', '#8936df', '#fec32d', '#25d7fd'],
+                     'ieee': ['k', 'r', 'b', 'g'],
+                     'light': ['#77AADD', '#EE8866', '#EEDD88', '#FFAABB', '#99DDFF', '#44BB99', '#BBCC33', '#AAAA00',
+                               '#DDDDDD'],
+                     'muted': ['#CC6677', '#332288', '#DDCC77', '#117733', '#88CCEE', '#882255', '#44AA99', '#999933',
+                               '#AA4499', '#DDDDDD'],
+                     'retro': ['#4165c0', '#e770a2', '#5ac3be', '#696969', '#f79a1e', '#ba7dcd'],
+                     'scatter': ['#0C5DA5', '#00B945', '#FF9500', '#FF2C00', '#845B97', '#474747', '#9e9e9e'],
+                     'std-colors': ['#0C5DA5', '#00B945', '#FF9500', '#FF2C00', '#845B97', '#474747', '#9e9e9e'],
+                     'tableau-colorblind10': ['#006BA4', '#FF800E', '#ABABAB', '#595959', '#5F9ED1', '#C85200',
+                                              '#898989',
+                                              '#A2C8EC', '#FFBC79', '#CFCFCF'],
+                     'vibrant': ['#EE7733', '#0077BB', '#33BBEE', '#EE3377', '#CC3311', '#009988', '#BBBBBB']
+                     }
 
 
 def print_(*arg):
@@ -51,7 +90,12 @@ class PlotControl:
         self.axins = None
         self.indicate_inset = None
         self.leg = None
-        self.ui.vl_Color.addWidget(self.plt.w_Color)
+        self.le_Color = QLineEdit()
+        self.le_Color.setReadOnly(True)
+        self.pb_Color = self.matplotlib_colors()
+        self.ui.gl_Color.addWidget(self.le_Color, 0, 0, 1, 1)
+        self.ui.gl_Color.addWidget(self.pb_Color, 1, 0, 1, 1)
+        self.ui.gl_Custom_Color.addWidget(self.plt.w_Color)
 
         # class variables
         self.plotID_count = 0
@@ -92,6 +136,26 @@ class PlotControl:
 
         self.initUI()
         self.signals()
+
+    def matplotlib_colors(self):
+        pb_Color = QPushButton()
+        menu = QMenu()
+        menu.triggered.connect(lambda x: pb_Color.setStyleSheet(f"background-color: {x.defaultWidget().text()};"))
+        menu.triggered.connect(lambda x: pb_Color.setText(x.defaultWidget().text()))
+        menu.triggered.connect(lambda x: self.le_Color.setText(x.defaultWidget().text()))
+        menu.triggered.connect(lambda x: self.le_Color.setStyleSheet(f"background-color: {x.defaultWidget().text()};"))
+        pb_Color.setMenu(menu)
+
+        for k, vals in MATPLOTLIB_COLORS.items():
+            sub_menu = menu.addMenu(k)
+            for v in vals:
+                l = QLabel(str(v))
+                action = QWidgetAction(sub_menu)
+                l.setStyleSheet(f"background-color: {v};")
+                action.setDefaultWidget(l)
+                sub_menu.addAction(action)
+
+        return pb_Color
 
     def createPlotTypeWidget(self):
         # plottypeselector
@@ -444,7 +508,9 @@ class PlotControl:
                 ax_selected.set_xlim(min(xr), max(xr))
 
     def signals(self):
+        self.ui.pb_Reset_Colors.clicked.connect(lambda: self.reset_colors())
         # self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
+        self.le_Color.textChanged.connect(lambda: self.plt.update_object_color(self.le_Color.text()))
 
         # plot abci impedance
         self.ui.pb_Plot.clicked.connect(lambda: self.plot())
@@ -511,7 +577,7 @@ class PlotControl:
 
     def initUI(self):
         # self.createPlotTypeWidget()
-
+        self.ui.w_Custom_Color.hide()
         # add row to table
         self.ui.tableWidget.setRowCount(1)  # and one row in the table
         self.table_control()
@@ -556,10 +622,10 @@ class PlotControl:
                 try:
                     self.make_abci_plot(key)
                 except KeyError:
-                    print_("A key error occured. Please make sure that a directory containing valid ABCI output"
+                    print_("A key error occurred. Please make sure that a directory containing valid ABCI output"
                            "files is loaded.")
                     return
-                # self.plot_impedance(self.args_dict, i, plot_count)
+
             elif code == 'SLANS':
                 pass
             else:
@@ -594,13 +660,15 @@ class PlotControl:
 
         # plot inset if check box is checked
         self.plot_inset()
-        # self.fig.canvas.draw_idle()
 
         # plot thresholds if threshold is checked
         if self.ui.cb_Longitudinal_Threshold.checkState() == 2:
             self.calc_limits('monopole')
         if self.ui.cb_Transverse_Threshold.checkState() == 2:
             self.calc_limits('dipole')
+
+        self.update_labels()
+        self.fig.canvas.draw_idle()
 
         # except Exception as e:
         #     self.log.error("Please enter a valid argument: Exception: ", e)
@@ -670,7 +738,7 @@ class PlotControl:
 
         filter_ = []
         f = args['Filter']
-        filter_.append(f[0].currentText())
+        filter_.append(f[0].lineEdit().text())
         filter_.append(f[1].text())
 
         # try:
@@ -854,7 +922,7 @@ class PlotControl:
                 type_.append(t[1].currentText())
 
                 f = args['Filter']
-                filter_.append(f[0].currentText())
+                filter_.append(f[0].lineEdit().text())
                 filter_.append(f[1].text())
 
                 try:
@@ -897,13 +965,6 @@ class PlotControl:
             for line2D in self.plot_dict[pid]['plot object'].values():
                 line2D[0].set(alpha=0)
 
-        self.ax.set_prop_cycle(None)
-        cycle = self.ax._get_lines.prop_cycler
-
-        # update colors, loop over all lines and give color in ascending order
-        for line2D in self.ax.get_lines():
-            line2D.set_color(next(cycle)['color'])
-
         self.update_labels()
         self.fig.canvas.draw_idle()
 
@@ -931,7 +992,7 @@ class PlotControl:
                 type_.append(t[1].currentText())
 
                 f = args['Filter']
-                filter_.append(f[0].currentText())
+                filter_.append(f[0].lineEdit().text())
                 filter_.append(f[1].text())
 
                 try:
@@ -949,11 +1010,12 @@ class PlotControl:
                 if plot_data_inputs == inputs_compare:
                     if self.plot_dict[pid]["plot object"] != {}:
                         for line2D in self.plot_dict[pid]['plot object'].values():
-                            line2D[0].set(alpha=1)
+                            line2D[0][0].set(alpha=1)
                         self.fig.canvas.draw_idle()
                     else:
                         # plot with modified inputs
                         self.plot_other(self.plot_dict[pid], pid)
+                        print("It is instead in here")
                 else:
                     # pop previous entry from plot and dictionary
                     for vals in self.plot_dict[pid]['plot object'].values():
@@ -968,21 +1030,12 @@ class PlotControl:
                     self.plot_other(self.plot_dict[pid], pid)
 
             else:
-                # self.ax.clear()
-                # make plot
                 self.plot_other(self.plot_dict[pid], pid)
 
         else:
             for vals in self.plot_dict[pid]['plot object'].values():
                 for line2D in vals.values():
                     line2D[0].set(alpha=0)
-
-        self.ax.set_prop_cycle(None)
-        cycle = self.ax._get_lines.prop_cycler
-
-        # update colors, loop over all lines and give color in ascending order
-        for line2D in self.ax.get_lines():
-            line2D.set_color(next(cycle)['color'])
 
         self.update_labels()
         self.fig.canvas.draw_idle()
@@ -1148,9 +1201,9 @@ class PlotControl:
         filename = args["plot inputs"]['Folder'][0].text()
         state = args["plot inputs"]['Toggle'].checkState()
         axis = args["plot inputs"]['Axis'].currentText()
-        type_ = args["plot inputs"]['Type'][0].currentText()
+        type_ = [args["plot inputs"]['Type'][0].currentText(), args["plot inputs"]['Type'][1].currentText()]
         style = args["plot inputs"]['Type'][1].currentText()
-        filter_ = args["plot inputs"]['Filter'][0].currentText()
+        filter_ = [args["plot inputs"]['Filter'][0].lineEdit().text(), args["plot inputs"]['Filter'][1].text()]
         value = args["plot inputs"]['Filter'][1].text()
 
         try:
@@ -1181,11 +1234,11 @@ class PlotControl:
             if requestY != [] and requestX != []:
                 if filename.split('.')[-1] == 'xlsx':
                     # get sheets
-                    if filter_ == "None" or value == "":
+                    if filter_[0] == "None" or value == "":
                         self.other_data_filtered = self.other_data[key][id_]
                     else:
                         self.other_data_filtered = self.other_data[key][id_][
-                            self.other_data[key][id_][filter_] == value]
+                            self.other_data[key][id_][filter_[0]] == value]
 
                     x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                     self.freq_glob = x_data
@@ -1195,7 +1248,7 @@ class PlotControl:
                         args["plot data"][id_].update({j: {"x": x_data, "y": y}})
 
                         if axis == 'Left':
-                            if type_ == 'Line':
+                            if type_[0] == 'Line':
                                 args["plot object"][id_].update(
                                     {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
                             else:
@@ -1207,7 +1260,7 @@ class PlotControl:
                             self.ax.set_ylabel('$Y$ []')
                             self.ax.set_xlabel('$X$ []')
                         else:
-                            if type_ == 'Line':
+                            if type_[0] == 'Line':
                                 args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, label=requestY[j],
                                                                                        linewidth=2,
                                                                                        linestyle=style,
@@ -1224,16 +1277,12 @@ class PlotControl:
             else:
                 # try to filter self.other_data
                 # try:
-                filter_ = args["plot inputs"]['Filter'][0].currentText()
+                filter_ = [args["plot inputs"]['Filter'][0].lineEdit().text(), args["plot inputs"]['Filter'][1].text()]
                 value = args["plot inputs"]['Filter'][1].text()
-                if filter_ == "None" or value == "":
+                if filter_[0] == "None" or value == "":
                     self.other_data_filtered = self.other_data[key]
                 else:
-                    self.other_data_filtered = self.other_data[key][self.other_data[key][filter_] == value]
-                # except Exception as e:
-                #     print_("plot_control: Exception::", e)
-                #     self.other_data_filtered = self.other_data[key]
-
+                    self.other_data_filtered = self.other_data[key][self.other_data[key][filter_[0]] == value]
                 x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                 self.freq_glob = x_data
 
@@ -1242,7 +1291,7 @@ class PlotControl:
                     args["plot data"][id_].update({j: {"x": x_data, "y": y}})
 
                     if axis == 'Left':
-                        if type_ == 'Line':
+                        if type_[0] == 'Line':
                             args["plot object"][id_].update(
                                 {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
                         else:
@@ -1254,7 +1303,7 @@ class PlotControl:
                         self.ax.set_ylabel('$Y$ []')
                         self.ax.set_xlabel('$X$ []')
                     else:
-                        if type_ == 'Line':
+                        if type_[0] == 'Line':
                             args["plot object"][id_].update(
                                 {j: self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
                         else:
@@ -1267,6 +1316,17 @@ class PlotControl:
             pass
         else:
             print_("Please specify columns to plot")
+
+    def reset_colors(self):
+        self.ax.set_prop_cycle(None)
+        cycle = self.ax._get_lines.prop_cycler
+
+        # update colors, loop over all lines and give color in ascending order
+        for line2D in self.ax.get_lines():
+            line2D.set_color(next(cycle)['color'])
+
+        self.update_labels()
+        self.fig.canvas.draw_idle()
 
     def plot_mat(self, filepath):
         # load mat file
@@ -1452,7 +1512,7 @@ class PlotControl:
         # checkable combo box
         ccb_Filter = QCheckableComboBox()
         ccb_Filter.setSizePolicy(sizePolicy)
-        ccb_Filter.addItem("None")
+        ccb_Filter.addItem("All")
         l_Filter_Widget.addWidget(ccb_Filter)
 
         # line edit
@@ -1527,6 +1587,26 @@ class PlotControl:
             else self.populate_combobox_list(cb_style, scatter_marker))
 
         table.setCellWidget(row_ind, 9, w_Type)
+
+        # pb_Color = QPushButton()
+        # menu = QMenu()
+        # menu.triggered.connect(lambda x: pb_Color.setStyleSheet(f"background-color: {x.defaultWidget().text()};"))
+        # menu.triggered.connect(lambda x: pb_Color.setText(x.defaultWidget().text()))
+        # # menu.triggered.connect(lambda x: print(x.defaultWidget().text()))
+        # pb_Color.setMenu(menu)
+        #
+        # for k, vals in MATPLOTLIB_COLORS.items():
+        #     sub_menu = menu.addMenu(k)
+        #     for v in vals:
+        #         l = QLabel(str(v))
+        #         action = QWidgetAction(sub_menu)
+        #         l.setStyleSheet(f"background-color: {v};")
+        #         action.setDefaultWidget(l)
+        #         sub_menu.addAction(action)
+        #         # action.triggered.connect(lambda: pb_Color.setStyleSheet(f"background-color: {v};"))
+        #         # action.triggered.connect(lambda: pb_Color.setText(str(v)))
+        #
+        # table.setCellWidget(row_ind, 10, pb_Color)
 
         args_dict = {'Code': cb_code, 'Folder': [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget],
                      'Polarization': cb_pol, 'Id': ccb_Id,
@@ -2104,7 +2184,7 @@ class PlotControl:
         self.ui.tableWidget.setColumnWidth(6, 75)
         self.ui.tableWidget.setColumnWidth(7, 75)
         self.ui.tableWidget.setColumnWidth(8, 75)
-        self.ui.tableWidget.setColumnWidth(10, 200)
+        self.ui.tableWidget.setColumnWidth(10, 100)
 
     @staticmethod
     def validating(le):
@@ -2194,6 +2274,7 @@ class PlotControl:
             for cb in cb_list:
                 # clear combobox item if any
                 cb.clear()
+                cb.addItem("All")
 
                 for a in dd.keys():
                     cb.addItem(f"{a}")
@@ -2206,6 +2287,7 @@ class PlotControl:
             for cb in cb_list:
                 # clear combobox item if any
                 cb.clear()
+                cb.addItem("All")
 
                 for a in df.keys():
                     cb.addItem(f"{a}")
@@ -2218,6 +2300,7 @@ class PlotControl:
             for cb in cb_list:
                 # clear combobox item if any
                 cb.clear()
+                cb.addItem("All")
                 for a in df.keys():
                     cb.addItem(f"{a}")
 
@@ -2285,6 +2368,16 @@ class PlotControl:
 
         self.fig.canvas.draw_idle()
 
+    def get_line_properties(self, line):
+        attr_dict = {'ls': line.get_linestyle(), 'color': line.get_color(), 'lw': line.get_linewidth(),
+                     'ms': line.get_markersize(), 'mec': line.get_markeredgecolor(), 'mew': line.get_markeredgewidth(),
+                     'mfc': line.get_markerfacecolor()}
+
+        return attr_dict
+
+    def set_line_properties(self, line, attr_dict):
+        line.set(attr_dict)
+
     def serialize(self, state_dict):
 
         # update state file
@@ -2322,12 +2415,6 @@ class PlotControl:
         state_dict["ylabeltick_size"] = self.sb_YLabel_Tick_Size.value()
         state_dict["legend_size"] = self.sb_Legend_Size.value()
 
-        # args_dict = {'Code': cb_code, 'Folder': [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget],
-        #              'Polarization': cb_pol, 'Id': ccb_Id,
-        #              'Request': [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget], 'Toggle': cb_toggle,
-        #              'Remove': pb_Delete_Row, 'ScaleX': le_ScaleX, 'ScaleY': le_ScaleY, 'Axis': cb_axis,
-        #              'Type': [cb_type, cb_style], 'Filter': [ccb_Filter, le_Value]}
-
         # serialize table widget
         table_widget_state = {}
         for k, v in self.plot_dict.items():
@@ -2337,7 +2424,8 @@ class PlotControl:
                         "Code": v['plot inputs']["Code"].currentText(),
                         "Folder": v['plot inputs']["Folder"][0].text(),
                         "Polarization": v['plot inputs']["Polarization"].currentText(),
-                        "Id": [[v['plot inputs']["Id"].itemText(i) for i in range(v['plot inputs']["Id"].count())], v['plot inputs']["Id"].currentText()],
+                        "Id": [[v['plot inputs']["Id"].itemText(i) for i in range(v['plot inputs']["Id"].count())],
+                               v['plot inputs']["Id"].currentText()],
                         "Request": [v['plot inputs']["Request"][0].currentText(),
                                     v['plot inputs']["Request"][1].currentText(),
                                     v['plot inputs']["Request"][2].currentText()],
@@ -2346,12 +2434,18 @@ class PlotControl:
                         "ScaleY": v['plot inputs']["ScaleY"].text(),
                         "Axis": v['plot inputs']["Axis"].currentText(),
                         "Type": [v['plot inputs']["Type"][0].currentText(), v['plot inputs']["Type"][1].currentText()],
-                        "Filter": [v['plot inputs']["Filter"][0].currentText(), v['plot inputs']["Filter"][1].text()],
+                        "Filter": [v['plot inputs']["Filter"][0].lineEdit().text(), v['plot inputs']["Filter"][1].text()]
                     }
                 }
             )
 
         state_dict['plot_table_widget'] = table_widget_state
+
+        plot_objects_attr = {"lines": [self.get_line_properties(line) for line in self.ax.get_lines()],
+                             "collections": [self.get_line_properties(coll) for coll in self.ax.collections],
+                             "patches": [],
+                             }
+        state_dict['plot_objects_attr'] = plot_objects_attr
 
     def deserialize(self, state_dict):
 
@@ -2391,31 +2485,12 @@ class PlotControl:
         self.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
         self.sb_Legend_Size.setValue(state_dict["legend_size"])
 
-        # for k, v in self.plot_dict.items():
-        #     table_widget_state.update(
-        #         {k:
-        #              {
-        #                  "Code": v['plot inputs']["Code"].currentText(),
-        #                  "Folder": v['plot inputs']["Folder"][0].text(),
-        #                  "Polarization": v['plot inputs']["Polarization"].currentText(),
-        #                  "Id": v['plot inputs']["Id"].currentText(),
-        #                  "Request": [v['plot inputs']["Request"][0].currentText(),
-        #                              v['plot inputs']["Request"][1].currentText(),
-        #                              v['plot inputs']["Request"][2].currentText()],
-        #                  "Toggle": v['plot inputs']["Toggle"].checkState(),
-        #                  "ScaleX": v['plot inputs']["ScaleX"].text(),
-        #                  "ScaleY": v['plot inputs']["ScaleY"].text(),
-        #                  "Axis": v['plot inputs']["Axis"].currentText(),
-        #                  "Type": [v['plot inputs']["Type"][0].currentText(), v['plot inputs']["Type"][1].currentText()],
-        #                  "Filter": [v['plot inputs']["Filter"][0].currentText(), v['plot inputs']["Filter"][1].text()],
-        #             }
-        #         }
-        #     )
-
         table_widget_state = state_dict['plot_table_widget']
+        # print(table_widget_state)
         for i, (k, v) in enumerate(table_widget_state.items()):
             if i > 0:
                 self.add_row()
+
             args_dict = self.plot_dict[i]['plot inputs']
 
             args_dict['Code'].setCurrentText(v["Code"])
@@ -2424,15 +2499,15 @@ class PlotControl:
             args_dict['Polarization'].setCurrentText(v["Polarization"])
 
             # check checked items
+            args_dict['Id'].clear()  # Not optimal
             for r, text in enumerate(v["Id"][0]):
-                if r != 0:
-                    args_dict['Id'].addItem(text)
-                    if args_dict['Id'].model().item(r).text() in v["Id"][1]:
-                        args_dict['Id'].model().item(r).setCheckState(Qt.Checked)
+                # if r != 0:
+                args_dict['Id'].addItem(text)
+                if args_dict['Id'].model().item(r).text() in v["Id"][1].split(','):
+                    args_dict['Id'].model().item(r).setCheckState(Qt.Checked)
 
-            print(args_dict['Id'].model().rowCount())
-
-            args_dict['Request'][0].setCurrentText(v["Request"][0])  # [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget],
+            args_dict['Request'][0].setCurrentText(
+                v["Request"][0])  # [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget],
             args_dict['Request'][1].setCurrentText(v["Request"][1])
 
             # check checked items
@@ -2440,9 +2515,27 @@ class PlotControl:
                 if args_dict['Request'][2].model().item(r).text() in v["Request"][2]:
                     args_dict['Request'][2].model().item(r).setCheckState(Qt.Checked)
 
-            args_dict['Toggle'].setCheckState(v["Toggle"])  # cb_toggle,
-            args_dict['ScaleX'].setText(v["ScaleX"])  # : le_ScaleX,
-            args_dict['ScaleY'].setText(v["ScaleY"])  # : le_ScaleY,
-            args_dict['Axis'].setCurrentText(v["Axis"])  # cb_axis,
-            args_dict['Type'][0].setCurrentText(v["Type"][0])  # [cb_type, cb_style], 'Filter': [ccb_Filter, le_Value]}
+            args_dict['Toggle'].setCheckState(v["Toggle"])
+            args_dict['ScaleX'].setText(v["ScaleX"])
+            args_dict['ScaleY'].setText(v["ScaleY"])
+            args_dict['Axis'].setCurrentText(v["Axis"])
+            args_dict['Type'][0].setCurrentText(v["Type"][0])
             args_dict['Type'][1].setCurrentText(v["Type"][1])
+
+            # check checked items
+            for r in range(args_dict['Filter'][0].model().rowCount()):
+                if args_dict['Filter'][0].model().item(r).text() in v['Filter'][0]:
+                    args_dict['Filter'][0].model().item(r).setCheckState(Qt.Checked)
+
+            args_dict['Filter'][1].setText(v["Filter"][1])
+
+        self.plot()
+        plot_objects_attr = state_dict['plot_objects_attr']
+        for n, line in enumerate(self.ax.get_lines()):
+            line.set(**plot_objects_attr['lines'][n])
+
+        # for n, coll in enumerate(self.ax.collections):
+        #     coll.set(**plot_objects_attr['collections'][n])
+
+        self.update_labels()
+        self.fig.canvas.draw_idle()

@@ -55,7 +55,7 @@
     "N_Elites_To_Cross": 15,
     "Mutation_Factor": 50,
     "Chaos_Factor": 50,
-    "Populate_Objectives": "",
+    "Populate_Objectives": "freq, Epk/Eacc, Bpk/Eacc, ZL, ZT",
     "Populate_Constraints": "",
     "Eigen_Shape_Entry_Mode": 0,
     "Eigen_Shape Space": "D:/Dropbox/CavityDesignHub/MuCol_Study/Cavities/cavity_data_mid_end_cells.json",
@@ -201,7 +201,7 @@
                     "NLSF_scale_1.621797_9",
                     "TESLA"
                 ],
-                "C3795_1300MHZ, ILC-LL"
+                "C3795_1300MHZ"
             ],
             "Request": [
                 "Transverse Impedance Magnitude",
@@ -274,11 +274,9 @@
             "Id": [
                 [
                     "All",
-                    "Sheet1",
-                    "Sheet1",
                     "Sheet1"
                 ],
-                "Sheet1, Sheet1"
+                "Sheet1"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
@@ -297,6 +295,96 @@
                 "",
                 ""
             ]
+        }
+    },
+    "plot_objects_attr": {
+        "lines": [
+            {
+                "ls": "-",
+                "color": "#97F0AA",
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": "#97F0AA",
+                "mew": 1.0,
+                "mfc": "#97F0AA"
+            },
+            {
+                "ls": "-",
+                "color": "#ff7f0e",
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": "#ff7f0e",
+                "mew": 1.0,
+                "mfc": "#ff7f0e"
+            },
+            {
+                "ls": "None",
+                "color": "#777777",
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
+                "mew": 1.0,
+                "mfc": "#777777"
+            }
+        ],
+        "collections": [],
+        "patches": []
+    },
+    "CCB Populate Objectives": "freq, Epk/Eacc, Bpk/Eacc, ZL, ZT",
+    "Optimization Objective Table": {
+        "0": {
+            "0": {
+                "QLabel": "freq"
+            },
+            "1": {
+                "QComboBox": 0
+            },
+            "2": {},
+            "3": {}
+        },
+        "1": {
+            "0": {
+                "QLabel": "Epk/Eacc"
+            },
+            "1": {
+                "QComboBox": 0
+            },
+            "2": {},
+            "3": {}
+        },
+        "2": {
+            "0": {
+                "QLabel": "Bpk/Eacc"
+            },
+            "1": {
+                "QComboBox": 1
+            },
+            "2": {},
+            "3": {}
+        },
+        "3": {
+            "0": {
+                "QLabel": "ZL"
+            },
+            "1": {
+                "QComboBox": 0
+            },
+            "2": {
+                "QLineEdit": "1, 2, 5"
+            },
+            "3": {}
+        },
+        "4": {
+            "0": {
+                "QLabel": "ZT"
+            },
+            "1": {
+                "QComboBox": 0
+            },
+            "2": {
+                "QLineEdit": "0.7, 1.3, 2.25, 5"
+            },
+            "3": {}
         }
     }
 }

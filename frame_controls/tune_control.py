@@ -1039,167 +1039,6 @@ class TuneControl:
             # show boundary conditions
             self.ui.w_BC.show()
 
-    def serialize(self, state_dict):
-        state_dict['Filename'] = self.ui.le_Generated_Shape_Space_Name.text()
-        # update state file
-        state_dict["Frequency"] = self.ui.le_Freq.text()
-        state_dict["Cell_Type"] = self.ui.cb_Cell_Type.currentIndex()
-        state_dict["Tune_Option"] = self.ui.cb_Tune_Option.currentIndex()
-        state_dict["Method"] = self.ui.cb_Shape_Space_Generation_Algorithm.currentIndex()
-
-        state_dict["No_Of_Shapes_Monte_Carlo"] = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
-
-        state_dict["Tuner"] = self.ui.cb_Tuner.currentIndex()
-        state_dict["LBC"] = self.ui.cb_LBC.currentIndex()
-        state_dict["RBC"] = self.ui.cb_RBC.currentIndex()
-
-        state_dict["Inner_Cell"] = self.ui.cb_Inner_Cell.checkState()
-        state_dict["Outer_Cell"] = self.ui.cb_Outer_Cell.checkState()
-        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
-        state_dict["LBP"] = self.ui.cb_LBP.checkState()
-
-        # cell parameters
-        state_dict["A_i"] = self.ui.le_A_i.text()
-        state_dict["B_i"] = self.ui.le_B_i.text()
-        state_dict["a_i"] = self.ui.le_a_i.text()
-        state_dict["b_i"] = self.ui.le_b_i.text()
-        state_dict["Ri_i"] = self.ui.le_Ri_i.text()
-        state_dict["L_i"] = self.ui.le_L_i.text()
-        state_dict["Req_i"] = self.ui.le_Req_i.text()
-
-        state_dict["A_o"] = self.ui.le_A_o.text()
-        state_dict["B_o"] = self.ui.le_B_o.text()
-        state_dict["a_o"] = self.ui.le_a_o.text()
-        state_dict["b_o"] = self.ui.le_b_o.text()
-        state_dict["Ri_o"] = self.ui.le_Ri_o.text()
-        state_dict["L_o"] = self.ui.le_L_o.text()
-
-        # settings
-        state_dict["No_Of_Processors"] = self.ui.sb_No_Of_Processors_Tune.value()
-        state_dict["Iterative_Method"] = self.ui.cb_Iterative_Method.currentIndex()
-        state_dict["Tolerance"] = self.ui.le_Tolerance.text()
-        state_dict["Max_Iteration"] = self.ui.sb_Max_Iteration.value()
-
-        # Optimization control
-        state_dict["Optimization_Algorithm"] = self.ui.cb_Optimization_Algorithm.currentText()
-        state_dict["Cell_Type_Optimization"] = self.ui.cb_Cell_Type_Optimization.currentText()
-        state_dict["UQ_Check"] = self.ui.cb_UQ.checkState()
-
-        # mid cell parameters
-        state_dict["A_i_opt"] = self.ui.le_A_i_opt.text()
-        state_dict["B_i_opt"] = self.ui.le_B_i_opt.text()
-        state_dict["a_i_opt"] = self.ui.le_a_i_opt.text()
-        state_dict["b_i_opt"] = self.ui.le_b_i_opt.text()
-        state_dict["Ri_i_opt"] = self.ui.le_Ri_i_opt.text()
-        state_dict["L_i_opt"] = self.ui.le_L_i_opt.text()
-        state_dict["Req_i_opt"] = self.ui.le_Req_i_opt.text()
-
-        state_dict["Tune_Variable"] = self.ui.cb_Tune_Variable.currentText()
-        state_dict["Tune_Frequency"] = self.ui.dsb_Tune_Frequency.value()
-        state_dict["Norm_Length"] = self.ui.db_Norm_Length.value()
-        state_dict["N_Cells"] = self.ui.sb_Norm_Length_N_Cells.value()
-        state_dict["Processors_Count"] = self.ui.sb_Processors_Count.value()
-
-        state_dict["Initial_Points"] = self.ui.sb_Initial_Points.value()
-        state_dict["Max_Table_Size"] = self.ui.sb_Max_Table_Size.value()
-        state_dict["N_Generation"] = self.ui.sb_N_Generation.value()
-
-        state_dict["Init_Generation_Method"] = self.ui.cb_Init_Generation_Method.currentText()
-        state_dict["Sobol_Sequence_Index"] = self.ui.sb_Sobol_Sequence_Index.value()
-        state_dict["Optimize_By"] = self.ui.cb_Optimize_By.currentText()
-        state_dict["Crossover_Factor"] = self.ui.sb_Crossover_Factor.value()
-        state_dict["N_Elites_To_Cross"] = self.ui.sb_N_Elites_To_Cross.value()
-        state_dict["Mutation_Factor"] = self.ui.sb_Mutation_Factor.value()
-        state_dict["Chaos_Factor"] = self.ui.sb_Chaos_Factor.value()
-
-        state_dict["Populate_Objectives"] = self.ui.ccb_Populate_Objectives.currentText()
-        state_dict["Populate_Constraints"] = self.ui.ccb_Populate_Constraints.currentText()
-
-        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
-        state_dict["LBP"] = self.ui.cb_LBP.checkState()
-
-    def deserialize(self, state_dict):
-        try:
-            self.ui.le_Generated_Shape_Space_Name.setText(state_dict['Filename'])
-            # update state file
-            self.ui.le_Freq.setText(state_dict["Frequency"])
-            self.ui.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
-            self.ui.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
-            self.ui.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
-
-            self.ui.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
-
-            self.ui.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
-            self.ui.cb_LBC.setCurrentIndex(state_dict["LBC"])
-            self.ui.cb_RBC.setCurrentIndex(state_dict["RBC"])
-
-            self.ui.cb_Inner_Cell.setCheckState(state_dict["Inner_Cell"])
-            self.ui.cb_Outer_Cell.setCheckState(state_dict["Outer_Cell"])
-            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
-            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
-
-            # cell parameters
-            self.ui.le_A_i.setText(state_dict["A_i"])
-            self.ui.le_B_i.setText(state_dict["B_i"])
-            self.ui.le_a_i.setText(state_dict["a_i"])
-            self.ui.le_b_i.setText(state_dict["b_i"])
-            self.ui.le_Ri_i.setText(state_dict["Ri_i"])
-            self.ui.le_L_i.setText(state_dict["L_i"])
-            self.ui.le_Req_i.setText(state_dict["Req_i"])
-
-            self.ui.le_A_o.setText(state_dict["A_o"])
-            self.ui.le_B_o.setText(state_dict["B_o"])
-            self.ui.le_a_o.setText(state_dict["a_o"])
-            self.ui.le_b_o.setText(state_dict["b_o"])
-            self.ui.le_Ri_o.setText(state_dict["Ri_o"])
-            self.ui.le_L_o.setText(state_dict["L_i"])
-
-            # settings
-            self.ui.sb_No_Of_Processors_Tune.setValue(state_dict["No_Of_Processors"])
-            self.ui.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
-            self.ui.le_Tolerance.setText(state_dict["Tolerance"])
-            self.ui.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
-
-            # Optimization control
-            self.ui.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
-            self.ui.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
-            self.ui.cb_UQ.setCheckState(state_dict["UQ_Check"])
-
-            # mid cell parameters
-            self.ui.le_A_i_opt.setText(state_dict["A_i_opt"])
-            self.ui.le_B_i_opt.setText(state_dict["B_i_opt"])
-            self.ui.le_a_i_opt.setText(state_dict["a_i_opt"])
-            self.ui.le_b_i_opt.setText(state_dict["b_i_opt"])
-            self.ui.le_Ri_i_opt.setText(state_dict["Ri_i_opt"])
-            self.ui.le_L_i_opt.setText(state_dict["L_i_opt"])
-            self.ui.le_Req_i_opt.setText(state_dict["Req_i_opt"])
-
-            self.ui.cb_Tune_Variable.setCurrentText(state_dict["Tune_Variable"])
-            self.ui.dsb_Tune_Frequency.setValue(state_dict["Tune_Frequency"])
-            self.ui.db_Norm_Length.setValue(state_dict["Norm_Length"])
-            self.ui.sb_Norm_Length_N_Cells.setValue(state_dict["N_Cells"])
-            self.ui.sb_Processors_Count.setValue(state_dict["Processors_Count"])
-
-            self.ui.sb_Initial_Points.setValue(state_dict["Initial_Points"])
-            self.ui.sb_Max_Table_Size.setValue(state_dict["Max_Table_Size"])
-            self.ui.sb_N_Generation.setValue(state_dict["N_Generation"])
-            self.ui.cb_Init_Generation_Method.setCurrentText(state_dict["Init_Generation_Method"])
-            self.ui.sb_Sobol_Sequence_Index.setValue(state_dict["Sobol_Sequence_Index"])
-            self.ui.cb_Optimize_By.setCurrentText(state_dict["Optimize_By"])
-            self.ui.sb_Crossover_Factor.setValue(state_dict["Crossover_Factor"])
-            self.ui.sb_N_Elites_To_Cross.setValue(state_dict["N_Elites_To_Cross"])
-            self.ui.sb_Mutation_Factor.setValue(state_dict["Mutation_Factor"])
-            self.ui.sb_Chaos_Factor.setValue(state_dict["Chaos_Factor"])
-
-            self.ui.ccb_Populate_Objectives.setCurrentText(state_dict["Populate_Objectives"])
-            self.ui.ccb_Populate_Constraints.setCurrentText(state_dict["Populate_Constraints"])
-
-            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
-            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
-
-        except KeyError:
-            print("Could not deserialize tune_control.py")
-
     #
     # def ui_effects(self):
     #
@@ -1446,6 +1285,248 @@ class TuneControl:
     def delete_process_dict(proc_count, projectDir):
         for index in range(proc_count):
             os.remove(fr'{projectDir}\Cavities\shape_space{index}.json')
+
+    def serialize_qcombobox(self, cb):
+        return cb.currentIndex()
+
+    def deserialize_qcombobox(self, cb, idx):
+        cb.setCurrentIndex(idx)
+
+    def serialize_qlabel(self, lbl):
+        return lbl.text()
+
+    def deserialize_qlabel(self, text):
+        return QLabel(text)
+
+    def serialize_qcheckablecombobox(self, ccb):
+        return ccb.currentText()
+
+    def deserialize_qcheckablecombobox(self, ccb, selected):
+        checked_items = selected.split(', ')
+
+        # checkablecombobox items
+        items = [ccb.itemText(i) for i in range(ccb.count())]
+        for kk, it in enumerate(items):
+            if ccb.model().item(kk).text() in checked_items:
+                ccb.model().item(kk).setCheckState(Qt.Checked)
+
+    def serialize_qlineedit(self, le):
+        return le.text()
+
+    def deserialize_qlineedit(self, text):
+        return QLineEdit(text)
+
+    def serialize_table_widget(self, tw):
+        row_count = tw.rowCount()
+        col_count = tw.columnCount()
+        dd = dict()
+
+        for i in range(row_count):
+            dd[f'{i}'] = dict()
+            for j in range(col_count):
+                dd[f'{i}'][f'{j}'] = dict()
+                # create cell object
+                cell_widget = tw.cellWidget(i, j)
+                if isinstance(cell_widget, QComboBox):
+                    dd[f'{i}'][f'{j}'].update({"QComboBox": cell_widget.currentIndex()})
+                elif isinstance(cell_widget, QCheckableComboBox):
+                    dd[f'{i}'][f'{j}'].update({"QCheckableComboBox": cell_widget.currentText()})
+                elif isinstance(cell_widget, QLineEdit):
+                    dd[f'{i}'][f'{j}'].update({"QLineEdit": cell_widget.text()})
+                elif isinstance(cell_widget, QLabel):
+                    dd[f'{i}'][f'{j}'].update({"QLabel": cell_widget.text()})
+                # set cell object value
+
+        return dd
+
+    def deserialize_table_widget(self, tw, tw_dict):
+        row_count = tw.rowCount()
+        col_count = tw.columnCount()
+
+        for i in range(row_count):
+            for j in range(col_count):
+                # create cell object
+                cell_widget = tw.cellWidget(i, j)
+                if isinstance(cell_widget, QComboBox):
+                    cell_widget.setCurrentIndex(tw_dict[f'{i}'][f'{j}']["QComboBox"])
+
+                elif isinstance(cell_widget, QCheckableComboBox):
+                    self.deserialize_qcheckablecombobox(cell_widget, tw_dict[f'{i}'][f'{j}']["QCheckableComboBox"])
+
+                elif isinstance(cell_widget, QLineEdit):
+                    cell_widget.setText(tw_dict[f'{i}'][f'{j}']["QLineEdit"])
+
+                elif isinstance(cell_widget, QLabel):
+                    cell_widget.setText(tw_dict[f'{i}'][f'{j}']["QLabel"])
+
+    def serialize(self, state_dict):
+        state_dict['Filename'] = self.ui.le_Generated_Shape_Space_Name.text()
+        # update state file
+        state_dict["Frequency"] = self.ui.le_Freq.text()
+        state_dict["Cell_Type"] = self.ui.cb_Cell_Type.currentIndex()
+        state_dict["Tune_Option"] = self.ui.cb_Tune_Option.currentIndex()
+        state_dict["Method"] = self.ui.cb_Shape_Space_Generation_Algorithm.currentIndex()
+
+        state_dict["No_Of_Shapes_Monte_Carlo"] = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
+
+        state_dict["Tuner"] = self.ui.cb_Tuner.currentIndex()
+        state_dict["LBC"] = self.ui.cb_LBC.currentIndex()
+        state_dict["RBC"] = self.ui.cb_RBC.currentIndex()
+
+        state_dict["Inner_Cell"] = self.ui.cb_Inner_Cell.checkState()
+        state_dict["Outer_Cell"] = self.ui.cb_Outer_Cell.checkState()
+        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
+        state_dict["LBP"] = self.ui.cb_LBP.checkState()
+
+        # cell parameters
+        state_dict["A_i"] = self.ui.le_A_i.text()
+        state_dict["B_i"] = self.ui.le_B_i.text()
+        state_dict["a_i"] = self.ui.le_a_i.text()
+        state_dict["b_i"] = self.ui.le_b_i.text()
+        state_dict["Ri_i"] = self.ui.le_Ri_i.text()
+        state_dict["L_i"] = self.ui.le_L_i.text()
+        state_dict["Req_i"] = self.ui.le_Req_i.text()
+
+        state_dict["A_o"] = self.ui.le_A_o.text()
+        state_dict["B_o"] = self.ui.le_B_o.text()
+        state_dict["a_o"] = self.ui.le_a_o.text()
+        state_dict["b_o"] = self.ui.le_b_o.text()
+        state_dict["Ri_o"] = self.ui.le_Ri_o.text()
+        state_dict["L_o"] = self.ui.le_L_o.text()
+
+        # settings
+        state_dict["No_Of_Processors"] = self.ui.sb_No_Of_Processors_Tune.value()
+        state_dict["Iterative_Method"] = self.ui.cb_Iterative_Method.currentIndex()
+        state_dict["Tolerance"] = self.ui.le_Tolerance.text()
+        state_dict["Max_Iteration"] = self.ui.sb_Max_Iteration.value()
+
+        # Optimization control
+        state_dict["Optimization_Algorithm"] = self.ui.cb_Optimization_Algorithm.currentText()
+        state_dict["Cell_Type_Optimization"] = self.ui.cb_Cell_Type_Optimization.currentText()
+        state_dict["UQ_Check"] = self.ui.cb_UQ.checkState()
+
+        # mid cell parameters
+        state_dict["A_i_opt"] = self.ui.le_A_i_opt.text()
+        state_dict["B_i_opt"] = self.ui.le_B_i_opt.text()
+        state_dict["a_i_opt"] = self.ui.le_a_i_opt.text()
+        state_dict["b_i_opt"] = self.ui.le_b_i_opt.text()
+        state_dict["Ri_i_opt"] = self.ui.le_Ri_i_opt.text()
+        state_dict["L_i_opt"] = self.ui.le_L_i_opt.text()
+        state_dict["Req_i_opt"] = self.ui.le_Req_i_opt.text()
+
+        state_dict["Tune_Variable"] = self.ui.cb_Tune_Variable.currentText()
+        state_dict["Tune_Frequency"] = self.ui.dsb_Tune_Frequency.value()
+        state_dict["Norm_Length"] = self.ui.db_Norm_Length.value()
+        state_dict["N_Cells"] = self.ui.sb_Norm_Length_N_Cells.value()
+        state_dict["Processors_Count"] = self.ui.sb_Processors_Count.value()
+
+        state_dict["Initial_Points"] = self.ui.sb_Initial_Points.value()
+        state_dict["Max_Table_Size"] = self.ui.sb_Max_Table_Size.value()
+        state_dict["N_Generation"] = self.ui.sb_N_Generation.value()
+
+        state_dict["Init_Generation_Method"] = self.ui.cb_Init_Generation_Method.currentText()
+        state_dict["Sobol_Sequence_Index"] = self.ui.sb_Sobol_Sequence_Index.value()
+        state_dict["Optimize_By"] = self.ui.cb_Optimize_By.currentText()
+        state_dict["Crossover_Factor"] = self.ui.sb_Crossover_Factor.value()
+        state_dict["N_Elites_To_Cross"] = self.ui.sb_N_Elites_To_Cross.value()
+        state_dict["Mutation_Factor"] = self.ui.sb_Mutation_Factor.value()
+        state_dict["Chaos_Factor"] = self.ui.sb_Chaos_Factor.value()
+
+        state_dict["Populate_Objectives"] = self.ui.ccb_Populate_Objectives.currentText()
+        state_dict["Populate_Constraints"] = self.ui.ccb_Populate_Constraints.currentText()
+
+        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
+        state_dict["LBP"] = self.ui.cb_LBP.checkState()
+        state_dict['CCB Populate Objectives'] = self.serialize_qcheckablecombobox(self.ui.ccb_Populate_Objectives)
+        state_dict['Optimization Objective Table'] = self.serialize_table_widget(self.ui.tw_Objectives)
+
+    def deserialize(self, state_dict):
+        try:
+            self.ui.le_Generated_Shape_Space_Name.setText(state_dict['Filename'])
+            # update state file
+            self.ui.le_Freq.setText(state_dict["Frequency"])
+            self.ui.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
+            self.ui.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
+            self.ui.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
+
+            self.ui.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
+
+            self.ui.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
+            self.ui.cb_LBC.setCurrentIndex(state_dict["LBC"])
+            self.ui.cb_RBC.setCurrentIndex(state_dict["RBC"])
+
+            self.ui.cb_Inner_Cell.setCheckState(state_dict["Inner_Cell"])
+            self.ui.cb_Outer_Cell.setCheckState(state_dict["Outer_Cell"])
+            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
+            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
+
+            # cell parameters
+            self.ui.le_A_i.setText(state_dict["A_i"])
+            self.ui.le_B_i.setText(state_dict["B_i"])
+            self.ui.le_a_i.setText(state_dict["a_i"])
+            self.ui.le_b_i.setText(state_dict["b_i"])
+            self.ui.le_Ri_i.setText(state_dict["Ri_i"])
+            self.ui.le_L_i.setText(state_dict["L_i"])
+            self.ui.le_Req_i.setText(state_dict["Req_i"])
+
+            self.ui.le_A_o.setText(state_dict["A_o"])
+            self.ui.le_B_o.setText(state_dict["B_o"])
+            self.ui.le_a_o.setText(state_dict["a_o"])
+            self.ui.le_b_o.setText(state_dict["b_o"])
+            self.ui.le_Ri_o.setText(state_dict["Ri_o"])
+            self.ui.le_L_o.setText(state_dict["L_i"])
+
+            # settings
+            self.ui.sb_No_Of_Processors_Tune.setValue(state_dict["No_Of_Processors"])
+            self.ui.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
+            self.ui.le_Tolerance.setText(state_dict["Tolerance"])
+            self.ui.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
+
+            # Optimization control
+            self.ui.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
+            self.ui.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
+            self.ui.cb_UQ.setCheckState(state_dict["UQ_Check"])
+
+            # mid cell parameters
+            self.ui.le_A_i_opt.setText(state_dict["A_i_opt"])
+            self.ui.le_B_i_opt.setText(state_dict["B_i_opt"])
+            self.ui.le_a_i_opt.setText(state_dict["a_i_opt"])
+            self.ui.le_b_i_opt.setText(state_dict["b_i_opt"])
+            self.ui.le_Ri_i_opt.setText(state_dict["Ri_i_opt"])
+            self.ui.le_L_i_opt.setText(state_dict["L_i_opt"])
+            self.ui.le_Req_i_opt.setText(state_dict["Req_i_opt"])
+
+            self.ui.cb_Tune_Variable.setCurrentText(state_dict["Tune_Variable"])
+            self.ui.dsb_Tune_Frequency.setValue(state_dict["Tune_Frequency"])
+            self.ui.db_Norm_Length.setValue(state_dict["Norm_Length"])
+            self.ui.sb_Norm_Length_N_Cells.setValue(state_dict["N_Cells"])
+            self.ui.sb_Processors_Count.setValue(state_dict["Processors_Count"])
+
+            self.ui.sb_Initial_Points.setValue(state_dict["Initial_Points"])
+            self.ui.sb_Max_Table_Size.setValue(state_dict["Max_Table_Size"])
+            self.ui.sb_N_Generation.setValue(state_dict["N_Generation"])
+            self.ui.cb_Init_Generation_Method.setCurrentText(state_dict["Init_Generation_Method"])
+            self.ui.sb_Sobol_Sequence_Index.setValue(state_dict["Sobol_Sequence_Index"])
+            self.ui.cb_Optimize_By.setCurrentText(state_dict["Optimize_By"])
+            self.ui.sb_Crossover_Factor.setValue(state_dict["Crossover_Factor"])
+            self.ui.sb_N_Elites_To_Cross.setValue(state_dict["N_Elites_To_Cross"])
+            self.ui.sb_Mutation_Factor.setValue(state_dict["Mutation_Factor"])
+            self.ui.sb_Chaos_Factor.setValue(state_dict["Chaos_Factor"])
+
+            self.ui.ccb_Populate_Objectives.setCurrentText(state_dict["Populate_Objectives"])
+            self.ui.ccb_Populate_Constraints.setCurrentText(state_dict["Populate_Constraints"])
+
+            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
+            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
+
+            # deserialize checkable_combobox
+            self.deserialize_qcheckablecombobox(self.ui.ccb_Populate_Objectives, state_dict['CCB Populate Objectives'])
+            # deserialize objective table
+            tw_dict = state_dict['Optimization Objective Table']
+            self.deserialize_table_widget(self.ui.tw_Objectives, tw_dict)
+
+        except KeyError:
+            print("Could not deserialize tune_control.py")
 
 
 class OptimizationControl:

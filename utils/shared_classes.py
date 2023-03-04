@@ -142,6 +142,7 @@ class QCheckableComboBox(QComboBox):
         item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
         item.setData(Qt.Unchecked, Qt.CheckStateRole)
         self.model().appendRow(item)
+        self.updateText()
 
     def addItems(self, texts, datalist=None):
         for i, text in enumerate(texts):
@@ -150,6 +151,7 @@ class QCheckableComboBox(QComboBox):
             except (TypeError, IndexError):
                 data = None
             self.addItem(text, data)
+        self.updateText()
 
     def currentData(self):
         # Return the list of selected items data
@@ -158,6 +160,89 @@ class QCheckableComboBox(QComboBox):
             if self.model().item(i).checkState() == Qt.Checked:
                 res.append(self.model().item(i).data())
         return res
+
+
+class QColorComboBox(QComboBox):
+    """ A drop down menu for selecting colors """
+
+    # signal emitted if a color has been selected
+    selectedColor = QtCore.pyqtSignal(QColor)
+
+    def __init__(self, parent=None, enableUserDefColors=True):
+        """ if the user shall not be able to define colors on its own, then set enableUserDefColors=False """
+        # init QComboBox
+        super(QColorComboBox, self).__init__(parent)
+
+        # enable the line edit to display the currently selected color
+        self.setEditable(True)
+        # read only so that there is no blinking cursor or sth editable
+        self.lineEdit().setReadOnly(True)
+
+        # text that shall be displayed for the option to pop up the QColorDialog for user defined colors
+        self._userDefEntryText = 'Custom'
+        # add the option for user defined colors
+        if enableUserDefColors:
+            self.addItem(self._userDefEntryText)
+
+        self._currentColor = None
+
+        self.activated.connect(self._color_selected)
+
+    # ------------------------------------------------------------------------
+    def addColors(self, colors):
+        """ Adds colors to the QComboBox """
+        for a_color in colors:
+            # if input is not a QColor, try to make it one
+            if not (isinstance(a_color, QColor)):
+                a_color = QColor(a_color)
+            # avoid dublicates
+            if self.findData(a_color) == -1:
+                # add the new color and set the background color of that item
+                self.addItem('', userData=a_color)
+                self.setItemData(self.count() - 1, QColor(a_color), Qt.BackgroundRole)
+
+    # ------------------------------------------------------------------------
+    def addColor(self, color):
+        """ Adds the color to the QComboBox """
+        self.addColors([color])
+
+    # ------------------------------------------------------------------------
+    def setColor(self, color):
+        """ Adds the color to the QComboBox and selects it"""
+        self.addColor(color)
+        self._color_selected(self.findData(color), False)
+
+    # ------------------------------------------------------------------------
+    def getCurrentColor(self):
+        """ Returns the currently selected QColor
+            Returns None if non has been selected yet
+        """
+        return self._currentColor
+
+    # ------------------------------------------------------------------------
+    def _color_selected(self, index, emitSignal=True):
+        """ Processes the selection of the QComboBox """
+        # if a color is selected, emit the selectedColor signal
+        if self.itemText(index) == '':
+            self._currentColor = self.itemData(index)
+            if emitSignal:
+                self.selectedColor.emit(self._currentColor)
+
+        # if the user wants to define a custom color
+        elif self.itemText(index) == self._userDefEntryText:
+            # get the user defined color
+            new_color = QColorDialog.getColor(self._currentColor if self._currentColor else Qt.white)
+            if new_color.isValid():
+                # add the color to the QComboBox and emit the signal
+                self.addColor(new_color)
+                self._currentColor = new_color
+                if emitSignal:
+                    self.selectedColor.emit(self._currentColor)
+
+        # make sure that current color is displayed
+        if self._currentColor:
+            self.setCurrentIndex(self.findData(self._currentColor))
+            self.lineEdit().setStyleSheet("background-color: " + self._currentColor.name())
 
 
 class ProgressMonitor(QThread):

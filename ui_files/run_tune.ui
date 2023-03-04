@@ -33,7 +33,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
@@ -62,8 +62,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>676</width>
-                <height>1568</height>
+                <width>522</width>
+                <height>1657</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -1890,607 +1890,36 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>674</width>
-                <height>1403</height>
+                <y>-190</y>
+                <width>520</width>
+                <height>1792</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
-               <item row="10" column="0">
-                <widget class="QLabel" name="label_38">
-                 <property name="text">
-                  <string>Parameters</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="12" column="0">
-                <widget class="QLabel" name="label_39">
-                 <property name="text">
-                  <string>Constraints</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="6" column="0">
-                <widget class="QLabel" name="label_37">
+               <item row="5" column="0">
+                <widget class="QPushButton" name="pb_Opt_Objectives">
                  <property name="text">
                   <string>Objectives</string>
                  </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
-               <item row="13" column="0">
-                <widget class="QWidget" name="widget_6" native="true">
-                 <layout class="QGridLayout" name="gridLayout_29">
-                  <item row="0" column="0">
-                   <widget class="QCheckableComboBox" name="ccb_Populate_Constraints">
-                    <item>
-                     <property name="text">
-                      <string>All</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>freq</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Epk/Eacc</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Bpk/Eacc</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>R/Q</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>ZL</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>ZT</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>G</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>kcc</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Q0</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Custom</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0" rowspan="2">
-                   <widget class="QTableWidget" name="tw_Constraints">
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>150</height>
-                     </size>
-                    </property>
-                    <column>
-                     <property name="text">
-                      <string>Variable</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>lower bound</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>upper bound</string>
-                     </property>
-                    </column>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="4" column="0">
-                <widget class="QWidget" name="w_Optimization_Settings" native="true">
-                 <layout class="QGridLayout" name="gridLayout_30">
-                  <item row="7" column="1">
-                   <widget class="QSpinBox" name="sb_Chaos_Factor">
-                    <property name="maximum">
-                     <number>999999</number>
-                    </property>
-                    <property name="value">
-                     <number>50</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="0">
-                   <widget class="QLabel" name="label_47">
-                    <property name="toolTip">
-                     <string>Number of crosses for each generation.</string>
-                    </property>
-                    <property name="text">
-                     <string>Crossover Factor</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_41">
-                    <property name="text">
-                     <string>No of generations</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_42">
-                    <property name="text">
-                     <string>Method</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QSpinBox" name="sb_Max_Table_Size">
-                    <property name="minimum">
-                     <number>20</number>
-                    </property>
-                    <property name="maximum">
-                     <number>999999999</number>
-                    </property>
-                    <property name="value">
-                     <number>30</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_43">
-                    <property name="text">
-                     <string>Max Table Size</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="1">
-                   <widget class="QSpinBox" name="sb_Crossover_Factor">
-                    <property name="maximum">
-                     <number>999999</number>
-                    </property>
-                    <property name="value">
-                     <number>50</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="6" column="0">
-                   <widget class="QLabel" name="label_49">
-                    <property name="toolTip">
-                     <string>Number of mutations for each generation.</string>
-                    </property>
-                    <property name="text">
-                     <string>Mutation Factor</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QComboBox" name="cb_Init_Generation_Method">
-                    <item>
-                     <property name="text">
-                      <string>LHS</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Sobol Sequence</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Random</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Uniform</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_40">
-                    <property name="text">
-                     <string>Initial points EA</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="QComboBox" name="cb_Optimize_By">
-                    <item>
-                     <property name="text">
-                      <string>Pareto</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Page Rank</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QSpinBox" name="sb_Initial_Points">
-                    <property name="minimum">
-                     <number>5</number>
-                    </property>
-                    <property name="maximum">
-                     <number>999999999</number>
-                    </property>
-                    <property name="value">
-                     <number>100</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QSpinBox" name="sb_N_Generation">
-                    <property name="minimum">
-                     <number>2</number>
-                    </property>
-                    <property name="maximum">
-                     <number>9999</number>
-                    </property>
-                    <property name="value">
-                     <number>5</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="7" column="0">
-                   <widget class="QLabel" name="label_50">
-                    <property name="toolTip">
-                     <string>Number of random inputs for each generation.</string>
-                    </property>
-                    <property name="text">
-                     <string>Chaos Factor</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="label_46">
-                    <property name="text">
-                     <string>Optimize by</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="6" column="1">
-                   <widget class="QSpinBox" name="sb_Mutation_Factor">
-                    <property name="maximum">
-                     <number>999999</number>
-                    </property>
-                    <property name="value">
-                     <number>50</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="2" colspan="2">
-                   <widget class="QWidget" name="w_Sobol_Sequence_Parameters" native="true">
-                    <layout class="QGridLayout" name="gridLayout_36">
-                     <item row="0" column="1">
-                      <widget class="QSpinBox" name="sb_Sobol_Sequence_Index">
-                       <property name="value">
-                        <number>2</number>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="0">
-                      <widget class="QLabel" name="label_63">
-                       <property name="text">
-                        <string>Index</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item row="0" column="2">
-                      <widget class="QLatexLabel" name="latexLabel" native="true">
-                       <property name="Text" stdset="0">
-                        <string>$2^{index}$ points</string>
-                       </property>
-                      </widget>
-                     </item>
-                    </layout>
-                   </widget>
-                  </item>
-                  <item row="5" column="3">
-                   <widget class="QSpinBox" name="sb_N_Elites_To_Cross">
-                    <property name="maximum">
-                     <number>999999999</number>
-                    </property>
-                    <property name="value">
-                     <number>15</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="5" column="2">
-                   <widget class="QLabel" name="label_62">
-                    <property name="text">
-                     <string>Elites</string>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="11" column="0">
-                <widget class="QWidget" name="widget_4" native="true">
-                 <layout class="QGridLayout" name="gridLayout_28">
-                  <item row="0" column="0" rowspan="2">
-                   <widget class="QTableWidget" name="tw_Parameters">
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>150</height>
-                     </size>
-                    </property>
-                    <column>
-                     <property name="text">
-                      <string>Parameter</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>min Value</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>max Value</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Influence</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>UQ</string>
-                     </property>
-                    </column>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="8" column="0">
-                <widget class="QWidget" name="widget_3" native="true">
-                 <layout class="QGridLayout" name="gridLayout_25">
-                  <item row="1" column="0" rowspan="2">
-                   <widget class="QTableWidget" name="tw_Objectives">
-                    <property name="minimumSize">
-                     <size>
-                      <width>0</width>
-                      <height>150</height>
-                     </size>
-                    </property>
-                    <column>
-                     <property name="text">
-                      <string>Objective</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Goal</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Interval(s)/Value(=)</string>
-                     </property>
-                    </column>
-                    <column>
-                     <property name="text">
-                      <string>Weight</string>
-                     </property>
-                    </column>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QCheckableComboBox" name="ccb_Populate_Objectives">
-                    <item>
-                     <property name="text">
-                      <string>All</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>freq</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Epk/Eacc</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Bpk/Eacc</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>R/Q</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>GR/Q</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>ZL</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>ZT</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>G</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>kcc</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Q0</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>k_loss</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>k_kick</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Custom</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
-                </widget>
-               </item>
-               <item row="2" column="0">
-                <widget class="QWidget" name="widget_8" native="true">
-                 <layout class="QGridLayout" name="gridLayout_31">
-                  <item row="2" column="3">
-                   <widget class="QSpinBox" name="sb_Norm_Length_N_Cells">
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="singleStep">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QDoubleSpinBox" name="db_Norm_Length">
-                    <property name="toolTip">
-                     <string>Usually length of the middle cell</string>
-                    </property>
-                    <property name="decimals">
-                     <number>4</number>
-                    </property>
-                    <property name="minimum">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="maximum">
-                     <double>99999999999999991611392.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>1.000000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>115.400000000000006</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QDoubleSpinBox" name="dsb_Tune_Frequency">
-                    <property name="maximum">
-                     <double>10000000000000000139372116959414099130712064.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1300.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="2">
-                   <widget class="QLabel" name="label_64">
-                    <property name="text">
-                     <string>n cells</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_44">
-                    <property name="text">
-                     <string>Normalization Cell Length</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_60">
-                    <property name="text">
-                     <string>Tune Variable</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="cb_Tune_Variable">
-                    <property name="toolTip">
-                     <string>Variable to tune</string>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Req</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>L</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_61">
-                    <property name="text">
-                     <string>Tune Frequency</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_45">
-                    <property name="text">
-                     <string>Processes</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QSpinBox" name="sb_Processors_Count">
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                 </layout>
+               <item row="3" column="0">
+                <widget class="QPushButton" name="pb_Opt_Parameters">
+                 <property name="text">
+                  <string>Parameters</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
                <item row="0" column="0">
@@ -2866,10 +2295,596 @@
                  </layout>
                 </widget>
                </item>
-               <item row="3" column="0">
+               <item row="17" column="0">
+                <widget class="QWidget" name="w_Opt_Constraints" native="true">
+                 <layout class="QGridLayout" name="gridLayout_29">
+                  <item row="0" column="0">
+                   <widget class="QCheckableComboBox" name="ccb_Populate_Constraints">
+                    <item>
+                     <property name="text">
+                      <string>All</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>freq</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Epk/Eacc</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Bpk/Eacc</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>R/Q</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>ZL</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>ZT</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>G</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>kcc</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Q0</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Custom</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="0" rowspan="2">
+                   <widget class="QTableWidget" name="tw_Constraints">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>150</height>
+                     </size>
+                    </property>
+                    <column>
+                     <property name="text">
+                      <string>Variable</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>lower bound</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>upper bound</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QWidget" name="w_Optimization_Settings" native="true">
+                 <layout class="QGridLayout" name="gridLayout_30">
+                  <item row="7" column="1">
+                   <widget class="QSpinBox" name="sb_Chaos_Factor">
+                    <property name="maximum">
+                     <number>999999</number>
+                    </property>
+                    <property name="value">
+                     <number>50</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_47">
+                    <property name="toolTip">
+                     <string>Number of crosses for each generation.</string>
+                    </property>
+                    <property name="text">
+                     <string>Crossover Factor</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_41">
+                    <property name="text">
+                     <string>No of generations</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_42">
+                    <property name="text">
+                     <string>Method</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QSpinBox" name="sb_Max_Table_Size">
+                    <property name="minimum">
+                     <number>20</number>
+                    </property>
+                    <property name="maximum">
+                     <number>999999999</number>
+                    </property>
+                    <property name="value">
+                     <number>30</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_43">
+                    <property name="text">
+                     <string>Max Table Size</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QSpinBox" name="sb_Crossover_Factor">
+                    <property name="maximum">
+                     <number>999999</number>
+                    </property>
+                    <property name="value">
+                     <number>50</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="0">
+                   <widget class="QLabel" name="label_49">
+                    <property name="toolTip">
+                     <string>Number of mutations for each generation.</string>
+                    </property>
+                    <property name="text">
+                     <string>Mutation Factor</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QComboBox" name="cb_Init_Generation_Method">
+                    <item>
+                     <property name="text">
+                      <string>LHS</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Sobol Sequence</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Random</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Uniform</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_40">
+                    <property name="text">
+                     <string>Initial points EA</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QComboBox" name="cb_Optimize_By">
+                    <item>
+                     <property name="text">
+                      <string>Pareto</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Page Rank</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QSpinBox" name="sb_Initial_Points">
+                    <property name="minimum">
+                     <number>5</number>
+                    </property>
+                    <property name="maximum">
+                     <number>999999999</number>
+                    </property>
+                    <property name="value">
+                     <number>100</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QSpinBox" name="sb_N_Generation">
+                    <property name="minimum">
+                     <number>2</number>
+                    </property>
+                    <property name="maximum">
+                     <number>9999</number>
+                    </property>
+                    <property name="value">
+                     <number>5</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="label_50">
+                    <property name="toolTip">
+                     <string>Number of random inputs for each generation.</string>
+                    </property>
+                    <property name="text">
+                     <string>Chaos Factor</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_46">
+                    <property name="text">
+                     <string>Optimize by</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <widget class="QSpinBox" name="sb_Mutation_Factor">
+                    <property name="maximum">
+                     <number>999999</number>
+                    </property>
+                    <property name="value">
+                     <number>50</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="2" colspan="2">
+                   <widget class="QWidget" name="w_Sobol_Sequence_Parameters" native="true">
+                    <layout class="QGridLayout" name="gridLayout_36">
+                     <item row="0" column="1">
+                      <widget class="QSpinBox" name="sb_Sobol_Sequence_Index">
+                       <property name="value">
+                        <number>2</number>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_63">
+                       <property name="text">
+                        <string>Index</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="2">
+                      <widget class="QLatexLabel" name="latexLabel" native="true">
+                       <property name="Text" stdset="0">
+                        <string>$2^{index}$ points</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </widget>
+                  </item>
+                  <item row="5" column="3">
+                   <widget class="QSpinBox" name="sb_N_Elites_To_Cross">
+                    <property name="maximum">
+                     <number>999999999</number>
+                    </property>
+                    <property name="value">
+                     <number>15</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="2">
+                   <widget class="QLabel" name="label_62">
+                    <property name="text">
+                     <string>Elites</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QWidget" name="widget_8" native="true">
+                 <layout class="QGridLayout" name="gridLayout_31">
+                  <item row="2" column="3">
+                   <widget class="QSpinBox" name="sb_Norm_Length_N_Cells">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="singleStep">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QDoubleSpinBox" name="db_Norm_Length">
+                    <property name="toolTip">
+                     <string>Usually length of the middle cell</string>
+                    </property>
+                    <property name="decimals">
+                     <number>4</number>
+                    </property>
+                    <property name="minimum">
+                     <double>1.000000000000000</double>
+                    </property>
+                    <property name="maximum">
+                     <double>99999999999999991611392.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>1.000000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>115.400000000000006</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QDoubleSpinBox" name="dsb_Tune_Frequency">
+                    <property name="maximum">
+                     <double>10000000000000000139372116959414099130712064.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>10.000000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>1300.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="2">
+                   <widget class="QLabel" name="label_64">
+                    <property name="text">
+                     <string>n cells</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_44">
+                    <property name="text">
+                     <string>Normalization Cell Length</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_60">
+                    <property name="text">
+                     <string>Tune Variable</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="cb_Tune_Variable">
+                    <property name="toolTip">
+                     <string>Variable to tune</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Req</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>L</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_61">
+                    <property name="text">
+                     <string>Tune Frequency</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_45">
+                    <property name="text">
+                     <string>Processes</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QSpinBox" name="sb_Processors_Count">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="value">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="7" column="0">
                 <widget class="QPushButton" name="pb_Optimization_Settings">
                  <property name="text">
                   <string>Optimization Settings</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QWidget" name="w_Opt_Parameters" native="true">
+                 <layout class="QGridLayout" name="gridLayout_28">
+                  <item row="0" column="0" rowspan="2">
+                   <widget class="QTableWidget" name="tw_Parameters">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>300</height>
+                     </size>
+                    </property>
+                    <column>
+                     <property name="text">
+                      <string>Parameter</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>min Value</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>max Value</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Influence</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>UQ</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="6" column="0">
+                <widget class="QWidget" name="w_Opt_Objectives" native="true">
+                 <layout class="QGridLayout" name="gridLayout_25">
+                  <item row="1" column="0" rowspan="2">
+                   <widget class="QTableWidget" name="tw_Objectives">
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>300</height>
+                     </size>
+                    </property>
+                    <column>
+                     <property name="text">
+                      <string>Objective</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Goal</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Interval(s)/Value(=)</string>
+                     </property>
+                    </column>
+                    <column>
+                     <property name="text">
+                      <string>Weight</string>
+                     </property>
+                    </column>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QCheckableComboBox" name="ccb_Populate_Objectives">
+                    <item>
+                     <property name="text">
+                      <string>All</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>freq</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Epk/Eacc</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Bpk/Eacc</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>R/Q</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>GR/Q</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>ZL</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>ZT</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>G</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>kcc</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Q0</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>k_loss</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>k_kick</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Custom</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QPushButton" name="pb_Opt_Constraints">
+                 <property name="text">
+                  <string>Constraints</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -3117,6 +3132,54 @@
     <hint type="destinationlabel">
      <x>366</x>
      <y>574</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Opt_Parameters</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Opt_Parameters</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>326</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>515</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Opt_Objectives</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Opt_Objectives</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>704</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>908</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Opt_Constraints</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Opt_Constraints</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>301</x>
+     <y>648</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>301</x>
+     <y>777</y>
     </hint>
    </hints>
   </connection>

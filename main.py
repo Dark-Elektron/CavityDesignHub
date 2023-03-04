@@ -8,6 +8,9 @@ import logging
 import shutil
 import sys
 from json import JSONDecodeError
+
+from icecream import ic
+
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *

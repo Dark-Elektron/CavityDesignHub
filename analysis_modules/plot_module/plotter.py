@@ -44,7 +44,7 @@ class Plot(FigureCanvasQTAgg):
         self.fig.set_tight_layout("True")
         self.fig_size = self.fig.get_size_inches()*self.fig.dpi
 
-        self.parent = parent
+        self.parent_ = parent
         self.parentUI = parent.ui
 
         # new feature
@@ -115,7 +115,7 @@ class Plot(FigureCanvasQTAgg):
         # # create new widgets
         # self.create_new_widgets()
         self.w_Color = QColorDialog()
-        self.w_Color.currentColorChanged.connect(lambda: self.update_object_color())
+        self.w_Color.currentColorChanged.connect(lambda: self.update_object_color(self.w_Color.currentColor().name()))
 
         # redefine save_image function
         self.toolbar.sizeHint()
@@ -338,6 +338,10 @@ class Plot(FigureCanvasQTAgg):
                 if isinstance(self.selected_object, matplotlib.lines.Line2D):
                     # set color picker color
                     self.w_Color.setCurrentColor(QtGui.QColor(self.selected_object.get_color()))
+                    self.parent_.le_Color.setStyleSheet(f'background-color: {self.selected_object.get_color()};')
+                    self.parent_.pb_Color.setStyleSheet(f"background-color: {self.selected_object.get_color()};")
+                    self.parent_.le_Color.setText(self.selected_object.get_color())
+                    self.parent_.pb_Color.setText(self.selected_object.get_color())
                     self.parentUI.dsb_Line_Width.setValue(self.selected_object.get_linewidth())
                     self.parentUI.cb_Line_Style.setCurrentText(self.selected_object.get_linestyle())
                     self.parentUI.cb_Marker.setCurrentText(self.selected_object.get_marker())
@@ -434,12 +438,17 @@ class Plot(FigureCanvasQTAgg):
         self.annot.get_bbox_patch().set_facecolor((167 / 255, 222 / 255, 255 / 255))
         # self.annot.get_bbox_patch().set_alpha(1)
 
-    def update_object_color(self):
+    def update_object_color(self, color):
         if self.selected_object is not None:
             if isinstance(self.selected_object, matplotlib.legend.Legend):
                 pass
             else:
-                self.selected_object.set_color(self.w_Color.currentColor().name())
+                self.selected_object.set_color(color)
+                self.selected_object.set_markerfacecolor(color)
+                self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
+                self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
+                self.parent_.le_Color.setText(color)
+                self.parent_.pb_Color.setText(color)
                 # copy the image to the GUI state, but screen might not be changed yet
                 self.draw_idle()
                 self.flush_events()

@@ -1348,3 +1348,10 @@ def f(x):
 res, err = quad(f, 0, 2*np.pi)
 
 print("The numerical result is {:2e} (+-{:g})".format(res, err))
+for style in sorted(plt.style.library):
+    the_rc = plt.style.library[style]
+    if 'axes.prop_cycle' in the_rc:
+        colors = the_rc['axes.prop_cycle'].by_key()['color']
+        print(f"'{style}'", ": ", [f"{color}" for color in colors])
+    else:
+        print('%25s: this style does not modify colors'%style)
