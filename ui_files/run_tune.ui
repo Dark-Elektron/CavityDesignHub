@@ -33,18 +33,30 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
            <string>Tune</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_24">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item row="0" column="1">
             <widget class="QScrollArea" name="scrollArea">
-             <property name="styleSheet">
-              <string notr="true"/>
-             </property>
              <property name="frameShape">
               <enum>QFrame::NoFrame</enum>
              </property>
@@ -61,15 +73,30 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>522</width>
-                <height>1657</height>
+                <y>-778</y>
+                <width>548</width>
+                <height>1568</height>
                </rect>
               </property>
               <property name="styleSheet">
                <string notr="true"/>
               </property>
               <layout class="QGridLayout" name="gridLayout_14">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
                <item row="7" column="0" alignment="Qt::AlignTop">
                 <widget class="QPushButton" name="pb_Postprocess">
                  <property name="text">
@@ -1881,6 +1908,21 @@
            <string>Optimization</string>
           </attribute>
           <layout class="QGridLayout" name="gridLayout_19">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item row="0" column="0">
             <widget class="QScrollArea" name="scrollArea_2">
              <property name="widgetResizable">
@@ -1890,13 +1932,28 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-190</y>
-                <width>520</width>
-                <height>1792</height>
+                <y>-871</y>
+                <width>546</width>
+                <height>1685</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
-               <item row="5" column="0">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item row="5" column="0" alignment="Qt::AlignTop">
                 <widget class="QPushButton" name="pb_Opt_Objectives">
                  <property name="text">
                   <string>Objectives</string>
@@ -1909,7 +1966,7 @@
                  </property>
                 </widget>
                </item>
-               <item row="3" column="0">
+               <item row="3" column="0" alignment="Qt::AlignTop">
                 <widget class="QPushButton" name="pb_Opt_Parameters">
                  <property name="text">
                   <string>Parameters</string>
@@ -1922,7 +1979,17 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="0">
+               <item row="9" column="0" alignment="Qt::AlignTop">
+                <widget class="QPushButton" name="pb_Opt_Constraints">
+                 <property name="text">
+                  <string>Constraints</string>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" alignment="Qt::AlignTop">
                 <widget class="QWidget" name="widget_9" native="true">
                  <layout class="QGridLayout" name="gridLayout_32">
                   <item row="0" column="2">
@@ -2295,7 +2362,7 @@
                  </layout>
                 </widget>
                </item>
-               <item row="17" column="0">
+               <item row="17" column="0" alignment="Qt::AlignTop">
                 <widget class="QWidget" name="w_Opt_Constraints" native="true">
                  <layout class="QGridLayout" name="gridLayout_29">
                   <item row="0" column="0">
@@ -2385,7 +2452,7 @@
                  </layout>
                 </widget>
                </item>
-               <item row="8" column="0">
+               <item row="8" column="0" alignment="Qt::AlignTop">
                 <widget class="QWidget" name="w_Optimization_Settings" native="true">
                  <layout class="QGridLayout" name="gridLayout_30">
                   <item row="7" column="1">
@@ -2720,14 +2787,20 @@
                  </layout>
                 </widget>
                </item>
-               <item row="7" column="0">
+               <item row="7" column="0" alignment="Qt::AlignTop">
                 <widget class="QPushButton" name="pb_Optimization_Settings">
                  <property name="text">
                   <string>Optimization Settings</string>
                  </property>
+                 <property name="checkable">
+                  <bool>true</bool>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
                 </widget>
                </item>
-               <item row="4" column="0">
+               <item row="4" column="0" alignment="Qt::AlignTop">
                 <widget class="QWidget" name="w_Opt_Parameters" native="true">
                  <layout class="QGridLayout" name="gridLayout_28">
                   <item row="0" column="0" rowspan="2">
@@ -2768,7 +2841,7 @@
                  </layout>
                 </widget>
                </item>
-               <item row="6" column="0">
+               <item row="6" column="0" alignment="Qt::AlignTop">
                 <widget class="QWidget" name="w_Opt_Objectives" native="true">
                  <layout class="QGridLayout" name="gridLayout_25">
                   <item row="1" column="0" rowspan="2">
@@ -2878,15 +2951,18 @@
                  </layout>
                 </widget>
                </item>
-               <item row="9" column="0">
-                <widget class="QPushButton" name="pb_Opt_Constraints">
-                 <property name="text">
-                  <string>Constraints</string>
+               <item row="18" column="0">
+                <spacer name="verticalSpacer">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
                  </property>
-                 <property name="checkable">
-                  <bool>true</bool>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>20</width>
+                   <height>40</height>
+                  </size>
                  </property>
-                </widget>
+                </spacer>
                </item>
               </layout>
              </widget>

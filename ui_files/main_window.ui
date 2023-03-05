@@ -61,9 +61,6 @@
              <property name="toolTip">
               <string>Apply theme</string>
              </property>
-             <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 0, 0);</string>
-             </property>
              <property name="text">
               <string>Apply</string>
              </property>
@@ -189,7 +186,8 @@
               <string>Project name</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 184, 83);</string>
+              <string notr="true">background-color: rgb(255, 184, 83);
+color: rgb(255, 255, 255);</string>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;ProjectName&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -438,8 +436,8 @@
                           <rect>
                            <x>0</x>
                            <y>0</y>
-                           <width>878</width>
-                           <height>963</height>
+                           <width>886</width>
+                           <height>917</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -484,6 +482,16 @@
                              <string>W A K E F I E L D
 A N A L Y S I S</string>
                             </property>
+                            <property name="icon">
+                             <iconset resource="../qss/icons.qrc">
+                              <normaloff>:/icons/icons/PNG/wakefield.png</normaloff>:/icons/icons/PNG/wakefield.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
+                            </property>
                            </widget>
                           </item>
                           <item row="1" column="0">
@@ -519,6 +527,16 @@ A N A L Y S I S</string>
                             </property>
                             <property name="text">
                              <string>T U N E</string>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="../qss/icons.qrc">
+                              <normaloff>:/icons/icons/PNG/tune.png</normaloff>:/icons/icons/PNG/tune.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
                             </property>
                            </widget>
                           </item>
@@ -560,6 +578,16 @@ A N A L Y S I S</string>
                              <string>E I G E N M O D E
 A N A L Y S I S</string>
                             </property>
+                            <property name="icon">
+                             <iconset resource="../qss/icons.qrc">
+                              <normaloff>:/icons/icons/PNG/eigenmode.png</normaloff>:/icons/icons/PNG/eigenmode.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
+                            </property>
                            </widget>
                           </item>
                           <item row="3" column="1">
@@ -598,6 +626,16 @@ A N A L Y S I S</string>
                             </property>
                             <property name="text">
                              <string>P L O T</string>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="../qss/icons.qrc">
+                              <normaloff>:/icons/icons/PNG/plot.png</normaloff>:/icons/icons/PNG/plot.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
                             </property>
                            </widget>
                           </item>
@@ -639,6 +677,16 @@ A N A L Y S I S</string>
                              <string>P O S T
 P R O C E S S</string>
                             </property>
+                            <property name="icon">
+                             <iconset resource="../qss/icons.qrc">
+                              <normaloff>:/icons/icons/PNG/postprocess.png</normaloff>:/icons/icons/PNG/postprocess.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
+                            </property>
                            </widget>
                           </item>
                           <item row="1" column="3">
@@ -666,6 +714,16 @@ P R O C E S S</string>
                             </property>
                             <property name="text">
                              <string>M U L T I P A C T I N G</string>
+                            </property>
+                            <property name="icon">
+                             <iconset resource="../qss/icons.qrc">
+                              <normaloff>:/icons/icons/PNG/multipacting.png</normaloff>:/icons/icons/PNG/multipacting.png</iconset>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
                             </property>
                            </widget>
                           </item>
@@ -703,6 +761,12 @@ P R O C E S S</string>
                             <property name="text">
                              <string>M I S C</string>
                             </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
+                            </property>
                            </widget>
                           </item>
                           <item row="3" column="2">
@@ -718,6 +782,12 @@ P R O C E S S</string>
                             </property>
                             <property name="text">
                              <string>S T A T I S T I C S</string>
+                            </property>
+                            <property name="iconSize">
+                             <size>
+                              <width>50</width>
+                              <height>50</height>
+                             </size>
                             </property>
                            </widget>
                           </item>
@@ -796,8 +866,8 @@ P R O C E S S</string>
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>385</width>
-                        <height>922</height>
+                        <width>484</width>
+                        <height>859</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_3">
@@ -852,6 +922,9 @@ P R O C E S S</string>
                 <height>16777215</height>
                </size>
               </property>
+              <property name="styleSheet">
+               <string notr="true">background-color: rgb(255, 170, 127);</string>
+              </property>
               <layout class="QGridLayout" name="gridLayout_8">
                <property name="topMargin">
                 <number>0</number>
@@ -893,7 +966,19 @@ P R O C E S S</string>
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>W</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/wakefield.png</normaloff>
+                   <activeon>:/icons/icons/PNG/wakefield_expand.png</activeon>
+                   <selectedon>:/icons/icons/PNG/wakefield_expand.png</selectedon>:/icons/icons/PNG/wakefield.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
@@ -921,7 +1006,19 @@ P R O C E S S</string>
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>H</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/home_.png</normaloff>
+                   <activeon>:/icons/icons/PNG/home_expand.png</activeon>
+                   <selectedon>:/icons/icons/PNG/home_expand.png</selectedon>:/icons/icons/PNG/home_.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
@@ -949,7 +1046,19 @@ P R O C E S S</string>
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>P</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/plot.png</normaloff>
+                   <activeon>:/icons/icons/PNG/plot_expand.png</activeon>
+                   <selectedon>:/icons/icons/PNG/plot_expand.png</selectedon>:/icons/icons/PNG/plot.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
@@ -979,6 +1088,12 @@ P R O C E S S</string>
                  <property name="text">
                   <string>M</string>
                  </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
+                 </property>
                  <property name="checkable">
                   <bool>true</bool>
                  </property>
@@ -1005,7 +1120,19 @@ P R O C E S S</string>
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>M</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/multipacting.png</normaloff>
+                   <activeon>:/icons/icons/PNG/multipacting_extend.png</activeon>
+                   <selectedon>:/icons/icons/PNG/multipacting_extend.png</selectedon>:/icons/icons/PNG/multipacting.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
                  </property>
                 </widget>
                </item>
@@ -1030,7 +1157,19 @@ P R O C E S S</string>
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>PP</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/postprocess.png</normaloff>
+                   <activeon>:/icons/icons/PNG/postprocess_extend.png</activeon>
+                   <selectedon>:/icons/icons/PNG/postprocess_extend.png</selectedon>:/icons/icons/PNG/postprocess.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
@@ -1058,7 +1197,19 @@ P R O C E S S</string>
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>E</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/eigenmode.png</normaloff>
+                   <activeon>:/icons/icons/PNG/eigenmode_expand.png</activeon>
+                   <selectedon>:/icons/icons/PNG/eigenmode_expand.png</selectedon>:/icons/icons/PNG/eigenmode.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
@@ -1105,13 +1256,25 @@ P R O C E S S</string>
                   </size>
                  </property>
                  <property name="toolTip">
-                  <string>Rune cavity</string>
+                  <string>Tune cavity</string>
                  </property>
                  <property name="styleSheet">
                   <string notr="true"/>
                  </property>
                  <property name="text">
-                  <string>T</string>
+                  <string/>
+                 </property>
+                 <property name="icon">
+                  <iconset resource="../qss/icons.qrc">
+                   <normaloff>:/icons/icons/PNG/tune.png</normaloff>
+                   <activeon>:/icons/icons/PNG/tune_expand.png</activeon>
+                   <selectedon>:/icons/icons/PNG/tune_expand.png</selectedon>:/icons/icons/PNG/tune.png</iconset>
+                 </property>
+                 <property name="iconSize">
+                  <size>
+                   <width>50</width>
+                   <height>50</height>
+                  </size>
                  </property>
                  <property name="checkable">
                   <bool>true</bool>
@@ -1187,7 +1350,7 @@ P R O C E S S</string>
      <x>0</x>
      <y>0</y>
      <width>1661</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>

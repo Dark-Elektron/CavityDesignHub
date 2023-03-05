@@ -630,14 +630,20 @@ class MainWindow:
     def eventFilter(self, obj, event):
         if not obj.isChecked():
             if event.type() == QEvent.Enter:  # Enter
-                obj.setMaximumWidth(75)
-                obj.setMinimumWidth(75)
+                # obj.setMaximumWidth(75)
+                # obj.setMinimumWidth(75)
+                obj.setStyleSheet("background-color: rgb(255, 190, 130); border-radius: 10px; "
+                                  "border-style: solid; border-width: 0px;")
+                obj.setIconSize(QSize(75, 50))
 
                 return True
 
             if event.type() == QEvent.Leave:  # Enter
-                obj.setMaximumSize(50, 50)
-                obj.setMinimumSize(50, 50)
+                # obj.setMaximumSize(50, 50)
+                # obj.setMinimumSize(50, 50)
+                obj.setStyleSheet("background-color: rgb(255, 170, 127); border-radius: 10px; "
+                                  "border-style: solid; border-width: 0px;")
+                obj.setIconSize(QSize(50, 50))
                 return True
 
         return self.default_ef(obj, event)
@@ -662,8 +668,9 @@ class MainWindow:
             shadow_effect = QGraphicsDropShadowEffect()
             shadow_effect.setOffset(2.5)
             shadow_effect.setColor(QColor(0, 0, 0, 77))
-            shadow_effect.setBlurRadius(5)
+            shadow_effect.setBlurRadius(10)
 
+            push_buttons[0].setStyleSheet("border-radius: 10px; border-style: solid; border-width: 0px;")
             push_buttons[0].setGraphicsEffect(shadow_effect)
 
     @staticmethod

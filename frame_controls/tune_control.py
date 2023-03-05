@@ -82,8 +82,9 @@ class TuneControl:
         self.opt_control = OptimizationControl(self.ui)
 
     def initUI(self):
+
         # splitter
-        self.ui.sp_Left_Right_Container.setStretchFactor(1, 4)
+        self.ui.sp_Left_Right_Container.setStretchFactor(2, 4)
 
         self.ui.cb_Inner_Cell.setCheckState(2)
         self.ui.cb_Inner_Cell.setEnabled(False)
@@ -93,6 +94,7 @@ class TuneControl:
         self.ui.pb_Expansion.setEnabled(False)
         self.ui.w_Tune_Settings.setVisible(False)
         self.ui.w_Postprocess.setVisible(False)
+        self.ui.w_Opt_Constraints.setVisible(False)
 
         self.ui.cb_Tuner.currentTextChanged.connect(lambda: self.tuner_routine())
         self.ui.cb_Cell_Type.currentTextChanged.connect(lambda: self.tuner_routine())
@@ -1367,7 +1369,7 @@ class TuneControl:
         state_dict["Tune_Option"] = self.ui.cb_Tune_Option.currentIndex()
         state_dict["Method"] = self.ui.cb_Shape_Space_Generation_Algorithm.currentIndex()
 
-        state_dict["No_Of_Shapes_Monte_Carlo"] = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
+        # state_dict["No_Of_Shapes_Monte_Carlo"] = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
 
         state_dict["Tuner"] = self.ui.cb_Tuner.currentIndex()
         state_dict["LBC"] = self.ui.cb_LBC.currentIndex()
@@ -1449,7 +1451,7 @@ class TuneControl:
             self.ui.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
             self.ui.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
 
-            self.ui.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
+            # self.ui.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
 
             self.ui.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
             self.ui.cb_LBC.setCurrentIndex(state_dict["LBC"])

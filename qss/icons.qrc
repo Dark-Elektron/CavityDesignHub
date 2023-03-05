@@ -1,5 +1,19 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/PNG/eigenmode_expand.png</file>
+    <file>icons/PNG/home_expand.png</file>
+    <file>icons/PNG/multipacting_extend.png</file>
+    <file>icons/PNG/plot_expand.png</file>
+    <file>icons/PNG/postprocess_extend.png</file>
+    <file>icons/PNG/wakefield_expand.png</file>
+    <file>icons/PNG/tune_expand.png</file>
+    <file>icons/PNG/postprocess.png</file>
+    <file>icons/PNG/multipacting.png</file>
+    <file>icons/PNG/eigenmode.png</file>
+    <file>icons/PNG/wakefield.png</file>
+    <file>icons/PNG/tune.png</file>
+    <file>icons/PNG/plot.png</file>
+    <file>icons/PNG/home_.png</file>
     <file>icons/PNG/add.png</file>
     <file>icons/PNG/back.png</file>
     <file>icons/PNG/forward.png</file>
