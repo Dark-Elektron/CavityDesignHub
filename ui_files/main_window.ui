@@ -56,6 +56,9 @@
            <property name="bottomMargin">
             <number>0</number>
            </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item row="0" column="11">
             <widget class="QPushButton" name="pb_Apply_Theme">
              <property name="toolTip">
@@ -186,7 +189,7 @@
               <string>Project name</string>
              </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(255, 184, 83);
+              <string notr="true">background-color: rgb(255, 170, 127);
 color: rgb(255, 255, 255);</string>
              </property>
              <property name="text">

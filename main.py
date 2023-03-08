@@ -724,6 +724,14 @@ class MainWindow:
             # add to GUI
             self.ui.gl_File_System_View.addWidget(self.tree)
 
+            self.tree.setStyleSheet("""QTreeView::branch:open:has-children:!has-siblings{image:url(:/icons/icons/PNG/tree_collapse.png); icon-size: 12px 12px;}
+                                       QTreeView::branch:closed:has-children:!has-siblings{image:url(:/icons/icons/PNG/tree_expand.png); icon-size: 12px 12px;}
+                                       QTreeView::branch:open:has-children{image:url(:/icons/icons/PNG/tree_collapse.png); icon-size: 12px 12px;}
+                                       QTreeView::branch:closed:has-children{image:url(:/icons/icons/PNG/tree_expand.png); icon-size: 12px 12px;}
+                                       QTreeView::branch:open:{image:url(:/icons/icons/PNG/tree_collapse.png); icon-size: 12px 12px;}
+                                       QTreeView::branch:closed:{image:url(:/icons/icons/PNG/tree_expand.png); icon-size: 12px 12px;}
+                                    """)
+
     def file_system_context_menu(self):
         menu = QMenu()
         open = menu.addAction('Open')

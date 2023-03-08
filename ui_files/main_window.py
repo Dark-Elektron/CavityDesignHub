@@ -36,6 +36,7 @@ class Ui_MainWindow(object):
         self.widget_3.setObjectName("widget_3")
         self.gridLayout_6 = QtWidgets.QGridLayout(self.widget_3)
         self.gridLayout_6.setContentsMargins(-1, 0, -1, 0)
+        self.gridLayout_6.setSpacing(0)
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.pb_Apply_Theme = QtWidgets.QPushButton(self.widget_3)
         self.pb_Apply_Theme.setObjectName("pb_Apply_Theme")
@@ -69,7 +70,7 @@ class Ui_MainWindow(object):
         self.le_New_Project_Filename.setObjectName("le_New_Project_Filename")
         self.gridLayout_6.addWidget(self.le_New_Project_Filename, 0, 1, 1, 1)
         self.l_Project_Name = QtWidgets.QLabel(self.widget_3)
-        self.l_Project_Name.setStyleSheet("background-color: rgb(255, 184, 83);\n"
+        self.l_Project_Name.setStyleSheet("background-color: rgb(255, 170, 127);\n"
 "color: rgb(255, 255, 255);")
         self.l_Project_Name.setAlignment(QtCore.Qt.AlignCenter)
         self.l_Project_Name.setObjectName("l_Project_Name")
