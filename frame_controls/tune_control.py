@@ -1527,8 +1527,8 @@ class TuneControl:
             tw_dict = state_dict['Optimization Objective Table']
             self.deserialize_table_widget(self.ui.tw_Objectives, tw_dict)
 
-        except KeyError:
-            print("Could not deserialize tune_control.py")
+        except KeyError as e:
+            print("Could not deserialize tune_control.py", e)
 
 
 class OptimizationControl:

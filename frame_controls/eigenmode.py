@@ -81,6 +81,8 @@ class EigenmodeControl:
         # self.ui_effects()
 
     def initUI(self):
+        self.ui.w_EXE.setVisible(False)
+        self.ui.w_UQ.setVisible(False)
         # splitter
         self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
 
@@ -494,55 +496,58 @@ class EigenmodeControl:
         state_dict["Eigen_No_Of_Processors"] = self.ui.sb_No_Of_Processors_SLANS.value()
 
     def deserialize(self, state_dict):
-        # update state file
-        self.ui.cb_Shape_Entry_Mode.setCurrentIndex(state_dict["Eigen_Shape_Entry_Mode"])
-        self.ui.le_Shape_Space.setText(state_dict["Eigen_Shape Space"])
-        self.ui.cb_Inner_Cell.setCheckState(state_dict["Eigen_Mid_Cell_CB"])
-        self.ui.cb_Outer_Cell_L.setCheckState(state_dict["Eigen_Left_Cell_CB"])
-        self.ui.cb_Outer_Cell_R.setCheckState(state_dict["Eigen_Right_Cell_CB"])
-        # self.ui.cb_Expansion.setCheckState(state_dict["Eigen_Expansion_CB"])
-        self.ui.cb_LBP.setCheckState(state_dict["Eigen_LBP_CB"])
-        self.ui.cb_RBP.setCheckState(state_dict["Eigen_RBP_CB"])
+        try:
+            # update state file
+            self.ui.cb_Shape_Entry_Mode.setCurrentIndex(state_dict["Eigen_Shape_Entry_Mode"])
+            self.ui.le_Shape_Space.setText(state_dict["Eigen_Shape Space"])
+            self.ui.cb_Inner_Cell.setCheckState(state_dict["Eigen_Mid_Cell_CB"])
+            self.ui.cb_Outer_Cell_L.setCheckState(state_dict["Eigen_Left_Cell_CB"])
+            self.ui.cb_Outer_Cell_R.setCheckState(state_dict["Eigen_Right_Cell_CB"])
+            # self.ui.cb_Expansion.setCheckState(state_dict["Eigen_Expansion_CB"])
+            self.ui.cb_LBP.setCheckState(state_dict["Eigen_LBP_CB"])
+            self.ui.cb_RBP.setCheckState(state_dict["Eigen_RBP_CB"])
 
-        # cell parameters
-        self.ui.le_A_i.setText(state_dict["Eigen_A_i"])
-        self.ui.le_B_i.setText(state_dict["Eigen_B_i"])
-        self.ui.le_a_i.setText(state_dict["Eigen_a_i"])
-        self.ui.le_b_i.setText(state_dict["Eigen_b_i"])
-        self.ui.le_Ri_i.setText(state_dict["Eigen_Ri_i"])
-        self.ui.le_L_i.setText(state_dict["Eigen_L_i"])
-        self.ui.le_Req_i.setText(state_dict["Eigen_Req_i"])
-        self.ui.le_Alpha.setText(state_dict["Eigen_Alpha_i"])
+            # cell parameters
+            self.ui.le_A_i.setText(state_dict["Eigen_A_i"])
+            self.ui.le_B_i.setText(state_dict["Eigen_B_i"])
+            self.ui.le_a_i.setText(state_dict["Eigen_a_i"])
+            self.ui.le_b_i.setText(state_dict["Eigen_b_i"])
+            self.ui.le_Ri_i.setText(state_dict["Eigen_Ri_i"])
+            self.ui.le_L_i.setText(state_dict["Eigen_L_i"])
+            self.ui.le_Req_i.setText(state_dict["Eigen_Req_i"])
+            self.ui.le_Alpha.setText(state_dict["Eigen_Alpha_i"])
 
-        self.ui.le_A_ol.setText(state_dict["Eigen_A_ol"])
-        self.ui.le_B_ol.setText(state_dict["Eigen_B_ol"])
-        self.ui.le_a_ol.setText(state_dict["Eigen_a_ol"])
-        self.ui.le_b_ol.setText(state_dict["Eigen_b_ol"])
-        self.ui.le_Ri_ol.setText(state_dict["Eigen_Ri_ol"])
-        self.ui.le_L_ol.setText(state_dict["Eigen_L_ol"])
-        self.ui.le_Req_ol.setText(state_dict["Eigen_Req_ol"])
-        self.ui.le_Alpha_ol.setText(state_dict["Eigen_Alpha_ol"])
+            self.ui.le_A_ol.setText(state_dict["Eigen_A_ol"])
+            self.ui.le_B_ol.setText(state_dict["Eigen_B_ol"])
+            self.ui.le_a_ol.setText(state_dict["Eigen_a_ol"])
+            self.ui.le_b_ol.setText(state_dict["Eigen_b_ol"])
+            self.ui.le_Ri_ol.setText(state_dict["Eigen_Ri_ol"])
+            self.ui.le_L_ol.setText(state_dict["Eigen_L_ol"])
+            self.ui.le_Req_ol.setText(state_dict["Eigen_Req_ol"])
+            self.ui.le_Alpha_ol.setText(state_dict["Eigen_Alpha_ol"])
 
-        self.ui.le_A_or.setText(state_dict["Eigen_A_or"])
-        self.ui.le_B_or.setText(state_dict["Eigen_B_or"])
-        self.ui.le_a_or.setText(state_dict["Eigen_a_or"])
-        self.ui.le_b_or.setText(state_dict["Eigen_b_or"])
-        self.ui.le_Ri_or.setText(state_dict["Eigen_Ri_or"])
-        self.ui.le_L_or.setText(state_dict["Eigen_L_or"])
-        self.ui.le_Req_or.setText(state_dict["Eigen_Req_or"])
-        self.ui.le_Alpha_or.setText(state_dict["Eigen_Alpha_or"])
+            self.ui.le_A_or.setText(state_dict["Eigen_A_or"])
+            self.ui.le_B_or.setText(state_dict["Eigen_B_or"])
+            self.ui.le_a_or.setText(state_dict["Eigen_a_or"])
+            self.ui.le_b_or.setText(state_dict["Eigen_b_or"])
+            self.ui.le_Ri_or.setText(state_dict["Eigen_Ri_or"])
+            self.ui.le_L_or.setText(state_dict["Eigen_L_or"])
+            self.ui.le_Req_or.setText(state_dict["Eigen_Req_or"])
+            self.ui.le_Alpha_or.setText(state_dict["Eigen_Alpha_or"])
 
-        # settings
-        self.ui.sb_N_Cells.setValue(state_dict["Eigen_N_Cells"])
-        self.ui.le_N_Cells.setText(state_dict["Eigen_N_Cells_"])
-        self.ui.le_Scale.setText(state_dict["Eigen_Scale"])
-        self.ui.sb_N_Modules.setValue(state_dict["Eigen_N_Modules"])
-        self.ui.cb_Polarization_SLANS.setCurrentIndex(state_dict["Eigen_Polarization"])
-        self.ui.le_Freq_Shift.setText(state_dict["Eigen_Freq_Shift"])
-        self.ui.le_No_Of_Modes.setText(state_dict["Eigen_No_Of_Modes"])
-        self.ui.cb_LBC.setCurrentIndex(state_dict["Eigen_LBC"])
-        self.ui.cb_RBC.setCurrentIndex(state_dict["Eigen_RBC"])
-        self.ui.sb_No_Of_Processors_SLANS.setValue(state_dict["Eigen_No_Of_Processors"])
+            # settings
+            self.ui.sb_N_Cells.setValue(state_dict["Eigen_N_Cells"])
+            self.ui.le_N_Cells.setText(state_dict["Eigen_N_Cells_"])
+            self.ui.le_Scale.setText(state_dict["Eigen_Scale"])
+            self.ui.sb_N_Modules.setValue(state_dict["Eigen_N_Modules"])
+            self.ui.cb_Polarization_SLANS.setCurrentIndex(state_dict["Eigen_Polarization"])
+            self.ui.le_Freq_Shift.setText(state_dict["Eigen_Freq_Shift"])
+            self.ui.le_No_Of_Modes.setText(state_dict["Eigen_No_Of_Modes"])
+            self.ui.cb_LBC.setCurrentIndex(state_dict["Eigen_LBC"])
+            self.ui.cb_RBC.setCurrentIndex(state_dict["Eigen_RBC"])
+            self.ui.sb_No_Of_Processors_SLANS.setValue(state_dict["Eigen_No_Of_Processors"])
+        except KeyError as e:
+            print("Could not deserialize eigenmode.py: ", e)
 
     @staticmethod
     def show_hide_(wid1, wid2):

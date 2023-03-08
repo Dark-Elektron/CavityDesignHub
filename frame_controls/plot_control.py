@@ -2448,94 +2448,97 @@ class PlotControl:
         state_dict['plot_objects_attr'] = plot_objects_attr
 
     def deserialize(self, state_dict):
+        try:
+            self.ui.le_Inset_Position.setText(state_dict["Inlet_Position"])
+            self.ui.le_Inset_Window.setText(state_dict["Inset_Window"])
 
-        self.ui.le_Inset_Position.setText(state_dict["Inlet_Position"])
-        self.ui.le_Inset_Window.setText(state_dict["Inset_Window"])
+            self.ui.cb_Show_Hide_Inset.setCheckState(state_dict["Show_Hide_Inset"])
 
-        self.ui.cb_Show_Hide_Inset.setCheckState(state_dict["Show_Hide_Inset"])
+            self.ui.cb_Y_Scale.setCurrentText(state_dict["Y_Scale"])
 
-        self.ui.cb_Y_Scale.setCurrentText(state_dict["Y_Scale"])
+            self.ui.cb_Show_Wakefield_Parameters.setCheckState(state_dict["Show_Wakefield_Parameters"])
 
-        self.ui.cb_Show_Wakefield_Parameters.setCheckState(state_dict["Show_Wakefield_Parameters"])
+            self.ui.le_Plot_Text.setText(state_dict["Text"])
+            self.ui.dsb_Threshold.setValue(state_dict["Peaks Threshold"])
 
-        self.ui.le_Plot_Text.setText(state_dict["Text"])
-        self.ui.dsb_Threshold.setValue(state_dict["Peaks Threshold"])
+            self.ui.le_E0.setText(state_dict["E0"])
+            self.ui.le_Nu_S.setText(state_dict["Nu_S"])
+            self.ui.le_I0.setText(state_dict["I0"])
+            self.ui.le_Alpha_P.setText(state_dict["Alpha_S"])
+            self.ui.le_Tau_Z.setText(state_dict["Tau_Z"])
+            self.ui.le_Tau_XY.setText(state_dict["Tau_XY"])
+            self.ui.le_F_Rev.setText(state_dict["F_Rev"])
+            self.ui.le_Beta_XY.setText(state_dict["Beta_XY"])
+            self.ui.le_N_Cav.setText(state_dict["N_Cav"])
+            self.ui.cb_Longitudinal_Threshold.setCheckState(state_dict["Longitudinal Threshold Checkbox"])
+            self.ui.cb_Transverse_Threshold.setCheckState(state_dict["Transverse Threshold Checkbox"])
+            self.ui.cb_Threshold_Line_Color.setCurrentText(state_dict["Threshold Line Color"])
+            self.ui.cb_Threshold_Linestyle.setCurrentText(state_dict["Threshold Linestyle"])
 
-        self.ui.le_E0.setText(state_dict["E0"])
-        self.ui.le_Nu_S.setText(state_dict["Nu_S"])
-        self.ui.le_I0.setText(state_dict["I0"])
-        self.ui.le_Alpha_P.setText(state_dict["Alpha_S"])
-        self.ui.le_Tau_Z.setText(state_dict["Tau_Z"])
-        self.ui.le_Tau_XY.setText(state_dict["Tau_XY"])
-        self.ui.le_F_Rev.setText(state_dict["F_Rev"])
-        self.ui.le_Beta_XY.setText(state_dict["Beta_XY"])
-        self.ui.le_N_Cav.setText(state_dict["N_Cav"])
-        self.ui.cb_Longitudinal_Threshold.setCheckState(state_dict["Longitudinal Threshold Checkbox"])
-        self.ui.cb_Transverse_Threshold.setCheckState(state_dict["Transverse Threshold Checkbox"])
-        self.ui.cb_Threshold_Line_Color.setCurrentText(state_dict["Threshold Line Color"])
-        self.ui.cb_Threshold_Linestyle.setCurrentText(state_dict["Threshold Linestyle"])
+            self.le_Xlabel.setText(state_dict["xlabel"])
+            self.le_Ylabel.setText(state_dict["ylabel"])
+            self.le_Title.setText(state_dict["title"])
+            self.sb_XLabel_Size.setValue(state_dict["xlabel_size"])
+            self.sb_YLabel_Size.setValue(state_dict["ylabel_size"])
+            self.sb_Title_Size.setValue(state_dict["title_size"])
+            self.sb_XLabel_Tick_Size.setValue(state_dict["xlabeltick_size"])
+            self.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
+            self.sb_Legend_Size.setValue(state_dict["legend_size"])
 
-        self.le_Xlabel.setText(state_dict["xlabel"])
-        self.le_Ylabel.setText(state_dict["ylabel"])
-        self.le_Title.setText(state_dict["title"])
-        self.sb_XLabel_Size.setValue(state_dict["xlabel_size"])
-        self.sb_YLabel_Size.setValue(state_dict["ylabel_size"])
-        self.sb_Title_Size.setValue(state_dict["title_size"])
-        self.sb_XLabel_Tick_Size.setValue(state_dict["xlabeltick_size"])
-        self.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
-        self.sb_Legend_Size.setValue(state_dict["legend_size"])
+            table_widget_state = state_dict['plot_table_widget']
+            # print(table_widget_state)
+            # self.ui.tableWidget.setRowCount(0)
+            for i, (k, v) in enumerate(table_widget_state.items()):
+                if i > 0:
+                    self.add_row()
 
-        table_widget_state = state_dict['plot_table_widget']
-        # print(table_widget_state)
-        for i, (k, v) in enumerate(table_widget_state.items()):
-            if i > 0:
-                self.add_row()
+                args_dict = self.plot_dict[i]['plot inputs']
 
-            args_dict = self.plot_dict[i]['plot inputs']
+                args_dict['Code'].setCurrentText(v["Code"])
+                args_dict['Folder'][0].setText(v["Folder"])  # [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget]
 
-            args_dict['Code'].setCurrentText(v["Code"])
-            args_dict['Folder'][0].setText(v["Folder"])  # [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget]
+                args_dict['Polarization'].setCurrentText(v["Polarization"])
 
-            args_dict['Polarization'].setCurrentText(v["Polarization"])
+                # check checked items
+                args_dict['Id'].clear()  # Not optimal
+                for r, text in enumerate(v["Id"][0]):
+                    # if r != 0:
+                    args_dict['Id'].addItem(text)
+                    if args_dict['Id'].model().item(r).text() in v["Id"][1].split(','):
+                        args_dict['Id'].model().item(r).setCheckState(Qt.Checked)
 
-            # check checked items
-            args_dict['Id'].clear()  # Not optimal
-            for r, text in enumerate(v["Id"][0]):
-                # if r != 0:
-                args_dict['Id'].addItem(text)
-                if args_dict['Id'].model().item(r).text() in v["Id"][1].split(','):
-                    args_dict['Id'].model().item(r).setCheckState(Qt.Checked)
+                args_dict['Request'][0].setCurrentText(
+                    v["Request"][0])  # [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget],
+                args_dict['Request'][1].setCurrentText(v["Request"][1])
 
-            args_dict['Request'][0].setCurrentText(
-                v["Request"][0])  # [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget],
-            args_dict['Request'][1].setCurrentText(v["Request"][1])
+                # check checked items
+                for r in range(args_dict['Request'][2].model().rowCount()):
+                    if args_dict['Request'][2].model().item(r).text() in v["Request"][2]:
+                        args_dict['Request'][2].model().item(r).setCheckState(Qt.Checked)
 
-            # check checked items
-            for r in range(args_dict['Request'][2].model().rowCount()):
-                if args_dict['Request'][2].model().item(r).text() in v["Request"][2]:
-                    args_dict['Request'][2].model().item(r).setCheckState(Qt.Checked)
+                args_dict['Toggle'].setCheckState(v["Toggle"])
+                args_dict['ScaleX'].setText(v["ScaleX"])
+                args_dict['ScaleY'].setText(v["ScaleY"])
+                args_dict['Axis'].setCurrentText(v["Axis"])
+                args_dict['Type'][0].setCurrentText(v["Type"][0])
+                args_dict['Type'][1].setCurrentText(v["Type"][1])
 
-            args_dict['Toggle'].setCheckState(v["Toggle"])
-            args_dict['ScaleX'].setText(v["ScaleX"])
-            args_dict['ScaleY'].setText(v["ScaleY"])
-            args_dict['Axis'].setCurrentText(v["Axis"])
-            args_dict['Type'][0].setCurrentText(v["Type"][0])
-            args_dict['Type'][1].setCurrentText(v["Type"][1])
+                # check checked items
+                for r in range(args_dict['Filter'][0].model().rowCount()):
+                    if args_dict['Filter'][0].model().item(r).text() in v['Filter'][0]:
+                        args_dict['Filter'][0].model().item(r).setCheckState(Qt.Checked)
 
-            # check checked items
-            for r in range(args_dict['Filter'][0].model().rowCount()):
-                if args_dict['Filter'][0].model().item(r).text() in v['Filter'][0]:
-                    args_dict['Filter'][0].model().item(r).setCheckState(Qt.Checked)
+                args_dict['Filter'][1].setText(v["Filter"][1])
 
-            args_dict['Filter'][1].setText(v["Filter"][1])
+            self.plot()
+            plot_objects_attr = state_dict['plot_objects_attr']
+            for n, line in enumerate(self.ax.get_lines()):
+                line.set(**plot_objects_attr['lines'][n])
 
-        self.plot()
-        plot_objects_attr = state_dict['plot_objects_attr']
-        for n, line in enumerate(self.ax.get_lines()):
-            line.set(**plot_objects_attr['lines'][n])
+            # for n, coll in enumerate(self.ax.collections):
+            #     coll.set(**plot_objects_attr['collections'][n])
 
-        # for n, coll in enumerate(self.ax.collections):
-        #     coll.set(**plot_objects_attr['collections'][n])
-
-        self.update_labels()
-        self.fig.canvas.draw_idle()
+            self.update_labels()
+            self.fig.canvas.draw_idle()
+        except KeyError as e:
+            print("Could not deserialize plot_control.py: ", e)
