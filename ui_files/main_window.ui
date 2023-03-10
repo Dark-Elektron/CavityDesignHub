@@ -32,6 +32,15 @@
         <string>Hub</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_15">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
         <item row="0" column="0">
          <widget class="QWidget" name="widget_3" native="true">
           <property name="minimumSize">
@@ -50,7 +59,13 @@
            <string notr="true">/*background-color: rgb(240, 240, 240);*/</string>
           </property>
           <layout class="QGridLayout" name="gridLayout_6">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
            <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
             <number>0</number>
            </property>
            <property name="bottomMargin">
@@ -440,7 +455,7 @@ color: rgb(255, 255, 255);</string>
                            <x>0</x>
                            <y>0</y>
                            <width>886</width>
-                           <height>917</height>
+                           <height>945</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -869,8 +884,8 @@ P R O C E S S</string>
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>484</width>
-                        <height>859</height>
+                        <width>495</width>
+                        <height>887</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_3">
@@ -1353,7 +1368,7 @@ P R O C E S S</string>
      <x>0</x>
      <y>0</y>
      <width>1661</width>
-     <height>31</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

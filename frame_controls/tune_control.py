@@ -7,13 +7,11 @@ from math import floor
 import oapackage
 import pandas as pd
 from analysis_modules.data_module.abci_data import ABCIData
-# from analysis_modules.data_module.slans_data import SLANSDataExtraction
 from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from ui_files.run_tune import Ui_w_Tune
 import time
 import multiprocessing as mp
 import random as r
-from utils.file_reader import FileReader
 import pyqtgraph as pg
 from distutils import dir_util
 from analysis_modules.tune.tuners.tuner import Tuner
@@ -22,7 +20,7 @@ from utils.shared_functions import *
 
 from analysis_modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 
-slans_geom = SLANSGeometry()  # parallel implementaion of code, consider making the two separate classes 1
+slans_geom = SLANSGeometry()  # parallel implementation of code, consider making the two separate classes 1
 from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 
 slans_geom_seq = SLANSGeometry()
@@ -32,7 +30,8 @@ DEBUG = True
 
 
 def print_(*arg):
-    if DEBUG: print(colored(f'\t{arg}', file_color))
+    if DEBUG:
+        print(colored(f'\t{arg}', file_color))
 
 
 fr = FileReader()
@@ -46,6 +45,15 @@ AN_DURATION = 200
 
 class TuneControl:
     def __init__(self, parent):
+        self.plot_list = None
+        self.end_routine_thread = None
+        self.progress_monitor_thread = None
+        self.convergence_list = None
+        self.progress_list = None
+        self.existing_keys = None
+        self.freq = None
+        self.filename = None
+        self.start = None
         self.process_state = None
         self.pseudo_shape_space = None
         self.w_Tune = QWidget()
@@ -81,8 +89,20 @@ class TuneControl:
         # evolution algorithm
         self.opt_control = OptimizationControl(self.ui)
 
-    def initUI(self):
+        # process control buttons icons
+        self.pause_icon = QIcon()
+        self.pause_icon.addPixmap(QPixmap(f":/icons/icons/PNG/pause.png"), QIcon.Normal, QIcon.Off)
+        self.resume_icon = QIcon()
+        self.resume_icon.addPixmap(QPixmap(f":/icons/icons/PNG/resume.png"), QIcon.Normal, QIcon.Off)
 
+        # create progress bar object and add to widget
+        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setValue(0)
+        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.progress_bar.hide()
+
+    def initUI(self):
         # splitter
         self.ui.sp_Left_Right_Container.setStretchFactor(2, 4)
 
@@ -112,15 +132,6 @@ class TuneControl:
         # show/hide convergence plot
         # animate_width(self.ui.cb_Monitor_Convergence, self.ui.w_PyqtGraph, 0, 500, True)
 
-        # create pause and resume icons to avoid creating them over and over again
-        self.pause_icon = QIcon()
-        self.pause_icon.addPixmap(QPixmap(f":/icons/icons/PNG/pause.png"), QIcon.Normal, QIcon.Off)
-        self.resume_icon = QIcon()
-        self.resume_icon.addPixmap(QPixmap(f":/icons/icons/PNG/resume.png"), QIcon.Normal, QIcon.Off)
-
-        # # initially set pause icon
-        # self.ui.pb_Pause_Resume.setIcon(self.pause_icon)
-
         # process state
         self.process_state = 'none'
         self.run_pause_resume_stop_routine()
@@ -128,13 +139,6 @@ class TuneControl:
         # set default boundary condition to magnetic wall at both ends
         self.ui.cb_LBC.setCurrentIndex(2)
         self.ui.cb_RBC.setCurrentIndex(2)
-
-        # create progress bar object and add to widget
-        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
-        self.progress_bar.setMaximum(100)
-        self.progress_bar.setValue(0)
-        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
-        self.progress_bar.hide()
 
         # disable convergence monitor checkbox
         self.ui.cb_Monitor_Convergence.setEnabled(False)
@@ -400,24 +404,24 @@ class TuneControl:
         self.pg_list.append(pg_)
         self.pygraph_list.append(pygraph)
 
-    def monitor_convergence(self, conv):
-        n = len(self.convergence_list)
-        self.plot_list = [None for i in range(n)]
-
-        for p in self.pygraph_list:
-            if p:
-                p.clear()
-
-        if self.ui.cb_Monitor_Convergence.checkState() == 2:
-            for i in range(n):
-                self.pygraph_list[i].addLine(x=None, y=self.freq, pen=pg.mkPen('r', width=1))
-
-                if not self.plot_list[i]:
-                    self.plot_list[i] = self.pygraph_list[i].plot(self.convergence_list[i][0],
-                                                                  self.convergence_list[i][1], pen=None, symbol='o')
-                else:
-                    self.plot_list[i].setData(self.convergence_list[i][0], self.convergence_list[i][1], pen=None,
-                                              symbol='o')
+    # def monitor_convergence(self, conv):
+    #     n = len(self.convergence_list)
+    #     self.plot_list = [None for i in range(n)]
+    #
+    #     for p in self.pygraph_list:
+    #         if p:
+    #             p.clear()
+    #
+    #     if self.ui.cb_Monitor_Convergence.checkState() == 2:
+    #         for i in range(n):
+    #             self.pygraph_list[i].addLine(x=None, y=self.freq, pen=pg.mkPen('r', width=1))
+    #
+    #             if not self.plot_list[i]:
+    #                 self.plot_list[i] = self.pygraph_list[i].plot(self.convergence_list[i][0],
+    #                                                               self.convergence_list[i][1], pen=None, symbol='o')
+    #             else:
+    #                 self.plot_list[i].setData(self.convergence_list[i][0], self.convergence_list[i][1], pen=None,
+    #                                           symbol='o')
 
     def update_progress_bar(self, val):
         self.progress_bar.setValue(val)
@@ -533,7 +537,7 @@ class TuneControl:
                                 "r") as f:
                             a = f.readline()
                             progress += eval(a)
-                self.progress_bar.setValue(progress * 100 / len(proc_ids))
+                self.progress_bar.setValue(int(progress * 100 / len(proc_ids)))
             except:
                 print("Error in progress update")
                 pass
@@ -545,28 +549,28 @@ class TuneControl:
         except:
             pass
 
-    def change_cell_parameters(self, d, key, par):
-        try:
-            if par == 'inner':
-                self.ui.le_A_i.setText(fr"{d[key]['IC'][0]}")
-                self.ui.le_B_i.setText(fr"{d[key]['IC'][1]}")
-                self.ui.le_a_i.setText(fr"{d[key]['IC'][2]}")
-                self.ui.le_b_i.setText(fr"{d[key]['IC'][3]}")
-                self.ui.le_Ri_i.setText(fr"{d[key]['IC'][4]}")
-                # check tune variable
-                if self.ui.cb_Tune_Option.currentText() == 'Req':
-                    self.ui.le_Tune_Variable.setText(fr"{d[key]['IC'][5]}")
-                else:
-                    self.ui.le_Tune_Variable.setText(fr"{d[key]['IC'][6]}")
-            else:
-                self.ui.le_A_o.setText(fr"{d[key]['OC'][0]}")
-                self.ui.le_B_o.setText(fr"{d[key]['OC'][1]}")
-                self.ui.le_a_o.setText(fr"{d[key]['OC'][2]}")
-                self.ui.le_b_o.setText(fr"{d[key]['OC'][3]}")
-                self.ui.le_Ri_o.setText(fr"{d[key]['OC'][4]}")
-                self.ui.le_Tune_Variable_End_Cell.setText(fr"{d[key]['OC'][5]}")
-        except Exception as e:
-            print('Exception: ', e)
+    # def change_cell_parameters(self, d, key, par):
+    #     try:
+    #         if par == 'inner':
+    #             self.ui.le_A_i.setText(fr"{d[key]['IC'][0]}")
+    #             self.ui.le_B_i.setText(fr"{d[key]['IC'][1]}")
+    #             self.ui.le_a_i.setText(fr"{d[key]['IC'][2]}")
+    #             self.ui.le_b_i.setText(fr"{d[key]['IC'][3]}")
+    #             self.ui.le_Ri_i.setText(fr"{d[key]['IC'][4]}")
+    #             # check tune variable
+    #             if self.ui.cb_Tune_Option.currentText() == 'Req':
+    #                 self.ui.le_Tune_Variable.setText(fr"{d[key]['IC'][5]}")
+    #             else:
+    #                 self.ui.le_Tune_Variable.setText(fr"{d[key]['IC'][6]}")
+    #         else:
+    #             self.ui.le_A_o.setText(fr"{d[key]['OC'][0]}")
+    #             self.ui.le_B_o.setText(fr"{d[key]['OC'][1]}")
+    #             self.ui.le_a_o.setText(fr"{d[key]['OC'][2]}")
+    #             self.ui.le_b_o.setText(fr"{d[key]['OC'][3]}")
+    #             self.ui.le_Ri_o.setText(fr"{d[key]['OC'][4]}")
+    #             self.ui.le_Tune_Variable_End_Cell.setText(fr"{d[key]['OC'][5]}")
+    #     except Exception as e:
+    #         print('Exception: ', e)
 
     def generate_pseudo_shape_space(self, freq, ihc, ohc):
         marker = self.ui.le_Generated_Shape_Space_Name.text()
@@ -888,7 +892,8 @@ class TuneControl:
 
         return df
 
-    def text_to_list(self, s):
+    @staticmethod
+    def text_to_list(s):
         # s = "range(16, 23, 10)"
         # s = "randrange(16, 23, 10)"
         # s = "[16, 23, 10]"
@@ -917,7 +922,8 @@ class TuneControl:
 
         return 1
 
-    def remove_duplicate_values(self, d):
+    @staticmethod
+    def remove_duplicate_values(d):
         temp = []
         res = dict()
         for key, val in d.items():
@@ -952,7 +958,8 @@ class TuneControl:
             elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_Outer_Cell.checkState() == 0:
                 self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_same_cell.png"))
 
-    def check_input(self, s):
+    @staticmethod
+    def check_input(s):
         # s = "range(16, 23, 10)"
         # s = "randrange(16, 23, 10)"
         # s = "[16, 23, 10]"
@@ -984,35 +991,6 @@ class TuneControl:
                 print("Please check inputs.")
 
         return 1
-
-    def check_input_old(self):
-        x = True
-        A_i = self.text_to_list(self.ui.le_A_i.text())
-        a_i = self.text_to_list(self.ui.le_a_i.text())
-        B_i = self.text_to_list(self.ui.le_B_i.text())
-        b_i = self.text_to_list(self.ui.le_b_i.text())
-        Ri_i = self.text_to_list(self.ui.le_Ri_i.text())
-        tune_var = self.text_to_list(self.ui.le_Tune_Variable.text())
-
-        if self.ui.cb_Tune_Option.currentText() == "Req":
-            L = tune_var
-            if A_i[0] + a_i[0] > L[0]:
-                x = False
-
-            if len(L) > 1:
-                if L[1] < L[0]:
-                    x = False
-        else:
-            Req = tune_var
-            if b_i[0] + Ri_i[0] > Req[0]:
-                x = False
-
-            if len(Req) > 1:
-                Req[0] = b_i[0] + Ri_i[0]
-                if Req[1] < Req[0]:
-                    x = False
-
-        return x
 
     def slans_tuners_control(self):
         if self.ui.cb_Tuner.currentText() == 'SLANS':
@@ -1144,7 +1122,7 @@ class TuneControl:
             buttonN = msg.button(QMessageBox.No)
             buttonN.setText('Overwrite')
 
-            msg.setDefaultButton(buttonY)
+            msg.setDefaultButton(QMessageBox.Yes)
 
             msg.buttonClicked.connect(button_clicked)
 
@@ -1166,14 +1144,14 @@ class TuneControl:
     @staticmethod
     def load_shape_space(filename, arg=None):
         fr = FileReader()
-        dir = f'{filename}'
+        filepath = f'{filename}'
 
         # check if extension is included
-        if dir.split('.')[-1] != 'json':
-            dir = f'{dir}.json'
+        if filepath.split('.')[-1] != 'json':
+            filepath = f'{filepath}.json'
 
-        print_(dir)
-        df = fr.json_reader(dir)
+        print_(filepath)
+        df = fr.json_reader(filepath)
         print(df)
 
         if arg:
@@ -1204,12 +1182,12 @@ class TuneControl:
             wid_r_bound.setValue(wid_l_bound.value())
 
     @staticmethod
-    def proof_filename(dirc):
+    def proof_filename(filepath):
         # check if extension is included
-        if dirc.split('.')[-1] != 'json':
-            dirc = f'{dirc}.json'
+        if filepath.split('.')[-1] != 'json':
+            filepath = f'{filepath}.json'
 
-        return dirc
+        return filepath
 
     def change_tune_option(self, txt):
         if txt == 'Req':
@@ -1237,32 +1215,34 @@ class TuneControl:
         else:
             print("Seems something is wrong with the input.")
 
-    def change_app_status(self):
-        # Application status
-        movie = QMovie(':/general/icons/GIF/spinner-icon.gif')
-        movie.setScaledSize(self.ui.l_Status.size())
-        self.ui.l_Status.setMovie(movie)
-        self.ui.l_Status_Text.setText("Busy")
-        movie.start()
+    # def change_app_status(self):
+    #     # Application status
+    #     movie = QMovie(':/general/icons/GIF/spinner-icon.gif')
+    #     movie.setScaledSize(self.ui.l_Status.size())
+    #     self.ui.l_Status.setMovie(movie)
+    #     self.ui.l_Status_Text.setText("Busy")
+    #     movie.start()
+    #
+    #     t_status = Thread(target=self.app_status, args=(movie,))
+    #     t_status.start()
 
-        t_status = Thread(target=self.app_status, args=(movie,))
-        t_status.start()
-
-    def app_status(self, movie):
-        print("Second thread started")
-        # keep on while t is alive
-        for t in self.thread_list:
-            # while t.isAlive():
-            while t.is_alive():
-                pass
-
-            t.join()
-
-        movie.stop()
-        self.ui.l_Status_Text.setText("Ready")
-        self.thread_list = []
+    # def app_status(self, movie):
+    #     print("Second thread started")
+    #     # keep on while t is alive
+    #     for t in self.thread_list:
+    #         # while t.isAlive():
+    #         while t.is_alive():
+    #             pass
+    #
+    #         t.join()
+    #
+    #     movie.stop()
+    #     self.ui.l_Status_Text.setText("Ready")
+    #     self.thread_list = []
 
     # @staticmethod
+
+    @staticmethod
     def combine_dict(self, proc_count, filename, projectDir):
         # Combining dictionaries
         print_('Combining dictionaries')
@@ -1288,22 +1268,28 @@ class TuneControl:
         for index in range(proc_count):
             os.remove(fr'{projectDir}\Cavities\shape_space{index}.json')
 
-    def serialize_qcombobox(self, cb):
+    @staticmethod
+    def serialize_qcombobox(cb):
         return cb.currentIndex()
 
-    def deserialize_qcombobox(self, cb, idx):
+    @staticmethod
+    def deserialize_qcombobox(cb, idx):
         cb.setCurrentIndex(idx)
 
-    def serialize_qlabel(self, lbl):
+    @staticmethod
+    def serialize_qlabel(lbl):
         return lbl.text()
 
-    def deserialize_qlabel(self, text):
+    @staticmethod
+    def deserialize_qlabel(text):
         return QLabel(text)
 
-    def serialize_qcheckablecombobox(self, ccb):
+    @staticmethod
+    def serialize_qcheckablecombobox(ccb):
         return ccb.currentText()
 
-    def deserialize_qcheckablecombobox(self, ccb, selected):
+    @staticmethod
+    def deserialize_qcheckablecombobox(ccb, selected):
         checked_items = selected.split(', ')
 
         # checkablecombobox items
@@ -1312,13 +1298,16 @@ class TuneControl:
             if ccb.model().item(kk).text() in checked_items:
                 ccb.model().item(kk).setCheckState(Qt.Checked)
 
-    def serialize_qlineedit(self, le):
+    @staticmethod
+    def serialize_qlineedit(le):
         return le.text()
 
-    def deserialize_qlineedit(self, text):
+    @staticmethod
+    def deserialize_qlineedit(text):
         return QLineEdit(text)
 
-    def serialize_table_widget(self, tw):
+    @staticmethod
+    def serialize_table_widget(tw):
         row_count = tw.rowCount()
         col_count = tw.columnCount()
         dd = dict()
@@ -3115,7 +3104,8 @@ class OptimizationControl:
         df = self.generate_first_men(f, n)
         return df
 
-    def remove_duplicate_values(self, d):
+    @staticmethod
+    def remove_duplicate_values(d):
         temp = []
         res = dict()
         for key, val in d.items():
@@ -3124,12 +3114,13 @@ class OptimizationControl:
                 res[key] = val
         return res
 
-    def proof_filename(self, dirc):
+    @staticmethod
+    def proof_filename(filepath):
         # check if extension is included
-        if dirc.split('.')[-1] != 'json':
-            dirc = f'{dirc}.json'
+        if filepath.split('.')[-1] != 'json':
+            filepath = f'{filepath}.json'
 
-        return dirc
+        return filepath
 
     def recursive_save(self, df, filename, pareto_index):
         styler = self.color_pareto(df, self.poc)
@@ -3141,7 +3132,8 @@ class OptimizationControl:
             filename = fr'{filename}_1.xlsx'
             self.recursive_save(df, filename, pareto_index)
 
-    def populate_objectives(self, f, ccb, tw, d):
+    @staticmethod
+    def populate_objectives(f, ccb, tw, d):
         tw.setRowCount(len(f))  # and one row in the table
 
         for i, x in enumerate(f):
@@ -3165,7 +3157,8 @@ class OptimizationControl:
                 le.setText("0.7, 1.3, 2.25, 5")
                 tw.setCellWidget(i, 2, le)
 
-    def populate_constraints(self, f, ccb, tw, d):
+    @staticmethod
+    def populate_constraints(f, ccb, tw, d):
         tw.setRowCount(len(f))  # and one row in the table
 
         for i, x in enumerate(f):
@@ -3284,7 +3277,8 @@ class OptimizationControl:
         # return [optimal_datapoints[i, :] for i in range(datapoints.shape[0])]
         return reorder_idx
 
-    def check_input(self, s):
+    @staticmethod
+    def check_input(s):
         # s = "range(16, 23, 10)"
         # s = "randrange(16, 23, 10)"
         # s = "[16, 23, 10]"
@@ -3318,15 +3312,15 @@ class OptimizationControl:
         return 1
 
     @staticmethod
-    def negate_list(l, arg):
+    def negate_list(ll, arg):
         if arg == 'max':
-            return l  # to find the pareto maxima
+            return ll  # to find the pareto maxima
         else:
-            return [-x for x in l]  # to find the pareto minima
+            return [-x for x in ll]  # to find the pareto minima
 
     @staticmethod
     def overwriteFolder(invar, projectDir):
-        path = f"{projectDir}\SimulationData\SLANS\_process_{invar}"
+        path = fr"{projectDir}\SimulationData\SLANS\_process_{invar}"
 
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -3352,15 +3346,15 @@ class OptimizationControl:
                    n_cell_last_run=n_cells)  # last_key=last_key This would have to be tested again #val2
 
     @staticmethod
-    def text_to_list(l):
-        if l == '':
+    def text_to_list(ll):
+        if ll == '':
             return None
         else:
-            l = ast.literal_eval(l)
-            if isinstance(l, int) or isinstance(l, float):
-                return [l, 2e10]
+            ll = ast.literal_eval(ll)
+            if isinstance(ll, int) or isinstance(ll, float):
+                return [ll, 2e10]
             else:
-                return list(l)
+                return list(ll)
 
     @staticmethod
     def process_interval(interval_list):
@@ -3371,12 +3365,14 @@ class OptimizationControl:
         return interval
 
     # def continue_check(self):
-    #     path = f'{self.main_control.projectDir}/Cavities/pseudo_{self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())}'
+    #     path = f'{self.main_control.projectDir}/' \
+    #            f'Cavities/pseudo_{self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())}'
     #     print(path)
     #     if os.path.exists(path):
     #         msg = QMessageBox()
     #         msg.setWindowTitle("Resume Simulation")
-    #         msg.setText("The pseudo shape space file already exist. Would you love to update or overwrite its content?")
+    #         msg.setText("The pseudo shape space file already exist. "
+    #                     "Would you love to update or overwrite its content?")
     #         msg.setIcon(QMessageBox.Question)
     #         msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
     #
@@ -3443,33 +3439,23 @@ def run_sequential_wakefield(n_cells, n_modules, processor_shape_space,
         if not skip:
             # run abci code
             # run both polarizations if MROT == 2
-            try:
-                if MROT == 2:
-                    for m in range(2):
-                        abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                         fid=key, MROT=m, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                         projectDir=projectDir,
-                                         WG_M='', marker='')
+            if 'OC_R' in list(shape.keys()):
+                OC_R = 'OC_R'
+            else:
+                OC_R = 'OC'
 
-                else:
-                    abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                     fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
+            if MROT == 2:
+                for m in range(2):
+                    abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape[OC_R],
+                                     fid=key, MROT=m, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
+                                     projectDir=projectDir,
                                      WG_M='', marker='')
-            except:
-                if MROT == 2:
-                    for m in range(2):
-                        abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                         fid=key, MROT=m, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                         projectDir=projectDir,
-                                         WG_M='', marker='')
-                else:
-                    abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                     fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
-                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
-                                     WG_M='', marker='')
+            else:
+                abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape[OC_R],
+                                 fid=key, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
+                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
+                                 WG_M='', marker='')
 
         print_(f'Cavity {key}. Time: {time.time() - start_time}')
 
@@ -3552,12 +3538,12 @@ def get_objectives_value(d, obj, norm_length, n_cells):
     Req = d['CAVITY RADIUS'][n_cells - 1] * 10  # convert to mm
     Freq = d['FREQUENCY'][n_cells - 1]
     E_stored = d['STORED ENERGY'][n_cells - 1]
-    Rsh = d['SHUNT IMPEDANCE'][n_cells - 1]  # MOhm
+    # Rsh = d['SHUNT IMPEDANCE'][n_cells - 1]  # MOhm
     Q = d['QUALITY FACTOR'][n_cells - 1]
     Epk = d['MAXIMUM ELEC. FIELD'][n_cells - 1]  # MV/m
     Hpk = d['MAXIMUM MAG. FIELD'][n_cells - 1]  # A/m
     # Vacc = dict['ACCELERATION'][n_cells - 1]
-    Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells - 1]  # MV/m
+    # Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells - 1]  # MV/m
     r_Q = d['EFFECTIVE IMPEDANCE'][n_cells - 1]  # Ohm
     G = 0.00948 * Q * (Freq / 1300)
     GR_Q = G * 2 * r_Q
@@ -3594,10 +3580,10 @@ def get_objectives_value(d, obj, norm_length, n_cells):
 
 
 def get_wakefield_objectives_value(key, obj, abci_data_dir):
-    k_loss_transverse = []
-    k_loss_longitudinal = []
-    k_loss_M0 = []
-    key_list = []
+    # k_loss_transverse = []
+    # k_loss_longitudinal = []
+    # k_loss_M0 = []
+    # key_list = []
 
     # create list to hold Z
     Zmax_mon_list = []
@@ -3606,33 +3592,33 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
     xmax_dip_list = []
     processed_keys = []
 
-    def calc_k_loss():
-        print(f"Processing for Cavity {key}")
-        abci_data_long = ABCIData(abci_data_dir, key, 0)
-        abci_data_trans = ABCIData(abci_data_dir, key, 1)
-
-        # trans
-        x, y, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-        k_loss_trans = abci_data_trans.loss_factor['Transverse']
-
-        if math.isnan(k_loss_trans):
-            print_(f"Encountered an exception: Check shape {key}")
-            return [0, 0, 0]
-
-        # long
-        x, y, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
-        abci_data_long.get_data('Loss Factor Spectrum Integrated up to F')
-
-        k_M0 = abci_data_long.y_peaks[0]
-        k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
-        k_loss_HOM = k_loss_long - k_M0
-
-        # append only after successful run
-        k_loss_M0.append(k_M0)
-        k_loss_longitudinal.append(k_loss_HOM)
-        k_loss_transverse.append(k_loss_trans)
-
-        return [k_loss_M0, k_loss_longitudinal, k_loss_transverse]
+    # def calc_k_loss():
+    #     print(f"Processing for Cavity {key}")
+    #     abci_data_long = ABCIData(abci_data_dir, key, 0)
+    #     abci_data_trans = ABCIData(abci_data_dir, key, 1)
+    #
+    #     # trans
+    #     x, y, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
+    #     k_loss_trans = abci_data_trans.loss_factor['Transverse']
+    #
+    #     if math.isnan(k_loss_trans):
+    #         print_(f"Encountered an exception: Check shape {key}")
+    #         return [0, 0, 0]
+    #
+    #     # long
+    #     x, y, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
+    #     abci_data_long.get_data('Loss Factor Spectrum Integrated up to F')
+    #
+    #     k_M0 = abci_data_long.y_peaks[0]
+    #     k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
+    #     k_loss_HOM = k_loss_long - k_M0
+    #
+    #     # append only after successful run
+    #     k_loss_M0.append(k_M0)
+    #     k_loss_longitudinal.append(k_loss_HOM)
+    #     k_loss_transverse.append(k_loss_trans)
+    #
+    #     return [k_loss_M0, k_loss_longitudinal, k_loss_transverse]
 
     def get_Zmax_L(mon_interval=None):
         # print("2a")
@@ -3661,22 +3647,22 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
             xp_mon, yp_mon = np.array(xr_mon)[peaks_mon], np.array(ymag_mon)[peaks_mon]
 
             # print("2f", mon_interval)
-            for i, z_bound in enumerate(mon_interval):
+            for n, z_bound in enumerate(mon_interval):
                 # get mask
                 msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
 
                 if len(yp_mon[msk_mon]) != 0:
                     Zmax_mon = max(yp_mon[msk_mon])
 
-                    Zmax_mon_list[i].append(Zmax_mon)
+                    Zmax_mon_list[n].append(Zmax_mon)
                 elif len(yp_mon) != 0:
-                    Zmax_mon_list[i].append(0)
+                    Zmax_mon_list[n].append(0)
                 else:
-                    return ['error']
+                    return ['Error']
 
             processed_keys.append(key)
-        except:
-            return ['error']
+        except KeyError as e:
+            return ['Exception occurred', e]
 
         # print("2g", Zmax_mon_list)
 
@@ -3704,106 +3690,105 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
             peaks_dip, _ = sps.find_peaks(ymag_dip, height=0)
             xp_dip, yp_dip = np.array(xr_dip)[peaks_dip], np.array(ymag_dip)[peaks_dip]
 
-            for i, z_bound in enumerate(dip_interval):
+            for n, z_bound in enumerate(dip_interval):
                 # get mask
                 msk_dip = [(z_bound[0] < x < z_bound[1]) for x in xp_dip]
 
                 if len(yp_dip[msk_dip]) != 0:
                     Zmax_dip = max(yp_dip[msk_dip])
 
-                    Zmax_dip_list[i].append(Zmax_dip)
+                    Zmax_dip_list[n].append(Zmax_dip)
                 elif len(yp_dip) != 0:
-                    Zmax_dip_list[i].append(0)
+                    Zmax_dip_list[n].append(0)
                 else:
-                    return ['error']
+                    return ['Error']
 
             processed_keys.append(key)
-        except:
-            return ['error']
+        except KeyError as e:
+            return ['Exception occurred', e]
 
         return Zmax_dip_list
 
-    def all(mon_interval, dip_interval):
-        print(f"Processing for Cavity {key}")
-        abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
-        abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
-
-        # get longitudinal and transverse impedance plot data
-        xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
-        xi_mon, yi_mon, _ = abci_data_long.get_data('Imaginary Part of Longitudinal Impedance')
-
-        xr_dip, yr_dip, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-        xi_dip, yi_dip, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
-
-        # loss factors
-        # trans
-        k_loss_trans = abci_data_trans.loss_factor['Transverse']
-
-        if math.isnan(k_loss_trans):
-            print_(f"Encountered an exception: Check shape {key}")
-            return 0
-
-        # long
-        abci_data_long.get_data('Loss Factor Spectrum Integrated upto F')
-
-        k_M0 = abci_data_long.y_peaks[0]
-        k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
-        k_loss_HOM = k_loss_long - k_M0
-
-        # calculate magnitude
-        ymag_mon = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_mon, yi_mon)]
-        ymag_dip = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_dip, yi_dip)]
-
-        # get peaks
-        peaks_mon, _ = sps.find_peaks(ymag_mon, height=0)
-        xp_mon, yp_mon = np.array(xr_mon)[peaks_mon], np.array(ymag_mon)[peaks_mon]
-
-        peaks_dip, _ = sps.find_peaks(ymag_dip, height=0)
-        xp_dip, yp_dip = np.array(xr_dip)[peaks_dip], np.array(ymag_dip)[peaks_dip]
-
-        for i, z_bound in enumerate(mon_interval):
-            # get mask
-            msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
-
-            if len(yp_mon[msk_mon]) != 0:
-                Zmax_mon = max(yp_mon[msk_mon])
-                xmax_mon = xp_mon[np.where(yp_mon == Zmax_mon)][0]
-
-                Zmax_mon_list[i].append(Zmax_mon)
-                xmax_mon_list[i].append(xmax_mon)
-            elif len(yp_mon) != 0:
-                Zmax_mon_list[i].append(0.0)
-                xmax_mon_list[i].append(0.0)
-            else:
-                continue
-
-        for i, z_bound in enumerate(dip_interval):
-            # get mask
-            msk_dip = [(z_bound[0] < x < z_bound[1]) for x in xp_dip]
-
-            if len(yp_dip[msk_dip]) != 0:
-                Zmax_dip = max(yp_dip[msk_dip])
-                xmax_dip = xp_dip[np.where(yp_dip == Zmax_dip)][0]
-
-                Zmax_dip_list[i].append(Zmax_dip)
-                xmax_dip_list[i].append(xmax_dip)
-            elif len(yp_dip) != 0:
-                Zmax_dip_list[i].append(0.0)
-                xmax_dip_list[i].append(0.0)
-            else:
-                continue
-
-        # append only after successful run
-
-        k_loss_M0.append(k_M0)
-        k_loss_longitudinal.append(k_loss_HOM)
-        k_loss_transverse.append(k_loss_trans)
+    # def eval_all(mon_interval, dip_interval):
+    #     print(f"Processing for Cavity {key}")
+    #     abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
+    #     abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
+    #
+    #     # get longitudinal and transverse impedance plot data
+    #     xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
+    #     xi_mon, yi_mon, _ = abci_data_long.get_data('Imaginary Part of Longitudinal Impedance')
+    #
+    #     xr_dip, yr_dip, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
+    #     xi_dip, yi_dip, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
+    #
+    #     # loss factors
+    #     # trans
+    #     k_loss_trans = abci_data_trans.loss_factor['Transverse']
+    #
+    #     if math.isnan(k_loss_trans):
+    #         print_(f"Encountered an exception: Check shape {key}")
+    #         return 0
+    #
+    #     # long
+    #     abci_data_long.get_data('Loss Factor Spectrum Integrated upto F')
+    #
+    #     k_M0 = abci_data_long.y_peaks[0]
+    #     k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
+    #     k_loss_HOM = k_loss_long - k_M0
+    #
+    #     # calculate magnitude
+    #     ymag_mon = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_mon, yi_mon)]
+    #     ymag_dip = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_dip, yi_dip)]
+    #
+    #     # get peaks
+    #     peaks_mon, _ = sps.find_peaks(ymag_mon, height=0)
+    #     xp_mon, yp_mon = np.array(xr_mon)[peaks_mon], np.array(ymag_mon)[peaks_mon]
+    #
+    #     peaks_dip, _ = sps.find_peaks(ymag_dip, height=0)
+    #     xp_dip, yp_dip = np.array(xr_dip)[peaks_dip], np.array(ymag_dip)[peaks_dip]
+    #
+    #     for n, z_bound in enumerate(mon_interval):
+    #         # get mask
+    #         msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
+    #
+    #         if len(yp_mon[msk_mon]) != 0:
+    #             Zmax_mon = max(yp_mon[msk_mon])
+    #             xmax_mon = xp_mon[np.where(yp_mon == Zmax_mon)][0]
+    #
+    #             Zmax_mon_list[n].append(Zmax_mon)
+    #             xmax_mon_list[n].append(xmax_mon)
+    #         elif len(yp_mon) != 0:
+    #             Zmax_mon_list[n].append(0.0)
+    #             xmax_mon_list[n].append(0.0)
+    #         else:
+    #             continue
+    #
+    #     for n, z_bound in enumerate(dip_interval):
+    #         # get mask
+    #         msk_dip = [(z_bound[0] < x < z_bound[1]) for x in xp_dip]
+    #
+    #         if len(yp_dip[msk_dip]) != 0:
+    #             Zmax_dip = max(yp_dip[msk_dip])
+    #             xmax_dip = xp_dip[np.where(yp_dip == Zmax_dip)][0]
+    #
+    #             Zmax_dip_list[n].append(Zmax_dip)
+    #             xmax_dip_list[n].append(xmax_dip)
+    #         elif len(yp_dip) != 0:
+    #             Zmax_dip_list[n].append(0.0)
+    #             xmax_dip_list[n].append(0.0)
+    #         else:
+    #             continue
+    #
+    #     # append only after successful run
+    #
+    #     k_loss_M0.append(k_M0)
+    #     k_loss_longitudinal.append(k_loss_HOM)
+    #     k_loss_transverse.append(k_loss_trans)
 
     ZL, ZT = [], []
     freq_range_ZL, freq_range_ZT = [], []
     # print("here here here")
     for i, o in enumerate(obj):
-        # print("print ptint pting")
         if o[1].split(' ')[0] == 'ZL':
             freq_range_ZL.append(o[2])
         elif o[1].split(' ')[0] == 'ZT':
@@ -3816,23 +3801,20 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
     # ic("about to evaluate ZL", freq_range_ZL)
     if freq_range_ZL:
-        for i in range(len(freq_range_ZL)):
+        for _ in range(len(freq_range_ZL)):
             Zmax_mon_list.append([])
             xmax_mon_list.append([])
 
         ZL = get_Zmax_L(freq_range_ZL)
 
-    # ic("about to evaluate ZT", freq_range_ZT)
     if freq_range_ZT:
-        for i in range(len(freq_range_ZT)):
+        for _ in range(len(freq_range_ZT)):
             Zmax_dip_list.append([])
             xmax_dip_list.append([])
 
         ZT = get_Zmax_T(freq_range_ZT)
 
-    # ic("Donbr rvasluating impedances")
     ZL, ZT = np.array(ZL).T, np.array(ZT).T
-    # ic(ZL, ZT)
 
     if ZL.size != 0 and ZT.size != 0:
         obj_result = np.hstack((ZL, ZT))
@@ -3840,8 +3822,6 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
         obj_result = ZL
     else:
         obj_result = ZT
-
-    # ic(obj_result)
 
     return list(obj_result[0])
 
