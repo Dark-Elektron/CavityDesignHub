@@ -69,6 +69,19 @@ class TuneControl:
         # get logger
         self.log = self.main_control.log
 
+        # process control buttons icons
+        self.pause_icon = QIcon()
+        self.pause_icon.addPixmap(QPixmap(f":/icons/icons/PNG/pause.png"), QIcon.Normal, QIcon.Off)
+        self.resume_icon = QIcon()
+        self.resume_icon.addPixmap(QPixmap(f":/icons/icons/PNG/resume.png"), QIcon.Normal, QIcon.Off)
+
+        # create progress bar object and add to widget
+        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
+        self.progress_bar.setMaximum(100)
+        self.progress_bar.setValue(0)
+        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
+        self.progress_bar.hide()
+
         self.initUI()
         self.signals()
 
@@ -88,19 +101,6 @@ class TuneControl:
 
         # evolution algorithm
         self.opt_control = OptimizationControl(self.ui)
-
-        # process control buttons icons
-        self.pause_icon = QIcon()
-        self.pause_icon.addPixmap(QPixmap(f":/icons/icons/PNG/pause.png"), QIcon.Normal, QIcon.Off)
-        self.resume_icon = QIcon()
-        self.resume_icon.addPixmap(QPixmap(f":/icons/icons/PNG/resume.png"), QIcon.Normal, QIcon.Off)
-
-        # create progress bar object and add to widget
-        self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
-        self.progress_bar.setMaximum(100)
-        self.progress_bar.setValue(0)
-        self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 7, 1, 1)
-        self.progress_bar.hide()
 
     def initUI(self):
         # splitter
@@ -485,7 +485,7 @@ class TuneControl:
         try:
             for p in self.processes:
                 p.terminate()
-        except:
+        except psutil.NoSuchProcess:
             pass
 
         # lear processes
@@ -542,12 +542,12 @@ class TuneControl:
                 print("Error in progress update")
                 pass
 
-        try:
-            # reset progress bar
-            self.progress_bar.setValue(0)
-            self.progress_bar.hide()
-        except:
-            pass
+        # try:
+        # reset progress bar
+        self.progress_bar.setValue(0)
+        self.progress_bar.hide()
+        # except:
+        #     pass
 
     # def change_cell_parameters(self, d, key, par):
     #     try:
@@ -614,7 +614,7 @@ class TuneControl:
         return self.pseudo_shape_space
 
     def create_shape_space_mc(self, freq, ihc, ohc, marker):
-        n_shapes = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
+        n_shapes = self.ui.sb_No_Of_Shapes.value()
         # pseudo_shape_space = {}
 
         # check input to avoid an infinite loop
@@ -3287,29 +3287,29 @@ class OptimizationControl:
 
         if "r" in s and "rr" not in s:
             s = s.replace('r', '')
-            try:
-                l = eval(s)
-                return np.linspace(l[0], l[1], l[2])
-            except:
-                print("Please check inputs.")
+            # try:
+            ll = eval(s)
+            return np.linspace(ll[0], ll[1], ll[2])
+            # except:
+            #     print("Please check inputs.")
         elif "rr" in s:
             s = s.replace('rr', '')
-            try:
-                l = eval(s)
-                ll = np.random.uniform(l[0], l[1], l[2])
-                return ll
-            except:
-                print("Please check inputs.")
+            # try:
+            ll = eval(s)
+            ll = np.random.uniform(ll[0], ll[1], ll[2])
+            return ll
+            # except:
+            #     print("Please check inputs.")
         else:
-            try:
-                ll = eval(s)
-                if isinstance(ll, int) or isinstance(ll, float):
-                    ll = [ll]
-                return ll
-            except:
-                print("Please check inputs.")
+            # try:
+            ll = eval(s)
+            if isinstance(ll, int) or isinstance(ll, float):
+                ll = [ll]
+            return ll
+            # except:
+            #     print("Please check inputs.")
 
-        return 1
+        # return 1
 
     @staticmethod
     def negate_list(ll, arg):

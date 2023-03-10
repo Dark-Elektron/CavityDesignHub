@@ -160,7 +160,7 @@ class MainWindow:
         # stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
 
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.last_saved_theme])
-        QApplication.instance().setStyleSheet(stylesheet)
+        self.main_win.setStyleSheet(stylesheet)
         # self.main_win.setStyleSheet("*{font-size: 13px;}")
 
         # self.ui.pb_rHome.enterEvent = self.tray_animation
@@ -440,6 +440,7 @@ class MainWindow:
             # only initialize UI after successfully setting folder and initialise only once
             self.ui.l_Project_Name.setText(self.projectDir)
             if self.global_state == 0:
+                print("IOt initialised")
                 self.initUI()
 
                 self.global_state += 1
@@ -449,24 +450,24 @@ class MainWindow:
 
         elif project_dir != '':
             try:
-                # check if it's a valid project folder
-                sub_dirs = [a for a in os.listdir(project_dir) if os.path.isdir(os.path.join(project_dir, a))]
-                compare_dirs = ['Cavities', 'OperatingPoints', 'PostprocessingData', 'SimulationData']
+                # # check if it's a valid project folder
+                # sub_dirs = [a for a in os.listdir(project_dir) if os.path.isdir(os.path.join(project_dir, a))]
+                # compare_dirs = ['Cavities', 'OperatingPoints', 'PostprocessingData', 'SimulationData']
+                #
+                # if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
+                self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
+                self.projectDir = f2b_slashes(project_dir)
 
-                if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
-                    self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
-                    self.projectDir = f2b_slashes(project_dir)
+                # only initialize UI after successfully setting folder and initialise only once
+                self.ui.l_Project_Name.setText(self.projectDir)
+                if self.global_state == 0:
+                    self.initUI()
+                    self.global_state += 1
 
-                    # only initialize UI after successfully setting folder and initialise only once
-                    self.ui.l_Project_Name.setText(self.projectDir)
-                    if self.global_state == 0:
-                        self.initUI()
-                        self.global_state += 1
-
-                    # add file system tree
-                    self.file_system(self.projectDir)
-            except FileNotFoundError:
-                pass
+                # add file system tree
+                self.file_system(self.projectDir)
+            except FileNotFoundError as e:
+                print("Invalid project folder not found. ", e)
         else:
             print('Please select a valid project directory')
 
@@ -494,7 +495,7 @@ class MainWindow:
         """
 
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.ui.cb_Theme.currentText()])
-        QApplication.instance().setStyleSheet(stylesheet)
+        self.main_win.setStyleSheet(stylesheet)
         self.last_saved_theme = self.ui.cb_Theme.currentText()
 
         # if self.ui.hs_Theme.value() == 0:

@@ -73,9 +73,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-778</y>
+                <y>-75</y>
                 <width>548</width>
-                <height>1568</height>
+                <height>1542</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -575,7 +575,7 @@
                        </item>
                       </widget>
                      </item>
-                     <item row="7" column="0" colspan="2">
+                     <item row="7" column="0" colspan="2" alignment="Qt::AlignLeft">
                       <widget class="QWidget" name="w_Tune_Multiple" native="true">
                        <layout class="QGridLayout" name="gridLayout_11">
                         <item row="2" column="0">
@@ -1093,18 +1093,6 @@
                         </item>
                         <item row="1" column="3">
                          <widget class="QLineEdit" name="le_B_o">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1137,18 +1125,6 @@
                         </item>
                         <item row="3" column="3">
                          <widget class="QLineEdit" name="le_b_o">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1159,18 +1135,6 @@
                         </item>
                         <item row="4" column="3">
                          <widget class="QLineEdit" name="le_L_o">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1181,18 +1145,6 @@
                         </item>
                         <item row="4" column="1">
                          <widget class="QLineEdit" name="le_Ri_o">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1203,18 +1155,6 @@
                         </item>
                         <item row="3" column="1">
                          <widget class="QLineEdit" name="le_a_o">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1225,18 +1165,6 @@
                         </item>
                         <item row="1" column="1">
                          <widget class="QLineEdit" name="le_A_o">
-                          <property name="minimumSize">
-                           <size>
-                            <width>150</width>
-                            <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1281,6 +1209,18 @@
 }</string>
                        </property>
                        <layout class="QGridLayout" name="gridLayout_2">
+                        <property name="leftMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="topMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="rightMargin">
+                         <number>0</number>
+                        </property>
+                        <property name="bottomMargin">
+                         <number>0</number>
+                        </property>
                         <item row="5" column="3">
                          <widget class="QLabel" name="l_Tune_Alternate_Variable">
                           <property name="minimumSize">
@@ -1309,12 +1249,6 @@
                            <size>
                             <width>150</width>
                             <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
                            </size>
                           </property>
                           <property name="toolTip">
@@ -1355,12 +1289,6 @@
                             <height>0</height>
                            </size>
                           </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1375,12 +1303,6 @@
                            <size>
                             <width>150</width>
                             <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
                            </size>
                           </property>
                           <property name="toolTip">
@@ -1443,12 +1365,6 @@
                             <height>0</height>
                            </size>
                           </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1481,12 +1397,6 @@
                             <height>0</height>
                            </size>
                           </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
-                           </size>
-                          </property>
                           <property name="toolTip">
                            <string>r(4, 6, 1) -&gt; range(4, 6, 1), rr(4, 6, 1) -&gt; randrange(4, 6, 1)</string>
                           </property>
@@ -1501,12 +1411,6 @@
                            <size>
                             <width>150</width>
                             <height>0</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>150</width>
-                            <height>16777215</height>
                            </size>
                           </property>
                           <property name="toolTip">
@@ -1620,12 +1524,6 @@
                               <size>
                                <width>150</width>
                                <height>0</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>150</width>
-                               <height>16777215</height>
                               </size>
                              </property>
                              <property name="toolTip">
@@ -1932,7 +1830,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-871</y>
+                <y>-866</y>
                 <width>546</width>
                 <height>1685</height>
                </rect>
