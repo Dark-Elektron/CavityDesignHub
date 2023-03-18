@@ -8,9 +8,7 @@ import logging
 import shutil
 import sys
 from json import JSONDecodeError
-
 from icecream import ic
-
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -192,7 +190,7 @@ class MainWindow:
         try:
             self.read_settings()
         except Exception as e:
-            pass
+            print("Exception occurred. ", e)
 
     def new_open_folder(self):
         """
@@ -333,13 +331,13 @@ class MainWindow:
 
         for k, pb in self.tray_buttons_dict.items():
             if key == k:
-                pb[0].setChecked(True)
                 pb[0].setMinimumWidth(75)
                 pb[0].setMaximumWidth(75)
+                pb[0].setChecked(True)
             else:
-                pb[0].setChecked(False)
                 pb[0].setMinimumWidth(50)
                 pb[0].setMaximumWidth(50)
+                pb[0].setChecked(False)
 
     def return_to_last_frame(self):
         """
@@ -678,12 +676,11 @@ class MainWindow:
     def button_clicked(i):
         return i.text()
 
-    @staticmethod
-    def loadStylesheet(filename):
+    def loadStylesheet(self, filename):
         file = QFile(filename)
         file.open(QFile.ReadOnly | QFile.Text)
         stylesheet = file.readAll()
-        QApplication.instance().setStyleSheet(str(stylesheet, encoding="utf-8"))
+        self.main_win.setStyleSheet(str(stylesheet, encoding="utf-8"))
 
     def show(self):
         self.main_win.showMaximized()
@@ -725,21 +722,27 @@ class MainWindow:
             # add to GUI
             self.ui.gl_File_System_View.addWidget(self.tree)
 
-            self.tree.setStyleSheet("""QTreeView::branch:open:has-children:!has-siblings{image:url(:/icons/icons/PNG/tree_collapse.png); icon-size: 12px 12px;}
-                                       QTreeView::branch:closed:has-children:!has-siblings{image:url(:/icons/icons/PNG/tree_expand.png); icon-size: 12px 12px;}
-                                       QTreeView::branch:open:has-children{image:url(:/icons/icons/PNG/tree_collapse.png); icon-size: 12px 12px;}
-                                       QTreeView::branch:closed:has-children{image:url(:/icons/icons/PNG/tree_expand.png); icon-size: 12px 12px;}
-                                       QTreeView::branch:open:{image:url(:/icons/icons/PNG/tree_collapse.png); icon-size: 12px 12px;}
-                                       QTreeView::branch:closed:{image:url(:/icons/icons/PNG/tree_expand.png); icon-size: 12px 12px;}
-                                    """)
+            self.tree.setStyleSheet(
+                """
+                QTreeView::branch:open:has-children:!has-siblings{image:url(:/icons/icons/PNG/tree_collapse.png);
+                    icon-size: 12px 12px;}
+                QTreeView::branch:closed:has-children:!has-siblings{image:url(:/icons/icons/PNG/tree_expand.png); 
+                   icon-size: 12px 12px;}
+                QTreeView::branch:open:has-children{image:url(:/icons/icons/PNG/tree_collapse.png); 
+                   icon-size: 12px 12px;}
+                QTreeView::branch:closed:has-children{image:url(:/icons/icons/PNG/tree_expand.png);
+                    icon-size: 12px 12px;}
+                QTreeView::branch:open:{image:url(:/icons/icons/PNG/tree_collapse.png); icon-size: 12px 12px;}
+                QTreeView::branch:closed:{image:url(:/icons/icons/PNG/tree_expand.png); icon-size: 12px 12px;}
+                """)
 
     def file_system_context_menu(self):
         menu = QMenu()
-        open = menu.addAction('Open')
+        open_ = menu.addAction('Open')
         new = menu.addAction('New')
         delete = menu.addAction('Delete')
 
-        open.triggered.connect(self.open_file)
+        open_.triggered.connect(self.open_file)
         new.triggered.connect(self.new_file)
         delete.triggered.connect(self.delete_file)
 
@@ -752,7 +755,8 @@ class MainWindow:
 
         os.startfile(file_path)
 
-    def new_file(self):
+    @staticmethod
+    def new_file():
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
         filename, _ = QFileDialog.getSaveFileName(None, "QFileDialog.getSaveFileName()", "",

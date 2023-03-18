@@ -20,6 +20,7 @@ import os
 #             print(file_dirname)
 #             command = fr"python matlab2python/matlab2python.py {file_dirname}.m -o {file_dirname}.py"
 #             p = subprocess.run(command)
+import re
 import shutil
 import subprocess
 
@@ -1304,54 +1305,108 @@ def jac(z, *data):
 #
 # plt.show()
 
-import scipy.io as spio
-
-
-def plot_mat(filepath):
-    # load mat file
-    data = {}
-    # files_folder = "D:\Dropbox\multipacting\MPGUI21"
-
-    if ".mat" in filepath:
-        writer = pd.ExcelWriter(r'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\multiple.xlsx', engine='openpyxl')
-        data = spio.loadmat(fr"{filepath}")
-
-        del data['__header__']
-        del data['__version__']
-        del data['__globals__']
-
-        for key, vals in data.items():
-            df = pd.DataFrame(np.array(vals).T)
-
-            df.to_excel(writer, sheet_name=key)
-
-        writer.save()
-
-
-filepath = r'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\Impedance_all_Fig_6.20.mat'
+# import scipy.io as spio
+#
+#
+# def plot_mat(filepath):
+#     # load mat file
+#     data = {}
+#     # files_folder = "D:\Dropbox\multipacting\MPGUI21"
+#
+#     if ".mat" in filepath:
+#         writer = pd.ExcelWriter(r'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\multiple.xlsx', engine='openpyxl')
+#         data = spio.loadmat(fr"{filepath}")
+#
+#         del data['__header__']
+#         del data['__version__']
+#         del data['__globals__']
+#
+#         for key, vals in data.items():
+#             df = pd.DataFrame(np.array(vals).T)
+#
+#             df.to_excel(writer, sheet_name=key)
+#
+#         writer.save()
+#
+#
+# filepath = r'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\Impedance_all_Fig_6.20.mat'
 # plot_mat(filepath)
 
-from math import cos, exp, pi
-from scipy.integrate import quad
+# from math import cos, exp, pi
+# from scipy.integrate import quad
+#
+#
+# # function we want to integrate
+# def f(x):
+#     k = 1/(2*np.pi*8.854e-12)
+#     b = 0.1
+#     d = 0.15
+#     lamda = 5/(2*np.pi*b)
+#     return k*lamda*1/np.sqrt(b**2+d**2 - 2*b*d*np.cos(x))
+#
+#
+# # call quad to integrate f from -2 to 2
+# res, err = quad(f, 0, 2*np.pi)
+#
+# print("The numerical result is {:2e} (+-{:g})".format(res, err))
+# for style in sorted(plt.style.library):
+#     the_rc = plt.style.library[style]
+#     if 'axes.prop_cycle' in the_rc:
+#         colors = the_rc['axes.prop_cycle'].by_key()['color']
+#         print(f"'{style}'", ": ", [f"{color}" for color in colors])
+#     else:
+#         print('%25s: this style does not modify colors'%style)
 
 
-# function we want to integrate
-def f(x):
-    k = 1/(2*np.pi*8.854e-12)
-    b = 0.1
-    d = 0.15
-    lamda = 5/(2*np.pi*b)
-    return k*lamda*1/np.sqrt(b**2+d**2 - 2*b*d*np.cos(x))
+# Define the model geometry and materials
+L = 1.0  # Length of the waveguide
+N = 100  # Number of grid points
+dx = L / (N - 1)  # Grid spacing
+dt = 1e-12 * dx  # Time step
 
+# Define the source particle properties
+q = 1.0  # Charge of the particle
+m = 1.0  # Mass of the particle
+c = 299792458
+v = 0.5*c  # Velocity of the particle
 
-# call quad to integrate f from -2 to 2
-res, err = quad(f, 0, 2*np.pi)
+# Define the electromagnetic properties of the materials
+eps0 = 8.854e-12  # Permittivity of free space
+mu0 = 4 * np.pi * 1e-7  # Permeability of free space
+epsr = 1.0  # Relative permittivity of the waveguide
+mur = 1.0  # Relative permeability of the waveguide
 
-print("The numerical result is {:2e} (+-{:g})".format(res, err))
-for style in sorted(plt.style.library):
-    the_rc = plt.style.library[style]
-    if 'axes.prop_cycle' in the_rc:
-        colors = the_rc['axes.prop_cycle'].by_key()['color']
-        print(f"'{style}'", ": ", [f"{color}" for color in colors])
-    else:
-        print('%25s: this style does not modify colors'%style)
+# Define the FDTD coefficients
+excoef = (1 - (dt / dx) / (2 * epsr * eps0)) / (1 + (dt / dx) / (2 * epsr * eps0))
+eycoef = (1 - (dt / dx) / (2 * mur * mu0)) / (1 + (dt / dx) / (2 * mur * mu0))
+hzcoef = (1 - (dt / dx) / (2 * epsr * eps0)) / (1 + (dt / dx) / (2 * epsr * eps0))
+
+# Initialize the fields
+ex = np.zeros(N)
+ey = np.zeros(N)
+hz = np.zeros(N)
+ic(ex, hzcoef)
+# Initialize the time loop
+tmax = 100000
+for t in range(tmax):
+    # Update the electric fields
+    ex[1:-1] = excoef * ex[1:-1] + (dt / (dx * epsr * eps0)) * (hz[1:-1] - hz[:-2])
+    ey[1:-1] = eycoef * ey[1:-1] - (dt / (dx * mur * mu0)) * (hz[1:-1] - hz[:-2])
+
+    # Update the magnetic field
+    hz[:-1] = hzcoef * hz[:-1] + (dt / (dx * epsr * eps0)) * (ex[1:] - ex[:-1])
+
+    # Add the source particle
+    j = q / dx * np.exp(-((t * dt - L / v) ** 2) / (2 * (dt) ** 2))  # Gaussian current pulse
+    hz[N // 2] += hzcoef * (dt / (dx * epsr * eps0)) * j
+
+    # Plot the fields
+    if t % 10000 == 0:
+        plt.clf()
+        plt.plot(ex)
+        plt.plot(ey)
+        plt.plot(hz)
+        plt.title(f"Time = {t * dt:.2f}")
+        plt.show()
+
+ic(ex)

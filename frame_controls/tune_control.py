@@ -260,6 +260,7 @@ class TuneControl:
             pseudo_shape_space = self.create_shape_space_mc(self.freq, inner_half_cell_parameters,
                                                             outer_half_cell_parameters, marker)
         elif self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Grid":
+            ic(inner_half_cell_parameters, outer_half_cell_parameters)
             ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
             ohc = self.create_pseudo_shape_space(outer_half_cell_parameters, lock_list, "End Cell")
             pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
@@ -615,12 +616,6 @@ class TuneControl:
 
     def create_shape_space_mc(self, freq, ihc, ohc, marker):
         n_shapes = self.ui.sb_No_Of_Shapes.value()
-        # pseudo_shape_space = {}
-
-        # check input to avoid an infinite loop
-        # check = self.check_input()
-        #
-        # if check:
 
         count = 0
         loop_escape = 0
@@ -675,25 +670,10 @@ class TuneControl:
 
                 Req_o = Req_i
 
-                # update L_i
-                # L_i = self.process_range(self.text_to_list(self.ui.le_Tune_Variable_End_Cell.text()))
-                # inner_cell[5] = L_i
-
                 other_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, 0, 0]
             else:
                 other_cell = inner_cell
 
-            # if other_cell[0] + other_cell[2] > other_cell[5]:
-            #     loop_escape += 1
-            #     print_("Encountered a shape with A + a > L")
-            #     continue
-
-            # if other_cell[3] + other_cell[4] > other_cell[6] or inner_cell[3] + inner_cell[4] > inner_cell[6]:
-            #     loop_escape += 1
-            #     print_("Encountered a shape with B + b > Req")
-            #     continue
-
-            # print_('6e')
             if self.ui.cb_LBP.checkState() == 2:
                 key = f"{marker}_{count}"
                 if key not in self.existing_keys:
@@ -712,46 +692,61 @@ class TuneControl:
         with open(pseudo_shape_space_name, 'w') as file:
             file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
 
+        ic(self.pseudo_shape_space)
         return self.pseudo_shape_space
 
     def generate_pseudo_shape_space_lhc(self, freq, ihc, ohc, marker):
+        ic(ihc, ohc, marker)
         no_of_shapes = self.ui.sb_No_Of_Shapes.value()
         columns = ['A', 'B', 'a', 'b', 'Ri', 'L', 'Req']
-        dim = len(columns)
-        # index = self.ui.sb_Sobol_Sequence_Index.value()
-        l_bounds = np.array(list(self.sbd.values()))[:, 0]
-        u_bounds = np.array(list(self.sbd.values()))[:, 1]
+        lock_list = [False, False, False, False, False, False, False]
 
-        const_var = []
-        for i in range(dim - 1, -1, -1):
-            if l_bounds[i] == u_bounds[i]:
-                const_var.append([columns[i], l_bounds[i]])
-                del columns[i]
-                l_bounds = np.delete(l_bounds, i)
-                u_bounds = np.delete(u_bounds, i)
+        d = dict()
+        # get variables with bounds
+        lhc_bounds_ihc = []
+        lhc_bounds_key_ihc = []
+        for n, v in enumerate(ihc):
+            if len(v) > 1:
+                lhc_bounds_ihc.append(v)
+                lhc_bounds_key_ihc.append(columns[n])
+                lock_list[n] = True
+            else:
+                d[columns[n]] = v
 
-        reduced_dim = len(columns)
+        ic(d)
+        ic(lock_list)
+        ic(lhc_bounds_ihc, lhc_bounds_key_ihc)
+
+        l_bounds = np.array(lhc_bounds_ihc)[:, 0]
+        u_bounds = np.array(lhc_bounds_ihc)[:, -1]
+        ic(l_bounds, u_bounds)
+
+        reduced_dim = len(lhc_bounds_key_ihc)
         sampler = qmc.LatinHypercube(d=reduced_dim)
         _ = sampler.reset()
         sample = sampler.random(n=no_of_shapes)
         # ic(qmc.discrepancy(sample))
 
         sample = qmc.scale(sample, l_bounds, u_bounds)
+        ic(sample)
 
-        df = pd.DataFrame()
-        df['key'] = [f"{0}" for i in range(no_of_shapes)]
-        df[columns] = sample
-
-        for i in range(len(const_var) - 1, -1, -1):
-            df[const_var[i][0]] = np.ones(no_of_shapes) * const_var[i][1]
-
-        df['alpha_i'] = np.zeros(no_of_shapes)
-        df['alpha_o'] = np.zeros(no_of_shapes)
+        for n, k in enumerate(lhc_bounds_key_ihc):
+            d[k] = sample[:, n]
+        ic(d)
 
         if self.ui.cb_Outer_Cell.checkState() == 2:
             pass
 
-        return df
+        inner_half_cell_parameters = []
+        for k in columns:
+            inner_half_cell_parameters.append(list(d[k]))
+
+        ic(inner_half_cell_parameters)
+        ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
+        ohc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "End Cell")
+        pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
+
+        return pseudo_shape_space
 
     def create_pseudo_shape_space(self, var_list, lock_list, cell):
         A, B, a, b, Ri, L, Req = var_list
@@ -933,7 +928,7 @@ class TuneControl:
         return res
 
     def show_hide(self):
-        if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == 'Monte Carlo':
+        if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() != 'Grid':
             self.ui.w_No_Of_Shapes_Monte_Carlo.show()
         else:
             self.ui.w_No_Of_Shapes_Monte_Carlo.hide()
@@ -969,15 +964,15 @@ class TuneControl:
         if "r" in s and "rr" not in s:
             s = s.replace('r', '')
             try:
-                l = eval(s)
-                return np.linspace(l[0], l[1], l[2])
+                ll = eval(s)
+                return np.linspace(ll[0], ll[1], ll[2])
             except:
                 print("Please check inputs.")
         elif "rr" in s:
             s = s.replace('rr', '')
             try:
-                l = eval(s)
-                ll = np.random.uniform(l[0], l[1], l[2])
+                ll = eval(s)
+                ll = np.random.uniform(ll[0], ll[1], ll[2])
                 return ll
             except:
                 print("Please check inputs.")
@@ -1143,7 +1138,6 @@ class TuneControl:
 
     @staticmethod
     def load_shape_space(filename, arg=None):
-        fr = FileReader()
         filepath = f'{filename}'
 
         # check if extension is included
@@ -1203,15 +1197,15 @@ class TuneControl:
             # self.ui.le_Tune_Variable_End_Cell.setEnabled(False)
 
     @staticmethod
-    def process_range(l):
-        if isinstance(l, list):
-            if len(l) > 1:
-                val = (l[0] if l[0] == l[-1] else round(r.uniform(l[0], l[-1]), 2))
+    def process_range(ll):
+        if isinstance(ll, list):
+            if len(ll) > 1:
+                val = (ll[0] if ll[0] == ll[-1] else round(r.uniform(ll[0], ll[-1]), 2))
                 return val
             else:
-                return l[0]
-        elif isinstance(l, int) or isinstance(l, float):
-            return l
+                return ll[0]
+        elif isinstance(ll, int) or isinstance(ll, float):
+            return ll
         else:
             print("Seems something is wrong with the input.")
 
@@ -1243,7 +1237,7 @@ class TuneControl:
     # @staticmethod
 
     @staticmethod
-    def combine_dict(self, proc_count, filename, projectDir):
+    def combine_dict(proc_count, filename, projectDir):
         # Combining dictionaries
         print_('Combining dictionaries')
 

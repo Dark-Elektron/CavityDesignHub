@@ -1,6 +1,7 @@
 import itertools
 from itertools import combinations
 import matplotlib.ticker as mticker
+import scipy.special
 from matplotlib import pyplot as plt
 from scipy.stats import qmc
 import numpy as np
@@ -11,10 +12,11 @@ from sympy import symbols
 
 
 class PCE:
-    def __init__(self, df, rand_vars, obj_vars, poly_type):
+    def __init__(self, df, rand_vars, obj_vars, poly_type, stat=None):
         self.df = df
         self.rand_vars = rand_vars
         self.obj_vars = obj_vars
+        self.stat = stat
         poly_type_dict = {"legendre": "Le",
                           "hermite": "He",
                           "laguerre": "La",
@@ -47,8 +49,9 @@ class PCE:
                         poly_list[f'{a}'] = [self.Le(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
                         pc, sy = self.Le(i, x[list(x.keys())[j]], self.rand_vars[j])
                     elif self.poly_type.lower() == 'he':
-                        poly_list[f'{a}'] = [self.He(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
+                        poly_list[f'{a}'], poly_list[f'w{a}'] = [self.He(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
                         pc, sy = self.He(i, x[list(x.keys())[j]], self.rand_vars[j])
+
                     elif self.poly_type.lower() == 'la':
                         poly_list[f'{a}'] = [self.Le(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
                         pc, sy = self.Le(i, x[list(x.keys())[j]], self.rand_vars[j])
@@ -70,12 +73,12 @@ class PCE:
                 poly_chaos_ex[f'{a}'] = [f"pce_model.{self.poly_type}({i}, DF['{list(x.keys())[j]}'])"
                                          for j, i in enumerate(a)]
 
-        # regeression
-        _, _ = self.regression(poly_list_sym, symbols_dict)
+        # # regression
+        # polly, coefff = self.regression(poly_list_sym, symbols_dict)
 
         c = {}
         poly_sym_d = {}
-
+        ic(poly_list)
         for ob in self.obj_vars:
             c[ob] = {}
             poly_sym = 0
@@ -90,6 +93,49 @@ class PCE:
 
             poly_sym_d[ob] = poly_sym
 
+        ic(c)
+        # c = {'response_fn_1': {'(0, 0, 0, 0, 0)': 1.6371393075e+06,
+        #                    '(0, 0, 0, 0, 1)': 1.4971356708e+03,
+        #                    '(0, 0, 0, 0, 2)': -1.8586366451e+02,
+        #                    '(0, 0, 0, 1, 0)': -1.8262247637e+03,
+        #                    '(0, 0, 0, 1, 1)': -3.3897954231e+03,
+        #                    '(0, 0, 0, 2, 0)': -3.8081069626e+02,
+        #                    '(0, 0, 1, 0, 0)': 2.8106097564e+03,
+        #                    '(0, 0, 1, 0, 1)': 2.3795946956e+03,
+        #                    '(0, 0, 1, 1, 0)': 1.3380032127e+03,
+        #                    '(0, 0, 2, 0, 0)': 5.6852260437e+02,
+        #                    '(0, 1, 0, 0, 0)': 2.0150479340e+03,
+        #                    '(0, 1, 0, 0, 1)': 6.3273692469e+02,
+        #                    '(0, 1, 0, 1, 0)': 2.3166359473e+02,
+        #                    '(0, 1, 1, 0, 0)': 1.7697620080e+03,
+        #                    '(0, 2, 0, 0, 0)': 2.9092364406e+02,
+        #                    '(1, 0, 0, 0, 0)': 2.5399272506e+03,
+        #                    '(1, 0, 0, 0, 1)': -5.9863430571e+02,
+        #                    '(1, 0, 0, 1, 0)': -8.7696096854e+02,
+        #                    '(1, 0, 1, 0, 0)': -1.7494330516e+03,
+        #                    '(1, 1, 0, 0, 0)': -2.1139073983e+02,
+        #                    '(2, 0, 0, 0, 0)': -4.3603898222e+02},
+        #  'response_fn_2': {'(0, 0, 0, 0, 0)': 4.0554681770e+03,
+        #                    '(0, 0, 0, 0, 1)': 4.2528951248e+02,
+        #                    '(0, 0, 0, 0, 2)': 7.7010275138e+01,
+        #                    '(0, 0, 0, 1, 0)': -1.6598174061e+02,
+        #                    '(0, 0, 0, 1, 1)': -4.4885109213e+00,
+        #                    '(0, 0, 0, 2, 0)': 5.6121339103e+00,
+        #                    '(0, 0, 1, 0, 0)': 7.3216408129e+02,
+        #                    '(0, 0, 1, 0, 1)': 2.3345099075e+01,
+        #                    '(0, 0, 1, 1, 0)': -1.3952088931e+01,
+        #                    '(0, 0, 2, 0, 0)': 5.6468298761e+01,
+        #                    '(0, 1, 0, 0, 0)': -5.1390019972e+02,
+        #                    '(0, 1, 0, 0, 1)': -4.0452513526e+01,
+        #                    '(0, 1, 0, 1, 0)': -3.5963841550e+00,
+        #                    '(0, 1, 1, 0, 0)': -6.2518560900e+01,
+        #                    '(0, 2, 0, 0, 0)': 6.7836668831e+01,
+        #                    '(1, 0, 0, 0, 0)': 4.8423579763e+01,
+        #                    '(1, 0, 0, 0, 1)': 8.5391792565e+00,
+        #                    '(1, 0, 0, 1, 0)': 1.4772222285e+01,
+        #                    '(1, 0, 1, 0, 0)': 5.7901560871e+00,
+        #                    '(1, 1, 0, 0, 0)': -1.0105404132e+01,
+        #                    '(2, 0, 0, 0, 0)': 5.5184854096e+00}}
         # build polynomials
         obj_pce = {}
         for ob in self.obj_vars:
@@ -97,7 +143,8 @@ class PCE:
                                                for key, coeff in c[ob].items()]))
 
         self.pce = obj_pce
-
+        ic(self.pce)
+        # return polly, coefff
         return obj_pce, c
 
     def projection(self):
@@ -129,12 +176,12 @@ class PCE:
             # ic(poly[ob].subs(symbols_dict))
 
         self.pce = poly
-        ic(poly)
 
+        # ic(poly, coef_dict)
         return poly, coef_dict
 
     @staticmethod
-    def Le(n, x, symbol=None):
+    def Le(n, x, symbol=None, mean=0, std_dev=1):
         if symbol:
             sym = symbols(symbol)  # sympy symbol
 
@@ -176,27 +223,77 @@ class PCE:
                 return 0.125 * (35 * x ** 4 - 30 * x ** 2 + 3)
 
     @staticmethod
-    def He(n, x, symbol=None):
-        shift = (max(x) + min(x)) / 2
-        scale = (max(x) - min(x)) / 2
-        if n == 0:
-            return np.ones(len(x))
+    def He(n, x, symbol=None, mu=0, s=1):
+        """
 
-        if n == 1:
-            x = (np.array(x) - shift) / scale
-            return 2 * x
+        Parameters
+        ----------
+        n
+        x
+        symbol
+        mu: float
+            mean
+        s: float
+            Standard deviation
 
-        if n == 2:
-            x = (np.array(x) - shift) / scale
-            return 4 * x ** 2 - 2
+        Returns
+        -------
+        Hermite polynomial
 
-        if n == 3:
-            x = (np.array(x) - shift) / scale
-            return 8 * x ** 3 - 12 * x
+        """
 
-        if n == 4:
-            x = (np.array(x) - shift) / scale
-            return 16 * x ** 4 - 48 * x ** 2 + 12
+        if symbol:
+            sym = symbols(symbol)  # sympy symbol
+
+            if n == 0:
+                # isoprobabilistic transformation
+                p = mu + s*1
+                return p, sym
+
+            if n == 1:
+                # isoprobabilistic transformation
+                p = mu + s*(2 * sym)
+                return p, sym
+
+            if n == 2:
+                # isoprobabilistic transformation
+                p = mu + s*(4 * sym ** 2 - 2)
+                return p, sym
+
+            if n == 3:
+                # isoprobabilistic transformation
+                p = mu + s*(8 * sym ** 3 - 12 * sym)
+                return p, sym
+
+            if n == 4:
+                # isoprobabilistic transformation
+                p = mu + s*(16 * sym ** 4 - 48 * sym ** 2 + 12)
+
+                return p, sym
+        else:
+            shift = (max(x) + min(x)) / 2
+            scale = (max(x) - min(x)) / 2
+
+            w = np.exp(-x ** 2)  # weight
+
+            if n == 0:
+                return np.ones(len(x)), w
+
+            if n == 1:
+                x = (np.array(x) - shift) / scale
+                return 2 * x, w
+
+            if n == 2:
+                x = (np.array(x) - shift) / scale
+                return 4 * x ** 2 - 2, w
+
+            if n == 3:
+                x = (np.array(x) - shift) / scale
+                return 8 * x ** 3 - 12 * x, w
+
+            if n == 4:
+                x = (np.array(x) - shift) / scale
+                return 16 * x ** 4 - 48 * x ** 2 + 12, w
 
     def self_validation(self):
         # find least squares error
@@ -207,16 +304,15 @@ class PCE:
 
         # evaluate polynomial expansion on uq_model input dataframe
         if self.pce is not None:
-            print(self.pce)
             for key, ob in self.pce.items():
                 DF[key] = eval(ob)
 
         # find difference
-        print(self.obj_vars)
+        # print(self.obj_vars)
         for obj in self.obj_vars:
             diff = self.df[obj] - DF[obj]
             # print(diff)
-            print(f"error norm {obj}: ", np.linalg.norm(diff))
+            print(f"Error norm {obj}: ", np.linalg.norm(diff))
 
     def cross_validation(self):
         pass
@@ -249,7 +345,6 @@ class UQModel:
 
         # df = self.generate_input_space()
         # self.model_output = self.model(self.model_input, df)
-
         df_ = self.generate_input_qmc(self.var_sample_size, self.input_variable_names, self.input_variable_bounds)
         model_output_satelli = self.model(self.model_input, df_)
         # Sj = self.sobol_satelli(model_output_satelli, self.input_variable_names, self.objective_variables, 10000)
@@ -290,31 +385,40 @@ class UQModel:
 
         self.model_input = dd
 
-    def generate_input_space(self):
-        var = self.input_variable_names
-        bounds = np.array(self.input_variable_bounds)
-
-        dd = {}
-
-        for k, v in enumerate(var):
-            if self.input_variable_distribution[k] == 'Uniform':
-                dd[v] = np.linspace(min(bounds[k]), max(bounds[k]), int(self.var_sample_size))
-            elif self.input_variable_distribution[k] == 'Lognormal':
-                eta = np.sqrt(np.log((bounds[k][1]/bounds[k][0])**2 + 1))
-                mean = np.log(bounds[k][0]) - eta**2/2
-                # print(mean, eta)
-                dd[v] = np.linspace(min(bounds[k]), max(bounds[k]), int(self.var_sample_size))
-                # dd[v] = np.random.lognormal(bounds[k][0], bounds[k][1], self.var_sample_size)
-
-        mg = np.meshgrid(*dd.values())
-
-        df = pd.DataFrame()
-        for i, rand_var in enumerate(var):
-            df[rand_var] = mg[i].flatten()
-
-        print(df.shape)
-
-        return df
+    # def generate_input_space(self, method='lhc'):
+    #     var = self.input_variable_names
+    #     bounds = np.array(self.input_variable_bounds)
+    #
+    #     dd = {}
+    #
+    #     if method == 'meshgrid':
+    #         for k, v in enumerate(var):
+    #             if self.input_variable_distribution[k] == 'Uniform':
+    #                 dd[v] = np.linspace(min(bounds[k]), max(bounds[k]), int(self.var_sample_size))
+    #             elif self.input_variable_distribution[k] == 'Lognormal':
+    #                 eta = np.sqrt(np.log((bounds[k][1]/bounds[k][0])**2 + 1))
+    #                 mean = np.log(bounds[k][0]) - eta**2/2
+    #                 # print(mean, eta)
+    #                 dd[v] = np.linspace(min(bounds[k]), max(bounds[k]), int(self.var_sample_size))
+    #                 # dd[v] = np.random.lognormal(bounds[k][0], bounds[k][1], self.var_sample_size)
+    #
+    #         mg = np.meshgrid(*dd.values())
+    #
+    #         df = pd.DataFrame()
+    #         for i, rand_var in enumerate(var):
+    #             df[rand_var] = mg[i].flatten()
+    #
+    #     elif method == 'lhc':
+    #         l_bounds, u_bounds = bounds[:, 0], bounds[:, 1]
+    #         sampler = qmc.LatinHypercube(d=len(self.model_input['random variables']))
+    #         _ = sampler.reset()
+    #         sample = sampler.random(n=self.var_sample_size)
+    #
+    #         sample = qmc.scale(sample, l_bounds, u_bounds)
+    #
+    #         ic(sample)
+    #
+    #     return df
 
     @staticmethod
     def generate_input_mc(N, rand_vars, bounds):
@@ -532,6 +636,7 @@ class UQModel:
         return Sj, STj
 
     def plot_sobol(self, S, ylabel='Sobol', table=False, plot_type="Stacked"):
+        print(type(S), S)
         # plot
         fig, ax = plt.subplots()
         x = self.input_variable_names
@@ -741,6 +846,104 @@ def dqw_pce_from_df(model_input, df):
     return DF
 
 
+def pce_from_file(model_input, df):
+    # create function from data input
+    # filename = fr'C:\Users\sosoho\DakotaProjects\HookCoupler_test\dakota_HC_tabular_dataF3A.xlsx'
+    # df_data = pd.read_excel(filename, 'Sheet1')
+    # ic(df_data)
+    filename = fr'C:\Users\sosoho\DakotaProjects\Validate results\HC_Stroud_3\sim_result_table.dat'
+    df_data = pd.read_csv(filename, sep='\s+')
+    x = model_input['random variables']
+    obj = model_input['objective variables']
+    # stat = model_input['stat']
+
+    pce_method = 'projection'  # projection
+    pce_model = PCE(df_data, x, obj, 'Legendre')  # it is important that the name is pce_model
+    pce, pce_coeff = pce_model.get_pce(1, 1)
+    pce_model.self_validation()
+
+    DF = pd.DataFrame()  # it is also important that the name is DF # change later
+    for key, vec in df.items():
+        DF[key] = vec.to_numpy()
+
+    # evaluate polynomial expansion on uq_model input dataframe
+    for key, ob in pce.items():
+        if pce_method == 'regression':
+            df_to_dict = DF.to_dict(orient='records')
+            for dfd in df_to_dict:
+                DF[key] = ob.subs(dfd)
+        else:
+            DF[key] = eval(ob)
+
+    return DF
+
+
+def quad_stroud3(rdim, degree):
+    """
+    Stroud-3 quadrature in :math:`[0,1]^k`
+
+    Parameters
+    ----------
+    rdim: int
+        Dimension of variables
+    degree: int
+        Degree
+
+    Returns
+    -------
+    Nodes and corresponding weights
+    """
+    # data for Stroud-3 quadrature in [0,1]**k
+    # nodes and weights
+    nodes = stroud(rdim)
+    nodestr = 2. * nodes - 1.
+    weights = (1 / (2 * rdim)) * np.ones((2 * rdim, 1))
+
+    # evaluation of Legendre polynomials
+    bpoly = np.zeros((degree + 1, rdim, 2 * rdim))
+    for ll in range(rdim):
+        for j in range(2 * rdim):
+            bpoly[0, ll, j] = 1
+            bpoly[1, ll, j] = nodestr[ll, j]
+            for i in range(1, degree):
+                bpoly[i + 1, ll, j] = ((2 * (i + 1) - 1) * nodestr[ll, j] * bpoly[i, ll, j] - i * bpoly[
+                    i - 1, ll, j]) / (i + 1)
+
+    # standardisation of Legendre polynomials
+    for i in range(1, degree + 1):
+        bpoly[i, :, :] = bpoly[i, :, :] * np.sqrt(2 * (i + 1) - 1)
+
+    return nodes, weights, bpoly
+
+
+def stroud(p):
+    # Stroud-3 method
+    #
+    # Input parameters:
+    #  p   number of dimensions
+    # Output parameters:
+    #  nodes   nodes of quadrature rule in [0,1]^p (column-wise)
+    #
+
+    nodes = np.zeros((p, 2 * p))
+    coeff = np.pi / p
+    fac = np.sqrt(2 / 3)
+
+    for i in range(2 * p):
+        for r in range(int(np.floor(0.5 * p))):
+            k = 2 * r
+            nodes[k, i] = fac * np.cos((k + 1) * (i + 1) * coeff)
+            nodes[k + 1, i] = fac * np.sin((k + 1) * (i + 1) * coeff)
+
+        if 0.5 * p != np.floor(0.5 * p):
+            nodes[-1, i] = ((-1) ** (i + 1)) / np.sqrt(3)
+
+    # transform nodes from [-1,+1]^p to [0,1]^p
+    nodes = 0.5 * nodes + 0.5
+
+    return nodes
+
+
 if __name__ == '__main__':
 
     dd = {
@@ -779,18 +982,39 @@ if __name__ == '__main__':
         'distribution': ['Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform',
                          'Uniform', 'Uniform', 'Uniform']
     }
+    dd_hc = {
+        "random variables": ['l1', 'dh', 'lh', 'dch'],
+        "objective variables": ['response_fn_1', 'response_fn_2'],
+        'bounds': [[134.76, 202.14], [47.84, 71.76], [54.44, 81.66], [90, 110]],
+        # 'stat': [[87.7276, 3], [3.233, 0.1], [168.4549, 4], [11.5840, 0.2], [15.7575, 0.4]],
+        'distribution': ['Uniform', 'Uniform', 'Uniform', 'Uniform'],
+    }
 
     m = UQModel()
-    m.set_input_variables(dd_dqw)
+    m.set_input_variables(dd_hc)
     m.set_sample_size(10000)
-    m.set_model(dqw_pce_from_df)
+    m.set_model(pce_from_file)
     m.run_analysis()
-    # Sj, STi = m.sobol_df()
-    # Sj = m.sobol_satelli()
-    Sj, STj = m.sobol_janon()
+    # Sj, STj = m.sobol_df()
+    Sj, STj = m.sobol_satelli()
+    # Sj, STj = m.sobol_janon()
     m.plot_sobol(Sj, 'Main indices', plot_type="f")
-    m.plot_sobol(STj, 'Total indices')
+    # m.plot_sobol(STj, 'Total indices')
 
-    print(Sj)
-    print()
-    print(STj)
+    ic(Sj)
+    ic(STj)
+
+    # x, w, mu = scipy.special.roots_hermite(2, True)
+    # # ic(x, w/mu)
+    #
+    # x, w, mu = scipy.special.roots_legendre(2, True)
+    # a, b = 68, 108
+    # x = 0.5*(x + 1)*(b - a) + a
+    # # gauss = sum(w * 1) * 0.5*(b - a)
+    # ic(x, w/mu)
+    # n = 5
+    # nodes, weights, bpoly = quad_stroud3(n, 3)
+    # ic(nodes.shape, nodes, weights)
+    # x = 0.5 * (nodes + 1) * (b - a) + a
+    # ic(x)
+

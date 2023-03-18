@@ -455,7 +455,7 @@ color: rgb(255, 255, 255);</string>
                            <x>0</x>
                            <y>0</y>
                            <width>886</width>
-                           <height>945</height>
+                           <height>930</height>
                           </rect>
                          </property>
                          <layout class="QGridLayout" name="gridLayout_5">
@@ -885,7 +885,7 @@ P R O C E S S</string>
                         <x>0</x>
                         <y>0</y>
                         <width>495</width>
-                        <height>887</height>
+                        <height>872</height>
                        </rect>
                       </property>
                       <layout class="QGridLayout" name="gridLayout_3">
@@ -926,7 +926,7 @@ P R O C E S S</string>
               </layout>
              </widget>
             </item>
-            <item row="0" column="0">
+            <item row="0" column="0" alignment="Qt::AlignLeft">
              <widget class="QWidget" name="w_Pane" native="true">
               <property name="minimumSize">
                <size>
@@ -1368,7 +1368,7 @@ P R O C E S S</string>
      <x>0</x>
      <y>0</y>
      <width>1661</width>
-     <height>21</height>
+     <height>31</height>
     </rect>
    </property>
   </widget>
