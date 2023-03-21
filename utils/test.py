@@ -34,6 +34,7 @@ from icecream import ic
 import scipy as sp
 # import pyvista as pv
 import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 from matplotlib.patches import Ellipse
 from scipy.optimize import fsolve
 
@@ -1362,7 +1363,9 @@ def jac(z, *data):
 L = 1.0  # Length of the waveguide
 N = 100  # Number of grid points
 dx = L / (N - 1)  # Grid spacing
-dt = 1e-12 * dx  # Time step
+dy = L / (N - 1)  # Grid spacing
+dt = 1e-6 * dx  # Time step
+ic(dt)
 
 # Define the source particle properties
 q = 1.0  # Charge of the particle
@@ -1376,37 +1379,58 @@ mu0 = 4 * np.pi * 1e-7  # Permeability of free space
 epsr = 1.0  # Relative permittivity of the waveguide
 mur = 1.0  # Relative permeability of the waveguide
 
-# Define the FDTD coefficients
-excoef = (1 - (dt / dx) / (2 * epsr * eps0)) / (1 + (dt / dx) / (2 * epsr * eps0))
-eycoef = (1 - (dt / dx) / (2 * mur * mu0)) / (1 + (dt / dx) / (2 * mur * mu0))
-hzcoef = (1 - (dt / dx) / (2 * epsr * eps0)) / (1 + (dt / dx) / (2 * epsr * eps0))
+# Initialize geometry
+x = np.linspace(0, 1, N)
+y = np.linspace(0, 1, N)
+X, Y = np.meshgrid(x, y)
 
-# Initialize the fields
-ex = np.zeros(N)
-ey = np.zeros(N)
-hz = np.zeros(N)
-ic(ex, hzcoef)
+# Initialize field vectors as 3D array for easier calculation. Location where there are no field values are set to zero
+ex = np.zeros((N, N))
+ey = np.zeros((N, N))
+# ez = np.zeros((N, N, N))
+# hx = np.zeros((N, N, N))
+# hy = np.zeros((N, N, N))
+hz = np.zeros((N, N))
+j = np.zeros((N, N))
+
+# Initial conditions
+# ex[<some index>, 0] = ey[<some index>, 0] = [<some vector>] initial field set up by bunch moving at speed of light
+# it has only radial components at the inlet, z=0
+j[N//2, N//2] = 1  # some analytic vector generating function, maybe using mirror charge concept
+# unit impulse
+ex[N//2, N//2] = 1
+ey[N//2, N//2] = 1
+# plt.imshow(j.T)
+# this should be thw field distribution moved through the stucture
+
+
 # Initialize the time loop
-tmax = 100000
-for t in range(tmax):
-    # Update the electric fields
-    ex[1:-1] = excoef * ex[1:-1] + (dt / (dx * epsr * eps0)) * (hz[1:-1] - hz[:-2])
-    ey[1:-1] = eycoef * ey[1:-1] - (dt / (dx * mur * mu0)) * (hz[1:-1] - hz[:-2])
+tmax = N
 
-    # Update the magnetic field
-    hz[:-1] = hzcoef * hz[:-1] + (dt / (dx * epsr * eps0)) * (ex[1:] - ex[:-1])
+fig, ax = plt.subplots()
+pcolormesh = ax.pcolormesh(np.sqrt(ex**2 + ey**2).T)
+fig.colorbar(pcolormesh)
 
-    # Add the source particle
-    j = q / dx * np.exp(-((t * dt - L / v) ** 2) / (2 * (dt) ** 2))  # Gaussian current pulse
-    hz[N // 2] += hzcoef * (dt / (dx * epsr * eps0)) * j
 
-    # Plot the fields
-    if t % 10000 == 0:
-        plt.clf()
-        plt.plot(ex)
-        plt.plot(ey)
-        plt.plot(hz)
-        plt.title(f"Time = {t * dt:.2f}")
-        plt.show()
+def animate(t):
+    # for t in range(tmax):
+    # update electric and magnetic fields
+    ex[:-1, :] = ex[:-1, :] + dt/eps0*(hz[1:, :] - hz[:-1, :])/dy
+    ey[:, :-1] = ey[:, :-1] - dt/eps0*(hz[:, 1:] - hz[:, :-1])/dx #- dt / eps0 * j[:, :-1]
+    hz[:-1, :-1] = hz[:-1, :-1] - dt*((ex[1:, 1:] - ex[:-1, 1:])/dy - (ey[1:, 1:] - ey[1:, :-1])/dx)
 
-ic(ex)
+    # # move source
+    # j[t, :N//2] = 1  # some analytic vector generating function, maybe using mirror charge concept
+    # # blot from previous location# also consider using just a single vector to represent this
+    # j[t-1, :N//2] = 0
+
+    # plt.pcolor(X, Y, np.sqrt(ex**2 + ey**2).T)
+    # plt.colorbar()
+    # plt.show()
+    pcolormesh.set_array(np.sqrt(ex**2 + ey**2).T.flatten())
+
+    return pcolormesh
+
+
+ani = FuncAnimation(fig, animate, interval=1, frames=5)
+plt.show()
