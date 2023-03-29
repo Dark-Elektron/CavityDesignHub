@@ -22,7 +22,6 @@ and multipacting analysis.
 * Postprocessing - Python
 
 ## Eigenmode Analysis
-***************
 
 Eigenmode analysis is performed using the SLANS electromagnetic code. The code
 also calculates most of the figures of merit. Some postprocessing is, however,
