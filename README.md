@@ -37,7 +37,6 @@ purposes.
 
 
 ## Wakefield Analysis
-******************
 
 Wakefield analysis is performed using the ABCI electromagnetic code which solves the Maxwell
 equations directly in the time domain when a bunched beam goes through an axi-symmetric
