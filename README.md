@@ -21,7 +21,7 @@ and multipacting analysis.
 * Uncertainty quantification - Python
 * Postprocessing - Python
 
-Eigenmode Analysis
+## Eigenmode Analysis
 ***************
 
 Eigenmode analysis is performed using the SLANS electromagnetic code. The code
@@ -36,7 +36,7 @@ Belomestnykh and it consists of a set of executable files for different
 purposes.
 
 
-Wakefield Analysis
+## Wakefield Analysis
 ******************
 
 Wakefield analysis is performed using the ABCI electromagnetic code which solves the Maxwell
