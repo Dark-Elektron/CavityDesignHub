@@ -17,9 +17,9 @@ Each module performs a different operation. The analysis that are currently
 supported in this module are eigenmode analysis, wakefield analysis,
 and multipacting analysis.
 
-* Eigenmode analysis - SLANS :cite:p:`SLANS`
-* Wakefield analysis - ABCI :cite:p:`ABCI`
-* Multipacting analysis - Multipac
+* Eigenmode analysis - SLANS [[1]](#1)
+* Wakefield analysis - ABCI [[2]](2#)
+* Multipacting analysis - Multipac [[3]](3#)
 * Optimisation - Python
 * Uncertainty quantification - Python
 * Postprocessing - Python
@@ -56,5 +56,18 @@ Wakefield Analysis
 
 
 
-.. bibliography::
-   :all:
+## References
+   <a id="1">[1]<a/>
+   D. Myakishev and V. Yakovlev, "The new possibilities of SUPERLANS code for evaluation of 
+   axisymmetric cavities", in Proc. of the 1995 Particle Accelerator Conf. 
+   Dallas, TX, 1995, pp. 2348-50, Available: 
+   http://epaper.kek.jp/p95/ARTICLES/MPC/MPC17.PDF.
+
+   <a id="2">[2]<a/>
+   Y. H. Chin, Azimuthal Beam Cavity Interaction (ABCI), https://abci.kek.jp/
+   
+   <a id="3">[3]<a/>
+   P. Ylä-Oijala, J. Lukkarinen, S. Järvenpää and M. Ukkola 
+   "MultiPac 2.1 - Multipacting simulation toolbox with 2D FEM field solver and
+   MATLAB graphical user interface", User's manual, Rolf Nevanlinna Institute, 
+   Helsinki (2001).
