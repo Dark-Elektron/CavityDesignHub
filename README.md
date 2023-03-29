@@ -8,10 +8,8 @@
 Overview
 =======
 
-This is the introduction file and I have to write somethign at some point in time here
-Now, this software is used to for conducting analysis on accelerating
-cavities. Eigenmode analysis, wakefield analysis, multipacting analysis
-and general post-processing.
+This repository contains Python codes for conducting analysis on accelerating
+cavities. Eigenmode analysis, wakefield analysis, and general post-processing.
 
 Each module performs a different operation. The analysis that are currently
 supported in this module are eigenmode analysis, wakefield analysis,
@@ -19,7 +17,6 @@ and multipacting analysis.
 
 * Eigenmode analysis - SLANS [[1]](#1)
 * Wakefield analysis - ABCI [[2]](2#)
-* Multipacting analysis - Multipac [[3]](3#)
 * Optimisation - Python
 * Uncertainty quantification - Python
 * Postprocessing - Python
@@ -48,9 +45,6 @@ structure on or off axis. An arbitrary charge distribution can be defined
 by the user (default=Gaussian)
 
 
-Mulipacting Analysis
-******************
-
 
 ## References
    <a id="1">[1]<a/>
@@ -62,8 +56,3 @@ Mulipacting Analysis
    <a id="2">[2]<a/>
    Y. H. Chin, Azimuthal Beam Cavity Interaction (ABCI), https://abci.kek.jp/
    
-   <a id="3">[3]<a/>
-   P. Ylä-Oijala, J. Lukkarinen, S. Järvenpää and M. Ukkola 
-   "MultiPac 2.1 - Multipacting simulation toolbox with 2D FEM field solver and
-   MATLAB graphical user interface", User's manual, Rolf Nevanlinna Institute, 
-   Helsinki (2001).
