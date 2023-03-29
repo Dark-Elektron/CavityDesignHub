@@ -161,16 +161,11 @@ def combine_params_output(params_file, output_file):
 
 
 if __name__ == '__main__':
-    plt.rcParams["figure.figsize"] = (6, 2.5)
-    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\HC_Stroud_3_updated_bounds"
-    # # filepath = fr"C:\Users\sosoho\DakotaProjects\HookCoupler_COMPUMAG\dakota_HC.out"
-    # filepath = fr"C:\Users\sosoho\DakotaProjects\HookCoupler_test\dakota_HC.out"
-    # # filepath = fr"C:\Users\sosoho\DakotaProjects\HookCoupler_Shahnam\dakota_HC.out"
-    # # filepath = fr"C:\Users\sosoho\DakotaProjects\HookCoupler_COMPUMAG_red\dakota_HC.out"
-    # # filepath = fr"C:\Users\sosoho\DakotaProjects\Validate results\HC_Stroud_3\dakota_HC.out"
-    # filepath = fr"C:\Users\sosoho\DakotaProjects\Validate results\HC_Stroud_5\dakota_HC.out"
+    plt.rcParams["figure.figsize"] = (6.5, 2.5)
+    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\HC_Stroud_5_1mm"
     #
     obj = [r"$Q_\mathrm{ext, FM}$", r"$\max(Q_\mathrm{ext, dip})$"]
+    obj = [r"$f_\mathrm{min}$", r"$f_\mathrm{max}$"]
     plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Main', kind='stacked', orientation='horizontal')
     plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Total', kind='stacked', orientation='horizontal')
     # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Interaction', kind='normal', orientation='horizontal')

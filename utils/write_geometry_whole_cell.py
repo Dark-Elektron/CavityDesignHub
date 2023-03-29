@@ -76,10 +76,11 @@ def drawCavity():
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         # ADD BEAM PIPE LENGTH
-        lineTo(pt, [L_bp_l - shift, Ri_el], step)
-        pt = [L_bp_l - shift, Ri_el]
-        print(pt)
-        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+        if L_bp_l != 0:
+            lineTo(pt, [L_bp_l - shift, Ri_el], step)
+            pt = [L_bp_l - shift, Ri_el]
+            print(pt)
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         for n in range(1, n_cell + 1):
             if n == 1:
@@ -299,10 +300,12 @@ def drawCavity():
         # reset shift
         print("pt before", pt)
         shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
-        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + L_el + L_er - shift, Ri_er], step)
-        pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
-        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
-        print("pt after", pt)
+
+        if L_bp_r != 0:  # if there's a problem, check here.
+            lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + L_el + L_er - shift, Ri_er], step)
+            pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
+            print("pt after", pt)
 
         # END PATH
         lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
@@ -320,19 +323,19 @@ def drawCavity():
 
 def drawCavity_flat_top():
     plt.rcParams["figure.figsize"] = (12, 3)
-    midJlab = np.array([64.45, 54.58, 19.1, 25.92, 65, 83.554, 163.975, 90, 20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
-    endJlab = np.array([64.45, 54.58, 19.1, 25.92, 65, 83.554, 163.975, 90, 11.19]) * 1e-3
-    endJlab_r = np.array([64.45, 54.58, 19.1, 25.92, 65, 83.554, 163.975, 90, 11.19]) * 1e-3
+    midJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
+    endJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
+    endJlab_r = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
 
     # # TESLA end cell 2
     A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, alpha, lft = midJlab
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, alpha_el, lft_el = endJlab
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, alpha_el, lft_el = midJlab
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, alpha_er, lft_er = endJlab
 
     n_cell = 1
     step = 2  # step in boundary points in mm
-    L_bp_l = 4 * L_m  # 0.0001  #
-    L_bp_r = 4 * L_m  # 0.0001  #
+    L_bp_l = 4 * L_m  # 0.0000  #
+    L_bp_r = 4 * L_m  # 0.0000  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2)*lft + L_er + lft_er) / 2
@@ -346,24 +349,23 @@ def drawCavity_flat_top():
 
     x1el, y1el, x2el, y2el = fsolve(f, np.array(
         [a_el + L_bp_l, Ri_el + 0.85 * b_el, L_el - A_el + L_bp_l, Req_el - 0.85 * B_el]),
-                                    args=data,
+                                    args=data, fprime=jac,
                                     xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
 
     # CALCULATE x1, y1, x2, y2
     data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
             [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     x1, y1, x2, y2 = fsolve(f, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
-                            args=data, xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+                            args=data, fprime=jac, xtol=1.49012e-12)
 
     # CALCULATE x1_er, y1_er, x2_er, y2_er
     data = ([0 + L_bp_r, Ri_er + b_er, L_er + L_bp_r, Req_er - B_er],
             [a_er, b_er, A_er, B_er])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     x1er, y1er, x2er, y2er = fsolve(f, np.array(
         [a_er + L_bp_r, Ri_er + 0.85 * b_er, L_er - A_er + L_bp_r, Req_er - 0.85 * B_er]),
-                                    args=data,
-                                    xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+                                    args=data, fprime=jac,
+                                    xtol=1.49012e-12)
 
-    ic(alpha, alpha_el, alpha_er)
     with open(r'D:\Dropbox\multipacting\MPGUI21\geodata.n', 'w') as fil:
         fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
         fil.write("   1.25000000e-02   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")  # a point inside the structure
@@ -378,10 +380,11 @@ def drawCavity_flat_top():
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         # ADD BEAM PIPE LENGTH
-        lineTo(pt, [L_bp_l - shift, Ri_el], step)
-        pt = [L_bp_l - shift, Ri_el]
-        print(pt)
-        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+        if L_bp_l != 0:
+            lineTo(pt, [L_bp_l - shift, Ri_el], step)
+            pt = [L_bp_l - shift, Ri_el]
+            print(pt)
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         for n in range(1, n_cell + 1):
             if n == 1:
@@ -389,7 +392,10 @@ def drawCavity_flat_top():
                 pts = arcTo(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt, [-shift + x1el, y1el])
                 pt = [-shift + x1el, y1el]
                 for pp in pts:
-                    fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW LINE CONNECTING ARCS
@@ -401,7 +407,10 @@ def drawCavity_flat_top():
                 pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el])
                 pt = [L_bp_l + L_el - shift, Req_el]
                 for pp in pts:
-                    fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("found one")
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # flat top
@@ -445,9 +454,7 @@ def drawCavity_flat_top():
 
                     # calculate new shift
                     shift = shift - (L_el + L_er + lft_el)
-                    ic(shift)
                 else:
-                    print("if else")
                     # EQUATOR ARC TO NEXT POINT
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
@@ -618,9 +625,10 @@ def drawCavity_flat_top():
         shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2)*lft + L_er + lft_er) / 2
         lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + (n_cell-2)*lft + lft_el + lft_er + L_el + L_er - shift, Ri_er], step)
 
-        pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r + (n_cell-2)*lft + lft_el + lft_er - shift, Ri_er]
-        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
-        print("pt after", pt)
+        if L_bp_r != 0:
+            pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r + (n_cell-2)*lft + lft_el + lft_er - shift, Ri_er]
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
+            print("pt after", pt)
 
         # END PATH
         lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + (n_cell-2)*lft + lft_el + lft_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
@@ -637,17 +645,113 @@ def drawCavity_flat_top():
 
 
 def f(z, *data):
+    """
+    Calculates the coordinates of the tangent line that connects two ellipses
+
+    .. _ellipse tangent:
+
+    .. figure:: ../images/ellipse_tangent.png
+       :alt: ellipse tangent
+       :align: center
+       :width: 200px
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+
+    Returns
+    -------
+    list of four non-linear functions
+
+    Note
+    -----
+    The four returned non-linear functions are
+
+    .. math::
+
+       f_1 = \\frac{A^2b^2(x_1 - h)(y_2-q)}{a^2B^2(x_2-p)(y_1-k)} - 1
+
+       f_2 = \\frac{(x_1 - h)^2}{a^2} + \\frac{(y_1-k)^2}{b^2} - 1
+
+       f_3 = \\frac{(x_2 - p)^2}{A^2} + \\frac{(y_2-q)^2}{B^2} - 1
+
+       f_4 = \\frac{-b^2(x_1-x_2)(x_1-h)}{a^2(y_1-y_2)(y_1-k)} - 1
+    """
+
     coord, dim = data
     h, k, p, q = coord
     a, b, A, B = dim
     x1, y1, x2, y2 = z
 
-    f1 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
-    f2 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
-    f3 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
     f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
 
     return f1, f2, f3, f4
+
+
+def jac(z, *data):
+    """
+    Computes the Jacobian of the non-linear system of ellipse tangent equations
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+    Returns
+    -------
+    J: array like
+        Array of the Jacobian
+
+    """
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    # f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    # f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    # f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    # f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    df1_dx1 = A ** 2 * b ** 2 * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)**2)
+    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p)**2 * (y1 - k))
+    df1_dy2 = A ** 2 * b ** 2 * (x1 - h) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+
+    df2_dx1 = 2 * (x1 - h) / a ** 2
+    df2_dy1 = 2 * (y1 - k) / b ** 2
+    df2_dx2 = 0
+    df2_dy2 = 0
+
+    df3_dx1 = 0
+    df3_dy1 = 0
+    df3_dx2 = 2 * (x2 - p) / A ** 2
+    df3_dy2 = 2 * (y2 - q) / B ** 2
+
+    df4_dx1 = -b ** 2 * ((x1 - x2) + (x1 - h)) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k))**2)
+    df4_dx2 = b ** 2 * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2)**2 * (y1 - k))
+
+    J = [[df1_dx1, df1_dy1, df1_dx2, df1_dy2],
+         [df2_dx1, df2_dy1, df2_dx2, df2_dy2],
+         [df3_dx1, df3_dy1, df3_dx2, df3_dy2],
+         [df4_dx1, df4_dy1, df4_dx2, df4_dy2]]
+
+    return J
 
 
 def linspace(start, stop, step=1.):
