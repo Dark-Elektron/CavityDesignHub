@@ -34,26 +34,22 @@ to accelerating cavities design.
 
 The SUPERLANS code is intended to calculate azimuthal-homogenous modes in
 axissymmetric cavities, periodical structure, and cut-off frequencies in
-long homogenous waveguides :cite:p:`SLANS`. SLANS is written by Sergey
-Belomestnykh and it consists of a set of executable files for differnt
-purposes. The first of these is the ``genmesh.exe`` which reads a geometry
-file ``<filename>.geo`` written using Python and generates the mesh file
-which is a .gem file and some other related files. ``slansre.exe`` is then
-called to run the eigenmode simulation and the results are output to specified folder.
-
-The files output by the SLANS codes are basically three types
-
-* binary files:
-* text files: which can be read by regular text editors
-* meta files
-
-The inputs and output files of the various SLANS codes are given below:
-
+long homogenous waveguides. SLANS is written by Sergey
+Belomestnykh and it consists of a set of executable files for different
+purposes.
 
 
 Wakefield Analysis
 ******************
 
+Wakefield analysis is performed using the ABCI electromagnetic code which solves the Maxwell
+equations directly in the time domain when a bunched beam goes through an axi-symmetric
+structure on or off axis. An arbitrary charge distribution can be defined 
+by the user (default=Gaussian)
+
+
+Mulipacting Analysis
+******************
 
 
 ## References
