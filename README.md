@@ -43,7 +43,6 @@ structure on or off axis. An arbitrary charge distribution can be defined
 by the user (default=Gaussian)
 
 
-
 ## References
    <a id="1">[1]<a/>
    D. Myakishev and V. Yakovlev, "The new possibilities of SUPERLANS code for evaluation of 
