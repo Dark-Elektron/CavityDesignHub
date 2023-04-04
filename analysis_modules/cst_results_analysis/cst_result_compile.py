@@ -20,7 +20,7 @@ def eigenmode_analysis(sim_folder, folders, requests):
     f = df["Frequency (Multiple Modes)"][df["RQT_kOhm_m"] == max(df["RQT_kOhm_m"])]
     f = f.values[0]
     print(f, max(df["RQT_kOhm_m"]))
-    write_threshold(fr"{sim_folder}\Lossy_Eigenmode_esults")
+    write_threshold(fr"{sim_folder}\Lossy_Eigenmode_results")
 
     # df = df.sort_values(by=['Frequency (Multiple Modes)'])
     recursive_save(df, fr"{sim_folder}\Lossy_Eigenmode_results")
