@@ -327,12 +327,17 @@ def drawCavity_flat_top():
     endJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
     endJlab_r = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
 
-    # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, alpha, lft = midJlab
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, alpha_el, lft_el = midJlab
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, alpha_er, lft_er = endJlab
+    # cepc
+    midCEPC = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
+    endCEPC = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
+    endCEPC_r = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
 
-    n_cell = 1
+    # # TESLA end cell 2
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, alpha, lft = midCEPC
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, alpha_el, lft_el = midCEPC
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, alpha_er, lft_er = midCEPC
+
+    n_cell = 2
     step = 2  # step in boundary points in mm
     L_bp_l = 4 * L_m  # 0.0000  #
     L_bp_r = 4 * L_m  # 0.0000  #

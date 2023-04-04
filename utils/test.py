@@ -1364,14 +1364,17 @@ L = 1.0  # Length of the waveguide
 N = 100  # Number of grid points
 dx = L / (N - 1)  # Grid spacing
 dy = L / (N - 1)  # Grid spacing
-dt = 1e-6 * dx  # Time step
-ic(dt)
+dz = L / (N - 1)  # Grid spacing
 
 # Define the source particle properties
 q = 1.0  # Charge of the particle
 m = 1.0  # Mass of the particle
 c = 299792458
-v = 0.5*c  # Velocity of the particle
+v = c  # Velocity of the particle
+
+tt = L/v  # ns , total time
+dt = tt/N  # Time step
+ic(dt)
 
 # Define the electromagnetic properties of the materials
 eps0 = 8.854e-12  # Permittivity of free space
@@ -1385,52 +1388,82 @@ y = np.linspace(0, 1, N)
 X, Y = np.meshgrid(x, y)
 
 # Initialize field vectors as 3D array for easier calculation. Location where there are no field values are set to zero
-ex = np.zeros((N, N))
-ey = np.zeros((N, N))
-# ez = np.zeros((N, N, N))
-# hx = np.zeros((N, N, N))
-# hy = np.zeros((N, N, N))
-hz = np.zeros((N, N))
-j = np.zeros((N, N))
+ex = np.zeros((N, N, N))
+ey = np.zeros((N, N, N))
+ez = np.zeros((N, N, N))
+hx = np.zeros((N, N, N))
+hy = np.zeros((N, N, N))
+hz = np.zeros((N, N, N))
+jx = np.zeros((N, N, N))
+jy = np.zeros((N, N, N))
+jz = np.zeros((N, N, N))
 
 # Initial conditions
+jx[:, :, 0] = 1
+jy[:, :, 0] = 1
 # ex[<some index>, 0] = ey[<some index>, 0] = [<some vector>] initial field set up by bunch moving at speed of light
 # it has only radial components at the inlet, z=0
-j[N//2, N//2] = 1  # some analytic vector generating function, maybe using mirror charge concept
+# j[0, :N//2] = 1  # some analytic vector generating function, maybe using mirror charge concept
+# j[0, :N//2] = 1  # some analytic vector generating function, maybe using mirror charge concept
 # unit impulse
-ex[N//2, N//2] = 1
-ey[N//2, N//2] = 1
+# ex[N//2, N//2] = 1
+# ey[N//2, N//2] = 1
 # plt.imshow(j.T)
-# this should be thw field distribution moved through the stucture
-
+# this should be thw field distribution moved through the structure
 
 # Initialize the time loop
 tmax = N
 
 fig, ax = plt.subplots()
-pcolormesh = ax.pcolormesh(np.sqrt(ex**2 + ey**2).T)
-fig.colorbar(pcolormesh)
+pcolormesh = ax.pcolormesh(np.sqrt(ex[N//2, :, :]**2))
+# fig.colorbar(pcolormesh)
 
 
 def animate(t):
-    # for t in range(tmax):
+    ic(t)
     # update electric and magnetic fields
-    ex[:-1, :] = ex[:-1, :] + dt/eps0*(hz[1:, :] - hz[:-1, :])/dy
-    ey[:, :-1] = ey[:, :-1] - dt/eps0*(hz[:, 1:] - hz[:, :-1])/dx #- dt / eps0 * j[:, :-1]
-    hz[:-1, :-1] = hz[:-1, :-1] - dt*((ex[1:, 1:] - ex[:-1, 1:])/dy - (ey[1:, 1:] - ey[1:, :-1])/dx)
+    ex[1:-1, 1:-1, 1:-1] = ex[1:-1, 1:-1, 1:-1] \
+                           + dt/eps0*(((hz[:, 1:, :] - hz[:, :-1, :])/dy)[1:-1, :-1, 1:-1]
+                                      - ((hy[:, :, 1:] - hy[:, :, :-1])/dz)[1:-1, 1:-1, :-1]) \
+                           - dt / eps0 * jx[1:-1, 1:-1, 1:-1]
 
-    # # move source
-    # j[t, :N//2] = 1  # some analytic vector generating function, maybe using mirror charge concept
-    # # blot from previous location# also consider using just a single vector to represent this
-    # j[t-1, :N//2] = 0
+    ey[1:-1, 1:-1, 1:-1] = ey[1:-1, 1:-1, 1:-1] \
+                           + dt/eps0*(((hx[:, :, 1:] - hx[:, :, :-1])/dz)[1:-1, 1:-1, :-1]
+                                      - ((hz[1:, :, :] - hz[:-1, :, :])/dx)[:-1, 1:-1, 1:-1]) \
+                           - dt / eps0 * jy[1:-1, 1:-1, 1:-1]
+
+    ez[1:-1, 1:-1, 1:-1] = ez[1:-1, 1:-1, 1:-1] \
+                           - dt/eps0*(((hx[:, 1:, :] - hx[:, :-1, :])/dy)[1:-1, :-1, 1:-1]
+                                      - ((hy[1:, :, :] - hy[:-1, :, :])/dx)[:-1, 1:-1, 1:-1]) \
+                           - dt / eps0 * jz[1:-1, 1:-1, 1:-1]
+
+    hx[1:-1, 1:-1, 1:-1] = hx[1:-1, 1:-1, 1:-1] \
+                           - dt/mu0*(((ey[:, :, 1:] - ey[:, :, :-1])/dz)[1:-1, 1:-1, :-1]
+                                     - ((ez[:, 1:, :] - ez[:, :-1, :])/dy)[1:-1, :-1, 1:-1])
+
+    hy[1:-1, 1:-1, 1:-1] = hz[1:-1, 1:-1, 1:-1] \
+                           - dt/mu0*(((ez[1:, :, :] - ez[:-1, :, :])/dx)[:-1, 1:-1, 1:-1]
+                                     - ((ex[:, :, 1:] - ex[:, :, :-1])/dz)[1:-1, 1:-1, :-1])
+
+    hz[1:-1, 1:-1, 1:-1] = hz[1:-1, 1:-1, 1:-1] \
+                           - dt/mu0*(((ex[:, 1:, :] - ex[:, :-1, :])/dy)[1:-1, :-1, 1:-1]
+                                     - ((ey[1:, :, :] - ey[:-1, :, :])/dx)[:-1, 1:-1, 1:-1])
+
+    # # move source along z
+    jx[:, :, t+1] = 1  # some analytic vector generating function, maybe using mirror charge concept
+    jy[:, :, t+1] = 1
+    jx[:, :, t] = 0
+    jy[:, :, t] = 0
 
     # plt.pcolor(X, Y, np.sqrt(ex**2 + ey**2).T)
-    # plt.colorbar()
     # plt.show()
-    pcolormesh.set_array(np.sqrt(ex**2 + ey**2).T.flatten())
+    # pcolormesh.set_array(np.sqrt(ex[N//2, :, :]**2).flatten())
+    pcolormesh.set_array(np.sqrt(ex[N//2, :, :]**2 + ey[N//2, :, :]**2 + ez[N//2, :, :]**2).flatten())
+    # pcolormesh.set_array(j.T.flatten())
 
     return pcolormesh
 
 
-ani = FuncAnimation(fig, animate, interval=1, frames=5)
+ani = FuncAnimation(fig, animate, interval=1, frames=N, repeat=False)
+plt.colorbar(pcolormesh)
 plt.show()
