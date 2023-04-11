@@ -17,3 +17,5 @@ __pycache__/
 venv
 utils/test.py
 exe
+analysis_modules/eigenmode/SLANS/MidCellTune
+analysis_modules/eigenmode/SLANS/EndCellTune

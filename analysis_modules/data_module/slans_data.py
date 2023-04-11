@@ -5,6 +5,9 @@ import shutil
 import scipy
 from PyQt5.QtWidgets import QMessageBox
 import multiprocessing as mp
+
+from icecream import ic
+
 from utils.file_reader import FileReader
 import numpy as np
 import pandas as pd
@@ -285,8 +288,11 @@ class SLANSDataExtraction:
                         Rsh_Q = d_0d['EFFECTIVE IMPEDANCE'][mode - 1]  # Ohm
                         # Epk_Eacc = d_0d['KM (Emax/Accel.rate)'][mode-1]  #
                         # Bpk_Eacc = d_0d['KH (Hmax*Z0/Accel.rate)'][mode-1]  # mT/(MV/m)
+                        try:
+                            L = 4*value["IC"][5]  # normalize to length of cell
+                        except KeyError:
+                            L = 4*value['L']
 
-                        L = 2*value["IC"][5]  # normalize to length of cell
                         Vacc = np.sqrt(2*Rsh_Q * E_stored * 2*np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
                         # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
                         # Eacc = Vacc / (374 * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
@@ -312,7 +318,11 @@ class SLANSDataExtraction:
                             kcc = 0
 
                         kcc_arr.append(kcc * 100)
-                        append_geom_parameters(value["IC"])
+                        try:
+                            append_geom_parameters(value["IC"])
+                        except KeyError:
+                            append_geom_parameters(list(value.values()))
+
                         key_list.append(key)
 
                     except FileNotFoundError:
@@ -543,8 +553,8 @@ class SLANSDataExtraction:
     def multiple_folders_data_parallel(self, shape_space, slans_data_folder, proc_count, mode, bc, request, save_excel,
                                        temp_folder):
 
-        bc = bc.replace('m', '3')
-        bc = bc.replace('e', '2')
+        # bc = bc.replace('m', '3')
+        # bc = bc.replace('e', '2')
 
         # create temporary folder
         if os.path.exists(fr"{temp_folder}"):
@@ -585,7 +595,7 @@ class SLANSDataExtraction:
         self.join_excel('Proc', proc_count, save_excel, temp_folder)
 
         # delete temporary folder
-        shutil.rmtree(temp_folder)
+        # shutil.rmtree(temp_folder)
 
     def join_excel(self, generic_name, proc_count, save_excel, temp_folder):
         df = fr.excel_reader(fr'{temp_folder}\{generic_name}_{0}.xlsx')['Sheet1']
@@ -602,11 +612,23 @@ class SLANSDataExtraction:
 
 
 if __name__ == '__main__':
-    directory = r"D:\Dropbox\Projects\NewFolder\SimulationData\SLANS"
-    fid = "Cavity0"  # folder name
+    slans_de = SLANSDataExtraction()
 
-    # create ABCIData object
-    abci_data = SLANSData(directory, fid, 22)
-
-    data = abci_data.get_0D_plot_data()  # For the key, either the title of the plot can be given as input or the index
-    print(data['TITLE'])
+    # get simulation data from multiple folders
+    dir_path = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data'
+    for path in os.listdir(dir_path):
+        if os.path.exists(fr"{dir_path}/{path}/shape_space.xlsx"):
+            print(path)
+            # load shape space
+            shape_space = pd.read_excel(fr"{dir_path}/{path}/shape_space.xlsx", "Sheet1", index_col=0)
+            shape_space = shape_space.rename('Cavity{}'.format)
+            shape_space = shape_space.to_dict(orient='index')
+            # ic(shape_space)
+            # break
+            slans_data_folder = fr"{dir_path}/{path}/SLANS"
+            temp_folder = fr"{dir_path}/{path}/temp"
+            save_excel = fr"{dir_path}/{path}/results_slans"
+            request = '0D Data'
+            slans_de.multiple_folders_data_parallel(shape_space, slans_data_folder, 40, 2, 'mm',
+                                                    request, save_excel, temp_folder)
+            # break

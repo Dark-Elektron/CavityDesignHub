@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 
+from icecream import ic
 from scipy.optimize import fsolve
 import numpy as np
 import pandas as pd
@@ -347,10 +348,10 @@ class ProcessData:
 
 if __name__ == '__main__':
     pr = ProcessData()
-    ###########################################################
-    dirc = r'D:\Dropbox\To Shahnam\TestBook1.xlsx'
-    df = pd.read_excel(dirc, 'Sheet1')
-    pr.calculate_alpha_dataframe(df)
+    # ###########################################################
+    # dirc = r'D:\Dropbox\To Shahnam\TestBook1.xlsx'
+    # df = pd.read_excel(dirc, 'Sheet1')
+    # pr.calculate_alpha_dataframe(df)
 
 
 # #################################################
@@ -413,3 +414,23 @@ if __name__ == '__main__':
     #     pr.write_cst_paramters(int(val['key']), val['A'], val['B'], val['a2'], val['b3'], val['Ri'], val['L'], val['Req'])
     #     # print(val)
 #################################################
+
+#############
+# get simulation data from multiple folders
+dir_path = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data'
+df_all = pd.DataFrame()
+for path in os.listdir(dir_path):
+    if os.path.exists(fr"{dir_path}/{path}/results_abci.xlsx") and os.path.exists(fr"{dir_path}/{path}/results_slans.xlsx"):
+        # load shape space
+        results_abci = pd.read_excel(fr"{dir_path}/{path}/results_abci.xlsx", "Sheet1", index_col=0)
+        results_slans = pd.read_excel(fr"{dir_path}/{path}/results_slans.xlsx", "Sheet1", index_col=0)
+
+        df = pd.merge(results_slans, results_abci, on=['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req'])
+        df = df.add_suffix(f'_{path}', axis=0)
+        ic(df)
+
+        df.to_excel(f'{dir_path}/{path}/results_abci_slans.xlsx')
+        df_all = pd.concat([df_all, df], axis=0)
+
+df_all.to_excel(f'{dir_path}/all_results_abci_slans.xlsx')
+

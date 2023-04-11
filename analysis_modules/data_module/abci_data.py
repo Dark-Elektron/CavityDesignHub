@@ -7,6 +7,7 @@ import time
 import matplotlib
 import pandas as pd
 from PyQt5.QtWidgets import QMessageBox
+from icecream import ic
 
 from utils.file_reader import FileReader
 import matplotlib.pyplot as plt
@@ -491,9 +492,13 @@ class ABCIDataExtraction:
                     dip_interval = [0.0, 2e10]
 
                 for key, value in d.items():
-                    print(f"Processing for Cavity {key}")
-                    abci_data_mon = ABCIData(abci_data_dir, key, 0)
-                    abci_data_dip = ABCIData(abci_data_dir, key, 1)
+                    # check if folder exists
+                    # print(fr"{abci_data_dir}/{key}")
+                    if os.path.exists(fr"{abci_data_dir}/{key}"):
+                        abci_data_mon = ABCIData(abci_data_dir, key, 0)
+                        abci_data_dip = ABCIData(abci_data_dir, key, 1)
+                    else:
+                        continue
 
                     # get longitudinal and transverse impedance plot data
                     xr_mon, yr_mon, _ = abci_data_mon.get_data('Real Part of Longitudinal Impedance')
@@ -521,7 +526,7 @@ class ABCIDataExtraction:
 
                     for i, z_bound in enumerate(mon_interval):
                         # get mask
-                        msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
+                        msk_mon = [z_bound[0] < x < z_bound[1] for x in xp_mon]
 
                         if len(yp_mon[msk_mon]) != 0:
                             Zmax_mon = max(yp_mon[msk_mon])
@@ -545,34 +550,40 @@ class ABCIDataExtraction:
                         else:
                             continue
 
-                    append_geom_parameters(value["IC"])
+                    try:
+                        append_geom_parameters(value["IC"])
+                    except KeyError:
+                        append_geom_parameters(list(value.values()))
 
             def all(mon_interval, dip_interval):
                 for key, value in d.items():
                     print(f"Processing for Cavity {key}")
-                    abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
-                    abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
+                    if os.path.exists(fr"{abci_data_dir}/{key}"):
+                        abci_data_mon = ABCIData(abci_data_dir, key, 0)
+                        abci_data_dip = ABCIData(abci_data_dir, key, 1)
+                    else:
+                        continue
 
                     # get longitudinal and transverse impedance plot data
-                    xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
-                    xi_mon, yi_mon, _ = abci_data_long.get_data('Imaginary Part of Longitudinal Impedance')
+                    xr_mon, yr_mon, _ = abci_data_mon.get_data('Real Part of Longitudinal Impedance')
+                    xi_mon, yi_mon, _ = abci_data_mon.get_data('Imaginary Part of Longitudinal Impedance')
 
-                    xr_dip, yr_dip, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-                    xi_dip, yi_dip, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
+                    xr_dip, yr_dip, _ = abci_data_dip.get_data('Real Part of Transverse Impedance')
+                    xi_dip, yi_dip, _ = abci_data_dip.get_data('Imaginary Part of Transverse Impedance')
 
                     # loss factors
                     # trans
-                    k_loss_trans = abci_data_trans.loss_factor['Transverse']
+                    k_loss_trans = abci_data_dip.loss_factor['Transverse']
 
                     if math.isnan(k_loss_trans):
                         print_(f"Encountered an exception: Check shape {key}")
                         continue
 
                     # long
-                    abci_data_long.get_data('Loss Factor Spectrum Integrated upto F')
+                    abci_data_mon.get_data('Loss Factor Spectrum Integrated upto F')
 
-                    k_M0 = abci_data_long.y_peaks[0]
-                    k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
+                    k_M0 = abci_data_mon.y_peaks[0]
+                    k_loss_long = abs(abci_data_mon.loss_factor['Longitudinal'])
                     k_loss_HOM = k_loss_long - k_M0
 
                     # calculate magnitude
@@ -619,7 +630,10 @@ class ABCIDataExtraction:
                             continue
 
                     # append only after successful run
-                    append_geom_parameters(value["IC"])
+                    try:
+                        append_geom_parameters(value["IC"])
+                    except KeyError:
+                        append_geom_parameters(list(value.values()))
                     key_list.append(key)
 
                     k_loss_M0.append(k_M0)
@@ -640,7 +654,8 @@ class ABCIDataExtraction:
 
             if request.lower() == 'zmax':
                 get_Zmax(mon_interval, dip_interval)
-                print(len(Zmax_mon_list), len(Zmax_dip_list), len(A))
+                print(Zmax_mon_list)
+                print(len(Zmax_mon_list[0]), len(Zmax_dip_list[0]), len(A))
 
                 # save excel
                 try:
@@ -748,35 +763,57 @@ class ABCIDataExtraction:
 
 
 if __name__ == '__main__':
-    directory = r"D:\Dropbox\Projects\NewFolder\SimulationData\ABCI"
-    fid = "Cavity0"  # folder name
-    MROT = "1"  # 0 for monopole, 1 for dipole
+    # directory = r"D:\Dropbox\Projects\NewFolder\SimulationData\ABCI"
+    # fid = "Cavity0"  # folder name
+    # MROT = "1"  # 0 for monopole, 1 for dipole
+    #
+    # # create ABCIData object
+    # abci_data = ABCIData(directory, fid, MROT)
+    #
+    # # call get_data method and provide key
+    # keys = {0: r'Cavity Shape Input',
+    #         1: r'Cavity Shape Used',
+    #         2: r'Wake Potentials',
+    #         3: r'Real Part of Longitudinal Impedance',
+    #         4: r'Imaginary Part of Longitudinal Impedance',
+    #         5: 'Frequency Spectrum of Loss Factor',
+    #         6: r'Loss Factor Spectrum Integrated upto F',
+    #         7: r'Real Part of Long. + Log Impedance',
+    #         8: r'Imaginary Part of Long. + Log Impedance',
+    #         9: r'Spectrum of Long. + Log Loss Factor',
+    #         10: r'Long. + Log Factor Integrated up to F',
+    #         11: r'Real Part of Azimuthal Impedance',
+    #         12: r'Imaginary Part of Azimuthal Impedance',
+    #         13: r'Real Part of Transverse Impedance',
+    #         14: r'Imaginary Part of Transverse Impedance'}
+    #
+    # x, y, _ = abci_data.get_data(key=3)  # For the key, either the title of the plot can be given as input or the index
+    # print(x)
+    # print(y)
+    #
+    # import matplotlib.pyplot as plt
+    # plt.plot(x, y)
+    # plt.show()
 
-    # create ABCIData object
-    abci_data = ABCIData(directory, fid, MROT)
+    abci_de = ABCIDataExtraction()
 
-    # call get_data method and provide key
-    keys = {0: r'Cavity Shape Input',
-            1: r'Cavity Shape Used',
-            2: r'Wake Potentials',
-            3: r'Real Part of Longitudinal Impedance',
-            4: r'Imaginary Part of Longitudinal Impedance',
-            5: 'Frequency Spectrum of Loss Factor',
-            6: r'Loss Factor Spectrum Integrated upto F',
-            7: r'Real Part of Long. + Log Impedance',
-            8: r'Imaginary Part of Long. + Log Impedance',
-            9: r'Spectrum of Long. + Log Loss Factor',
-            10: r'Long. + Log Factor Integrated up to F',
-            11: r'Real Part of Azimuthal Impedance',
-            12: r'Imaginary Part of Azimuthal Impedance',
-            13: r'Real Part of Transverse Impedance',
-            14: r'Imaginary Part of Transverse Impedance'}
-
-    x, y, _ = abci_data.get_data(key=3)  # For the key, either the title of the plot can be given as input or the index
-    print(x)
-    print(y)
-
-    import matplotlib.pyplot as plt
-    plt.plot(x, y)
-    plt.show()
-
+    # get simulation data from multiple folders
+    dir_path = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data'
+    for path in os.listdir(dir_path):
+        if os.path.exists(fr"{dir_path}/{path}/shape_space.xlsx"):
+            print(path)
+            # load shape space
+            shape_space = pd.read_excel(fr"{dir_path}/{path}/shape_space.xlsx", "Sheet1", index_col=0)
+            shape_space = shape_space.rename('Cavity{}'.format)
+            shape_space = shape_space.to_dict(orient='index')
+            # ic(shape_space)
+            # break
+            abci_data_folder = fr"{dir_path}/{path}/ABCI"
+            temp_folder = fr"{dir_path}/{path}/temp"
+            save_excel = fr"{dir_path}/{path}/results_abci"
+            request = 'all'
+            abci_de.multiple_folders_data_parallel(shape_space, abci_data_folder, 40,
+                                                   request, save_excel, temp_folder,
+                                                   mon_interval=[0.44, 0.77, 1.1, 2.0],
+                                                   dip_interval=[0.54, 0.59, 0.75, 1.05, 2.0])
+            break
