@@ -289,6 +289,42 @@ class Cavities:
         ic(results)
         return results_norm_units
 
+    def qois_all(self):
+        """
+        Retrieves the fundamental mode quantities of interest
+
+        Returns
+        -------
+        Dictionary containing fundamental mode quantities of interest (normed optional).
+        """
+        results = []
+        for cav in self.cavities_list:
+            results.append({
+                r"$E_\mathrm{pk}/E_\mathrm{acc} [\cdot]$": cav.e,
+                r"$B_\mathrm{pk}/E_\mathrm{acc} \mathrm{[mT/MV/m]}$": cav.b,
+                r"$k_\mathrm{cc}$": cav.k_cc,
+                r"$R/Q \mathrm{[10^2\Omega]}$": cav.R_Q * 1e-2,
+                r"$G \mathrm{[10^{2}\Omega]}$": cav.G * 1e-2,
+                r"$G\cdot R/Q \mathrm{[10^{5}\Omega^2]}$": cav.GR_Q * 1e-5
+            })
+
+        results_norm_units = []
+        for cav in self.cavities_list:
+            results_norm_units.append({
+                r"$e_\mathrm{pk}/e_\mathrm{acc}$": cav.e,
+                r"$b_\mathrm{pk}/e_\mathrm{acc}$": cav.b,
+                r"$k_\mathrm{cc}$": cav.k_cc,
+                r"$r/q$": cav.R_Q,
+                r"$g$": cav.G,
+                # r"$g\cdot r/q $": cav.GR_Q,
+                # r"$|k_\mathrm{FM}|$": cav.k_fm,
+                r"$|k_\parallel|$": cav.k_loss,
+                r"$k_\perp$": cav.k_kick,
+                r"$p_\mathrm{HOM}/cav$": cav.phom
+            })
+        ic(results)
+        return results_norm_units
+
     def plot_power_comparison(self, fig=None, ax_list=None):
         """
         Can be called using ``cavities.plot_power_comparison()``
@@ -528,6 +564,47 @@ class Cavities:
         fname = '_'.join(fname)
 
         self.save_all_plots(f"{fname}_fm_bar.png")
+
+        fig.show()
+
+    def plot_compare_all_bar(self):
+        """
+        Plot bar chart of fundamental mode quantities of interest
+
+        Returns
+        -------
+
+        """
+        plt.rcParams["figure.figsize"] = (6, 3)
+        # plot barchart
+        self.fm_results = self.qois_all()
+        data = np.array([list(d.values()) for d in self.fm_results])
+        data_col_max = data.max(axis=0)
+        x = list(self.fm_results[0].keys())
+        X = np.arange(len(x))
+
+        fig, ax = plt.subplots()
+        width = 0.15
+        for i, cav in enumerate(self.cavities_list):
+            # print(type(X), type(i), type(width), type(data[i]), data)
+            ax.bar(X + i * width, data[i] / data_col_max, width=width, label=self.cavities_list[i].plot_label)
+
+        ax.set_xticklabels(ax.get_xticks(), rotation=0)
+        ax.set_xticks([r + width for r in range(len(x))], x)
+        # label = ["C3794_H (2-Cell)", "C3795_H (5-Cell)"]
+        # label = ["C3795_ttbar (5-Cell)", "FCCUROS5_ttbar (5-Cell)", "TELSA_ttbar (5-Cell)"]
+        # ax.legend(label, loc="upper left")
+        # ax.axhline(1.05, c='k')
+        ax.set_ylim(0.39, 1)
+        ax.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left",
+                  mode="expand", borderaxespad=0, ncol=min(3, len(self.cavities_list)))
+        plt.tight_layout()
+
+        # save plots
+        fname = [cav.name for cav in self.cavities_list]
+        fname = '_'.join(fname)
+
+        self.save_all_plots(f"{fname}_all_bar.png")
 
         fig.show()
 
@@ -2983,7 +3060,7 @@ def ttbar_study():
 
     cFCCUROS5 = Cavity(vrf=8.8e9, inv_eta=745, name="FCCUROS5", op_field=24.72e6,
                        op_temp='2K', material='bulkNb',
-                       wp=wp, sigma=sigma, plot_label="FCC_UROS5",
+                       wp=wp, sigma=sigma, plot_label="FCCUROS5",
                        slans_dir=fr"{parent_dir_slans}\FCC_UROS5",
                        abci_dir=fr"{parent_dir_abci}\FCC_UROS5")
 
@@ -3004,6 +3081,7 @@ def ttbar_study():
     cavities.plot_compare_bar()
     cavities.plot_compare_fm_bar()
     cavities.plot_compare_hom_bar()
+    cavities.plot_compare_all_bar()
 
     # print(cavities)
     # print(c3795_tt)
@@ -3107,7 +3185,7 @@ if __name__ == '__main__':
     # sigma = 'SR_5.775mm'
     # mucol_study()
 
-    mucol_study_2()
+    # mucol_study_2()
     # mucol_study_3()
     # print(PARTICLE['electron']['rc [m]'])
     # print(PARTICLE['muon']['rc [m]'])
@@ -3115,7 +3193,7 @@ if __name__ == '__main__':
 
     # wp = 'ttbar_2022'  # working point
     # sigma = 'SR_1.67mm'
-    # ttbar_study()
+    ttbar_study()
 
     # wp = 'H'  # working point
     # sigma = 'SR_2.5mm'

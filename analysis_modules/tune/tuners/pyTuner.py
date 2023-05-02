@@ -149,7 +149,7 @@ class PyTune:
                 if alpha < 90.0 or error_msg != 1:
                     print("Mid cell alpha is less than 90", alpha, error_msg)
                     break
-            print(alpha, error_msg)
+            # print(alpha, error_msg)
             # update convergence list
             if conv_list:
                 conv_list[proc] = [tv_list, freq_list]
@@ -160,7 +160,7 @@ class PyTune:
         # return best answer from iteration
         min_error = [abs(x-target_freq) for x in freq_list]
         key = min_error.index(min(min_error))
-        print(tv_list, freq_list)
+        # print(tv_list, freq_list)
         import matplotlib.pyplot as plt
         plt.scatter(tv_list, freq_list)
         plt.show()

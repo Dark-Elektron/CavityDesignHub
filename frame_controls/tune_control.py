@@ -1534,6 +1534,11 @@ class OptimizationControl:
         self.parentDir = r"D:\Dropbox\CavityDesignHub"
         self.projectDir = fr"D:\Dropbox\CavityDesignHub\Cavity800"
 
+        # interpolation
+        self.n_interp = 10000
+        self.interp_error = []
+        self.interp_error_avg = []
+
         self.initUI()
         self.signals()
 
@@ -1577,11 +1582,14 @@ class OptimizationControl:
 
     def ea(self, n):
         if n == 0:
+
             # update lists
             self.ng_max = self.ui.sb_N_Generation.value()
             self.get_constraints()
             self.get_objectives()
             self.df = self.generate_first_men()
+
+            self.f2_interp = [np.zeros(self.n_interp) for _ in range(len(self.objectives))]
 
             # clear folder to avoid reading from previous optimization attempt
             folders = [fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS",
@@ -1681,8 +1689,8 @@ class OptimizationControl:
 
                 # after removing duplicates, dataframe might change size
                 df = df.loc[df['key'].isin(processed_keys)]
-                print(tune_result)
-                # replace Req with tuned Req
+                # print(tune_result)
+                # replace Req wÖith tuned Req
                 df[['Req', 'L', 'alpha_i', 'alpha_o', 'freq']] = tune_result
 
                 # append objective column to dataframe only from slans results
@@ -1882,11 +1890,32 @@ class OptimizationControl:
         df = df.reset_index(drop=True)
 
         # pareto condition
-        reorder_indx = self.pareto_front(df)
+        reorder_indx, pareto_list = self.pareto_front(df)
+
+        # estimate convergence
+        obj_error = []
+        obj0 = self.objectives[0][1]
+        for i, obj in enumerate(self.objectives):
+            if i != 0:
+                pareto_shapes = df.loc[pareto_list, [obj0, obj[1]]]
+                pareto_shapes_sorted = pareto_shapes.sort_values(obj0)
+                f1 = np.linspace(min(pareto_shapes[obj0]), max(pareto_shapes[obj0]), self.n_interp)
+                # self.ax1.plot(f1, pareto_poly_fit(f1), '-', c='k')
+                f2_interp = np.interp(f1, pareto_shapes_sorted[obj0], pareto_shapes_sorted[obj[1]])
+                ic(max(np.abs(f2_interp)))
+                rel_error = np.linalg.norm(f2_interp - self.f2_interp[i])/max(np.abs(f2_interp))
+                obj_error.append(rel_error)
+
+                self.f2_interp[i] = f2_interp
+
+        self.interp_error.append(max(obj_error))
+        ic(max(obj_error), np.average(self.interp_error))
+        self.interp_error_avg.append(np.average(self.interp_error))
+        ic(self.interp_error, self.interp_error_avg)
+
         df = df.loc[reorder_indx, :]
         # reset index
         df = df.dropna().reset_index(drop=True)
-        ic(df)
 
         # update global
         if len(df) > self.ui.sb_Max_Table_Size.value():
@@ -1935,6 +1964,10 @@ class OptimizationControl:
         if n < self.ng_max:
             return self.ea(n)
         else:
+
+            plt.plot(self.interp_error, marker='P')
+            plt.plot(self.interp_error_avg, marker='X')
+            plt.show()
             return
 
     def uq_parallel(self, df, objectives, solver_dict, solver_args_dict):
@@ -3269,7 +3302,7 @@ class OptimizationControl:
         # ic([optimal_datapoints.loc[i, :] for i in range(len(lst))])
 
         # return [optimal_datapoints[i, :] for i in range(datapoints.shape[0])]
-        return reorder_idx
+        return reorder_idx, lst
 
     @staticmethod
     def check_input(s):

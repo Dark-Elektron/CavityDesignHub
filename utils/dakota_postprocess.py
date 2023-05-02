@@ -1,3 +1,4 @@
+import csv
 import re
 
 import pandas as pd
@@ -84,7 +85,7 @@ def plot_sobol_indices(filepath, objectives, which='Main', kind='stacked', orien
             df_merge_interaction = pd.merge(df_merge_interaction, df, on=['var1', 'var2'])
 
         # combine var columns
-        df_merge_interaction["vars"] = df_merge_interaction[["var1", "var2"]].agg(','.join, axis=1)
+        # df_merge_interaction["vars"] = df_merge_interaction[["var1", "var2"]].agg(','.join, axis=1)
         # df.plot.bar(x='var', y='Main')
 
     ic(df_merge)
@@ -143,7 +144,7 @@ def quadrature_nodes_to_cst_par_input(filefolder, n=2):
         else:
             df_part = df.loc[i * row_partition:]
 
-        df_part.to_csv(fr"{filefolder}\cst_par_in_{i}.txt", sep="\t", index=None)
+        df_part.to_csv(fr"{filefolder}\cst_par_in_{i+1}.txt", sep="\t", index=None)
 
 
 def get_pce(filefolder):
@@ -156,20 +157,37 @@ def get_pce(filefolder):
         poly += 0
 
 
-def combine_params_output(params_file, output_file):
-    pass
+def quote_to_float(value):
+    if isinstance(value, str) and value.startswith('"') and value.endswith('"'):
+        return float(value[1:-1])
+    else:
+        return value
+
+
+def combine_params_output(folder, N):
+    for i in range(N):
+        if i == 0:
+            df = pd.read_csv(f'{folder}/m{(i+1):02d}.csv', engine='python', skipfooter=1)
+            ic(df)
+        else:
+            df = pd.concat([df, pd.read_csv(f'{folder}/m{(i+1):02d}.csv', engine='python', skipfooter=1)])
+
+    df.to_excel(fr"{folder}\cubature_nodes.xlsx", index=False)
 
 
 if __name__ == '__main__':
     plt.rcParams["figure.figsize"] = (6.5, 2.5)
-    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\HC_Stroud_5_1mm"
+    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC_10%"
     #
-    obj = [r"$Q_\mathrm{ext, FM}$", r"$\max(Q_\mathrm{ext, dip})$"]
-    obj = [r"$f_\mathrm{min}$", r"$f_\mathrm{max}$"]
-    plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Main', kind='stacked', orientation='horizontal')
-    plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Total', kind='stacked', orientation='horizontal')
+    # obj = [r"$Q_\mathrm{ext, FM}$", r"$\max(Q_\mathrm{ext, dip})$"]
+    obj = [r"$f_\mathrm{min}~[MHz]$", r"$f_\mathrm{max}~[MHz]$"]
+    # obj = [r"Y"]
+    # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Main', kind='stacked', orientation='horizontal')
+    # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Total', kind='stacked', orientation='horizontal')
     # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Interaction', kind='normal', orientation='horizontal')
 
-    # quadrature_nodes_to_cst_par_input(filefolder, n=2)
+    quadrature_nodes_to_cst_par_input(filefolder, n=10)
+    # combine_params_output(filefolder, 40)
+
     # get_pce(filefolder)
 

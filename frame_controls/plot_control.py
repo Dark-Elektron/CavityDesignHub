@@ -1,6 +1,7 @@
 import pickle
 import time
 
+import scipy
 from PyQt5 import QtGui
 from labellines import labelLines
 from scipy.special import jn_zeros, jnp_zeros
@@ -779,6 +780,28 @@ class PlotControl:
                 else:
                     xr, y, _ = abci_data_long.get_data(request)
 
+                    #### to integrate better later. This part of the code is to check the frequency distribution of
+                    #### HOM power in the cavity
+                    if request == 'Frequency Spectrum of Loss Factor':
+                        e = 1.602e-19
+                        Nb = 2.26e11
+                        I0 = 5e-3
+                        Pf = np.array(y)*I0*e*Nb  # k_hom*I0*e*Nb
+
+                        # # Define bin edges and calculate bin centers
+                        # bin_edges = np.linspace(np.array(xr).min(), np.array(xr).max(), num=int((np.array(xr).min() + np.array(xr).max())/2))
+                        # bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
+                        #
+                        # # Bin the power data
+                        # power_binned, _ = np.histogram(xr, bins=bin_edges, weights=Pf)
+                        #
+                        # # Plot the binned data
+                        # plt.bar(bin_centers, power_binned, width=np.diff(bin_edges), align='center')
+                        plt.bar(xr, Pf)
+                        plt.xlabel('Frequency')
+                        plt.ylabel('Power (summed in bins)')
+                        plt.show()
+
                     # scale x axis]
                     xr = [a * scaleX for a in xr]
                     # scale y axis]
@@ -799,10 +822,19 @@ class PlotControl:
                     # self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
                     # f' ({abci_data_long.wakelength} m)', linewidth=2)
                     # process id
-                    plot_dict["plot object"].update({
-                        id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
-                                                       f' ({abci_data_long.wakelength} m)',
-                                          linewidth=2, picker=True)})
+
+                    # check if peaks is selected
+                    if self.ui.cb_Plot_Peaks.checkState() == 2:
+                        peaks, _ = scipy.signal.find_peaks(y, height=self.ui.dsb_Threshold.value())
+                        plot_dict["plot object"].update({
+                            id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                           f' ({abci_data_long.wakelength} m)',
+                                              linewidth=2, picker=True, markevery=peaks, marker='o', mec='k')})
+                    else:
+                        plot_dict["plot object"].update({
+                            id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                           f' ({abci_data_long.wakelength} m)',
+                                              linewidth=2, picker=True)})
                     # mplcursors.cursor(plot_dict["plot object"][id_])
 
                 elif axis == "Right":
@@ -814,10 +846,17 @@ class PlotControl:
                     # update plot data
                     plot_dict["plot data"].update({id_: {"x": xr, "y": y}})
                     # process id
-                    plot_dict["plot object"].update({
-                        id_: self.ax_right.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
-                                                             f' ({abci_data_long.wakelength} m)',
-                                                linewidth=2, picker=True)})
+                    if self.ui.cb_Plot_Peaks.checkState() == 2:
+                        peaks, _ = scipy.signal.find_peaks(y, height=self.ui.dsb_Threshold.value())
+                        plot_dict["plot object"].update({
+                            id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                           f' ({abci_data_long.wakelength} m)',
+                                              linewidth=2, picker=True, markevery=peaks, marker='o', mec='k')})
+                    else:
+                        plot_dict["plot object"].update({
+                            id_: self.ax_right.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                                 f' ({abci_data_long.wakelength} m)',
+                                                    linewidth=2, picker=True)})
                     # mplcursors.cursor(plot_dict["plot object"][id_])
 
                 # ax_selected.set_xlabel('$f \mathrm{ [GHz]}$')
@@ -865,10 +904,17 @@ class PlotControl:
                     # update plot data
                     plot_dict["plot data"].update({id_: {"x": xr, "y": y}})
                     # process id
-                    plot_dict["plot object"].update({
-                        id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
-                                                       f' ({abci_data_trans.wakelength} m)',
-                                          linewidth=2, picker=True)})
+                    if self.ui.cb_Plot_Peaks.checkState() == 2:
+                        peaks, _ = scipy.signal.find_peaks(y, height=self.ui.dsb_Threshold.value())
+                        plot_dict["plot object"].update({
+                            id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                           f' ({abci_data_trans.wakelength} m)',
+                                              linewidth=2, picker=True, markevery=peaks, marker='o', mec='k')})
+                    else:
+                        plot_dict["plot object"].update({
+                            id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                           f' ({abci_data_trans.wakelength} m)',
+                                              linewidth=2, picker=True)})
                     # mplcursors.cursor(plot_dict["plot object"][id_])
                 elif axis == 'Right':
                     ax_selected = self.ax_right
@@ -877,10 +923,17 @@ class PlotControl:
                     # update plot data
                     plot_dict["plot data"].update({id_: {"x": xr, "y": y}})
                     # process id
-                    plot_dict["plot object"].update({
-                        id_: self.ax_right.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
-                                                             f' ({abci_data_trans.wakelength} m)',
-                                                linewidth=2, picker=True)})
+                    if self.ui.cb_Plot_Peaks.checkState() == 2:
+                        peaks, _ = scipy.signal.find_peaks(y, height=self.ui.dsb_Threshold.value())
+                        plot_dict["plot object"].update({
+                            id_: self.ax.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                           f' ({abci_data_trans.wakelength} m)',
+                                              linewidth=2, picker=True, markevery=peaks, marker='o', mec='k')})
+                    else:
+                        plot_dict["plot object"].update({
+                            id_: self.ax_right.plot(xr, y, label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                                 f' ({abci_data_trans.wakelength} m)',
+                                                    linewidth=2, picker=True)})
                     # mplcursors.cursor(plot_dict["plot object"][id_])
 
                 ax_selected.set_yscale('log')
@@ -2434,7 +2487,8 @@ class PlotControl:
                         "ScaleY": v['plot inputs']["ScaleY"].text(),
                         "Axis": v['plot inputs']["Axis"].currentText(),
                         "Type": [v['plot inputs']["Type"][0].currentText(), v['plot inputs']["Type"][1].currentText()],
-                        "Filter": [v['plot inputs']["Filter"][0].lineEdit().text(), v['plot inputs']["Filter"][1].text()]
+                        "Filter": [v['plot inputs']["Filter"][0].lineEdit().text(),
+                                   v['plot inputs']["Filter"][1].text()]
                     }
                 }
             )
@@ -2532,8 +2586,11 @@ class PlotControl:
 
             self.plot()
             plot_objects_attr = state_dict['plot_objects_attr']
-            for n, line in enumerate(self.ax.get_lines()):
-                line.set(**plot_objects_attr['lines'][n])
+            try:
+                for n, line in enumerate(self.ax.get_lines()):
+                    line.set(**plot_objects_attr['lines'][n])
+            except IndexError:
+                pass
 
             # for n, coll in enumerate(self.ax.collections):
             #     coll.set(**plot_objects_attr['collections'][n])

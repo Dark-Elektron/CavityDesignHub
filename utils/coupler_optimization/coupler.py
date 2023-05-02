@@ -423,6 +423,23 @@ class Coupler:
         mplcursors.cursor(plt.plot(freq_range, Y_dB))
         plt.show()
 
+    def test_circuit_resonance_anti_resonance(self):
+        # this function computes the total resistance
+        Ztot = []
+        L1, L2, C, C1, R = 8e-9, 25.1e-9, 120e-12, 3e-12, 0.1
+        # L2, C, R = 11e-9, 120e-12, 0.1
+        for p in range(0, len(self.freq_range)):
+            w = 2 * np.pi * self.freq_range[p]
+            # parallel function gives the overall resistance for parallel resistances
+            Z = 1j * (w * L1 - 1 / (C1 * w))
+            Z = self.parallel(Z, 1j * (w * L2 - 1 / (C * w)) + R)
+            # Z = 1j * (w * L2 - 1 / (C * w)) + R
+            Ztot.append(np.absolute(Z))
+
+        ic(Ztot)
+        self.Y_dB = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
+        self.Y_dB_magnetic = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
+
     def test_Z_total(self, Z0, circuit):
         # this function computes the total impedance
         N = 1001
@@ -1126,7 +1143,7 @@ class Coupler:
             Z = self.parallel(1 / (1j * w * Ce), Z)
             Z = self.trans_line(Z2, Z, l1, w)
             Z = self.parallel(Z, Z1)
-            Ztot.append(Z)
+            Ztot.append(np.absolute(Z))
 
         self.Y_dB = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
         self.Y_dB_magnetic = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
@@ -1169,7 +1186,7 @@ class Coupler:
             Z = self.parallel(1j * w * L, Z)
             Z = self.trans_line(Z2, Z, l1, w)
             Z = self.parallel(Z, Z1)
-            Ztot.append(Z)
+            Ztot.append(np.absolute(Z))
 
         self.Y_dB = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
         self.Y_dB_magnetic = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
@@ -1238,7 +1255,7 @@ class Coupler:
             Z = self.parallel(1 / (1j * w * Ce), Z)
             Z = self.trans_line(Z1, Z, l1, w)
             Z = self.parallel(Z, Z1)
-            Ztot.append(Z)
+            Ztot.append(np.absolute(Z))
 
         self.Y_dB = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
         self.Y_dB_magnetic = 20 * np.log10(np.real(np.array(Ztot)) / max(np.real(np.array(Ztot))))
@@ -1396,19 +1413,20 @@ if __name__ == '__main__':
     coupler = Coupler()
     coupler.set_freq_range(0.001, 2000, 3000)
 
-    f = coupler.CEPCHookType
+    # f = coupler.CEPCHookType
     # f = coupler.DQWType(freq_range, 3e6)
     # f = coupler.LHCHookType
-    # f = coupler.transline_capacitor_parallel
+    f = coupler.transline_capacitor_parallel
     # f = coupler.transline_inductor_parallel
     # f = coupler.transline_ind_par_cap_par
+    # f = coupler.test_circuit_resonance_anti_resonance
     f()
-    coupler.add_slider(f, {'L23': [10e-9, 50e-9, 22e-9], 'd2': [5e-3, 50e-3, 12.4e-3], 'd3': [5e-3, 100e-3, 12.4e-3],
-                           "Z1": [20, 150, 50], 'dk': [0.01, 0.05, 0.028], 'l2': [1e-3, 100e-3, 10e-3]})
+    # coupler.add_slider(f, {'L23': [10e-9, 50e-9, 22e-9], 'd2': [5e-3, 50e-3, 12.4e-3], 'd3': [5e-3, 100e-3, 12.4e-3],
+    #                        "Z1": [20, 150, 50], 'dk': [0.01, 0.05, 0.028], 'l2': [1e-3, 100e-3, 10e-3]})
     # coupler.add_slider(f, {'d2': [5e-3, 50e-3, 12.4e-3], 'd3': [5e-3, 100e-3, 12.4e-3],
     #                        "Z1": [20, 150, 50], 'dk': [0.01, 0.05, 0.028], 'l2': [1e-3, 100e-3, 10e-3]})
-    # coupler.add_slider(f, {'l1': [5e-3, 500e-3, 225e-3], 'l2': [5e-3, 500e-3, 225e-3], 'd1': [5e-3, 100e-3, 20e-3],
-    #                        "le": [20e-3, 150e-3, 50e-3], 'de': [5e-3, 200e-3, 50e-3]})
+    coupler.add_slider(f, {'l1': [5e-3, 500e-3, 225e-3], 'l2': [5e-3, 500e-3, 225e-3], 'd1': [5e-3, 100e-3, 20e-3],
+                           "le": [20e-3, 150e-3, 50e-3], 'de': [5e-3, 200e-3, 50e-3]})
     # coupler.add_slider(f, {'l1': [1e-4, 500e-3, 225e-3], 'l2': [1e-4, 500e-3, 225e-3], 'l3': [1e-4, 500e-3, 225e-3],
     #                        'd1': [1e-4, 50e-3, 20e-3], 'le': [5e-3, 200e-3, 50e-3], 'de': [5e-3, 200e-3, 50e-3],
     #                        "L": [1e-10, 50e-9, 20e-9], "eps_r": [1, 10, 1]})

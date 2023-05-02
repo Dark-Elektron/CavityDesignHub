@@ -581,6 +581,7 @@ class UQModel:
         rand_vars = self.model_input['random variables']
         obj_vars = self.model_input['objective variables']
         df = self.model_output
+        ic("model output", df)
         N = self.var_sample_size
 
         Sj = {}
@@ -593,10 +594,12 @@ class UQModel:
                 VEx = (1/N)*np.sum([df[ob][N + i] * df[ob][(j+2)*N + i] for i in range(N)]) - E2Y
 
                 EY = (1/N)*np.sum([(df[ob][i]) for i in range(N)])
+                ic(EY)
                 VY = (1/N)*np.sum([(df[ob][i])**2 for i in range(N)]) - EY**2
 
                 EVYx = (1/N)*np.sum([(df[ob][i])**2 - df[ob][i]*df[ob][(j+2)*N + i] for i in range(N)])
                 # EVYx = (1/(2*N))*np.sum([(df[ob][i] - df[ob][(j+2)*N + i])**2 for i in range(N)])
+                ic(VEx, EVYx, VY)
 
                 Sj[ob][f"V[E[{ob}|{rv}]]"] = VEx/VY
                 STj[ob][f"V[E[{ob}|{rv}]]"] = EVYx/VY
@@ -636,7 +639,9 @@ class UQModel:
         return Sj, STj
 
     def plot_sobol(self, S, ylabel='Sobol', table=False, plot_type="Stacked"):
-        print(type(S), S)
+        ic(S)
+        S = pd.DataFrame.from_dict(S)
+        ic(S)
         # plot
         fig, ax = plt.subplots()
         x = self.input_variable_names
@@ -655,9 +660,9 @@ class UQModel:
             for key in x:
                 # for key in x.keys():
                 if key == 0:
-                    ax.bar(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
+                    S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
                 else:
-                    ax.bar(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$',
+                    S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$',
                            bottom=bottom)
 
                 bottom += np.array([S[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
@@ -677,10 +682,8 @@ class UQModel:
                 ncol = 5
             else:
                 ncol = int(len(rand_var_dict.keys()))
-            fig.legend(lines, labels, loc="upper center",
-                       ncol=ncol,
-                       fancybox=True, shadow=False,
-                       bbox_to_anchor=(0.5, 1.0))
+
+            plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=ncol, loc='lower left', mode='expand')
 
             # ax[0].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
             #        fancybox=True, shadow=True)
@@ -707,6 +710,38 @@ class UQModel:
                        bbox_to_anchor=(0.5, 1.0))
         # ax.set_xlim(left=0)
         ax.set_ylim(bottom=0)
+        plt.tight_layout()
+        plt.show()
+
+    def plot_sobol_stacked(filepath, objectives, which='Main', kind='stacked', orientation='vertical'):
+
+        cmap = 'tab20'
+
+        if kind.lower() == 'stacked':
+            # # filter df
+            # if which == 'Main' or which == 'Total':
+            #     dff = df_merge.filter(regex=f'{which}|var')
+            # else:
+            #     dff = df_merge_interaction.filter(regex=f'{which}|var')
+
+            dff_T = df.set_index('vars').T
+            if orientation == 'vertical':
+                ax = dff_T.plot.bar(stacked=True, rot=0, cmap=cmap)
+                plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
+            else:
+                ax = dff_T.plot.barh(stacked=True, rot=0, cmap=cmap, edgecolor='k')
+                ax.set_yticklabels(objectives)
+                plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=7, loc='lower left', mode='expand')
+        else:
+            if orientation == 'vertical':
+                ax = df.plot.bar(x='vars', stacked=True, cmap=cmap)
+                ax.axhline(0.03, c='k')
+                plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
+            else:
+                ax = df.plot.barh(x='vars', stacked=True, cmap=cmap)
+                ax.axvline(0.03, c='k')
+                plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=7, loc='lower left', mode='expand')
+
         plt.tight_layout()
         plt.show()
 
@@ -851,7 +886,7 @@ def pce_from_file(model_input, df):
     # filename = fr'C:\Users\sosoho\DakotaProjects\HookCoupler_test\dakota_HC_tabular_dataF3A.xlsx'
     # df_data = pd.read_excel(filename, 'Sheet1')
     # ic(df_data)
-    filename = fr'C:\Users\sosoho\DakotaProjects\Validate results\HC_Stroud_3\sim_result_table.dat'
+    filename = fr'C:\Users\sosoho\DakotaProjects\Validate results\HC_MC_1\sim_result_table.dat'
     df_data = pd.read_csv(filename, sep='\s+')
     x = model_input['random variables']
     obj = model_input['objective variables']
@@ -876,6 +911,24 @@ def pce_from_file(model_input, df):
             DF[key] = eval(ob)
 
     return DF
+
+
+def input_from_df(model_input, df):
+
+    # create function from data input
+    # filename = fr'C:\Users\sosoho\DakotaProjects\HookCoupler_test\dakota_HC_tabular_dataF3A.xlsx'
+    # df_data = pd.read_excel(filename, 'Sheet1')
+    # ic(df_data)
+    filename = fr'C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC_1mm\sim_result_table.dat'
+    df_data = pd.read_csv(filename, sep='\s+')
+    x = model_input['random variables']
+    obj = model_input['objective variables']
+
+    # select random variables and onjective variables from dataframe
+    df_x_obj = df_data[x+obj].copy()
+    ic(df_x_obj)
+
+    return df_x_obj
 
 
 def quad_stroud3(rdim, degree):
@@ -989,16 +1042,23 @@ if __name__ == '__main__':
         # 'stat': [[87.7276, 3], [3.233, 0.1], [168.4549, 4], [11.5840, 0.2], [15.7575, 0.4]],
         'distribution': ['Uniform', 'Uniform', 'Uniform', 'Uniform'],
     }
+    dd_hc_mc_1mm = {
+        "random variables": ['c34', 'lh', 'ch', 'l1', 'd4', 'de'],
+        "objective variables": ['response_fn_1', 'response_fn_2'],
+        'bounds': [[2.233, 4.233], [67.05, 69.05], [0.95, 2.95], [167.4549, 169.4549], [10.46, 12.46], [30.01, 32.01]],
+        # 'stat': [[87.7276, 3], [3.233, 0.1], [168.4549, 4], [11.5840, 0.2], [15.7575, 0.4]],
+        'distribution': ['Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform'],
+    }
 
     m = UQModel()
-    m.set_input_variables(dd_hc)
-    m.set_sample_size(10000)
-    m.set_model(pce_from_file)
+    m.set_input_variables(dd_hc_mc_1mm)
+    m.set_sample_size(1000)
+    m.set_model(input_from_df)
     m.run_analysis()
     # Sj, STj = m.sobol_df()
     Sj, STj = m.sobol_satelli()
     # Sj, STj = m.sobol_janon()
-    m.plot_sobol(Sj, 'Main indices', plot_type="f")
+    m.plot_sobol(Sj, 'Main indices', plot_type="Stacked")
     # m.plot_sobol(STj, 'Total indices')
 
     ic(Sj)
