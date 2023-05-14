@@ -24,3 +24,4 @@ PyQt5
 # oapackage~=2.7.2
 oapackage~=2.7.2
 tqdm~=4.64.1
+swig-4.1.1

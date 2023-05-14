@@ -319,7 +319,7 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
     oc = update_alpha(oc)
     if cell_type is None:
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
+        path = projectDir / fr'SimulationData/SLANS/{key}/{key}.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -337,8 +337,8 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
 
     else:
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
-        path_mc = fr'{projectDir}/SimulationData/SLANS/{key}/{key}_Multicell.txt'
+        path = projectDir / fr'SimulationData/SLANS/{key}/{key}.txt'
+        path_mc = projectDir / fr'SimulationData/SLANS/{key}/{key}_Multicell.txt'
 
         # print(path)
         with open(path, 'w') as f:
