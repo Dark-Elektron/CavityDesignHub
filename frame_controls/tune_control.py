@@ -1,6 +1,8 @@
 import math
 import random
 import shutil
+from pathlib import Path
+
 import scipy.signal as sps
 from scipy.stats import qmc
 from math import floor
@@ -210,9 +212,9 @@ class TuneControl:
             self.pseudo_shape_space = {}
             if resume == "Yes":
                 # check if value set is already written. This is to enable continuation in case of break in program
-                if os.path.exists(fr'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}'):
+                if os.path.exists(self.main_control.projectDir / fr'Cavities\pseudo_{self.filename}'):
                     self.pseudo_shape_space = json.load(
-                        open(fr'{self.main_control.projectDir}\Cavities\pseudo_{self.filename}', 'r'))
+                        open(self.main_control.projectDir / fr'Cavities\pseudo_{self.filename}', 'r'))
 
                     self.existing_keys = list(self.pseudo_shape_space.keys())
                     # self.log(f'last saved key: {self.existing_keys}')
@@ -532,9 +534,9 @@ class TuneControl:
                 progress = 0
                 for i in range(len(proc_ids)):
                     if os.path.exists(
-                            fr'{self.main_control.projectDir}\SimulationData\SLANS\_process_{i}\progress_file.txt'):
+                            self.main_control.projectDir / fr'SimulationData\SLANS\_process_{i}\progress_file.txt'):
                         with open(
-                                fr'{self.main_control.projectDir}\SimulationData\SLANS\_process_{i}\progress_file.txt',
+                                self.main_control.projectDir / fr'SimulationData\SLANS\_process_{i}\progress_file.txt',
                                 "r") as f:
                             a = f.readline()
                             progress += eval(a)
@@ -608,7 +610,7 @@ class TuneControl:
         self.pseudo_shape_space = self.remove_duplicate_values(self.pseudo_shape_space)
 
         filename = self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())
-        pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
+        pseudo_shape_space_name = self.main_control.projectDir / f'Cavities/pseudo_{filename}'
         with open(pseudo_shape_space_name, 'w') as file:
             file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
 
@@ -688,7 +690,7 @@ class TuneControl:
             loop_escape = 0  # reset loop escape
 
         filename = self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())
-        pseudo_shape_space_name = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
+        pseudo_shape_space_name = self.main_control.projectDir / f'Cavities/pseudo_{filename}'
         with open(pseudo_shape_space_name, 'w') as file:
             file.write(json.dumps(self.pseudo_shape_space, indent=4, separators=(',', ': ')))
 
@@ -1052,7 +1054,7 @@ class TuneControl:
 
     @staticmethod
     def overwriteFolder(invar, projectDir):
-        path = fr"{projectDir}\SimulationData\SLANS\_process_{invar}"
+        path = projectDir / fr"SimulationData\SLANS\_process_{invar}"
 
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -1062,8 +1064,8 @@ class TuneControl:
 
     @staticmethod
     def copyFiles(invar, parentDir, projectDir):
-        src = fr"{parentDir}\exe\SLANS_exe"
-        dst = fr"{projectDir}\SimulationData\SLANS\_process_{invar}\SLANS_exe"
+        src = parentDir / fr"exe\SLANS_exe"
+        dst = parentDir / fr"SimulationData\SLANS\_process_{invar}\SLANS_exe"
 
         dir_util.copy_tree(src, dst)
 
@@ -1103,7 +1105,7 @@ class TuneControl:
 
     def continue_check(self):
         filename = self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())
-        path = f'{self.main_control.projectDir}/Cavities/pseudo_{filename}'
+        path = self.main_control.projectDir / f'Cavities/pseudo_{filename}'
 
         if os.path.exists(path):
             msg = QMessageBox()
@@ -1243,14 +1245,14 @@ class TuneControl:
 
         result = {}
         for index in range(proc_count):
-            with open(fr'{projectDir}\Cavities\shape_space{index}.json', "r") as infile:
+            with open(projectDir / fr'Cavities\shape_space{index}.json', "r") as infile:
                 result.update(json.load(infile))
 
         # check if extension is included
         if filename.split('.')[-1] != 'json':
             filename = f'{filename}.json'
 
-        with open(fr'{projectDir}\Cavities\{filename}', "w") as outfile:
+        with open(projectDir / fr'Cavities\{filename}', "w") as outfile:
             json.dump(result, outfile, indent=4, separators=(',', ': '))
 
         print_('Done combining dictionaries')
@@ -1260,7 +1262,7 @@ class TuneControl:
     @staticmethod
     def delete_process_dict(proc_count, projectDir):
         for index in range(proc_count):
-            os.remove(fr'{projectDir}\Cavities\shape_space{index}.json')
+            os.remove(projectDir / fr'Cavities\shape_space{index}.json')
 
     @staticmethod
     def serialize_qcombobox(cb):
@@ -1531,8 +1533,8 @@ class OptimizationControl:
         self.df = None
         self.sbd = {}  # shape bounds dictionary
         self.poc = 5  # pareto optimal count
-        self.parentDir = r"D:\Dropbox\CavityDesignHub"
-        self.projectDir = fr"D:\Dropbox\CavityDesignHub\Cavity800"
+        self.parentDir = Path(r"D:\Dropbox\CavityDesignHub")
+        self.projectDir = Path(fr"D:\Dropbox\CavityDesignHub\Cavity800")
 
         # interpolation
         self.n_interp = 10000
@@ -1592,16 +1594,16 @@ class OptimizationControl:
             self.f2_interp = [np.zeros(self.n_interp) for _ in range(len(self.objectives))]
 
             # clear folder to avoid reading from previous optimization attempt
-            folders = [fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS",
-                       fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI"]
+            folders = [Path(fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"),
+                       Path(fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI")]
 
             # folders = [fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"]
             for folder in folders:
                 for filename in os.listdir(folder):
                     try:
-                        shutil.rmtree(fr"{folder}\{filename}")
+                        shutil.rmtree(folder / fr"{filename}")
                     except NotADirectoryError:
-                        os.remove(fr"{folder}\{filename}")
+                        os.remove(folder / fr"{filename}")
 
         # optimize by page rank
         # remove the lowest ranking members
@@ -1671,14 +1673,14 @@ class OptimizationControl:
                 tune_result = []
                 processed_keys = []
                 for key in pseudo_shape_space.keys():
-                    filename = fr'{self.projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
+                    filename = self.projectDir / fr'SimulationData\SLANS\{key}\cavity_33.svl'
                     try:
                         params = fr.svl_reader(filename)
                         obj = self.get_objectives_value(params, self.objectives, norm_length, n_cells)
                         # print(obj, tr)
                         # read tune results
                         d_tune_res = {'Req': 0, 'L': 0, 'freq': 0}
-                        with open(fr'{self.projectDir}\SimulationData\SLANS\{key}\tune_res.json', "r") as infile:
+                        with open(self.projectDir / fr'SimulationData\SLANS\{key}\tune_res.json', "r") as infile:
                             d_tune_res = json.load(infile)
 
                         obj_result.append(obj)
@@ -1706,7 +1708,7 @@ class OptimizationControl:
                 # print("In here to evaluate wakfield1")
                 # process wakefield results
                 df_wake, processed_keys = self.get_wakefield_objectives_value(wake_shape_space,
-                                                                              fr'{self.projectDir}\SimulationData\ABCI')
+                                                                              self.projectDir / fr'SimulationData\ABCI')
                 ic(df_wake)
                 df = df.merge(df_wake, on='key', how='inner')
                 ic(df)
@@ -1749,8 +1751,8 @@ class OptimizationControl:
             # get uq_parameters
             uq_result_dict = {}
             for key in shape_space.keys():
-                filename_slans = fr'{self.projectDir}\SimulationData\SLANS\{key}\uq.json'
-                filename_abci = fr'{self.projectDir}\SimulationData\ABCI\{key}\uq.json'
+                filename_slans = self.projectDir / fr'SimulationData\SLANS\{key}\uq.json'
+                filename_abci = self.projectDir / fr'SimulationData\ABCI\{key}\uq.json'
                 if os.path.exists(filename_slans):  # and os.path.exists(filename_abci):
                     uq_result_dict[key] = []
                     with open(filename_slans, "r") as infile:

@@ -643,7 +643,10 @@ def f2b_slashes(path):
 
     """
 
-    path = path.replace(r"/", "\\")
+    if os.name == 'nt':
+        path = path.replace("/", "\\")
+    else:
+        path = path.replace('\\', '/')
     return path
 
 
@@ -946,7 +949,7 @@ def open_file(frame_control, le, cb, start_folder=''):
     frame_control.ui.cb_Shape_Space_Keys.addItem('All')
     # self.selected_keys.clear()
 
-    filename, _ = QFileDialog.getOpenFileName(None, "Open File", start_folder, "Json Files (*.json)")
+    filename, _ = QFileDialog.getOpenFileName(None, "Open File", str(start_folder), "Json Files (*.json)")
     try:
         le.setText(filename)
         with open(filename, 'r') as file:

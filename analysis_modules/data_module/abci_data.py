@@ -4,6 +4,8 @@ import os
 import re
 import shutil
 import time
+from pathlib import Path
+
 import matplotlib
 import pandas as pd
 from PyQt5.QtWidgets import QMessageBox
@@ -38,17 +40,16 @@ class ABCIData:
     def __init__(self, dirc, fid, MROT):
         self.title_dict = {}
         self.data_dict = {}
-        self.dir = dirc
+        self.dir = Path(dirc)
         self.fid = fid
         self.MROT = MROT
         self.loss_factor = {}
         self.SIG = None
         self.wakelength = None
-        self.checks(dirc, fid, MROT)
+        self.checks(fid, MROT)
 
-    def checks(self, dirc, fid, MROT):
-        dirc = fr'{dirc}\{fid}\Cavity_MROT_{MROT}.top'
-        # print(dirc)
+    def checks(self, fid, MROT):
+        dirc = self.dir / fr'{fid}\Cavity_MROT_{MROT}.top'
         if os.path.exists(dirc):
             self._get_plot_data(dirc)
         else:

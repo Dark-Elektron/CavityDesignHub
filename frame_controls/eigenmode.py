@@ -2,7 +2,7 @@ import subprocess
 import time
 import multiprocessing as mp
 from threading import Thread
-
+from pathlib import Path
 from psutil import NoSuchProcess
 
 from graphics.graphics_view import GraphicsView
@@ -124,7 +124,7 @@ class EigenmodeControl:
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
             lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
-                              start_folder=f"{self.main_control.projectDir}/Cavities"))
+                              start_folder=str(self.main_control.projectDir / "Cavities")))
 
         # control shape entry mode
         self.ui.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
@@ -348,7 +348,7 @@ class EigenmodeControl:
             self.progress_bar.hide()
 
     def prompt(self, code, fid):
-        path = fr'{self.main_control.projectDir}\SimulationData\SLANS\{fid}'
+        path = self.main_control.projectDir / fr'SimulationData\SLANS\{fid}'
         # print(path)
         # path = os.path.join(path, fr"{}\{code}\{fid}")
         if os.path.exists(path):
@@ -378,16 +378,16 @@ class EigenmodeControl:
 
     def exe_control(self):
         # Slans
-        self.ui.pb_Genmsh.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\genmesh2.exe"))
-        self.ui.pb_Sl.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\Sl.exe"))
-        self.ui.pb_Slansc.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slansc.exe"))
-        self.ui.pb_Slansm.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slansm.exe"))
-        self.ui.pb_Slanss.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slanss.exe"))
-        self.ui.pb_Slansre.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\slansre.exe"))
-        self.ui.pb_MTFView.clicked.connect(lambda: self.run_slans_exe(r"SLANS_exe\Mtfview\mtfview.exe"))
+        self.ui.pb_Genmsh.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\genmesh2.exe")))
+        self.ui.pb_Sl.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\Sl.exe")))
+        self.ui.pb_Slansc.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\slansc.exe")))
+        self.ui.pb_Slansm.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\slansm.exe")))
+        self.ui.pb_Slanss.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\slanss.exe")))
+        self.ui.pb_Slansre.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\slansre.exe")))
+        self.ui.pb_MTFView.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\Mtfview\mtfview.exe")))
 
     def run_slans_exe(self, path, filename=None):
-        path = fr"{self.main_control.parentDir}\exe\{path}"
+        path = self.main_control.parentDir / fr"exe\{path}"
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
 
@@ -576,39 +576,41 @@ class EigenmodeControl:
 
                 if 'EXPANSION_R' in shape.keys():
                     expansion_r = shape['EXPANSION_R']
-                if len(n_cells) == 1:
-                    # # create folders for all keys
-                    slans_geom.createFolder(key, projectDir, subdir=sub_dir)
 
-                    write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+                # if len(n_cells) == 1:
+                #     n_cells = n_cells[0]
+                #     # # create folders for all keys
+                #     slans_geom.createFolder(key, projectDir, subdir=sub_dir)
+                #
+                #     write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+                #
+                #     if 'OC_R' in shape.keys():
+                #         slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                #                           n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                #                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                #                           expansion=expansion, expansion_r=expansion_r)
+                #     else:
+                #         slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                #                           n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                #                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                #                           expansion=expansion, expansion_r=expansion_r)
+                # else:
+                for n_cell in n_cells:
+                    # # create folders for all keys
+                    slans_geom.createFolder(f"{key}_{n_cell}", projectDir, subdir=sub_dir)
+
+                    write_cst_paramters(f"{key}_{n_cell}", shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
 
                     if 'OC_R' in shape.keys():
-                        slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                          n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                        slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                          n_modes=n_modes, fid=f"{key}_{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
                                           expansion=expansion, expansion_r=expansion_r)
                     else:
-                        slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                          n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                        slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                          n_modes=n_modes, fid=f"{key}_{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
                                           expansion=expansion, expansion_r=expansion_r)
-                else:
-                    for n_cell in n_cells:
-                        # # create folders for all keys
-                        slans_geom.createFolder(f"{key}_{n_cell}", projectDir, subdir=sub_dir)
-
-                        write_cst_paramters(f"{key}_{n_cell}", shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
-
-                        if 'OC_R' in shape.keys():
-                            slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                              n_modes=n_modes, fid=f"{key}_{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                              parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                              expansion=expansion, expansion_r=expansion_r)
-                        else:
-                            slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                              n_modes=n_modes, fid=f"{key}_{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                                              parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                              expansion=expansion, expansion_r=expansion_r)
 
                 # run UQ
                 if UQ:
@@ -711,7 +713,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
         fid = fr'{key}_Q{i}'
 
         # check if folder exists and skip if it does
-        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{key}\{fid}'):
+        if os.path.exists(projectDir / fr'SimulationData\SLANS\{key}\{fid}'):
             skip = True
 
         # skip analysis if folder already exists.
@@ -728,7 +730,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
                                   n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
                                   parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
 
-        filename = fr'{projectDir}\SimulationData\SLANS\{key}\{fid}\cavity_{bc}.svl'
+        filename = projectDir / fr'SimulationData\SLANS\{key}\{fid}\cavity_{bc}.svl'
         if os.path.exists(filename):
             params = fr.svl_reader(filename)
             norm_length = 2*n_cells*shape['IC'][5]
@@ -770,7 +772,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
         # plt.show()
 
-        with open(fr"{projectDir}\SimulationData\SLANS\{key}\uq.json", 'w') as file:
+        with open(projectDir / fr"SimulationData\SLANS\{key}\uq.json", 'w') as file:
             file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
     else:
         print_(fr"There was a problem running UQ analysis for {key}")

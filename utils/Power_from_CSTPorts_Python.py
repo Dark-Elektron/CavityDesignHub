@@ -7,6 +7,7 @@ Created on Fri Nov 11 17:35:26 2022
 
 import numpy as np
 import matplotlib
+from icecream import ic
 from numpy import loadtxt
 from scipy.interpolate import interp1d
 import scipy.io
@@ -151,7 +152,7 @@ def get_beam_spectrum(wp):
     I_beam[1:] = 1 * I_beam[1:]
     f_beam = 1 / (t_full[-1] - t_full[0]) * ((np.arange(1, N_full + 1, 1)) - 1)
 
-    f_harm = np.arange(0, 3e9, 1 / T)
+    f_harm = np.arange(0, 3e9, 1 / T)  # truncation
 
     beam_spectrum = {"f": f_harm, "I": I_beam[0, 0:f_harm.shape[0]]}
 
@@ -167,7 +168,7 @@ result_folder = r'D:\CST Studio\LONGITIDUNAL_WAKE_TESLA_CAVITY_100m\Export'
 # beam_spectrum = scipy.io.loadmat('Beam_Spectrum_save.mat')
 beam_spectrum = get_beam_spectrum('ttbar')
 f_harm = beam_spectrum["f"]
-N_port = 20
+N_port = 2
 
 Charge_dist = loadtxt(f"{result_folder}/Particle Beams_ParticleBeam1_Charge distribution spectrum.txt", comments="#", unpack=False)
 Long_Imp = loadtxt(f"{result_folder}/Particle Beams_ParticleBeam1_Wake impedance_Z.txt", comments="#", unpack=False)
@@ -179,7 +180,7 @@ Charge_dist_interpolated = Charge_dist_interpolated_function(Long_Imp[:, 0])
 Port_summation = 0
 Port_signal = []
 for i in range(N_port):
-    filename = f"{result_folder}/Port signals_o{1}({i+1}),pb.txt"
+    filename = f"{result_folder}/Power_Excitation (pb)_Power Accepted per Port_Port {i+1}.txt"
     data = loadtxt(filename, comments="#", unpack=False)
     data[:, 1] = (2 / np.pi) * data[:, 1] / Charge_dist_interpolated ** 2
     Port_signal.append(data)
@@ -188,8 +189,9 @@ for i in range(N_port):
 Long_Imp_interp_f = interp1d(Long_Imp[:, 0], Long_Imp[:, 1], 'cubic')
 Long_Imp_interp = Long_Imp_interp_f(f_harm / 1e6)
 
-Port_interp = np.empty((np.size(f_harm, 1), N_port))
-power_port = np.empty((np.size(f_harm, 1), N_port))
+
+Port_interp = np.empty((np.size(f_harm), N_port))
+power_port = np.empty((np.size(f_harm), N_port))
 
 for i in range(N_port):
     Port_interp_f = interp1d(Long_Imp[:, 0], Port_signal[i][:, 1], 'cubic')
@@ -197,14 +199,13 @@ for i in range(N_port):
     power_port[:, i] = 2 * abs(beam_spectrum["I"] ** 2) * abs(Port_interp[:, i])
 
 power_imp = 2 * abs(beam_spectrum["I"] ** 2) * Long_Imp_interp
+ind1 = np.argwhere(f_harm > 0.45e9)[0, 0]
+ind2 = np.argwhere(f_harm > 1.5e9)[0, 0]
 
-ind1 = np.argwhere(f_harm > 0.45e9)[0, 1]
-ind2 = np.argwhere(f_harm > 1.5e9)[0, 1]
-
-power_imp_distribution = [sum(power_imp[0, ind1:ind2]), 0, 0]
-power_imp_distribution[1] = sum(power_imp[0, ind2:])
-power_imp_distribution[2] = power_imp_distribution[0] + power_imp_distribution[1] + power_imp_distribution[
-    1] * 19.5 / 32.2
+ic(power_imp)
+power_imp_distribution = [sum(power_imp[ind1:ind2]), 0, 0]
+power_imp_distribution[1] = sum(power_imp[ind2:])
+power_imp_distribution[2] = power_imp_distribution[0] + power_imp_distribution[1] + power_imp_distribution[1] * 19.5 / 32.2
 
 power_port_distribution = sum(power_port[ind1:ind2, :])
 power_port_distribution = np.c_[power_port_distribution, sum(power_port[ind2:, :])]
@@ -215,3 +216,5 @@ power_port_distribution = np.c_[power_port_distribution, (
 
 power_port_all = sum(power_port_distribution)
 power_port_percent = 100 * power_port_distribution[:, 2] / power_port_all[2]
+
+print(power_port_percent)

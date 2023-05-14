@@ -129,11 +129,12 @@ class SLANSGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{fid}'
+            run_save_directory = projectDir / fr'SimulationData\SLANS\{fid}'
         else:
-            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
+            run_save_directory = projectDir / fr'SimulationData\SLANS\{subdir}\{fid}'
 
         # Write SLANS Geometry
+        print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(

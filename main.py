@@ -8,6 +8,7 @@ import logging
 import shutil
 import sys
 from json import JSONDecodeError
+from pathlib import Path
 from icecream import ic
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
@@ -48,6 +49,7 @@ from utils.shared_functions import animate_width, f2b_slashes
 # pyuic5 -x ui_files/plottypeselector.ui -o ui_files/plottypeselector.py
 # C:\Users\sosoho\anaconda3\envs\PhD\Scripts\pyrcc5 qss/icons.qrc -o icons_rc.py
 # git push -f  https://github.com/Dark-Elektron/CavityDesignHub.git master
+# git push https://github.com/Dark-Elektron/CavityDesignHub.git master
 # sphinx-autobuild ./source ./_build/html
 # sphinx-apidoc -o source .. -f
 # make html
@@ -93,8 +95,8 @@ class MainWindow:
         self.last_saved_theme = 'Light VS'
 
         # self.initUI()
-        self.parentDir = os.getcwd()
-        self.projectDir = r'D:\Dropbox\CavityDesignHub\SampleProject'
+        self.parentDir = Path(os.getcwd())
+        self.projectDir = Path(r'D:\Dropbox\CavityDesignHub\SampleProject')
 
         # add node editor
         # new = NodeEditorWidget()
@@ -378,9 +380,9 @@ class MainWindow:
 
                 def make_dirs_from_dict(d, current_dir=project_dir):
                     for key, val in d.items():
-                        os.mkdir(os.path.join(current_dir, key))
+                        os.mkdir(f2b_slashes(os.path.join(current_dir, key)))
                         if type(val) == dict:
-                            make_dirs_from_dict(val, os.path.join(current_dir, key))
+                            make_dirs_from_dict(val, f2b_slashes(os.path.join(current_dir, key)))
 
                 # create project structure in folders
                 project_dir_structure = {
@@ -404,7 +406,7 @@ class MainWindow:
                 }
 
                 make_dirs_from_dict(project_dir_structure)
-                self.projectDir = f2b_slashes(fr"{project_dir}\{project_name}")
+                self.projectDir = Path(fr"{project_dir}\{project_name}")
 
                 # only initialize UI after successfully setting folder
                 if self.global_state == 0:
@@ -430,10 +432,10 @@ class MainWindow:
 
         if not project_dir:
             project_dir = str(QFileDialog.getExistingDirectory(None, "Select Directory"))
-            self.projectDir = f2b_slashes(project_dir)
+            self.projectDir = Path(project_dir)
 
-            if os.path.exists(fr'{project_dir}\state_file.json'):
-                self.deserialize(fr'{project_dir}\state_file.json')
+            if os.path.exists(self.projectDir / "state_file.json"):
+                self.deserialize(self.projectDir / "state_file.json")
 
             # only initialize UI after successfully setting folder and initialise only once
             self.ui.l_Project_Name.setText(self.projectDir)
@@ -454,10 +456,11 @@ class MainWindow:
                 #
                 # if len(set(sub_dirs) & set(sub_dirs)) == len(compare_dirs):
                 self.ui.l_Project_Name.setText(project_dir)  # .split('/')[-1]
-                self.projectDir = f2b_slashes(project_dir)
+                self.projectDir = Path(project_dir)
 
                 # only initialize UI after successfully setting folder and initialise only once
-                self.ui.l_Project_Name.setText(self.projectDir)
+                print(self.projectDir)
+                self.ui.l_Project_Name.setText(str(self.projectDir))
                 if self.global_state == 0:
                     self.initUI()
                     self.global_state += 1
@@ -514,7 +517,7 @@ class MainWindow:
         # serialize home
         try:
             # open state file
-            with open('ui_state_files/state_file.json', 'r') as file:
+            with open(Path('ui_state_files/state_file.json'), 'r') as file:
                 state_dict = json.load(file)
 
         except FileNotFoundError:
@@ -539,11 +542,11 @@ class MainWindow:
         self.plot_widget.serialize(state_dict)
 
         # dump save state file
-        with open('ui_state_files/state_file.json', 'w', encoding='utf-8') as file:
+        with open(Path('ui_state_files/state_file.json'), 'w', encoding='utf-8') as file:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
 
         # dump save state file in project folder
-        with open(f'{self.projectDir}/state_file.json', 'w', encoding='utf-8') as file:
+        with open(self.projectDir / 'state_file.json', 'w', encoding='utf-8') as file:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
 
     def deserialize(self, filename):
@@ -560,6 +563,8 @@ class MainWindow:
         """
 
         # check if state file exists
+
+        filename = Path(filename)
         if os.path.exists(filename):
             # open state file
             try:
@@ -572,7 +577,7 @@ class MainWindow:
             # check if state file empty
             if not state_dict:
                 # copy default state dict from application directory to project directory
-                shutil.copyfile('ui_state_files/_state_file_default.json', filename)
+                shutil.copyfile(Path('ui_state_files/_state_file_default.json'), filename)
                 with open(filename, 'r') as f:
                     state_dict = json.load(f)
 
@@ -598,12 +603,12 @@ class MainWindow:
         """
 
         # try:
-        self.deserialize('ui_state_files/state_file.json')
+        self.deserialize(Path('ui_state_files/state_file.json'))
         # except AttributeError as e:
         #     print("Could not deserialize state file: ", e)
 
     def checkIfPathExist(self, directory, folder):
-        path = f"{directory}/{folder}"
+        path = Path(f"{directory}/{folder}")
         if os.path.exists(path):
             msg = QMessageBox()
             msg.setWindowTitle("Folder Exist")
@@ -701,10 +706,10 @@ class MainWindow:
             self.tree.setRootIndex(self.model.index(dir_path))
         else:
             self.model = QFileSystemModel()
-            self.model.setRootPath(dir_path)
+            self.model.setRootPath(str(dir_path))
             self.tree = QTreeView()
             self.tree.setModel(self.model)
-            self.tree.setRootIndex(self.model.index(dir_path))
+            self.tree.setRootIndex(self.model.index(str(dir_path)))
             # self.tree.setColumnWidth(0, 250)
             self.tree.setAlternatingRowColors(True)
 
@@ -762,7 +767,7 @@ class MainWindow:
         filename, _ = QFileDialog.getSaveFileName(None, "QFileDialog.getSaveFileName()", "",
                                                   "All Files (*);;Text Files (*.txt)", options=options)
         if filename:
-            with open(filename, 'w') as file:
+            with open(Path(filename), 'w') as file:
                 file.write('')
 
     def delete_file(self):

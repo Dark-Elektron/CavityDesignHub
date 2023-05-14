@@ -5,7 +5,7 @@ import multiprocessing as mp
 from threading import Thread
 import pandas as pd
 from psutil import NoSuchProcess
-
+from pathlib import Path
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from analysis_modules.data_module.abci_data import ABCIData
@@ -92,7 +92,7 @@ class WakefieldControl:
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
             lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
-                              start_folder=f"{self.main_control.projectDir}/Cavities"))
+                              start_folder=self.main_control.projectDir/ f"Cavities"))
 
         self.ui.pb_Load_Machine_Parameters.clicked.connect(
             lambda: self.load_operating_points(self.ui.ccb_Operation_Points))
@@ -419,7 +419,7 @@ class WakefieldControl:
 
     def load_operating_points(self, ccb):
         filename, _ = QFileDialog.getOpenFileName(
-            None, "Open File", fr"{self.main_control.projectDir}/Cavities", "Json Files (*.json)")
+            None, "Open File", self.main_control.projectDir / fr"Cavities", "Json Files (*.json)")
         try:
             self.ui.le_Machine_Parameters_Filename.setText(filename)
             with open(filename, 'r') as file:
@@ -460,7 +460,7 @@ class WakefieldControl:
             ic(key)
             if len(self.ui.le_N_Cells) == 1:
                 try:
-                    with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\{key}\qois.json') as json_file:
+                    with open(self.main_control.projectDir / fr'SimulationData\SLANS\{key}\qois.json') as json_file:
                         qois_slans = json.load(json_file)
                     n_cells = qois_slans['N Cells']
                     R_Q = qois_slans['R/Q [Ohm]']
@@ -491,7 +491,7 @@ class WakefieldControl:
                         else:
                             folder_name = f"{key}_scale_{scale}_{n_cell}"
 
-                    with open(fr'{self.main_control.projectDir}\SimulationData\SLANS\{folder_name}\qois.json') as json_file:
+                    with open(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\qois.json') as json_file:
                         qois_slans = json.load(json_file)
 
                     op_points = val['Operating Point'].currentText().split(', ')
@@ -595,7 +595,7 @@ class WakefieldControl:
     def prompt(self, code, fid):
         # path = os.getcwd()
         # path = os.path.join(path, fr"File\{code}\{fid}")
-        path = fr'{self.main_control.projectDir}\SimulationData\ABCI\{fid}'
+        path = self.main_control.projectDir / fr'SimulationData\ABCI\{fid}'
         if os.path.exists(path):
             print_("File already exists. Do you want to overwrite it?")
             msg = QMessageBox()
@@ -630,7 +630,7 @@ class WakefieldControl:
     def exe_control(self):
         # Abci
         self.ui.pb_Top_Drawer.clicked.connect(lambda: self.run_abci_exe(
-            fr'{self.main_control.parentDir}\exe\ABCI_exe\TopDrawer for Windows\TopDrawW.exe'))
+            self.main_control.parentDir / fr'exe\ABCI_exe\TopDrawer for Windows\TopDrawW.exe'))
 
     def ui_effects(self):
         # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
@@ -878,7 +878,7 @@ class WakefieldControl:
                                                          projectDir=projectDir,
                                                          WG_M=ii, marker=ii, sub_dir=fid)
 
-                                        dirc = fr'{projectDir}\SimulationData\ABCI\{fid}{marker}'
+                                        dirc = projectDir / fr'SimulationData\ABCI\{fid}{marker}'
                                         # try:
                                         k_loss = abs(ABCIData(dirc, f'{fid_op}', 0).loss_factor['Longitudinal'])
                                         k_kick = abs(ABCIData(dirc, f'{fid_op}', 1).loss_factor['Transverse'])
@@ -892,8 +892,8 @@ class WakefieldControl:
                                         progress_list.append(progress + 1)
 
                         # save qoi dictionary
-                        run_save_directory = fr'{projectDir}\SimulationData\ABCI\{fid}{marker}'
-                        with open(fr'{run_save_directory}\qois.json', "w") as f:
+                        run_save_directory = projectDir / fr'SimulationData\ABCI\{fid}{marker}'
+                        with open(run_save_directory / fr'qois.json', "w") as f:
                             json.dump(d, f, indent=4, separators=(',', ': '))
 
             print_("Done with the secondary analysis for working points")
@@ -986,7 +986,7 @@ class WakefieldControl:
                     fid = fr'{key}_Q{i}'
 
                     # check if folder exists and skip if it does
-                    if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{key}\{fid}'):
+                    if os.path.exists(projectDir / fr'SimulationData\ABCI\{key}\{fid}'):
                         skip = True
 
                     if not skip:
@@ -1002,7 +1002,7 @@ class WakefieldControl:
                                           )
 
                     # get objective function values
-                    abci_folder = fr'{projectDir}\SimulationData\ABCI\{key}'
+                    abci_folder = projectDir / fr'SimulationData\ABCI\{key}'
                     if os.path.exists(abci_folder):
                         # ic(abci_obj_list)
                         obj_result = get_wakefield_objectives_value(fid, abci_obj_list, abci_folder)
@@ -1026,7 +1026,7 @@ class WakefieldControl:
                         result_dict_abci[o[1]]['expe'].append(v_expe_fobj[i])
                         result_dict_abci[o[1]]['stdDev'].append(v_stdDev_fobj[i])
 
-                    with open(fr"{projectDir}\SimulationData\ABCI\{key}\uq.json", 'w') as file:
+                    with open(projectDir / fr"SimulationData\ABCI\{key}\uq.json", 'w') as file:
                         file.write(json.dumps(result_dict_abci, indent=4, separators=(',', ': ')))
 
 

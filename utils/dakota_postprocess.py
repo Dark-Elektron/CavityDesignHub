@@ -8,11 +8,14 @@ import matplotlib as mpl
 import matplotlib.ticker as mticker
 
 
-def plot_sobol_indices(filepath, objectives, which='Main', kind='stacked', orientation='vertical'):
+def plot_sobol_indices(filepath, objectives, which=None, kind='stacked', orientation='vertical', normalise=True):
+    if which is None:
+        which = ['Main']
+
     start_keyword = "Main"
-    end_keyword = "Interaction"
-    end_keyword_2 = "Sobol' indices:"
-    end_keyword_3 = "Statistics based on"
+    interaction_start_keyword = "Interaction"
+    pattern = r'\s+(-?\d\.\d+e[+-]\d+)\s+(-?\d\.\d+e[+-]\d+)\s+(\w+)'
+    pattern_interaction = r'\s*(-?\d+\.\d+e[-+]\d+)\s+(\w+)\s+(\w+)\s*'
 
     with open(filepath, "r") as file:
         # read the file line by line
@@ -35,50 +38,43 @@ def plot_sobol_indices(filepath, objectives, which='Main', kind='stacked', orien
                 result[count] = []
                 continue
 
-            # check if the line contains the end keyword
-            if end_keyword in line:
-                # if it does, set the flag to stop recording lines
-                record = False
-
-                # record interaction
+            if interaction_start_keyword in line:
                 record_interaction = True
                 result_interaction[count] = []
-                count += 1
-                continue
-
-            if end_keyword_2 in line:
-                record_interaction = False
-
-            if end_keyword_3 in line:
-                print("In herere", line)
-                record_interaction = False
-                del result_interaction[count-1][-1]
                 continue
 
             # if the flag is set to record, add the line to the result list
             if record:
-                result[count].append(re.findall("\S+", line))
+                if re.match(pattern, line):
+                    result[count].append(re.findall("\S+", line))
+                else:
+                    record = False
+                    count += 1
 
             if record_interaction:
-                result_interaction[count-1].append(re.findall("\S+", line))
+                if re.match(pattern_interaction, line):
+                    result_interaction[count-1].append(re.findall("\S+", line))
+                else:
+                    record_interaction = False
 
-    # ic(result)
+    ic(result, type(result))
     ic(result_interaction)
-    df_merge = pd.DataFrame(columns=['Main', 'Total', 'vars'])
+    # result = result_interaction
+    df_merge = pd.DataFrame(columns=['main', 'total', 'vars'])
     # print the lines between the keywords
     for i, (k, v) in enumerate(result.items()):
-        df = pd.DataFrame(v, columns=['Main', 'Total', 'vars'])
-        df = df.astype({'Main': 'float', 'Total': 'float'})
+        df = pd.DataFrame(v, columns=['main', 'total', 'vars'])
+        df = df.astype({'main': 'float', 'total': 'float'})
         if i == 0:
             df_merge = df
         else:
             df_merge = pd.merge(df_merge, df, on='vars')
         # df.plot.bar(x='var', y='Main')
 
-    df_merge_interaction = pd.DataFrame(columns=['Interaction', 'var1', 'var2'])
+    df_merge_interaction = pd.DataFrame(columns=['interaction', 'var1', 'var2'])
     for i, (k, v) in enumerate(result_interaction.items()):
-        df = pd.DataFrame(v, columns=['Interaction', 'var1', 'var2'])
-        df = df.astype({'Interaction': 'float'})
+        df = pd.DataFrame(v, columns=['interaction', 'var1', 'var2'])
+        df = df.astype({'interaction': 'float'})
         if i == 0:
             df_merge_interaction = df
         else:
@@ -90,42 +86,56 @@ def plot_sobol_indices(filepath, objectives, which='Main', kind='stacked', orien
 
     ic(df_merge)
     ic(df_merge_interaction)
+
+    if normalise:
+        # normalise dataframe columns
+        for column in df_merge.columns:
+            if 'main' in column or 'total' in column:
+                df_merge[column] = df_merge[column].abs() / df_merge[column].abs().sum()
+
+    ic(df_merge)
     # filter df
-    if which == 'Main' or which == 'Total':
-        dff = df_merge.filter(regex=f'{which}|vars')
-    else:
-        dff = df_merge_interaction.filter(regex=f'{which}|vars')
-    ic(dff)
-
-    cmap = 'tab20'
-
-    if kind.lower() == 'stacked':
-        # # filter df
-        # if which == 'Main' or which == 'Total':
-        #     dff = df_merge.filter(regex=f'{which}|var')
-        # else:
-        #     dff = df_merge_interaction.filter(regex=f'{which}|var')
-
-        dff_T = dff.set_index('vars').T
-        if orientation == 'vertical':
-            ax = dff_T.plot.bar(stacked=True, rot=0, cmap=cmap)
-            plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
+    for w in which:
+        if w.lower() == 'main' or w.lower() == 'total':
+            dff = df_merge.filter(regex=f'{w.lower()}|vars')
         else:
-            ax = dff_T.plot.barh(stacked=True, rot=0, cmap=cmap, edgecolor='k')
-            ax.set_yticklabels(objectives)
-            plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=7, loc='lower left', mode='expand')
-    else:
-        if orientation == 'vertical':
-            ax = dff.plot.bar(x='vars', stacked=True, cmap=cmap)
-            ax.axhline(0.03, c='k')
-            plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
-        else:
-            ax = dff.plot.barh(x='vars', stacked=True, cmap=cmap)
-            ax.axvline(0.03, c='k')
-            plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=7, loc='lower left', mode='expand')
+            # create new column which is a combination of the two variable names
+            dff = df_merge_interaction.filter(regex=f'{w.lower()}|vars')
+            if not dff.empty:
+                dff['vars'] = df_merge_interaction[['var1', 'var2']].apply(lambda x: '_'.join(x), axis=1)
+        ic(dff)
 
-    plt.tight_layout()
-    plt.show()
+
+        cmap = 'tab20'
+
+        if not dff.empty:
+            if kind.lower() == 'stacked':
+                dff_T = dff.set_index('vars').T
+                if orientation == 'vertical':
+                    ax = dff_T.plot.bar(stacked=True, rot=0, cmap=cmap)
+                    ax.set_xlim(left=0)
+                    plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
+                else:
+                    ax = dff_T.plot.barh(stacked=True, rot=0, cmap=cmap, edgecolor='k')
+                    ax.set_xlim(left=0)
+                    ax.set_yticklabels(objectives)
+                    plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=7, loc='lower left', mode='expand')
+            else:
+                if orientation == 'vertical':
+                    ax = dff.plot.bar(x='vars', stacked=True, cmap=cmap)
+                    ax.set_xlim(left=0)
+                    ax.axhline(0.03, c='k')
+                    plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
+                else:
+                    ax = dff.plot.barh(x='vars', stacked=True, cmap=cmap)
+                    ax.set_xlim(left=0)
+                    ax.axvline(0.03, c='k')
+                    plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=7, loc='lower left', mode='expand')
+
+            plt.tight_layout()
+            plt.show()
+        else:
+            ic(f"No {w} found.")
 
 
 def quadrature_nodes_to_cst_par_input(filefolder, n=2):
@@ -168,26 +178,35 @@ def combine_params_output(folder, N):
     for i in range(N):
         if i == 0:
             df = pd.read_csv(f'{folder}/m{(i+1):02d}.csv', engine='python', skipfooter=1)
-            ic(df)
         else:
             df = pd.concat([df, pd.read_csv(f'{folder}/m{(i+1):02d}.csv', engine='python', skipfooter=1)])
+
+    # rearrange column according to the reference column order
+    df_reference = pd.read_excel(fr"{folder}\cubature_nodes_pars.xlsx")
+    columns = list(df_reference.columns)
+    # check if 3D Run ID in column and drop if yes
+    if ' 3D Run ID' in list(df.columns):
+        columns.append(' 3D Run ID')
+
+    columns = list(df_reference.columns) + (df.columns.drop(columns).tolist())
+    ic(columns)
+
+    df = df[columns]
+    ic(df)
 
     df.to_excel(fr"{folder}\cubature_nodes.xlsx", index=False)
 
 
 if __name__ == '__main__':
-    plt.rcParams["figure.figsize"] = (6.5, 2.5)
-    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC_10%"
+    plt.rcParams["figure.figsize"] = (8, 3)
+    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC__1mm"
     #
     # obj = [r"$Q_\mathrm{ext, FM}$", r"$\max(Q_\mathrm{ext, dip})$"]
-    obj = [r"$f_\mathrm{min}~[MHz]$", r"$f_\mathrm{max}~[MHz]$"]
-    # obj = [r"Y"]
-    # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Main', kind='stacked', orientation='horizontal')
-    # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Total', kind='stacked', orientation='horizontal')
-    # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, 'Interaction', kind='normal', orientation='horizontal')
+    obj = [r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
+    plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal')
 
-    quadrature_nodes_to_cst_par_input(filefolder, n=10)
-    # combine_params_output(filefolder, 40)
+    # quadrature_nodes_to_cst_par_input(filefolder, n=10)
+    # combine_params_output(filefolder, 10)
 
     # get_pce(filefolder)
 
