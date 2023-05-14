@@ -2637,7 +2637,7 @@ def plot_beampipe_decay(freq: list, fc_list):
 
 
 def plot_surface_resistance():
-    from labellines import labelLines
+    # from labellines import labelLines
 
     Eacc = np.linspace(0.5, 30, 50)  # MV/m
     b = 4.88  # mT/MV/m
@@ -2680,7 +2680,7 @@ def plot_surface_resistance():
         plt.xlim(min(Eacc), max(Eacc))
         plt.plot(Eacc, sr, label=sr_labels[i])
 
-    labelLines(plt.gca().get_lines(), zorder=2.5)
+    # labelLines(plt.gca().get_lines(), zorder=2.5)
     # plt.legend()
     plt.xlabel("$E$ [MV/m]")
     plt.ylabel(r"$R_s [\mathrm{n\Omega}]$")

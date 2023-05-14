@@ -3,7 +3,7 @@ import time
 
 import scipy
 from PyQt5 import QtGui
-from labellines import labelLines
+# from labellines import labelLines
 from scipy.special import jn_zeros, jnp_zeros
 from ui_files.plot import Ui_Plot
 from ui_files.plottypeselector import Ui_PlotTypeSelector
