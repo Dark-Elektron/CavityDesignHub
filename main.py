@@ -57,7 +57,8 @@ from utils.shared_functions import animate_width, f2b_slashes
 fr = FileReader()
 
 myappid = u'll'  # arbitrary string
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+if os.name == 'nt':
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 DEBUG = True
 AN_DURATION = 250
