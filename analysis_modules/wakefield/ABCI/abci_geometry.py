@@ -1,6 +1,8 @@
 import json
 import os
 import subprocess
+from pathlib import Path
+
 from analysis_modules.wakefield.ABCI.geometry import Geometry
 from analysis_modules.wakefield.ABCI.abci_code import ABCI
 
@@ -106,9 +108,9 @@ class ABCIGeometry(Geometry):
 
             # change save directory
             if sub_dir == '':
-                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{fid}'
+                run_save_directory = projectDir / fr'SimulationData\ABCI\{fid}'
             else:
-                run_save_directory = fr'{projectDir}\SimulationData\ABCI\{sub_dir}\{fid}'
+                run_save_directory = projectDir / fr'SimulationData\ABCI\{sub_dir}\{fid}'
 
             fname = fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'
             # print('filename:: ', fname)
@@ -258,9 +260,9 @@ class ABCIGeometry(Geometry):
 
             abci_path = os.getcwd()
 
-            exe_path = os.path.join(abci_path, fr'{parentDir}\exe\ABCI_exe\ABCI_MP64+.exe')
+            exe_path = os.path.join(abci_path, parentDir / fr'exe\ABCI_exe\ABCI_MP64+.exe')
             # print(exe_path)
-            subprocess.call([exe_path, fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'],
+            subprocess.call([exe_path, Path(fr'{run_save_directory}\Cavity_MROT_{MROT}.abc')],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             # save json file
@@ -268,7 +270,7 @@ class ABCIGeometry(Geometry):
                      'OC': list(l_end_cell_par),
                      'OC_R': list(r_end_cell_par)}
 
-            with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
+            with open(Path(fr"{run_save_directory}\geometric_parameters.json"), 'w') as f:
                 json.dump(shape, f, indent=4, separators=(',', ': '))
 
     @staticmethod
@@ -281,18 +283,18 @@ class ABCIGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            path = fr'{projectDir}\SimulationData\ABCI\{fid}{marker}'
+            path = projectDir / fr'SimulationData\ABCI\{fid}{marker}'
             if os.path.exists(path):
                 pass
             else:
                 os.mkdir(path)
         else:
-            new_path = fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}\{fid}'
-            if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}'):
+            new_path = projectDir / fr'SimulationData\ABCI\{subdir}{marker}\{fid}'
+            if os.path.exists(projectDir / fr'SimulationData\ABCI\{subdir}{marker}'):
                 if os.path.exists(new_path):
                     pass
                 else:
                     os.mkdir(new_path)
             else:
-                os.mkdir(fr'{projectDir}\SimulationData\ABCI\{subdir}{marker}')
+                os.mkdir(projectDir / fr'SimulationData\ABCI\{subdir}{marker}')
                 os.mkdir(new_path)

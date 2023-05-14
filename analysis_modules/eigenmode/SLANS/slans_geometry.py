@@ -3,6 +3,8 @@ import os
 import shutil
 import subprocess
 from math import floor
+from pathlib import Path
+
 import pandas as pd
 from scipy.signal import find_peaks
 from termcolor import colored
@@ -135,7 +137,7 @@ class SLANSGeometry(Geometry):
 
         # Write SLANS Geometry
         print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))
-        with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
+        with open(Path(fr'{run_save_directory}\{filename}.geo'), 'w') as f:
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
                 self.Jxy * n + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
@@ -258,8 +260,8 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
-        filepath = fr'{run_save_directory}\{filename}'
+        genmesh_path = projectDir / fr'exe\SLANS_exe\genmesh2.exe'
+        filepath = Path(fr'{run_save_directory}\{filename}')
 
         # folder for exe to write to
         cwd = run_save_directory
@@ -276,28 +278,28 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = fr'{parentDir}\exe\SLANS_exe\slansc'
-        slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
-        slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
-        slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
+        slansc_path = projectDir / fr'exe\SLANS_exe\slansc'
+        slansm_path = projectDir / fr'exe\SLANS_exe\slansm'
+        slanss_path = projectDir / fr'exe\SLANS_exe\slanss'
+        slansre_path = projectDir / fr'exe\SLANS_exe\slansre'
 
         # print(cwd)
         # check if corresponding file exists at before the executable is called
-        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.geo'):
+        if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\{filename}.geo'):
             subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd,
                             startupinfo=startupinfo)  # settings, number of modes, etc
             ic("Done with slansc")
 
-            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.gem'):
+            if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\{filename}.gem'):
                 subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
                 ic("Done with slansm")
 
-                if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\aslans.mtx') \
-                        and os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\bslans.mtx'):
+                if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\aslans.mtx') \
+                        and os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\bslans.mtx'):
                     subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
                     ic("Done with slanss")
 
-                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.res'):
+                    if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\{filename}.res'):
                         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
                         ic("Done with slansre")
 
@@ -306,10 +308,10 @@ class SLANSGeometry(Geometry):
                  'OC': update_alpha(l_end_cell_par),
                  'OC_R': update_alpha(r_end_cell_par)}
 
-        with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
+        with open(Path(fr"{run_save_directory}\geometric_parameters.json"), 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
         try:
-            filename = fr'{run_save_directory}\cavity_33.svl'
+            filename = Path(fr'{run_save_directory}\cavity_33.svl')
             d = fr.svl_reader(filename)
 
             Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
@@ -372,7 +374,7 @@ class SLANSGeometry(Geometry):
                 "GR/Q [Ohm^2]": GR_Q
             }
 
-            with open(fr'{run_save_directory}\qois.json', "w") as f:
+            with open(Path(fr'{run_save_directory}\qois.json'), "w") as f:
                 json.dump(d, f, indent=4, separators=(',', ': '))
         except FileNotFoundError as e:
             print("Simulation failed", e)
@@ -444,9 +446,9 @@ class SLANSGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            run_save_directory = fr'{parentDir}\{projectDir}\{fid}'
+            run_save_directory = Path(fr'{parentDir}\{projectDir}\{fid}')
         else:
-            run_save_directory = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
+            run_save_directory = projectDir / fr'SimulationData\SLANS\{subdir}\{fid}'
 
         # Write Slans Geometry
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
@@ -529,8 +531,8 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
-        filepath = fr'{run_save_directory}\{filename}'
+        genmesh_path = parentDir / fr'exe\SLANS_exe\genmesh2.exe'
+        filepath = Path(fr'{run_save_directory}\{filename}')
 
         # folder for exe to write to
         cwd = run_save_directory
@@ -556,10 +558,10 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = fr'{parentDir}\exe\SLANS_exe\slansc'
-        slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
-        slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
-        slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
+        slansc_path = parentDir / fr'exe\SLANS_exe\slansc'
+        slansm_path = parentDir / fr'exe\SLANS_exe\slansm'
+        slanss_path = parentDir / fr'exe\SLANS_exe\slanss'
+        slansre_path = parentDir / fr'exe\SLANS_exe\slansre'
 
         # print(cwd)
         subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
@@ -633,7 +635,7 @@ class SLANSGeometry(Geometry):
             "GR/Q [Ohm^2]": GR_Q
         }
 
-        with open(fr'{run_save_directory}\qois.json', "w") as f:
+        with open(Path(fr'{run_save_directory}\qois.json'), "w") as f:
             json.dump(d, f, indent=4, separators=(',', ': '))
 
     def cavity_multicell_full(self, no_of_modules=1, cells_par=None, fid=None, bc=33,
@@ -716,10 +718,10 @@ class SLANSGeometry(Geometry):
 
         # change save directory
         if subdir == '':
-            run_save_directory = fr'{parentDir}\{projectDir}\{fid}'
+            run_save_directory = Path(fr'{parentDir}\{projectDir}\{fid}')
         else:
             print("it's here", fid)
-            run_save_directory = fr'{parentDir}\SimulationData\SLANS\{subdir}\{fid}'
+            run_save_directory = parentDir / fr'SimulationData\SLANS\{subdir}\{fid}'
 
         # Write Slans Geometry
         with open(fr'{run_save_directory}\{filename}.geo', 'w') as f:
@@ -801,7 +803,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
+        genmesh_path = parentDir / fr'exe\SLANS_exe\genmesh2.exe'
         filepath = fr'{run_save_directory}\{filename}'
 
         # folder for exe to write to
@@ -828,10 +830,10 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = fr'{parentDir}\exe\SLANS_exe\slansc'
-        slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
-        slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
-        slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
+        slansc_path = parentDir / fr'exe\SLANS_exe\slansc'
+        slansm_path = parentDir / fr'exe\SLANS_exe\slansm'
+        slanss_path = parentDir / fr'exe\SLANS_exe\slanss'
+        slansre_path = parentDir / fr'exe\SLANS_exe\slansre'
 
         # print(cwd)
         subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
@@ -844,10 +846,10 @@ class SLANSGeometry(Geometry):
                  "BP": beampipes,
                  "FREQ": 0}
 
-        with open(fr"{run_save_directory}\geometric_parameters.json", 'w') as f:
+        with open(Path(fr"{run_save_directory}\geometric_parameters.json"), 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
 
-        filename = fr'{run_save_directory}\cavity_33.svl'
+        filename = Path(fr'{run_save_directory}\cavity_33.svl')
         d = fr.svl_reader(filename)
 
         Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
@@ -906,7 +908,7 @@ class SLANSGeometry(Geometry):
             "GR/Q [Ohm^2]": GR_Q
         }
 
-        with open(fr'{run_save_directory}\qois.json', "w") as f:
+        with open(Path(fr'{run_save_directory}\qois.json'), "w") as f:
             json.dump(d, f, indent=4, separators=(',', ': '))
 
     @staticmethod
@@ -930,19 +932,19 @@ class SLANSGeometry(Geometry):
     @staticmethod
     def createFolder(fid, projectDir, subdir=''):
         # change save directory
-        path = fr'{projectDir}\SimulationData\SLANS\{fid}'
+        path = projectDir / fr'SimulationData\SLANS\{fid}'
         if subdir == '':
             pass
         else:
-            new_path = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
+            new_path = projectDir / fr'SimulationData\SLANS\{subdir}\{fid}'
             if os.path.exists(new_path):
                 path = new_path
             else:
-                if not os.path.exists(fr'{projectDir}\SimulationData\SLANS\{subdir}'):
-                    os.mkdir(fr'{projectDir}\SimulationData\SLANS\{subdir}')
+                if not os.path.exists(projectDir / fr'SimulationData\SLANS\{subdir}'):
+                    os.mkdir(projectDir / fr'SimulationData\SLANS\{subdir}')
 
                 os.mkdir(new_path)
-                path = fr'{projectDir}\SimulationData\SLANS\{subdir}\{fid}'
+                path = projectDir / fr'SimulationData\SLANS\{subdir}\{fid}'
 
         if os.path.exists(path):
             shutil.rmtree(path)

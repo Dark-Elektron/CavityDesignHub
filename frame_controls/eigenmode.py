@@ -625,7 +625,7 @@ class EigenmodeControl:
 
             else:
                 # run own eigenmode code
-                folder = fr"{projectDir}\SimulationData\NativeEig"
+                folder = projectDir / fr'SimulationData\NativeEig'
                 mod = Model(folder=folder, name=f"{key}", parent_dir=parentDir)
 
                 try:
