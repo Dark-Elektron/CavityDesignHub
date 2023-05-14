@@ -703,7 +703,7 @@ class MainWindow:
     def file_system(self, dir_path):
         if self.model:
             self.model.setRootPath("")
-            self.model.setRootPath(dir_path)
+            self.model.setRootPath(str(dir_path))
             self.tree.setRootIndex(self.model.index(dir_path))
         else:
             self.model = QFileSystemModel()
