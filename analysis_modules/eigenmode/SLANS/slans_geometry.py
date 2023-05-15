@@ -260,7 +260,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = projectDir / fr'exe\SLANS_exe\genmesh2.exe'
+        genmesh_path = parentDir / fr'exe\SLANS_exe\genmesh2.exe'
         filepath = Path(fr'{run_save_directory}\{filename}')
 
         # folder for exe to write to
@@ -270,37 +270,37 @@ class SLANSGeometry(Geometry):
         # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
         startupinfo = subprocess.STARTUPINFO()
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-
-        subprocess.call([genmesh_path, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
+        print(str(filepath))
+        subprocess.call([genmesh_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
         path = run_save_directory
 
         beta, f_shift, n_modes = 1, 0, no_of_cells + 1
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = projectDir / fr'exe\SLANS_exe\slansc'
-        slansm_path = projectDir / fr'exe\SLANS_exe\slansm'
-        slanss_path = projectDir / fr'exe\SLANS_exe\slanss'
-        slansre_path = projectDir / fr'exe\SLANS_exe\slansre'
+        slansc_path = parentDir / fr'exe\SLANS_exe\slansc'
+        slansm_path = parentDir / fr'exe\SLANS_exe\slansm'
+        slanss_path = parentDir / fr'exe\SLANS_exe\slanss'
+        slansre_path = parentDir / fr'exe\SLANS_exe\slansre'
 
         # print(cwd)
         # check if corresponding file exists at before the executable is called
         if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\{filename}.geo'):
-            subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd,
+            subprocess.call([slansc_path, str(filepath), '-b'], cwd=cwd,
                             startupinfo=startupinfo)  # settings, number of modes, etc
             ic("Done with slansc")
 
             if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\{filename}.gem'):
-                subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                subprocess.call([slansm_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
                 ic("Done with slansm")
 
                 if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\aslans.mtx') \
                         and os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\bslans.mtx'):
-                    subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                    subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
                     ic("Done with slanss")
 
                     if os.path.exists(projectDir / fr'SimulationData\SLANS\{fid}\{filename}.res'):
-                        subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                        subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
                         ic("Done with slansre")
 
         # save json file
@@ -946,6 +946,8 @@ class SLANSGeometry(Geometry):
                 os.mkdir(new_path)
                 path = projectDir / fr'SimulationData\SLANS\{subdir}\{fid}'
 
+        print(path)
+        print(type(path))
         if os.path.exists(path):
             shutil.rmtree(path)
             os.mkdir(path)

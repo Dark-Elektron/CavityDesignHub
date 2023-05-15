@@ -54,8 +54,8 @@ class Geometry:
 
         self.left_beam_pipe = [self.Rbp_L, self.at_L, self.bt_L, self.c_L, self.x_L]
         self.right_beam_pipe = [self.Rbp_R, self.at_R, self.bt_R, self.c_R, self.x_R]
-        print(self.left_beam_pipe)
-        print(self.right_beam_pipe)
+        # print(self.left_beam_pipe)
+        # print(self.right_beam_pipe)
 
         self.WG_L, self.WG_R = 0, 0
         if beampipes.lower() == 'both':
@@ -167,7 +167,7 @@ class Geometry:
         else:
             path = os.path.join(cwd, "node_editor\ABCI\Cavity{}\cst_parameters.txt".format(fid))
 
-        print_(path)
+        # print_(path)
         with open(path, 'w') as f:
             name_list = ['c_L', 'Rbp_L', 'at_L', 'bt_L', 'x_L',
                          'Req_L', 'ri_L', 'L_L', 'Aeq_L', 'Beq_L', 'ai_L', 'bi_L',
@@ -189,13 +189,13 @@ class Geometry:
     def write_cst_paramters_mid(self, fid):
         print_("Writing parameters to file")
         cwd = os.getcwd()
-        print_(cwd)
+        # print_(cwd)
         if self.ui.cb_Code.currentText() == 'SLANS':
             path = os.path.join(cwd, "node_editor\SLANS\Cavity{}\cst_parameters_mid.txt".format(fid))
         else:
             path = os.path.join(cwd, "node_editor\ABCI\Cavity{}\cst_parameters_mid.txt".format(fid))
 
-        print_(path)
+        # print_(path)
         with open(path, 'w') as f:
             name_list = ['Req_M', 'ri_M', 'L_M', 'Aeq_M', 'Beq_M', 'ai_M', 'bi_M']
 
