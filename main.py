@@ -97,7 +97,7 @@ class MainWindow:
 
         # self.initUI()
         self.parentDir = Path(os.getcwd())
-        self.projectDir = Path(r'D:\Dropbox\CavityDesignHub\SampleProject')
+        self.projectDir = Path(r'D:/Dropbox/CavityDesignHub/SampleProject')
 
         # add node editor
         # new = NodeEditorWidget()
@@ -377,7 +377,7 @@ class MainWindow:
                 # animate_width(self.ui.le_New_Project_Filename, 0, 150, True)
                 self.ui.le_New_Project_Filename.setMinimumWidth(0)
                 self.ui.le_New_Project_Filename.setMaximumWidth(0)
-                self.ui.l_Project_Name.setText(fr'{project_dir}\{project_name}')
+                self.ui.l_Project_Name.setText(fr'{project_dir}/{project_name}')
 
                 def make_dirs_from_dict(d, current_dir=project_dir):
                     for key, val in d.items():
@@ -407,7 +407,7 @@ class MainWindow:
                 }
 
                 make_dirs_from_dict(project_dir_structure)
-                self.projectDir = Path(fr"{project_dir}\{project_name}")
+                self.projectDir = Path(fr"{project_dir}/{project_name}")
 
                 # only initialize UI after successfully setting folder
                 if self.global_state == 0:
@@ -704,7 +704,7 @@ class MainWindow:
         if self.model:
             self.model.setRootPath("")
             self.model.setRootPath(str(dir_path))
-            self.tree.setRootIndex(self.model.index(dir_path))
+            self.tree.setRootIndex(self.model.index(str(dir_path)))
         else:
             self.model = QFileSystemModel()
             self.model.setRootPath(str(dir_path))
