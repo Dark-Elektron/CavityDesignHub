@@ -268,8 +268,12 @@ class SLANSGeometry(Geometry):
 
         # the next two lines suppress pop up windows from the slans codes
         # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
-        startupinfo = subprocess.STARTUPINFO()
-        startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        if os.name == 'nt':
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        else:
+            startupinfo = ''
+
         print(str(filepath))
         subprocess.call([genmesh_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
         path = run_save_directory
