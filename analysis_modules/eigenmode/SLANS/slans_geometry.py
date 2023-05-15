@@ -271,11 +271,12 @@ class SLANSGeometry(Geometry):
         if os.name == 'nt':
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            kwargs = {"startupinfo": startupinfo}
         else:
-            startupinfo = ''
+            kwargs = {}
 
         print(str(filepath))
-        subprocess.call([genmesh_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+        subprocess.call([genmesh_path, str(filepath), '-b'], cwd=cwd, **kwargs)
         path = run_save_directory
 
         beta, f_shift, n_modes = 1, 0, no_of_cells + 1
@@ -290,21 +291,20 @@ class SLANSGeometry(Geometry):
         # print(cwd)
         # check if corresponding file exists at before the executable is called
         if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.geo'):
-            subprocess.call([slansc_path, str(filepath), '-b'], cwd=cwd,
-                            startupinfo=startupinfo)  # settings, number of modes, etc
+            subprocess.call([slansc_path, str(filepath), '-b'], cwd=cwd, **kwargs)  # settings, number of modes, etc
             ic("Done with slansc")
 
             if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.gem'):
-                subprocess.call([slansm_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                subprocess.call([slansm_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                 ic("Done with slansm")
 
                 if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/aslans.mtx') \
                         and os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/bslans.mtx'):
-                    subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                    subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                     ic("Done with slanss")
 
                     if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.res'):
-                        subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
+                        subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                         ic("Done with slansre")
 
         # save json file

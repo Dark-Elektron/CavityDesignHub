@@ -527,7 +527,7 @@ class MainWindow:
 
         # update state file
         # serialize home
-        state_dict["Project Directory"] = self.projectDir
+        state_dict["Project Directory"] = str(self.projectDir)
         state_dict['Theme'] = self.last_saved_theme
 
         # serialize tuneUI
