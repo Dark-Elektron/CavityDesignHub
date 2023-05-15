@@ -439,7 +439,7 @@ class MainWindow:
                 self.deserialize(self.projectDir / "state_file.json")
 
             # only initialize UI after successfully setting folder and initialise only once
-            self.ui.l_Project_Name.setText(self.projectDir)
+            self.ui.l_Project_Name.setText(str(self.projectDir))
             if self.global_state == 0:
                 print("IOt initialised")
                 self.initUI()
