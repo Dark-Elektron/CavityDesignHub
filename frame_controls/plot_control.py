@@ -1,16 +1,11 @@
-import pickle
-import time
-
+import itertools
 import scipy
 from PyQt5 import QtGui
-# from labellines import labelLines
 from scipy.special import jn_zeros, jnp_zeros
 from ui_files.plot import Ui_Plot
 from ui_files.plottypeselector import Ui_PlotTypeSelector
 from analysis_modules.plot_module.plotter import Plot
 from analysis_modules.data_module.abci_data import ABCIData
-import pandas as pd
-from utils.file_reader import FileReader
 from utils.shared_classes import *
 from utils.shared_functions import *
 import scipy.io as spio
@@ -60,7 +55,8 @@ MATPLOTLIB_COLORS = {'Default': plt.rcParams['axes.prop_cycle'].by_key()['color'
 
 
 def print_(*arg):
-    if DEBUG: print(colored(f'\t{arg}', file_color))
+    if DEBUG:
+        print(colored(f'\t{arg}', file_color))
 
 
 class PlotControl:
@@ -87,6 +83,7 @@ class PlotControl:
         self.ui.gl_Plot_Area.addWidget(self.plt)
         self.fig = self.plt.fig
         self.ax = self.plt.ax
+        self.initial_prop_cycler, _ = itertools.tee(self.ax._get_lines.prop_cycler)
         self.ax_right = self.plt.ax_right
         self.axins = None
         self.indicate_inset = None
@@ -134,6 +131,7 @@ class PlotControl:
                                       "title": "Title",
                                       "legend": []}
         self.other_data_filtered = {}
+        self.row = None
 
         self.initUI()
         self.signals()
@@ -150,10 +148,10 @@ class PlotControl:
         for k, vals in MATPLOTLIB_COLORS.items():
             sub_menu = menu.addMenu(k)
             for v in vals:
-                l = QLabel(str(v))
+                label = QLabel(str(v))
                 action = QWidgetAction(sub_menu)
-                l.setStyleSheet(f"background-color: {v};")
-                action.setDefaultWidget(l)
+                label.setStyleSheet(f"background-color: {v};")
+                action.setDefaultWidget(label)
                 sub_menu.addAction(action)
 
         return pb_Color
@@ -169,8 +167,8 @@ class PlotControl:
         self.pts_dict[self.plotID_count] = {"plot inputs": None, "plot data": {}, "plot object": {},
                                             "plot data inputs": None}
 
-        self.init_abci(PTS, plotID)
-        self.init_slans(PTS, plotID)
+        self.init_abci(PTS)
+        self.init_slans(PTS)
         self.init_other(PTS, plotID)
 
         # add plottypeselector to layout
@@ -186,11 +184,10 @@ class PlotControl:
         # increment plotID
         self.plotID_count += 1
 
-    def init_abci(self, PTS, plotID):
+    def init_abci(self, PTS):
         """
 
         :param PTS:
-        :param plotID:
         :return:
         """
         # abci
@@ -246,11 +243,10 @@ class PlotControl:
             if PTS.cb_Type_ABCI.currentText() == "Line"
             else self.populate_combobox_list(PTS.cb_Style_ABCI, scatter_marker))
 
-    def init_slans(self, PTS, plotID):
+    def init_slans(self, PTS):
         """
 
         :param PTS:
-        :param plotID:
         :return:
         """
         # slans
@@ -262,8 +258,8 @@ class PlotControl:
 
         Parameters
         ----------
-        PTS
         plotID
+        PTS
 
         Returns
         -------
@@ -317,7 +313,7 @@ class PlotControl:
     def make_abci_plot_object(self, pid):
         # check state of switch
         switch = self.pts_dict[pid]["plot inputs"].switchControl
-        plottype = self.pts_dict[pid]["plot inputs"].cb_code.currentText()
+        # plottype = self.pts_dict[pid]["plot inputs"].cb_code.currentText()
         if switch.checkState() == 2:
 
             # check if plot already exist
@@ -330,8 +326,8 @@ class PlotControl:
 
                 plot_data_inputs = self.pts_dict[pid]["plot data inputs"]
 
-                if plot_data_inputs["ids"] == ids and plot_data_inputs["pol"] == pol and plot_data_inputs[
-                    "request"] == request:
+                if plot_data_inputs["ids"] == ids and plot_data_inputs["pol"] == pol and \
+                        plot_data_inputs["request"] == request:
                     if self.pts_dict[pid]["plot object"] != {}:
                         for line2D in self.pts_dict[pid]['plot object'].values():
                             line2D[0].set(alpha=1)
@@ -361,7 +357,7 @@ class PlotControl:
                 line2D[0].set(alpha=0)
 
         self.ax.set_prop_cycle(None)
-        cycle = self.ax._get_lines.prop_cycler
+        cycle, _ = itertools.tee(self.initial_prop_cycler)
 
         # update colors, loop over all lines and give color in ascending order
         for line2D in self.ax.get_lines():
@@ -436,7 +432,8 @@ class PlotControl:
                     pts_["plot data"].update({id_: {"x": xr, "y": y}})
                     # process id
                     pts_["plot object"].update({id_: self.ax.plot(xr, y,
-                                                                  label='${' + f'{str(id_).replace("_", ",")}' + '}$' + f' ({abci_data_long.wakelength} m)',
+                                                                  label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                                        f'({abci_data_long.wakelength} m)',
                                                                   linewidth=2)})
 
                 elif axis.lower() == "right":
@@ -445,7 +442,9 @@ class PlotControl:
                     pts_["plot data"].update({id_: {"x": xr, "y": y}})
                     # process id
                     pts_["plot object"].update({id_: self.ax_right.plot(xr, y,
-                                                                        label='${' + f'{str(id_).replace("_", ",")}' + '}$' + f' ({abci_data_long.wakelength} m)',
+                                                                        label='${' + f'{str(id_).replace("_", ",")}' +
+                                                                              '}$' +
+                                                                              f' ({abci_data_long.wakelength} m)',
                                                                         linewidth=2)})
 
                 # ax_selected.set_xlabel('$f \mathrm{ [GHz]}$')
@@ -492,7 +491,8 @@ class PlotControl:
                     pts_["plot data"].update({id_: {"x": xr, "y": y}})
                     # process id
                     pts_["plot object"].update({id_: self.ax.plot(xr, y,
-                                                                  label='${' + f'{str(id_).replace("_", ",")}' + '}$' + f' ({abci_data_trans.wakelength} m)',
+                                                                  label='${' + f'{str(id_).replace("_", ",")}' + '}$' +
+                                                                        f' ({abci_data_trans.wakelength} m)',
                                                                   linewidth=2)})
 
                 elif axis.lower() == 'right':
@@ -501,7 +501,9 @@ class PlotControl:
                     pts_["plot data"].update({id_: {"x": xr, "y": y}})
                     # process id
                     pts_["plot object"].update({id_: self.ax_right.plot(xr, y,
-                                                                        label='${' + f'{str(id_).replace("_", ",")}' + '}$' + f' ({abci_data_trans.wakelength} m)',
+                                                                        label='${' + f'{str(id_).replace("_", ",")}' +
+                                                                              '}$' +
+                                                                              f' ({abci_data_trans.wakelength} m)',
                                                                         linewidth=2)})
 
                 ax_selected.set_yscale('log')
@@ -512,7 +514,8 @@ class PlotControl:
         self.ui.pb_Reset_Colors.clicked.connect(lambda: self.reset_colors())
         # self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
         self.le_Color.textChanged.connect(lambda: self.plt.update_object_properties({'color': self.le_Color.text()}))
-        self.ui.dsb_Alpha.valueChanged.connect(lambda: self.plt.update_object_properties({'alpha': self.ui.dsb_Alpha.value()}))
+        self.ui.dsb_Alpha.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'alpha': self.ui.dsb_Alpha.value()}))
 
         # plot abci impedance
         self.ui.pb_Plot.clicked.connect(lambda: self.plot())
@@ -530,8 +533,8 @@ class PlotControl:
         self.ui.pb_Plot_Decorations.clicked.connect(lambda: self.toggle_page('Plot Decorations'))
         self.ui.pb_Plot_Element_Format.clicked.connect(lambda: self.toggle_page('Plot Element Format'))
 
-        # signal for plot argument entrmake widgets rey
-        # self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda: animate_height(self.ui.w_Plot_Args, 0, 200, True))
+        # signal for plot argument entrmake widgets rey self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda:
+        # animate_height(self.ui.w_Plot_Args, 0, 200, True))
 
         # signal for threshold
         self.ui.pb_Load_Machine_Parameters.clicked.connect(lambda: self.load_operating_points())
@@ -622,7 +625,8 @@ class PlotControl:
         # args = list(self.args_dict.values())
 
         # use same color cycler for both axes
-        self.ax_right._get_lines.prop_cycler = self.ax._get_lines.prop_cycler
+        self.ax._get_lines.prop_cycler, _ = itertools.tee(self.initial_prop_cycler)
+        self.ax_right._get_lines.prop_cycler, _ = itertools.tee(self.initial_prop_cycler)
         plot_count = 1
         for key, val in self.plot_dict.items():
             code = self.plot_dict[key]['plot inputs']['Code'].currentText()
@@ -701,7 +705,7 @@ class PlotControl:
         self.plt.clear()
 
         # clear cutoff frequency lines
-        for key, val in self.ax_obj_dict.items():
+        for _, val in self.ax_obj_dict.items():
             del val
         self.ax_obj_dict = {}
 
@@ -738,7 +742,7 @@ class PlotControl:
         pol = args['Polarization'].currentText()
         request = args['Request'][0].currentText()
         folder = args['Folder'][0].text()
-        state = args['Toggle'].checkState()
+        # state = args['Toggle'].checkState()
         axis = args['Axis'].currentText()
         type_ = []
         t = args['Type']
@@ -788,17 +792,17 @@ class PlotControl:
                 else:
                     xr, y, _ = abci_data_long.get_data(request)
 
-                    #### to integrate better later. This part of the code is to check the frequency distribution of
-                    #### HOM power in the cavity
+                    # to integrate better later. This part of the code is to check the frequency distribution of
+                    # HOM power in the cavity
                     if request == 'Frequency Spectrum of Loss Factor':
                         e = 1.602e-19
                         Nb = 2.26e11
                         I0 = 5e-3
                         Pf = np.array(y) * I0 * e * Nb  # k_hom*I0*e*Nb
 
-                        # # Define bin edges and calculate bin centers
-                        # bin_edges = np.linspace(np.array(xr).min(), np.array(xr).max(), num=int((np.array(xr).min() + np.array(xr).max())/2))
-                        # bin_centers = 0.5 * (bin_edges[1:] + bin_edges[:-1])
+                        # # Define bin edges and calculate bin centers bin_edges = np.linspace(np.array(xr).min(),
+                        # np.array(xr).max(), num=int((np.array(xr).min() + np.array(xr).max())/2)) bin_centers = 0.5
+                        # * (bin_edges[1:] + bin_edges[:-1])
                         #
                         # # Bin the power data
                         # power_binned, _ = np.histogram(xr, bins=bin_edges, weights=Pf)
@@ -962,7 +966,7 @@ class PlotControl:
         """
         # check state of switch
         switch = self.plot_dict[pid]["plot inputs"]["Toggle"]
-        plottype = self.plot_dict[pid]["plot inputs"]["Code"].currentText()
+        # plottype = self.plot_dict[pid]["plot inputs"]["Code"].currentText()
         if switch.checkState() == 2:
             # check if plot already exist
             if self.plot_dict[pid]['plot data'] != {}:
@@ -972,7 +976,7 @@ class PlotControl:
                 pol = args['Polarization'].currentText()
                 request = args['Request'][0].currentText()
                 folder = args['Folder'][0].text()
-                state = args['Toggle'].checkState()
+                # state = args['Toggle'].checkState()
                 axis = args['Axis'].currentText()
 
                 type_ = []
@@ -1032,7 +1036,7 @@ class PlotControl:
     def make_other_plot(self, pid):
         # check state of switch
         switch = self.plot_dict[pid]["plot inputs"]["Toggle"]
-        plottype = self.plot_dict[pid]["plot inputs"]["Code"].currentText()
+        # plottype = self.plot_dict[pid]["plot inputs"]["Code"].currentText()
         if switch.checkState() == 2:
             # check if plot already exist
             if self.plot_dict[pid]['plot data'] != {}:
@@ -1040,7 +1044,7 @@ class PlotControl:
                 args = self.plot_dict[pid]["plot inputs"]
                 ids = [a.strip() for a in args['Id'].currentText().split(',')]  # get list
                 filename = args['Folder'][0].text()
-                state = args['Toggle'].checkState()
+                # state = args['Toggle'].checkState()
                 axis = args['Axis'].currentText()
 
                 requestX = args['Request'][1].currentText()
@@ -1177,8 +1181,8 @@ class PlotControl:
             scaleX = 1
             scaleY = 1
 
-        if filename == '':
-            folder = fr'{self.main_control.projectDir}/SimulationData/ABCI'
+        # if filename == '':
+        #     folder = fr'{self.main_control.projectDir}/SimulationData/ABCI'
 
         # # load file (for now, just excel files)
         # df = fr.excel_reader(filename)
@@ -1267,7 +1271,7 @@ class PlotControl:
         requestY = args["plot inputs"]['Request'][2].currentText().split(', ')
         ids = [a.strip() for a in args["plot inputs"]['Id'].currentText().split(',')]  # get list
         filename = args["plot inputs"]['Folder'][0].text()
-        state = args["plot inputs"]['Toggle'].checkState()
+        # state = args["plot inputs"]['Toggle'].checkState()
         axis = args["plot inputs"]['Axis'].currentText()
         type_ = [args["plot inputs"]['Type'][0].currentText(), args["plot inputs"]['Type'][1].currentText()]
         style = args["plot inputs"]['Type'][1].currentText()
@@ -1281,21 +1285,13 @@ class PlotControl:
             scaleX = 1
             scaleY = 1
 
-        if filename == '':
-            folder = fr'{self.main_control.projectDir}/SimulationData/ABCI'
+        # if filename == '':
+        #     folder = fr'{self.main_control.projectDir}/SimulationData/ABCI'
 
         # record data input
         args["plot data inputs"] = {"Ids": ids, "RequestX": requestX, "RequestY": requestY, "Folder": filename,
                                     "Axis": axis, "ScaleX": scaleX, "ScaleY": scaleY, "Type": type_, "Filter": filter_}
 
-        # # load file (for now, just excel files)
-        # df = fr.excel_reader(filename)
-        # sheet_name = list(df.keys())[0]
-        #
-        # data = df[sheet_name]
-
-        sheets = [a.strip() for a in args["plot inputs"]['Id'].currentText().split(',')]
-        # for sh in sheets:
         for id_ in ids:
             args["plot data"][id_] = {}
             args["plot object"][id_] = {}
@@ -1310,7 +1306,6 @@ class PlotControl:
 
                     x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
                     self.freq_glob = x_data
-                    # print("Len req y", len(requestY), id_)
                     for j in range(len(requestY)):
                         y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
                         args["plot data"][id_].update({j: {"x": x_data, "y": y}})
@@ -1387,7 +1382,7 @@ class PlotControl:
 
     def reset_colors(self):
         self.ax.set_prop_cycle(None)
-        cycle = self.ax._get_lines.prop_cycler
+        cycle, _ = itertools.tee(self.initial_prop_cycler)
 
         # update colors, loop over all lines and give color in ascending order
         for line2D in self.ax.get_lines():
@@ -1396,7 +1391,8 @@ class PlotControl:
         self.update_labels()
         self.fig.canvas.draw_idle()
 
-    def plot_mat(self, filepath):
+    @staticmethod
+    def plot_mat(filepath):
         # load mat file
         data = {}
         # files_folder = "D:\Dropbox\multipacting\MPGUI21"
@@ -1840,7 +1836,8 @@ class PlotControl:
     def calc_limits(self, mode, selection=None):
         if self.operation_points is not None:
             if len(self.freq_glob) > 0:
-                if self.ui.cb_Longitudinal_Threshold.checkState() == 2 or self.ui.cb_Transverse_Threshold.checkState() == 2:
+                if self.ui.cb_Longitudinal_Threshold.checkState() == 2 or \
+                        self.ui.cb_Transverse_Threshold.checkState() == 2:
                     E0 = [45.6, 80, 120, 182.5]  # [GeV] Energy
                     nu_s = [0.025, 0.0506, 0.036, 0.087]  # Synchrotron oscillation tune
                     I0 = [1400, 135, 26.7, 5]  # [mA] Beam current5.4 * 2
@@ -1962,7 +1959,7 @@ class PlotControl:
                 # print(x, y)
 
                 pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
-                pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
+                # pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
                 indx = np.argmin(abs(f_list - pos[0]))
                 x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
 
@@ -2010,7 +2007,6 @@ class PlotControl:
             ylim = axis_obj_in.get_ylim()
 
             x_delta = xlim[1] - xlim[0]
-            y_delta = ylim[1] - ylim[0]
 
             if not inverse:
                 x_out = xlim[0] + xin * x_delta
@@ -2018,7 +2014,6 @@ class PlotControl:
                 print("\t", x_out, y_out)
             else:
                 x_delta2 = xin - xlim[0]
-                y_delta2 = yin - ylim[0]
                 x_out = x_delta2 / x_delta
                 y_out = np.log(yin / ylim[0]) / np.log(ylim[1] / ylim[0])
                 print("\t", x_out, y_out)
@@ -2098,10 +2093,6 @@ class PlotControl:
         if len(Ri_list) != 0:
             cutoff.addItems(self.mode_list_sorted[f"{Ri_list[0]}"])
 
-        color = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']
-        step = [0.02, 0.2, 0.4, 0.6, 0.8]
-        count = 0
-
     def plot_cutoff(self, cutoff):
         # selected
         selected = cutoff.currentText().split(", ")
@@ -2125,7 +2116,7 @@ class PlotControl:
                 # get y text position from axis position. Position x is not used
                 pos = self.axis_data_coords_sys_transform(self.ax, freq, 0.05, inverse=False)
 
-                ylim = self.ax.get_ylim()
+                # ylim = self.ax.get_ylim()
                 ab = self.plt.add_text(r"$f_\mathrm{c," + f"{sc[0]}" + r"} (R_\mathrm{i} = "
                                        + f"{sc[1]}" + r" ~\mathrm{mm}) $",
                                        box="None", xy=(freq, pos[1]),
@@ -2201,7 +2192,7 @@ class PlotControl:
             self.ax_right.tick_params(axis='y', colors=colors[0])
             self.ax_right.yaxis.label.set_color(colors[0])
 
-    def open_(self, le, cb_pol=None, ccb=None, mode='Folder', row_ind=0, start_dir=''):
+    def open_(self, le, cb_pol=None, ccb=None, mode='Folder', start_dir=''):
         if mode == "Folder":
             data_dir = str(
                 QFileDialog.getExistingDirectory(None, "Select Directory", start_dir,
@@ -2443,14 +2434,16 @@ class PlotControl:
 
         self.fig.canvas.draw_idle()
 
-    def get_line_properties(self, line):
+    @staticmethod
+    def get_line_properties(line):
         attr_dict = {'ls': line.get_linestyle(), 'color': line.get_color(), 'lw': line.get_linewidth(),
                      'ms': line.get_markersize(), 'mec': line.get_markeredgecolor(), 'mew': line.get_markeredgewidth(),
                      'mfc': line.get_markerfacecolor()}
 
         return attr_dict
 
-    def set_line_properties(self, line, attr_dict):
+    @staticmethod
+    def set_line_properties(line, attr_dict):
         line.set(attr_dict)
 
     def serialise(self, state_dict):
@@ -2477,8 +2470,7 @@ class PlotControl:
                         "Type": [v['plot inputs']["Type"][0].currentText(), v['plot inputs']["Type"][1].currentText()],
                         "Filter": [v['plot inputs']["Filter"][0].lineEdit().text(),
                                    v['plot inputs']["Filter"][1].text()]
-                    }
-                }
+                    }}
             )
 
         state_dict['plot_table_widget'] = table_widget_state

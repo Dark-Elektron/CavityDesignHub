@@ -9,7 +9,6 @@ import shutil
 import sys
 from json import JSONDecodeError
 from pathlib import Path
-from icecream import ic
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -497,8 +496,8 @@ class MainWindow:
         """
 
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.ui.cb_Theme.currentText()])
-        self.main_win.setStyleSheet(stylesheet)
-        self.main_win.setStyleSheet('*{font: 13px "Segoe UI";}')
+        self.main_win.setStyleSheet(stylesheet+'*{font: 12px "Segoe UI";}')
+
         self.last_saved_theme = self.ui.cb_Theme.currentText()
 
         # if self.ui.hs_Theme.value() == 0:
@@ -551,7 +550,7 @@ class MainWindow:
         with open(self.projectDir / 'state_file.json', 'w', encoding='utf-8') as file:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
 
-    def deserialize(self, filename):
+    def deserialize(self, filename: str | Path):
         """
         Retrieve and update GUI object state from last saved GUI state
 
@@ -622,37 +621,37 @@ class MainWindow:
             x = msg.exec_()
 
             if x == msg.Yes:
-                try:
-                    shutil.rmtree(path)
-                    return True
-                except:
-                    return False
+                # try:
+                shutil.rmtree(path)
+                return True
+                # except:
+                #     return False
             else:
                 return False
 
         else:
             return True
 
-    def eventFilter(self, obj, event):
-        if not obj.isChecked():
-            if event.type() == QEvent.Enter:  # Enter
-                # obj.setMaximumWidth(75)
-                # obj.setMinimumWidth(75)
-                obj.setStyleSheet("background-color: rgb(255, 190, 130); border-radius: 10px; "
-                                  "border-style: solid; border-width: 0px; color: white;")
-                obj.setIconSize(QSize(75, 50))
-
-                return True
-
-            if event.type() == QEvent.Leave:  # Enter
-                # obj.setMaximumSize(50, 50)
-                # obj.setMinimumSize(50, 50)
-                obj.setStyleSheet("background-color: rgb(255, 170, 127); border-radius: 10px; "
-                                  "border-style: solid; border-width: 0px; color: white;")
-                obj.setIconSize(QSize(50, 50))
-                return True
-
-        return self.default_ef(obj, event)
+    # def eventFilter(self, obj, event):
+    #     if not obj.isChecked():
+    #         if event.type() == QEvent.Enter:  # Enter
+    #             # obj.setMaximumWidth(75)
+    #             # obj.setMinimumWidth(75)
+    #             obj.setStyleSheet("background-color: rgb(255, 190, 130); border-radius: 10px; "
+    #                               "border-style: solid; border-width: 0px; color: white;")
+    #             obj.setIconSize(QSize(75, 50))
+    #
+    #             return True
+    #
+    #         if event.type() == QEvent.Leave:  # Enter
+    #             # obj.setMaximumSize(50, 50)
+    #             # obj.setMinimumSize(50, 50)
+    #             obj.setStyleSheet("background-color: rgb(255, 170, 127); border-radius: 10px; "
+    #                               "border-style: solid; border-width: 0px; color: white;")
+    #             obj.setIconSize(QSize(50, 50))
+    #             return True
+    #
+    #     return self.default_ef(obj, event)
 
     def ui_effects(self):
         """
@@ -687,7 +686,7 @@ class MainWindow:
         file = QFile(filename)
         file.open(QFile.ReadOnly | QFile.Text)
         stylesheet = file.readAll()
-        self.main_win.setStyleSheet(str(stylesheet, encoding="utf-8"))
+        self.main_win.setStyleSheet(str(stylesheet.data(), encoding="utf-8"))
 
     def show(self):
         self.main_win.showMaximized()

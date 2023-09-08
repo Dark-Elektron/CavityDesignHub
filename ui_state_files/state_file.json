@@ -231,7 +231,7 @@
                     "LHC_retuned",
                     "TESLA_800MHz_s0.6616"
                 ],
-                "Baseline"
+                "C3795, C3795_round2"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
@@ -256,12 +256,45 @@
         "lines": [
             {
                 "ls": "-",
-                "color": "#66c2a5",
+                "color": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ],
                 "lw": 2.0,
                 "ms": 6.0,
-                "mec": "#66c2a5",
+                "mec": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ],
                 "mew": 1.0,
-                "mfc": "#66c2a5"
+                "mfc": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ]
+            },
+            {
+                "ls": "-",
+                "color": [
+                    0.9882352941176471,
+                    0.5529411764705883,
+                    0.3843137254901961
+                ],
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": [
+                    0.9882352941176471,
+                    0.5529411764705883,
+                    0.3843137254901961
+                ],
+                "mew": 1.0,
+                "mfc": [
+                    0.9882352941176471,
+                    0.5529411764705883,
+                    0.3843137254901961
+                ]
             }
         ],
         "collections": [],
@@ -598,9 +631,9 @@
     "plot_dsb_Alpha": 0.5,
     "plot_qt_spinbox_lineedit": "14",
     "plot_cb_Line_Style": "-",
-    "plot_dsb_Line_Width": 2.0,
+    "plot_dsb_Line_Width": 14.0,
     "plot_cb_Marker": "o",
-    "plot_db_Marker_Size": 6.0,
+    "plot_db_Marker_Size": 14.0,
     "plot_": "Presentation",
     "plot_dsb_Threshold": 14.0,
     "plot_cb_Peaks_Marker_Style": "x",

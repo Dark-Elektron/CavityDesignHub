@@ -2712,7 +2712,8 @@ def plot_brillouin(op_freq, p, cst_result_folder=None):
 
     # get dictionary instead from cst run folder
     d = pd.read_csv(fr"D:\CST Studio\5. tt\Eigenmode\E3795_PBC.csv", sep=",", skipfooter=1, engine='python').to_dict(orient='list')
-    # d = pd.read_csv(fr"D:\CST Studio\5. tt\Eigenmode\E3795_PBC_endcell.csv", sep=",", skipfooter=1, engine='python').to_dict(orient='list')
+    # d = pd.read_csv(fr"D:\CST Studio\5. tt\Eigenmode\E3795_PBC_endcell.csv", sep=",", skipfooter=1,
+    # engine='python').to_dict(orient='list')
     freq_dict = {key: val for key, val in d.items() if 'Mode' in key}
     phase = d['phase']
 
@@ -3129,8 +3130,8 @@ def h_study():
     parent_dir_abci = r"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI"
 
     # 2 and 5 cell, 400MHz, 800MHz cavities comparison for H
-    wp = 'H'  # working point
-    sigma = 'SR_2.5mm'
+    # wp = 'H'  # working point
+    # sigma = 'SR_2.5mm'
     slans_dirs = [fr"{parent_dir_slans}\3794_400", fr"{parent_dir_slans}\3794_800",
                   fr"{parent_dir_slans}\C3795_800"]
     abci_dirs = [fr"{parent_dir_abci}\3794_400", fr"{parent_dir_abci}\3794_800",
