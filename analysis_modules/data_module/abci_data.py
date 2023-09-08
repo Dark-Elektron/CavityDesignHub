@@ -106,10 +106,13 @@ class ABCIData:
                         key = 'Azimuthal'
                     if 'Transverse Wake' in line:
                         key = 'Transverse'
+                        # print("it got here to transverse wake")
                     if 'Longitudinal Wake' in line:
                         key = 'Longitudinal'
+                        # print("it got here to longitudinal wake")
 
                     if 'Loss Factor' in line and key:
+                        # print("Got in here", key)
                         indx_0 = line.index('= ')
                         indx_1 = line.index('V/pC')
                         loss_factor = float(line[indx_0 + 2:indx_1])
@@ -119,7 +122,7 @@ class ABCIData:
 
                     # get sigma
                     if 'SIG' in line and self.SIG is None:
-                        indx_0 = line.index('SIG= ')
+                        indx_0 = line.index('SIG=')
                         indx_1 = line.index(' cm')
                         self.SIG = float(line[indx_0 + 5:indx_1])
                     # except:

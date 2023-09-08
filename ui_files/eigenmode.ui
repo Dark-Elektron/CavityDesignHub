@@ -165,9 +165,9 @@
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>-83</y>
-               <width>737</width>
-               <height>2101</height>
+               <y>0</y>
+               <width>756</width>
+               <height>1897</height>
               </rect>
              </property>
              <property name="styleSheet">
@@ -2188,10 +2188,7 @@
           <string notr="true">border-radius: 15px;</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="0">
-           <layout class="QVBoxLayout" name="vL_2D_Graphics_View"/>
-          </item>
-          <item row="1" column="0">
+          <item row="1" column="1">
            <widget class="QWidget" name="widget_4" native="true">
             <property name="maximumSize">
              <size>
@@ -2246,6 +2243,9 @@
              </item>
             </layout>
            </widget>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <layout class="QGridLayout" name="gl_Plot_Area"/>
           </item>
          </layout>
         </widget>

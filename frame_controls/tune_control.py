@@ -1,3 +1,4 @@
+import datetime
 import math
 import random
 import shutil
@@ -255,7 +256,7 @@ class TuneControl:
         # print(outer_half_cell_parameters)
         lock_list = [False, False, False, False, False, False, False]
         if self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == 'LHS':
-            pseudo_shape_space = self.generate_pseudo_shape_space_lhc(self.freq, inner_half_cell_parameters,
+            pseudo_shape_space = self.generate_pseudo_shape_space_lhs(self.freq, inner_half_cell_parameters,
                                                                       outer_half_cell_parameters, marker)
 
         elif self.ui.cb_Shape_Space_Generation_Algorithm.currentText() == "Monte Carlo":
@@ -697,58 +698,70 @@ class TuneControl:
         ic(self.pseudo_shape_space)
         return self.pseudo_shape_space
 
-    def generate_pseudo_shape_space_lhc(self, freq, ihc, ohc, marker):
+    def generate_pseudo_shape_space_lhs(self, freq, ihc, ohc, marker):
         ic(ihc, ohc, marker)
         no_of_shapes = self.ui.sb_No_Of_Shapes.value()
+
+        df_ihc = self.generate_lhs_ihc_ohc(ihc, no_of_shapes)
+
+        if self.ui.cb_Outer_Cell.checkState() == 2:
+            df_ohc = self.generate_lhs_ihc_ohc(ohc, no_of_shapes)
+            pseudo_shape_space = {}
+            for index, row in df_ihc.iterrows():
+                pseudo_shape_space[f'{index}'] = {'IC': row.tolist(),
+                                                  'OC': df_ohc.iloc[index].tolist(),
+                                                  'FREQ': freq,
+                                                  'BP': 'left'}
+
+        else:
+            pseudo_shape_space = {}
+            for index, row in df_ihc.iterrows():
+                pseudo_shape_space[f'{index}'] = {'IC': row.tolist(),
+                                                  'OC': row.tolist(),
+                                                  'FREQ': freq,
+                                                  'BP': 'none'}
+        ic(pseudo_shape_space)
+
+        return pseudo_shape_space
+
+    def generate_lhs_ihc_ohc(self, ihc_ohc, no_of_shapes):
+        d = dict()
         columns = ['A', 'B', 'a', 'b', 'Ri', 'L', 'Req']
         lock_list = [False, False, False, False, False, False, False]
 
-        d = dict()
-        # get variables with bounds
-        lhc_bounds_ihc = []
-        lhc_bounds_key_ihc = []
-        for n, v in enumerate(ihc):
+        lhs_bounds = []
+        lhs_bounds_key = []
+        for n, v in enumerate(ihc_ohc):
             if len(v) > 1:
-                lhc_bounds_ihc.append(v)
-                lhc_bounds_key_ihc.append(columns[n])
+                lhs_bounds.append(v)
+                lhs_bounds_key.append(columns[n])
                 lock_list[n] = True
             else:
-                d[columns[n]] = v
+                d[columns[n]] = v * no_of_shapes
 
-        ic(d)
-        ic(lock_list)
-        ic(lhc_bounds_ihc, lhc_bounds_key_ihc)
+        # ic(d)
+        # ic(lock_list)
+        # ic(lhs_bounds, lhs_bounds_key)
 
-        l_bounds = np.array(lhc_bounds_ihc)[:, 0]
-        u_bounds = np.array(lhc_bounds_ihc)[:, -1]
-        ic(l_bounds, u_bounds)
+        l_bounds = np.array(lhs_bounds)[:, 0]
+        u_bounds = np.array(lhs_bounds)[:, -1]
+        # ic(l_bounds, u_bounds)
 
-        reduced_dim = len(lhc_bounds_key_ihc)
+        reduced_dim = len(lhs_bounds_key)
         sampler = qmc.LatinHypercube(d=reduced_dim)
         _ = sampler.reset()
         sample = sampler.random(n=no_of_shapes)
         # ic(qmc.discrepancy(sample))
 
         sample = qmc.scale(sample, l_bounds, u_bounds)
-        ic(sample)
+        # ic(sample)
 
-        for n, k in enumerate(lhc_bounds_key_ihc):
+        for n, k in enumerate(lhs_bounds_key):
             d[k] = sample[:, n]
-        ic(d)
-
-        if self.ui.cb_Outer_Cell.checkState() == 2:
-            pass
-
-        inner_half_cell_parameters = []
-        for k in columns:
-            inner_half_cell_parameters.append(list(d[k]))
-
-        ic(inner_half_cell_parameters)
-        ihc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "Mid Cell")
-        ohc = self.create_pseudo_shape_space(inner_half_cell_parameters, lock_list, "End Cell")
-        pseudo_shape_space = self.generate_pseudo_shape_space(self.freq, ihc, ohc)
-
-        return pseudo_shape_space
+        # ic(d)
+        df = pd.DataFrame(d, columns=columns)
+        # ic(df)
+        return df.round(2)
 
     def create_pseudo_shape_space(self, var_list, lock_list, cell):
         A, B, a, b, Ri, L, Req = var_list
@@ -1064,8 +1077,8 @@ class TuneControl:
 
     @staticmethod
     def copyFiles(invar, parentDir, projectDir):
-        src = parentDir / fr"exe\SLANS_exe"
-        dst = parentDir / fr"SimulationData\SLANS\_process_{invar}\SLANS_exe"
+        src = str(parentDir / fr"exe\SLANS_exe")
+        dst = str(parentDir / fr"SimulationData\SLANS\_process_{invar}\SLANS_exe")
 
         dir_util.copy_tree(src, dst)
 
@@ -1346,174 +1359,25 @@ class TuneControl:
                 elif isinstance(cell_widget, QLabel):
                     cell_widget.setText(tw_dict[f'{i}'][f'{j}']["QLabel"])
 
-    def serialize(self, state_dict):
-        state_dict['Filename'] = self.ui.le_Generated_Shape_Space_Name.text()
-        # update state file
-        state_dict["Frequency"] = self.ui.le_Freq.text()
-        state_dict["Cell_Type"] = self.ui.cb_Cell_Type.currentIndex()
-        state_dict["Tune_Option"] = self.ui.cb_Tune_Option.currentIndex()
-        state_dict["Method"] = self.ui.cb_Shape_Space_Generation_Algorithm.currentIndex()
+    def serialise(self, state_dict):
+        serialise(state_dict, self.w_Tune, marker='tune')
 
-        # state_dict["No_Of_Shapes_Monte_Carlo"] = self.ui.sb_No_Of_Shapes_Monte_Carlo.value()
-
-        state_dict["Tuner"] = self.ui.cb_Tuner.currentIndex()
-        state_dict["LBC"] = self.ui.cb_LBC.currentIndex()
-        state_dict["RBC"] = self.ui.cb_RBC.currentIndex()
-
-        state_dict["Inner_Cell"] = self.ui.cb_Inner_Cell.checkState()
-        state_dict["Outer_Cell"] = self.ui.cb_Outer_Cell.checkState()
-        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
-        state_dict["LBP"] = self.ui.cb_LBP.checkState()
-
-        # cell parameters
-        state_dict["A_i"] = self.ui.le_A_i.text()
-        state_dict["B_i"] = self.ui.le_B_i.text()
-        state_dict["a_i"] = self.ui.le_a_i.text()
-        state_dict["b_i"] = self.ui.le_b_i.text()
-        state_dict["Ri_i"] = self.ui.le_Ri_i.text()
-        state_dict["L_i"] = self.ui.le_L_i.text()
-        state_dict["Req_i"] = self.ui.le_Req_i.text()
-
-        state_dict["A_o"] = self.ui.le_A_o.text()
-        state_dict["B_o"] = self.ui.le_B_o.text()
-        state_dict["a_o"] = self.ui.le_a_o.text()
-        state_dict["b_o"] = self.ui.le_b_o.text()
-        state_dict["Ri_o"] = self.ui.le_Ri_o.text()
-        state_dict["L_o"] = self.ui.le_L_o.text()
-
-        # settings
-        state_dict["No_Of_Processors"] = self.ui.sb_No_Of_Processors_Tune.value()
-        state_dict["Iterative_Method"] = self.ui.cb_Iterative_Method.currentIndex()
-        state_dict["Tolerance"] = self.ui.le_Tolerance.text()
-        state_dict["Max_Iteration"] = self.ui.sb_Max_Iteration.value()
-
-        # Optimization control
-        state_dict["Optimization_Algorithm"] = self.ui.cb_Optimization_Algorithm.currentText()
-        state_dict["Cell_Type_Optimization"] = self.ui.cb_Cell_Type_Optimization.currentText()
-        state_dict["UQ_Check"] = self.ui.cb_UQ.checkState()
-
-        # mid cell parameters
-        state_dict["A_i_opt"] = self.ui.le_A_i_opt.text()
-        state_dict["B_i_opt"] = self.ui.le_B_i_opt.text()
-        state_dict["a_i_opt"] = self.ui.le_a_i_opt.text()
-        state_dict["b_i_opt"] = self.ui.le_b_i_opt.text()
-        state_dict["Ri_i_opt"] = self.ui.le_Ri_i_opt.text()
-        state_dict["L_i_opt"] = self.ui.le_L_i_opt.text()
-        state_dict["Req_i_opt"] = self.ui.le_Req_i_opt.text()
-
-        state_dict["Tune_Variable"] = self.ui.cb_Tune_Variable.currentText()
-        state_dict["Tune_Frequency"] = self.ui.dsb_Tune_Frequency.value()
-        state_dict["Norm_Length"] = self.ui.db_Norm_Length.value()
-        state_dict["N_Cells"] = self.ui.sb_Norm_Length_N_Cells.value()
-        state_dict["Processors_Count"] = self.ui.sb_Processors_Count.value()
-
-        state_dict["Initial_Points"] = self.ui.sb_Initial_Points.value()
-        state_dict["Max_Table_Size"] = self.ui.sb_Max_Table_Size.value()
-        state_dict["N_Generation"] = self.ui.sb_N_Generation.value()
-
-        state_dict["Init_Generation_Method"] = self.ui.cb_Init_Generation_Method.currentText()
-        state_dict["Sobol_Sequence_Index"] = self.ui.sb_Sobol_Sequence_Index.value()
-        state_dict["Optimize_By"] = self.ui.cb_Optimize_By.currentText()
-        state_dict["Crossover_Factor"] = self.ui.sb_Crossover_Factor.value()
-        state_dict["N_Elites_To_Cross"] = self.ui.sb_N_Elites_To_Cross.value()
-        state_dict["Mutation_Factor"] = self.ui.sb_Mutation_Factor.value()
-        state_dict["Chaos_Factor"] = self.ui.sb_Chaos_Factor.value()
-
-        state_dict["Populate_Objectives"] = self.ui.ccb_Populate_Objectives.currentText()
-        state_dict["Populate_Constraints"] = self.ui.ccb_Populate_Constraints.currentText()
-
-        state_dict["Expansion"] = self.ui.cb_Expansion.checkState()
-        state_dict["LBP"] = self.ui.cb_LBP.checkState()
         state_dict['CCB Populate Objectives'] = self.serialize_qcheckablecombobox(self.ui.ccb_Populate_Objectives)
         state_dict['Optimization Objective Table'] = self.serialize_table_widget(self.ui.tw_Objectives)
 
-    def deserialize(self, state_dict):
+    def deserialise(self, state_dict):
+        deserialise(state_dict, self.w_Tune, marker='tune')
+
         try:
-            self.ui.le_Generated_Shape_Space_Name.setText(state_dict['Filename'])
-            # update state file
-            self.ui.le_Freq.setText(state_dict["Frequency"])
-            self.ui.cb_Cell_Type.setCurrentIndex(state_dict["Cell_Type"])
-            self.ui.cb_Tune_Option.setCurrentIndex(state_dict["Tune_Option"])
-            self.ui.cb_Shape_Space_Generation_Algorithm.setCurrentIndex(state_dict["Method"])
-
-            # self.ui.sb_No_Of_Shapes_Monte_Carlo.setValue(state_dict["No_Of_Shapes_Monte_Carlo"])
-
-            self.ui.cb_Tuner.setCurrentIndex(state_dict["Tuner"])
-            self.ui.cb_LBC.setCurrentIndex(state_dict["LBC"])
-            self.ui.cb_RBC.setCurrentIndex(state_dict["RBC"])
-
-            self.ui.cb_Inner_Cell.setCheckState(state_dict["Inner_Cell"])
-            self.ui.cb_Outer_Cell.setCheckState(state_dict["Outer_Cell"])
-            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
-            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
-
-            # cell parameters
-            self.ui.le_A_i.setText(state_dict["A_i"])
-            self.ui.le_B_i.setText(state_dict["B_i"])
-            self.ui.le_a_i.setText(state_dict["a_i"])
-            self.ui.le_b_i.setText(state_dict["b_i"])
-            self.ui.le_Ri_i.setText(state_dict["Ri_i"])
-            self.ui.le_L_i.setText(state_dict["L_i"])
-            self.ui.le_Req_i.setText(state_dict["Req_i"])
-
-            self.ui.le_A_o.setText(state_dict["A_o"])
-            self.ui.le_B_o.setText(state_dict["B_o"])
-            self.ui.le_a_o.setText(state_dict["a_o"])
-            self.ui.le_b_o.setText(state_dict["b_o"])
-            self.ui.le_Ri_o.setText(state_dict["Ri_o"])
-            self.ui.le_L_o.setText(state_dict["L_i"])
-
-            # settings
-            self.ui.sb_No_Of_Processors_Tune.setValue(state_dict["No_Of_Processors"])
-            self.ui.cb_Iterative_Method.setCurrentIndex(state_dict["Iterative_Method"])
-            self.ui.le_Tolerance.setText(state_dict["Tolerance"])
-            self.ui.sb_Max_Iteration.setValue(state_dict["Max_Iteration"])
-
-            # Optimization control
-            self.ui.cb_Optimization_Algorithm.setCurrentText(state_dict["Optimization_Algorithm"])
-            self.ui.cb_Cell_Type_Optimization.setCurrentText(state_dict["Cell_Type_Optimization"])
-            self.ui.cb_UQ.setCheckState(state_dict["UQ_Check"])
-
-            # mid cell parameters
-            self.ui.le_A_i_opt.setText(state_dict["A_i_opt"])
-            self.ui.le_B_i_opt.setText(state_dict["B_i_opt"])
-            self.ui.le_a_i_opt.setText(state_dict["a_i_opt"])
-            self.ui.le_b_i_opt.setText(state_dict["b_i_opt"])
-            self.ui.le_Ri_i_opt.setText(state_dict["Ri_i_opt"])
-            self.ui.le_L_i_opt.setText(state_dict["L_i_opt"])
-            self.ui.le_Req_i_opt.setText(state_dict["Req_i_opt"])
-
-            self.ui.cb_Tune_Variable.setCurrentText(state_dict["Tune_Variable"])
-            self.ui.dsb_Tune_Frequency.setValue(state_dict["Tune_Frequency"])
-            self.ui.db_Norm_Length.setValue(state_dict["Norm_Length"])
-            self.ui.sb_Norm_Length_N_Cells.setValue(state_dict["N_Cells"])
-            self.ui.sb_Processors_Count.setValue(state_dict["Processors_Count"])
-
-            self.ui.sb_Initial_Points.setValue(state_dict["Initial_Points"])
-            self.ui.sb_Max_Table_Size.setValue(state_dict["Max_Table_Size"])
-            self.ui.sb_N_Generation.setValue(state_dict["N_Generation"])
-            self.ui.cb_Init_Generation_Method.setCurrentText(state_dict["Init_Generation_Method"])
-            self.ui.sb_Sobol_Sequence_Index.setValue(state_dict["Sobol_Sequence_Index"])
-            self.ui.cb_Optimize_By.setCurrentText(state_dict["Optimize_By"])
-            self.ui.sb_Crossover_Factor.setValue(state_dict["Crossover_Factor"])
-            self.ui.sb_N_Elites_To_Cross.setValue(state_dict["N_Elites_To_Cross"])
-            self.ui.sb_Mutation_Factor.setValue(state_dict["Mutation_Factor"])
-            self.ui.sb_Chaos_Factor.setValue(state_dict["Chaos_Factor"])
-
-            self.ui.ccb_Populate_Objectives.setCurrentText(state_dict["Populate_Objectives"])
-            self.ui.ccb_Populate_Constraints.setCurrentText(state_dict["Populate_Constraints"])
-
-            self.ui.cb_Expansion.setCheckState(state_dict["Expansion"])
-            self.ui.cb_LBP.setCheckState(state_dict["LBP"])
-
             # deserialize checkable_combobox
             self.deserialize_qcheckablecombobox(self.ui.ccb_Populate_Objectives, state_dict['CCB Populate Objectives'])
+
             # deserialize objective table
             tw_dict = state_dict['Optimization Objective Table']
             self.deserialize_table_widget(self.ui.tw_Objectives, tw_dict)
 
-        except KeyError as e:
-            print("Could not deserialize tune_control.py", e)
+        except (KeyError, TypeError) as e:
+            print("Could not deserialize tune_control.py ->", e)
 
 
 class OptimizationControl:
@@ -1966,7 +1830,8 @@ class OptimizationControl:
         if n < self.ng_max:
             return self.ea(n)
         else:
-
+            end = datetime.datetime.now()
+            ic("End time: ", end)
             plt.plot(self.interp_error, marker='P')
             plt.plot(self.interp_error_avg, marker='X')
             plt.show()
@@ -2581,7 +2446,7 @@ class OptimizationControl:
             else:
                 goal = self.ui.tw_Objectives.cellWidget(i, 1).currentText()
                 if goal == 'equal':
-                    value = np.float(self.ui.tw_Objectives.item(i, 2).text())
+                    value = (self.ui.tw_Objectives.item(i, 2).text())
                     self.objectives.append([goal, obj_var, value])
                 else:
                     self.objectives.append([goal, obj_var])

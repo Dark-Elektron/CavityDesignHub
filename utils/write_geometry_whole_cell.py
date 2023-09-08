@@ -5,33 +5,37 @@ from scipy.optimize import fsolve
 
 
 def drawCavity():
+    # 21578127116
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
 
     # # TESLA end cell 1
     # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = 42, 42, 12, 19, 35, 57.6524, 103.353
     # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
     # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
 
-    midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
-                         71.98698698698699, 93.5, 171.1929])*1e-3
-    endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
-                         80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
+    # midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
+    #                      71.98698698698699, 93.5, 171.1929])*1e-3
+    # endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
+    #                      80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
+    #
+    # midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591])*1e-3
+    # endFCCUROS5 = np.array([66.5, 51, 17, 23, 78, 85.77, 166.591]) * 1e-3
+    #
+    # midTESLA = np.array([68.12, 68.12, 19.46, 30.81, 56.76, 93.5, 167.62]) * 1e-3
+    # endTESLA_l = np.array([65.42, 65.42, 16.22, 21.89, 63.25, 90.36, 167.62]) * 1e-3
+    # endTESLA_r = np.array([68.12, 68.12, 14.60, 20.76, 63.25, 92.14, 167.62]) * 1e-3
+    #
+    # # # TESLA end cell 2
+    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3795
+    # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = midC3795
+    # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = midC3795
 
-    midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591])*1e-3
-    endFCCUROS5 = np.array([66.5, 51, 17, 23, 78, 85.77, 166.591]) * 1e-3
-
-    midTESLA = np.array([68.12, 68.12, 19.46, 30.81, 56.76, 93.5, 167.62]) * 1e-3
-    endTESLA_l = np.array([65.42, 65.42, 16.22, 21.89, 63.25, 90.36, 167.62]) * 1e-3
-    endTESLA_r = np.array([68.12, 68.12, 14.60, 20.76, 63.25, 92.14, 167.62]) * 1e-3
-
-    # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3795
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = midC3795
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = midC3795
-
-    n_cell = 1
-    step = 2  # step in boundary points in mm
-    L_bp_l = 0.0001  # 4 * L_m  #
-    L_bp_r = 0.0001  # 4 * L_m  #
+    n_cell = 2
+    step = 1  # step in boundary points in mm
+    L_bp_l = 4 * L_m  # 0.0001  #
+    L_bp_r = 4 * L_m  # 0.0001  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -878,6 +882,6 @@ def arcTo(x_center, y_center, a, b, step, start, end):
 
 if __name__ == '__main__':
 
-    # drawCavity()
-    drawCavity_flat_top()
+    drawCavity()
+    # drawCavity_flat_top()
     # drawCapacitor()

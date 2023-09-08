@@ -61,15 +61,23 @@ def plot_sobol_indices(filepath, objectives, which=None, kind='stacked', orienta
     ic(result_interaction)
     # result = result_interaction
     df_merge = pd.DataFrame(columns=['main', 'total', 'vars'])
+    ic(df_merge)
     # print the lines between the keywords
+    # df_merge_list = []
     for i, (k, v) in enumerate(result.items()):
         df = pd.DataFrame(v, columns=['main', 'total', 'vars'])
         df = df.astype({'main': 'float', 'total': 'float'})
+        # df_merge_list.append(df)
+        # ic(df)
+        # ic(df_merge)
         if i == 0:
             df_merge = df
         else:
-            df_merge = pd.merge(df_merge, df, on='vars')
+            df_merge = pd.merge(df_merge, df, on='vars', suffixes=(f'{i}', f'{i+1}'))
         # df.plot.bar(x='var', y='Main')
+    # ic(df_merge_list)
+    # df_merge = pd.merge(df_merge_list, on='vars')
+    # ic(df_merge)
 
     df_merge_interaction = pd.DataFrame(columns=['interaction', 'var1', 'var2'])
     for i, (k, v) in enumerate(result_interaction.items()):
@@ -104,7 +112,6 @@ def plot_sobol_indices(filepath, objectives, which=None, kind='stacked', orienta
             if not dff.empty:
                 dff['vars'] = df_merge_interaction[['var1', 'var2']].apply(lambda x: '_'.join(x), axis=1)
         ic(dff)
-
 
         cmap = 'tab20'
 
@@ -198,12 +205,13 @@ def combine_params_output(folder, N):
 
 
 if __name__ == '__main__':
-    plt.rcParams["figure.figsize"] = (8, 3)
-    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC__1mm"
+    plt.rcParams["figure.figsize"] = (6, 2)
+    filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC_10%"
     #
     # obj = [r"$Q_\mathrm{ext, FM}$", r"$\max(Q_\mathrm{ext, dip})$"]
-    obj = [r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
-    plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal')
+    # obj = [r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
+    obj = [r"$S_\mathrm{max}~\mathrm{[dB]}$", r"$S_\mathrm{min}~\mathrm{[dB]}$", r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
+    plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal')#, normalise=False
 
     # quadrature_nodes_to_cst_par_input(filefolder, n=10)
     # combine_params_output(filefolder, 10)

@@ -3,10 +3,12 @@ Cavity800
 SSC_for_Sosoho
 C538
 C1092V
+KWT_simulations
 C800MHz
-SampleProject
+SimulationData
 MuCol_Study
 TestFolder
+PhD_Thesis
 exe/own_exe
 manual_run/slans/Cavity
 dist

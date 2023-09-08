@@ -511,7 +511,8 @@ class PlotControl:
     def signals(self):
         self.ui.pb_Reset_Colors.clicked.connect(lambda: self.reset_colors())
         # self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
-        self.le_Color.textChanged.connect(lambda: self.plt.update_object_color(self.le_Color.text()))
+        self.le_Color.textChanged.connect(lambda: self.plt.update_object_properties({'color': self.le_Color.text()}))
+        self.ui.dsb_Alpha.valueChanged.connect(lambda: self.plt.update_object_properties({'alpha': self.ui.dsb_Alpha.value()}))
 
         # plot abci impedance
         self.ui.pb_Plot.clicked.connect(lambda: self.plot())
@@ -527,6 +528,7 @@ class PlotControl:
         # signal for plot menu pages
         self.ui.pb_Machine_Parameters.clicked.connect(lambda: self.toggle_page('Machine Parameters'))
         self.ui.pb_Plot_Decorations.clicked.connect(lambda: self.toggle_page('Plot Decorations'))
+        self.ui.pb_Plot_Element_Format.clicked.connect(lambda: self.toggle_page('Plot Element Format'))
 
         # signal for plot argument entrmake widgets rey
         # self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda: animate_height(self.ui.w_Plot_Args, 0, 200, True))
@@ -563,6 +565,12 @@ class PlotControl:
 
         # plot axvline
         self.ui.pb_Add_Vline.clicked.connect(lambda: self.plt.add_axvline(self.ui.dsb_Axvline_X.value()))
+
+        # add rectangular patch
+        self.ui.pb_Add_Patch.clicked.connect(lambda: self.plt.add_patch(
+            (self.ui.le_Patch_Pos_X.text(), self.ui.le_Patch_Pos_Y.text()), self.ui.le_Patch_Size_A.text(),
+            self.ui.le_Patch_Size_B.text(),
+            self.ui.cb_Patch_Type.currentText().lower()))
 
         # switch axis
         self.ui.cb_Active_Axis.currentTextChanged.connect(lambda: self.switch_axis())
@@ -786,7 +794,7 @@ class PlotControl:
                         e = 1.602e-19
                         Nb = 2.26e11
                         I0 = 5e-3
-                        Pf = np.array(y)*I0*e*Nb  # k_hom*I0*e*Nb
+                        Pf = np.array(y) * I0 * e * Nb  # k_hom*I0*e*Nb
 
                         # # Define bin edges and calculate bin centers
                         # bin_edges = np.linspace(np.array(xr).min(), np.array(xr).max(), num=int((np.array(xr).min() + np.array(xr).max())/2))
@@ -1110,8 +1118,15 @@ class PlotControl:
                         self.axins.plot(line.get_xdata(), line.get_ydata(), linestyle='None', marker=line.get_marker(),
                                         markersize=line.get_ms(), c=line.get_color(), mec=line.get_mec())
                     else:
-                        self.axins.plot(line.get_xdata(), line.get_ydata(), ls=line.get_linestyle(),
-                                        linewidth=line.get_lw(), c=line.get_color())
+                        if self.ui.cb_Plot_Peaks.checkState() == 2:
+                            peaks, _ = scipy.signal.find_peaks(line.get_ydata(), height=self.ui.dsb_Threshold.value())
+                            self.axins.plot(line.get_xdata(), line.get_ydata(), ls=line.get_linestyle(),
+                                            linewidth=line.get_lw(), c=line.get_color(), markevery=peaks, marker='o',
+                                            mec='k')
+
+                        else:
+                            self.axins.plot(line.get_xdata(), line.get_ydata(), ls=line.get_linestyle(),
+                                            linewidth=line.get_lw(), c=line.get_color())
 
             # sub region of the original image
             # get values from line edit
@@ -1996,15 +2011,16 @@ class PlotControl:
 
             x_delta = xlim[1] - xlim[0]
             y_delta = ylim[1] - ylim[0]
+
             if not inverse:
-                x_out = xlim[0] + ((np.e ** xin - 1) / (np.e - 1)) * x_delta
-                y_out = ylim[0] + ((np.e ** yin - 1) / (np.e - 1)) * y_delta
+                x_out = xlim[0] + xin * x_delta
+                y_out = ylim[0] ** (1 - yin) * ylim[1] ** yin
                 print("\t", x_out, y_out)
             else:
                 x_delta2 = xin - xlim[0]
                 y_delta2 = yin - ylim[0]
-                x_out = np.log(1 + (np.e - 1) * x_delta2 / x_delta)
-                y_out = np.log(1 + (np.e - 1) * y_delta2 / y_delta)
+                x_out = x_delta2 / x_delta
+                y_out = np.log(yin / ylim[0]) / np.log(ylim[1] / ylim[0])
                 print("\t", x_out, y_out)
 
         else:
@@ -2013,6 +2029,7 @@ class PlotControl:
 
             x_delta = xlim[1] - xlim[0]
             y_delta = ylim[1] - ylim[0]
+
             if not inverse:
                 x_out = xlim[0] + xin * x_delta
                 y_out = ylim[0] + yin * y_delta
@@ -2103,14 +2120,16 @@ class PlotControl:
                 indx = self.mode_list_sorted[f'{sc[1]}'].index(f"{sc[0]}")
                 freq = self.f_list_sorted[f'{sc[1]}'][indx]
 
-                vl = self.ax.axvline(freq, label=f"{sc[0]} cutoff (Ri={sc[1]})", ls='--', c='k')
+                vl = self.ax.axvline(freq, ls='--', c='k')  # label=f"{sc[0]} cutoff (Ri={sc[1]})",
 
-                pos = self.axis_data_coords_sys_transform(self.ax, freq, 0.5)
+                # get y text position from axis position. Position x is not used
+                pos = self.axis_data_coords_sys_transform(self.ax, freq, 0.05, inverse=False)
 
+                ylim = self.ax.get_ylim()
                 ab = self.plt.add_text(r"$f_\mathrm{c," + f"{sc[0]}" + r"} (R_\mathrm{i} = "
                                        + f"{sc[1]}" + r" ~\mathrm{mm}) $",
-                                       box="None", xy=(pos[0], 0.1),
-                                       xycoords='axes fraction', size=14, rotation=90)
+                                       box="None", xy=(freq, pos[1]),
+                                       xycoords='data', size=14, rotation=90)
 
                 # update axes object dictionary
                 self.ax_obj_dict.update({f"{sc}": [vl, ab]})
@@ -2152,6 +2171,9 @@ class PlotControl:
 
         if key == 'Machine Parameters':
             self.ui.sw_Plot_Area_Tools.setCurrentIndex(1)
+
+        if key == 'Plot Element Format':
+            self.ui.sw_Plot_Area_Tools.setCurrentIndex(2)
 
     def toggle_axis_labels(self):
         if len(self.ax.get_lines()) == 0:
@@ -2431,42 +2453,8 @@ class PlotControl:
     def set_line_properties(self, line, attr_dict):
         line.set(attr_dict)
 
-    def serialize(self, state_dict):
-
-        # update state file
-        state_dict["Inlet_Position"] = self.ui.le_Inset_Position.text()
-        state_dict["Inset_Window"] = self.ui.le_Inset_Window.text()
-        state_dict["Show_Hide_Inset"] = self.ui.cb_Show_Hide_Inset.checkState()
-        state_dict["Y_Scale"] = self.ui.cb_Y_Scale.currentText()
-
-        state_dict["Show_Wakefield_Parameters"] = self.ui.cb_Show_Wakefield_Parameters.checkState()
-
-        state_dict["Text"] = self.ui.le_Plot_Text.text()
-        state_dict["Peaks Threshold"] = self.ui.dsb_Threshold.value()
-
-        state_dict["E0"] = self.ui.le_E0.text()
-        state_dict["Nu_S"] = self.ui.le_Nu_S.text()
-        state_dict["I0"] = self.ui.le_I0.text()
-        state_dict["Alpha_S"] = self.ui.le_Alpha_P.text()
-        state_dict["Tau_Z"] = self.ui.le_Tau_Z.text()
-        state_dict["Tau_XY"] = self.ui.le_Tau_XY.text()
-        state_dict["F_Rev"] = self.ui.le_F_Rev.text()
-        state_dict["Beta_XY"] = self.ui.le_Beta_XY.text()
-        state_dict["N_Cav"] = self.ui.le_N_Cav.text()
-        state_dict["Longitudinal Threshold Checkbox"] = self.ui.cb_Longitudinal_Threshold.checkState()
-        state_dict["Transverse Threshold Checkbox"] = self.ui.cb_Transverse_Threshold.checkState()
-        state_dict["Threshold Line Color"] = self.ui.cb_Threshold_Line_Color.currentText()
-        state_dict["Threshold Linestyle"] = self.ui.cb_Threshold_Linestyle.currentText()
-
-        state_dict["xlabel"] = self.le_Xlabel.text()
-        state_dict["ylabel"] = self.le_Ylabel.text()
-        state_dict["title"] = self.le_Title.text()
-        state_dict["xlabel_size"] = self.sb_XLabel_Size.value()
-        state_dict["ylabel_size"] = self.sb_YLabel_Size.value()
-        state_dict["title_size"] = self.sb_Title_Size.value()
-        state_dict["xlabeltick_size"] = self.sb_XLabel_Tick_Size.value()
-        state_dict["ylabeltick_size"] = self.sb_YLabel_Tick_Size.value()
-        state_dict["legend_size"] = self.sb_Legend_Size.value()
+    def serialise(self, state_dict):
+        serialise(state_dict, self.w_Plot, marker='plot')
 
         # serialize table widget
         table_widget_state = {}
@@ -2501,44 +2489,10 @@ class PlotControl:
                              }
         state_dict['plot_objects_attr'] = plot_objects_attr
 
-    def deserialize(self, state_dict):
+    def deserialise(self, state_dict):
+        deserialise(state_dict, self.w_Plot, marker='plot')
+
         try:
-            self.ui.le_Inset_Position.setText(state_dict["Inlet_Position"])
-            self.ui.le_Inset_Window.setText(state_dict["Inset_Window"])
-
-            self.ui.cb_Show_Hide_Inset.setCheckState(state_dict["Show_Hide_Inset"])
-
-            self.ui.cb_Y_Scale.setCurrentText(state_dict["Y_Scale"])
-
-            self.ui.cb_Show_Wakefield_Parameters.setCheckState(state_dict["Show_Wakefield_Parameters"])
-
-            self.ui.le_Plot_Text.setText(state_dict["Text"])
-            self.ui.dsb_Threshold.setValue(state_dict["Peaks Threshold"])
-
-            self.ui.le_E0.setText(state_dict["E0"])
-            self.ui.le_Nu_S.setText(state_dict["Nu_S"])
-            self.ui.le_I0.setText(state_dict["I0"])
-            self.ui.le_Alpha_P.setText(state_dict["Alpha_S"])
-            self.ui.le_Tau_Z.setText(state_dict["Tau_Z"])
-            self.ui.le_Tau_XY.setText(state_dict["Tau_XY"])
-            self.ui.le_F_Rev.setText(state_dict["F_Rev"])
-            self.ui.le_Beta_XY.setText(state_dict["Beta_XY"])
-            self.ui.le_N_Cav.setText(state_dict["N_Cav"])
-            self.ui.cb_Longitudinal_Threshold.setCheckState(state_dict["Longitudinal Threshold Checkbox"])
-            self.ui.cb_Transverse_Threshold.setCheckState(state_dict["Transverse Threshold Checkbox"])
-            self.ui.cb_Threshold_Line_Color.setCurrentText(state_dict["Threshold Line Color"])
-            self.ui.cb_Threshold_Linestyle.setCurrentText(state_dict["Threshold Linestyle"])
-
-            self.le_Xlabel.setText(state_dict["xlabel"])
-            self.le_Ylabel.setText(state_dict["ylabel"])
-            self.le_Title.setText(state_dict["title"])
-            self.sb_XLabel_Size.setValue(state_dict["xlabel_size"])
-            self.sb_YLabel_Size.setValue(state_dict["ylabel_size"])
-            self.sb_Title_Size.setValue(state_dict["title_size"])
-            self.sb_XLabel_Tick_Size.setValue(state_dict["xlabeltick_size"])
-            self.sb_YLabel_Tick_Size.setValue(state_dict["ylabeltick_size"])
-            self.sb_Legend_Size.setValue(state_dict["legend_size"])
-
             table_widget_state = state_dict['plot_table_widget']
             # print(table_widget_state)
             # self.ui.tableWidget.setRowCount(0)
@@ -2549,7 +2503,8 @@ class PlotControl:
                 args_dict = self.plot_dict[i]['plot inputs']
 
                 args_dict['Code'].setCurrentText(v["Code"])
-                args_dict['Folder'][0].setText(v["Folder"])  # [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget]
+                args_dict['Folder'][0].setText(
+                    v["Folder"])  # [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget]
 
                 args_dict['Polarization'].setCurrentText(v["Polarization"])
 
@@ -2597,5 +2552,5 @@ class PlotControl:
 
             self.update_labels()
             self.fig.canvas.draw_idle()
-        except KeyError as e:
+        except (KeyError, TypeError) as e:
             print("Could not deserialize plot_control.py: ", e)

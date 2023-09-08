@@ -83,6 +83,9 @@ class QGraphicsLineDirect(QGraphicsLine):
     def calcPath(self):
 
         path = QPainterPath(QPointF(self.posSource[0], self.posSource[1]))
+        A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = self.IC
+        A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = self.OC
+        A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = self.OC
 
         if self.IC is None or self.OC is None or self.BP is None:
             # DEFINE VARIABLES
@@ -212,7 +215,7 @@ class QGraphicsLineDirect(QGraphicsLine):
                 path.arcTo(QRectF(-a_el + L_bp_l-shift, Ri_el, 2*a_el, 2*b_el), 90, -90+alpha1_el)
 
                 # DRAW LINE CONNECTING ARCS
-                path.lineTo(-shift + x2el, y2el)
+                path.lineTo(-shift + L_bp_l + x2el, y2el)
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
                 path.arcTo(QRectF(L_el-A_el + L_bp_l-shift, Req_el-2*B_el, 2*A_el, 2*B_el),
@@ -224,7 +227,7 @@ class QGraphicsLineDirect(QGraphicsLine):
                 path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el - a_m + L_bp_l-shift, Ri_m, 2*a_m, 2*b_m), 90, -90+alpha1)
 
                 # DRAW LINE CONNECTING ARCS
-                path.lineTo(2*(i-1)*L_m + L_m + L_el-shift + x2, y2)
+                path.lineTo(2*(i-1)*L_m + L_m + L_el + L_bp_l-shift + x2, y2)
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
                 path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + L_m-A_m + L_bp_l-shift,
@@ -247,7 +250,7 @@ class QGraphicsLineDirect(QGraphicsLine):
                                       Req_er-2*B_er, 2*A_er, 2*B_er), 270, 90-alpha2_er)
 
                     # STRAIGHT LINE TO NEXT POINT
-                    path.lineTo(2*(i-1)*L_m + L_m + L_el + 2*L_er - x1er + 2*L_bp_l-shift, y1er)
+                    path.lineTo(2*(i-1)*L_m + L_m + L_el + 2*L_er + L_bp_l - x1er + 2*L_bp_l-shift, y1er)
 
                     # ARC
                     path.arcTo(QRectF(2*(i-1)*L_m + L_m + L_el + 2*L_er-a_er + L_bp_l-shift,

@@ -51,6 +51,8 @@ class ABCIGeometry(Geometry):
         # UBT = 0.3  # The last longitudinal coordinate relative to the head of the beam,
         # up to which the potentials are calculated (defaults 10*Sig). The longer the better resolution of impedance
         bunch_length = bunch_length
+        wake_offset = 5e-03
+        beam_offset = 5e-03
         sig_var = [x*1e-3 for x in [bunch_length]]  # bunch length converted to m
 
         # not needed for our parametrization
@@ -63,8 +65,8 @@ class ABCIGeometry(Geometry):
             module_nu = no_of_modules  # Number of cavities in module
             n = no_of_cells  # Number of cells
             SIG = sig_var[i_out]  # One standard deviation of bunch length
-            mesh_DDR = DDR_SIG*SIG
-            mesh_DDZ = DDZ_SIG*SIG
+            mesh_DDR = min(self.ri_M/10, DDR_SIG*SIG)#/lines_per_sigma
+            mesh_DDZ = min(self.ri_M/10, DDZ_SIG*SIG)#/lines_per_sigma
 
             #  mesh_DDR = 2.5*1e-3
             #  mesh_DDZ = 2.5*1e-3
@@ -250,9 +252,11 @@ class ABCIGeometry(Geometry):
                     f.write('9999. 9999. \n')
 
                 f.write(' &BEAM  SIG = {}, MROT = {}  &END \n'.format(SIG, MROT))
+                # f.write(' &BEAM  SIG = {}, MROT = {}, RDRIVE = {}  &END \n'.format(SIG, MROT, beam_offset))
                 f.write(' &TIME  MT = {} &END \n'.format(MT))
                 f.write(' &WAKE  UBT = {} &END \n'.format(UBT))
-                f.write(' &WAKE   &END \n')
+                # f.write(' &WAKE  UBT = {}, LCHIN = .F., LNAPOLY = .F., LNONAP = .F. &END \n'.format(UBT, wake_offset))
+                # f.write(' &WAKE R  = {}   &END \n'.format(wake_offset))
                 f.write(' &PLOT  LCAVIN = .T., LCAVUS = .T., LPLW = .T., LFFT = .T., LSPEC = .T., '
                         'LINTZ = .F., LPATH = .T., NFS = {} &END \n'.format(NFS))
                 f.write(' &PRIN  LPRW = .T. ,LSVW = .T., LSVWL = .T.,  LSVF = .T.   &END\n')
@@ -261,7 +265,7 @@ class ABCIGeometry(Geometry):
             abci_path = os.getcwd()
 
             exe_path = os.path.join(abci_path, parentDir / fr'exe\ABCI_exe\ABCI_MP64+.exe')
-            # print(exe_path)
+
             subprocess.call([exe_path, Path(fr'{run_save_directory}\Cavity_MROT_{MROT}.abc')],
                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 

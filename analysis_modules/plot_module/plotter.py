@@ -12,8 +12,11 @@ from matplotlib.figure import Figure
 import warnings
 import matplotlib.gridspec as gridspec
 import matplotlib as mpl
-from analysis_modules.plot_module.matplotlib_annotation_objects import DraggableText, DraggableAxvline
-from frame_controls.edit_annotated_text_dialog import EditATextDialog
+from analysis_modules.plot_module.matplotlib_annotation_objects import DraggableText, DraggableAxvline, DraggableRectangle
+from frame_controls.edit_matplotlibobjects_dialog import EditATextDialog
+import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
+import matplotlib.path as mpath
 
 matplotlib.use('Qt5Agg')
 
@@ -35,6 +38,9 @@ def print_(*arg):
 
 class Plot(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=12, height=9, dpi=100):
+
+        self.event = None
+        plt.rcParams['axes.prop_cycle'] = plt.cycler('color', plt.cm.Set2.colors)
         self.event_y = None
         self.event_x = None
         self.eal = None
@@ -115,7 +121,8 @@ class Plot(FigureCanvasQTAgg):
         # # create new widgets
         # self.create_new_widgets()
         self.w_Color = QColorDialog()
-        self.w_Color.currentColorChanged.connect(lambda: self.update_object_color(self.w_Color.currentColor().name()))
+        self.w_Color.currentColorChanged.connect(lambda: self.update_object_properties(
+            {'color': self.w_Color.currentColor().name()}))
 
         # redefine save_image function
         self.toolbar.sizeHint()
@@ -127,7 +134,7 @@ class Plot(FigureCanvasQTAgg):
         self.signals()
         self.text_dict = {}
         self.axvline_dict = {}
-        self.patched_dict = {}
+        self.patch_dict = {}
 
         self.selected_object = None
 
@@ -168,18 +175,6 @@ class Plot(FigureCanvasQTAgg):
     def plot_settings(mode):
         # plt.style.use(['science', 'no-latex'])
         if mode == 'presentation':
-            # plt.rcParams["figure.figsize"] = (11, 6)
-            #
-            # mpl.rcParams['lines.markersize'] = 10
-            #
-            # # axes
-            # mpl.rcParams['axes.labelsize'] = 20
-            # mpl.rcParams['axes.titlesize'] = 25
-            #
-            # mpl.rcParams['xtick.labelsize'] = 15
-            # mpl.rcParams['ytick.labelsize'] = 15
-            #
-
             # plot settings
             mpl.rcParams['xtick.labelsize'] = 20
             mpl.rcParams['ytick.labelsize'] = 20
@@ -224,6 +219,11 @@ class Plot(FigureCanvasQTAgg):
         # self.cid_axes_leave = self.fig.canvas.mpl_connect('axes_leave_event', self.leave_axes)
 
     def on_press(self, event):
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         # get event position in fig size
         self.event_x, self.event_y = event.x, event.y
 
@@ -237,18 +237,18 @@ class Plot(FigureCanvasQTAgg):
                     pass
 
                 if isinstance(self.selected_object, matplotlib.text.Annotation):
-                    self.text_dict[id(self.selected_object)].connect()
+                    self.text_dict[f'{id(self.selected_object)}'].connect()
                     pass
 
                 if isinstance(self.selected_object, matplotlib.collections.PathCollection):
-                    obj_id = id(self.selected_object)
+                    obj_id = f'{id(self.selected_object)}'
                     if obj_id in self.picked_points_annotext_id_dict.keys():
                         annotext_id = self.picked_points_annotext_id_dict[obj_id]
 
                         # remove annotated text object from axes
-                        self.text_dict[annotext_id].remove()
+                        self.text_dict[str(annotext_id)].remove()
                         # remove annotated text object from dictionary
-                        del self.text_dict[annotext_id]
+                        del self.text_dict[str(annotext_id)]
 
                         # remove scatter object from axes
                         self.selected_object.remove()
@@ -323,7 +323,7 @@ class Plot(FigureCanvasQTAgg):
                                              size=14, rotation=0,
                                              arrowprops=dict(arrowstyle='-', facecolor='black'))
 
-                    self.picked_points_annotext_id_dict[id(scatter_obj)] = id(annotext)
+                    self.picked_points_annotext_id_dict[str(id(scatter_obj))] = str(id(annotext))
                     self.selected_points_list.append([x_picked, y_picked])
 
                     # self.axvline_dict[f"{id(self.selected_object)}"].connect()
@@ -334,18 +334,31 @@ class Plot(FigureCanvasQTAgg):
 
                 self.draw()
             else:
+                if event.inaxes is not None:
+                    for patch in self.ax.patches:
+                        if patch.contains(event)[0]:
+                            self.selected_object = patch
+                            # check format in which color was given
+                            if isinstance(patch.get_facecolor(), list) or isinstance(patch.get_facecolor(), tuple):
+                                color = mpl.colors.to_hex(patch.get_facecolor())
+                            else:
+                                color = patch.get_facecolor()
+
+                            self.color_widgets(color)
+
+                            # patch.set_edgecolor('red')  # Highlight the selected patch
+                            # self.fig.canvas.draw_idle()
                 # update color and properties
                 if isinstance(self.selected_object, matplotlib.lines.Line2D):
                     # set color picker color
-                    self.w_Color.setCurrentColor(QtGui.QColor(self.selected_object.get_color()))
-                    self.parent_.le_Color.setStyleSheet(f'background-color: {self.selected_object.get_color()};')
-                    self.parent_.pb_Color.setStyleSheet(f"background-color: {self.selected_object.get_color()};")
-                    self.parent_.le_Color.setText(self.selected_object.get_color())
-                    self.parent_.pb_Color.setText(self.selected_object.get_color())
-                    self.parentUI.dsb_Line_Width.setValue(self.selected_object.get_linewidth())
-                    self.parentUI.cb_Line_Style.setCurrentText(self.selected_object.get_linestyle())
-                    self.parentUI.cb_Marker.setCurrentText(self.selected_object.get_marker())
-                    self.parentUI.db_Marker_Size.setValue(self.selected_object.get_markersize())
+
+                    # check format in which color was given
+                    if isinstance(self.selected_object.get_color(), list) or isinstance(self.selected_object.get_color(), tuple):
+                        color = mpl.colors.to_hex(self.selected_object.get_color())
+                    else:
+                        color = self.selected_object.get_color()
+
+                    self.color_widgets(color, self.selected_object)
 
         if event.button == 2:  # MMB
             pass
@@ -356,10 +369,18 @@ class Plot(FigureCanvasQTAgg):
                 self.draggableTextContextMenuEvent(event)
             elif isinstance(self.selected_object, matplotlib.lines.Line2D):
                 self.draggableAxvlineContextMenuEvent(event)
+            elif event.inaxes is not None:
+                for patch in self.ax.patches:
+                    if patch.contains(event)[0]:
+                        self.patchContextMenuEvent(event, patch)
             else:
                 self.contextMenuEvent(event)
 
     def on_release(self, event):
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         # reset selected object to none
         # self.selected_object = None
         self.PRESS = False
@@ -385,11 +406,21 @@ class Plot(FigureCanvasQTAgg):
         #     legline.set_alpha(0.2)
         #############################################################
 
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         if event.artist is not None:
             self.selected_object = event.artist
             self.event = event
 
     def on_motion(self, event):
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+
+            return 0
+
         # vis = self.annot.get_visible()
         # if isinstance(self.ax, event.inaxes):  # not so good fix
         #     cont, ind = self.plot_object.contains(event)
@@ -438,20 +469,37 @@ class Plot(FigureCanvasQTAgg):
         self.annot.get_bbox_patch().set_facecolor((167 / 255, 222 / 255, 255 / 255))
         # self.annot.get_bbox_patch().set_alpha(1)
 
-    def update_object_color(self, color):
+    def update_object_properties(self, props):
         if self.selected_object is not None:
             if isinstance(self.selected_object, matplotlib.legend.Legend):
                 pass
-            else:
-                self.selected_object.set_color(color)
-                self.selected_object.set_markerfacecolor(color)
-                self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
-                self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
-                self.parent_.le_Color.setText(color)
-                self.parent_.pb_Color.setText(color)
-                # copy the image to the GUI state, but screen might not be changed yet
-                self.draw_idle()
-                self.flush_events()
+            elif isinstance(self.selected_object, matplotlib.lines.Line2D) or isinstance(self.selected_object, matplotlib.collections.PathCollection):
+
+                if 'color' in props.keys():
+                    color = props['color']
+
+                    self.selected_object.set_color(color)
+                    self.selected_object.set_markerfacecolor(color)
+                    self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
+                    self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
+                    self.parent_.le_Color.setText(color)
+                    self.parent_.pb_Color.setText(color)
+                    # copy the image to the GUI state, but screen might not be changed yet
+                if 'alpha' in props.keys():
+                    alpha = props['alpha']
+                    self.selected_object.set_alpha(alpha)
+
+            elif isinstance(self.selected_object, matplotlib.patches.Rectangle) or isinstance(self.selected_object, matplotlib.patches.Circle):
+                if 'color' in props.keys():
+                    color = props['color']
+                    self.selected_object.set(facecolor=color)
+                if 'alpha' in props.keys():
+                    alpha = props['alpha']
+                    self.selected_object.set_alpha(alpha)
+
+            self.draw_idle()
+            self.flush_events()
+            self.parent_.update_labels()
 
     def contextMenuEvent(self, event):
         contextMenu = QMenu(self)
@@ -480,16 +528,15 @@ class Plot(FigureCanvasQTAgg):
 
         if action == deleteAct:
             self.remove_text()
-            self.text_dict.pop(f"{id(self.selected_object)}")
 
         elif action == editAct:
-            try:
-                self.text_dict[f"{id(self.selected_object)}"].disconnect()
-            except KeyError:
-                pass
+            # try:
+            #     self.text_dict[f"{id(self.selected_object)}"].disconnect()
+            # except KeyError:
+            #     pass
 
             # create pop up widget
-            self.eat = EditATextDialog(self, self.selected_object)
+            self.eat = EditATextDialog(self, self.text_dict[f"{id(self.selected_object)}"])
             self.eat.show()
 
     def draggableAxvlineContextMenuEvent(self, event):
@@ -511,6 +558,31 @@ class Plot(FigureCanvasQTAgg):
             # create pop up widget
             self.eal = EditALine2DDialog(self, self.selected_object)
             self.eal.show()
+
+    def patchContextMenuEvent(self, event, patch):
+        contextMenu = QMenu(self)
+        # editAct = contextMenu.addAction("Edit")
+        deleteAct = contextMenu.addAction("Delete")
+
+        # get figure size and subtract from event.y because event.y counts bottom up
+        action = contextMenu.exec_(
+            self.mapToGlobal(QtCore.QPoint(event.x, int(self.fig.get_size_inches()[1] * self.fig.dpi) - event.y)))
+
+        if action == deleteAct:
+            patch.remove()
+            self.patch_dict.pop(f"{id(patch)}")
+            self.draw_idle()
+            self.flush_events()
+        #
+        # elif action == editAct:
+        #     try:
+        #         self.patch_dict[f"{id(patch)}"].disconnect()
+        #     except KeyError:
+        #         pass
+        #
+        #     # create pop up widget
+        #     self.epd = EditPatchDialog(self, self.selected_object)
+        #     self.epd.show()
 
     def add_text(self, text, box, xy=(0.5, 0.5), xycoords='data', xytext=None, textcoords='data',
                  size=14, rotation=0, arrowprops=None):
@@ -560,12 +632,12 @@ class Plot(FigureCanvasQTAgg):
 
         dt = DraggableText(annotext)
         dt.connect()
-        self.text_dict[id(annotext)] = dt
+        self.text_dict[f'{id(annotext)}'] = dt
 
-        return annotext
+        return dt
 
     def remove_text(self):
-        selected_obj_id = id(self.selected_object)
+        selected_obj_id = f'{id(self.selected_object)}'
         self.text_dict[selected_obj_id].remove()
         # remove key from dictionary
         del self.text_dict[selected_obj_id]
@@ -590,13 +662,61 @@ class Plot(FigureCanvasQTAgg):
         self.axvline_dict[f"{id(self.selected_object)}"].remove()
         self.draw()
 
-    def add_square(self):
-        # add square object
+    def add_patch(self, pos, a, b, kind='rectangle', ec='none', fc='red', alpha=0.1):
+        # check inputs
+        try:
+            pos = tuple([eval(n) for n in pos])
+            a = eval(a)
+            b = eval(b)
+            if kind == 'rectangle':
+                self.add_rectangle(pos, a, b, ec=ec, fc=fc, alpha=alpha)
+            elif kind == 'ellipse':
+                self.add_ellipse(pos, a, b, ec=ec, fc=fc, alpha=alpha)
+            self.draw_idle()
+            self.flush_events()
+        except (NameError, SyntaxError) as e:
+            print(f"Exception occurred -> {e}")
 
+    def remove_patch(self):
+        pass
+
+    def add_rectangle(self, pos, a, b, ec='none', fc='red', alpha=0.3):
+        rect = mpatches.Rectangle(pos, a, b, ec=ec, fc=fc, alpha=alpha, lw=2, zorder=10)
+
+        # add to axis
+        if "left" in self.parentUI.cb_Active_Axis.currentText().lower():
+            ax = self.ax
+        else:
+            ax = self.ax_right
+
+        ax.add_artist(rect)
+
+        dp = DraggableRectangle(rect)
+        dp.connect()
+
+        # add to path dict
+        self.patch_dict[f'{id(rect)}'] = dp
+
+    def add_ellipse(self, pos, a, b, ec='b', fc='b', alpha=0.3):
+        # add rectangule object
+        ellipse = mpatches.Ellipse(pos, a, b, ec=ec, fc=fc, alpha=alpha)
+
+        # add to axis
+        if "left" in self.parentUI.cb_Active_Axis.currentText().lower():
+            ax = self.ax
+        else:
+            ax = self.ax_right
+        ax.add_artist(ellipse)
+
+        # add to path dict
+        self.patch_dict[f'{id(ellipse)}'] = ellipse
         #
         pass
 
-    def remove_square(self):
+    def remove_rectangle(self):
+        pass
+
+    def remove_ellipse(self):
         pass
 
     def clear(self):
@@ -623,6 +743,25 @@ class Plot(FigureCanvasQTAgg):
         self.fig.patch.set_facecolor(color)
         self.draw_idle()
         self.flush_events()
+
+    def color_widgets(self, color, obj=None):
+        self.w_Color.setCurrentColor(QtGui.QColor(color))
+        self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
+        self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
+        self.parent_.le_Color.setText(color)
+        self.parent_.pb_Color.setText(color)
+
+        alpha = self.selected_object.get_alpha()
+        if alpha:
+            self.parentUI.dsb_Alpha.setValue(alpha)
+        else:
+            self.parentUI.dsb_Alpha.setValue(1)
+
+        if obj is not None:
+            self.parentUI.dsb_Line_Width.setValue(self.selected_object.get_linewidth())
+            self.parentUI.cb_Line_Style.setCurrentText(self.selected_object.get_linestyle())
+            self.parentUI.cb_Marker.setCurrentText(self.selected_object.get_marker())
+            self.parentUI.db_Marker_Size.setValue(self.selected_object.get_markersize())
 
 
 class ZoomPan:

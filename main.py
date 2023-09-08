@@ -168,17 +168,17 @@ class MainWindow:
         # self.ui.pb_rHome.leaveEvent = self.tray_animation
 
         # save event filter to variable to be restored later
-        self.default_ef = self.main_win.eventFilter
-        self.main_win.eventFilter = self.eventFilter
-        self.ui.pb_rBack.installEventFilter(self.main_win)
-        self.ui.pb_rHome.installEventFilter(self.main_win)
-        self.ui.pb_rTune.installEventFilter(self.main_win)
-        self.ui.pb_rEigenmode.installEventFilter(self.main_win)
-        self.ui.pb_rWakefield.installEventFilter(self.main_win)
-        self.ui.pb_rMultipacting.installEventFilter(self.main_win)
-        self.ui.pb_rPlot.installEventFilter(self.main_win)
-        self.ui.pb_rPostprocess.installEventFilter(self.main_win)
-        self.ui.pb_rMisc.installEventFilter(self.main_win)
+        # self.default_ef = self.main_win.eventFilter
+        # self.main_win.eventFilter = self.eventFilter
+        # self.ui.pb_rBack.installEventFilter(self.main_win)
+        # self.ui.pb_rHome.installEventFilter(self.main_win)
+        # self.ui.pb_rTune.installEventFilter(self.main_win)
+        # self.ui.pb_rEigenmode.installEventFilter(self.main_win)
+        # self.ui.pb_rWakefield.installEventFilter(self.main_win)
+        # self.ui.pb_rMultipacting.installEventFilter(self.main_win)
+        # self.ui.pb_rPlot.installEventFilter(self.main_win)
+        # self.ui.pb_rPostprocess.installEventFilter(self.main_win)
+        # self.ui.pb_rMisc.installEventFilter(self.main_win)
 
         # ui effects
         try:
@@ -332,15 +332,15 @@ class MainWindow:
         self.ui.g_Display.addWidget(w, 0, 1, 1, 1)
         w.show()
 
-        for k, pb in self.tray_buttons_dict.items():
-            if key == k:
-                pb[0].setMinimumWidth(75)
-                pb[0].setMaximumWidth(75)
-                pb[0].setChecked(True)
-            else:
-                pb[0].setMinimumWidth(50)
-                pb[0].setMaximumWidth(50)
-                pb[0].setChecked(False)
+        # for k, pb in self.tray_buttons_dict.items():
+        #     if key == k:
+        #         pb[0].setMinimumWidth(75)
+        #         pb[0].setMaximumWidth(75)
+        #         pb[0].setChecked(True)
+        #     else:
+        #         pb[0].setMinimumWidth(50)
+        #         pb[0].setMaximumWidth(50)
+        #         pb[0].setChecked(False)
 
     def return_to_last_frame(self):
         """
@@ -498,6 +498,7 @@ class MainWindow:
 
         stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.ui.cb_Theme.currentText()])
         self.main_win.setStyleSheet(stylesheet)
+        self.main_win.setStyleSheet('*{font: 13px "Segoe UI";}')
         self.last_saved_theme = self.ui.cb_Theme.currentText()
 
         # if self.ui.hs_Theme.value() == 0:
@@ -525,22 +526,22 @@ class MainWindow:
             print("state_file.json not found, initializing state_dict = {}")
             state_dict = {}
 
-        # update state file
+        # update state file○
         # serialize home
         state_dict["Project Directory"] = str(self.projectDir)
         state_dict['Theme'] = self.last_saved_theme
 
         # serialize tuneUI
-        self.tune_widget.serialize(state_dict)
+        self.tune_widget.serialise(state_dict)
 
         # serialize eigenmodeUI
-        self.eigenmode_widget.serialize(state_dict)
+        self.eigenmode_widget.serialise(state_dict)
 
         # serialize wakefieldUI
-        self.wakefield_widget.serialize(state_dict)
+        self.wakefield_widget.serialise(state_dict)
 
         # serialize plotUI
-        self.plot_widget.serialize(state_dict)
+        self.plot_widget.serialise(state_dict)
 
         # dump save state file
         with open(Path('ui_state_files/state_file.json'), 'w', encoding='utf-8') as file:
@@ -589,10 +590,10 @@ class MainWindow:
             # open project
             self.open_project(self.projectDir)
 
-            self.tune_widget.deserialize(state_dict)
-            self.eigenmode_widget.deserialize(state_dict)
-            self.wakefield_widget.deserialize(state_dict)
-            self.plot_widget.deserialize(state_dict)
+            self.tune_widget.deserialise(state_dict)
+            self.eigenmode_widget.deserialise(state_dict)
+            self.wakefield_widget.deserialise(state_dict)
+            self.plot_widget.deserialise(state_dict)
 
     def load_last_state(self):
         """

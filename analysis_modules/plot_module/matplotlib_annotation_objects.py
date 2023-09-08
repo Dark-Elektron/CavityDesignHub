@@ -2,14 +2,37 @@
 # http://www.scipy.org/Cookbook/Matplotlib/Animations
 # import numpy as np
 # import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
 
 class DraggableRectangle:
     lock = None  # only one can be animated at a time
 
     def __init__(self, rect):
         self.rect = rect
+        self.toolbar = self.rect.figure.canvas.toolbar
         self.press = None
         self.background = None
+        self.drag_points = []
+
+        # self.create_drag_points()
+
+    def create_drag_points(self):
+        x, y, width, height = self.rect.get_x(), self.rect.get_y(), self.rect.get_width(), self.rect.get_height()
+
+        # to ensure fixed width and height for the drag points always, convert fixed axes sizes (0.01, 0.01)
+        # to display units and then to datapoints.
+        xdisplay, ydisplay = self.rect.axes.transAxes.transform((0.005, 0.005))
+        xdata, ydata = self.rect.axes.transData.inverted().transform((xdisplay, ydisplay))
+
+        self.drag_points = [
+            Rectangle((x - 0.02, y - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True),
+            Rectangle((x + width - 0.02, y - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True),
+            Rectangle((x - 0.02, y + height - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True),
+            Rectangle((x + width - 0.02, y + height - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True)
+        ]
+        for drag_point in self.drag_points:
+            self.rect.axes.add_patch(drag_point)
 
     def connect(self):
         """connect to all the events we need"""
@@ -22,11 +45,19 @@ class DraggableRectangle:
 
     def on_press(self, event):
         """on button press we will see if the mouse is over us and store some data"""
-        if event.inaxes != self.rect.axes: return
-        if DraggableRectangle.lock is not None: return
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+        if event.inaxes != self.rect.axes:
+            return
+        if DraggableRectangle.lock is not None:
+            return
         contains, attrd = self.rect.contains(event)
-        if not contains: return
-        print('event contains', self.rect.xy)
+        if not contains:
+            return
+        # print('event contains', self.rect.xy)
+
         x0, y0 = self.rect.xy
         self.press = x0, y0, event.xdata, event.ydata
         DraggableRectangle.lock = self
@@ -46,13 +77,21 @@ class DraggableRectangle:
 
     def on_motion(self, event):
         """on motion we will move the rect if the mouse is over us"""
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
         if DraggableRectangle.lock is not self:
             return
-        if event.inaxes != self.rect.axes: return
+        if event.inaxes != self.rect.axes:
+            return
+
         x0, y0, xpress, ypress = self.press
+        # print(x0, y0, xpress, ypress)
         dx = event.xdata - xpress
         dy = event.ydata - ypress
         self.rect.set_x(x0 + dx)
+        # print('dxdy', dx, dy)
         self.rect.set_y(y0 + dy)
 
         canvas = self.rect.figure.canvas
@@ -68,6 +107,11 @@ class DraggableRectangle:
 
     def on_release(self, event):
         """on release we reset the press data"""
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         if DraggableRectangle.lock is not self:
             return
 
@@ -97,6 +141,7 @@ class DraggableText:
         self.background = None
         self.prev_text = None
 
+        self.toolbar = self.text.figure.canvas.toolbar
         self.text.set_picker(True)
 
         self.x = 0.5
@@ -114,6 +159,10 @@ class DraggableText:
 
     def on_press(self, event):
         """on button press we will see if the mouse is over us and store some data"""
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
         if event.inaxes != self.text.axes:
             return
         if DraggableText.lock is not None:
@@ -146,6 +195,11 @@ class DraggableText:
 
     def on_motion(self, event):
         """on motion, we will move the text if the mouse is over us"""
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         if DraggableText.lock is not self:
             return
         if event.inaxes != self.text.axes:
@@ -168,6 +222,7 @@ class DraggableText:
             # self.x, self.y = fig.transFigure.inversed().transform()
             self.x, self.y = axes.transData.inverted().transform((self.x, self.y))
             self.text.set_position((self.x, self.y))
+            print('in here', self.text.get_position())
         elif self.text.xycoords == 'axes fraction':
 
             # calculate relative position as fraction of figure
@@ -196,6 +251,11 @@ class DraggableText:
 
     def on_release(self, event):
         """on release, we reset the press data"""
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         if DraggableText.lock is not self:
             return
 
@@ -451,6 +511,7 @@ class DraggableAxvline:
         self.axvline = axvline
         self.press = None
         self.background = None
+        self.toolbar = self.axvline.figure.canvas.toolbar
 
     def connect(self):
         """connect to all the events we need"""
@@ -463,6 +524,11 @@ class DraggableAxvline:
 
     def on_press(self, event):
         """on button press we will see if the mouse is over us and store some data"""
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         if event.inaxes != self.axvline.axes:
             return
         if DraggableAxvline.lock is not None:
@@ -489,6 +555,11 @@ class DraggableAxvline:
         canvas.blit(axes.bbox)
 
     def on_motion(self, event):
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         """on motion, we will move the axvline if the mouse is over us"""
         if DraggableAxvline.lock is not self:
             return
@@ -496,7 +567,7 @@ class DraggableAxvline:
         x0, xpress = self.press
         dx = event.xdata - xpress
 
-        self.axvline.set_xdata([x+dx for x in x0])
+        self.axvline.set_xdata([x + dx for x in x0])
 
         canvas = self.axvline.figure.canvas
         axes = self.axvline.axes
@@ -510,6 +581,11 @@ class DraggableAxvline:
         canvas.blit(axes.bbox)
 
     def on_release(self, event):
+
+        # check if zoom or pan mode is active to avoid selection of matplotlib objects
+        if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
+            return 0
+
         """on release, we reset the press data"""
         if DraggableAxvline.lock is not self:
             return

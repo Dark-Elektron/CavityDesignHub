@@ -146,6 +146,9 @@
                       <height>24</height>
                      </size>
                     </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -168,6 +171,25 @@
                       <width>24</width>
                       <height>24</height>
                      </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="pb_Plot_Element_Format">
+                    <property name="minimumSize">
+                     <size>
+                      <width>24</width>
+                      <height>24</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>...</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
                     </property>
                    </widget>
                   </item>
@@ -213,6 +235,9 @@
                    <width>24</width>
                    <height>24</height>
                   </size>
+                 </property>
+                 <property name="checkable">
+                  <bool>true</bool>
                  </property>
                 </widget>
                </item>
@@ -495,8 +520,8 @@
                                 <rect>
                                  <x>0</x>
                                  <y>0</y>
-                                 <width>533</width>
-                                 <height>98</height>
+                                 <width>513</width>
+                                 <height>84</height>
                                 </rect>
                                </property>
                                <layout class="QGridLayout" name="gridLayout_27">
@@ -715,7 +740,7 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>859</width>
+                        <width>895</width>
                         <height>1152</height>
                        </rect>
                       </property>
@@ -746,8 +771,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>798</width>
-                                <height>755</height>
+                                <width>844</width>
+                                <height>813</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1069,12 +1094,58 @@
                               <property name="geometry">
                                <rect>
                                 <x>0</x>
-                                <y>0</y>
-                                <width>798</width>
-                                <height>1133</height>
+                                <y>-62</y>
+                                <width>845</width>
+                                <height>1182</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
+                               <item row="6" column="0">
+                                <spacer name="verticalSpacer_9">
+                                 <property name="orientation">
+                                  <enum>Qt::Vertical</enum>
+                                 </property>
+                                 <property name="sizeHint" stdset="0">
+                                  <size>
+                                   <width>20</width>
+                                   <height>40</height>
+                                  </size>
+                                 </property>
+                                </spacer>
+                               </item>
+                               <item row="0" column="0">
+                                <widget class="QPushButton" name="pb_Show_Hide_Machine_Parameters">
+                                 <property name="text">
+                                  <string>Machine Parameters</string>
+                                 </property>
+                                 <property name="checkable">
+                                  <bool>true</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="2" column="0">
+                                <widget class="QPushButton" name="pb_Annotation">
+                                 <property name="text">
+                                  <string>Annotations</string>
+                                 </property>
+                                 <property name="checkable">
+                                  <bool>true</bool>
+                                 </property>
+                                 <property name="checked">
+                                  <bool>true</bool>
+                                 </property>
+                                </widget>
+                               </item>
+                               <item row="4" column="0">
+                                <widget class="QPushButton" name="pb_Patches">
+                                 <property name="text">
+                                  <string>Patches</string>
+                                 </property>
+                                 <property name="checkable">
+                                  <bool>true</bool>
+                                 </property>
+                                </widget>
+                               </item>
                                <item row="3" column="0">
                                 <widget class="QWidget" name="w_Annotations" native="true">
                                  <layout class="QGridLayout" name="gridLayout_16">
@@ -1087,7 +1158,14 @@
                                      </size>
                                     </property>
                                     <layout class="QGridLayout" name="gridLayout_21">
-                                     <item row="0" column="0" colspan="6">
+                                     <item row="3" column="1">
+                                      <widget class="QPushButton" name="pb_Recalculate_cutoff">
+                                       <property name="text">
+                                        <string>Refresh</string>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item row="0" column="0" colspan="3">
                                       <widget class="QLabel" name="label_32">
                                        <property name="text">
                                         <string>Plot Beam Pipe Cutoff</string>
@@ -1116,26 +1194,6 @@
                                         <widget class="QSpinBox" name="sb_Mode_Text_Rotation"/>
                                        </item>
                                       </layout>
-                                     </item>
-                                     <item row="3" column="1">
-                                      <widget class="QPushButton" name="pb_Recalculate_cutoff">
-                                       <property name="text">
-                                        <string>Refresh</string>
-                                       </property>
-                                      </widget>
-                                     </item>
-                                     <item row="3" column="2" colspan="3">
-                                      <spacer name="horizontalSpacer">
-                                       <property name="orientation">
-                                        <enum>Qt::Horizontal</enum>
-                                       </property>
-                                       <property name="sizeHint" stdset="0">
-                                        <size>
-                                         <width>40</width>
-                                         <height>20</height>
-                                        </size>
-                                       </property>
-                                      </spacer>
                                      </item>
                                     </layout>
                                    </widget>
@@ -1276,29 +1334,6 @@
                                   </item>
                                  </layout>
                                 </widget>
-                               </item>
-                               <item row="0" column="0">
-                                <widget class="QPushButton" name="pb_Show_Hide_Machine_Parameters">
-                                 <property name="text">
-                                  <string>Machine Parameters</string>
-                                 </property>
-                                 <property name="checkable">
-                                  <bool>true</bool>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="4" column="0">
-                                <spacer name="verticalSpacer_9">
-                                 <property name="orientation">
-                                  <enum>Qt::Vertical</enum>
-                                 </property>
-                                 <property name="sizeHint" stdset="0">
-                                  <size>
-                                   <width>20</width>
-                                   <height>40</height>
-                                  </size>
-                                 </property>
-                                </spacer>
                                </item>
                                <item row="1" column="0">
                                 <widget class="QWidget" name="w_Machine_Parameters" native="true">
@@ -1483,8 +1518,8 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>718</width>
-                                          <height>365</height>
+                                          <width>778</width>
+                                          <height>339</height>
                                          </rect>
                                         </property>
                                         <layout class="QGridLayout" name="gridLayout_31">
@@ -1821,17 +1856,86 @@
                                  </layout>
                                 </widget>
                                </item>
-                               <item row="2" column="0">
-                                <widget class="QPushButton" name="pb_Annotation">
-                                 <property name="text">
-                                  <string>Annotations</string>
-                                 </property>
-                                 <property name="checkable">
-                                  <bool>true</bool>
-                                 </property>
-                                 <property name="checked">
-                                  <bool>true</bool>
-                                 </property>
+                               <item row="5" column="0">
+                                <widget class="QWidget" name="w_Patches" native="true">
+                                 <layout class="QGridLayout" name="gridLayout_30">
+                                  <item row="2" column="2">
+                                   <widget class="QLineEdit" name="le_Patch_Pos_Y">
+                                    <property name="text">
+                                     <string>100</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="2" column="1">
+                                   <widget class="QLineEdit" name="le_Patch_Pos_X">
+                                    <property name="text">
+                                     <string>100</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="4" column="0" colspan="3">
+                                   <widget class="QPushButton" name="pb_Add_Patch">
+                                    <property name="text">
+                                     <string>Add</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="3" column="2">
+                                   <widget class="QLineEdit" name="le_Patch_Size_B">
+                                    <property name="text">
+                                     <string>100</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="3" column="1">
+                                   <widget class="QLineEdit" name="le_Patch_Size_A">
+                                    <property name="text">
+                                     <string>100</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="0" column="0" colspan="3">
+                                   <widget class="QComboBox" name="cb_Patch_Type">
+                                    <item>
+                                     <property name="text">
+                                      <string>Rectangle</string>
+                                     </property>
+                                    </item>
+                                    <item>
+                                     <property name="text">
+                                      <string>Ellipse</string>
+                                     </property>
+                                    </item>
+                                   </widget>
+                                  </item>
+                                  <item row="3" column="0">
+                                   <widget class="QLabel" name="label_7">
+                                    <property name="text">
+                                     <string>Size</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="2" column="0">
+                                   <widget class="QLabel" name="label_6">
+                                    <property name="text">
+                                     <string>Position</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="0" column="3">
+                                   <spacer name="horizontalSpacer_5">
+                                    <property name="orientation">
+                                     <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                     <size>
+                                      <width>40</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                   </spacer>
+                                  </item>
+                                 </layout>
                                 </widget>
                                </item>
                               </layout>
@@ -2273,6 +2377,22 @@
     <hint type="destinationlabel">
      <x>1352</x>
      <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Patches</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Patches</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1025</x>
+     <y>995</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>1025</x>
+     <y>1064</y>
     </hint>
    </hints>
   </connection>

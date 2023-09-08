@@ -1,29 +1,143 @@
+import math
 import os.path
 import matplotlib as mpl
 import numpy as np
 import pandas as pd
+import scipy.integrate
 from icecream import ic
 from matplotlib import pyplot as plt
+from numpy import loadtxt
 
 
-def eigenmode_analysis(sim_folder, folders, requests):
+def compile_monopole(folder, request, cavity_half_len, n_cells):
+    """
+    This function filters monopole modes from eigenmode analysis
+    Returns
+    -------
+
+    """
+
+    monopole_mode_num, beampipe_modes = [], []
+
+    for path in os.listdir(fr'{folder}\Export'):
+        if request in path:
+            # get axis field profile
+
+            mode_number = int(path.split(' ')[-1].split('.')[0])
+
+            mode = pd.read_csv(fr"{folder}\Export\{path}", sep="\t", header=None)
+
+            z, Ez = mode[0], mode[1]
+
+            # filter axis field if maximum is less than 1e4
+            if max(abs(Ez)) < 1e4:
+                # ic('Low axis field value: ', mode_number, max(abs(Ez)))
+                continue
+
+            # # detect noisy field values
+            # peaks, _ = scipy.signal.find_peaks(abs(Ez), height=2000)
+            # if len(peaks) > 20:
+            #     # ic('Noisy: Possibly Quadrupole: ', mode_number, "Number of peaks: ", len(peaks))
+            #     continue
+
+            # check if maximum field is in beampipe
+            Ez_cav = np.array(Ez)[np.where((z > -cavity_half_len*n_cells) & (z < cavity_half_len*n_cells))]
+            Ez_bp = np.array(Ez)[np.where((z < -cavity_half_len*n_cells) | (z > cavity_half_len*n_cells))]
+            # plt.plot(np.array(z)[np.where((z < -cavity_half_len*n_cells) | (z > cavity_half_len*n_cells))], Ez_bp)
+            # plt.plot(np.array(z)[np.where((z > -cavity_half_len*n_cells) & (z < cavity_half_len*n_cells))], Ez_cav)
+            # plt.show()
+
+            Ez_cav_mx, Ez_bp_mx = max(abs(Ez_cav)), max(abs(Ez_bp))
+            # ic(mode_number, Ez_cav_mx, Ez_bp_mx)
+            field_ratio = Ez_cav_mx/Ez_bp_mx
+            # ic(mode_number, field_ratio)
+            if field_ratio < 0.2:
+                beampipe_modes.append(mode_number)
+                # ic('Beampipe mode: ', mode_number)
+                continue
+
+            monopole_mode_num.append(mode_number)
+    sorted_mode_number = np.sort(monopole_mode_num)
+    ic(np.sort(beampipe_modes))
+    return sorted_mode_number
+
+
+def monopole_mode(z, Ez, cavity_half_len, n_cells):
+    # filter axis field if maximum is less than 1e4
+    if max(abs(Ez)) < 1e5:
+        return False
+
+    # # detect noisy field values
+    # peaks, _ = scipy.signal.find_peaks(abs(Ez))
+    # if len(peaks) > 20:
+    #     return False
+
+    # check if maximum field is in beampipe
+    Ez_cav = np.array(Ez)[np.where((z > -cavity_half_len * n_cells) & (z < cavity_half_len * n_cells))]
+    Ez_bp = np.array(Ez)[np.where((z < -cavity_half_len * n_cells) | (z > cavity_half_len * n_cells))]
+
+    Ez_cav_mx, Ez_bp_mx = max(abs(Ez_cav)), max(abs(Ez_bp))
+    field_ratio = Ez_cav_mx / Ez_bp_mx
+    if field_ratio < 0.2:
+        return False
+
+    return True
+
+
+def dipole_mode(z, Ez, cavity_half_len, n_cells):
+    Ez = np.abs(Ez)
+    # filter axis field if maximum is less than 1e4
+    if max(abs(Ez)) < 1e5:
+        ic('Low axis field value: ', max(abs(Ez)))
+        return False
+
+    # detect noisy field values
+    peaks, _ = scipy.signal.find_peaks(abs(Ez), height=2000)
+    # plt.plot(z, Ez)
+    # plt.scatter(z[peaks], Ez[peaks])
+    # plt.show()
+    if len(peaks) > 100:
+        ic('Noisy: Possibly Quadrupole: ', "Number of peaks: ", len(peaks))
+        return False
+
+    # check if maximum field is in beampipe
+    Ez_cav = np.array(Ez)[np.where((z > -cavity_half_len * n_cells) & (z < cavity_half_len * n_cells))]
+    Ez_bp = np.array(Ez)[np.where((z < -cavity_half_len * n_cells) | (z > cavity_half_len * n_cells))]
+    # plt.plot(np.array(z)[np.where((z < -cavity_half_len*n_cells) | (z > cavity_half_len*n_cells))], Ez_bp)
+    # plt.plot(np.array(z)[np.where((z > -cavity_half_len*n_cells) & (z < cavity_half_len*n_cells))], Ez_cav)
+    # plt.show()
+    Ez_cav_mx, Ez_bp_mx = max(abs(Ez_cav)), max(abs(Ez_bp))
+    field_ratio = Ez_cav_mx / Ez_bp_mx
+    if field_ratio < 0.2:
+        ic('Beampipe mode: ')
+        return False
+
+    return True
+
+
+def eigenmode_analysis(sim_folder, folders, requests, name):
     df = pd.DataFrame()
     for request in requests:
         d = pd.DataFrame()
         for folder in folders:
-            d = pd.concat([d, pd.read_csv(fr"{sim_folder}\{folder}\Export\{request}.txt", sep="\t", header=None)])
-            # print(d)
+            new_d = pd.read_csv(fr"{sim_folder}\{folder}\Export\{request}.txt", sep="\t", header=None)
+            new_d.index += 1
+            d = pd.concat([d, new_d])
 
         df[request] = d.loc[:, 1]
 
-    # other
-    f = df["Frequency (Multiple Modes)"][df["RQT_kOhm_m"] == max(df["RQT_kOhm_m"])]
-    f = f.values[0]
-    print(f, max(df["RQT_kOhm_m"]))
-    write_threshold(fr"{sim_folder}\Lossy_Eigenmode_results")
+    # get monopole mode inde and filter dataframe
+    monopole_index = compile_monopole(fr"{sim_folder}\{name}", 'e_Z (Z)_', 93.5, 5) - 1
+    ic(monopole_index)
+    df = df.iloc[monopole_index, :]
+    # # other
+    # f = df["Frequency (Multiple Modes)"][df["RQT_kOhm_m"] == max(df["RQT_kOhm_m"])]
+    # f = f.values[0]
+    # print(f, max(df["RQT_kOhm_m"]))
+    # write_threshold(fr"{sim_folder}\Lossy_Eigenmode_results")
 
     # df = df.sort_values(by=['Frequency (Multiple Modes)'])
-    recursive_save(df, fr"{sim_folder}\Lossy_Eigenmode_results")
+    recursive_save(df, fr"{sim_folder}\{name}")
 
 
 def split_axis_x(data, bounds, scale='linear', divisions=None, labels=None):
@@ -63,7 +177,7 @@ def split_axis_x(data, bounds, scale='linear', divisions=None, labels=None):
                 ax.plot((1 - d, 1 + d), (1 - d, 1 + d), **kwargs)  # top-right diagonal
                 ax.plot((1 - d, 1 + d), (-d, +d), **kwargs)  # bottom-right diagonal
                 # ax.axhline(100, c='k')
-                ax.axhline(1e10/670, c='k')
+                # ax.axhline(1e10/670, c='k')
 
             if 0 < i < len(bounds) - 1:
                 ax.spines['left'].set_visible(False)
@@ -81,7 +195,7 @@ def split_axis_x(data, bounds, scale='linear', divisions=None, labels=None):
                 ax.plot((-d, +d), (-d, +d), **kwargs)  # top-left diagonal
                 ax.plot((-d, +d), (1 - d, 1 + d), **kwargs)  # bottom-left diagonal
                 # ax.axhline(100, c='k')
-                ax.axhline(1e10/670, c='k')
+                # ax.axhline(1e10/670, c='k')
 
             if i == len(bounds) - 1:
                 ax.spines['left'].set_visible(False)
@@ -98,7 +212,7 @@ def split_axis_x(data, bounds, scale='linear', divisions=None, labels=None):
                 ax.plot((-d, +d), (-d, +d), **kwargs)  # top-left diagonal
                 ax.plot((-d, +d), (1 - d, 1 + d), **kwargs)  # top-right diagonal
                 # ax.axhline(100, c='k')
-                ax.axhline(1e10/670, c='k')
+                # ax.axhline(1e10/670, c='k')
 
     f.supxlabel("$f$ [MHz]")
     f.supylabel(r'$Z_\perp \mathrm{/cav ~[k \Omega/m]}$')
@@ -106,7 +220,6 @@ def split_axis_x(data, bounds, scale='linear', divisions=None, labels=None):
 
 
 def plot_threshold():
-    plt.rcParams["figure.figsize"] = (10, 4.5)
     df = pd.read_excel(fr"D:\CST Studio\MuCol_Study\Assembly\Eigenmode\NLSF_Lossy_Eigenmode_results_.xlsx", "Sheet1")
     intervals = [[1600, 1990], [2450, 2590]]
 
@@ -136,21 +249,21 @@ def plot_threshold():
     Z = (df['RQT_kOhm_m']*1e-3*670) * (f*1e-3)**2
     split_axis_x([[f, Zth], [f, Z]], intervals, scale='log', divisions=divisions, labels=labels)
     plt.ylim(0, 1e3)
-    plt.legend(ncol=2)
+    plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left",
+              mode="expand", borderaxespad=0, ncol=2)
     plt.tight_layout()
     plt.show()
 
 
 def plot_threshold_Z():
-    plt.rcParams["figure.figsize"] = (10, 5)
     df = pd.read_excel(fr"D:\CST Studio\MuCol_Study\Assembly\Eigenmode\NLSF_Lossy_Eigenmode_results_.xlsx", "Sheet1")
     intervals = [[1600, 1990], [2450, 2590]]
 
     df = pd.read_excel(fr"D:\CST Studio\MuCol_Study\Assembly\Eigenmode\ERL_MA_Lossy_Eigenmode_results.xlsx", "Sheet1")
     intervals = [[1540, 1920], [2470, 2515]]
 
-    df = pd.read_excel(fr"D:\CST Studio\MuCol_Study\Assembly\Eigenmode\TESLA_Lossy_Eigenmode_results.xlsx", "Sheet1")
-    intervals = [[1600, 1905], [2470, 2590]]
+    # df = pd.read_excel(fr"D:\CST Studio\MuCol_Study\Assembly\Eigenmode\TESLA_Lossy_Eigenmode_results.xlsx", "Sheet1")
+    # intervals = [[1600, 1905], [2470, 2590]]
 
     # get only dipole modes
     df = df[df['Pol'] == 'D']
@@ -171,7 +284,8 @@ def plot_threshold_Z():
 
     split_axis_x([[f, Zth], [f, df['Z_T_kOhm_m']]], intervals, scale='log', divisions=divisions, labels=labels)
     plt.ylim(0, 1e11 / 670)
-    plt.legend(ncol=2)
+    plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), loc="lower left",
+              mode="expand", borderaxespad=0, ncol=2)
     plt.tight_layout()
     plt.show()
 
@@ -221,15 +335,62 @@ def recursive_save(df, filename):
         df.to_excel(f"{filename}.xlsx")
 
 
+def plot_particle_vs_time():
+
+    df = pd.read_csv(fr"D:\CST Studio\Multipacting_CST\tesla_mid_cell.csv", sep=",", skipfooter=1, engine='python')
+    df1 = pd.read_csv(fr"D:\CST Studio\Multipacting_CST\tesla_mid_cell_ref.csv", sep=",", skipfooter=1, engine='python')
+    df = pd.concat([df, df1])
+    ic(df)
+
+    plt.stem(df['field_factor'], df[r'Tables\0D Results\Particle vs. Time_0D_yAtX'])
+    plt.show()
+
+# plot_particle_vs_time()
+
+
+def integrate_wake_potential():
+    sigma = 100e-3  # m
+    WL = pd.read_csv(fr"D:\CST Studio\TESLA\TESLA\Export\Particle Beams_ParticleBeam1_Wake potential_Z.txt", sep='\s+', engine='python', header=None)
+    WTx = pd.read_csv(fr"D:\CST Studio\TESLA\TESLA\Export\Particle Beams_ParticleBeam1_Wake potential_X.txt", sep='\s+', engine='python', header=None)
+    WTy = pd.read_csv(fr"D:\CST Studio\TESLA\TESLA\Export\Particle Beams_ParticleBeam1_Wake potential_X.txt", sep='\s+', engine='python', header=None)
+
+    WT = (WTx + WTy)/2
+    s = WL[0]*1e-3  # convert to m
+
+    # scale with bunch length
+    # for gaussian bunch
+    lambda_s = 1/(np.sqrt(2*np.pi)*sigma) * np.exp(-s**2/(2*sigma**2))
+
+    WsL = np.multiply(lambda_s, WL[1])
+    plt.plot(s, WsL)
+    plt.show()
+    WsT = np.multiply(lambda_s, WT[1])
+
+    k_loss = -np.trapz(WsL, s)
+    k_kick = np.trapz(WsT, s)
+
+    ds = np.array(s[1:]) - np.array(s[:-1])
+    left_area = WsL[:-1] * ds
+    right_area = WsL[1:] * ds
+    left_int = math.fsum(left_area)
+    right_int = math.fsum(right_area)
+
+    ic(left_int, right_int, np.abs(left_int-right_int))
+
+    ic(k_loss, k_kick)
+
+
+# integrate_wake_potential()
+
 if __name__ == '__main__':
-    sim_folder = r"D:\CST Studio\MuCol_Study\Assembly\Eigenmode"
-    folders = ["NLSF_9_cell_2DQW_D1", "NLSF_9_cell_2DQW_D2", "NLSF_9_cell_2DQW_D3", "NLSF_9_cell_2DQW_M1",
-               "NLSF_9_cell_2DQW_M2"]
-    folders = ["ERL_MA_9_cell_2DQW_D1", "ERL_MA_9_cell_2DQW_D2", "ERL_MA_9_cell_2DQW_D3", "ERL_MA_9_cell_2DQW_M1", "ERL_MA_9_cell_2DQW_M2"]
-    folders = ["TESLA_9_cell_2DQW_D1", "TESLA_9_cell_2DQW_D2", "TESLA_9_cell_2DQW_M1", "TESLA_9_cell_2DQW_D3"]
-    req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
-           "RQT", "RQT_kOhm_m", "Z_kOhm", "Z_T_kOhm_m"]
-    eigenmode_analysis(sim_folder, folders, req)
+    # plt.rcParams["figure.figsize"] = (10, 3)
+    # sim_folder = r"D:\CST Studio\5. tt\Eigenmode"
+    # folders = ["E_C3795"]
+    # req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
+    #        "RQT", "Z_kOhm", "Z_T_kOhm_m"]
+    # name = "E_C3795"
+    #
+    # eigenmode_analysis(sim_folder, folders, req, name)
 
     # sim_folder = r"D:\CST Studio\MuCol_Study\Couplers"
     # folders = ["DQW_1300MHz_Ri38mm"]
@@ -239,3 +400,9 @@ if __name__ == '__main__':
 
     # plot_threshold()
     # plot_threshold_Z()
+
+    sim_folder = r"D:\CST Studio\3. W\Eigenmode\E_C3794"
+    monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=0', 187, 2)
+    ic(monopole, len(monopole))
+    monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=Ri', 187, 2)
+    ic(monopole, len(monopole))

@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 # from numpy._distributor_init import Book1
 
+
 class Plotter:
     def __init__(self):
         self.color = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c']

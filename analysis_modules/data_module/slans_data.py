@@ -12,6 +12,8 @@ from utils.file_reader import FileReader
 import numpy as np
 import pandas as pd
 
+from utils.shared_functions import perform_geometry_checks
+
 fr = FileReader()
 
 
@@ -207,7 +209,7 @@ class SLANSDataExtraction:
     def __init__(self):
         pass
 
-    def multiple_folders_data(self, shape_space, slans_data_dir, mode, bc, request, save_excel, parallel=False):
+    def multiple_folders_data(self, dirs, slans_data_folder, mode, bc, request, save_excel, parallel=False):
         reply = "Yes"
 
         def button_clicked(i):
@@ -231,170 +233,226 @@ class SLANSDataExtraction:
                 reply = 'No'
 
         if reply == "Yes":
-            d = shape_space
+            # build shape space
+            df = pd.DataFrame(columns=['key',
+                                       'A_i', 'B_i', 'a_i', 'b_i', 'Ri_i', 'L_i', 'Req', 'alpha_i',
+                                       "Req [mm]", "Normalization Length [mm]", "N cells", "freq [MHz]", "Q []",
+                                       "E [MV/m]", "Vacc [MV]", "Eacc [MV/m]", "Epk [MV/m]", "Hpk [A/m]", "Bpk [mT]",
+                                       "kcc [%]", "ff [%]", "Rsh [Ohm]", "R/Q [Ohm]",
+                                       "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "GR/Q [Ohm^2]"])
 
-            # data arrays initialization
-            A, B, a, b, Ri, L, Req, alpha = [], [], [], [], [], [], [], []
-            key_list = []
+            for key in dirs:
+                if os.path.exists(f"{slans_data_folder}/{key}/qois.json") \
+                        and os.path.exists(f"{slans_data_folder}/{key}/geometric_parameters.json"):
+                    geometric_parameter = {}
+                    qois = {}
 
-            # data arrays initialization
-            Freq_arr = []
-            E_stored_arr = []
-            Rsh_arr = []
-            Q_arr = []
-            Epk_arr = []
-            Hpk_arr = []
-            Eacc_arr = []
-            Rsh_Q_arr = []
-            Epk_Eacc_arr = []
-            Bpk_Eacc_arr = []
-            kcc_arr = []
+                    with open(f"{slans_data_folder}/{key}/geometric_parameters.json") as json_file:
+                        geometric_parameter.update(json.load(json_file))
 
-            def append_geom_parameters(values):
-                A.append(values[0])
-                B.append(values[1])
-                a.append(values[2])
-                b.append(values[3])
-                Ri.append(values[4])
-                L.append(values[5])
-                Req.append(values[6])
-                alpha.append(values[7])
+                    with open(f"{slans_data_folder}/{key}/qois.json") as json_file:
+                        qois.update(json.load(json_file))
 
-            def get_0D_plot_data():
+                    # check frequency
+                    if not 801 <= qois['freq [MHz]'] <= 802:
+                        continue
 
-                # directory_list = [os.path.join(slans_data_dir, name) for name in os.listdir(slans_data_dir) if
-                #                   os.path.isdir(os.path.join(slans_data_dir, name))]
-                # print(directory_list)
-                for key, value in d.items():
-                    # if os.path.exists(f"{dir_}\geometric_parameters.json"):
-                    #     with open(f"{dir_}\geometric_parameters.json", 'r') as f:
-                    #         d = json.load(f)
-                    # else:
-                    #     continue
-                    # key = dir_[dir_.index("Cavity"):]
-                    slans_data = SLANSData(slans_data_dir, f"{key}", bc)
+                    # check alpha
+                    if not perform_geometry_checks(geometric_parameter['IC'], geometric_parameter['OC']):
+                        continue
 
-                    try:
-                        d_0d = slans_data.get_0D_plot_data()
 
-                        Freq = d_0d['FREQUENCY'][mode - 1]
-                        E_stored = d_0d['STORED ENERGY'][mode - 1]
-                        Rsh = d_0d['SHUNT IMPEDANCE'][mode - 1]  # MOhm
-                        Q = d_0d['QUALITY FACTOR'][mode - 1]
-                        Epk = d_0d['MAXIMUM ELEC. FIELD'][mode - 1]  # MV/m
-                        Hpk = d_0d['MAXIMUM MAG. FIELD'][mode - 1]  # A/m
-                        # Vacc = d_0d['ACCELERATION'][mode-1]
-                        Eavg = d_0d['AVERAGE E.FIELD ON AXIS'][mode - 1]  # MV/m
-                        Rsh_Q = d_0d['EFFECTIVE IMPEDANCE'][mode - 1]  # Ohm
-                        # Epk_Eacc = d_0d['KM (Emax/Accel.rate)'][mode-1]  #
-                        # Bpk_Eacc = d_0d['KH (Hmax*Z0/Accel.rate)'][mode-1]  # mT/(MV/m)
-                        try:
-                            L = 4*value["IC"][5]  # normalize to length of cell
-                        except KeyError:
-                            L = 4*value['L']
+                    df.loc[key, ['key']] = key
+                    df.loc[key, ['A_i', 'B_i', 'a_i', 'b_i', 'Ri_i', 'L_i', 'Req', 'alpha_i']] = geometric_parameter[
+                        'IC']
 
-                        Vacc = np.sqrt(2*Rsh_Q * E_stored * 2*np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
-                        # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
-                        # Eacc = Vacc / (374 * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
-                        Eacc = Vacc / (L * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
-                        Epk_Eacc = Epk / Eacc
-                        Bpk_Eacc = (Hpk * 4 * np.pi * 1e-7) * 1e3 / Eacc
+                    # check if end cell is not the same as mid cell
+                    if geometric_parameter['IC'] != geometric_parameter['OC']:
+                        df.loc[key, ['Aeq_ol', 'Beq_ol', 'ai_ol', 'bi_ol', 'Ri_ol', 'L_ol', 'Req_ol', 'alpha_ol']] = \
+                        geometric_parameter['OC']
 
-                        Freq_arr.append(Freq)
-                        E_stored_arr.append(E_stored)
-                        Rsh_arr.append(2 * Rsh)  # corrected to accelerator definition
-                        Q_arr.append(Q)
-                        Epk_arr.append(Epk)
-                        Hpk_arr.append(Hpk)
-                        Eacc_arr.append(Eacc)
-                        Epk_Eacc_arr.append(Epk_Eacc)
-                        Bpk_Eacc_arr.append(Bpk_Eacc)
-                        Rsh_Q_arr.append(2 * Rsh_Q)  # corrected to accelerator definition
+                        if 'OC_R' in list(geometric_parameter.keys()):
+                            if geometric_parameter['OC'] != geometric_parameter['OC_R']:
+                                df.iloc[
+                                    key, ['Aeq_or', 'Beq_or', 'ai_or', 'bi_or', 'Ri_or', 'L_or', 'Req_or',
+                                          'alpha_or']] = \
+                                    geometric_parameter['OC']
+                    df.loc[key, ["Req [mm]", "Normalization Length [mm]", "N cells", "freq [MHz]", "Q []",
+                                 "E [MV/m]", "Vacc [MV]", "Eacc [MV/m]", "Epk [MV/m]", "Hpk [A/m]", "Bpk [mT]",
+                                 "kcc [%]", "ff [%]", "Rsh [Ohm]", "R/Q [Ohm]",
+                                 "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "GR/Q [Ohm^2]"]] = list(qois.values())
 
-                        f_0, f_pi = d_0d['FREQUENCY'][0], d_0d['FREQUENCY'][mode - 1]
-                        try:
-                            kcc = 2 * (f_pi - f_0) / (f_pi + f_0)
-                        except ZeroDivisionError:
-                            kcc = 0
+                # print(key)
+            ic(df)
+            df = df.sort_values(by='key')
+            # df = pd.DataFrame.from_dict(data)
+            df.to_excel(f'{save_excel}.xlsx', index=False)
 
-                        kcc_arr.append(kcc * 100)
-                        try:
-                            append_geom_parameters(value["IC"])
-                        except KeyError:
-                            append_geom_parameters(list(value.values()))
 
-                        key_list.append(key)
-
-                    except FileNotFoundError:
-                        pass
-
-            # sheets = ['Sheet1', 'Sheet2']
-            def get_1D_plot_data():
-                new_save = True
-                for key, value in d.items():
-
-                    slans_data = SLANSData(slans_data_dir, key, bc)
-                    d_1d = slans_data.get_1D_plot_data()
-
-                    dd = d_1d[mode]
-                    fields = list(dd.keys())
-                    # print(sheets)
-
-                    # save excel
-                    if save_excel:
-                        data = {'x': dd[fields[0]]['x'], 'y_abs': dd[fields[0]]['y_abs']}
-                        df_axis_field = pd.DataFrame.from_dict(data)
-
-                        data = {'Es': dd[fields[1]]['Es']}
-                        df_surface_field = pd.DataFrame.from_dict(data)
-
-                        if new_save:
-                            with pd.ExcelWriter(f'{save_excel}_Axis_Fields.xlsx') as writer:
-                                df_axis_field.to_excel(writer, sheet_name=f'{key}')
-
-                            with pd.ExcelWriter(f'{save_excel}_Surface_Fields.xlsx') as writer:
-                                df_surface_field.to_excel(writer, sheet_name=f'{key}')
-
-                            new_save = False
-                        else:
-                            with pd.ExcelWriter(f'{save_excel}_Axis_Fields.xlsx', engine="openpyxl",
-                                                mode='a') as writer:
-                                df_axis_field.to_excel(writer, sheet_name=f'{key}')
-
-                            with pd.ExcelWriter(f'{save_excel}_Surface_Fields.xlsx', engine="openpyxl",
-                                                mode='a') as writer:
-                                df_surface_field.to_excel(writer, sheet_name=f'{key}')
-
-            print(request)
-
-            if request == '0D Data':
-                get_0D_plot_data()
-                print(len(Epk_Eacc_arr), len(Bpk_Eacc_arr), len(Epk_arr), len(A), len(kcc_arr))
-
-                # save excel
-                if save_excel:
-                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req,
-                            "alpha": alpha,
-                            f'Freq_{mode}': Freq_arr,
-                            f'E_stored_{mode}': E_stored_arr, f'Rsh_{mode}': Rsh_arr, f'Q_{mode}': Q_arr,
-                            f'Epk_{mode}': Epk_arr, f'Hpk_{mode}': Hpk_arr, f'Eacc_{mode}': Eacc_arr,
-                            f'Rsh/Q_{mode}': Rsh_Q_arr, f'Epk/Eacc_{mode}': Epk_Eacc_arr,
-                            f'Bpk/Eacc_{mode}': Bpk_Eacc_arr, f'kcc_{mode}': kcc_arr}
-
-                    df = pd.DataFrame.from_dict(data)
-                    df.to_excel(f'{save_excel}.xlsx', index=False)
-
-                    # # save to json
-                    # with open(f'{save_excel}.json', 'w') as f:
-                    #     json.dump(data, f, indent=4, separators=(',', ': '))
-
-            if request == '1D Data':
-                if not os.path.exists(f'{save_excel}_Axis_Fields.xlsx') and not os.path.exists(
-                        f'{save_excel}_Surface_Fields.xlsx'):
-                    get_1D_plot_data()
-                else:
-                    print(f"Hey Chief, seems you've already processed the {save_excel} data for this folder. "
-                          "Delete the file to reprocess or rename save_excel argument")
+            # d = shape_space
+            #
+            # # data arrays initialization
+            # A, B, a, b, Ri, L, Req, alpha = [], [], [], [], [], [], [], []
+            # key_list = []
+            #
+            # # data arrays initialization
+            # Freq_arr = []
+            # E_stored_arr = []
+            # Rsh_arr = []
+            # Q_arr = []
+            # Epk_arr = []
+            # Hpk_arr = []
+            # Eacc_arr = []
+            # Rsh_Q_arr = []
+            # Epk_Eacc_arr = []
+            # Bpk_Eacc_arr = []
+            # kcc_arr = []
+            #
+            # def append_geom_parameters(values):
+            #     A.append(values[0])
+            #     B.append(values[1])
+            #     a.append(values[2])
+            #     b.append(values[3])
+            #     Ri.append(values[4])
+            #     L.append(values[5])
+            #     Req.append(values[6])
+            #     alpha.append(values[7])
+            #
+            # def get_0D_plot_data():
+            #
+            #     # directory_list = [os.path.join(slans_data_dir, name) for name in os.listdir(slans_data_dir) if
+            #     #                   os.path.isdir(os.path.join(slans_data_dir, name))]
+            #     # print(directory_list)
+            #     for key, value in d.items():
+            #         # if os.path.exists(f"{dir_}\geometric_parameters.json"):
+            #         #     with open(f"{dir_}\geometric_parameters.json", 'r') as f:
+            #         #         d = json.load(f)
+            #         # else:
+            #         #     continue
+            #         # key = dir_[dir_.index("Cavity"):]
+            #         slans_data = SLANSData(slans_data_dir, f"{key}", bc)
+            #
+            #         try:
+            #             d_0d = slans_data.get_0D_plot_data()
+            #
+            #             Freq = d_0d['FREQUENCY'][mode - 1]
+            #             E_stored = d_0d['STORED ENERGY'][mode - 1]
+            #             Rsh = d_0d['SHUNT IMPEDANCE'][mode - 1]  # MOhm
+            #             Q = d_0d['QUALITY FACTOR'][mode - 1]
+            #             Epk = d_0d['MAXIMUM ELEC. FIELD'][mode - 1]  # MV/m
+            #             Hpk = d_0d['MAXIMUM MAG. FIELD'][mode - 1]  # A/m
+            #             # Vacc = d_0d['ACCELERATION'][mode-1]
+            #             Eavg = d_0d['AVERAGE E.FIELD ON AXIS'][mode - 1]  # MV/m
+            #             Rsh_Q = d_0d['EFFECTIVE IMPEDANCE'][mode - 1]  # Ohm
+            #             # Epk_Eacc = d_0d['KM (Emax/Accel.rate)'][mode-1]  #
+            #             # Bpk_Eacc = d_0d['KH (Hmax*Z0/Accel.rate)'][mode-1]  # mT/(MV/m)
+            #             try:
+            #                 L = 4*value["IC"][5]  # normalize to length of cell
+            #             except KeyError:
+            #                 L = 4*value['L']
+            #
+            #             Vacc = np.sqrt(2*Rsh_Q * E_stored * 2*np.pi * Freq * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
+            #             # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+            #             # Eacc = Vacc / (374 * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
+            #             Eacc = Vacc / (L * 1e-3)  # for 1 cell factor of 2, remember circuit and accelerator definition
+            #             Epk_Eacc = Epk / Eacc
+            #             Bpk_Eacc = (Hpk * 4 * np.pi * 1e-7) * 1e3 / Eacc
+            #
+            #             Freq_arr.append(Freq)
+            #             E_stored_arr.append(E_stored)
+            #             Rsh_arr.append(2 * Rsh)  # corrected to accelerator definition
+            #             Q_arr.append(Q)
+            #             Epk_arr.append(Epk)
+            #             Hpk_arr.append(Hpk)
+            #             Eacc_arr.append(Eacc)
+            #             Epk_Eacc_arr.append(Epk_Eacc)
+            #             Bpk_Eacc_arr.append(Bpk_Eacc)
+            #             Rsh_Q_arr.append(2 * Rsh_Q)  # corrected to accelerator definition
+            #
+            #             f_0, f_pi = d_0d['FREQUENCY'][0], d_0d['FREQUENCY'][mode - 1]
+            #             try:
+            #                 kcc = 2 * (f_pi - f_0) / (f_pi + f_0)
+            #             except ZeroDivisionError:
+            #                 kcc = 0
+            #
+            #             kcc_arr.append(kcc * 100)
+            #             try:
+            #                 append_geom_parameters(value["IC"])
+            #             except KeyError:
+            #                 append_geom_parameters(list(value.values()))
+            #
+            #             key_list.append(key)
+            #
+            #         except FileNotFoundError:
+            #             pass
+            #
+            # # sheets = ['Sheet1', 'Sheet2']
+            # def get_1D_plot_data():
+            #     new_save = True
+            #     for key, value in d.items():
+            #
+            #         slans_data = SLANSData(slans_data_dir, key, bc)
+            #         d_1d = slans_data.get_1D_plot_data()
+            #
+            #         dd = d_1d[mode]
+            #         fields = list(dd.keys())
+            #         # print(sheets)
+            #
+            #         # save excel
+            #         if save_excel:
+            #             data = {'x': dd[fields[0]]['x'], 'y_abs': dd[fields[0]]['y_abs']}
+            #             df_axis_field = pd.DataFrame.from_dict(data)
+            #
+            #             data = {'Es': dd[fields[1]]['Es']}
+            #             df_surface_field = pd.DataFrame.from_dict(data)
+            #
+            #             if new_save:
+            #                 with pd.ExcelWriter(f'{save_excel}_Axis_Fields.xlsx') as writer:
+            #                     df_axis_field.to_excel(writer, sheet_name=f'{key}')
+            #
+            #                 with pd.ExcelWriter(f'{save_excel}_Surface_Fields.xlsx') as writer:
+            #                     df_surface_field.to_excel(writer, sheet_name=f'{key}')
+            #
+            #                 new_save = False
+            #             else:
+            #                 with pd.ExcelWriter(f'{save_excel}_Axis_Fields.xlsx', engine="openpyxl",
+            #                                     mode='a') as writer:
+            #                     df_axis_field.to_excel(writer, sheet_name=f'{key}')
+            #
+            #                 with pd.ExcelWriter(f'{save_excel}_Surface_Fields.xlsx', engine="openpyxl",
+            #                                     mode='a') as writer:
+            #                     df_surface_field.to_excel(writer, sheet_name=f'{key}')
+            #
+            # print(request)
+            #
+            # if request == '0D Data':
+            #     get_0D_plot_data()
+            #     print(len(Epk_Eacc_arr), len(Bpk_Eacc_arr), len(Epk_arr), len(A), len(kcc_arr))
+            #
+            #     # save excel
+            #     if save_excel:
+            #         data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req,
+            #                 "alpha": alpha,
+            #                 f'Freq_{mode}': Freq_arr,
+            #                 f'E_stored_{mode}': E_stored_arr, f'Rsh_{mode}': Rsh_arr, f'Q_{mode}': Q_arr,
+            #                 f'Epk_{mode}': Epk_arr, f'Hpk_{mode}': Hpk_arr, f'Eacc_{mode}': Eacc_arr,
+            #                 f'Rsh/Q_{mode}': Rsh_Q_arr, f'Epk/Eacc_{mode}': Epk_Eacc_arr,
+            #                 f'Bpk/Eacc_{mode}': Bpk_Eacc_arr, f'kcc_{mode}': kcc_arr}
+            #
+            #         df = pd.DataFrame.from_dict(data)
+            #         df.to_excel(f'{save_excel}.xlsx', index=False)
+            #
+            #         # # save to json
+            #         # with open(f'{save_excel}.json', 'w') as f:
+            #         #     json.dump(data, f, indent=4, separators=(',', ': '))
+            #
+            # if request == '1D Data':
+            #     if not os.path.exists(f'{save_excel}_Axis_Fields.xlsx') and not os.path.exists(
+            #             f'{save_excel}_Surface_Fields.xlsx'):
+            #         get_1D_plot_data()
+            #     else:
+            #         print(f"Hey Chief, seems you've already processed the {save_excel} data for this folder. "
+            #               "Delete the file to reprocess or rename save_excel argument")
 
     def multiple_folders_data_old(self, shape_space, slans_data_dir, mode, bc, request, save_excel, parallel=False):
         reply = "Yes"
@@ -550,7 +608,7 @@ class SLANSDataExtraction:
                     print(f"Hey Chief, seems you've already processed the {save_excel} data for this folder. "
                           "Delete the file to reprocess or rename save_excel argument")
 
-    def multiple_folders_data_parallel(self, shape_space, slans_data_folder, proc_count, mode, bc, request, save_excel,
+    def multiple_folders_data_parallel(self, slans_data_folder, proc_count, mode, bc, request, save_excel,
                                        temp_folder):
 
         # bc = bc.replace('m', '3')
@@ -564,7 +622,12 @@ class SLANSDataExtraction:
 
         processes = []
 
-        keys = list(shape_space.keys())
+        # get list of directories in folder
+        dirs = [x for x in os.listdir(slans_data_folder) if '_process_' not in x]
+        # print(dirs)
+
+
+        keys = dirs
         shape_space_len = len(keys)
         share = round(shape_space_len / proc_count)
 
@@ -575,15 +638,15 @@ class SLANSDataExtraction:
             else:
                 proc_keys_list = keys[p * share:]
 
-            print(proc_keys_list)
-            processor_shape_space = {}
-
-            for key, val in shape_space.items():
-                if key in proc_keys_list:
-                    processor_shape_space[key] = val
+            # print(proc_keys_list)
+            # processor_shape_space = {}
+            #
+            # for key, val in shape_space.items():
+            #     if key in proc_keys_list:
+            #         processor_shape_space[key] = val
 
             service = mp.Process(target=self.multiple_folders_data,
-                                 args=(processor_shape_space, slans_data_folder, mode, bc, request),
+                                 args=(proc_keys_list, slans_data_folder, mode, bc, request),
                                  kwargs={'save_excel': f'{temp_folder}\Proc_{p}', 'parallel': True})
             service.start()
             processes.append(service)
@@ -593,6 +656,7 @@ class SLANSDataExtraction:
 
         # join temporary files and delete
         self.join_excel('Proc', proc_count, save_excel, temp_folder)
+        print('Done extracting data')
 
         # delete temporary folder
         # shutil.rmtree(temp_folder)

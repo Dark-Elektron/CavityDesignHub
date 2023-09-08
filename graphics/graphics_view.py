@@ -108,6 +108,19 @@ class GraphicsView(QGraphicsView):
         self.ui.cb_Outer_Cell_R.clicked.connect(lambda: self.drawCells(color=QColor(0, 0, 0, 255)))
 
     def drawCells(self, IC=None, OC=None, BP=None, color="#ffffff"):
+        """
+
+        Parameters
+        ----------
+        IC: Inner cell geometric parameters
+        OC: Outer cell geometric parameters
+        BP: Beampipe dimensions
+        color: Geometry surface profile color
+
+        Returns
+        -------
+
+        """
         line_T = Line(self, line_type='line', section="top", IC=IC, OC=OC, BP=BP, color=color)
         line_B = Line(self, line_type='line', section="bottom", IC=IC, OC=OC, BP=BP, color=color)
 

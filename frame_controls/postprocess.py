@@ -1643,7 +1643,7 @@ class PostprocessControl:
                 bc = self.ui.cb_BC.currentText()
                 bc = bc.replace('m', '3')
                 bc = bc.replace('e', '2')
-                slans_data_ex.multiple_folders_data_parallel(self._shape_space, folder, proc_count, mode, bc, request,
+                slans_data_ex.multiple_folders_data_parallel(folder, proc_count, mode, bc, request,
                                                              filename, temp_folder)
 
         # else:
@@ -1686,4 +1686,10 @@ class PostprocessControl:
 
         # update plot
         self.ppplot.fig.canvas.draw_idle()
+
+    def serialise(self, state_dict):
+        serialise(state_dict, self.w_Postprocess, marker='postprocess')
+
+    def deserialise(self, state_dict):
+        deserialise(state_dict, self.w_Postprocess, marker='postprocess')
 

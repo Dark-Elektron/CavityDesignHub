@@ -301,6 +301,7 @@ class SLANSEigen(Geometry):
             # peaks, _ = find_peaks(ax_field['y_abs'])
             # E_abs_peaks = ax_field['y_abs'][peaks]
             # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+            # ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
 
             d = {
                 "Req [mm]": Req,

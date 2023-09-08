@@ -3,8 +3,9 @@ import copy
 import json
 import os
 
+import pandas as pd
 from PyQt5.QtGui import QDoubleValidator, QValidator
-from PyQt5.QtWidgets import QFileDialog
+from PyQt5.QtWidgets import *
 from icecream import ic
 from matplotlib import pyplot as plt
 from matplotlib.patches import Ellipse
@@ -76,7 +77,6 @@ def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
 
 
 def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
-
     # data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
     #         [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     #
@@ -219,8 +219,8 @@ def jac(z, *data):
     # f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
 
     df1_dx1 = A ** 2 * b ** 2 * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
-    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)**2)
-    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p)**2 * (y1 - k))
+    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k) ** 2)
+    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) ** 2 * (y1 - k))
     df1_dy2 = A ** 2 * b ** 2 * (x1 - h) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
 
     df2_dx1 = 2 * (x1 - h) / a ** 2
@@ -234,9 +234,9 @@ def jac(z, *data):
     df3_dy2 = 2 * (y2 - q) / B ** 2
 
     df4_dx1 = -b ** 2 * ((x1 - x2) + (x1 - h)) / (a ** 2 * (y1 - y2) * (y1 - k))
-    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k))**2)
+    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k)) ** 2)
     df4_dx2 = b ** 2 * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k))
-    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2)**2 * (y1 - k))
+    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) ** 2 * (y1 - k))
 
     J = [[df1_dx1, df1_dy1, df1_dx2, df1_dy2],
          [df2_dx1, df2_dy1, df2_dx2, df2_dy2],
@@ -319,7 +319,7 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
     oc = update_alpha(oc)
     if cell_type is None:
         # print("Writing parameters to file")
-        path = projectDir / fr'SimulationData/SLANS/{key}/{key}.txt'
+        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -337,8 +337,8 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
 
     else:
         # print("Writing parameters to file")
-        path = projectDir / fr'SimulationData/SLANS/{key}/{key}.txt'
-        path_mc = projectDir / fr'SimulationData/SLANS/{key}/{key}_Multicell.txt'
+        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
+        path_mc = fr'{projectDir}/SimulationData/SLANS/{key}/{key}_Multicell.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -715,10 +715,11 @@ def text_to_list(txt):
 def get_geometric_parameters(frame_control, code, scales=None):
     if scales is None:
         scales = [1]
-    ic(scales)
+
     shape_space = {}
     for scale in scales:
-        loaded_shape_space = copy.deepcopy(frame_control.loaded_shape_space)  # have to copy it otherwise the dict is updated
+        loaded_shape_space = copy.deepcopy(
+            frame_control.loaded_shape_space)  # have to copy it otherwise the dict is updated
         if frame_control.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
             try:
                 # get selected keys
@@ -743,7 +744,7 @@ def get_geometric_parameters(frame_control, code, scales=None):
                             if scale == 1 or scale == 0:
                                 shape_space[key] = val
                             else:
-                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                                shape_space[f"{key}_s{scale}"] = scale_cavity_geometry(val, scale)
 
                         if ans == 'No':
                             continue
@@ -752,7 +753,7 @@ def get_geometric_parameters(frame_control, code, scales=None):
                             if scale == 1 or scale == 0:
                                 shape_space[key] = val
                             else:
-                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                                shape_space[f"{key}_s{scale}"] = scale_cavity_geometry(val, scale)
                             to_all = 'YesToAll'
 
                         if ans == 'NoToAll':
@@ -762,14 +763,14 @@ def get_geometric_parameters(frame_control, code, scales=None):
                             if scale == 1 or scale == 0:
                                 shape_space[key] = val
                             else:
-                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                                shape_space[f"{key}_s{scale}"] = scale_cavity_geometry(val, scale)
                             to_all = None
                     else:
                         if to_all == 'YesToAll':
                             if scale == 1 or scale == 0:
                                 shape_space[key] = val
                             else:
-                                shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                                shape_space[f"{key}_s{scale}"] = scale_cavity_geometry(val, scale)
                         else:
                             path = f'{frame_control.main_control.projectDir}/SimulationData/{code}/{key}'
                             if os.path.exists(path):
@@ -778,7 +779,7 @@ def get_geometric_parameters(frame_control, code, scales=None):
                                 if scale == 1 or scale == 0:
                                     shape_space[key] = val
                                 else:
-                                    shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                                    shape_space[f"{key}_s{scale}"] = scale_cavity_geometry(val, scale)
 
             except Exception as e:
                 print(f"File not found, check path:: {e}")
@@ -794,7 +795,8 @@ def get_geometric_parameters(frame_control, code, scales=None):
                 Req_i_space = text_to_list(frame_control.ui.le_Req_i.text())
                 alpha_i_space = text_to_list(frame_control.ui.le_Alpha.text())
 
-                inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, alpha_i_space]
+                inner_cell_space = [A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space,
+                                    alpha_i_space]
             else:
                 inner_cell_space = [[0], [0], [0], [0], [0], [0], [0], [0]]
 
@@ -809,7 +811,8 @@ def get_geometric_parameters(frame_control, code, scales=None):
                 Req_ol_space = text_to_list(frame_control.ui.le_Req_ol.text())
                 alpha_ol_space = text_to_list(frame_control.ui.le_Alpha_ol.text())
 
-                outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space, Req_ol_space, alpha_ol_space]
+                outer_cell_L_space = [A_ol_space, B_ol_space, a_ol_space, b_ol_space, Ri_ol_space, L_ol_space,
+                                      Req_ol_space, alpha_ol_space]
             else:
                 outer_cell_L_space = inner_cell_space
 
@@ -824,7 +827,8 @@ def get_geometric_parameters(frame_control, code, scales=None):
                 Req_or_space = text_to_list(frame_control.ui.le_Req_or.text())
                 alpha_or_space = text_to_list(frame_control.ui.le_Alpha_or.text())
 
-                outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space, Req_or_space, alpha_or_space]
+                outer_cell_R_space = [A_or_space, B_or_space, a_or_space, b_or_space, Ri_or_space, L_or_space,
+                                      Req_or_space, alpha_or_space]
             else:
                 outer_cell_R_space = inner_cell_space
             count = 0
@@ -841,13 +845,17 @@ def get_geometric_parameters(frame_control, code, scales=None):
                                             outer_cell_L = inner_cell
 
                                             if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'both', 'FREQ': None}
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
+                                                                      'OC_R': outer_cell_L, 'BP': 'both', 'FREQ': None}
                                             elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
-                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'left', 'FREQ': None}
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
+                                                                      'OC_R': outer_cell_L, 'BP': 'left', 'FREQ': None}
                                             elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'right', 'FREQ': None}
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
+                                                                      'OC_R': outer_cell_L, 'BP': 'right', 'FREQ': None}
                                             else:
-                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_L, 'BP': 'none', 'FREQ': None}
+                                                shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L,
+                                                                      'OC_R': outer_cell_L, 'BP': 'none', 'FREQ': None}
 
                                             count += 1
                                         else:
@@ -859,17 +867,35 @@ def get_geometric_parameters(frame_control, code, scales=None):
                                                                 for L_ol in outer_cell_L_space[5]:
                                                                     # for Req_ol in outer_cell_L_space[6]:
                                                                     if outer_cell_L_space == outer_cell_R_space:
-                                                                        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                                                                        outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
+                                                                        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i,
+                                                                                      Req_i, 0]
+                                                                        outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol,
+                                                                                        L_ol, Req_i, 0]
                                                                         outer_cell_R = outer_cell_L
                                                                         if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
-                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
+                                                                            shape_space[count] = {'IC': inner_cell,
+                                                                                                  'OC': outer_cell_L,
+                                                                                                  'OC_R': outer_cell_R,
+                                                                                                  'BP': 'left',
+                                                                                                  'FREQ': None}
                                                                         elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
+                                                                            shape_space[count] = {'IC': inner_cell,
+                                                                                                  'OC': outer_cell_L,
+                                                                                                  'OC_R': outer_cell_R,
+                                                                                                  'BP': 'right',
+                                                                                                  'FREQ': None}
                                                                         elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
+                                                                            shape_space[count] = {'IC': inner_cell,
+                                                                                                  'OC': outer_cell_L,
+                                                                                                  'OC_R': outer_cell_R,
+                                                                                                  'BP': 'both',
+                                                                                                  'FREQ': None}
                                                                         else:
-                                                                            shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
+                                                                            shape_space[count] = {'IC': inner_cell,
+                                                                                                  'OC': outer_cell_L,
+                                                                                                  'OC_R': outer_cell_R,
+                                                                                                  'BP': 'none',
+                                                                                                  'FREQ': None}
 
                                                                         count += 1
                                                                     else:
@@ -877,29 +903,71 @@ def get_geometric_parameters(frame_control, code, scales=None):
                                                                             for B_or in outer_cell_R_space[1]:
                                                                                 for a_or in outer_cell_R_space[2]:
                                                                                     for b_or in outer_cell_R_space[3]:
-                                                                                        for Ri_or in outer_cell_R_space[4]:
-                                                                                            for L_or in outer_cell_R_space[5]:
+                                                                                        for Ri_or in outer_cell_R_space[
+                                                                                            4]:
+                                                                                            for L_or in \
+                                                                                            outer_cell_R_space[5]:
                                                                                                 # for Req_or in outer_cell_R_space[6]:
-                                                                                                inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, 0]
-                                                                                                outer_cell_L = [A_ol, B_ol, a_ol, b_ol, Ri_ol, L_ol, Req_i, 0]
-                                                                                                outer_cell_R = [A_or, B_or, a_or, b_or, Ri_or, L_or, Req_i, 0]
+                                                                                                inner_cell = [A_i, B_i,
+                                                                                                              a_i, b_i,
+                                                                                                              Ri_i, L_i,
+                                                                                                              Req_i, 0]
+                                                                                                outer_cell_L = [A_ol,
+                                                                                                                B_ol,
+                                                                                                                a_ol,
+                                                                                                                b_ol,
+                                                                                                                Ri_ol,
+                                                                                                                L_ol,
+                                                                                                                Req_i,
+                                                                                                                0]
+                                                                                                outer_cell_R = [A_or,
+                                                                                                                B_or,
+                                                                                                                a_or,
+                                                                                                                b_or,
+                                                                                                                Ri_or,
+                                                                                                                L_or,
+                                                                                                                Req_i,
+                                                                                                                0]
                                                                                                 if frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 0:
-                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'left', 'FREQ': None}
+                                                                                                    shape_space[
+                                                                                                        count] = {
+                                                                                                        'IC': inner_cell,
+                                                                                                        'OC': outer_cell_L,
+                                                                                                        'OC_R': outer_cell_R,
+                                                                                                        'BP': 'left',
+                                                                                                        'FREQ': None}
                                                                                                 elif frame_control.ui.cb_LBP.checkState() == 0 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'right', 'FREQ': None}
+                                                                                                    shape_space[
+                                                                                                        count] = {
+                                                                                                        'IC': inner_cell,
+                                                                                                        'OC': outer_cell_L,
+                                                                                                        'OC_R': outer_cell_R,
+                                                                                                        'BP': 'right',
+                                                                                                        'FREQ': None}
                                                                                                 elif frame_control.ui.cb_LBP.checkState() == 2 and frame_control.ui.cb_RBP.checkState() == 2:
-                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'both', 'FREQ': None}
+                                                                                                    shape_space[
+                                                                                                        count] = {
+                                                                                                        'IC': inner_cell,
+                                                                                                        'OC': outer_cell_L,
+                                                                                                        'OC_R': outer_cell_R,
+                                                                                                        'BP': 'both',
+                                                                                                        'FREQ': None}
                                                                                                 else:
-                                                                                                    shape_space[count] = {'IC': inner_cell, 'OC': outer_cell_L, 'OC_R': outer_cell_R, 'BP': 'none', 'FREQ': None}
+                                                                                                    shape_space[
+                                                                                                        count] = {
+                                                                                                        'IC': inner_cell,
+                                                                                                        'OC': outer_cell_L,
+                                                                                                        'OC_R': outer_cell_R,
+                                                                                                        'BP': 'none',
+                                                                                                        'FREQ': None}
 
                                                                                                 count += 1
-
 
             # scale geometry
             if scale != 1 or scale != 0:
                 scaled_shape_space = {}
                 for key, val in shape_space.items():
-                    scaled_shape_space[f"{key}_scale_{scale}"] = scale_cavity_geometry(val, scale)
+                    scaled_shape_space[f"{key}_s{scale}"] = scale_cavity_geometry(val, scale)
 
                 shape_space = scaled_shape_space
 
@@ -909,7 +977,6 @@ def get_geometric_parameters(frame_control, code, scales=None):
 
 
 def scale_cavity_geometry(shape, scale):
-
     shape['IC'] = list(np.array(shape['IC']) * scale)
     shape['OC'] = list(np.array(shape['OC']) * scale)
     shape['FREQ'] = shape['FREQ'] / scale
@@ -927,6 +994,7 @@ def validating(le, default='1'):
         le.setFocus()
     else:
         le.setText(default)
+
 
 # def mid_only():
 #
@@ -1037,10 +1105,10 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
         filename = fr'{projectDir}\SimulationData\SLANS\{key}\{fid}\cavity_{bc}.svl'
         if os.path.exists(filename):
             params = fr.svl_reader(filename)
-            norm_length = 2*n_cells*shape['IC'][5]
+            norm_length = 2 * n_cells * shape['IC'][5]
 
             qois_result = get_qoi_value(params, slans_obj_list, n_cells, norm_length)
-            print_(qois_result)
+            print(qois_result)
             # sometimes some degenerate shapes are still generated and the solver returns zero
             # for the objective functions, such shapes are considered invalid
             for objr in qois_result:
@@ -1060,7 +1128,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
     # params = fr.svl_reader(filename)
     # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
     # tab_val_f = obj_result
-        # Ttab_val_f.append(tab_val_f)
+    # Ttab_val_f.append(tab_val_f)
 
     # import matplotlib.pyplot as plt
     if not err:
@@ -1079,7 +1147,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
         with open(fr"{projectDir}\SimulationData\SLANS\{key}\uq.json", 'w') as file:
             file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
     else:
-        print_(fr"There was a problem running UQ analysis for {key}")
+        print(fr"There was a problem running UQ analysis for {key}")
 
 
 def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None,
@@ -1179,7 +1247,8 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el], plot)
+                pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el],
+                            plot)
                 pt = [L_bp_l + L_el - shift, Req_el]
                 for pp in pts:
                     fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -1201,7 +1270,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
 
                     # STRAIGHT LINE TO NEXT POINT
                     lineTo(pt, [L_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step, plot)
-                    pt = [L_el + L_er - x1er + + L_bp_l + L_bp_r  - shift, y1er]
+                    pt = [L_el + L_er - x1er + + L_bp_l + L_bp_r - shift, y1er]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # ARC
@@ -1314,7 +1383,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # calculate new shift
-                shift = shift - 2*L_m
+                shift = shift - 2 * L_m
             else:
                 # DRAW ARC:
                 pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1], plot)
@@ -1375,13 +1444,14 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
         # BEAM PIPE
         # reset shift
         shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
-        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + L_el + L_er - shift, Ri_er], step, plot)
-        pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
+        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell - 1) * L_m + L_el + L_er - shift, Ri_er], step, plot)
+        pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
 
         # END PATH
-        lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step, plot)  # to add beam pipe to right
-        pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0]
+        lineTo(pt, [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step,
+               plot)  # to add beam pipe to right
+        pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0]
         # lineTo(pt, [2 * n_cell * L_er + L_bp_l - shift, 0], step)
         # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
@@ -1513,6 +1583,345 @@ def arcTo(x_center, y_center, a, b, step, start, end, plot=False):
         plt.plot(inbox[:, 0], inbox[:, 1])
 
     return inbox
+
+
+def plot_cavity_geometry(plot, IC, OC, BP, n_cell):
+    fig = plot.fig
+    ax = plot.ax
+
+    # 21578127116
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = np.array(IC)[:7] * 1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array(OC)[:7] * 1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array(OC)[:7] * 1e-3
+
+    step = 1  # step in boundary points in mm
+    L_bp_l = 4 * L_m  # 0.0001  #
+    L_bp_r = 4 * L_m  # 0.0001  #
+
+    # calculate shift
+    shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
+    # shift = 0
+    # shift = L_m  # for end cell
+
+    # calculate angles outside loop
+    # CALCULATE x1_el, y1_el, x2_el, y2_el
+    data = ([0 + L_bp_l, Ri_el + b_el, L_el + L_bp_l, Req_el - B_el],
+            [a_el, b_el, A_el, B_el])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+
+    x1el, y1el, x2el, y2el = fsolve(ellipse_tangent, np.array(
+        [a_el + L_bp_l, Ri_el + 0.85 * b_el, L_el - A_el + L_bp_l, Req_el - 0.85 * B_el]),
+                                    args=data,
+                                    xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+
+    # CALCULATE x1, y1, x2, y2
+    data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
+            [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    x1, y1, x2, y2 = fsolve(ellipse_tangent,
+                            np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
+                            args=data, xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+
+    # CALCULATE x1_er, y1_er, x2_er, y2_er
+    data = ([0 + L_bp_r, Ri_er + b_er, L_er + L_bp_r, Req_er - B_er],
+            [a_er, b_er, A_er, B_er])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    x1er, y1er, x2er, y2er = fsolve(ellipse_tangent, np.array(
+        [a_er + L_bp_r, Ri_er + 0.85 * b_er, L_er - A_er + L_bp_r, Req_er - 0.85 * B_er]),
+                                    args=data,
+                                    xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+    geo = []
+
+    # SHIFT POINT TO START POINT
+    start_point = [-shift, 0]
+    geo.append([start_point[1], start_point[0]])
+
+    lineTo(start_point, [-shift, Ri_el], step)
+    pt = [-shift, Ri_el]
+    geo.append([pt[1], pt[0]])
+
+    # ADD BEAM PIPE LENGTH
+    if L_bp_l != 0:
+        lineTo(pt, [L_bp_l - shift, Ri_el], step)
+        pt = [L_bp_l - shift, Ri_el]
+
+        geo.append([pt[1], pt[0]])
+
+    for n in range(1, n_cell + 1):
+        if n == 1:
+            # DRAW ARC:
+            pts = arcTo(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt, [-shift + x1el, y1el])
+            pt = [-shift + x1el, y1el]
+            for pp in pts:
+                geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+            # DRAW LINE CONNECTING ARCS
+            lineTo(pt, [-shift + x2el, y2el], step)
+            pt = [-shift + x2el, y2el]
+            geo.append([pt[1], pt[0]])
+
+            # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+            pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el])
+            pt = [L_bp_l + L_el - shift, Req_el]
+            for pp in pts:
+                geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+            if n_cell == 1:
+                # EQUATOR ARC TO NEXT POINT
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_el + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
+                            [L_el + L_er - x2er + 2 * L_bp_l - shift, Req_er])
+                pt = [L_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        geo.append([pp[1], pp[0]])
+                geo.append([pt[1], pt[0]])
+
+                # STRAIGHT LINE TO NEXT POINT
+                lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
+                pt = [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
+                geo.append([pt[1], pt[0]])
+
+                # ARC
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
+                            [L_bp_l + L_el + L_er - shift, y1er])
+
+                pt = [L_bp_l + L_el + L_er - shift, Ri_er]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        geo.append([pp[1], pp[0]])
+
+                geo.append([pt[1], pt[0]])
+
+                # calculate new shift
+                shift = shift - (L_el + L_er)
+
+            else:
+                # EQUATOR ARC TO NEXT POINT
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_el + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
+                            [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                pt = [L_el + L_m - x2 + 2 * L_bp_l - shift, y2]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        geo.append([pp[1], pp[0]])
+                geo.append([pt[1], pt[0]])
+
+                # STRAIGHT LINE TO NEXT POINT
+                lineTo(pt, [L_el + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+                pt = [L_el + L_m - x1 + 2 * L_bp_l - shift, y1]
+                geo.append([pt[1], pt[0]])
+
+                # ARC
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_el + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
+                            [L_bp_l + L_el + L_m - shift, y1])
+                pt = [L_bp_l + L_el + L_m - shift, Ri_m]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        geo.append([pp[1], pp[0]])
+                geo.append([pt[1], pt[0]])
+
+                # calculate new shift
+                shift = shift - (L_el + L_m)
+                ic(shift)
+
+        elif n > 1 and n != n_cell:
+            # DRAW ARC:
+            pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+            pt = [-shift + x1, y1]
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+            # DRAW LINE CONNECTING ARCS
+            lineTo(pt, [-shift + x2, y2], step)
+            pt = [-shift + x2, y2]
+            geo.append([pt[1], pt[0]])
+
+            # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+            pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+            pt = [L_bp_l + L_m - shift, Req_m]
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+
+            geo.append([pt[1], pt[0]])
+
+            # EQUATOR ARC TO NEXT POINT
+            # half of bounding box is required,
+            # start is the lower coordinate of the bounding box and end is the upper
+            pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
+                        [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+            pt = [L_m + L_m - x2 + 2 * L_bp_l - shift, y2]
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+
+            geo.append([pt[1], pt[0]])
+
+            # STRAIGHT LINE TO NEXT POINT
+            lineTo(pt, [L_m + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+            pt = [L_m + L_m - x1 + 2 * L_bp_l - shift, y1]
+            geo.append([pt[1], pt[0]])
+
+            # ARC
+            # half of bounding box is required,
+            # start is the lower coordinate of the bounding box and end is the upper
+            pts = arcTo(L_m + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
+                        [L_bp_l + L_m + L_m - shift, y1])
+            pt = [L_bp_l + L_m + L_m - shift, Ri_m]
+
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+            # calculate new shift
+            shift = shift - 2 * L_m
+        else:
+            # DRAW ARC:
+            pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+            pt = [-shift + x1, y1]
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+            # DRAW LINE CONNECTING ARCS
+            lineTo(pt, [-shift + x2, y2], step)
+            pt = [-shift + x2, y2]
+            geo.append([pt[1], pt[0]])
+
+            # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+            pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+            pt = [L_bp_l + L_m - shift, Req_m]
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+            # EQUATOR ARC TO NEXT POINT
+            # half of bounding box is required,
+            # start is the lower coordinate of the bounding box and end is the upper
+            pts = arcTo(L_m + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
+                        [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er])
+            pt = [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+            # STRAIGHT LINE TO NEXT POINT
+            lineTo(pt, [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step)
+            pt = [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er]
+            geo.append([pt[1], pt[0]])
+
+            # ARC
+            # half of bounding box is required,
+            # start is the lower coordinate of the bounding box and end is the upper
+            pts = arcTo(L_m + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
+                        [L_bp_l + L_m + L_er - shift, y1er])
+            pt = [L_bp_l + L_m + L_er - shift, Ri_er]
+            for pp in pts:
+                if (np.around(pp, 12) != np.around(pt, 12)).all():
+                    geo.append([pp[1], pp[0]])
+            geo.append([pt[1], pt[0]])
+
+    # BEAM PIPE
+    # reset shift
+    shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
+
+    if L_bp_r != 0:  # if there's a problem, check here.
+        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell - 1) * L_m + L_el + L_er - shift, Ri_er], step)
+        pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
+        geo.append([pt[1], pt[0]])
+
+    # END PATH
+    lineTo(pt, [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
+    pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0]
+    # lineTo(pt, [2 * n_cell * L_er + L_bp_l - shift, 0], step)
+    # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
+    geo.append([pt[1], pt[0]])
+
+    # CLOSE PATH
+    # lineTo(pt, start_point, step)
+    # geo.append([start_point[1], start_point[0]])
+    geo = np.array(geo)
+
+    ax.plot(geo[:, 1], geo[:, 0], lw=4)
+    ax.plot(geo[:, 1], -geo[:, 0], lw=4)
+    fig.canvas.draw()
+
+
+def serialise(state_dict, widget=None, visited_widgets=None, marker=''):
+    if visited_widgets is None:
+        visited_widgets = set()
+
+    if widget in visited_widgets:
+        return 0
+
+    visited_widgets.add(widget)
+
+    if widget.objectName() != "":
+        if isinstance(widget, QPushButton):
+            if widget.isCheckable():
+                state_dict[f'{marker}_'+widget.objectName()] = widget.isChecked()
+
+        if isinstance(widget, QComboBox):
+            state_dict[f'{marker}_'+widget.objectName()] = widget.currentText()
+
+        if isinstance(widget, QLineEdit):
+            state_dict[f'{marker}_'+widget.objectName()] = widget.text()
+
+        if isinstance(widget, QSpinBox):
+            state_dict[f'{marker}_'+widget.objectName()] = widget.value()
+
+        if isinstance(widget, QDoubleSpinBox):
+            state_dict[f'{marker}_'+widget.objectName()] = widget.value()
+
+    for child_widget in widget.findChildren(QWidget):
+        serialise(state_dict, child_widget, visited_widgets, marker)
+
+
+def deserialise(state_dict, widget, visited_widgets=None, marker=''):
+    try:
+        if visited_widgets is None:
+            visited_widgets = set()
+
+        if widget in visited_widgets:
+            return 0
+
+        visited_widgets.add(widget)
+
+        if widget.objectName() != "":
+            if isinstance(widget, QPushButton):
+                if widget.isCheckable():
+                    if not widget.isChecked() == state_dict[f'{marker}_'+widget.objectName()]:
+                        widget.toggle()
+
+            if isinstance(widget, QComboBox):
+                widget.setCurrentText(state_dict[f'{marker}_'+widget.objectName()])
+
+            if isinstance(widget, QLineEdit):
+                widget.setText(state_dict[f'{marker}_'+widget.objectName()])
+
+            if isinstance(widget, QSpinBox):
+                widget.setValue(int(state_dict[f'{marker}_'+widget.objectName()]))
+
+            if isinstance(widget, QDoubleSpinBox):
+                widget.setValue(float(state_dict[f'{marker}_'+widget.objectName()]))
+
+        for child_widget in widget.findChildren(QWidget):
+            deserialise(state_dict, child_widget, visited_widgets, marker)
+
+    except (TypeError, KeyError) as e:
+        print(f"Could not deserialize {widget.objectName()}: ", e)
 
 
 if __name__ == '__main__':

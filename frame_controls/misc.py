@@ -14,13 +14,17 @@ from frame_controls.misc_widgets.mode_nomenclature import ModeNomControl
 from ui_files.misc import Ui_Misc
 from analysis_modules.data_module.abci_data import ABCIData
 from utils.file_reader import FileReader
+from utils.shared_functions import *
 
 fr = FileReader()
 
 file_color = 'red'
 DEBUG = True
+
+
 def print_(*arg):
     if DEBUG: print(colored(f'\t{arg}', file_color))
+
 
 class MiscControl:
     def __init__(self, parent):
@@ -76,3 +80,9 @@ class MiscControl:
             wid2.show()
         else:
             wid2.hide()
+
+    def serialise(self, state_dict):
+        serialise(state_dict, self.w_Misc, marker='misc')
+
+    def deserialise(self, state_dict):
+        deserialise(state_dict, self.w_Misc, marker='misc')

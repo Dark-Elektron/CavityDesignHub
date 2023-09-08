@@ -287,12 +287,13 @@ class SLANSGeometry(Geometry):
             f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
             kcc = 2*f_diff/f_add * 100
 
-            # field flatness
+            # field flatness•
             ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
             # get max in each cell
             peaks, _ = find_peaks(ax_field['y_abs'])
             E_abs_peaks = ax_field['y_abs'][peaks]
-            ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
+            # ff = min(E_abs_peaks)/max(E_abs_peaks) * 100
+            ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
 
             d = {
                 "Req [mm]": Req,
@@ -318,7 +319,7 @@ class SLANSGeometry(Geometry):
 
             with open(fr'{run_save_directory}\qois.json', "w") as f:
                 json.dump(d, f, indent=4, separators=(',', ': '))
-        except FileNotFoundError as e:
+        except (FileNotFoundError, ValueError) as e:
             print("Simulation failed", e)
 
     def write_dtr(self, path, filename, beta, f_shift, n_modes):

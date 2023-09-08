@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
     rf379401hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized\Export'
     rf379402hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1000MHz\Export'
-    rf379403hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1250MHz\Export'
+    rf379403hc = r'D:{\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1250MHz\Export'
     rf379404hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1425MHz\Export'
     rf379405hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1597MHz\Export'
     rf379406hc = r'D:\CST Studio\3. W\Assembly\E_3794_4HC_1FPC_Optimized_from_1697MHz\Export'
@@ -107,8 +107,6 @@ if __name__ == '__main__':
                 Hz = get_field(assembly[n], fr"h_z (Z)_Mode {i - sum(modes[0:n]) + 1}.txt")
 
                 Z_axis = Ex.iloc[:, 0] * 1e-3  # 1e-3 to convert mm to m
-                # ic(Z_axis)
-                # ic(Ex)
                 v_z = np.trapz((Ez.iloc[:, 1] + 1j * Ez.iloc[:, 2]) * np.exp(1j * 2 * np.pi * freq * Z_axis / c0), Z_axis)
 
                 vt_x = np.trapz((Ex.iloc[:, 1] + 1j * Ex.iloc[:, 2] - c0 * mu0 * (Hy.iloc[:, 1] + 1j * Hy.iloc[:, 2]))
@@ -124,9 +122,6 @@ if __name__ == '__main__':
                     n += 1
 
             # change
-        ic(V_z)
-        ic(abs(Ez.iloc[:, 1] + 1j * Ez.iloc[:, 2]))
-        ic(Ez.iloc[:, 1], 1j * Ez.iloc[:, 2])
 
         ic(abs(np.array(V_z))[4])
         R_Q = abs(np.array(V_z) ** 2) / (2 * np.pi * freq_all)
@@ -170,7 +165,7 @@ if __name__ == '__main__':
         # get cst calculated values
         Z_CST = get_var("Z_kOhm.txt", assembly).iloc[:, 1]
         ZT_CST = get_var("Z_T_kOhm_m.txt", assembly).iloc[:, 1]
-        print(len(Z_CST), len(freq_all))
+
         # po3 = plt.scatter(freq_all, Z_CST, label=fr'$Z_\parallel (CST)$ {names[a]}')
         # po4 = plt.scatter(freq_all, ZT_CST, label=fr'$Z_\perp (CST)$ {names[a]}')
 

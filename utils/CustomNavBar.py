@@ -31,11 +31,12 @@ class MyCustomToolbar(NavigationToolbar):
                      ('Zoom', 'Zoom to rectangle\nx/y fixes axis, CTRL fixes aspect', 'zoom', 'zoom'),
                      ('Subplots', 'Configure subplots', 'subplots', 'configure_subplots'),
                      ('Customize', 'Edit axis, curve and image parameters', 'options', 'edit_parameters'),
-                     (None, None, None, None),
                      ('Plot format', 'Edit rcParams, curve and image parameters', 'options', 'rcParams'),
+                     (None, None, None, None),
                      ('Linear', 'Save the figure', 'lin', 'linear_scale'),
                      ('Log', 'Save the figure', 'log', 'log_scale'),
                      ('Decibel', 'Save the figure', 'dB', 'decibel_scale'),
+                     (None, None, None, None),
                      ('Grid', 'Toggle Grid', 'dB', 'toggle_grid'),
                      (None, None, None, None),
                      ("Size", None, None, None),
@@ -50,7 +51,7 @@ class MyCustomToolbar(NavigationToolbar):
         for a in actions:
             self.removeAction(a)
 
-        self._actions = {} # mapping of toolitem method names to QActions.
+        self._actions = {}  # mapping of toolitem method names to QActions.
 
         for text, tooltip_text, image_file, callback in toolitems:
             if text is None:

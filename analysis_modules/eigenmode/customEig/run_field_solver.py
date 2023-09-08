@@ -1188,7 +1188,8 @@ class Model:
         plt.plot(self.E_z_axis_abs)
         plt.show()
         E_abs_peaks = self.E_z_axis_abs[peaks]
-        self.ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+        # self.ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+        ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
 
         d = {
             "Req [mm]": Req*1e3,

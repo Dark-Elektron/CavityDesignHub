@@ -6,6 +6,8 @@ from threading import Thread
 import pandas as pd
 from psutil import NoSuchProcess
 from pathlib import Path
+
+from analysis_modules.plot_module.plotter import Plot
 from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from analysis_modules.data_module.abci_data import ABCIData
@@ -55,8 +57,13 @@ class WakefieldControl:
         self.scene = Scene(self)
 
         # QGraphicsView
-        self.graphicsView = GraphicsView(self, 'Wakefield')
-        self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
+        # self.graphicsView = GraphicsView(self, 'Wakefield')
+        # self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
+
+        self.plot = Plot(self)
+        # fix axis aspect ratio
+        self.plot.ax.set_aspect('equal', adjustable='datalim')
+        self.ui.gl_Plot_Area.addWidget(self.plot)
 
         # ##########################
         self.initUI()
@@ -88,6 +95,7 @@ class WakefieldControl:
 
         # signals
         self.ui.pb_Run.clicked.connect(lambda: self.run_abci())
+        self.ui.le_N_Cells.editingFinished.connect(lambda: self.draw_shape_from_shape_space())
 
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
@@ -165,17 +173,21 @@ class WakefieldControl:
             self.ui.w_Select_Shape_Space.show()
 
             # clear cells from graphics view
-            self.graphicsView.removeCells()
+            # self.graphicsView.removeCells()
+            self.plot.ax.clear()
+            self.plot.fig.canvas.draw()
         else:
             self.ui.w_Enter_Geometry_Manual.setEnabled(True)
             self.ui.w_Select_Shape_Space.hide()
 
             # uncomment following lines to draw
             # clear cells from graphics view
-            self.graphicsView.removeCells()
+            # self.graphicsView.removeCells()
 
             # draw new cell
-            self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
+            # self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
+            # self.plot.ax.clear()
+            # self.plot.fig.canvas.draw()
 
     def run_abci(self):
         # get analysis parameters
@@ -419,7 +431,7 @@ class WakefieldControl:
 
     def load_operating_points(self, ccb):
         filename, _ = QFileDialog.getOpenFileName(
-            None, "Open File", self.main_control.projectDir / fr"Cavities", "Json Files (*.json)")
+            None, "Open File", fr"{self.main_control.projectDir}/Cavities", "Json Files (*.json)")
         try:
             self.ui.le_Machine_Parameters_Filename.setText(filename)
             with open(filename, 'r') as file:
@@ -775,6 +787,12 @@ class WakefieldControl:
         except KeyError as e:
             print("Could not deserialize wakefield.py: ", e)
 
+    def serialise(self, state_dict):
+        serialise(state_dict, self.w_Wakefield, marker='wakefield')
+
+    def deserialise(self, state_dict):
+        deserialise(state_dict, self.w_Wakefield, marker='wakefield')
+
     @staticmethod
     def run_abci_exe(path):
         path = os.path.join(os.getcwd(), path)
@@ -787,15 +805,19 @@ class WakefieldControl:
         ci = 0
 
         # remove existing cells
-        self.graphicsView.removeCells()
+        self.plot.ax.clear()
+        self.plot.fig.canvas.draw()
+        # self.graphicsView.removeCells()
         for key in self.loaded_shape_space.keys():
             if key in self.ui.cb_Shape_Space_Keys.currentText():
                 IC = self.loaded_shape_space[key]["IC"]
                 OC = self.loaded_shape_space[key]["OC"]
                 BP = self.loaded_shape_space[key]["BP"]
-                self.graphicsView.drawCells(IC, OC, BP,
-                                            QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
+                n_cell = int(self.ui.le_N_Cells.text())
+                # self.graphicsView.drawCells(IC, OC, BP,
+                #                             QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
 
+                plot_cavity_geometry(self.plot, IC, OC, BP, n_cell)
                 ci += 1
             if ci > 4:  # maximum of only 10 plots
                 break
@@ -847,7 +869,7 @@ class WakefieldControl:
                     ic(qoi_df)
                     if qoi_df is not None:
                         d = {}
-                        ic(qoi_df[fid])
+                        ic(qoi_df)
                         #  # save qois
                     # for indx, val in qoi_df[key].items():
                         op_points, no_of_cells, R_Q, sigma_SR_list, sigma_BS_list, I0_list, Nb_list, freq = qoi_df[fid]
@@ -878,18 +900,19 @@ class WakefieldControl:
                                                          projectDir=projectDir,
                                                          WG_M=ii, marker=ii, sub_dir=fid)
 
-                                        dirc = projectDir / fr'SimulationData\ABCI\{fid}{marker}'
-                                        # try:
-                                        k_loss = abs(ABCIData(dirc, f'{fid_op}', 0).loss_factor['Longitudinal'])
-                                        k_kick = abs(ABCIData(dirc, f'{fid_op}', 1).loss_factor['Transverse'])
-                                        # except:
-                                        #     k_loss = 0
-                                        #     k_kick = 0
+                                    dirc = projectDir / fr'SimulationData\ABCI\{fid}{marker}'
+                                    # try:
+                                    print(ABCIData(dirc, f'{fid_op}', 0).loss_factor, fid_op, fid)
+                                    k_loss = abs(ABCIData(dirc, f'{fid_op}', 0).loss_factor['Longitudinal'])
+                                    k_kick = abs(ABCIData(dirc, f'{fid_op}', 1).loss_factor['Transverse'])
+                                    # except:
+                                    #     k_loss = 0
+                                    #     k_kick = 0
 
-                                        d[fid_op] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, no_of_cells)
+                                    d[fid_op] = get_qois_value(freq, R_Q, k_loss, k_kick, s, I0, Nb, no_of_cells)
 
-                                        # update progress
-                                        progress_list.append(progress + 1)
+                                    # update progress
+                                    progress_list.append(progress + 1)
 
                         # save qoi dictionary
                         run_save_directory = projectDir / fr'SimulationData\ABCI\{fid}{marker}'

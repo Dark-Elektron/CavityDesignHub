@@ -271,6 +271,7 @@ class SLANSGeometry(Geometry):
         if os.name == 'nt':
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
             kwargs = {"startupinfo": startupinfo}
         else:
             kwargs = {}
@@ -352,7 +353,8 @@ class SLANSGeometry(Geometry):
                 # get max in each cell
                 peaks, _ = find_peaks(ax_field['y_abs'])
                 E_abs_peaks = ax_field['y_abs'][peaks]
-                ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+                # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+                ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
             except FileNotFoundError:
                 ff = 0
 
@@ -617,7 +619,8 @@ class SLANSGeometry(Geometry):
         # get max in each cell
         peaks, _ = find_peaks(ax_field['y_abs'])
         E_abs_peaks = ax_field['y_abs'][peaks]
-        ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+        # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+        ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
 
         d = {
             "Req [mm]": Req,
@@ -890,7 +893,8 @@ class SLANSGeometry(Geometry):
         # get max in each cell
         peaks, _ = find_peaks(ax_field['y_abs'])
         E_abs_peaks = ax_field['y_abs'][peaks]
-        ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+        # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+        ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
 
         d = {
             "Req [mm]": Req,
