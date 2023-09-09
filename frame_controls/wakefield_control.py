@@ -1,19 +1,13 @@
-import math
 import subprocess
 import time
 import multiprocessing as mp
 from threading import Thread
-import pandas as pd
 from psutil import NoSuchProcess
-from pathlib import Path
-
 from analysis_modules.plot_module.plotter import Plot
-from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from analysis_modules.data_module.abci_data import ABCIData
 from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from ui_files.wakefield import Ui_Wakefield
-from utils.file_reader import FileReader
 from utils.shared_classes import *
 from utils.shared_functions import *
 import scipy.signal as sps
@@ -100,7 +94,7 @@ class WakefieldControl:
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
             lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
-                              start_folder=self.main_control.projectDir/ f"Cavities"))
+                              start_folder=self.main_control.projectDir / f"Cavities"))
 
         self.ui.pb_Load_Machine_Parameters.clicked.connect(
             lambda: self.load_operating_points(self.ui.ccb_Operation_Points))
@@ -134,7 +128,7 @@ class WakefieldControl:
         # splitter
         self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
 
-        df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
+        # df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
         # init shape entry mode
         self.shape_entry_widgets_control()
 
@@ -191,7 +185,7 @@ class WakefieldControl:
 
     def run_abci(self):
         # get analysis parameters
-        n_cells = self.ui.sb_N_Cells.value()
+        # n_cells = self.ui.sb_N_Cells.value()
         n_cells = text_to_list(self.ui.le_N_Cells.text())
         n_modules = self.ui.sb_N_Modules.value()
 
@@ -325,7 +319,7 @@ class WakefieldControl:
 
         Parameters
         ----------
-        op_dict
+        cavity
         row_ind
         table
 
@@ -474,10 +468,10 @@ class WakefieldControl:
                 try:
                     with open(self.main_control.projectDir / fr'SimulationData\SLANS\{key}\qois.json') as json_file:
                         qois_slans = json.load(json_file)
-                    n_cells = qois_slans['N Cells']
-                    R_Q = qois_slans['R/Q [Ohm]']
-                    freq = qois_slans['freq [MHz]']
-                    print("Found a corresponding SLANS file")
+                    # n_cells = qois_slans['N Cells']
+                    # R_Q = qois_slans['R/Q [Ohm]']
+                    # freq = qois_slans['freq [MHz]']
+                    print("Found a corresponding SLANS file", qois_slans)
                     # self.cav_operating_points[key]['N Cells'].setValue(int(n_cells))
                     # self.cav_operating_points[key]['R/Q [Ohm]'].setValue(R_Q)
                     # self.cav_operating_points[key]['freq [MHz]'].setValue(freq)
@@ -503,7 +497,8 @@ class WakefieldControl:
                         else:
                             folder_name = f"{key}_scale_{scale}_{n_cell}"
 
-                    with open(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\qois.json') as json_file:
+                    with open(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\qois.json') as \
+                            json_file:
                         qois_slans = json.load(json_file)
 
                     op_points = val['Operating Point'].currentText().split(', ')
@@ -604,7 +599,7 @@ class WakefieldControl:
             self.progress_bar.setValue(0)
             self.progress_bar.hide()
 
-    def prompt(self, code, fid):
+    def prompt(self, fid):
         # path = os.getcwd()
         # path = os.path.join(path, fr"File\{code}\{fid}")
         path = self.main_control.projectDir / fr'SimulationData\ABCI\{fid}'
@@ -678,115 +673,6 @@ class WakefieldControl:
         # self.ui.w_Load_Manual.setGraphicsEffect(shadow)
         pass
 
-    def serialize(self, state_dict):
-        # update state file
-        state_dict["Wakefield_Shape_Entry_Mode"] = self.ui.cb_Shape_Entry_Mode.currentIndex()
-        state_dict["Wakefield_Shape_Space"] = self.ui.le_Shape_Space.text()
-        state_dict["Wakefield_Mid_Cell_CB"] = self.ui.cb_Inner_Cell.checkState()
-        state_dict["Wakefield_Left_Cell_CB"] = self.ui.cb_Outer_Cell_L.checkState()
-        state_dict["Wakefield_Right_Cell_CB"] = self.ui.cb_Outer_Cell_R.checkState()
-        state_dict["Wakefield_Expansion_CB"] = self.ui.cb_Expansion.checkState()
-        state_dict["Wakefield_LBP_CB"] = self.ui.cb_LBP.checkState()
-        state_dict["Wakefield_RBP_CB"] = self.ui.cb_RBP.checkState()
-
-        # cell parameters
-        state_dict["Wakefield_A_i"] = self.ui.le_A_i.text()
-        state_dict["Wakefield_B_i"] = self.ui.le_B_i.text()
-        state_dict["Wakefield_a_i"] = self.ui.le_a_i.text()
-        state_dict["Wakefield_b_i"] = self.ui.le_b_i.text()
-        state_dict["Wakefield_Ri_i"] = self.ui.le_Ri_i.text()
-        state_dict["Wakefield_L_i"] = self.ui.le_L_i.text()
-        state_dict["Wakefield_Req_i"] = self.ui.le_Req_i.text()
-        state_dict["Wakefield_Alpha_i"] = self.ui.le_Alpha.text()
-
-        state_dict["Wakefield_A_ol"] = self.ui.le_A_ol.text()
-        state_dict["Wakefield_B_ol"] = self.ui.le_B_ol.text()
-        state_dict["Wakefield_a_ol"] = self.ui.le_a_ol.text()
-        state_dict["Wakefield_b_ol"] = self.ui.le_b_ol.text()
-        state_dict["Wakefield_Ri_ol"] = self.ui.le_Ri_ol.text()
-        state_dict["Wakefield_L_ol"] = self.ui.le_L_ol.text()
-        state_dict["Wakefield_Req_ol"] = self.ui.le_Req_ol.text()
-        state_dict["Wakefield_Alpha_ol"] = self.ui.le_Alpha_ol.text()
-
-        state_dict["Wakefield_A_or"] = self.ui.le_A_or.text()
-        state_dict["Wakefield_B_or"] = self.ui.le_B_or.text()
-        state_dict["Wakefield_a_or"] = self.ui.le_a_or.text()
-        state_dict["Wakefield_b_or"] = self.ui.le_b_or.text()
-        state_dict["Wakefield_Ri_or"] = self.ui.le_Ri_or.text()
-        state_dict["Wakefield_L_or"] = self.ui.le_L_or.text()
-        state_dict["Wakefield_Req_or"] = self.ui.le_Req_or.text()
-        state_dict["Wakefield_Alpha_or"] = self.ui.le_Alpha_or.text()
-
-        # settings
-        state_dict["Wakefield_N_Cells"] = self.ui.sb_N_Cells.value()
-        state_dict["Wakefield_N_Cells_"] = self.ui.le_N_Cells.text()
-        state_dict["Wakefield_Scale"] = self.ui.le_Scale.text()
-        state_dict["Wakefield_N_Modules"] = self.ui.sb_N_Modules.value()
-        state_dict["Wakefield_Polarization"] = self.ui.cb_Polarization_ABCI.currentIndex()
-        state_dict["Wakefield_No_Of_Processors"] = self.ui.sb_No_Of_Processors_ABCI.value()
-        state_dict["Wakefield_Wakelength"] = self.ui.le_Wakelength.text()
-        state_dict["Wakefield_Bunch_Length"] = self.ui.le_Bunch_Length.text()
-        state_dict["Wakefield_NFS"] = self.ui.le_NFS.text()
-        state_dict["Wakefield_MT"] = self.ui.le_MT.text()
-        state_dict["Wakefield_DDz/SIG"] = self.ui.le_DDZ_SIG.text()
-        state_dict["Wakefield_DDr/SIG"] = self.ui.le_DDR_SIG.text()
-
-    def deserialize(self, state_dict):
-        try:
-            # update state file
-            self.ui.cb_Shape_Entry_Mode.setCurrentIndex(state_dict["Wakefield_Shape_Entry_Mode"])
-            self.ui.le_Shape_Space.setText(state_dict["Wakefield_Shape_Space"])
-            self.ui.cb_Inner_Cell.setCheckState(state_dict["Wakefield_Mid_Cell_CB"])
-            self.ui.cb_Outer_Cell_L.setCheckState(state_dict["Wakefield_Left_Cell_CB"])
-            self.ui.cb_Outer_Cell_R.setCheckState(state_dict["Wakefield_Right_Cell_CB"])
-            self.ui.cb_Expansion.setCheckState(state_dict["Wakefield_Expansion_CB"])
-            self.ui.cb_LBP.setCheckState(state_dict["Wakefield_LBP_CB"])
-            self.ui.cb_RBP.setCheckState(state_dict["Wakefield_RBP_CB"])
-
-            # cell parameters
-            self.ui.le_A_i.setText(state_dict["Wakefield_A_i"])
-            self.ui.le_B_i.setText(state_dict["Wakefield_B_i"])
-            self.ui.le_a_i.setText(state_dict["Wakefield_a_i"])
-            self.ui.le_b_i.setText(state_dict["Wakefield_b_i"])
-            self.ui.le_Ri_i.setText(state_dict["Wakefield_Ri_i"])
-            self.ui.le_L_i.setText(state_dict["Wakefield_L_i"])
-            self.ui.le_Req_i.setText(state_dict["Wakefield_Req_i"])
-            self.ui.le_Alpha.setText(state_dict["Wakefield_Alpha_i"])
-
-            self.ui.le_A_ol.setText(state_dict["Wakefield_A_ol"])
-            self.ui.le_B_ol.setText(state_dict["Wakefield_B_ol"])
-            self.ui.le_a_ol.setText(state_dict["Wakefield_a_ol"])
-            self.ui.le_b_ol.setText(state_dict["Wakefield_b_ol"])
-            self.ui.le_Ri_ol.setText(state_dict["Wakefield_Ri_ol"])
-            self.ui.le_L_ol.setText(state_dict["Wakefield_L_ol"])
-            self.ui.le_Req_ol.setText(state_dict["Wakefield_Req_ol"])
-            self.ui.le_Alpha_ol.setText(state_dict["Wakefield_Alpha_ol"])
-
-            self.ui.le_A_or.setText(state_dict["Wakefield_A_or"])
-            self.ui.le_B_or.setText(state_dict["Wakefield_B_or"])
-            self.ui.le_a_or.setText(state_dict["Wakefield_a_or"])
-            self.ui.le_b_or.setText(state_dict["Wakefield_b_or"])
-            self.ui.le_Ri_or.setText(state_dict["Wakefield_Ri_or"])
-            self.ui.le_L_or.setText(state_dict["Wakefield_L_or"])
-            self.ui.le_Req_or.setText(state_dict["Wakefield_Req_or"])
-            self.ui.le_Alpha_or.setText(state_dict["Wakefield_Alpha_or"])
-
-            # settings
-            self.ui.sb_N_Cells.setValue(state_dict["Wakefield_N_Cells"])
-            self.ui.le_N_Cells.setText(state_dict["Wakefield_N_Cells_"])
-            self.ui.le_Scale.setText(state_dict["Wakefield_Scale"])
-            self.ui.sb_N_Modules.setValue(state_dict["Wakefield_N_Modules"])
-            self.ui.cb_Polarization_ABCI.setCurrentIndex(state_dict["Wakefield_Polarization"])
-            self.ui.sb_No_Of_Processors_ABCI.setValue(state_dict["Wakefield_No_Of_Processors"])
-            self.ui.le_Wakelength.setText(state_dict["Wakefield_Wakelength"])
-            self.ui.le_Bunch_Length.setText(state_dict["Wakefield_Bunch_Length"])
-            self.ui.le_NFS.setText(state_dict["Wakefield_NFS"])
-            self.ui.le_MT.setText(state_dict["Wakefield_MT"])
-            self.ui.le_DDZ_SIG.setText(state_dict["Wakefield_DDz/SIG"])
-            self.ui.le_DDR_SIG.setText(state_dict["Wakefield_DDr/SIG"])
-        except KeyError as e:
-            print("Could not deserialize wakefield.py: ", e)
-
     def serialise(self, state_dict):
         serialise(state_dict, self.w_Wakefield, marker='wakefield')
 
@@ -800,8 +686,6 @@ class WakefieldControl:
         t.start()
 
     def draw_shape_from_shape_space(self):
-        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255], [109, 144, 79, 255],
-                  [139, 139, 139, 255]]
         ci = 0
 
         # remove existing cells
@@ -830,7 +714,7 @@ class WakefieldControl:
                        WG_M=None, marker='', qoi_df=None):
         progress = 0
         # get length of processor
-        total_no_of_shapes = len(list(processor_shape_space.keys()))
+        # total_no_of_shapes = len(list(processor_shape_space.keys()))
         for key, shape in processor_shape_space.items():
             # run abci code
             start_time = time.time()
@@ -885,8 +769,8 @@ class WakefieldControl:
                             bl_diff = ['SR', 'BS']
 
                             for j, s in enumerate(sigma_z):
-                                for ii in WG_M:
-                                    fid_op = f"{WP}_{bl_diff[j]}_{s}mm{ii}"
+                                for nn in WG_M:
+                                    fid_op = f"{WP}_{bl_diff[j]}_{s}mm{nn}"
                                     if "OC_R" in list(shape.keys()):
                                         OC_R = "OC_R"
                                     else:
@@ -898,7 +782,7 @@ class WakefieldControl:
                                                          bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
-                                                         WG_M=ii, marker=ii, sub_dir=fid)
+                                                         WG_M=nn, marker=nn, sub_dir=fid)
 
                                     dirc = projectDir / fr'SimulationData\ABCI\{fid}{marker}'
                                     # try:
@@ -924,7 +808,7 @@ class WakefieldControl:
     @staticmethod
     def uq(shape_space, objectives, solver_dict, solver_args_dict):
         for key, shape in shape_space.items():
-            err = False
+            # err = False
             result_dict_slans, result_dict_abci = {}, {}
             run_slans, run_abci = False, False
             slans_obj_list, abci_obj_list = [], []
@@ -932,7 +816,7 @@ class WakefieldControl:
 
                 if o[1] in ["Req", "freq", "Q", "E", "R/Q", "Epk/Eacc", "Bpk/Eacc"]:
                     result_dict_slans[o[1]] = {'expe': [], 'stdDev': []}
-                    run_slans = True
+                    # run_slans = True
                     slans_obj_list.append(o)
 
                 if o[1].split(' ')[0] in ['ZL', 'ZT', 'k_loss', 'k_kick']:
@@ -948,22 +832,22 @@ class WakefieldControl:
             degree = 1
 
             #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
-            nodes = np.array(0)  # initialization
-            weights = np.array(0)  # initialization
+            nodes_ = np.array(0)  # initialization
+            weights_ = np.array(0)  # initialization
             flag_stroud = 1
             if flag_stroud == 1:
-                nodes, weights, bpoly = quad_stroud3(rdim, degree)
-                nodes = 2. * nodes - 1.
+                nodes_, weights_, bpoly_ = quad_stroud3(rdim, degree)
+                nodes_ = 2. * nodes_ - 1.
             elif flag_stroud == 2:
-                nodes, weights, bpoly = quad_stroud3(rdim, degree)  # change to stroud 5 later
-                nodes = 2. * nodes - 1.
+                nodes_, weights_, bpoly_ = quad_stroud3(rdim, degree)  # change to stroud 5 later
+                nodes_ = 2. * nodes_ - 1.
             else:
                 ic('flag_stroud==1 or flag_stroud==2')
 
             #  mean value of geometrical parameters
             p_init = np.zeros(np.shape(p_true))
 
-            no_parm, no_sims = np.shape(nodes)
+            no_parm, no_sims = np.shape(nodes_)
             # ic(no_sims)
             delta = 0.05  # or 0.1
 
@@ -982,21 +866,21 @@ class WakefieldControl:
                 DDZ_SIG = solver_args['DDZ_SIG']
                 parentDir = solver_args['parentDir']
                 projectDir = solver_args['projectDir']
-                progress_list = solver_args['progress_list']
-                WG_M = solver_args['WG_M']
-                marker = solver_args['marker']
+                # progress_list = solver_args['progress_list']
+                # WG_M = solver_args['WG_M']
+                # marker = solver_args['marker']
 
-                proc = solver_args['proc']
+                # proc = solver_args['proc']
                 sub_dir = fr'{key}'  # the simulation runs at the quadrature points
                 # are saved to the key of the mean value run
                 no_error = True
                 for i in range(no_sims):
                     skip = False
-                    p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
-                    p_init[1] = p_true[1] * (1 + delta * nodes[1, i])
-                    p_init[2] = p_true[2] * (1 + delta * nodes[2, i])
-                    p_init[3] = p_true[3] * (1 + delta * nodes[3, i])
-                    p_init[4] = p_true[4] * (1 + delta * nodes[4, i])
+                    p_init[0] = p_true[0] * (1 + delta * nodes_[0, i])
+                    p_init[1] = p_true[1] * (1 + delta * nodes_[1, i])
+                    p_init[2] = p_true[2] * (1 + delta * nodes_[2, i])
+                    p_init[3] = p_true[3] * (1 + delta * nodes_[3, i])
+                    p_init[4] = p_true[4] * (1 + delta * nodes_[4, i])
 
                     par_mid = np.append(p_init, shape['IC'][5:]).tolist()
                     par_end = par_mid
@@ -1042,7 +926,7 @@ class WakefieldControl:
                         no_error = False
 
                 if no_error:
-                    v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)
+                    v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights_)
                     # append results to dict
                     # ic(v_expe_fobj, v_stdDev_fobj)
                     for i, o in enumerate(abci_obj_list):
@@ -1078,10 +962,10 @@ def get_qois_value(f_fm, R_Q, k_loss, k_kick, sigma_z, I0, Nb, n_cell):
 
 
 def get_wakefield_objectives_value(key, obj, abci_data_dir):
-    k_loss_transverse = []
-    k_loss_longitudinal = []
-    k_loss_M0 = []
-    key_list = []
+    # k_loss_transverse = []
+    # k_loss_longitudinal = []
+    # k_loss_M0 = []
+    # key_list = []
 
     # create list to hold Z
     Zmax_mon_list = []
@@ -1090,33 +974,33 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
     xmax_dip_list = []
     processed_keys = []
 
-    def calc_k_loss():
-        print(f"Processing for Cavity {key}")
-        abci_data_long = ABCIData(abci_data_dir, key, 0)
-        abci_data_trans = ABCIData(abci_data_dir, key, 1)
-
-        # trans
-        x, y, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-        k_loss_trans = abci_data_trans.loss_factor['Transverse']
-
-        if math.isnan(k_loss_trans):
-            print_(f"Encountered an exception: Check shape {key}")
-            return [0, 0, 0]
-
-        # long
-        x, y, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
-        abci_data_long.get_data('Loss Factor Spectrum Integrated up to F')
-
-        k_M0 = abci_data_long.y_peaks[0]
-        k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
-        k_loss_HOM = k_loss_long - k_M0
-
-        # append only after successful run
-        k_loss_M0.append(k_M0)
-        k_loss_longitudinal.append(k_loss_HOM)
-        k_loss_transverse.append(k_loss_trans)
-
-        return [k_loss_M0, k_loss_longitudinal, k_loss_transverse]
+    # def calc_k_loss():
+    #     print(f"Processing for Cavity {key}")
+    #     abci_data_long = ABCIData(abci_data_dir, key, 0)
+    #     abci_data_trans = ABCIData(abci_data_dir, key, 1)
+    #
+    #     # trans
+    #     x, y, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
+    #     k_loss_trans = abci_data_trans.loss_factor['Transverse']
+    #
+    #     if math.isnan(k_loss_trans):
+    #         print_(f"Encountered an exception: Check shape {key}")
+    #         return [0, 0, 0]
+    #
+    #     # long
+    #     x, y, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
+    #     abci_data_long.get_data('Loss Factor Spectrum Integrated up to F')
+    #
+    #     k_M0 = abci_data_long.y_peaks[0]
+    #     k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
+    #     k_loss_HOM = k_loss_long - k_M0
+    #
+    #     # append only after successful run
+    #     k_loss_M0.append(k_M0)
+    #     k_loss_longitudinal.append(k_loss_HOM)
+    #     k_loss_transverse.append(k_loss_trans)
+    #
+    #     return [k_loss_M0, k_loss_longitudinal, k_loss_transverse]
 
     def get_Zmax_L(mon_interval=None):
         if mon_interval is None:
@@ -1141,16 +1025,16 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
             peaks_mon, _ = sps.find_peaks(ymag_mon, height=0)
             xp_mon, yp_mon = np.array(xr_mon)[peaks_mon], np.array(ymag_mon)[peaks_mon]
 
-            for i, z_bound in enumerate(mon_interval):
+            for nn, z_bound in enumerate(mon_interval):
                 # get mask
                 msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
 
                 if len(yp_mon[msk_mon]) != 0:
                     Zmax_mon = max(yp_mon[msk_mon])
 
-                    Zmax_mon_list[i].append(Zmax_mon)
+                    Zmax_mon_list[nn].append(Zmax_mon)
                 elif len(yp_mon) != 0:
-                    Zmax_mon_list[i].append(0)
+                    Zmax_mon_list[nn].append(0)
                 else:
                     return ['error']
 
@@ -1182,16 +1066,16 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
             peaks_dip, _ = sps.find_peaks(ymag_dip, height=0)
             xp_dip, yp_dip = np.array(xr_dip)[peaks_dip], np.array(ymag_dip)[peaks_dip]
 
-            for i, z_bound in enumerate(dip_interval):
+            for nn, z_bound in enumerate(dip_interval):
                 # get mask
                 msk_dip = [(z_bound[0] < x < z_bound[1]) for x in xp_dip]
 
                 if len(yp_dip[msk_dip]) != 0:
                     Zmax_dip = max(yp_dip[msk_dip])
 
-                    Zmax_dip_list[i].append(Zmax_dip)
+                    Zmax_dip_list[nn].append(Zmax_dip)
                 elif len(yp_dip) != 0:
-                    Zmax_dip_list[i].append(0)
+                    Zmax_dip_list[nn].append(0)
                 else:
                     return ['error']
 
@@ -1201,81 +1085,81 @@ def get_wakefield_objectives_value(key, obj, abci_data_dir):
 
         return Zmax_dip_list
 
-    def all_(mon_interval, dip_interval):
-        print(f"Processing for Cavity {key}")
-        abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
-        abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
-
-        # get longitudinal and transverse impedance plot data
-        xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
-        xi_mon, yi_mon, _ = abci_data_long.get_data('Imaginary Part of Longitudinal Impedance')
-
-        xr_dip, yr_dip, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-        xi_dip, yi_dip, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
-
-        # loss factors
-        # trans
-        k_loss_trans = abci_data_trans.loss_factor['Transverse']
-
-        if math.isnan(k_loss_trans):
-            print_(f"Encountered an exception: Check shape {key}")
-            return 0
-
-        # long
-        abci_data_long.get_data('Loss Factor Spectrum Integrated upto F')
-
-        k_M0 = abci_data_long.y_peaks[0]
-        k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
-        k_loss_HOM = k_loss_long - k_M0
-
-        # calculate magnitude
-        ymag_mon = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_mon, yi_mon)]
-        ymag_dip = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_dip, yi_dip)]
-
-        # get peaks
-        peaks_mon, _ = sps.find_peaks(ymag_mon, height=0)
-        xp_mon, yp_mon = np.array(xr_mon)[peaks_mon], np.array(ymag_mon)[peaks_mon]
-
-        peaks_dip, _ = sps.find_peaks(ymag_dip, height=0)
-        xp_dip, yp_dip = np.array(xr_dip)[peaks_dip], np.array(ymag_dip)[peaks_dip]
-
-        for ii, z_bound in enumerate(mon_interval):
-            # get mask
-            msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
-
-            if len(yp_mon[msk_mon]) != 0:
-                Zmax_mon = max(yp_mon[msk_mon])
-                xmax_mon = xp_mon[np.where(yp_mon == Zmax_mon)][0]
-
-                Zmax_mon_list[ii].append(Zmax_mon)
-                xmax_mon_list[ii].append(xmax_mon)
-            elif len(yp_mon) != 0:
-                Zmax_mon_list[ii].append(0.0)
-                xmax_mon_list[ii].append(0.0)
-            else:
-                continue
-
-        for i, z_bound in enumerate(dip_interval):
-            # get mask
-            msk_dip = [(z_bound[0] < x < z_bound[1]) for x in xp_dip]
-
-            if len(yp_dip[msk_dip]) != 0:
-                Zmax_dip = max(yp_dip[msk_dip])
-                xmax_dip = xp_dip[np.where(yp_dip == Zmax_dip)][0]
-
-                Zmax_dip_list[i].append(Zmax_dip)
-                xmax_dip_list[i].append(xmax_dip)
-            elif len(yp_dip) != 0:
-                Zmax_dip_list[i].append(0.0)
-                xmax_dip_list[i].append(0.0)
-            else:
-                continue
-
-        # append only after successful run
-
-        k_loss_M0.append(k_M0)
-        k_loss_longitudinal.append(k_loss_HOM)
-        k_loss_transverse.append(k_loss_trans)
+    # def all_(mon_interval, dip_interval):
+    #     print(f"Processing for Cavity {key}")
+    #     abci_data_long = ABCIData(abci_data_dir, f"{key}_", 0)
+    #     abci_data_trans = ABCIData(abci_data_dir, f"{key}_", 1)
+    #
+    #     # get longitudinal and transverse impedance plot data
+    #     xr_mon, yr_mon, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
+    #     xi_mon, yi_mon, _ = abci_data_long.get_data('Imaginary Part of Longitudinal Impedance')
+    #
+    #     xr_dip, yr_dip, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
+    #     xi_dip, yi_dip, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
+    #
+    #     # loss factors
+    #     # trans
+    #     k_loss_trans = abci_data_trans.loss_factor['Transverse']
+    #
+    #     if math.isnan(k_loss_trans):
+    #         print_(f"Encountered an exception: Check shape {key}")
+    #         return 0
+    #
+    #     # long
+    #     abci_data_long.get_data('Loss Factor Spectrum Integrated upto F')
+    #
+    #     k_M0 = abci_data_long.y_peaks[0]
+    #     k_loss_long = abs(abci_data_long.loss_factor['Longitudinal'])
+    #     k_loss_HOM = k_loss_long - k_M0
+    #
+    #     # calculate magnitude
+    #     ymag_mon = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_mon, yi_mon)]
+    #     ymag_dip = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr_dip, yi_dip)]
+    #
+    #     # get peaks
+    #     peaks_mon, _ = sps.find_peaks(ymag_mon, height=0)
+    #     xp_mon, yp_mon = np.array(xr_mon)[peaks_mon], np.array(ymag_mon)[peaks_mon]
+    #
+    #     peaks_dip, _ = sps.find_peaks(ymag_dip, height=0)
+    #     xp_dip, yp_dip = np.array(xr_dip)[peaks_dip], np.array(ymag_dip)[peaks_dip]
+    #
+    #     for ii, z_bound in enumerate(mon_interval):
+    #         # get mask
+    #         msk_mon = [(z_bound[0] < x < z_bound[1]) for x in xp_mon]
+    #
+    #         if len(yp_mon[msk_mon]) != 0:
+    #             Zmax_mon = max(yp_mon[msk_mon])
+    #             xmax_mon = xp_mon[np.where(yp_mon == Zmax_mon)][0]
+    #
+    #             Zmax_mon_list[ii].append(Zmax_mon)
+    #             xmax_mon_list[ii].append(xmax_mon)
+    #         elif len(yp_mon) != 0:
+    #             Zmax_mon_list[ii].append(0.0)
+    #             xmax_mon_list[ii].append(0.0)
+    #         else:
+    #             continue
+    #
+    #     for i, z_bound in enumerate(dip_interval):
+    #         # get mask
+    #         msk_dip = [(z_bound[0] < x < z_bound[1]) for x in xp_dip]
+    #
+    #         if len(yp_dip[msk_dip]) != 0:
+    #             Zmax_dip = max(yp_dip[msk_dip])
+    #             xmax_dip = xp_dip[np.where(yp_dip == Zmax_dip)][0]
+    #
+    #             Zmax_dip_list[i].append(Zmax_dip)
+    #             xmax_dip_list[i].append(xmax_dip)
+    #         elif len(yp_dip) != 0:
+    #             Zmax_dip_list[i].append(0.0)
+    #             xmax_dip_list[i].append(0.0)
+    #         else:
+    #             continue
+    #
+    #     # append only after successful run
+    #
+    #     k_loss_M0.append(k_M0)
+    #     k_loss_longitudinal.append(k_loss_HOM)
+    #     k_loss_transverse.append(k_loss_trans)
 
     ZL, ZT = [], []
     freq_range_ZL, freq_range_ZT = [], []

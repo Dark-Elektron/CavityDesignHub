@@ -246,7 +246,7 @@ def jac(z, *data):
     return J
 
 
-def perform_geometry_checks(par_mid, par_end):
+def perform_geometry_checks(par_mid: list, par_end: list):
     """
     Checks geometry to filter out low loss cavity geometries
 
@@ -739,7 +739,7 @@ def get_geometric_parameters(frame_control, code, scales=None):
                             continue
 
                     if not to_all:
-                        ans = frame_control.prompt(code, key)
+                        ans = frame_control.prompt(key)
                         if ans == 'Yes':
                             if scale == 1 or scale == 0:
                                 shape_space[key] = val

@@ -6,11 +6,11 @@ from pathlib import Path
 from psutil import NoSuchProcess
 
 from analysis_modules.plot_module.plotter import Plot
-from graphics.graphics_view import GraphicsView
+# from graphics.graphics_view import GraphicsView
 from graphics.scene import Scene
 from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.eigenmode import Ui_Eigenmode
-from utils.file_reader import FileReader
+# from utils.file_reader import FileReader
 from utils.shared_classes import *
 from utils.shared_functions import *
 from analysis_modules.eigenmode.customEig.run_field_solver import Model
@@ -146,7 +146,8 @@ class EigenmodeControl:
 
         # cancel
         self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
-        self.ui.pb_Pause_Resume.clicked.connect(lambda: self.pause() if self.process_state == 'running' else self.resume())
+        self.ui.pb_Pause_Resume.clicked.connect(
+            lambda: self.pause() if self.process_state == 'running' else self.resume())
 
         # uncomment to draw again
         self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
@@ -191,7 +192,6 @@ class EigenmodeControl:
 
     def run_slans(self):
         # get analysis parameters
-        n_cells = self.ui.sb_N_Cells.value()
         n_cells = text_to_list(self.ui.le_N_Cells.text())
         n_modules = self.ui.sb_N_Modules.value()
         f_shift = float(self.ui.le_Freq_Shift.text())
@@ -356,7 +356,7 @@ class EigenmodeControl:
             self.progress_bar.setValue(0)
             self.progress_bar.hide()
 
-    def prompt(self, code, fid):
+    def prompt(self, fid):
         path = self.main_control.projectDir / fr'SimulationData\SLANS\{fid}'
         # print(path)
         # path = os.path.join(path, fr"{}\{code}\{fid}")
@@ -395,14 +395,12 @@ class EigenmodeControl:
         self.ui.pb_Slansre.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\slansre.exe")))
         self.ui.pb_MTFView.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\Mtfview\mtfview.exe")))
 
-    def run_slans_exe(self, path, filename=None):
+    def run_slans_exe(self, path):
         path = self.main_control.parentDir / fr"exe\{path}"
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
 
     def draw_shape_from_shape_space(self):
-        colors = [[48, 162, 218, 255], [252, 79, 48, 255], [229, 174, 56, 255], [109, 144, 79, 255],
-                  [139, 139, 139, 255]]
         ci = 0
 
         # remove existing cells
@@ -474,7 +472,7 @@ class EigenmodeControl:
                        progress_list, sub_dir='', UQ=False, solver='slans'):
         progress = 0
         # get length of processor
-        total_no_of_shapes = len(list(processor_shape_space.keys()))
+        # total_no_of_shapes = len(list(processor_shape_space.keys()))
 
         for key, shape in processor_shape_space.items():
             if solver.lower() == 'slans':
@@ -497,31 +495,30 @@ class EigenmodeControl:
                 #
                 #     write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
                 #
-                #     if 'OC_R' in shape.keys():
-                #         slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                #                           n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                #                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                #                           expansion=expansion, expansion_r=expansion_r)
-                #     else:
-                #         slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                #                           n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                #                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                #                           expansion=expansion, expansion_r=expansion_r)
-                # else:
+                # if 'OC_R' in shape.keys(): slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
+                # shape['OC_R'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
+                # expansion_r=expansion_r) else: slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
+                # shape['OC'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
+                # expansion_r=expansion_r) else:
                 for n_cell in n_cells:
                     # # create folders for all keys
                     slans_geom.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir)
 
-                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'],
+                                        projectDir=projectDir, cell_type="None")
 
                     if 'OC_R' in shape.keys():
                         slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                          bc=bc, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
                                           expansion=expansion, expansion_r=expansion_r)
                     else:
                         slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                          bc=bc, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
                                           expansion=expansion, expansion_r=expansion_r)
 
@@ -568,7 +565,8 @@ class EigenmodeControl:
         Req_i_space = text_to_list(self.ui.le_Req_i.text())[0]
 
         # try:
-        alpha_i_space = calculate_alpha(A_i_space, B_i_space, a_i_space, b_i_space, Ri_i_space, L_i_space, Req_i_space, 0)
+        alpha_i_space, _ = calculate_alpha(A_i_space, B_i_space, a_i_space, b_i_space,
+                                           Ri_i_space, L_i_space, Req_i_space, 0)
         self.ui.le_Alpha.setText(f"{round(alpha_i_space, 2)}")
         # except:
         #     pass
@@ -590,18 +588,19 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
     #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
     flag_stroud = 1
     if flag_stroud == 1:
-        nodes, weights, bpoly = quad_stroud3(rdim, degree)
-        nodes = 2. * nodes - 1.
+        nodes_, weights_, bpoly_ = quad_stroud3(rdim, degree)
+        nodes_ = 2. * nodes_ - 1.
     elif flag_stroud == 2:
-        nodes, weights, bpoly = quad_stroud3(rdim, degree)  # change to stroud 5 later
-        nodes = 2. * nodes - 1.
+        nodes_, weights_, bpoly_ = quad_stroud3(rdim, degree)  # change to stroud 5 later
+        nodes_ = 2. * nodes_ - 1.
     else:
         ic('flag_stroud==1 or flag_stroud==2')
+        return 0
 
     #  mean value of geometrical parameters
     p_init = np.zeros(np.shape(p_true))
 
-    no_parm, no_sims = np.shape(nodes)
+    no_parm, no_sims = np.shape(nodes_)
     delta = 0.005  # or 0.1
 
     Ttab_val_f = []
@@ -609,11 +608,11 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
     sub_dir = fr'{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
     for i in range(no_sims):
         skip = False
-        p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
-        p_init[1] = p_true[1] * (1 + delta * nodes[1, i])
-        p_init[2] = p_true[2] * (1 + delta * nodes[2, i])
-        p_init[3] = p_true[3] * (1 + delta * nodes[3, i])
-        p_init[4] = p_true[4] * (1 + delta * nodes[4, i])
+        p_init[0] = p_true[0] * (1 + delta * nodes_[0, i])
+        p_init[1] = p_true[1] * (1 + delta * nodes_[1, i])
+        p_init[2] = p_true[2] * (1 + delta * nodes_[2, i])
+        p_init[3] = p_true[3] * (1 + delta * nodes_[3, i])
+        p_init[4] = p_true[4] * (1 + delta * nodes_[4, i])
 
         par_mid = np.append(p_init, shape['IC'][5:]).tolist()
         par_end = par_mid
@@ -673,7 +672,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
     # import matplotlib.pyplot as plt
     if not err:
-        v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)
+        v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights_)
 
         # append results to dict
         for i, o in enumerate(slans_obj_list):
@@ -695,12 +694,12 @@ def get_qoi_value(d, obj, n_cells, norm_length):
     Req = d['CAVITY RADIUS'][n_cells-1] * 10  # convert to mm
     Freq = d['FREQUENCY'][n_cells-1]
     E_stored = d['STORED ENERGY'][n_cells-1]
-    Rsh = d['SHUNT IMPEDANCE'][n_cells-1]  # MOhm
+    # Rsh = d['SHUNT IMPEDANCE'][n_cells-1]  # MOhm
     Q = d['QUALITY FACTOR'][n_cells-1]
     Epk = d['MAXIMUM ELEC. FIELD'][n_cells-1]  # MV/m
     Hpk = d['MAXIMUM MAG. FIELD'][n_cells-1]  # A/m
     # Vacc = dict['ACCELERATION'][0]
-    Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells-1]  # MV/m
+    # Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells-1]  # MV/m
     Rsh_Q = d['EFFECTIVE IMPEDANCE'][n_cells-1]  # Ohm
 
     Vacc = np.sqrt(
