@@ -1972,57 +1972,6 @@
                               <item row="0" column="0">
                                <widget class="QWidget" name="widget_8" native="true">
                                 <layout class="QGridLayout" name="gridLayout_34">
-                                 <item row="9" column="0" colspan="2">
-                                  <widget class="QPushButton" name="pb_Custom_Color">
-                                   <property name="text">
-                                    <string>Custom Color</string>
-                                   </property>
-                                   <property name="checkable">
-                                    <bool>true</bool>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item row="5" column="1">
-                                  <widget class="QDoubleSpinBox" name="dsb_Alpha">
-                                   <property name="maximum">
-                                    <double>1.000000000000000</double>
-                                   </property>
-                                   <property name="singleStep">
-                                    <double>0.010000000000000</double>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item row="1" column="0">
-                                  <widget class="QLabel" name="label_10">
-                                   <property name="text">
-                                    <string>Line style</string>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item row="2" column="0">
-                                  <widget class="QLabel" name="label_14">
-                                   <property name="text">
-                                    <string>Marker</string>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item row="5" column="0">
-                                  <widget class="QLabel" name="label_11">
-                                   <property name="text">
-                                    <string>alpha</string>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item row="6" column="0" colspan="2">
-                                  <widget class="QLabel" name="label_15">
-                                   <property name="text">
-                                    <string>Object Color</string>
-                                   </property>
-                                   <property name="alignment">
-                                    <set>Qt::AlignCenter</set>
-                                   </property>
-                                  </widget>
-                                 </item>
                                  <item row="1" column="1">
                                   <widget class="QComboBox" name="cb_Line_Style">
                                    <item>
@@ -2042,10 +1991,44 @@
                                    </item>
                                   </widget>
                                  </item>
-                                 <item row="0" column="0">
-                                  <widget class="QLabel" name="label_13">
+                                 <item row="4" column="0">
+                                  <widget class="QLabel" name="label_12">
                                    <property name="text">
-                                    <string>Line width</string>
+                                    <string>Marker Edge Color</string>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="7" column="0" colspan="2">
+                                  <widget class="QLabel" name="label_15">
+                                   <property name="text">
+                                    <string>Object Color</string>
+                                   </property>
+                                   <property name="alignment">
+                                    <set>Qt::AlignCenter</set>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="3" column="0">
+                                  <widget class="QLabel" name="label_16">
+                                   <property name="text">
+                                    <string>Marker size</string>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="5" column="1">
+                                  <widget class="QDoubleSpinBox" name="dsb_Alpha">
+                                   <property name="maximum">
+                                    <double>1.000000000000000</double>
+                                   </property>
+                                   <property name="singleStep">
+                                    <double>0.010000000000000</double>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="2" column="0">
+                                  <widget class="QLabel" name="label_14">
+                                   <property name="text">
+                                    <string>Marker</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -2062,17 +2045,27 @@
                                    </property>
                                   </widget>
                                  </item>
-                                 <item row="3" column="0">
-                                  <widget class="QLabel" name="label_16">
+                                 <item row="3" column="1">
+                                  <widget class="QDoubleSpinBox" name="db_Marker_Size"/>
+                                 </item>
+                                 <item row="8" column="0" colspan="2">
+                                  <layout class="QGridLayout" name="gl_Color">
+                                   <property name="spacing">
+                                    <number>0</number>
+                                   </property>
+                                  </layout>
+                                 </item>
+                                 <item row="0" column="0">
+                                  <widget class="QLabel" name="label_13">
                                    <property name="text">
-                                    <string>Marker size</string>
+                                    <string>Line width</string>
                                    </property>
                                   </widget>
                                  </item>
-                                 <item row="4" column="0">
-                                  <widget class="QLabel" name="label_12">
+                                 <item row="5" column="0">
+                                  <widget class="QLabel" name="label_11">
                                    <property name="text">
-                                    <string>Marker Edge Color</string>
+                                    <string>alpha</string>
                                    </property>
                                   </widget>
                                  </item>
@@ -2140,17 +2133,31 @@
                                    </item>
                                   </widget>
                                  </item>
-                                 <item row="3" column="1">
-                                  <widget class="QDoubleSpinBox" name="db_Marker_Size"/>
-                                 </item>
-                                 <item row="7" column="0" colspan="2">
-                                  <layout class="QGridLayout" name="gl_Color">
-                                   <property name="spacing">
-                                    <number>0</number>
-                                   </property>
-                                  </layout>
-                                 </item>
                                  <item row="10" column="0" colspan="2">
+                                  <widget class="QPushButton" name="pb_Custom_Color">
+                                   <property name="text">
+                                    <string>Custom Color</string>
+                                   </property>
+                                   <property name="checkable">
+                                    <bool>true</bool>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="1" column="0">
+                                  <widget class="QLabel" name="label_10">
+                                   <property name="text">
+                                    <string>Line style</string>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="9" column="0" colspan="2">
+                                  <widget class="QPushButton" name="pb_Reset_Colors">
+                                   <property name="text">
+                                    <string>Reset Colors</string>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="11" column="0" colspan="2">
                                   <widget class="QWidget" name="w_Custom_Color" native="true">
                                    <layout class="QGridLayout" name="gridLayout_8">
                                     <item row="0" column="0">
@@ -2159,10 +2166,26 @@
                                    </layout>
                                   </widget>
                                  </item>
-                                 <item row="8" column="0" colspan="2">
-                                  <widget class="QPushButton" name="pb_Reset_Colors">
+                                 <item row="6" column="0">
+                                  <widget class="QLabel" name="label_17">
                                    <property name="text">
-                                    <string>Reset Colors</string>
+                                    <string>Layer</string>
+                                   </property>
+                                  </widget>
+                                 </item>
+                                 <item row="6" column="1">
+                                  <widget class="QDoubleSpinBox" name="sb_Layer">
+                                   <property name="decimals">
+                                    <number>1</number>
+                                   </property>
+                                   <property name="minimum">
+                                    <double>1.000000000000000</double>
+                                   </property>
+                                   <property name="singleStep">
+                                    <double>0.500000000000000</double>
+                                   </property>
+                                   <property name="value">
+                                    <double>1.000000000000000</double>
                                    </property>
                                   </widget>
                                  </item>

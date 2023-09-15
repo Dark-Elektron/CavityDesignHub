@@ -17,7 +17,7 @@ from utils.file_reader import FileReader
 fr = FileReader()
 
 AN_DURATION = 250
-global animation
+global animate
 
 
 def update_alpha(cell):
@@ -40,6 +40,7 @@ def update_alpha(cell):
         A, B, a, b, Ri, L, Req = cell
     alpha = calculate_alpha(A, B, a, b, Ri, L, Req, 0)
     cell = [A, B, a, b, Ri, L, Req, alpha[0]]
+
     return cell
 
 
@@ -50,7 +51,6 @@ def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
     Parameters
     ----------
     A: float
-
     B: float
     a: float
     b: float
@@ -121,10 +121,10 @@ def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
         if key == 'non-reentrant':
             if 90 < alpha < 180:
                 return df
-        if key == 'reentrant':
+        elif key == 'reentrant':
             if 0 < alpha < 90:
                 return df
-        if key == 'expansion':
+        elif key == 'expansion':
             if 90 < alpha < 180:
                 return df
 
@@ -461,28 +461,28 @@ def quad_stroud3(rdim, degree):
     return nodes, weights, bpoly
 
 
-def quad_stroud5(rdim, degree):
-    # data for Stroud-5 quadrature in [0,1]**rdim
-    # nodes and weights
-    # o, nodestr, weights = quadpy.cn.stroud_cn_5_2(rdim)
-    nodes = 0.5 * nodestr + 0.5
-    weights = weights / (2 ** rdim)
-    dummy, nnodes = np.size(nodes)
-
-    # evaluation of Legendre polynomials
-    bpoly = np.zeros((degree + 1, rdim, nnodes))
-    for l in range(rdim):
-        for j in range(nnodes):
-            bpoly[1, l, j] = 1.
-            bpoly[2, l, j] = nodestr(l, j)
-            for i in range(1, degree):
-                bpoly[i + 1, l, j] = ((2 * i - 1) * nodestr(l, j) * bpoly[i, l, j] - (i - 1) * bpoly[i - 1, l, j]) / i
-
-    # standardisation of Legendre polynomials
-    for i in range(1, degree + 1):
-        bpoly[i, :, :] = bpoly[i, :, :] * np.sqrt(2 * i - 1)
-
-    return nodes, weights, bpoly
+# def quad_stroud5(rdim, degree):
+#     # data for Stroud-5 quadrature in [0,1]**rdim
+#     # nodes and weights
+#     # o, nodestr, weights = quadpy.cn.stroud_cn_5_2(rdim)
+#     nodes = 0.5 * nodestr + 0.5
+#     weights = weights / (2 ** rdim)
+#     dummy, nnodes = np.size(nodes)
+#
+#     # evaluation of Legendre polynomials
+#     bpoly = np.zeros((degree + 1, rdim, nnodes))
+#     for l in range(rdim):
+#         for j in range(nnodes):
+#             bpoly[1, l, j] = 1.
+#             bpoly[2, l, j] = nodestr(l, j)
+#             for i in range(1, degree):
+#                 bpoly[i + 1, l, j] = ((2 * i - 1) * nodestr(l, j) * bpoly[i, l, j] - (i - 1) * bpoly[i - 1, l, j]) / i
+#
+#     # standardisation of Legendre polynomials
+#     for i in range(1, degree + 1):
+#         bpoly[i, :, :] = bpoly[i, :, :] * np.sqrt(2 * i - 1)
+#
+#     return nodes, weights, bpoly
 
 
 def weighted_mean_obj(tab_var, weights):
@@ -562,7 +562,7 @@ def animate_width(widget, min_width, standard, enable, option="max"):
     -------
 
     """
-    global animation
+    global animate
     if enable:
         # GET WIDTH
         width = widget.width()
@@ -576,15 +576,15 @@ def animate_width(widget, min_width, standard, enable, option="max"):
 
         # ANIMATION
         if option == 'max':
-            animation = QPropertyAnimation(widget, b"maximumWidth")
+            animate = QPropertyAnimation(widget, b"maximumWidth")
         else:
-            animation = QPropertyAnimation(widget, b"minimumWidth")
+            animate = QPropertyAnimation(widget, b"minimumWidth")
 
-        animation.setDuration(AN_DURATION)
-        animation.setStartValue(width)
-        animation.setEndValue(widthCollapsed)
-        animation.setEasingCurve(QEasingCurve.InOutQuart)
-        animation.start()
+        animate.setDuration(AN_DURATION)
+        animate.setStartValue(width)
+        animate.setEndValue(widthCollapsed)
+        animate.setEasingCurve(QEasingCurve.InOutQuart)
+        animate.start()
 
 
 def animate_height(widget, min_height, standard, enable, option="max"):

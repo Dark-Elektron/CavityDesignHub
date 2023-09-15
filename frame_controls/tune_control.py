@@ -103,7 +103,7 @@ class TuneControl:
         # self.ui_effects()
 
         # evolution algorithm
-        self.opt_control = OptimizationControl(self.ui)
+        self.opt_control = OptimizationControl(self.main_control, self.ui)
 
     def initUI(self):
         # splitter
@@ -1381,7 +1381,7 @@ class TuneControl:
 
 
 class OptimizationControl:
-    def __init__(self, tuneUI):
+    def __init__(self, parent, tuneUI):
         self.tune_freq = None
         self.df_global = pd.DataFrame()
         self.ui = tuneUI
@@ -1397,8 +1397,8 @@ class OptimizationControl:
         self.df = None
         self.sbd = {}  # shape bounds dictionary
         self.poc = 5  # pareto optimal count
-        self.parentDir = Path(r"D:\Dropbox\CavityDesignHub")
-        self.projectDir = Path(fr"D:\Dropbox\CavityDesignHub\Cavity800")
+        self.parentDir = parent.parentDir
+        self.projectDir = parent.projectDir
 
         # interpolation
         self.n_interp = 10000
@@ -2111,7 +2111,8 @@ class OptimizationControl:
                     with open(fr"{projectDir}\SimulationData\ABCI\{key}\uq.json", 'w') as file:
                         file.write(json.dumps(result_dict_abci, indent=4, separators=(',', ': ')))
 
-    def stroud(self, p):
+    @staticmethod
+    def stroud(p):
         # Stroud-3 method
         #
         # Input parameters:

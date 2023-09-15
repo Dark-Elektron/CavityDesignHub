@@ -56,6 +56,9 @@ class QCheckableComboBox(QComboBox):
         # Prevent popup from closing when clicking on an item
         self.view().viewport().installEventFilter(self)
 
+        # combobox text list
+        self.texts = []
+
     def resizeEvent(self, event):
         # Recompute text to elide as needed
         self.updateText()
@@ -135,6 +138,7 @@ class QCheckableComboBox(QComboBox):
     def addItem(self, text, data=None):
         item = QStandardItem()
         item.setText(text)
+        self.texts.append(text)
         if data is None:
             item.setData(text)
         else:
@@ -160,6 +164,11 @@ class QCheckableComboBox(QComboBox):
             if self.model().item(i).checkState() == Qt.Checked:
                 res.append(self.model().item(i).data())
         return res
+
+    def clear(self) -> None:
+        super().clear()
+        # reset text list
+        self.texts = []
 
 
 class QColorComboBox(QComboBox):

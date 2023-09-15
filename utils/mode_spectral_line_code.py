@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     for m in M:
         for n in N:
-            # get jacobian
+            # get bessel
             j_mn = jn_zeros(m, n)[n-1]
             j_mn_p = jnp_zeros(m, n)[n-1]
             J = [j_mn, j_mn_p]

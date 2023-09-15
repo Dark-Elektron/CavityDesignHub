@@ -218,83 +218,231 @@
     "Wakefield_Scale": "1",
     "plot_table_widget": {
         "0": {
-            "Code": "ABCI",
-            "Folder": "D:/Dropbox/CavityDesignHub/PhD_Thesis/SimulationData/ABCI",
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "Baseline",
-                    "C3794",
-                    "C3795",
-                    "C3795_round2",
-                    "LHC_retuned",
-                    "TESLA_800MHz_s0.6616"
+                    "Sheet1"
                 ],
-                "C3795, C3795_round2"
+                "Sheet1"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "",
-                ""
+                "Frequency (Multiple Modes)",
+                "Q-Factor (lossy E) (Multiple Modes)"
             ],
             "Toggle": 2,
-            "ScaleX": "1000",
+            "ScaleX": "1",
             "ScaleY": "1",
             "Axis": "Left",
             "Type": [
-                "Line",
-                "-"
+                "Scatter",
+                "o"
             ],
             "Filter": [
-                "",
-                ""
+                "Pol",
+                "M"
+            ]
+        },
+        "1": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "Sheet1"
+                ],
+                "Sheet1"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "Frequency (Multiple Modes)",
+                "Q-Factor (lossy E) (Multiple Modes)"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "P"
+            ],
+            "Filter": [
+                "Pol",
+                "D"
+            ]
+        },
+        "2": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "Sheet1"
+                ],
+                "Sheet1"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "Frequency (Multiple Modes)",
+                "Q-Factor (lossy E) (Multiple Modes)"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "X"
+            ],
+            "Filter": [
+                "Pol",
+                "Q"
+            ]
+        },
+        "3": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "Sheet1"
+                ],
+                "Sheet1"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "Frequency (Multiple Modes)",
+                "Q-Factor (lossy E) (Multiple Modes)"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "H"
+            ],
+            "Filter": [
+                "Pol",
+                "S"
+            ]
+        },
+        "4": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "Sheet1"
+                ],
+                "Sheet1"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "Frequency (Multiple Modes)",
+                "Q-Factor (lossy E) (Multiple Modes)"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "^"
+            ],
+            "Filter": [
+                "Pol",
+                "O"
             ]
         }
     },
     "plot_objects_attr": {
         "lines": [
             {
-                "ls": "-",
+                "ls": "None",
+                "color": "#8da0cb",
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
+                "mew": 1.0,
+                "mfc": "#8da0cb"
+            },
+            {
+                "ls": "None",
+                "color": "#e78ac3",
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
+                "mew": 1.0,
+                "mfc": "#e78ac3"
+            },
+            {
+                "ls": "None",
                 "color": [
-                    0.4,
-                    0.7607843137254902,
-                    0.6470588235294118
+                    0.6509803921568628,
+                    0.8470588235294118,
+                    0.32941176470588235
                 ],
-                "lw": 2.0,
-                "ms": 6.0,
-                "mec": [
-                    0.4,
-                    0.7607843137254902,
-                    0.6470588235294118
-                ],
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
                 "mew": 1.0,
                 "mfc": [
-                    0.4,
-                    0.7607843137254902,
-                    0.6470588235294118
+                    0.6509803921568628,
+                    0.8470588235294118,
+                    0.32941176470588235
                 ]
             },
             {
-                "ls": "-",
+                "ls": "None",
                 "color": [
-                    0.9882352941176471,
-                    0.5529411764705883,
-                    0.3843137254901961
+                    1.0,
+                    0.8509803921568627,
+                    0.1843137254901961
                 ],
-                "lw": 2.0,
-                "ms": 6.0,
-                "mec": [
-                    0.9882352941176471,
-                    0.5529411764705883,
-                    0.3843137254901961
-                ],
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
                 "mew": 1.0,
                 "mfc": [
-                    0.9882352941176471,
-                    0.5529411764705883,
-                    0.3843137254901961
+                    1.0,
+                    0.8509803921568627,
+                    0.1843137254901961
                 ]
+            },
+            {
+                "ls": "None",
+                "color": "#e5c494",
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
+                "mew": 1.0,
+                "mfc": "#e5c494"
+            },
+            {
+                "ls": "--",
+                "color": "k",
+                "lw": 1.5,
+                "ms": 6.0,
+                "mec": "k",
+                "mew": 1.0,
+                "mfc": "k"
+            },
+            {
+                "ls": "--",
+                "color": "k",
+                "lw": 1.5,
+                "ms": 6.0,
+                "mec": "k",
+                "mew": 1.0,
+                "mfc": "k"
             }
         ],
         "collections": [],
@@ -628,12 +776,12 @@
     "wakefield_le_Beam_Offset": "5",
     "wakefield_sb_Std_Dev": 5,
     "plot_pb_Custom_Color": false,
-    "plot_dsb_Alpha": 0.5,
+    "plot_dsb_Alpha": 1.0,
     "plot_qt_spinbox_lineedit": "14",
-    "plot_cb_Line_Style": "-",
-    "plot_dsb_Line_Width": 14.0,
+    "plot_cb_Line_Style": "--",
+    "plot_dsb_Line_Width": 1.5,
     "plot_cb_Marker": "o",
-    "plot_db_Marker_Size": 14.0,
+    "plot_db_Marker_Size": 10.0,
     "plot_": "Presentation",
     "plot_dsb_Threshold": 14.0,
     "plot_cb_Peaks_Marker_Style": "x",
@@ -647,7 +795,7 @@
     "plot_pb_Show_Hide_Machine_Parameters": false,
     "plot_pb_Annotation": true,
     "plot_pb_Patches": true,
-    "plot_le_Ri_Cutoff_List": "150",
+    "plot_le_Ri_Cutoff_List": "80",
     "plot_sb_Mode_Text_Rotation": 14,
     "plot_sb_Annotation_Text_Size": 14,
     "plot_sb_Rotation": 14,
@@ -676,14 +824,15 @@
     "plot_le_Threshold_Label": "",
     "plot_le_Machine_Parameters_Filename": "",
     "plot_ccb_Operation_Points": "",
-    "plot_le_Patch_Pos_Y": "10",
-    "plot_le_Patch_Pos_X": "400",
-    "plot_le_Patch_Size_B": "10",
-    "plot_le_Patch_Size_A": "100",
+    "plot_le_Patch_Pos_Y": "1e5",
+    "plot_le_Patch_Pos_X": "1368",
+    "plot_le_Patch_Size_B": "1e10",
+    "plot_le_Patch_Size_A": "140",
     "plot_cb_Patch_Type": "Rectangle",
     "plot_cb_Active_Axis": "Left Axis",
-    "plot_pb_Plot_Decorations": true,
-    "plot_pb_Machine_Parameters": false,
+    "plot_pb_Plot_Decorations": false,
+    "plot_pb_Machine_Parameters": true,
     "plot_pb_Plot_Element_Format": true,
-    "plot_pb_Plot_Area_Menu": true
+    "plot_pb_Plot_Area_Menu": true,
+    "plot_sb_Layer": 2.5
 }

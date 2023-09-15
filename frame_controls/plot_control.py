@@ -1,6 +1,7 @@
 import itertools
 import scipy
 from PyQt5 import QtGui
+from PyQt5.QtWidgets import *
 from scipy.special import jn_zeros, jnp_zeros
 from ui_files.plot import Ui_Plot
 from ui_files.plottypeselector import Ui_PlotTypeSelector
@@ -357,7 +358,8 @@ class PlotControl:
                 line2D[0].set(alpha=0)
 
         self.ax.set_prop_cycle(None)
-        cycle, _ = itertools.tee(self.initial_prop_cycler)
+        # cycle, _ = itertools.tee(self.initial_prop_cycler)
+        cycle = self.ax._get_lines.prop_cycler
 
         # update colors, loop over all lines and give color in ascending order
         for line2D in self.ax.get_lines():
@@ -516,6 +518,8 @@ class PlotControl:
         self.le_Color.textChanged.connect(lambda: self.plt.update_object_properties({'color': self.le_Color.text()}))
         self.ui.dsb_Alpha.valueChanged.connect(
             lambda: self.plt.update_object_properties({'alpha': self.ui.dsb_Alpha.value()}))
+        self.ui.sb_Layer.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'zorder': self.ui.sb_Layer.value()}))
 
         # plot abci impedance
         self.ui.pb_Plot.clicked.connect(lambda: self.plot())
@@ -524,9 +528,9 @@ class PlotControl:
         self.ui.pb_Refresh.clicked.connect(lambda: self.plot())
 
         # toggle plot menu
-        self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: animate_width(self.ui.w_Plot_Menu, 0, 500, True))
-        self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: self.ui.w_Plot_Area_Buttons.setEnabled(
-            True) if self.ui.w_Plot_Menu.maximumWidth() == 0 else self.ui.w_Plot_Area_Buttons.setDisabled(True))
+        # self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: animate_width(self.ui.w_Plot_Menu, 0, 500, True))
+        # self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: self.ui.w_Plot_Area_Buttons.setEnabled(
+        #     True) if self.ui.w_Plot_Menu.maximumWidth() == 0 else self.ui.w_Plot_Area_Buttons.setDisabled(True))
 
         # signal for plot menu pages
         self.ui.pb_Machine_Parameters.clicked.connect(lambda: self.toggle_page('Machine Parameters'))
@@ -595,8 +599,8 @@ class PlotControl:
         self.table_control()
 
         # set plot menu initial size to zero and disable plot buttons
-        self.ui.w_Plot_Menu.setFixedWidth(0)
-        self.ui.w_Plot_Area_Buttons.setDisabled(True)
+        # self.ui.w_Plot_Menu.setFixedWidth(0)
+        # self.ui.w_Plot_Area_Buttons.setDisabled(True)
 
         # tableWidget initializations
         self.ui.tableWidget.mousePressEvent = self.mousePressEvent
@@ -625,8 +629,9 @@ class PlotControl:
         # args = list(self.args_dict.values())
 
         # use same color cycler for both axes
-        self.ax._get_lines.prop_cycler, _ = itertools.tee(self.initial_prop_cycler)
-        self.ax_right._get_lines.prop_cycler, _ = itertools.tee(self.initial_prop_cycler)
+        # self.ax._get_lines.prop_cycler, _ = itertools.tee(self.initial_prop_cycler)
+        # self.ax_right._get_lines.prop_cycler, _ = itertools.tee(self.initial_prop_cycler)
+        self.ax_right._get_lines.prop_cycler = self.ax._get_lines.prop_cycler
         plot_count = 1
         for key, val in self.plot_dict.items():
             code = self.plot_dict[key]['plot inputs']['Code'].currentText()
@@ -1382,7 +1387,8 @@ class PlotControl:
 
     def reset_colors(self):
         self.ax.set_prop_cycle(None)
-        cycle, _ = itertools.tee(self.initial_prop_cycler)
+        # cycle, _ = itertools.tee(self.initial_prop_cycler)
+        cycle = self.ax._get_lines.prop_cycler
 
         # update colors, loop over all lines and give color in ascending order
         for line2D in self.ax.get_lines():
@@ -1973,7 +1979,7 @@ class PlotControl:
                 self.baseline_line_objects.append(ab)
 
             self.ax.autoscale(True, axis='y')
-            self.fig.canvas.draw()
+            self.fig.canvas.blit()
             self.fig.canvas.flush_events()
         else:
             # plot baselines
@@ -1994,7 +2000,7 @@ class PlotControl:
                 # self.baseline_line_objects.append(ab)
 
             self.ax.autoscale(True, axis='y')
-            self.fig.canvas.draw()
+            self.fig.canvas.blit()
             self.fig.canvas.flush_events()
 
     @staticmethod
@@ -2046,7 +2052,7 @@ class PlotControl:
 
         self.ax.autoscale(True, axis='y')
         self.ax.relim()
-        self.plt.draw()
+        self.plt.blit()
 
     def populate_cutoff_combobox(self, cutoff):
         cutoff.clear()
@@ -2140,7 +2146,7 @@ class PlotControl:
                     self.plt.text_dict[f"{id(obj)}"].remove()
 
             del self.ax_obj_dict[f"{k}"]
-        self.fig.canvas.draw()
+        self.fig.canvas.blit()
 
     @staticmethod
     def calc_cutoff(Ri, mode):
@@ -2236,8 +2242,8 @@ class PlotControl:
 
             # try to select copied selection
             for txt in selection:
-                if txt in dir_list:
-                    item = ccb.model().item(dir_list.index(txt) + 1)  # +1 because 'all' takes position 0
+                if txt in ccb.texts:
+                    item = ccb.model().item(ccb.texts.index(txt))  # +1 because 'all' takes position 0
                     item.setCheckState(2)
 
     def set_table_size(self):
@@ -2508,13 +2514,12 @@ class PlotControl:
                     if args_dict['Id'].model().item(r).text() in v["Id"][1].split(','):
                         args_dict['Id'].model().item(r).setCheckState(Qt.Checked)
 
-                args_dict['Request'][0].setCurrentText(
-                    v["Request"][0])  # [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget],
+                args_dict['Request'][0].setCurrentText(v["Request"][0])
                 args_dict['Request'][1].setCurrentText(v["Request"][1])
 
                 # check checked items
                 for r in range(args_dict['Request'][2].model().rowCount()):
-                    if args_dict['Request'][2].model().item(r).text() in v["Request"][2]:
+                    if args_dict['Request'][2].model().item(r).text() == v["Request"][2]:
                         args_dict['Request'][2].model().item(r).setCheckState(Qt.Checked)
 
                 args_dict['Toggle'].setCheckState(v["Toggle"])
@@ -2546,3 +2551,4 @@ class PlotControl:
             self.fig.canvas.draw_idle()
         except (KeyError, TypeError) as e:
             print("Could not deserialize plot_control.py: ", e)
+

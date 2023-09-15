@@ -488,6 +488,9 @@ class Plot(FigureCanvasQTAgg):
                 if 'alpha' in props.keys():
                     alpha = props['alpha']
                     self.selected_object.set_alpha(alpha)
+                if 'zorder' in props.keys():
+                    zorder = props['zorder']
+                    self.selected_object.set_zorder(zorder)
 
             elif isinstance(self.selected_object, matplotlib.patches.Rectangle) or isinstance(self.selected_object, matplotlib.patches.Circle):
                 if 'color' in props.keys():
@@ -496,6 +499,9 @@ class Plot(FigureCanvasQTAgg):
                 if 'alpha' in props.keys():
                     alpha = props['alpha']
                     self.selected_object.set_alpha(alpha)
+                if 'zorder' in props.keys():
+                    zorder = props['zorder']
+                    self.selected_object.set_zorder(zorder)
 
             self.draw_idle()
             self.flush_events()
@@ -634,7 +640,7 @@ class Plot(FigureCanvasQTAgg):
         dt.connect()
         self.text_dict[f'{id(annotext)}'] = dt
 
-        return dt
+        return annotext
 
     def remove_text(self):
         selected_obj_id = f'{id(self.selected_object)}'
@@ -660,7 +666,7 @@ class Plot(FigureCanvasQTAgg):
 
     def remove_axvline(self):
         self.axvline_dict[f"{id(self.selected_object)}"].remove()
-        self.draw()
+        self.blit()
 
     def add_patch(self, pos, a, b, kind='rectangle', ec='none', fc='red', alpha=0.1):
         # check inputs
@@ -668,6 +674,7 @@ class Plot(FigureCanvasQTAgg):
             pos = tuple([eval(n) for n in pos])
             a = eval(a)
             b = eval(b)
+            print(pos, a, b)
             if kind == 'rectangle':
                 self.add_rectangle(pos, a, b, ec=ec, fc=fc, alpha=alpha)
             elif kind == 'ellipse':
@@ -757,6 +764,12 @@ class Plot(FigureCanvasQTAgg):
         else:
             self.parentUI.dsb_Alpha.setValue(1)
 
+        zorder = self.selected_object.get_zorder()
+        if zorder:
+            self.parentUI.sb_Layer.setValue(zorder)
+        else:
+            self.parentUI.sb_Layer.setValue(1)
+
         if obj is not None:
             self.parentUI.dsb_Line_Width.setValue(self.selected_object.get_linewidth())
             self.parentUI.cb_Line_Style.setCurrentText(self.selected_object.get_linestyle())
@@ -804,8 +817,8 @@ class ZoomPan:
             rely = (cur_ylim[1] - ydata) / (cur_ylim[1] - cur_ylim[0])
 
             ax.set_xlim([xdata - new_width * (1 - relx), xdata + new_width * relx])
-            ax.set_ylim([ydata - new_height * (1-rely), ydata + new_height * rely])
-            ax.figure.canvas.draw()
+            ax.set_ylim([ydata - new_height * (1 - rely), ydata + new_height * rely])
+            ax.figure.canvas.draw_idle()
 
         fig = ax.get_figure()  # get the figure of interest
         fig.canvas.mpl_connect('scroll_event', zoom)
@@ -853,10 +866,11 @@ class ZoomPan:
 
         fig = ax.get_figure()  # get the figure of interest
 
-        # attach the call back
-        fig.canvas.mpl_connect('button_press_event', onPress)
-        fig.canvas.mpl_connect('button_release_event', onRelease)
-        fig.canvas.mpl_connect('motion_notify_event', onMotion)
+        if fig:
+            # attach the call back
+            fig.canvas.mpl_connect('button_press_event', onPress)
+            fig.canvas.mpl_connect('button_release_event', onRelease)
+            fig.canvas.mpl_connect('motion_notify_event', onMotion)
 
         # return the function
         return onMotion

@@ -126,10 +126,11 @@ def eigenmode_analysis(sim_folder, folders, requests, name):
 
         df[request] = d.loc[:, 1]
 
-    # get monopole mode inde and filter dataframe
-    monopole_index = compile_monopole(fr"{sim_folder}\{name}", 'e_Z (Z)_', 93.5, 5) - 1
-    ic(monopole_index)
-    df = df.iloc[monopole_index, :]
+    # # get monopole mode inde and filter dataframe
+    # monopole_index = compile_monopole(fr"{sim_folder}\{name}", 'e_Z (Z)_', 93.5, 5) - 1
+    # ic(monopole_index)
+    # df = df.iloc[monopole_index, :]
+
     # # other
     # f = df["Frequency (Multiple Modes)"][df["RQT_kOhm_m"] == max(df["RQT_kOhm_m"])]
     # f = f.values[0]
@@ -380,17 +381,77 @@ def integrate_wake_potential():
     ic(k_loss, k_kick)
 
 
+# Define a function to find approximate matches
+def find_approx_matches(df1, df2, col_name, tolerance):
+    val_1, val_2 = df1[col_name], df2[col_name]
+
+    close_freq_list = []
+    for v1 in val_1:
+        subtr = np.abs(val_2 - v1)
+        ind, min_diff = np.argmin(subtr), np.min(subtr)
+
+        if min_diff <= tolerance:
+            close_freq_list.append(v1)
+
+    ic(close_freq_list)
+    return df1[df1[col_name].isin(close_freq_list)]
+
+
+def plot_frequency_line(ee_file, mm_file):
+    fig, axs = plt.subplot_mosaic([[0, 1, 2], [3, 4, 5]], figsize=(14, 4))
+    df_ee = pd.read_excel(ee_file, 'Sheet1')[['Frequency (Multiple Modes)', 'Pol']]
+    df_mm = pd.read_excel(mm_file, 'Sheet1')[['Frequency (Multiple Modes)', 'Pol']]
+    f_ee = df_ee['Frequency (Multiple Modes)']
+    f_mm = df_mm['Frequency (Multiple Modes)']
+
+    # get modes with same frqquency
+    # Define your tolerance for approximate equality
+    tolerance = 0.1
+    # Find approximate matches using Pandas merge
+    merged_df = pd.merge_asof(df_ee, df_mm, on='Frequency (Multiple Modes)', direction='nearest', tolerance=tolerance)
+    # Filter the merged DataFrame to get approximate matches
+    approx_matches_pd = merged_df.dropna()
+    approx_matches = find_approx_matches(df_ee, df_mm, 'Frequency (Multiple Modes)', tolerance=tolerance)
+    f_tp = approx_matches['Frequency (Multiple Modes)']
+
+    # Print the matches
+    if not approx_matches_pd.empty:
+        f_tp_pd = approx_matches_pd['Frequency (Multiple Modes)']
+    else:
+        ic("No approximate matches found.")
+
+    intervals = [[370, 600], [600, 1000], [1000, 1300], [1300, 1500], [1500, 1800], [1800, 2000]]
+
+    for i, interval in enumerate(intervals):
+        axs[i].scatter(f_ee[(f_ee > interval[0]) & (f_ee < interval[1])], f_ee[(f_ee > interval[0]) & (f_ee < interval[1])], marker='o', edgecolors='k', facecolors='none', s=25)
+        axs[i].scatter(f_mm[(f_mm > interval[0]) & (f_mm < interval[1])], f_mm[(f_mm > interval[0]) & (f_mm < interval[1])], marker='+', facecolors='r', s=25)
+        axs[i].scatter(f_tp[(f_tp > interval[0]) & (f_tp < interval[1])], f_tp[(f_tp > interval[0]) & (f_tp < interval[1])], marker='o', edgecolors='b', facecolors='none', s=100)
+        axs[i].scatter(f_tp_pd[(f_tp_pd > interval[0]) & (f_tp_pd < interval[1])], f_tp_pd[(f_tp > interval[0]) & (f_tp_pd < interval[1])], marker='o', edgecolors='pink', facecolors='pink', s=50)
+        ylim = axs[i].get_ylim()
+        # plot vertical lines
+        for f in f_tp[(f_tp > interval[0]) & (f_tp < interval[1])]:
+            axs[i].plot([f, f], [0, f], ls='--', c='k')
+        axs[i].set_ylim(ylim)
+
+    plt.tight_layout()
+    plt.show()
+
+
 # integrate_wake_potential()
 
 if __name__ == '__main__':
-    # plt.rcParams["figure.figsize"] = (10, 3)
-    # sim_folder = r"D:\CST Studio\5. tt\Eigenmode"
-    # folders = ["E_C3795"]
-    # req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
-    #        "RQT", "Z_kOhm", "Z_T_kOhm_m"]
-    # name = "E_C3795"
-    #
-    # eigenmode_analysis(sim_folder, folders, req, name)
+    plt.rcParams["figure.figsize"] = (10, 3)
+    # sim_folder = r"D:\CST Studio\3. W\Eigenmode"
+    sim_folder = r"D:\CST Studio\5. tt\Eigenmode"
+    # folders = ["E_C3794_390_665_EE", "E_C3794_665_1000_EE", "E_C3794_1000_1400_EE", "E_C3794_1400_1800_EE", "E_C3794_1800_2200_EE"]
+    # folders = ["E_C3794_390_665", "E_C3794_665_1000", "E_C3794_1000_1400_MM", "E_C3794_1400_1800_MM", "E_C3794_1800_2200_MM"]
+    folders = ["E_C3795_700_1250", "E_C3795_1250_1450", "E_C3795_1450_1650", "E_C3795_1650_1850", "E_C3795_1850_2050", "E_C3795_2050_2250"]
+    req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
+           "RQT", "Z_kOhm", "Z_T_kOhm_m"]
+    # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]
+    name = "E_C3795"
+
+    eigenmode_analysis(sim_folder, folders, req, name)
 
     # sim_folder = r"D:\CST Studio\MuCol_Study\Couplers"
     # folders = ["DQW_1300MHz_Ri38mm"]
@@ -401,8 +462,14 @@ if __name__ == '__main__':
     # plot_threshold()
     # plot_threshold_Z()
 
-    sim_folder = r"D:\CST Studio\3. W\Eigenmode\E_C3794"
-    monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=0', 187, 2)
-    ic(monopole, len(monopole))
-    monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=Ri', 187, 2)
-    ic(monopole, len(monopole))
+    # sim_folder = r"D:\CST Studio\3. W\Eigenmode\E_C3794"
+    # monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=0', 187, 2)
+    # ic(monopole, len(monopole))
+    # monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=Ri', 187, 2)
+    # ic(monopole, len(monopole))
+
+
+    # ee_file = fr'D:\CST Studio\3. W\Eigenmode\E_C3794_EE.xlsx'
+    # mm_file = fr'D:\CST Studio\3. W\Eigenmode\E_C3794_MM.xlsx'
+    # plot_frequency_line(ee_file, mm_file)
+

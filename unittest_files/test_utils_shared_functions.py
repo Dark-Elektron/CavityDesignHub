@@ -31,6 +31,11 @@ class TestSharedFunctions(unittest.TestCase):
     def test_scale_cavity_geometry(self):
         self.assertEqual(scale_cavity_geometry(self.shape_space, 2), self.shape_space_scale_2)
 
+    def test_calculate_alpha(self):
+        A, B, a, b, Ri, L, Req = self.shape_space['IC'][:7]
+        alpha, _ = calculate_alpha(A, B, a, b, Ri, L, Req, 0)
+        self.assertEqual(alpha, 94.514020666181)
+
 
 if __name__ == '__main__':
     unittest.main()
