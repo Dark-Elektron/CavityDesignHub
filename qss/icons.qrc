@@ -2,6 +2,7 @@
   <qresource prefix="icons">
     <file>icons/PNG/tree_collapse.png</file>
     <file>icons/PNG/tree_expand.png</file>
+    <file>icons/PNG/geometry.png</file>
     <file>icons/PNG/eigenmode_expand.png</file>
     <file>icons/PNG/home_expand.png</file>
     <file>icons/PNG/multipacting_extend.png</file>

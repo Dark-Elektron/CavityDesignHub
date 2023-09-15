@@ -44,20 +44,16 @@ class WakefieldControl:
         self.main_ui = parent.ui
         # ###########################
 
+        # Get plot object
+        self.geometry_view = self.win.geometryview_widget
+        self.plot = self.geometry_view.plot
+
+        # geometry input ui
+        self.geo_control = self.main_control.geometryinput_widget
+        self.geo_ui = self.geo_control.ui
+
         # get logger
         self.log = self.main_control.log
-
-        # Create Scene
-        self.scene = Scene(self)
-
-        # QGraphicsView
-        # self.graphicsView = GraphicsView(self, 'Wakefield')
-        # self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
-
-        self.plot = Plot(self)
-        # fix axis aspect ratio
-        self.plot.ax.set_aspect('equal', adjustable='datalim')
-        self.ui.gl_Plot_Area.addWidget(self.plot)
 
         # ##########################
         self.initUI()
@@ -81,68 +77,21 @@ class WakefieldControl:
         self.ui_effects()
 
     def signals(self):
-        # initial push button state
-        self.ui.w_Outer_Cell_L.hide()
-        self.ui.w_Outer_Cell_R.hide()
-        self.ui.w_Expansion.hide()
-        self.ui.pb_Expansion.setEnabled(False)
-
         # signals
         self.ui.pb_Run.clicked.connect(lambda: self.run_abci())
-        self.ui.le_N_Cells.editingFinished.connect(lambda: self.draw_shape_from_shape_space())
-
-        # load shape space
-        self.ui.pb_Select_Shape_Space.clicked.connect(
-            lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
-                              start_folder=self.main_control.projectDir / f"Cavities"))
 
         self.ui.pb_Load_Machine_Parameters.clicked.connect(
             lambda: self.load_operating_points(self.ui.ccb_Operation_Points))
-
-        # control shape entry mode
-        self.ui.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
 
         # cancel
         self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
         self.ui.pb_Pause_Resume.clicked.connect(
             lambda: self.pause() if self.process_state == 'running' else self.resume())
 
-        #
-        self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
-        self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(
-            lambda: self.add_row(self.ui.cb_Shape_Space_Keys.currentText().split(', ')))
-
-        #
-        self.ui.le_Req_i.editingFinished.connect(
-            lambda: self.ui.le_Req_ol.setText(self.ui.le_Req_i.text()))
-        self.ui.le_Req_i.editingFinished.connect(
-            lambda: self.ui.le_Req_or.setText(self.ui.le_Req_i.text()))
-
-        # self.ui.pb_Get_Eigenmode_Results.clicked.connect(lambda: self.get_eigenmode_results())
-
-        # self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
-
     def initUI(self):
         self.ui.w_Save_Folder.setVisible(False)
         self.ui.w_Machine_Parameters.setEnabled(False)
-        # splitter
-        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
-
         # df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
-        # init shape entry mode
-        self.shape_entry_widgets_control()
-
-        # disable expansion section for now. Feature to come later
-        self.ui.cb_Expansion.setEnabled(False)
-
-        # inner cell
-        self.ui.cb_Inner_Cell.setCheckState(2)
-        self.ui.cb_Inner_Cell.setEnabled(False)
-
-        self.ui.cb_LBP.setCheckState(2)
-        self.ui.cb_RBP.setCheckState(2)
-        self.ui.cb_LBP.setEnabled(False)
-        self.ui.cb_RBP.setEnabled(False)
 
         # create pause and resume icons to avoid creating them over and over again
         self.pause_icon = QIcon()
@@ -161,35 +110,14 @@ class WakefieldControl:
         self.ui.w_Mesh.hide()
         self.ui.w_Operating_Points_QOIs.hide()
 
-    def shape_entry_widgets_control(self):
-        if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-            self.ui.w_Enter_Geometry_Manual.setEnabled(False)
-            self.ui.w_Select_Shape_Space.show()
-
-            # clear cells from graphics view
-            # self.graphicsView.removeCells()
-            self.plot.ax.clear()
-            self.plot.fig.canvas.draw()
-        else:
-            self.ui.w_Enter_Geometry_Manual.setEnabled(True)
-            self.ui.w_Select_Shape_Space.hide()
-
-            # uncomment following lines to draw
-            # clear cells from graphics view
-            # self.graphicsView.removeCells()
-
-            # draw new cell
-            # self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
-            # self.plot.ax.clear()
-            # self.plot.fig.canvas.draw()
-
     def run_abci(self):
         # get analysis parameters
         # n_cells = self.ui.sb_N_Cells.value()
-        n_cells = text_to_list(self.ui.le_N_Cells.text())
-        n_modules = self.ui.sb_N_Modules.value()
+        n_cells = text_to_list(self.geo_ui.le_N_Cells.text())
+        n_modules = self.geo_ui.sb_N_Modules.value()
 
-        WG_M = self.ui.le_LBP.text()  # half-length of beam pipe between cavities in module
+        # WG_M = self.geo_ui.le_LBP.text()  # half-length of beam pipe between cavities in module
+        WG_M = ''
 
         if WG_M == '':
             WG_M = ['']
@@ -218,9 +146,7 @@ class WakefieldControl:
             qoi_dict = None
 
         # get geometric parameters
-        ic(self.loaded_shape_space)
-        self.shape_space = get_geometric_parameters(self, 'ABCI', text_to_list(self.ui.le_Scale.text()))
-        ic(self.shape_space, self.loaded_shape_space)
+        self.shape_space = get_geometric_parameters(self.geo_control, 'ABCI', text_to_list(self.geo_ui.le_Scale.text()))
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(self.shape_space.keys())
@@ -464,7 +390,7 @@ class WakefieldControl:
     def get_eigenmode_results(self):
         for key in self.cav_operating_points.keys():
             ic(key)
-            if len(self.ui.le_N_Cells) == 1:
+            if len(self.geo_ui.le_N_Cells) == 1:
                 try:
                     with open(self.main_control.projectDir / fr'SimulationData\SLANS\{key}\qois.json') as json_file:
                         qois_slans = json.load(json_file)
@@ -483,16 +409,16 @@ class WakefieldControl:
     def get_table_entries(self):
         dd = {}
         for key, val in self.cav_operating_points.items():
-            for scale in text_to_list(self.ui.le_Scale.text()):
-                for n_cell in text_to_list(self.ui.le_N_Cells.text()):
+            for scale in text_to_list(self.geo_ui.le_Scale.text()):
+                for n_cell in text_to_list(self.geo_ui.le_N_Cells.text()):
 
                     if scale == 1 or scale == 0:
-                        if len(text_to_list(self.ui.le_N_Cells.text())) == 1:
+                        if len(text_to_list(self.geo_ui.le_N_Cells.text())) == 1:
                             folder_name = key
                         else:
                             folder_name = f"{key}_{n_cell}"
                     else:
-                        if len(text_to_list(self.ui.le_N_Cells.text())) == 1:
+                        if len(text_to_list(self.geo_ui.le_N_Cells.text())) == 1:
                             folder_name = f"{key}_scale_{scale}"
                         else:
                             folder_name = f"{key}_scale_{scale}_{n_cell}"
@@ -511,7 +437,6 @@ class WakefieldControl:
                     # freq = val['freq [MHz]'].value()
                     freq = qois_slans['freq [MHz]']
                     dd.update({folder_name: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
-
         ic(dd)
         return dd
 
@@ -684,27 +609,6 @@ class WakefieldControl:
         path = os.path.join(os.getcwd(), path)
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
-
-    def draw_shape_from_shape_space(self):
-        ci = 0
-
-        # remove existing cells
-        self.plot.ax.clear()
-        self.plot.fig.canvas.draw()
-        # self.graphicsView.removeCells()
-        for key in self.loaded_shape_space.keys():
-            if key in self.ui.cb_Shape_Space_Keys.currentText():
-                IC = self.loaded_shape_space[key]["IC"]
-                OC = self.loaded_shape_space[key]["OC"]
-                BP = self.loaded_shape_space[key]["BP"]
-                n_cell = int(self.ui.le_N_Cells.text())
-                # self.graphicsView.drawCells(IC, OC, BP,
-                #                             QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
-
-                plot_cavity_geometry(self.plot, IC, OC, BP, n_cell)
-                ci += 1
-            if ci > 4:  # maximum of only 10 plots
-                break
 
     @staticmethod
     def run_sequential(n_cells, n_modules, processor_shape_space,

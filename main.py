@@ -9,6 +9,9 @@ import shutil
 import sys
 from json import JSONDecodeError
 from pathlib import Path
+
+from frame_controls.geometry_input import GeometryInputControl
+from frame_controls.geometry_view import GeometryViewControl
 from utils.misc_functions import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
@@ -35,6 +38,7 @@ from utils.shared_functions import animate_width, f2b_slashes
 # pyuic5 -x ui_files/plot.ui -o ui_files/plot.py
 # pyuic5 -x ui_files/wakefield.ui -o ui_files/wakefield.py
 # pyuic5 -x ui_files/geometry_input.ui -o ui_files/geometry_input.py
+# pyuic5 -x ui_files/geometry_view.ui -o ui_files/geometry_view.py
 # pyuic5 -x ui_files/misc.ui -o ui_files/misc.py
 # pyuic5 -x ui_files/wg_calculations.ui -o ui_files/wg_calculations.py
 # pyuic5 -x ui_files/mode_nomenclature.ui -o ui_files/mode_nomenclature.py
@@ -68,6 +72,8 @@ class MainWindow:
     """
 
     def __init__(self):
+        self.geometryinput_widget = None
+        self.geometryview_widget = None
         self.tree = None
         self.model = None
         self.animation = None
@@ -222,6 +228,7 @@ class MainWindow:
 
         self.frames_dict = {'Home': [self.ui.pb_rHome],
                             'Tune': [self.ui.pb_Tune],
+                            'Geometry': [self.ui.pb_Geometry],
                             'Wakefield': [self.ui.pb_Wakefield_Analysis],
                             'Multipacting': [self.ui.pb_Multipacting_Analysis],
                             'Eigenmode': [self.ui.pb_Eigenmode_Analysis],
@@ -231,6 +238,7 @@ class MainWindow:
                             }
 
         self.tray_buttons_dict = {'Home': [self.ui.pb_rHome],
+                                  'Geometry': [self.ui.pb_rGeometry],
                                   'Tune': [self.ui.pb_rTune],
                                   'Wakefield': [self.ui.pb_rWakefield],
                                   'Multipacting': [self.ui.pb_rMultipacting],
@@ -267,6 +275,7 @@ class MainWindow:
             button_widget_pair[0].clicked.connect(lambda _, b=key: self.change_frame(b))
 
         # signal for button panel
+        self.ui.pb_rGeometry.clicked.connect(lambda: self.change_frame('Geometry'))
         self.ui.pb_rTune.clicked.connect(lambda: self.change_frame('Tune'))
         self.ui.pb_rEigenmode.clicked.connect(lambda: self.change_frame('Eigenmode'))
         self.ui.pb_rWakefield.clicked.connect(lambda: self.change_frame('Wakefield'))
@@ -296,6 +305,8 @@ class MainWindow:
         """
 
         # frame UIs
+        self.geometryview_widget = GeometryViewControl(self)
+        self.geometryinput_widget = GeometryInputControl(self)
         self.tune_widget = TuneControl(self)
         self.wakefield_widget = WakefieldControl(self)
         self.eigenmode_widget = EigenmodeControl(self)
@@ -305,9 +316,10 @@ class MainWindow:
         self.multipacting_widget = MultipactingControl(self)
 
         self.frames_dict['Home'].append(self.ui.sa_Home)
+        self.frames_dict['Geometry'] += [self.geometryview_widget.w_GeometryView, self.geometryinput_widget.w_GeometryInput]
         self.frames_dict['Tune'].append(self.tune_widget.w_Tune)
-        self.frames_dict['Wakefield'].append(self.wakefield_widget.w_Wakefield)
-        self.frames_dict['Eigenmode'].append(self.eigenmode_widget.w_Eigenmode)
+        self.frames_dict['Wakefield'] += [self.geometryview_widget.w_GeometryView, self.wakefield_widget.w_Wakefield]
+        self.frames_dict['Eigenmode'] += [self.geometryview_widget.w_GeometryView, self.eigenmode_widget.w_Eigenmode]
         self.frames_dict['Multipacting'].append(self.multipacting_widget.w_Multipacting)
         self.frames_dict['Postprocess'].append(self.postprocess_widget.w_Postprocess)
         self.frames_dict['Plot'].append(self.plot_widget.w_Plot)
@@ -330,6 +342,22 @@ class MainWindow:
         w = self.frames_dict[key][1]
         self.ui.g_Display.addWidget(w, 0, 1, 1, 1)
         w.show()
+
+        if key in ['Geometry', 'Eigenmode', 'Wakefield']:
+            # remove existing widgets
+            index = self.geometryview_widget.ui.gl_InputWidgets.count() - 1
+
+            while index >= 0:
+                widget = self.geometryview_widget.ui.gl_InputWidgets.itemAt(index).widget()
+                self.geometryview_widget.ui.gl_InputWidgets.removeWidget(widget)
+                if widget is not None:
+                    widget.hide()
+                index -= 1
+
+            # get correct widget
+            w = self.frames_dict[key][2]
+            self.geometryview_widget.ui.gl_InputWidgets.addWidget(w, 0, 1, 1, 1)
+            w.show()
 
         # for k, pb in self.tray_buttons_dict.items():
         #     if key == k:

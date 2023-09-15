@@ -4,13 +4,8 @@ import multiprocessing as mp
 from threading import Thread
 from pathlib import Path
 from psutil import NoSuchProcess
-
-from analysis_modules.plot_module.plotter import Plot
-# from graphics.graphics_view import GraphicsView
-from graphics.scene import Scene
 from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.eigenmode import Ui_Eigenmode
-# from utils.file_reader import FileReader
 from utils.shared_classes import *
 from utils.shared_functions import *
 from analysis_modules.eigenmode.customEig.run_field_solver import Model
@@ -29,7 +24,6 @@ def print_(*arg):
 
 class EigenmodeControl:
     def __init__(self, parent):
-
         self.animation = None
         self.pause_icon = None
         self.resume_icon = None
@@ -50,22 +44,31 @@ class EigenmodeControl:
         self.main_control = parent
         self.main_ui = parent.ui
 
+        # Get plot object
+        self.geometry_view = self.win.geometryview_widget
+        self.plot = self.geometry_view.plot
+
+        # geometry input ui
+        self.geo_control = self.main_control.geometryinput_widget
+        self.geo_ui = self.geo_control.ui
+
         # get logger
         self.log = self.main_control.log
 
         # ###########################
         # Create Scene
-        self.scene = Scene(self)
+        # self.scene = Scene(self)
 
         # QGraphicsView
         # self.graphicsView = GraphicsView(self, 'Eigenmode')
         #
         # self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
 
-        self.plot = Plot(self)
-        # fix axis aspect ratio
-        self.plot.ax.set_aspect('equal', adjustable='datalim')
-        self.ui.gl_Plot_Area.addWidget(self.plot)
+        #################################
+        # self.plot = Plot(self)
+        # # fix axis aspect ratio
+        # self.plot.ax.set_aspect('equal', adjustable='datalim')
+        # self.ui.gl_Plot_Area.addWidget(self.plot)
         # ##########################
 
         self.initUI()
@@ -77,7 +80,7 @@ class EigenmodeControl:
         self.slans_geom = SLANSGeometry()
 
         # shape space initialization
-        self.loaded_shape_space = {}
+        # self.loaded_shape_space = {}
         self.selected_keys = []
         self.processes = []
         self.processes_id = []
@@ -89,15 +92,6 @@ class EigenmodeControl:
     def initUI(self):
         self.ui.w_EXE.setVisible(False)
         self.ui.w_UQ.setVisible(False)
-        # splitter
-        self.ui.sp_Left_Right_Container.setStretchFactor(1, 3)
-
-        # init shape entry mode
-        self.shape_entry_widgets_control()
-
-        # inner cell
-        self.ui.cb_Inner_Cell.setCheckState(2)
-        self.ui.cb_Inner_Cell.setEnabled(False)
 
         # create pause and resume1 icons to avoid creating them over and over again
         self.pause_icon = QIcon()
@@ -118,82 +112,18 @@ class EigenmodeControl:
         self.progress_bar.hide()
 
     def signals(self):
-        # initial push button state
-        self.ui.w_Outer_Cell_L.hide()
-        self.ui.w_Outer_Cell_R.hide()
-        self.ui.w_Expansion.hide()
-        # self.ui.pb_Expansion.setEnabled(False)
-
-        self.ui.le_N_Cells.editingFinished.connect(lambda: self.draw_shape_from_shape_space())
         # run eigenmode solver
         self.ui.pb_Run.clicked.connect(lambda: self.run_slans())
-
-        # load shape space
-        self.ui.pb_Select_Shape_Space.clicked.connect(
-            lambda: open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
-                              start_folder=str(self.main_control.projectDir / "Cavities")))
-
-        # control shape entry mode
-        self.ui.cb_Shape_Entry_Mode.currentIndexChanged.connect(lambda: self.shape_entry_widgets_control())
-
-        # cell parameters control signals
-        self.ui.cb_Outer_Cell_L.stateChanged.connect(lambda: animate_height(
-            self.ui.cb_Outer_Cell_L, self.ui.w_Outer_Cell_L, 0, 160, True))
-        self.ui.cb_Outer_Cell_R.stateChanged.connect(lambda: animate_height(
-            self.ui.cb_Outer_Cell_R, self.ui.w_Outer_Cell_R, 0, 160, True))
-        # self.ui.cb_Expansion_l.stateChanged.connect(lambda: animate_height(
-        #     self.ui.cb_Expansion, self.ui.w_Expansion, 0, 160, True))
 
         # cancel
         self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
         self.ui.pb_Pause_Resume.clicked.connect(
             lambda: self.pause() if self.process_state == 'running' else self.resume())
 
-        # uncomment to draw again
-        self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
-
-        #
-        self.ui.le_Alpha.editingFinished.connect(lambda: self.update_alpha())
-
-        #
-        self.ui.le_Req_i.editingFinished.connect(lambda: self.ui.le_Req_ol.setText(self.ui.le_Req_i.text()))
-        self.ui.le_Req_i.editingFinished.connect(lambda: self.ui.le_Req_or.setText(self.ui.le_Req_i.text()))
-
-        # self.ui.le_Scale.editingFinished.connect(lambda: validating(self.ui.le_Scale))
-
-    def shape_entry_widgets_control(self):
-        if self.ui.cb_Shape_Entry_Mode.currentIndex() == 0:
-            # animate_height(self.ui.w_Select_Shape_Space, 0, 50, True)
-            #
-            # self.ui.w_Enter_Geometry_Manual.setMinimumHeight(0)
-            # self.ui.w_Enter_Geometry_Manual.setMaximumHeight(0)
-            self.ui.w_Enter_Geometry_Manual.setEnabled(False)
-            self.ui.w_Select_Shape_Space.show()
-
-            # # clear cells from graphics view
-            # self.graphicsView.removeCells()
-            self.plot.ax.clear()
-            self.plot.fig.canvas.draw()
-        else:
-            # animate_height(self.ui.w_Enter_Geometry_Manual, 0, 375, True)
-            #
-            # self.ui.w_Select_Shape_Space.setMinimumHeight(0)
-            # self.ui.w_Select_Shape_Space.setMaximumHeight(0)
-
-            self.ui.w_Enter_Geometry_Manual.setEnabled(True)
-            self.ui.w_Select_Shape_Space.hide()
-
-            # uncomment following lines to draw
-            # # clear cells from graphics view
-            # self.graphicsView.removeCells()
-            #
-            # # draw new cell
-            # self.graphicsView.drawCells(color=QColor(0, 0, 0, 255))
-
     def run_slans(self):
         # get analysis parameters
-        n_cells = text_to_list(self.ui.le_N_Cells.text())
-        n_modules = self.ui.sb_N_Modules.value()
+        n_cells = text_to_list(self.geo_ui.le_N_Cells.text())
+        n_modules = self.geo_ui.sb_N_Modules.value()
         f_shift = float(self.ui.le_Freq_Shift.text())
         n_modes = float(self.ui.le_No_Of_Modes.text())
 
@@ -213,9 +143,8 @@ class EigenmodeControl:
             UQ = False
 
         # get geometric parameters
-        ic(self.loaded_shape_space)
-        self.shape_space = get_geometric_parameters(self, 'SLANS', text_to_list(self.ui.le_Scale.text()))
-        ic(self.shape_space, self.loaded_shape_space)
+        self.shape_space = get_geometric_parameters(self.geo_control, 'SLANS',
+                                                    text_to_list(self.geo_ui.le_Scale.text()))
 
         # split shape_space for different processes/ MPI share process by rank
         keys = list(self.shape_space.keys())
@@ -243,7 +172,6 @@ class EigenmodeControl:
             for key, val in self.shape_space.items():
                 if key in proc_keys_list:
                     processor_shape_space[key] = val
-            # print(f'Processor {p}: {processor_shape_space}')
 
             service = mp.Process(target=self.run_sequential, args=(
                 n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
@@ -399,27 +327,27 @@ class EigenmodeControl:
         path = self.main_control.parentDir / fr"exe\{path}"
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
-
-    def draw_shape_from_shape_space(self):
-        ci = 0
-
-        # remove existing cells
-        self.plot.ax.clear()
-        self.plot.fig.canvas.draw()
-        # self.graphicsView.removeCells()
-        for key in self.loaded_shape_space.keys():
-            if key in self.ui.cb_Shape_Space_Keys.currentText():
-                IC = self.loaded_shape_space[key]["IC"]
-                OC = self.loaded_shape_space[key]["OC"]
-                BP = self.loaded_shape_space[key]["BP"]
-                n_cell = int(self.ui.le_N_Cells.text())
-                # self.graphicsView.drawCells(IC, OC, BP,
-                #                             QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
-
-                plot_cavity_geometry(self.plot, IC, OC, BP, n_cell)
-                ci += 1
-            if ci > 4:  # maximum of only 10 plots
-                break
+    #
+    # def draw_shape_from_shape_space(self):
+    #     ci = 0
+    #
+    #     # remove existing cells
+    #     self.plot.ax.clear()  #removed for testing
+    #     self.plot.fig.canvas.draw()  #removed for testing
+    #     # self.graphicsView.removeCells()
+    #     for key in self.loaded_shape_space.keys():
+    #         if key in self.ui.cb_Shape_Space_Keys.currentText():
+    #             IC = self.loaded_shape_space[key]["IC"]
+    #             OC = self.loaded_shape_space[key]["OC"]
+    #             BP = self.loaded_shape_space[key]["BP"]
+    #             n_cell = int(self.ui.le_N_Cells.text())
+    #             # self.graphicsView.drawCells(IC, OC, BP,
+    #             #                             QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
+    #
+    #             plot_cavity_geometry(self.plot, IC, OC, BP, n_cell)
+    #             ci += 1
+    #         if ci > 4:  # maximum of only 10 plots
+    #             break
 
     # def ui_effects(self):
     #
@@ -554,22 +482,6 @@ class EigenmodeControl:
 
                     mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
                             req_mode_num=int(n_modes), plot=False)
-
-    def update_alpha(self):
-        A_i_space = text_to_list(self.ui.le_A_i.text())[0]
-        B_i_space = text_to_list(self.ui.le_B_i.text())[0]
-        a_i_space = text_to_list(self.ui.le_a_i.text())[0]
-        b_i_space = text_to_list(self.ui.le_b_i.text())[0]
-        Ri_i_space = text_to_list(self.ui.le_Ri_i.text())[0]
-        L_i_space = text_to_list(self.ui.le_L_i.text())[0]
-        Req_i_space = text_to_list(self.ui.le_Req_i.text())[0]
-
-        # try:
-        alpha_i_space, _ = calculate_alpha(A_i_space, B_i_space, a_i_space, b_i_space,
-                                           Ri_i_space, L_i_space, Req_i_space, 0)
-        self.ui.le_Alpha.setText(f"{round(alpha_i_space, 2)}")
-        # except:
-        #     pass
 
 
 def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, projectDir):
