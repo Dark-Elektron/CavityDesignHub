@@ -9,7 +9,6 @@ import shutil
 import sys
 from json import JSONDecodeError
 from pathlib import Path
-
 from frame_controls.geometry_input import GeometryInputControl
 from frame_controls.geometry_view import GeometryViewControl
 from utils.misc_functions import *
@@ -558,6 +557,9 @@ class MainWindow:
         state_dict["Project Directory"] = str(self.projectDir)
         state_dict['Theme'] = self.last_saved_theme
 
+        # serialize geometryUI
+        self.geometryinput_widget.serialise(state_dict)
+
         # serialize tuneUI
         self.tune_widget.serialise(state_dict)
 
@@ -617,6 +619,7 @@ class MainWindow:
             # open project
             self.open_project(self.projectDir)
 
+            self.geometryinput_widget.deserialise(state_dict)
             self.tune_widget.deserialise(state_dict)
             self.eigenmode_widget.deserialise(state_dict)
             self.wakefield_widget.deserialise(state_dict)

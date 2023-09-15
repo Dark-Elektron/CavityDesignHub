@@ -1,4 +1,6 @@
 import itertools
+
+import pandas as pd
 import scipy
 from PyQt5 import QtGui
 from PyQt5.QtWidgets import *
@@ -1344,7 +1346,6 @@ class PlotControl:
                             self.ax_right.set_ylabel('$Y$ [dB]')
             else:
                 # try to filter self.other_data
-                # try:
                 filter_ = [args["plot inputs"]['Filter'][0].lineEdit().text(), args["plot inputs"]['Filter'][1].text()]
                 value = args["plot inputs"]['Filter'][1].text()
                 if filter_[0] == "None" or value == "":
@@ -1382,8 +1383,6 @@ class PlotControl:
                         # mplcursors.cursor(args["plot object"][id_][j])
                         self.ax_right.set_ylabel('$Y$ [dB]')
             pass
-        else:
-            print_("Please specify columns to plot")
 
     def reset_colors(self):
         self.ax.set_prop_cycle(None)
@@ -2243,7 +2242,7 @@ class PlotControl:
             # try to select copied selection
             for txt in selection:
                 if txt in ccb.texts:
-                    item = ccb.model().item(ccb.texts.index(txt))  # +1 because 'all' takes position 0
+                    item = ccb.model().item(ccb.texts.index(txt))
                     item.setCheckState(2)
 
     def set_table_size(self):

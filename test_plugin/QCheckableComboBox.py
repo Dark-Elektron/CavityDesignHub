@@ -13,15 +13,12 @@ class QCheckableComboBox(QComboBox):
             size.setHeight(20)
             return size
 
-    def __init__(self, parent=None):
-
-        if parent is None:
-            super().__init__()
-        else:
-            super().__init__(parent=parent)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         # Make the combo editable to set a custom text, but readonly
         self.setEditable(True)
+        # self.lineEdit().setReadOnly(False)
         self.lineEdit().setReadOnly(True)
         # Make the lineedit the same color as QPushButton
         palette = qApp.palette()
@@ -41,13 +38,15 @@ class QCheckableComboBox(QComboBox):
         # Prevent popup from closing when clicking on an item
         self.view().viewport().installEventFilter(self)
 
+        # combobox text list
+        self.texts = []
+
     def resizeEvent(self, event):
         # Recompute text to elide as needed
         self.updateText()
         super().resizeEvent(event)
 
     def eventFilter(self, obj, event):
-
         if obj == self.lineEdit():
             if event.type() == QEvent.MouseButtonRelease:
                 if self.closeOnLineEditClick:
@@ -66,18 +65,24 @@ class QCheckableComboBox(QComboBox):
                     item.setCheckState(Qt.Unchecked)
 
                     if item == self.model().item(0):
-                        # deselect all items if item check is all
-                        for i in range(1, self.model().rowCount()):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Unchecked)
+                        # deselect all items if item check a maximum of 25 elements
+                        for i in range(1, 25):
+                            try:
+                                item = self.model().item(i)
+                                item.setCheckState(Qt.Unchecked)
+                            except AttributeError:
+                                break
                 else:
                     item.setCheckState(Qt.Checked)
 
                     if item == self.model().item(0):
-                        # deselect all items if item check is all
-                        for i in range(1, self.model().rowCount()):
-                            item = self.model().item(i)
-                            item.setCheckState(Qt.Checked)
+                        # deselect all items if item check a maximum of 25 elements
+                        for i in range(1, 25):
+                            try:
+                                item = self.model().item(i)
+                                item.setCheckState(Qt.Checked)
+                            except AttributeError:
+                                break
 
                 return True
         return False
@@ -115,6 +120,7 @@ class QCheckableComboBox(QComboBox):
     def addItem(self, text, data=None):
         item = QStandardItem()
         item.setText(text)
+        self.texts.append(text)
         if data is None:
             item.setData(text)
         else:
@@ -122,6 +128,7 @@ class QCheckableComboBox(QComboBox):
         item.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
         item.setData(Qt.Unchecked, Qt.CheckStateRole)
         self.model().appendRow(item)
+        self.updateText()
 
     def addItems(self, texts, datalist=None):
         for i, text in enumerate(texts):
@@ -130,11 +137,17 @@ class QCheckableComboBox(QComboBox):
             except (TypeError, IndexError):
                 data = None
             self.addItem(text, data)
+        self.updateText()
 
-    def currentData(self, role=None):
+    def currentData(self):
         # Return the list of selected items data
         res = []
         for i in range(self.model().rowCount()):
             if self.model().item(i).checkState() == Qt.Checked:
                 res.append(self.model().item(i).data())
         return res
+
+    def clear(self) -> None:
+        super().clear()
+        # reset text list
+        self.texts = []

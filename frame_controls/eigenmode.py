@@ -55,22 +55,6 @@ class EigenmodeControl:
         # get logger
         self.log = self.main_control.log
 
-        # ###########################
-        # Create Scene
-        # self.scene = Scene(self)
-
-        # QGraphicsView
-        # self.graphicsView = GraphicsView(self, 'Eigenmode')
-        #
-        # self.ui.vL_2D_Graphics_View.addWidget(self.graphicsView)
-
-        #################################
-        # self.plot = Plot(self)
-        # # fix axis aspect ratio
-        # self.plot.ax.set_aspect('equal', adjustable='datalim')
-        # self.ui.gl_Plot_Area.addWidget(self.plot)
-        # ##########################
-
         self.initUI()
         self.signals()
         self.exe_control()
@@ -79,9 +63,6 @@ class EigenmodeControl:
         # instantiate geometry
         self.slans_geom = SLANSGeometry()
 
-        # shape space initialization
-        # self.loaded_shape_space = {}
-        self.selected_keys = []
         self.processes = []
         self.processes_id = []
         self.show_progress_bar = False

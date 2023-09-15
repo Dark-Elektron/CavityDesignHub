@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import *
 from matplotlib.backends.backend_template import FigureCanvas
 from matplotlib.figure import Figure
 from termcolor import colored
-
 from analysis_modules.data_module.slans_data import SLANSDataExtraction
 
 slans_data_extraction = SLANSDataExtraction()

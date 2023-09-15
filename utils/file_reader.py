@@ -1,8 +1,4 @@
 import json
-import os
-import time
-
-import numpy as np
 import pandas as pd
 
 
@@ -210,24 +206,6 @@ class FileReader:
 
 if __name__ == '__main__':
     fr = FileReader()
-    # txt = fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor/SLANS/Cavity382/cavity_mm.pam")
-    # fr.txt_reader(r"D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor/SLANS/Cavity1/cavity_mm_7.af")
-    # df = fr.excel_reader(r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Dataframe_full_data.xlsx')
-    # print([[x] for x in df["Midcell node_editor"].iloc[0][1:8]])
-    # print(len(df["Midcell node_editor"]))
-    # print([[x] for x in df["Midcell node_editor"].iloc[0][8:20]])
-    # print([[x] for x in df["Midcell node_editor"].iloc[0][10:11]])
-
-    # # dataframe from json
-    # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Cavity Population/pseudo_shape_space.json'
-    # df = fr.json_reader(dir, ['A', 'B', 'a', 'b', 'Ri', 'L'])
-    # for value in df.to_dict(orient='list').values():
-    #     print(value)
-
-    # # svl reader
-    # dir = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\node_editor\SLANS\Cavity_process_0/cavity_mm.svl'
-    # d = fr.svl_reader(dir)
-    # print(d['FREQUENCY'])
 
     # txt reader
     durr = r"D:\Dropbox\CavityDesignHub\SampleProject\Cavities\test.json"

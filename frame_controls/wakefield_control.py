@@ -2,9 +2,9 @@ import subprocess
 import time
 import multiprocessing as mp
 from threading import Thread
+
+import pandas as pd
 from psutil import NoSuchProcess
-from analysis_modules.plot_module.plotter import Plot
-from graphics.scene import Scene
 from analysis_modules.data_module.abci_data import ABCIData
 from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from ui_files.wakefield import Ui_Wakefield

@@ -2064,7 +2064,7 @@ class Cavities:
                         # ARC
                         # half of bounding box is required,
                         # start is the lower coordinate of the bounding box and end is the upper
-                        ic(shift)
+                        # ic(shift)
                         pts = self.arcTo(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
                                          [L_bp_l + L_el + L_er - shift, y1er])
                         ic(pt, 5, L_el + L_er + L_bp_l - shift)
@@ -2081,7 +2081,7 @@ class Cavities:
 
                         # calculate new shift
                         shift = shift - (L_el + L_er)
-                        ic(shift)
+                        # ic(shift)
                     else:
                         print("if else")
                         # EQUATOR ARC TO NEXT POINT
@@ -2117,7 +2117,7 @@ class Cavities:
 
                         # calculate new shift
                         shift = shift - (L_el + L_m)
-                        ic(shift)
+                        # ic(shift)
 
                 elif n > 1 and n != n_cell:
                     print("elif")

@@ -143,7 +143,7 @@ def drawCavity():
 
                     # calculate new shift
                     shift = shift - (L_el + L_er)
-                    ic(shift)
+                    # ic(shift)
                 else:
                     print("if else")
                     # EQUATOR ARC TO NEXT POINT
@@ -179,7 +179,7 @@ def drawCavity():
 
                     # calculate new shift
                     shift = shift - (L_el + L_m)
-                    ic(shift)
+                    # ic(shift)
 
             elif n > 1 and n != n_cell:
                 print("elif")
@@ -497,7 +497,7 @@ def drawCavity_flat_top():
 
                     # calculate new shift
                     shift = shift - (L_el + L_m + lft_el)
-                    ic(shift)
+                    # ic(shift)
 
             elif n > 1 and n != n_cell:
                 print("elif")

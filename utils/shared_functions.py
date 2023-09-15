@@ -2,8 +2,6 @@ import ast
 import copy
 import json
 import os
-
-import pandas as pd
 from PyQt5.QtGui import QDoubleValidator, QValidator
 from PyQt5.QtWidgets import *
 from icecream import ic
@@ -650,33 +648,6 @@ def f2b_slashes(path):
     return path
 
 
-def load_shape_space(filename):
-    """
-    Loads shape space file to Python dictionary object
-
-    Appears to have no usage
-
-    Parameters
-    ----------
-    filename: str
-        Absolute path of shape space file
-
-    Returns
-    -------
-    Python dictionary object of shape space
-
-    """
-    directory = filename
-
-    # check if extension is included
-    if directory.split('.')[-1] != 'json':
-        directory = f'{dir}.json'
-
-    df = fr.json_reader(directory)
-
-    return df.to_dict()
-
-
 def button_clicked(button):
     """
     Return text on button clicked
@@ -1011,11 +982,10 @@ def validating(le, default='1'):
 #     return inner_cell, outer_cell_left, outer_cell_right
 
 
-def open_file(frame_control, le, cb, start_folder=''):
+def load_shape_space_open_file(frame_control, le, cb, start_folder=''):
     # clear combobox
     frame_control.ui.cb_Shape_Space_Keys.clear()
     frame_control.ui.cb_Shape_Space_Keys.addItem('All')
-    # self.selected_keys.clear()
 
     filename, _ = QFileDialog.getOpenFileName(None, "Open File", str(start_folder), "Json Files (*.json)")
     try:
@@ -1023,14 +993,42 @@ def open_file(frame_control, le, cb, start_folder=''):
         with open(filename, 'r') as file:
             dd = json.load(file)
 
-        # populate checkboxes with key
-        for col in dd.keys():
-            cb.addItem(fr'{col}')
+        if dd:
+            # clear combobox
+            frame_control.ui.cb_Shape_Space_Keys.clear()
+            frame_control.ui.cb_Shape_Space_Keys.addItem('All')
 
-        frame_control.loaded_shape_space = dd
+            # populate checkboxes with key
+            for col in dd.keys():
+                cb.addItem(fr'{col}')
+
+            frame_control.loaded_shape_space = dd
 
     except Exception as e:
         print('Failed to open file:: ', e)
+
+
+def load_shape_space(frame_control, le, cb):
+    filename = le.text()
+    if os.path.exists(filename):
+        try:
+            le.setText(filename)
+            with open(filename, 'r') as file:
+                dd = json.load(file)
+
+            if dd:
+                # clear combobox
+                frame_control.ui.cb_Shape_Space_Keys.clear()
+                frame_control.ui.cb_Shape_Space_Keys.addItem('All')
+
+                # populate checkboxes with key
+                for col in dd.keys():
+                    cb.addItem(fr'{col}')
+
+            frame_control.loaded_shape_space = dd
+
+        except Exception as e:
+            print('Failed to open file:: ', e)
 
 
 def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, projectDir):
@@ -1728,7 +1726,7 @@ def plot_cavity_geometry(plot, IC, OC, BP, n_cell):
 
                 # calculate new shift
                 shift = shift - (L_el + L_m)
-                ic(shift)
+                # ic(shift)
 
         elif n > 1 and n != n_cell:
             # DRAW ARC:
@@ -1907,6 +1905,17 @@ def deserialise(state_dict, widget, visited_widgets=None, marker=''):
 
             if isinstance(widget, QComboBox):
                 widget.setCurrentText(state_dict[f'{marker}_'+widget.objectName()])
+
+                # if isinstance(widget, QCheckableComboBox):
+                try:
+                    selection = state_dict[f'{marker}_'+widget.objectName()].split(', ')
+                    # try to select copied selection
+                    for txt in selection:
+                        if txt in widget.texts:
+                            item = widget.model().item(widget.texts.index(txt))
+                            item.setCheckState(2)
+                except AttributeError:
+                    pass
 
             if isinstance(widget, QLineEdit):
                 widget.setText(state_dict[f'{marker}_'+widget.objectName()])
