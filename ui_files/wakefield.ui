@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>355</width>
+    <width>490</width>
     <height>1046</height>
    </rect>
   </property>
@@ -212,15 +212,25 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
-           <width>312</width>
-           <height>1648</height>
+           <y>-134</y>
+           <width>447</width>
+           <height>1819</height>
           </rect>
          </property>
          <property name="styleSheet">
           <string notr="true"/>
          </property>
          <layout class="QGridLayout" name="gridLayout_9">
+          <item row="29" column="0">
+           <widget class="QPushButton" name="pb_Print_And_Save">
+            <property name="text">
+             <string>Print and Save</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
           <item row="24" column="0" alignment="Qt::AlignTop">
            <widget class="QWidget" name="w_Operating_Points_QOIs" native="true">
             <property name="minimumSize">
@@ -303,7 +313,7 @@
             </layout>
            </widget>
           </item>
-          <item row="30" column="0" alignment="Qt::AlignTop">
+          <item row="32" column="0" alignment="Qt::AlignTop">
            <widget class="QWidget" name="w_EXE" native="true">
             <layout class="QGridLayout" name="gridLayout_18">
              <property name="leftMargin">
@@ -333,7 +343,7 @@
            </widget>
           </item>
           <item row="20" column="0">
-           <widget class="QWidget" name="widget_11" native="true">
+           <widget class="QWidget" name="w_Wake_Parameters" native="true">
             <layout class="QGridLayout" name="gridLayout_26">
              <item row="1" column="0">
               <widget class="QLabel" name="label_30">
@@ -352,13 +362,13 @@
              <item row="1" column="1">
               <widget class="QSpinBox" name="sb_Wake_Potential_Points">
                <property name="minimum">
-                <number>101</number>
+                <number>2001</number>
                </property>
                <property name="maximum">
-                <number>10001</number>
+                <number>100001</number>
                </property>
                <property name="value">
-                <number>101</number>
+                <number>2001</number>
                </property>
               </widget>
              </item>
@@ -387,9 +397,9 @@
               </widget>
              </item>
              <item row="6" column="1">
-              <widget class="QCheckBox" name="checkBox">
+              <widget class="QCheckBox" name="cb_Wake_For_Counter_Beam">
                <property name="text">
-                <string>CheckBox</string>
+                <string/>
                </property>
               </widget>
              </item>
@@ -425,7 +435,7 @@
            </widget>
           </item>
           <item row="18" column="0">
-           <widget class="QWidget" name="widget_10" native="true">
+           <widget class="QWidget" name="w_Beam_Parameters" native="true">
             <layout class="QGridLayout" name="gridLayout_23">
              <item row="0" column="1">
               <widget class="QLineEdit" name="le_Bunch_Length">
@@ -444,7 +454,7 @@
              <item row="1" column="0">
               <widget class="QLabel" name="label_15">
                <property name="text">
-                <string>Beam Offset</string>
+                <string>Beam Radial Offset</string>
                </property>
               </widget>
              </item>
@@ -456,7 +466,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="le_Beam_Offset">
+              <widget class="QLineEdit" name="le_Beam_Radial_Offset">
                <property name="text">
                 <string>5</string>
                </property>
@@ -499,7 +509,7 @@
            </widget>
           </item>
           <item row="26" column="0">
-           <widget class="QWidget" name="widget_12" native="true">
+           <widget class="QWidget" name="w_File" native="true">
             <layout class="QGridLayout" name="gridLayout_29">
              <item row="0" column="0">
               <widget class="QLabel" name="label_34">
@@ -786,7 +796,7 @@
                 </size>
                </property>
                <property name="toolTip">
-                <string>No of time steps it takes for a beam to move one cal to another.</string>
+                <string>Number of time steps/mesh step</string>
                </property>
                <property name="text">
                 <string>MT</string>
@@ -869,9 +879,12 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLineEdit" name="lineEdit">
+              <widget class="QLineEdit" name="le_Beta">
                <property name="text">
                 <string>1</string>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
                </property>
               </widget>
              </item>
@@ -969,7 +982,7 @@
             </layout>
            </widget>
           </item>
-          <item row="31" column="0">
+          <item row="33" column="0">
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -999,6 +1012,9 @@
            <widget class="QPushButton" name="pb_Beam_Parameters">
             <property name="text">
              <string>Beam Parameters</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1033,13 +1049,16 @@
            </widget>
           </item>
           <item row="25" column="0">
-           <widget class="QPushButton" name="pushButton_5">
+           <widget class="QPushButton" name="pb_File">
             <property name="text">
              <string>File</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
            </widget>
           </item>
-          <item row="29" column="0" alignment="Qt::AlignTop">
+          <item row="31" column="0" alignment="Qt::AlignTop">
            <widget class="QPushButton" name="pb_EXE">
             <property name="text">
              <string>EXE</string>
@@ -1064,6 +1083,145 @@
             <property name="text">
              <string>Wake Parameters</string>
             </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="30" column="0">
+           <widget class="QWidget" name="w_Print_And_Save" native="true">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="1" column="1">
+              <widget class="QCheckBox" name="cb_Print_Wake_Potentials">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+               <property name="tristate">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="2">
+              <widget class="QLabel" name="label_23">
+               <property name="text">
+                <string>Save Longitudinal Wake</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Print Cavity Shape</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="2">
+              <widget class="QLabel" name="label_20">
+               <property name="text">
+                <string>Save Transverse Wake</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>Save Azimuthal Wake</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="2">
+              <widget class="QLabel" name="label_25">
+               <property name="text">
+                <string>Save FFT Results</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="2">
+              <widget class="QLabel" name="label_17">
+               <property name="text">
+                <string>Save Wake Potentials</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QCheckBox" name="cb_Print_Cavity_Shape">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Print Wake Potentials</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QCheckBox" name="cb_Line_Printer_Plot_Of_Wake_Pot">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_16">
+               <property name="text">
+                <string>Line-Printer Plot of Wake Pot.</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="3">
+              <widget class="QCheckBox" name="cb_Save_Wake_Potentials">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="3">
+              <widget class="QCheckBox" name="cb_Save_Azimuthal_Wake">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="3">
+              <widget class="QCheckBox" name="cb_Save_Transverse_Wake">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="3">
+              <widget class="QCheckBox" name="cb_Save_Longitudinal_Wake">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="3">
+              <widget class="QCheckBox" name="cb_Save_FFT_Results">
+               <property name="text">
+                <string/>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
          </layout>
@@ -1200,6 +1358,70 @@
     <hint type="destinationlabel">
      <x>406</x>
      <y>781</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_File</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_File</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>166</x>
+     <y>746</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
+     <y>798</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Wake_Parameters</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Wake_Parameters</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>166</x>
+     <y>357</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
+     <y>457</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Beam_Parameters</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Beam_Parameters</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>166</x>
+     <y>180</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>166</x>
+     <y>248</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Print_And_Save</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Print_And_Save</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>840</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>234</x>
+     <y>926</y>
     </hint>
    </hints>
   </connection>

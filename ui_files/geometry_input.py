@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Geometry_Input(object):
     def setupUi(self, Geometry_Input):
         Geometry_Input.setObjectName("Geometry_Input")
-        Geometry_Input.resize(357, 1155)
+        Geometry_Input.resize(512, 1155)
         self.gridLayout = QtWidgets.QGridLayout(Geometry_Input)
         self.gridLayout.setObjectName("gridLayout")
         self.widget = QtWidgets.QWidget(Geometry_Input)

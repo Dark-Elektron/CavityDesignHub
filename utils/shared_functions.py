@@ -695,7 +695,7 @@ def get_geometric_parameters(frame_control, code, scales=None):
             try:
                 # get selected keys
                 frame_control.selected_keys = frame_control.ui.cb_Shape_Space_Keys.currentText()
-                ic("selected keys: ", frame_control.ui.cb_Shape_Space_Keys.currentText())
+                # ic("selected keys: ", frame_control.ui.cb_Shape_Space_Keys.currentText())
                 # print("Selected keys: ", frame_control.selected_keys, type(frame_control.selected_keys[0]))
 
                 # check keys of shape space if results already exist
@@ -1883,6 +1883,9 @@ def serialise(state_dict, widget=None, visited_widgets=None, marker=''):
         if isinstance(widget, QDoubleSpinBox):
             state_dict[f'{marker}_'+widget.objectName()] = widget.value()
 
+        if isinstance(widget, QCheckBox):
+            state_dict[f'{marker}_'+widget.objectName()] = widget.checkState()
+
     for child_widget in widget.findChildren(QWidget):
         serialise(state_dict, child_widget, visited_widgets, marker)
 
@@ -1925,6 +1928,9 @@ def deserialise(state_dict, widget, visited_widgets=None, marker=''):
 
             if isinstance(widget, QDoubleSpinBox):
                 widget.setValue(float(state_dict[f'{marker}_'+widget.objectName()]))
+
+            if isinstance(widget, QCheckBox):
+                widget.setCheckState(state_dict[f'{marker}_'+widget.objectName()])
 
         for child_widget in widget.findChildren(QWidget):
             deserialise(state_dict, child_widget, visited_widgets, marker)

@@ -397,3 +397,4 @@ class MathTextLabel(QWidget):
 
         self._figure.set_size_inches(w / 80, h / 80)
         self.setFixedSize(w, h)
+

@@ -12,6 +12,7 @@ class ABCIGeometry(Geometry):
         super().__init__()
 
         # create node_editor folder on initialisation
+        self.L_all = None
         self.abci = None
         path = os.getcwd()
         path = os.path.join(path, "node_editor")
@@ -28,7 +29,47 @@ class ABCIGeometry(Geometry):
                fid="_0", MROT=0, beampipes=None,
                bunch_length=50, MT=3, NFS=5000, UBT=0,
                DDZ_SIG=0.1, DDR_SIG=0.1,
-               parentDir='', projectDir='', WG_M=None, marker='', sub_dir=''):
+               parentDir='', projectDir='', WG_M=None, marker='', sub_dir='', **kwargs):
+
+        # defaults
+        RDRIVE, ISIG = 5e-3, 5
+        LCRBW = 'F'
+        BETA = 1
+        LMATPR = 'F',
+        LPRW, LPPW, LSVW, LSVWA, LSVWT, LSVWL, LSVF = 'T', 'T', 'T', 'F', 'T', 'T', 'F'
+        LSAV, LCPUTM = 'F', 'F'
+
+        # unpack kwargs
+        for key, value in kwargs.items():
+            if key == 'RADIAL BEAM OFFSET AT (RDRIVE)':
+                RDRIVE = value
+            if key == 'NUMBER OF WAKE POTENTIAL POINTS (NW)':
+                NW = value
+            if key == 'WAKE FOR A COUNTER-ROTATING BEAM (LCRBW)':
+                LCRBW = value
+            if key == 'VELOCITY OF THE BUNCH / C (BETA)':
+                BETA = value
+            if key == 'PRINTOUT OF CAVITY SHAPE USED (LMATPR)':
+                LMATPR = value
+            if key == 'PRINTOUT OF WAKE POTENTIALS (LPRW)':
+                LPRW = value
+            if key == 'LINE-PRINTER PLOT OF WAKE POT. (LPPW)':
+                LPPW = value
+            if key == 'SAVE WAKE POTENTIALS IN A FILE (LSVW)':
+                LSVW = value
+            if key == 'SAVE AZIMUTHAL WAKE IN A FILE (LSVWA)':
+                LSVWA = value
+            if key == 'SAVE TRANSVERSE WAKE IN A FILE (LSVWT)':
+                LSVWT = value
+            if key == 'SAVE LONGITUDINAL WAKE IN A FILE (LSVWL)':
+                LSVWL = value
+            if key == 'SAVE FFT RESULTS IN A FILE (LSVF)':
+                LSVF = value
+            if key == 'SAVE FIELDS INTO FILE (LSAV)':
+                LSAV = value
+            if key == 'CPUTIME MONITOR ACTIVE (LCPUTM)':
+                LCPUTM = value
+
         # Adding parameter arguments here for testing purposes # fid, fileID
         self.fid = f'{fid}'
 
@@ -53,7 +94,7 @@ class ABCIGeometry(Geometry):
         bunch_length = bunch_length
         wake_offset = 5e-03
         beam_offset = 5e-03
-        sig_var = [x*1e-3 for x in [bunch_length]]  # bunch length converted to m
+        sig_var = [x * 1e-3 for x in [bunch_length]]  # bunch length converted to m
 
         # not needed for our parametrization
         end_type = 1  # if _type = 1 the  HALF cell is changed for tuning.
@@ -65,8 +106,8 @@ class ABCIGeometry(Geometry):
             module_nu = no_of_modules  # Number of cavities in module
             n = no_of_cells  # Number of cells
             SIG = sig_var[i_out]  # One standard deviation of bunch length
-            mesh_DDR = min(self.ri_M/10, DDR_SIG*SIG)#/lines_per_sigma
-            mesh_DDZ = min(self.ri_M/10, DDZ_SIG*SIG)#/lines_per_sigma
+            mesh_DDR = min(self.ri_M / 10, DDR_SIG * SIG)  # /lines_per_sigma
+            mesh_DDZ = min(self.ri_M / 10, DDZ_SIG * SIG)  # /lines_per_sigma
 
             #  mesh_DDR = 2.5*1e-3
             #  mesh_DDZ = 2.5*1e-3
@@ -121,7 +162,7 @@ class ABCIGeometry(Geometry):
             self.L_all = 0
             # print(fname)
             with open(fname, 'w') as f:
-                f.write(' &FILE LSAV = .F., ITEST = 0, LREC = .F. &END \n')
+                f.write(f' &FILE LSAV = .{LSAV}., ITEST = 0, LREC = .F., LCPUTM = .{LCPUTM}. &END \n')
                 f.write(' SAMPLE INPUT #1 A SIMPLE CAVITY STRUCTURE \n')
                 f.write(' &BOUN  IZL = 3, IZR = 3  &END \n')
                 f.write(' &MESH DDR = {}, DDZ = {} &END \n'.format(mesh_DDR, mesh_DDZ))
@@ -141,13 +182,14 @@ class ABCIGeometry(Geometry):
                         f.write('{} {} \n'.format(self.ri_L, self.WG_L))
 
                 if n == 1:
-                    for i_mode in range(1, module_nu+1):
+                    for i_mode in range(1, module_nu + 1):
                         if i_mode > 0:
                             if self.WG_L > 0:
                                 if end_L == 2:
-                                    f.write('{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L+(i_mode-1)*self.L_all))
+                                    f.write(
+                                        '{} {} \n'.format(self.Rbp_L, self.WG_L - self.x_L + (i_mode - 1) * self.L_all))
                                 else:
-                                    f.write('{} {} \n'.format(self.ri_L, self.WG_L + (i_mode-1)*self.L_all))
+                                    f.write('{} {} \n'.format(self.ri_L, self.WG_L + (i_mode - 1) * self.L_all))
 
                         if self.Req_L != self.Req_R:
                             print('Error:: The equator radius of left and right cell are not equal')
@@ -156,31 +198,32 @@ class ABCIGeometry(Geometry):
                         #     L_M = []
 
                         if end_L == 2:
-                            self.abci.abci_bp_L(n, zr12_BPL, self.WG_L+(i_mode-1)*self.L_all, f)
+                            self.abci.abci_bp_L(n, zr12_BPL, self.WG_L + (i_mode - 1) * self.L_all, f)
 
                         # print("GUI_ABCI::It got here")
-                        self.abci.abci_n1_L(n, zr12_L, self.WG_L+(i_mode-1)*self.L_all, f)
-                        self.abci.abci_n1_R(n, zr12_R, self.WG_L+(i_mode-1)*self.L_all, f)
+                        self.abci.abci_n1_L(n, zr12_L, self.WG_L + (i_mode - 1) * self.L_all, f)
+                        self.abci.abci_n1_R(n, zr12_R, self.WG_L + (i_mode - 1) * self.L_all, f)
 
                         if end_R == 2:
-                            self.abci.abci_bp_R(n, zr12_BPR, self.WG_L+(i_mode-1)*self.L_all, f)
+                            self.abci.abci_bp_R(n, zr12_BPR, self.WG_L + (i_mode - 1) * self.L_all, f)
 
                         if self.WG_R > 0:
                             if end_R == 2:
                                 f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R + self.L_L
-                                                          + self.L_R+(i_mode-1)*self.L_all))
+                                                          + self.L_R + (i_mode - 1) * self.L_all))
                             else:
-                                f.write('{} {} \n'.format(self.ri_R, self.WG_L+self.WG_R + self.L_L
-                                                          + self.L_R + (i_mode-1)*self.L_all))
+                                f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L
+                                                          + self.L_R + (i_mode - 1) * self.L_all))
 
-                    f.write('0 {} \n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R + (module_nu-1)*self.L_all))
+                    f.write(
+                        '0 {} \n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R + (module_nu - 1) * self.L_all))
                     f.write('0 0 \n')
                     f.write('9999. 9999. \n')
 
                 # #  n>1 multi-cell cavity
 
                 if n > 1:
-                    for i_mode in range(1, module_nu+1):
+                    for i_mode in range(1, module_nu + 1):
 
                         # print("imode:", i_mode, i_mode)
                         # change waveguide length
@@ -189,7 +232,7 @@ class ABCIGeometry(Geometry):
                                 self.WG_R = WG_M
                             if i_mode == 2:
                                 self.WG_L = WG_M
-                                self.WG_R = 4*self.L_M
+                                self.WG_R = 4 * self.L_M
 
                         elif module_nu > 2:
                             if i_mode == 1:
@@ -197,7 +240,7 @@ class ABCIGeometry(Geometry):
                             elif 1 < i_mode < module_nu:
                                 self.WG_L = WG_M
                             else:
-                                self.WG_R = 4*self.L_M
+                                self.WG_R = 4 * self.L_M
                         # Total length of each cavity
                         L_all_increment = self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M
                         # print(self.WG_L, self.WG_R, WG_M, self.L_all)
@@ -235,31 +278,33 @@ class ABCIGeometry(Geometry):
                                 # f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R+ self.L_L + self.L_R
                                 # + 2*(n-1)*self.L_M+(i_mode-1)*self.L_all))
                                 f.write('{} {} \n'.format(self.Rbp_R, self.WG_L + self.WG_R + self.L_L
-                                                          + self.L_R + 2*(n-1)*self.L_M+self.L_all))
+                                                          + self.L_R + 2 * (n - 1) * self.L_M + self.L_all))
                             else:
                                 # f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L
                                 # + self.L_R+2*(n-1)*self.L_M + (i_mode-1)*self.L_all))
                                 f.write('{} {} \n'.format(self.ri_R, self.WG_L + self.WG_R + self.L_L
-                                                          + self.L_R+2*(n-1)*self.L_M + self.L_all))
+                                                          + self.L_R + 2 * (n - 1) * self.L_M + self.L_all))
 
                         if i_mode < no_of_modules:
                             self.L_all += L_all_increment
 
                     # f.write('0 {} \n'.format(self.WG_L + self.WG_R+ self.L_L
                     # + self.L_R+2*(n-1)*self.L_M+(module_nu-1)*self.L_all))
-                    f.write('0 {} \n'.format(self.WG_L + self.WG_R + self.L_L + self.L_R+2*(n-1)*self.L_M+self.L_all))
+                    f.write('0 {} \n'.format(
+                        self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M + self.L_all))
                     f.write('0 0 \n')
                     f.write('9999. 9999. \n')
 
-                f.write(' &BEAM  SIG = {}, MROT = {}  &END \n'.format(SIG, MROT))
+                f.write(f' &BEAM  SIG = {SIG}, ISIG = {ISIG}, RDRIVE = {RDRIVE}, MROT = {MROT}  &END \n')
                 # f.write(' &BEAM  SIG = {}, MROT = {}, RDRIVE = {}  &END \n'.format(SIG, MROT, beam_offset))
-                f.write(' &TIME  MT = {} &END \n'.format(MT))
-                f.write(' &WAKE  UBT = {} &END \n'.format(UBT))
+                f.write(f' &TIME  MT = {int(MT)} &END \n')
+                f.write(f' &WAKE  UBT = {int(UBT)}, LCRBW = .{LCRBW}. &END \n')
                 # f.write(' &WAKE  UBT = {}, LCHIN = .F., LNAPOLY = .F., LNONAP = .F. &END \n'.format(UBT, wake_offset))
                 # f.write(' &WAKE R  = {}   &END \n'.format(wake_offset))
-                f.write(' &PLOT  LCAVIN = .T., LCAVUS = .T., LPLW = .T., LFFT = .T., LSPEC = .T., '
-                        'LINTZ = .F., LPATH = .T., NFS = {} &END \n'.format(NFS))
-                f.write(' &PRIN  LPRW = .T. ,LSVW = .T., LSVWL = .T.,  LSVF = .T.   &END\n')
+                f.write(f' &PLOT  LCAVIN = .T., LCAVUS = .F., LPLW = .T., LFFT = .T., LSPEC = .T., '
+                        f'LINTZ = .F., LPATH = .T., NFS = {NFS} &END \n')
+                f.write(f' &PRIN  LMATPR = .{LMATPR}., LPRW = .{LPRW}., LPPW = .{LPPW}., LSVW = .{LSVW}., '
+                        f'LSVWA = .{LSVWA}., LSVWT = .{LSVWT}., LSVWL = .{LSVWL}.,  LSVF = .{LSVF}.   &END\n')
                 f.write('\nSTOP\n')
 
             abci_path = os.getcwd()

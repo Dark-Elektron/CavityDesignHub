@@ -289,10 +289,10 @@ class MainWindow:
         self.ui.pb_Apply_Theme.clicked.connect(lambda: self.change_theme())
 
         # save state
-        self.ui.pb_Save_State.clicked.connect(lambda: self.serialize())
+        self.ui.pb_Save_State.clicked.connect(lambda: self.serialise())
 
         # # load state file
-        # self.ui.pb_Load_State_File.clicked.connect(lambda: self.deserialize())
+        # self.ui.pb_Load_State_File.clicked.connect(lambda: self.deserialise())
 
         # expand/collapse session log
         self.ui.pb_Expand_Collapse_Log.clicked.connect(lambda: animate_width(self.ui.w_Log, 0, 375, True, 'min'))
@@ -462,7 +462,7 @@ class MainWindow:
             self.projectDir = Path(project_dir)
 
             if os.path.exists(self.projectDir / "state_file.json"):
-                self.deserialize(self.projectDir / "state_file.json")
+                self.deserialise(self.projectDir / "state_file.json")
 
             # only initialize UI after successfully setting folder and initialise only once
             self.ui.l_Project_Name.setText(str(self.projectDir))
@@ -486,7 +486,6 @@ class MainWindow:
                 self.projectDir = Path(project_dir)
 
                 # only initialize UI after successfully setting folder and initialise only once
-                print(self.projectDir)
                 self.ui.l_Project_Name.setText(str(self.projectDir))
                 if self.global_state == 0:
                     self.initUI()
@@ -534,7 +533,7 @@ class MainWindow:
         #     self.stylesheet_filename = 'qss/amoled.qss'
         #     self.loadStylesheet(self.stylesheet_filename)
 
-    def serialize(self):
+    def serialise(self):
         """
         Save GUI objects state
         Returns
@@ -542,7 +541,7 @@ class MainWindow:
 
         """
 
-        # serialize home
+        # serialise home
         try:
             # open state file
             with open(Path('ui_state_files/state_file.json'), 'r') as file:
@@ -553,23 +552,23 @@ class MainWindow:
             state_dict = {}
 
         # update state file○
-        # serialize home
+        # serialise home
         state_dict["Project Directory"] = str(self.projectDir)
         state_dict['Theme'] = self.last_saved_theme
 
-        # serialize geometryUI
+        # serialise geometryUI
         self.geometryinput_widget.serialise(state_dict)
 
-        # serialize tuneUI
+        # serialise tuneUI
         self.tune_widget.serialise(state_dict)
 
-        # serialize eigenmodeUI
+        # serialise eigenmodeUI
         self.eigenmode_widget.serialise(state_dict)
 
-        # serialize wakefieldUI
+        # serialise wakefieldUI
         self.wakefield_widget.serialise(state_dict)
 
-        # serialize plotUI
+        # serialise plotUI
         self.plot_widget.serialise(state_dict)
 
         # dump save state file
@@ -580,7 +579,7 @@ class MainWindow:
         with open(self.projectDir / 'state_file.json', 'w', encoding='utf-8') as file:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
 
-    def deserialize(self, filename: str | Path):
+    def deserialise(self, filename: str | Path):
         """
         Retrieve and update GUI object state from last saved GUI state
 
@@ -635,9 +634,9 @@ class MainWindow:
         """
 
         # try:
-        self.deserialize(Path('ui_state_files/state_file.json'))
+        self.deserialise(Path('ui_state_files/state_file.json'))
         # except AttributeError as e:
-        #     print("Could not deserialize state file: ", e)
+        #     print("Could not deserialise state file: ", e)
 
     def checkIfPathExist(self, directory, folder):
         path = Path(f"{directory}/{folder}")
@@ -737,10 +736,12 @@ class MainWindow:
             self.model.setRootPath(str(dir_path))
             self.tree.setRootIndex(self.model.index(str(dir_path)))
         else:
-            self.model = QFileSystemModel()
+            self.model = CustomFileSystemModel()
             self.model.setRootPath(str(dir_path))
+            self.model.setHeader(f2b_slashes(str(self.projectDir)).split('\\')[-1])
             self.tree = QTreeView()
             self.tree.setModel(self.model)
+
             self.tree.setRootIndex(self.model.index(str(dir_path)))
             # self.tree.setColumnWidth(0, 250)
             self.tree.setAlternatingRowColors(True)
@@ -845,6 +846,22 @@ class CustomFormatter(logging.Formatter):
         res = logging.Formatter.format(self, record)
         self._style._fmt = last_fmt
         return res
+
+
+class CustomFileSystemModel(QFileSystemModel):
+    def __init__(self):
+        super(CustomFileSystemModel, self).__init__()
+        self.header_title = "Files and Folders"
+
+    def headerData(self, section, orientation, role=Qt.DisplayRole):
+        if role == Qt.DisplayRole and orientation == Qt.Horizontal:
+            if section == 0:
+                return self.header_title
+            # You can customize other column headers here if needed
+        return super().headerData(section, orientation, role)
+
+    def setHeader(self, title):
+        self.header_title = title
 
 
 if __name__ == '__main__':

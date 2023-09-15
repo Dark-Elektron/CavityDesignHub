@@ -138,6 +138,32 @@ class WakefieldControl:
         proc_count = self.ui.sb_No_Of_Processors_ABCI.value()
         marker = self.ui.le_Marker.text()
 
+        # extra abci wakefield parameters
+        abci_kwargs = {'RADIAL BEAM OFFSET AT (RDRIVE)': float(self.ui.le_Beam_Radial_Offset.text()) * 1e-3,
+                       'NUMBER OF STAND.DEV. USED (ISIG)': self.ui.sb_Std_Dev.value(),
+                       'NUMBER OF WAKE POTENTIAL POINTS (NW)': self.ui.sb_Wake_Potential_Points.value(),
+                       'WAKE FOR A COUNTER-ROTATING BEAM (LCRBW)':
+                           list(str(self.ui.cb_Wake_For_Counter_Beam.isChecked()))[0],
+                       'VELOCITY OF THE BUNCH / C (BETA)': self.ui.le_Beta.text(),
+                       'PRINTOUT OF CAVITY SHAPE USED (LMATPR)':
+                           list(str(self.ui.cb_Print_Cavity_Shape.isChecked()))[0],
+                       'PRINTOUT OF WAKE POTENTIALS (LPRW)':
+                           list(str(self.ui.cb_Print_Wake_Potentials.isChecked()))[0],
+                       'LINE-PRINTER PLOT OF WAKE POT. (LPPW)':
+                           list(str(self.ui.cb_Line_Printer_Plot_Of_Wake_Pot.isChecked()))[0],
+                       'SAVE WAKE POTENTIALS IN A FILE (LSVW)':
+                           list(str(self.ui.cb_Save_Wake_Potentials.isChecked()))[0],
+                       'SAVE AZIMUTHAL WAKE IN A FILE (LSVWA)':
+                           list(str(self.ui.cb_Save_Azimuthal_Wake.isChecked()))[0],
+                       'SAVE TRANSVERSE WAKE IN A FILE (LSVWT)':
+                           list(str(self.ui.cb_Save_Transverse_Wake.isChecked()))[0],
+                       'SAVE LONGITUDINAL WAKE IN A FILE (LSVWL)':
+                           list(str(self.ui.cb_Save_Longitudinal_Wake.isChecked()))[0],
+                       'SAVE FFT RESULTS IN A FILE (LSVF)': list(str(self.ui.cb_Save_FFT_Results.isChecked()))[0],
+                       'SAVE FIELDS INTO FILE (LSAV)': list(str(self.ui.cb_Save_Fields.isChecked()))[0],
+                       'CPUTIME MONITOR ACTIVE (LCPUTM)': list(str(self.ui.cb_CPU_Time.isChecked()))[0],
+                       }
+
         if self.ui.sc_Operating_Points_QOI.checkState() == 2:
             # qoi_df = write_qtable_to_df(self.ui.tw_Operating_Points_Input)
             qoi_dict = self.get_table_entries()
@@ -186,13 +212,15 @@ class WakefieldControl:
                 if key in proc_keys_list:
                     processor_shape_space[key] = val
 
-            service = mp.Process(target=self.run_sequential, args=(n_cells, n_modules, processor_shape_space,
-                                                                   MROT, MT, NFS, UBT, bunch_length,
-                                                                   DDR_SIG, DDZ_SIG,
-                                                                   self.main_control.parentDir,
-                                                                   self.main_control.projectDir, self.progress_list,
-                                                                   WG_M, marker, qoi_dict
-                                                                   ))
+            service = mp.Process(target=self.run_sequential,
+                                 args=(n_cells, n_modules, processor_shape_space,
+                                       MROT, MT, NFS, UBT, bunch_length,
+                                       DDR_SIG, DDZ_SIG,
+                                       self.main_control.parentDir,
+                                       self.main_control.projectDir, self.progress_list,
+                                       WG_M, marker, qoi_dict
+                                       ),
+                                 kwargs=abci_kwargs)
 
             service.start()
             self.processes.append(psutil.Process(service.pid))
@@ -615,7 +643,7 @@ class WakefieldControl:
                        MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
                        DDR_SIG=0.1, DDZ_SIG=0.1,
                        parentDir=None, projectDir=None, progress_list=None,
-                       WG_M=None, marker='', qoi_df=None):
+                       WG_M=None, marker='', qoi_df=None, **kwargs):
         progress = 0
         # get length of processor
         # total_no_of_shapes = len(list(processor_shape_space.keys()))
@@ -641,14 +669,14 @@ class WakefieldControl:
                                              bunch_length=bunch_length,
                                              DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                              projectDir=projectDir,
-                                             WG_M=ii, marker=ii)
+                                             WG_M=ii, marker=ii, **kwargs)
 
                     else:
                         abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
                                          fid=f"{key}_{n_cell}", MROT=MROT, MT=MT, NFS=NFS, UBT=UBT,
                                          bunch_length=bunch_length,
                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
-                                         WG_M=ii, marker=ii)
+                                         WG_M=ii, marker=ii, **kwargs)
 
                     # update progress
                     progress_list.append(progress + 1)
@@ -659,7 +687,7 @@ class WakefieldControl:
                         d = {}
                         ic(qoi_df)
                         #  # save qois
-                    # for indx, val in qoi_df[key].items():
+                        # for indx, val in qoi_df[key].items():
                         op_points, no_of_cells, R_Q, sigma_SR_list, sigma_BS_list, I0_list, Nb_list, freq = qoi_df[fid]
 
                         for i, op_point in enumerate(op_points):
@@ -686,7 +714,7 @@ class WakefieldControl:
                                                          bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                                          projectDir=projectDir,
-                                                         WG_M=nn, marker=nn, sub_dir=fid)
+                                                         WG_M=nn, marker=nn, sub_dir=fid, **kwargs)
 
                                     dirc = projectDir / fr'SimulationData\ABCI\{fid}{marker}'
                                     # try:
