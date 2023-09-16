@@ -2,7 +2,6 @@ import subprocess
 import time
 import multiprocessing as mp
 from threading import Thread
-
 import pandas as pd
 from psutil import NoSuchProcess
 from analysis_modules.data_module.abci_data import ABCIData

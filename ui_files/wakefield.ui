@@ -97,8 +97,8 @@
           <widget class="QPushButton" name="pb_Run">
            <property name="maximumSize">
             <size>
-             <width>18</width>
-             <height>18</height>
+             <width>24</width>
+             <height>24</height>
             </size>
            </property>
            <property name="styleSheet">
@@ -212,7 +212,7 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-134</y>
+           <y>-826</y>
            <width>447</width>
            <height>1819</height>
           </rect>

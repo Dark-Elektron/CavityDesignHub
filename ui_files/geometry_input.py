@@ -33,7 +33,7 @@ class Ui_Geometry_Input(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 645, 1214))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, -117, 645, 1214))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.g_Geometry_Display = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -52,11 +52,10 @@ class Ui_Geometry_Input(object):
         self.w_Cell_Parameters.setObjectName("w_Cell_Parameters")
         self.gridLayout_17 = QtWidgets.QGridLayout(self.w_Cell_Parameters)
         self.gridLayout_17.setObjectName("gridLayout_17")
-        self.sb_N_Cells = QtWidgets.QSpinBox(self.w_Cell_Parameters)
-        self.sb_N_Cells.setMinimum(1)
-        self.sb_N_Cells.setProperty("value", 2)
-        self.sb_N_Cells.setObjectName("sb_N_Cells")
-        self.gridLayout_17.addWidget(self.sb_N_Cells, 0, 2, 1, 1)
+        self.sb_N_Modules = QtWidgets.QSpinBox(self.w_Cell_Parameters)
+        self.sb_N_Modules.setProperty("value", 1)
+        self.sb_N_Modules.setObjectName("sb_N_Modules")
+        self.gridLayout_17.addWidget(self.sb_N_Modules, 1, 1, 1, 1)
         self.label_31 = QtWidgets.QLabel(self.w_Cell_Parameters)
         self.label_31.setMinimumSize(QtCore.QSize(100, 0))
         self.label_31.setMaximumSize(QtCore.QSize(100, 16777215))
@@ -67,10 +66,6 @@ class Ui_Geometry_Input(object):
         self.label_35.setMaximumSize(QtCore.QSize(100, 16777215))
         self.label_35.setObjectName("label_35")
         self.gridLayout_17.addWidget(self.label_35, 1, 0, 1, 1)
-        self.sb_N_Modules = QtWidgets.QSpinBox(self.w_Cell_Parameters)
-        self.sb_N_Modules.setProperty("value", 1)
-        self.sb_N_Modules.setObjectName("sb_N_Modules")
-        self.gridLayout_17.addWidget(self.sb_N_Modules, 1, 2, 1, 1)
         self.le_N_Cells = QtWidgets.QLineEdit(self.w_Cell_Parameters)
         self.le_N_Cells.setObjectName("le_N_Cells")
         self.gridLayout_17.addWidget(self.le_N_Cells, 0, 1, 1, 1)
@@ -600,6 +595,7 @@ class Ui_Geometry_Input(object):
         self.gridLayout.addWidget(self.widget, 0, 0, 1, 1)
 
         self.retranslateUi(Geometry_Input)
+        self.pb_Cell_Geometric_Parameters.toggled['bool'].connect(self.w_Cell_Parameters.setVisible) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(Geometry_Input)
 
     def retranslateUi(self, Geometry_Input):

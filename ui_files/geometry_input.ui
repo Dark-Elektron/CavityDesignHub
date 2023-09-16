@@ -41,7 +41,7 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>0</y>
+           <y>-117</y>
            <width>645</width>
            <height>1214</height>
           </rect>
@@ -79,13 +79,10 @@
           <item row="7" column="0" alignment="Qt::AlignLeft|Qt::AlignTop">
            <widget class="QWidget" name="w_Cell_Parameters" native="true">
             <layout class="QGridLayout" name="gridLayout_17">
-             <item row="0" column="2">
-              <widget class="QSpinBox" name="sb_N_Cells">
-               <property name="minimum">
-                <number>1</number>
-               </property>
+             <item row="1" column="1">
+              <widget class="QSpinBox" name="sb_N_Modules">
                <property name="value">
-                <number>2</number>
+                <number>1</number>
                </property>
               </widget>
              </item>
@@ -124,13 +121,6 @@
                </property>
                <property name="text">
                 <string>No. of Modules</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="2">
-              <widget class="QSpinBox" name="sb_N_Modules">
-               <property name="value">
-                <number>1</number>
                </property>
               </widget>
              </item>
@@ -1673,5 +1663,22 @@
  <resources>
   <include location="../qss/icons.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pb_Cell_Geometric_Parameters</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Cell_Parameters</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>344</x>
+     <y>-77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>187</x>
+     <y>1059</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

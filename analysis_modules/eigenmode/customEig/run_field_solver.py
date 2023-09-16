@@ -1856,24 +1856,22 @@ class Model:
 if __name__ == '__main__':
     folder = fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\NativeEig'
     mod = Model(folder, 'TESLA')
-    n_cells = 6
-    midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
-                         71.98698698698699, 93.5, 171.1929]) * 1e-3
-    endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
-                         80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
+    n_cells = 5
+    midC3795 = np.array([62.22, 66.13, 30.22, 23.11, 72, 93.5, 171.2]) * 1e-3
+    endC3795 = np.array([62.58, 57.54, 17.21, 12.0, 80.0, 93.795, 171.2]) * 1e-3
 
-    midTESLA = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
-    midTESLA_800 = np.array([68.12, 68.12, 19.46, 30.81, 56.76, 93.5, 167.646]) * 1e-3
-    midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591]) * 1e-3
+    # midTESLA = np.array([42, 42, 12, 19, 35, 57.7, 103.3]) * 1e-3
+    # midTESLA_800 = np.array([68.12, 68.12, 19.46, 30.81, 56.76, 93.5, 167.646]) * 1e-3
+    # midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591]) * 1e-3
+    #
+    # midDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
+    # endDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
+    #
+    # midNLSF_RE = np.array([49, 35.30, 10.5, 17, 32.0, 57.7, 98.58, 0]) * 1e-3
+    # endNLSF_RE = np.array([50, 35, 10, 15, 32.0, 57.7, 98.58, 0]) * 1e-3
+    #
+    # mid_cell_parameters = [43.99, 35.06, 12.53, 20.95, 35, 57.6524, 101.205]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
+    # left_end_cell_parameters = [50.9, 45.3, 8.4, 11.5, 39, 59.988, 101.205]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
+    # right_end_cell_paramters = [52.1, 47.9, 9.9, 11.3, 37, 62.665, 101.205]
 
-    midDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
-    endDegen = np.array([50.052, 36.5, 7.6, 10.0, 30.0, 57.7, 98.58, 0]) * 1e-3
-
-    midNLSF_RE = np.array([49, 35.30, 10.5, 17, 32.0, 57.7, 98.58, 0]) * 1e-3
-    endNLSF_RE = np.array([50, 35, 10, 15, 32.0, 57.7, 98.58, 0]) * 1e-3
-
-    mid_cell_parameters = [43.99, 35.06, 12.53, 20.95, 35, 57.6524, 101.205]  # [A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m]
-    left_end_cell_parameters = [50.9, 45.3, 8.4, 11.5, 39, 59.988, 101.205]  # [A_e, B_e, a_e, b_e, Ri_e, L_e, Req_e]
-    right_end_cell_paramters = [52.1, 47.9, 9.9, 11.3, 37, 62.665, 101.205]
-
-    mod.run(n_cells, mid_cell_parameters, left_end_cell_parameters, right_end_cell_paramters, beampipe='none', gridcons=0.005, plot=True)
+    mod.run(n_cells, midC3795, endC3795, endC3795, beampipe='both', gridcons=0.005, plot=True)

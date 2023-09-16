@@ -777,6 +777,10 @@ P R O C E S S</string>
                            <property name="text">
                             <string>M I S C</string>
                            </property>
+                           <property name="icon">
+                            <iconset resource="../qss/icons.qrc">
+                             <normaloff>:/icons/icons/PNG/misc.png</normaloff>:/icons/icons/PNG/misc.png</iconset>
+                           </property>
                            <property name="iconSize">
                             <size>
                              <width>50</width>
@@ -968,6 +972,10 @@ P R O C E S S</string>
                 </property>
                 <property name="text">
                  <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="../qss/icons.qrc">
+                  <normaloff>:/icons/icons/PNG/misc.png</normaloff>:/icons/icons/PNG/misc.png</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
