@@ -219,7 +219,7 @@
     "plot_table_widget": {
         "0": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
@@ -231,9 +231,9 @@
             "Request": [
                 "Longitudinal Impedance Magnitude",
                 "Frequency (Multiple Modes)",
-                "Q-Factor (lossy E) (Multiple Modes)"
+                "Z_T_kOhm_m"
             ],
-            "Toggle": 2,
+            "Toggle": 0,
             "ScaleX": "1",
             "ScaleY": "1",
             "Axis": "Left",
@@ -248,7 +248,7 @@
         },
         "1": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
@@ -277,7 +277,7 @@
         },
         "2": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
@@ -289,9 +289,9 @@
             "Request": [
                 "Longitudinal Impedance Magnitude",
                 "Frequency (Multiple Modes)",
-                "Q-Factor (lossy E) (Multiple Modes)"
+                "Z_T_kOhm_m"
             ],
-            "Toggle": 2,
+            "Toggle": 0,
             "ScaleX": "1",
             "ScaleY": "1",
             "Axis": "Left",
@@ -306,7 +306,7 @@
         },
         "3": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
+            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
@@ -318,9 +318,9 @@
             "Request": [
                 "Longitudinal Impedance Magnitude",
                 "Frequency (Multiple Modes)",
-                "Q-Factor (lossy E) (Multiple Modes)"
+                "Z_T_kOhm_m"
             ],
-            "Toggle": 2,
+            "Toggle": 0,
             "ScaleX": "1",
             "ScaleY": "1",
             "Axis": "Left",
@@ -334,6 +334,35 @@
             ]
         },
         "4": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "Sheet1"
+                ],
+                "Sheet1"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "Frequency (Multiple Modes)",
+                "Z_T_kOhm_m"
+            ],
+            "Toggle": 0,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "^"
+            ],
+            "Filter": [
+                "Pol",
+                "O"
+            ]
+        },
+        "5": {
             "Code": "Other",
             "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
             "Polarization": "Long",
@@ -355,11 +384,11 @@
             "Axis": "Left",
             "Type": [
                 "Scatter",
-                "^"
+                "P"
             ],
             "Filter": [
                 "Pol",
-                "O"
+                "D"
             ]
         }
     },
@@ -367,21 +396,54 @@
         "lines": [
             {
                 "ls": "None",
-                "color": "#8da0cb",
+                "color": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ],
                 "lw": 1.5,
                 "ms": 10.0,
                 "mec": "black",
                 "mew": 1.0,
-                "mfc": "#8da0cb"
+                "mfc": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ]
             },
             {
                 "ls": "None",
-                "color": "#e78ac3",
+                "color": [
+                    0.5529411764705883,
+                    0.6274509803921569,
+                    0.796078431372549
+                ],
                 "lw": 1.5,
                 "ms": 10.0,
                 "mec": "black",
                 "mew": 1.0,
-                "mfc": "#e78ac3"
+                "mfc": [
+                    0.5529411764705883,
+                    0.6274509803921569,
+                    0.796078431372549
+                ]
+            },
+            {
+                "ls": "None",
+                "color": [
+                    0.9058823529411765,
+                    0.5411764705882353,
+                    0.7647058823529411
+                ],
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
+                "mew": 1.0,
+                "mfc": [
+                    0.9058823529411765,
+                    0.5411764705882353,
+                    0.7647058823529411
+                ]
             },
             {
                 "ls": "None",
@@ -402,29 +464,21 @@
             },
             {
                 "ls": "None",
-                "color": [
-                    1.0,
-                    0.8509803921568627,
-                    0.1843137254901961
-                ],
+                "color": "#2ca02c",
                 "lw": 1.5,
                 "ms": 10.0,
                 "mec": "black",
                 "mew": 1.0,
-                "mfc": [
-                    1.0,
-                    0.8509803921568627,
-                    0.1843137254901961
-                ]
+                "mfc": "#2ca02c"
             },
             {
                 "ls": "None",
-                "color": "#e5c494",
+                "color": "#d62728",
                 "lw": 1.5,
                 "ms": 10.0,
                 "mec": "black",
                 "mew": 1.0,
-                "mfc": "#e5c494"
+                "mfc": "#d62728"
             }
         ],
         "collections": [],
@@ -758,12 +812,12 @@
     "wakefield_le_Beam_Offset": "5",
     "wakefield_sb_Std_Dev": 5,
     "plot_pb_Custom_Color": false,
-    "plot_dsb_Alpha": 0.0,
+    "plot_dsb_Alpha": 1.0,
     "plot_qt_spinbox_lineedit": "",
     "plot_cb_Line_Style": "-",
-    "plot_dsb_Line_Width": 1.0,
-    "plot_cb_Marker": "o",
-    "plot_db_Marker_Size": 0.0,
+    "plot_dsb_Line_Width": 1.5,
+    "plot_cb_Marker": "P",
+    "plot_db_Marker_Size": 10.0,
     "plot_": "Presentation",
     "plot_dsb_Threshold": 0.5,
     "plot_cb_Peaks_Marker_Style": "x",
@@ -816,7 +870,7 @@
     "plot_pb_Machine_Parameters": false,
     "plot_pb_Plot_Element_Format": false,
     "plot_pb_Plot_Area_Menu": false,
-    "plot_sb_Layer": 1.0,
+    "plot_sb_Layer": 2.0,
     "Geometry_pb_Cell_Parameters": true,
     "Geometry_pb_Cell_Geometric_Parameters": true,
     "Geometry_sb_N_Cells": 1,
@@ -935,5 +989,6 @@
     "multipacting_dsb_Frequency": 801.58,
     "multipacting_dsb_Mesh_Constant": 5.0,
     "multipacting_dsb_Relative_Epsilon": 1.0,
-    "multipacting_cb_Geometry": "C3795"
+    "multipacting_cb_Geometry": "C3795",
+    "multipacting_pb_Plots": true
 }

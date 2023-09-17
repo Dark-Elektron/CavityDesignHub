@@ -33,6 +33,7 @@ def print_(*arg):
 
 class MultipactingControl:
     def __init__(self, parent):
+        self.initials = None
         self.folder = None
         self.cwd = None
         self.shape_space = None
@@ -117,6 +118,9 @@ class MultipactingControl:
         # self.progress_bar.hide()
 
     def signals(self):
+        self.ui.pb_Generate_Mesh.clicked.connect(lambda: self.generate_mesh())
+        self.ui.pb_Generate_Fields.clicked.connect(lambda: self.run_field_solver())
+        self.ui.pb_Run_Multipac.clicked.connect(lambda: self.run_mpanalysis())
         # run multipacting solver
         self.ui.pb_Run.clicked.connect(lambda: self.run())
 
@@ -844,6 +848,340 @@ class MultipactingControl:
 
         self.calculate_QoI()
 
+    def run_mpanalysis(self):
+
+        # load geometry and mesh if they are none
+        if self.geodata is None:
+            self.geodata = self.load_ascii('geodata.n')
+        if self.mesh is None:
+            pass
+        if self.fieldparam is None:
+            self.fieldparam = self.load_ascii('fieldparam')
+        if self.fields is None:
+            self.fields = self.load_mat('fields.mat')
+        if self.initials is None:
+            self.initials = self.load_ascii('initials')
+
+        # if len(varargin) < 1:
+        #     s = 1
+        #
+        # if s == 1:
+        #     clear_window
+        #
+        # ok = test_geometry(0)
+        # if ok == 0:
+        #     return
+        #
+        # ok0 = check_fieldparam
+        # self.fieldparam
+        # if ok0 > 0:
+        #     spio.loadmat('fieldparam')
+        #     gtype = fieldparam(1)
+        #     if gtype <= 2:
+        #         ok1 = check_inputs
+        #     else:
+        #         ok1 = check_inputs_win
+        # else:
+        #     ok1 = 0
+        #
+        # ok2 = check_kama
+        # if ok1 * ok2 > 0:
+        #     plt.figure(1)
+        #     print('------------ Multipacting Analysis -----------.')
+        #     print('                                               ')
+        #     # plot the initial points, the geometry and the secondary yield curve
+        #     if exist('initangle'):
+        #         plot_inisecang(1)
+        #     else:
+        #         plot_inisec(1)
+        # start the MP analysis
+        self.mp_cavity_coupler()
+
+    def mp_cavity_coupler(self):
+        # calculate the counter functions
+        self.calculate_counters()
+
+        # C = spio.loadmat('Ccounter')
+        # A = spio.loadmat('Acounter')
+        # flevels = spio.loadmat('counter_flevels')
+
+        # if np.amax(C) == 0:
+        #     print(np.array(['Counter function is dentically zero and multipacting ', 'analysis is completed.']))
+        # else:
+        #     val, ind = np.amax(A)
+        #     if gtype == 1:
+        #         plt.plot(np.array([flevel(ind) / 1000.0, flevel(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
+        #     else:
+        #         if gtype == 2:
+        #             plt.plot(np.array([Pow(ind) / 1000.0, Pow(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
+        #
+        #     if gtype == 1:
+        #         plt.plot(np.array([flevel(ind) / 1000.0, flevel(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
+        #     else:
+        #         if gtype == 2:
+        #             plt.plot(np.array([Pow(ind) / 1000.0, Pow(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
+        #     if gtype == 1:
+        #         plt.plot(np.array([flevel(ind) / 1000.0, flevel(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
+        #     else:
+        #         if gtype == 2:
+        #             plt.plot(np.array([Pow(ind) / 1000.0, Pow(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
+
+        # calculate the distance map
+        self.calculate_distance()
+        # plot the distance map
+        self.plot_distance()
+        self.Ddistance = self.load_mat('Ddistance')
+        # val, yi0 = np.amin(np.abs(D))
+
+        # calculate an electron trajectory
+        self.calculate_trajectory()
+        # plot the trajectory
+        self.plot_trajectory()
+
+    def calculate_counters(self):
+        checks = ['counter_intials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
+                  'fieldparam']
+        filesexist = True
+        for ch in checks:
+            if not os.path.exists(fr'{self.folder}/{ch}'):
+                filesexist = False
+                print(fr'{ch} is missing. Choose Counter Functions in menu Run.')
+
+        ic("In here cto calculate counter")
+        if filesexist:
+            # redefine magnetic walls as artificial walls
+            self.redefine_magnetic_walls_as_artificial_walls()
+
+            # self.initials = pd.read_csv(fr"{self.folder}\initials", sep='\s+',
+            #                             header=None).to_numpy()  # complete code to write initials later
+            # if len(self.initials) == 0:
+            #     print('No initial points.')
+            #     return
+            # else:
+            #     print('Computing the counter functions.')
+
+            # run the main program
+            # mika_alue = 0
+            # save mikaalue mika_alue -v4
+            mika_alue = {'mika_alue': 0}
+            self.save_mat(mika_alue, f"mikaalue.mat")
+
+            # !Multipac mp
+            self.run_multipac_exe()
+
+            # geodata = geodata_tmp
+            # save -ascii geodata.n geodata
+            self.save_ascii(self.geodata, 'geodata.n')
+
+            ic("Donce calculating counter")
+
+    def calculate_distance(self):
+
+        # check_inputs : requires :: counter_intials.mat, counter_flevels.mat, param, geodata.n, secy1
+        # check_outputs(0) : requires :: Ccounter.mat, Acounter.mat, Efcounter.mat
+        checks = ['counter_intials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
+                  'Ccounter.mat', 'Acounter.mat', 'Efcounter.mat']
+        filesexist = True
+        for ch in checks:
+            if not os.path.exists(fr'{self.folder}/{ch}'):
+                filesexist = False
+                print(fr'{ch} is missing. Choose Counter Functions in menu Run.')
+
+        if filesexist:
+
+            # load fieldparam
+            gtype = self.fieldparam[1]
+
+            # load_output_data
+            filenames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
+                      "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
+
+            data = self.load_multiple(filenames)
+            A = data["Acounter.mat"]["A"][:, 0]
+            At = data["Atcounter.mat"]["At"]
+            C = data["Ccounter.mat"]["C"][:, 0]
+            Ef = data["Efcounter.mat"]["Ef"][:, 0]
+            flevel = data["counter_flevels.mat"]["flevel"]
+            initials = data["counter_initials.mat"]["initials"]
+
+            if max(C) == 0:
+                print('Counter function is identically zero.')
+                ok = 0
+            s = 1
+            if ok > 0:
+                if s > 0:
+                    # plot_triplot(3)
+                    print('To select the field level press the mouse buttom on Figure 5.')
+                    print('To finish press return on Figure 5.');
+
+                    # [x, y] = ginput
+                    # x = x[len(x)]
+                else:
+                    [val, ind] = max(A)
+                #
+                # if gtype == 1:
+                #     if s > 0:
+                #         ind = min(np.where(abs(flevel/1e3 - x) == min(abs(flevel/1e3 - x))));
+                #         # plot the chosen value
+                #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[0, ax(4)],'-r')
+                #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[0, ax(4)],'-r')
+                #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[ax(3), ax(4)],'-r')
+                # elif gtype == 2:
+                #     if s == 3:
+                #         ind = min(np.where(abs(flevel/1e3 - x) == min(abs(flevel/1e3 - x))));
+                #         # plot the chosen value
+                #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[0, ax(4)],'-r')
+                #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[0, ax(4)],'-r')
+                #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[ax(3), ax(4)],'-r')
+                #     elif s == 2:
+                #         ind = min(np.where(abs(Efl/1e3 - x) == min(abs(Efl/1e3 - x))))
+                #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[0, ax(4)],'-r')
+                #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[0, ax(4)],'-r')
+                #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[ax(3),ax(4)],'-r')
+                #     elif s == 1:
+                #         ind = min(find(abs(Pow/1e3 - x) == min(abs(Pow/1e3 - x))))
+                #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[0,ax(4)],'-r')
+                #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[0,ax(4)],'-r')
+                #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[ax(3),ax(4)],'-r')
+
+                flevel = flevel[ind]
+
+                if C(ind) == 0:
+                    print('For a chosen field level the counter function is zero.');
+                    print('Recalculate the Distance map for an other field level.');
+                else:
+                    if s > 0:
+                        print('                                                ');
+
+                    print('Calculating the distance function.');
+                    if s > 0:
+                        print('                                                ')
+                    # save distance_flevel flevel
+                    # save -ascii flevel flevel
+                    # save -ascii initials initials
+
+                    self.save_mat(self.distance_flevel, 'distance_flevel.mat')
+                    self.save_ascii(self.flevel, 'flevel')
+                    self.save_ascii(self.initials, 'initials')
+
+                    # type of output data is redefined
+                    # load param
+                    self.load_ascii('param')
+                    param[5] = 2
+                    # save -ascii param param
+                    self.save_ascii(self.param, 'param')
+
+                    # redefine magnetic walls as artificial walls
+                    self.redefine_magnetic_walls_as_artificial_walls()
+
+                    # run the main program
+                    # mika_alue = 0;
+                    # save mikaalue mika_alue -v4
+
+                    # !Multipac mp
+                    self.run_multipac_exe()
+
+                    # geodata = geodata_tmp;
+                    # save -ascii geodata.n geodata
+                    self.save_ascii(self.geodata, 'geodata.n')
+
+                    # load D
+                    # save Ddistance D
+
+                    if s > 0:
+                        print('Calculation of the distance function finished.')
+                        print('To plot the distance map, choose Plot Distance Map in menu Outputs.')
+                        print('To calculate an electron trajectory, choose Trajectory in menu Run.')
+
+    def calculate_trajectory(self):
+        # check_inputs: requires: counter_initials.mat, counter_flevels.mat, param, geodata.n, secy1
+        # check_distance: requires: Ddistance.mat, distance_flevel.mat
+
+        checks = ['counter_intials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
+                  'Ddistance.mat', 'distance_flevel.mat']
+        filesexist = True
+        for ch in checks:
+            if not os.path.exists(fr'{self.folder}/{ch}'):
+                filesexist = False
+                print(fr'{ch} is missing. Choose Counter Functions in menu Run.')
+
+        if filesexist:
+            # mika_alue = 0;
+            # save mikaalue mika_alue -v4
+            mika_alue = {'mika_alue': 0}
+            self.save_mat(mika_alue, 'mikaalue.mat')
+
+            # load Ddistance
+            Ddistance = self.load_mat("Ddistance.mat")
+            D = Ddistance['D']
+
+            if min(min(abs(D))) == 2:
+                print('Distance map is zero. Recalculate the distance map for an other field level.')
+            else:
+                s = 0
+                if s == 0:
+                    [val, yi0] = min(abs(D))
+                else:
+                    print('To select the initial point press the mouse buttom on Figure 6.')
+                    print('To finish press return on Figure 6.')
+                    # yi0 = self.plot_distance(1, side)
+
+                if D[yi0] == -2:
+                    print('For a chosen initial point the distance map is zero.')
+                    print('Rerun Trajectory in menu Run and choose an other initial point.')
+                else:
+                    if s > 0:
+                        print('                                               ')
+                    print('Calculating an electron trajectory.')
+                    # the initial place of an electron
+
+                    # load counter_initials :: already loaded
+                    # load distance_flevel :: already loaded
+                    self.counter_initials = self.load_mat('counter_initials.mat')
+                    self.distance_flevel = self.load_mat('distance_flevel.mat')
+
+                    # type of output data is redefined
+                    # load param
+                    self.param[5] = 3
+                    # save -ascii param param
+                    self.save_ascii(self.param, 'paraam')
+
+                    # set the field level
+                    # save -ascii flevel flevel
+                    self.save_ascii(self.flevel, 'flevel')
+
+                    self.initials = self.initials[yi0, :]
+                    # save -ascii initials initials
+                    self.save_ascii(self.initials, 'initials')
+
+                    # load fieldparam
+                    gtype = self.fieldparam[0]
+                    if gtype == 1:
+                        # redefine magnetic walls as artificial walls
+                        # load geodata.n
+                        # geodata_tmp = geodata;
+                        # ind = find(geodata(:,3)==3);
+                        # geodata(ind,3) = zeros(length(ind),1);
+                        # save -ascii geodata.n geodata
+                        self.redefine_magnetic_walls_as_artificial_walls()
+
+                    # % run the main program
+                    # !Multipac mp
+                    self.run_multipac_exe()
+
+                    if gtype == 1:
+                        # save -ascii geodata.n geodata
+                        self.save_ascii(self.geodata, 'geodata.n')
+
+                    if s == 1:
+                        print('Calculation of an electron trajectory finished.')
+                        print('                                               ')
+                        print('To plot the trajectory. Choose Plot Trajectory in menu Outputs.')
+                        print('                                               ')
+
+    def plot_distance(self):
+        pass
+
     def plot_FEM_fields(self, ptype):
         ok2 = 0
         if os.path.exists(fr'{self.folder}/geodata.n'):
@@ -966,6 +1304,327 @@ class MultipactingControl:
             ax.set_xlabel('z axis [m]')
             ax.set_ylabel('r axis [m]')
             ax.set_title(r'Electric field |$E$| [V/m]')
+
+    def plot_sey(self):
+        fig, ax = plt.subplots()
+        x_label = "Incident Energy [eV]"
+        y_label = "SEY"
+        # data = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy1.txt", sep='\s+', header=None)
+        # data2 = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy2.txt", sep='\s+', header=None)
+        data = pd.read_csv("D:\Dropbox\multipacting\MPGUI21\secy1", sep='\s+', header=None)
+        sey_list = [data]  # , data2]
+        label = ["Nb", "Cu"]
+
+        for i, sey in enumerate(sey_list):
+            ax.plot(sey[0], sey[1], lw=1.5, label=label[i])
+
+        ax.axhline(1, ls='--', c='r')
+        ax.set_xlabel(x_label)
+        ax.set_ylabel(y_label)
+        ax.set_xlim(0, 1000)
+        # ax.set_ylim(0, 2.2)
+        plt.legend()
+        # ax.grid(True, which="both", ls=":")
+        ax.minorticks_on()
+        plt.tight_layout()
+        plt.show()
+
+    def plot_multipac_triplot(self, Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot', layout=None,
+                              min_max=None):
+        use_input_min_max = False
+        if layout is None:
+            layout = [[0], [1], [2]]
+
+        # mpl.rcParams['figure.figsize'] = [6, 7]
+
+        # if kind == 'triplot':
+        figsize = (10, 3 * len(layout))
+        fig, axs = plt.subplot_mosaic(layout, figsize=figsize)
+        kwargs = {"width": 0.1, "alpha": 1, "ec": 'k', "lw": 0.5}
+
+        for Eacc, Epk_Eacc, folder, label in zip(Eacc_list, Epk_Eacc_list, folders, labels):
+            # load_output_data
+            # files
+            fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
+                      "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
+            data = {}
+            # files_folder = "D:\Dropbox\multipacting\MPGUI21"
+            for f in fnames:
+                if ".mat" in f:
+                    data[f] = spio.loadmat(fr"{folder}\\{f}")
+                else:
+                    data[f] = pd.read_csv(fr"{folder}\\{f}", sep='\s+', header=None)
+
+            A = data["Acounter.mat"]["A"][:, 0]
+            At = data["Atcounter.mat"]["At"]
+            C = data["Ccounter.mat"]["C"][:, 0]
+            Ef = data["Efcounter.mat"]["Ef"][:, 0]
+            flevel = data["counter_flevels.mat"]["flevel"]
+            initials = data["counter_initials.mat"]["initials"]
+
+            secy1 = data["secy1"].to_numpy()
+            Pow = flevel
+            n = len(initials[:, 0]) / 2  # number of initials in the bright set
+            N = int(data["param"].to_numpy()[4])  # number of impacts
+            U = flevel
+            Efl = flevel[:, 0]
+            q = 1.6021773e-19
+            Efq = Ef / q
+
+            e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
+            e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
+            val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
+
+            if kind == 'counter_function' or kind == 'triplot':
+                if kind == 'counter_function':
+                    ax = axs[0]
+                else:
+                    ax = axs[0]
+                # ax.semilogy(Efl / (Epk_Eacc * 1e6), C / n, lw=1.5, label=label, marker='o', mec='k')
+                ax.bar(Efl / (Epk_Eacc * 1e6), C / n, label=label, **kwargs)
+                # ax.set_yscale('log')
+                ax.set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
+                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
+                # ax.set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
+
+                if min_max:
+                    if len(min_max) == 2:
+                        use_input_min_max = True
+
+                if use_input_min_max:
+                    ax.set_xlim(min_max[0], min_max[1])
+                else:
+                    ax.set_xlim(np.amin(Efl) / (Epk_Eacc * 1e6), np.amax(Efl) / (Epk_Eacc * 1e6))
+
+                ax.set_ylim(0, np.max([0.1, axs[0].get_ylim()[1]]))
+
+                # plot peak operating field
+                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=ax.get_xaxis_transform(), ha='right', va='center')
+
+                ax.minorticks_on()
+
+            if kind == 'final_impact_energy' or kind == 'triplot':
+                if kind == 'final_impact_energy':
+                    ax = axs[0]
+                else:
+                    ax = axs[1]
+                # ax.plot(Efl / (Epk_Eacc * 1e6), Efq, lw=1.5, label=label, marker='o', mec='k')
+                ax.bar(Efl / (Epk_Eacc * 1e6), Efq, label=label, **kwargs)
+                ax.set_yscale('log')
+
+                # axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
+                e0 = sci.interp1d(secy1[0:e1 + 1, 1], secy1[0:e1 + 1, 0])(1)
+                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)], [e0, e0], '-r')
+                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)],
+                        [secy1[e2, 0], secy1[e2, 0]], '-r')
+                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)],
+                        [secy1[e3, 0], secy1[e3, 0]], '--r')
+
+                ax.set_ylabel("$Ef_" + "{" + f"{N}" + "} [eV]$")
+                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
+                # ax.set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
+
+                if min_max:
+                    if len(min_max) == 2:
+                        use_input_min_max = True
+
+                if use_input_min_max:
+                    ax.set_xlim(min_max[0], min_max[1])
+                else:
+                    ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
+                ax.set_ylim(0, axs[0].get_ylim()[1])
+
+                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=ax.get_xaxis_transform(), ha='right', va='center')
+
+                ax.minorticks_on()
+
+            if kind == 'enhanced_counter_function' or kind == 'triplot':
+                if kind == 'enhanced_counter_function':
+                    ax = axs[0]
+                else:
+                    ax = axs[2]
+
+                # ax.plot(Efl / (Epk_Eacc * 1e6), (A + 1) / n, lw=1.5, label=label, marker='o', mec='k')
+                ax.bar(Efl / (Epk_Eacc * 1e6), (A + 1) / n, label=label, **kwargs)
+                ax.set_yscale('log')
+                ax.set_xlabel('$V$ [MV]')
+                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)], [1, 1], '-r')
+
+                if min_max:
+                    if len(min_max) == 2:
+                        use_input_min_max = True
+
+                if use_input_min_max:
+                    ax.set_xlim(min_max[0], min_max[1])
+                else:
+                    ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
+                ax.set_ylim(np.min((A + 1) / n), ax.get_ylim()[1])
+                ax.set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
+                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
+                # ax.set_title('$\mathbf{Enhanced~counter~function}$')
+
+                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=ax.get_xaxis_transform(), ha='right', va='center')
+
+                ax.minorticks_on()
+
+        axs[0].legend(loc='upper right')
+
+        fig.tight_layout()
+        fig.savefig(fr'D:\Dropbox\Quick presentation files\Multipacting_{label}_multipac_{kind}.png')
+        plt.show()
+        plt.close(fig)
+
+    def plot_trajectory(self, loc='center'):
+        fieldparams = pd.read_csv(fr"{self.folder}\\fieldparam", sep='\s+', header=None).to_numpy()
+        geodata = pd.read_csv(fr"{self.folder}\\geodata.n", sep='\s+', header=None).to_numpy()
+        param = pd.read_csv(fr"{self.folder}\\param", sep='\s+', header=None).to_numpy()
+        elecpath = pd.read_csv(fr"{self.folder}\\elecpath", sep='\s+', header=None).to_numpy()
+
+        gtype = fieldparams[0]
+
+        ng = len(geodata[:, 0])
+        bo = geodata[3:ng, 0:2].T
+        wr = []
+        wz = []
+
+        # convert boundary and electron path to mm
+        bo = bo * 1e3
+
+        eps = np.spacing(1.0)
+        par = param
+
+        n = np.shape(elecpath)[0]
+        if n == 1:
+            pat = []
+            ic(['No electron emission. Please, define a new initial point.'])
+        else:
+            pat = elecpath[1:n, [0, 2, 3, 5, 6, 7]]
+
+            N = par[4]
+            hit = np.array(np.where(pat[:, 5] != 0))
+            hit = hit[:, np.arange(1, len(hit[0]), 2)]
+            speed = np.sqrt(pat[hit, 2] ** 2 + pat[hit, 3] ** 2)
+            c = 2.9979e8
+            M = 9.1093879e-31
+            q = 1.6021773e-19
+            energy = (1 / np.sqrt(1.0 - (speed ** 2 / c ** 2)) - 1) * M * c ** 2. / q
+            avegene = np.mean(energy)
+            finaene = energy[:, len(energy)]
+            maxiene = np.max(energy)
+            dt = abs(np.min(pat[:, 4]) - np.max(pat[:, 4])) * par[0]
+
+            fig, axs = plt.subplot_mosaic([[0, 0, 2, 2, 2]], figsize=(10, 4))
+            pat = pat * 1e3  # convert to mm for plotting
+
+            axs[0].plot(bo[1, :], bo[0, :], lw=2)
+            axs[0].plot(pat[:, 1], pat[:, 0], '-r', lw=1)
+            axs[0].margins(x=0.01, y=0.01)
+            # fig.suptitle(f'MultiPac 2.1       Electron Trajectory,   N = {N},     ')
+            axs[0].set_xlabel(f'z-axis [mm],  \nFlight time {dt[0]:.2f} periods')
+            axs[0].set_ylabel('r-axis [mm]')
+
+            # axs[0].set_xlim(right=2*(axs[0].get_xlim()[1] - axs[0].get_xlim()[0]))
+
+            if loc == 'center':
+                axin = axs[0].inset_axes([0.275, 0.1, 0.45, 0.45])
+            elif loc == 'left':
+                axin = axs[0].inset_axes([0.05, 0.5, 0.45, 0.45])
+            else:
+                axin = axs[0].inset_axes([0.5, 0.5, 0.45, 0.45])
+
+            axin.set_xticklabels([])
+            axin.set_yticklabels([])
+
+            #
+            axin.plot(bo[1, :], bo[0, :], lw=2)
+            axin.plot(pat[:, 1], pat[:, 0], '-r', pat[hit, 1], pat[hit, 0], 'ro', lw=1)
+
+            min1 = np.min(pat[:, 0]) - eps * 1e3
+            max1 = np.max(pat[:, 0]) + eps * 1e3
+
+            if np.min(pat[:, 1]) < 0:
+                min2 = 1.1 * np.min(pat[:, 1]) - eps * 1e3
+            else:
+                min2 = 0.9 * np.min(pat[:, 1]) - eps * 1e3
+
+            if np.max(pat[:, 1]) < 0:
+                max2 = 0.9 * np.max(pat[:, 1]) + eps * 1e3
+            else:
+                max2 = 1.1 * max(pat[:, 1]) + eps * 1e3
+
+            axin.set_xlim([min2, max2])
+            axin.set_ylim([min1 - 0.05, max1 + 0.05])
+            axs[0].indicate_inset_zoom(axin)
+            # axin.set_xlim([max(min(bo[1, :]), min(pat[:, 1] - 1)), min(max(bo[1, :]), max(pat[:, 1] + 1))])
+
+            # axin.set_xlabel('z-axis [mm]')
+            # axin.set_ylabel('r-axis [mm]')
+
+            axs[2].plot(pat[:, 4] * par[0] * 1e-3, pat[:, 0], 'r', pat[hit, 4] * par[0] * 1e-3, pat[hit, 0], 'ro',
+                        markerfacecolor="None")
+
+            # axs[2].set_ylim(top=max(pat[:, 0]))
+
+            axs[2].set_xlabel(
+                f"Time in [1/f], \nAverage energy {avegene:.2f} eV \nFinal energy " + "$E_f=$" + fr"{finaene[0]:.2f} eV")
+            axs[2].set_ylabel('r-axis [m]')
+            axs[2].margins(x=0.01, y=0.01)
+
+            fig.tight_layout(pad=2.5)
+            plt.show()
+
+    def redefine_magnetic_walls_as_artificial_walls(self):
+        geodata_tmp = np.copy(self.geodata)
+        ic(self.geodata)
+        ind = np.where(geodata_tmp[:, 2] == 3)
+        ic(ind)
+        geodata_tmp[ind, 3] = np.zeros(len(ind))
+        # save -ascii geodata.n geodata
+        df = pd.DataFrame(geodata_tmp)
+        df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
+
+    def run_multipac_exe(self):
+        ic('it got here')
+        cwd = fr'{self.folder}'
+        multipacpath = fr'{self.parent_dir}\exe\own_exe\Multipac.exe'
+
+        if os.path.exists(multipacpath):
+            subprocess.call(multipacpath, cwd=cwd)
+            # subprocess.call(eigenCpath, cwd=cwd)
+        ic("\tDone running eigenC_bin.exe")
+
+    def save_ascii(self, data, filename):
+        df = pd.DataFrame(data)
+        df.to_csv(fr'{self.folder}\{filename}', sep=r' ', index=False, header=False, float_format='%.7E')
+
+    def load_ascii(self, filename):
+        return pd.read_csv(fr'{self.folder}\{filename}', sep='\s+', header=None).to_numpy()
+
+    def save_mat(self, data, filename):
+        spio.savemat(f"{self.folder}/{filename}", data, format='4')
+
+    def load_mat(self, filename):
+        return spio.loadmat(fr"{self.folder}\{filename}")
+
+    def load_multiple(self, filenames):
+        data = {}
+        # files_folder = "D:\Dropbox\multipacting\MPGUI21"
+        for f in filenames:
+            if ".mat" in f:
+                data[f] = self.load_mat(fr"{self.folder}\\{f}")
+            else:
+                data[f] = self.load_ascii(fr"{self.folder}\\{f}")
+
+        return data
 
     def calculate_QoI(self):
         ic("\t\tCalculating QoIs")
@@ -1438,8 +2097,8 @@ class MultipactingControl:
         # field flatness
         # get max in each cell
         peaks, _ = find_peaks(abs(self.E_z_axis))
-        plt.plot(self.E_z_axis_abs)
-        plt.show()
+        # plt.plot(self.E_z_axis_abs)
+        # plt.show()
         E_abs_peaks = self.E_z_axis_abs[peaks]
         # self.ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
         ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks)) / np.average(E_abs_peaks))) * 100
@@ -2097,415 +2756,6 @@ class MultipactingControl:
         W = np.array([A[2 * n:3 * n]]).T
 
         return X, W
-
-    def run_mpanalysis(self):
-        # if len(varargin) < 1:
-        #     s = 1
-        #
-        # if s == 1:
-        #     clear_window
-        #
-        # ok = test_geometry(0)
-        # if ok == 0:
-        #     return
-        #
-        # ok0 = check_fieldparam
-        # self.fieldparam
-        # if ok0 > 0:
-        #     spio.loadmat('fieldparam')
-        #     gtype = fieldparam(1)
-        #     if gtype <= 2:
-        #         ok1 = check_inputs
-        #     else:
-        #         ok1 = check_inputs_win
-        # else:
-        #     ok1 = 0
-        #
-        # ok2 = check_kama
-        # if ok1 * ok2 > 0:
-        #     plt.figure(1)
-        #     print('------------ Multipacting Analysis -----------.')
-        #     print('                                               ')
-        #     # plot the initial points, the geometry and the secondary yield curve
-        #     if exist('initangle'):
-        #         plot_inisecang(1)
-        #     else:
-        #         plot_inisec(1)
-        # start the MP analysis
-        self.mp_cavity_coupler()
-
-    def mp_cavity_coupler(self):
-        gtype = self.fieldparam[1]
-
-        # calculate the counter functions
-        self.calculate_counters()
-
-        C = spio.loadmat('Ccounter')
-        A = spio.loadmat('Acounter')
-        flevels = spio.loadmat('counter_flevels')
-
-        # if np.amax(C) == 0:
-        #     print(np.array(['Counter function is dentically zero and multipacting ', 'analysis is completed.']))
-        # else:
-        #     val, ind = np.amax(A)
-        #     if gtype == 1:
-        #         plt.plot(np.array([flevel(ind) / 1000.0, flevel(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
-        #     else:
-        #         if gtype == 2:
-        #             plt.plot(np.array([Pow(ind) / 1000.0, Pow(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
-        #
-        #     if gtype == 1:
-        #         plt.plot(np.array([flevel(ind) / 1000.0, flevel(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
-        #     else:
-        #         if gtype == 2:
-        #             plt.plot(np.array([Pow(ind) / 1000.0, Pow(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
-        #     if gtype == 1:
-        #         plt.plot(np.array([flevel(ind) / 1000.0, flevel(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
-        #     else:
-        #         if gtype == 2:
-        #             plt.plot(np.array([Pow(ind) / 1000.0, Pow(ind) / 1000.0]), np.array([ax(3), ax(4)]), '-r')
-
-        # calculate the distance map
-        self.calculate_distance(0)
-        # plot the distance map
-        self.plot_distance(0, 'c', 0)
-        spio.loadmat('Ddistance')
-        # val, yi0 = np.amin(np.abs(D))
-
-        # calculate an electron trajectory
-        self.calculate_trajectory(0, 'c')
-        # plot the trajectory
-        self.plot_trajectory('c')
-
-    def calculate_counters(self):
-        # redefine magnetic walls as artificial walls
-        geodata_tmp = np.copy(self.geodata)
-        ic(self.geodata)
-        ind = np.where(geodata_tmp[:, 2] == 3)
-        ic(ind)
-        geodata_tmp[ind, 3] = np.zeros(len(ind))
-        ic(geodata_tmp)
-        # save -ascii geodata.n geodata
-        df = pd.DataFrame(geodata_tmp)
-        df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
-
-        # self.initials = pd.read_csv(fr"{self.folder}\initials", sep='\s+',
-        #                             header=None).to_numpy()  # complete code to write initials later
-        # if len(self.initials) == 0:
-        #     print('No initial points.')
-        #     return
-        # else:
-        #     print('Computing the counter functions.')
-
-        # run the main program
-        # mika_alue = 0
-        # save mikaalue mika_alue -v4
-        mika_alue = {'mika_alue': 0}
-        spio.savemat(f"{self.folder}/mikaalue.mat", mika_alue, format='4')
-
-        # !Multipac mp
-        ic('it got here')
-        cwd = fr'{self.folder}'
-        if self.parent_dir is not None:
-            multipacpath = fr'{self.parent_dir}\exe\own_exe\Multipac.exe'
-        else:
-            multipacpath = fr'..\..\..\exe\own_exe\Multipac.exe'
-
-        if os.path.exists(multipacpath):
-            subprocess.call(multipacpath, cwd=cwd)
-            # subprocess.call(eigenCpath, cwd=cwd)
-        ic("\tDone running eigenC_bin.exe")
-
-        # geodata = geodata_tmp
-        # save -ascii geodata.n geodata
-        df = pd.DataFrame(self.geodata)
-        df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
-
-    def calculate_trajectory(self):
-        pass
-
-    def plot_distance(self):
-        pass
-
-    def calculate_distance(self):
-        pass
-
-    def plot_sey(self):
-        fig, ax = plt.subplots()
-        x_label = "Incident Energy [eV]"
-        y_label = "SEY"
-        # data = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy1.txt", sep='\s+', header=None)
-        # data2 = pd.read_csv("D:\CST Studio\Multipacting\SEY\secy2.txt", sep='\s+', header=None)
-        data = pd.read_csv("D:\Dropbox\multipacting\MPGUI21\secy1", sep='\s+', header=None)
-        sey_list = [data]  # , data2]
-        label = ["Nb", "Cu"]
-
-        for i, sey in enumerate(sey_list):
-            ax.plot(sey[0], sey[1], lw=1.5, label=label[i])
-
-        ax.axhline(1, ls='--', c='r')
-        ax.set_xlabel(x_label)
-        ax.set_ylabel(y_label)
-        ax.set_xlim(0, 1000)
-        # ax.set_ylim(0, 2.2)
-        plt.legend()
-        # ax.grid(True, which="both", ls=":")
-        ax.minorticks_on()
-        plt.tight_layout()
-        plt.show()
-
-    def plot_multipac_triplot(self, Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot', layout=None,
-                              min_max=None):
-        use_input_min_max = False
-        if layout is None:
-            layout = [[0], [1], [2]]
-
-        # mpl.rcParams['figure.figsize'] = [6, 7]
-
-        # if kind == 'triplot':
-        figsize = (10, 3 * len(layout))
-        fig, axs = plt.subplot_mosaic(layout, figsize=figsize)
-        kwargs = {"width": 0.1, "alpha": 1, "ec": 'k', "lw": 0.5}
-
-        for Eacc, Epk_Eacc, folder, label in zip(Eacc_list, Epk_Eacc_list, folders, labels):
-            # load_output_data
-            # files
-            fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
-                      "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
-            data = {}
-            # files_folder = "D:\Dropbox\multipacting\MPGUI21"
-            for f in fnames:
-                if ".mat" in f:
-                    data[f] = spio.loadmat(fr"{folder}\\{f}")
-                else:
-                    data[f] = pd.read_csv(fr"{folder}\\{f}", sep='\s+', header=None)
-
-            A = data["Acounter.mat"]["A"][:, 0]
-            At = data["Atcounter.mat"]["At"]
-            C = data["Ccounter.mat"]["C"][:, 0]
-            Ef = data["Efcounter.mat"]["Ef"][:, 0]
-            flevel = data["counter_flevels.mat"]["flevel"]
-            initials = data["counter_initials.mat"]["initials"]
-
-            secy1 = data["secy1"].to_numpy()
-            Pow = flevel
-            n = len(initials[:, 0]) / 2  # number of initials in the bright set
-            N = int(data["param"].to_numpy()[4])  # number of impacts
-            U = flevel
-            Efl = flevel[:, 0]
-            q = 1.6021773e-19
-            Efq = Ef / q
-
-            e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
-            e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
-            val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
-
-            if kind == 'counter_function' or kind == 'triplot':
-                if kind == 'counter_function':
-                    ax = axs[0]
-                else:
-                    ax = axs[0]
-                # ax.semilogy(Efl / (Epk_Eacc * 1e6), C / n, lw=1.5, label=label, marker='o', mec='k')
-                ax.bar(Efl / (Epk_Eacc * 1e6), C / n, label=label, **kwargs)
-                # ax.set_yscale('log')
-                ax.set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
-                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
-                # ax.set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
-
-                if min_max:
-                    if len(min_max) == 2:
-                        use_input_min_max = True
-
-                if use_input_min_max:
-                    ax.set_xlim(min_max[0], min_max[1])
-                else:
-                    ax.set_xlim(np.amin(Efl) / (Epk_Eacc * 1e6), np.amax(Efl) / (Epk_Eacc * 1e6))
-
-                ax.set_ylim(0, np.max([0.1, axs[0].get_ylim()[1]]))
-
-                # plot peak operating field
-                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=ax.get_xaxis_transform(), ha='right', va='center')
-
-                ax.minorticks_on()
-
-            if kind == 'final_impact_energy' or kind == 'triplot':
-                if kind == 'final_impact_energy':
-                    ax = axs[0]
-                else:
-                    ax = axs[1]
-                # ax.plot(Efl / (Epk_Eacc * 1e6), Efq, lw=1.5, label=label, marker='o', mec='k')
-                ax.bar(Efl / (Epk_Eacc * 1e6), Efq, label=label, **kwargs)
-                ax.set_yscale('log')
-
-                # axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
-                e0 = sci.interp1d(secy1[0:e1 + 1, 1], secy1[0:e1 + 1, 0])(1)
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)], [e0, e0], '-r')
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)],
-                        [secy1[e2, 0], secy1[e2, 0]], '-r')
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)],
-                        [secy1[e3, 0], secy1[e3, 0]], '--r')
-
-                ax.set_ylabel("$Ef_" + "{" + f"{N}" + "} [eV]$")
-                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
-                # ax.set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
-
-                if min_max:
-                    if len(min_max) == 2:
-                        use_input_min_max = True
-
-                if use_input_min_max:
-                    ax.set_xlim(min_max[0], min_max[1])
-                else:
-                    ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
-                ax.set_ylim(0, axs[0].get_ylim()[1])
-
-                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=ax.get_xaxis_transform(), ha='right', va='center')
-
-                ax.minorticks_on()
-
-            if kind == 'enhanced_counter_function' or kind == 'triplot':
-                if kind == 'enhanced_counter_function':
-                    ax = axs[0]
-                else:
-                    ax = axs[2]
-
-                # ax.plot(Efl / (Epk_Eacc * 1e6), (A + 1) / n, lw=1.5, label=label, marker='o', mec='k')
-                ax.bar(Efl / (Epk_Eacc * 1e6), (A + 1) / n, label=label, **kwargs)
-                ax.set_yscale('log')
-                ax.set_xlabel('$V$ [MV]')
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)], [1, 1], '-r')
-
-                if min_max:
-                    if len(min_max) == 2:
-                        use_input_min_max = True
-
-                if use_input_min_max:
-                    ax.set_xlim(min_max[0], min_max[1])
-                else:
-                    ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
-                ax.set_ylim(np.min((A + 1) / n), ax.get_ylim()[1])
-                ax.set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
-                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
-                # ax.set_title('$\mathbf{Enhanced~counter~function}$')
-
-                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=ax.get_xaxis_transform(), ha='right', va='center')
-
-                ax.minorticks_on()
-
-        axs[0].legend(loc='upper right')
-
-        fig.tight_layout()
-        fig.savefig(fr'D:\Dropbox\Quick presentation files\Multipacting_{label}_multipac_{kind}.png')
-        plt.show()
-        plt.close(fig)
-
-    def plot_trajectory(self, files_folder, loc='center'):
-        fieldparams = pd.read_csv(fr"{files_folder}\\fieldparam", sep='\s+', header=None).to_numpy()
-        geodata = pd.read_csv(fr"{files_folder}\\geodata.n", sep='\s+', header=None).to_numpy()
-        param = pd.read_csv(fr"{files_folder}\\param", sep='\s+', header=None).to_numpy()
-        elecpath = pd.read_csv(fr"{files_folder}\\elecpath", sep='\s+', header=None).to_numpy()
-
-        gtype = fieldparams[0]
-
-        ng = len(geodata[:, 0])
-        bo = geodata[3:ng, 0:2].T
-        wr = []
-        wz = []
-
-        # convert boundary and electron path to mm
-        bo = bo * 1e3
-
-        eps = np.spacing(1.0)
-        par = param
-
-        n = np.shape(elecpath)[0]
-        if n == 1:
-            pat = []
-            ic(['No electron emission. Please, define a new initial point.'])
-        else:
-            pat = elecpath[1:n, [0, 2, 3, 5, 6, 7]]
-
-            N = par[4]
-            hit = np.array(np.where(pat[:, 5] != 0))
-            hit = hit[:, np.arange(1, len(hit[0]), 2)]
-            speed = np.sqrt(pat[hit, 2] ** 2 + pat[hit, 3] ** 2)
-            c = 2.9979e8
-            M = 9.1093879e-31
-            q = 1.6021773e-19
-            energy = (1 / np.sqrt(1.0 - (speed ** 2 / c ** 2)) - 1) * M * c ** 2. / q
-            avegene = np.mean(energy)
-            finaene = energy[:, len(energy)]
-            maxiene = np.max(energy)
-            dt = abs(np.min(pat[:, 4]) - np.max(pat[:, 4])) * par[0]
-
-            fig, axs = plt.subplot_mosaic([[0, 0, 2, 2, 2]], figsize=(10, 4))
-            pat = pat * 1e3  # convert to mm for plotting
-
-            axs[0].plot(bo[1, :], bo[0, :], lw=2)
-            axs[0].plot(pat[:, 1], pat[:, 0], '-r', lw=1)
-            axs[0].margins(x=0.01, y=0.01)
-            # fig.suptitle(f'MultiPac 2.1       Electron Trajectory,   N = {N},     ')
-            axs[0].set_xlabel(f'z-axis [mm],  \nFlight time {dt[0]:.2f} periods')
-            axs[0].set_ylabel('r-axis [mm]')
-
-            # axs[0].set_xlim(right=2*(axs[0].get_xlim()[1] - axs[0].get_xlim()[0]))
-
-            if loc == 'center':
-                axin = axs[0].inset_axes([0.275, 0.1, 0.45, 0.45])
-            elif loc == 'left':
-                axin = axs[0].inset_axes([0.05, 0.5, 0.45, 0.45])
-            else:
-                axin = axs[0].inset_axes([0.5, 0.5, 0.45, 0.45])
-
-            axin.set_xticklabels([])
-            axin.set_yticklabels([])
-
-            #
-            axin.plot(bo[1, :], bo[0, :], lw=2)
-            axin.plot(pat[:, 1], pat[:, 0], '-r', pat[hit, 1], pat[hit, 0], 'ro', lw=1)
-
-            min1 = np.min(pat[:, 0]) - eps * 1e3
-            max1 = np.max(pat[:, 0]) + eps * 1e3
-
-            if np.min(pat[:, 1]) < 0:
-                min2 = 1.1 * np.min(pat[:, 1]) - eps * 1e3
-            else:
-                min2 = 0.9 * np.min(pat[:, 1]) - eps * 1e3
-
-            if np.max(pat[:, 1]) < 0:
-                max2 = 0.9 * np.max(pat[:, 1]) + eps * 1e3
-            else:
-                max2 = 1.1 * max(pat[:, 1]) + eps * 1e3
-
-            axin.set_xlim([min2, max2])
-            axin.set_ylim([min1 - 0.05, max1 + 0.05])
-            axs[0].indicate_inset_zoom(axin)
-            # axin.set_xlim([max(min(bo[1, :]), min(pat[:, 1] - 1)), min(max(bo[1, :]), max(pat[:, 1] + 1))])
-
-            # axin.set_xlabel('z-axis [mm]')
-            # axin.set_ylabel('r-axis [mm]')
-
-            axs[2].plot(pat[:, 4] * par[0] * 1e-3, pat[:, 0], 'r', pat[hit, 4] * par[0] * 1e-3, pat[hit, 0], 'ro',
-                        markerfacecolor="None")
-
-            # axs[2].set_ylim(top=max(pat[:, 0]))
-
-            axs[2].set_xlabel(
-                f"Time in [1/f], \nAverage energy {avegene:.2f} eV \nFinal energy " + "$E_f=$" + fr"{finaene[0]:.2f} eV")
-            axs[2].set_ylabel('r-axis [m]')
-            axs[2].margins(x=0.01, y=0.01)
-
-            fig.tight_layout(pad=2.5)
-            plt.show()
 
     def run_pause_resume_stop_routine(self):
         pass

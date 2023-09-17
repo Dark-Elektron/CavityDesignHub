@@ -451,7 +451,7 @@ if __name__ == '__main__':
     req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
            "RQT", "Z_kOhm", "Z_T_kOhm_m"]
     # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]
-    name = "E_C3795"
+    name = "E_C3795_2DQW"
 
     eigenmode_analysis(sim_folder, folders, req, name)
 
