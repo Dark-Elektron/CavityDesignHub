@@ -738,7 +738,7 @@
     "multipacting_pb_Field_Levels": true,
     "multipacting_dsb_Initial_Sites_Phase_Step": 5.0,
     "multipacting_qt_spinbox_lineedit": "5.00",
-    "multipacting_dsb_Initial_Sites_Step": 3.0,
+    "multipacting_dsb_Initial_Sites_Step": 2.0,
     "multipacting_dsb_Initial_Sites_Min": -0.1,
     "multipacting_dsb_Initial_Sites_Max": 0.1,
     "multipacting_dsb_Field_Levels_Min": 1000.0,

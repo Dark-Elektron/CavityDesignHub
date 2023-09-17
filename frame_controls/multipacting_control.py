@@ -314,7 +314,7 @@ class MultipactingControl:
 
         # parameters for the initial point generator
         dx = self.dx / 1000  # dimensions in mm
-        dc = self.dx / 10  # distance from the nearest corner
+        dc = dx / 10  # distance from the nearest corner
         alpha = 0  # initial velocity angle
         dt = self.dphi / freq / 360  # time step
         initials = [-dx, dc, alpha, dt, self.zmin, self.zmax]
@@ -328,7 +328,7 @@ class MultipactingControl:
         self.save_ascii(np.atleast_2d(initials).T, 'initials', transpose=True)
 
         self.redefine_magnetic_walls_as_artificial_walls()
-        self.run_multipac_exe('initials')
+        self.run_multipac_exe('initials')  # requires initials, initangle, param, geodata
         self.save_ascii(self.geodata, 'geodata.n')
 
         self.initials = self.load_ascii('initials')
@@ -999,13 +999,24 @@ class MultipactingControl:
             # redefine magnetic walls as artificial walls
             self.redefine_magnetic_walls_as_artificial_walls()
 
-            # self.initials = pd.read_csv(fr"{self.folder}\initials", sep='\s+',
-            #                             header=None).to_numpy()  # complete code to write initials later
-            # if len(self.initials) == 0:
-            #     print('No initial points.')
-            #     return
-            # else:
-            #     print('Computing the counter functions.')
+            # load and save the input data
+            # load counter_flevels
+            flevel = self.load_mat('counter_flevels.mat')['flevel']
+            # save -ascii flevel flevel
+            self.save_ascii(flevel, 'flevel')
+            # load param
+            param = self.load_ascii('param')
+            param[5] = 1
+            # save -ascii param param
+            self.save_ascii(param, 'param')
+            #
+            # load fieldparam
+            # gtype = fieldparam(1);
+            #
+            # load counter_initials
+            initials = self.load_mat('counter_initials')['initials']
+            # save -ascii initials initials
+            self.save_ascii(initials, 'initials')
 
             # run the main program
             # mika_alue = 0
@@ -1020,7 +1031,17 @@ class MultipactingControl:
             # save -ascii geodata.n geodata
             self.save_ascii(self.geodata, 'geodata.n')
 
-            ic("Donce calculating counter")
+            # rename and save the outputs
+            # load C, A, At, Ef
+            loaded = []
+            for f in ['C', 'A', 'At', 'Ef']:
+                loaded.append(self.load_ascii(f))
+            #
+            # save Ccounter C, Acounter A, Atcounter At, Efcounter Ef
+            for n, (f1, f2) in enumerate(zip(['C', 'A', 'At', 'Ef'], ['Ccounter', 'Acounter', 'Atcounter', 'Efcounter'])):
+                self.save_mat({f1: loaded[n]}, fr'{f2}.mat')
+
+            ic("Done calculating counter")
 
     def calculate_distance(self):
 
@@ -1035,10 +1056,6 @@ class MultipactingControl:
                 print(fr'{ch} is missing. Choose Counter Functions in menu Run.')
 
         if filesexist:
-
-            # load fieldparam
-            gtype = self.fieldparam[1]
-
             # load_output_data
             filenames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
                          "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
@@ -1054,91 +1071,89 @@ class MultipactingControl:
             if max(C) == 0:
                 print('Counter function is identically zero.')
                 ok = 0
-            s = 1
-            if ok > 0:
+
+            s = 0
+            ind = np.argmax(A)
+            if s > 0:
+                # plot_triplot(3)
+                print('To select the field level press the mouse buttom on Figure 5.')
+                print('To finish press return on Figure 5.')
+
+                # [x, y] = ginput
+                # x = x[len(x)]
+            #
+            # if gtype == 1:
+            #     if s > 0:
+            #         ind = min(np.where(abs(flevel/1e3 - x) == min(abs(flevel/1e3 - x))));
+            #         # plot the chosen value
+            #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[0, ax(4)],'-r')
+            #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[0, ax(4)],'-r')
+            #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[ax(3), ax(4)],'-r')
+            # elif gtype == 2:
+            #     if s == 3:
+            #         ind = min(np.where(abs(flevel/1e3 - x) == min(abs(flevel/1e3 - x))));
+            #         # plot the chosen value
+            #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[0, ax(4)],'-r')
+            #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[0, ax(4)],'-r')
+            #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[ax(3), ax(4)],'-r')
+            #     elif s == 2:
+            #         ind = min(np.where(abs(Efl/1e3 - x) == min(abs(Efl/1e3 - x))))
+            #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[0, ax(4)],'-r')
+            #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[0, ax(4)],'-r')
+            #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[ax(3),ax(4)],'-r')
+            #     elif s == 1:
+            #         ind = min(find(abs(Pow/1e3 - x) == min(abs(Pow/1e3 - x))))
+            #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[0,ax(4)],'-r')
+            #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[0,ax(4)],'-r')
+            #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[ax(3),ax(4)],'-r')
+
+            flevel = flevel[ind]
+            ic(flevel)
+
+            if C[ind] == 0:
+                print('For a chosen field level the counter function is zero.')
+                print('Recalculate the Distance map for an other field level.')
+            else:
+                print('Calculating the distance function.')
+                # save distance_flevel flevel
+                # save -ascii flevel flevel
+                # save -ascii initials initials
+                self.save_mat({'flevel': flevel}, 'distance_flevel.mat')
+                self.save_ascii(flevel, 'flevel')
+                self.save_ascii(initials, 'initials', transpose=True)
+
+                # type of output data is redefined
+                # load param
+                param = self.load_ascii('param')
+                param[5] = 2
+                # save -ascii param param
+                self.save_ascii(param, 'param')
+
+                # redefine magnetic walls as artificial walls
+                self.redefine_magnetic_walls_as_artificial_walls()
+
+                # run the main program
+                # mika_alue = 0;
+                # save mikaalue mika_alue -v4
+                mika_alue = {'mika_alue': 0}
+                self.save_mat(mika_alue, f"mikaalue.mat")
+
+                # !Multipac mp
+                self.run_multipac_exe('mp')
+
+                # geodata = geodata_tmp;
+                # save -ascii geodata.n geodata
+                self.save_ascii(self.geodata, 'geodata.n')
+
+                # load D
+                D = self.load_ascii('D')
+                # save Ddistance D
+                self.save_mat({'D': D}, 'Ddistance.mat')
+
                 if s > 0:
-                    # plot_triplot(3)
-                    print('To select the field level press the mouse buttom on Figure 5.')
-                    print('To finish press return on Figure 5.')
-
-                    # [x, y] = ginput
-                    # x = x[len(x)]
-                else:
-                    [val, ind] = max(A)
-                #
-                # if gtype == 1:
-                #     if s > 0:
-                #         ind = min(np.where(abs(flevel/1e3 - x) == min(abs(flevel/1e3 - x))));
-                #         # plot the chosen value
-                #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[0, ax(4)],'-r')
-                #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[0, ax(4)],'-r')
-                #         self.ax.plot([flevel[ind]/1e3,flevel[ind]/1e3],[ax(3), ax(4)],'-r')
-                # elif gtype == 2:
-                #     if s == 3:
-                #         ind = min(np.where(abs(flevel/1e3 - x) == min(abs(flevel/1e3 - x))));
-                #         # plot the chosen value
-                #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[0, ax(4)],'-r')
-                #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[0, ax(4)],'-r')
-                #         self.ax.plot([flevel(ind)/1e3,flevel(ind)/1e3],[ax(3), ax(4)],'-r')
-                #     elif s == 2:
-                #         ind = min(np.where(abs(Efl/1e3 - x) == min(abs(Efl/1e3 - x))))
-                #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[0, ax(4)],'-r')
-                #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[0, ax(4)],'-r')
-                #         plot([Efl[ind]/1e3,Efl[ind]/1e3],[ax(3),ax(4)],'-r')
-                #     elif s == 1:
-                #         ind = min(find(abs(Pow/1e3 - x) == min(abs(Pow/1e3 - x))))
-                #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[0,ax(4)],'-r')
-                #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[0,ax(4)],'-r')
-                #         self.ax.plot([Pow[ind]/1e3,Pow[ind]/1e3],[ax(3),ax(4)],'-r')
-
-                flevel = flevel[ind]
-
-                if C(ind) == 0:
-                    print('For a chosen field level the counter function is zero.')
-                    print('Recalculate the Distance map for an other field level.')
-                else:
-                    if s > 0:
-                        print('                                                ')
-
-                    print('Calculating the distance function.')
-                    if s > 0:
-                        print('                                                ')
-                    # save distance_flevel flevel
-                    # save -ascii flevel flevel
-                    # save -ascii initials initials
-
-                    self.save_mat(self.distance_flevel, 'distance_flevel.mat')
-                    self.save_ascii(self.flevel, 'flevel')
-                    self.save_ascii(self.initials, 'initials', transpose=True)
-
-                    # type of output data is redefined
-                    # load param
-                    self.load_ascii('param')
-                    self.param[5] = 2
-                    # save -ascii param param
-                    self.save_ascii(self.param, 'param')
-
-                    # redefine magnetic walls as artificial walls
-                    self.redefine_magnetic_walls_as_artificial_walls()
-
-                    # run the main program
-                    # mika_alue = 0;
-                    # save mikaalue mika_alue -v4
-
-                    # !Multipac mp
-                    self.run_multipac_exe('mp')
-
-                    # geodata = geodata_tmp;
-                    # save -ascii geodata.n geodata
-                    self.save_ascii(self.geodata, 'geodata.n')
-
-                    # load D
-                    # save Ddistance D
-
-                    if s > 0:
-                        print('Calculation of the distance function finished.')
-                        print('To plot the distance map, choose Plot Distance Map in menu Outputs.')
-                        print('To calculate an electron trajectory, choose Trajectory in menu Run.')
+                    print('Calculation of the distance function finished.')
+                    print('To plot the distance map, choose Plot Distance Map in menu Outputs.')
+                    print('To calculate an electron trajectory, choose Trajectory in menu Run.')
 
     def calculate_trajectory(self):
         # check_inputs: requires: counter_initials.mat, counter_flevels.mat, param, geodata.n, secy1
@@ -1685,7 +1700,6 @@ class MultipactingControl:
         multipacpath = fr'{self.parent_dir}\exe\own_exe\Multipac.exe'
 
         if os.path.exists(multipacpath):
-            ic([multipacpath, mode])
             subprocess.call([multipacpath, mode], cwd=cwd)
 
     def save_ascii(self, data, filename, transpose=False):
@@ -1708,9 +1722,9 @@ class MultipactingControl:
         # files_folder = "D:\Dropbox\multipacting\MPGUI21"
         for f in filenames:
             if ".mat" in f:
-                data[f] = self.load_mat(fr"{self.folder}\\{f}")
+                data[f] = self.load_mat(f)
             else:
-                data[f] = self.load_ascii(fr"{self.folder}\\{f}")
+                data[f] = self.load_ascii(f)
 
         return data
 

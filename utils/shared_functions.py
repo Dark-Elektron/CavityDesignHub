@@ -1529,7 +1529,7 @@ def arcTo2(x_center, y_center, a, b, step, start_angle, end_angle, plot=True):
         # end point of curve
         x_end, y_end = u + a * np.cos(sa), v + b * np.sin(sa)
 
-        t = np.arange(ea, sa, np.pi / 200)
+        t = np.arange(ea, sa, np.pi / 70)
         # t = np.linspace(ea, sa, 100)
         # check if end angle is included, include if not
         if sa not in t:
@@ -1539,7 +1539,7 @@ def arcTo2(x_center, y_center, a, b, step, start_angle, end_angle, plot=True):
         # end point of curve
         x_end, y_end = u + a * np.cos(ea), v + b * np.sin(ea)
 
-        t = np.arange(sa, ea, np.pi / 200)
+        t = np.arange(sa, ea, np.pi / 70)
         # t = np.linspace(ea, sa, 100)
         if ea not in t:
             t = np.append(t, ea)
@@ -1559,7 +1559,7 @@ def arcTo(x_center, y_center, a, b, step, start, end, plot=True):
     a = a  # radius on the x-axis
     b = b  # radius on the y-axis
 
-    t = np.arange(0, 2 * np.pi, np.pi / 200)
+    t = np.arange(0, 2 * np.pi, np.pi / 70)
 
     x = u + a * np.cos(t)
     y = v + b * np.sin(t)
@@ -1866,7 +1866,7 @@ def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_
     A_el, B_el, a_el, b_el, Ri_el, L_el, Req = end_cell_left[:7]
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req = end_cell_right[:7]
 
-    step = 0.1  # step in boundary points in mm
+    step = 1  # step in boundary points in mm
 
     if beampipe.lower() == 'both':
         L_bp_l = 4 * L_m
