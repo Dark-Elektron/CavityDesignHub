@@ -218,269 +218,36 @@
     "Wakefield_Scale": "1",
     "plot_table_widget": {
         "0": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
+            "Code": "ABCI",
+            "Folder": "",
             "Polarization": "Long",
             "Id": [
                 [
-                    "All",
-                    "Sheet1"
+                    "All"
                 ],
-                "Sheet1"
+                ""
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "Frequency (Multiple Modes)",
-                "Z_T_kOhm_m"
-            ],
-            "Toggle": 0,
-            "ScaleX": "1",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Scatter",
-                "o"
-            ],
-            "Filter": [
-                "Pol",
-                "M"
-            ]
-        },
-        "1": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "Sheet1"
-                ],
-                "Sheet1"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "Frequency (Multiple Modes)",
-                "Q-Factor (lossy E) (Multiple Modes)"
+                "",
+                ""
             ],
             "Toggle": 2,
             "ScaleX": "1",
             "ScaleY": "1",
             "Axis": "Left",
             "Type": [
-                "Scatter",
-                "P"
+                "Line",
+                "-"
             ],
             "Filter": [
-                "Pol",
-                "D"
-            ]
-        },
-        "2": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "Sheet1"
-                ],
-                "Sheet1"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "Frequency (Multiple Modes)",
-                "Z_T_kOhm_m"
-            ],
-            "Toggle": 0,
-            "ScaleX": "1",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Scatter",
-                "X"
-            ],
-            "Filter": [
-                "Pol",
-                "Q"
-            ]
-        },
-        "3": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "Sheet1"
-                ],
-                "Sheet1"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "Frequency (Multiple Modes)",
-                "Z_T_kOhm_m"
-            ],
-            "Toggle": 0,
-            "ScaleX": "1",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Scatter",
-                "H"
-            ],
-            "Filter": [
-                "Pol",
-                "S"
-            ]
-        },
-        "4": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Assembly/E_C3795_2DQW_Rama.xlsx",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "Sheet1"
-                ],
-                "Sheet1"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "Frequency (Multiple Modes)",
-                "Z_T_kOhm_m"
-            ],
-            "Toggle": 0,
-            "ScaleX": "1",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Scatter",
-                "^"
-            ],
-            "Filter": [
-                "Pol",
-                "O"
-            ]
-        },
-        "5": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Eigenmode/E_C3795.xlsx",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "Sheet1"
-                ],
-                "Sheet1"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "Frequency (Multiple Modes)",
-                "Q-Factor (lossy E) (Multiple Modes)"
-            ],
-            "Toggle": 2,
-            "ScaleX": "1",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Scatter",
-                "P"
-            ],
-            "Filter": [
-                "Pol",
-                "D"
+                "",
+                ""
             ]
         }
     },
     "plot_objects_attr": {
-        "lines": [
-            {
-                "ls": "None",
-                "color": [
-                    0.4,
-                    0.7607843137254902,
-                    0.6470588235294118
-                ],
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
-                "mew": 1.0,
-                "mfc": [
-                    0.4,
-                    0.7607843137254902,
-                    0.6470588235294118
-                ]
-            },
-            {
-                "ls": "None",
-                "color": [
-                    0.5529411764705883,
-                    0.6274509803921569,
-                    0.796078431372549
-                ],
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
-                "mew": 1.0,
-                "mfc": [
-                    0.5529411764705883,
-                    0.6274509803921569,
-                    0.796078431372549
-                ]
-            },
-            {
-                "ls": "None",
-                "color": [
-                    0.9058823529411765,
-                    0.5411764705882353,
-                    0.7647058823529411
-                ],
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
-                "mew": 1.0,
-                "mfc": [
-                    0.9058823529411765,
-                    0.5411764705882353,
-                    0.7647058823529411
-                ]
-            },
-            {
-                "ls": "None",
-                "color": [
-                    0.6509803921568628,
-                    0.8470588235294118,
-                    0.32941176470588235
-                ],
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
-                "mew": 1.0,
-                "mfc": [
-                    0.6509803921568628,
-                    0.8470588235294118,
-                    0.32941176470588235
-                ]
-            },
-            {
-                "ls": "None",
-                "color": "#2ca02c",
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
-                "mew": 1.0,
-                "mfc": "#2ca02c"
-            },
-            {
-                "ls": "None",
-                "color": "#d62728",
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
-                "mew": 1.0,
-                "mfc": "#d62728"
-            }
-        ],
+        "lines": [],
         "collections": [],
         "patches": []
     },
@@ -876,7 +643,7 @@
     "Geometry_sb_N_Cells": 1,
     "Geometry_qt_spinbox_lineedit": "1",
     "Geometry_sb_N_Modules": 1,
-    "Geometry_le_N_Cells": "5",
+    "Geometry_le_N_Cells": "2",
     "Geometry_cb_Shape_Entry_Mode": "Load",
     "Geometry_le_Shape_Space": "D:/Dropbox/CavityDesignHub/PhD_Thesis/Cavities/selected_shapes_800MHz_mid_end_comparison.json",
     "Geometry_cb_Shape_Space_Keys": "C3795",
@@ -972,8 +739,8 @@
     "multipacting_dsb_Initial_Sites_Phase_Step": 5.0,
     "multipacting_qt_spinbox_lineedit": "5.00",
     "multipacting_dsb_Initial_Sites_Step": 3.0,
-    "multipacting_dsb_Initial_Sites_Min": -0.04,
-    "multipacting_dsb_Initial_Sites_Max": 0.04,
+    "multipacting_dsb_Initial_Sites_Min": -0.1,
+    "multipacting_dsb_Initial_Sites_Max": 0.1,
     "multipacting_dsb_Field_Levels_Min": 1000.0,
     "multipacting_dsb_Field_Levels_Max": 60000.0,
     "multipacting_dsb_Field_Levels_Step": 500.0,

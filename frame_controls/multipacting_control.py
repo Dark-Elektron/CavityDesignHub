@@ -1,3 +1,4 @@
+import os.path
 import shutil
 import subprocess
 import scipy.sparse as sps
@@ -65,7 +66,6 @@ class MultipactingControl:
         # get logger
         self.log = self.main_control.log
 
-        self.initUI()
         self.signals()
 
         # shape space initialization
@@ -98,7 +98,10 @@ class MultipactingControl:
         self.geodata = None
         self.plot_dict = {}
 
+        self.initUI()
+
     def initUI(self):
+        # self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
         pass
         # # create pause and resume icons to avoid creating them over and over again
         # self.pause_icon = QIcon()
@@ -120,17 +123,22 @@ class MultipactingControl:
     def signals(self):
         self.ui.pb_Generate_Mesh.clicked.connect(lambda: self.generate_mesh())
         self.ui.pb_Generate_Fields.clicked.connect(lambda: self.run_field_solver())
-        self.ui.pb_Run_Multipac.clicked.connect(lambda: self.run_mpanalysis())
+        self.ui.pb_Run_Multipac.clicked.connect(lambda: self.run_mpanalysis(create_inputs=True))
         # run multipacting solver
         self.ui.pb_Run.clicked.connect(lambda: self.run())
 
         self.ui.rb_Show_E_Field.clicked.connect(lambda: self.plot_cavity_fields('contour'))
         self.ui.rb_Show_H_Field.clicked.connect(lambda: self.plot_cavity_fields('contour'))
         self.ui.rb_Show_Mesh.clicked.connect(lambda: self.plot_mesh())
+        self.ui.rb_Show_Initial_Points.clicked.connect(lambda: self.plot_initials())
 
         self.ui.rb_Show_None.clicked.connect(lambda: self.hide_plots())
         self.geo_ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.update_displayed_geometry_combobox())
         self.ui.pb_Refresh.clicked.connect(lambda: self.refresh_plots())
+
+        self.ui.dsb_Initial_Sites_Min.valueChanged.connect(lambda: self.plot_initials())
+        self.ui.dsb_Initial_Sites_Max.valueChanged.connect(lambda: self.plot_initials())
+        self.ui.dsb_Initial_Sites_Step.valueChanged.connect(lambda: self.plot_initials())
 
         # cancel
         # self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -150,7 +158,7 @@ class MultipactingControl:
         # 15/12/00 : Pasi Yla-Oijala - Rolf Nevanlinna Institute
         # -------------------------------------------------------------------------
 
-        self.gtype = self.ui.cb_Geometry_Type.currentText()
+        self.gtype = self.ui.cb_Geometry_Type.currentIndex() + 1
         unit_multiplier = {'Hz': 1, 'kHz': 1e3, 'MHz': 1e6, 'GHz': 1e9}
         unit = self.ui.cb_Frequency_Unit.currentText()
         self.freq = self.ui.dsb_Frequency.value() * unit_multiplier[unit]
@@ -194,7 +202,7 @@ class MultipactingControl:
             self.plot_cavity_fields('contour')
 
     def run(self, req_mode_num=None, plot=False, gridcons=0.005):
-        self.get_parameters()
+        # self.get_parameters()
         self.shape_space = get_geometric_parameters(self.geo_control, 'ABCI', text_to_list(self.geo_ui.le_Scale.text()))
 
         # write geometry(ies)
@@ -208,12 +216,18 @@ class MultipactingControl:
             n_cells = int(self.geo_ui.le_N_Cells.text())
             mid_cell, end_cell_left, end_cell_right, beampipe = np.array(value["IC"]) * 1e-3, np.array(
                 value["OC"]) * 1e-3, np.array(value["OC_R"]) * 1e-3, value["BP"]
-
-            ic(n_cells, mid_cell, end_cell_left)
             self.define_geometry(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=beampipe, plot=plot)
+
+            # create inputs
+            self.create_inputs()
+
+            # generate mesh
             self.generate_mesh(plot=True, gridcons=gridcons)
+
+            # run field solver
             self.run_field_solver(freq=self.freq, req_mode_num=req_mode_num, show_plots=True)
-            ic("Analysis ended.")
+
+            # run multipacting simulation
             self.run_mpanalysis()
 
     def set_name(self, name):
@@ -230,17 +244,16 @@ class MultipactingControl:
         -------
 
         """
+
+        # get parameters from gui
+        self.get_parameters()
+
         # remove old files
-        files_list = ["geodata.n", "initials", "flevel", "y00", "param", "fieldparam", "counter_flevels.mat",
-                      "counter_initials.mat",
-                      "gene_initials.mat", "gene_temp.mat", "initials_temp.mat", "distance_flevel.mat",
-                      "counter_initialsl.mat", "gene_initialsl.mat", "initials_templ.mat", "distance_flevell.mat",
-                      "counter_initialsr.mat", "gene_initialsr.mat", "initials_tempr.mat", "distance_flevelr.mat",
-                      "dx.mat", "alphas.mat"]
-        # input_files_list = ["initials", "param", "fieldparam", "counter_flevels.mat",
-        #                     "counter_initials.mat",
-        #                     "gene_initials.mat"]
-        for file in files_list:
+
+        input_files_list = ["initials", "param", "fieldparam", "counter_flevels.mat",
+                            "counter_initials.mat", "gene_initials.mat"]
+
+        for file in input_files_list:
             if os.path.exists(fr"{self.folder}\{file}"):
                 os.remove(fr"{self.folder}\{file}")
 
@@ -253,48 +266,75 @@ class MultipactingControl:
 
         # check if geometry has been written
         if self.geodata is None:
+            # self.load_ascii('geodata.n')
             ic("The geometry file geodata.n seems to be missing")
             return
 
         ic('Old input data deleted.')
 
         # Inputs for eigenmode solver
-        gtype = 1
-        epsr = 1  # relative epsilon
+        gtype = self.gtype
+        epsr = self.epsr  # relative epsilon
         strech = 0
-        d1 = 1  # Grid constant
-        d2 = 1  # Mesh constant
-        R = -1 + 0 * 1j
-        v0 = 2  # initial velocity
-        N = 20  # Number of impacts
+        d1 = self.d1  # Grid constant
+        d2 = self.d2  # Mesh constant
+        R = self.R
+        v0 = self.v0  # initial velocity
+        N = self.N  # Number of impacts
         Z = 0
-        freq = 0
+        freq = self.freq
 
         # initialize fieldparam
         self.fieldparam = [gtype, freq, epsr, d1 / 1000, R.real, R.imag, strech, Z]
-        df = pd.DataFrame(self.fieldparam)
-        df.to_csv(fr'{self.folder}\fieldparam', index=False, header=False, float_format='%.7E')
+        self.save_ascii(self.fieldparam, 'fieldparam')
+
+        # field levels
+        flevel = np.atleast_2d(np.arange(self.flmin, self.flmax + self.flstep, self.flstep) * 1e3).T
+        # save counter_flevels flevel
+        self.save_mat({'flevel': flevel}, 'counter_flevels.mat')
 
         # parameters for the MP analysis
-        param = np.zeros((7, 1))
+        self.param = np.zeros((7, 1))
         V0 = 1  # intensity of the EM field
-        # gamma = c0 / freq / (2 * np.pi)  # distance/phase -coefficient
+        gamma = c0 / freq / (2 * np.pi)  # distance/phase -coefficient
         v00 = c0 * np.sqrt(1 - 1 / ((v0 * q0 / (m0 * c0 ** 2) + 1) ** 2))  # initial velocity (relativistic)
-        # v00   = sqrt(2*v0*q/m)                 # (classical)
+        # v00 = np.sqrt(2*v0*q0/m0)                 # (classical)
         ctype = 1  # compute counter functions
         tol = 1e-3  # tolerance for the ODE solver
         emin = 1  # not required for eigenmode analysis
         emax = 10  # not required for eigenmode analysis
-        # self.param = [freq, V0, gamma, v00, N, ctype, tol, emin, emax]
+        self.param = [freq, V0, gamma, v00, N, ctype, tol, emin, emax]
         # save -ascii param param
-        df = pd.DataFrame(self.param)
-        df.to_csv(fr'{self.folder}\param', index=False, header=False, float_format='%.7E')
+        self.save_ascii(self.param, 'param')
 
         # grid constant for creating a new grid
         # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
         self.geodata[0, 0] = d2 / 1000
-        df = pd.DataFrame(self.geodata)
-        df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
+        self.save_ascii(self.geodata, 'geodata.n')
+
+        # parameters for the initial point generator
+        dx = self.dx / 1000  # dimensions in mm
+        dc = self.dx / 10  # distance from the nearest corner
+        alpha = 0  # initial velocity angle
+        dt = self.dphi / freq / 360  # time step
+        initials = [-dx, dc, alpha, dt, self.zmin, self.zmax]
+        # save gene_initials initials
+        self.save_mat({'initials': initials}, 'gene_initials.mat')
+
+        zmin = initials[4]
+        zmax = initials[5]
+        initials = initials[0:4]
+        initials0 = initials
+        self.save_ascii(np.atleast_2d(initials).T, 'initials', transpose=True)
+
+        self.redefine_magnetic_walls_as_artificial_walls()
+        self.run_multipac_exe('initials')
+        self.save_ascii(self.geodata, 'geodata.n')
+
+        self.initials = self.load_ascii('initials')
+        mask = (self.initials[:, 1] >= zmin) & (self.initials[:, 1] <= zmax)
+        self.initials = self.initials[mask]
+        self.save_mat({'initials': self.initials}, 'counter_initials.mat')
 
     def define_geometry(self, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
                         beampipe='none', plot=False):
@@ -351,7 +391,7 @@ class MultipactingControl:
                 exit()
 
         file_path = fr"{self.folder}\geodata.n"
-        write_cavity_for_custom_eig_solver(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+        writeCavityForMultipac(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
 
         self.geodata = pd.read_csv(file_path, sep='\s+', header=None).to_numpy()
 
@@ -754,6 +794,10 @@ class MultipactingControl:
                  }
 
         spio.savemat(f"{self.folder}/kama0.mat", kama0, format='4')
+
+        # save normalised eigenvalues for multipacting
+        self.normalize_u()
+
         ic("\t\tDone with eigen")
         return eigen_freq
 
@@ -848,7 +892,10 @@ class MultipactingControl:
 
         self.calculate_QoI()
 
-    def run_mpanalysis(self):
+    def run_mpanalysis(self, create_inputs=False):
+        if create_inputs:
+            # create inputs
+            self.create_inputs()
 
         # load geometry and mesh if they are none
         if self.geodata is None:
@@ -939,7 +986,7 @@ class MultipactingControl:
         self.plot_trajectory()
 
     def calculate_counters(self):
-        checks = ['counter_intials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
+        checks = ['counter_initials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
                   'fieldparam']
         filesexist = True
         for ch in checks:
@@ -947,7 +994,7 @@ class MultipactingControl:
                 filesexist = False
                 print(fr'{ch} is missing. Choose Counter Functions in menu Run.')
 
-        ic("In here cto calculate counter")
+        ic("In here cto calculate counter", filesexist)
         if filesexist:
             # redefine magnetic walls as artificial walls
             self.redefine_magnetic_walls_as_artificial_walls()
@@ -967,7 +1014,7 @@ class MultipactingControl:
             self.save_mat(mika_alue, f"mikaalue.mat")
 
             # !Multipac mp
-            self.run_multipac_exe()
+            self.run_multipac_exe('mp')
 
             # geodata = geodata_tmp
             # save -ascii geodata.n geodata
@@ -979,7 +1026,7 @@ class MultipactingControl:
 
         # check_inputs : requires :: counter_intials.mat, counter_flevels.mat, param, geodata.n, secy1
         # check_outputs(0) : requires :: Ccounter.mat, Acounter.mat, Efcounter.mat
-        checks = ['counter_intials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
+        checks = ['counter_initials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
                   'Ccounter.mat', 'Acounter.mat', 'Efcounter.mat']
         filesexist = True
         for ch in checks:
@@ -994,7 +1041,7 @@ class MultipactingControl:
 
             # load_output_data
             filenames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
-                      "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
+                         "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
 
             data = self.load_multiple(filenames)
             A = data["Acounter.mat"]["A"][:, 0]
@@ -1053,7 +1100,7 @@ class MultipactingControl:
                     if s > 0:
                         print('                                                ');
 
-                    print('Calculating the distance function.');
+                    print('Calculating the distance function.')
                     if s > 0:
                         print('                                                ')
                     # save distance_flevel flevel
@@ -1062,12 +1109,12 @@ class MultipactingControl:
 
                     self.save_mat(self.distance_flevel, 'distance_flevel.mat')
                     self.save_ascii(self.flevel, 'flevel')
-                    self.save_ascii(self.initials, 'initials')
+                    self.save_ascii(self.initials, 'initials', transpose=True)
 
                     # type of output data is redefined
                     # load param
                     self.load_ascii('param')
-                    param[5] = 2
+                    self.param[5] = 2
                     # save -ascii param param
                     self.save_ascii(self.param, 'param')
 
@@ -1079,7 +1126,7 @@ class MultipactingControl:
                     # save mikaalue mika_alue -v4
 
                     # !Multipac mp
-                    self.run_multipac_exe()
+                    self.run_multipac_exe('mp')
 
                     # geodata = geodata_tmp;
                     # save -ascii geodata.n geodata
@@ -1097,7 +1144,7 @@ class MultipactingControl:
         # check_inputs: requires: counter_initials.mat, counter_flevels.mat, param, geodata.n, secy1
         # check_distance: requires: Ddistance.mat, distance_flevel.mat
 
-        checks = ['counter_intials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
+        checks = ['counter_initials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
                   'Ddistance.mat', 'distance_flevel.mat']
         filesexist = True
         for ch in checks:
@@ -1152,7 +1199,7 @@ class MultipactingControl:
 
                     self.initials = self.initials[yi0, :]
                     # save -ascii initials initials
-                    self.save_ascii(self.initials, 'initials')
+                    self.save_ascii(self.initials, 'initials', transpose=True)
 
                     # load fieldparam
                     gtype = self.fieldparam[0]
@@ -1167,7 +1214,7 @@ class MultipactingControl:
 
                     # % run the main program
                     # !Multipac mp
-                    self.run_multipac_exe()
+                    self.run_multipac_exe('mp')
 
                     if gtype == 1:
                         # save -ascii geodata.n geodata
@@ -1181,6 +1228,48 @@ class MultipactingControl:
 
     def plot_distance(self):
         pass
+
+    def plot_initials(self):
+        self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
+        self.geodata = self.load_ascii('geodata.n')
+        self.create_inputs()
+
+        # Check if fieldparam file exists
+        file_exists = os.path.exists(fr'{self.folder}/fieldparam')
+        if file_exists > 0:
+            # Load fieldparam file
+            n = len(self.geodata)
+            gr = self.geodata[3:, 0]
+            gz = self.geodata[3:, 1]
+            ir = self.initials[:, 0]
+            iz = self.initials[:, 1]
+            m = len(ir)
+
+            if self.ui.rb_Show_Initial_Points.isChecked():
+                if "Initials" in self.plot_dict.keys():
+                    # delete existing points from plot
+                    for line in self.plot_dict["Initials"]:
+                        line.remove()
+
+                initials_plot = self.ax.plot(gz, gr, '-r', iz, ir, 'bo', mfc='none')
+                self.ax.set_xlabel('z axis [m]')
+                self.ax.set_ylabel('r axis [m]')
+                self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
+                self.plot_dict['Initials'] = initials_plot
+
+                for key, value in self.plot_dict.items():
+                    if key == 'Initials':
+                        for v in value:
+                            v.set_visible(True)
+                        self.ax.set_xlabel('z axis [m]')
+                        self.ax.set_ylabel('r axis [m]')
+                        self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
+                    else:
+                        for v in value:
+                            v.set_visible(False)
+
+            self.fig.canvas.draw_idle()
+            self.fig.canvas.flush_events()
 
     def plot_FEM_fields(self, ptype):
         ok2 = 0
@@ -1584,26 +1673,25 @@ class MultipactingControl:
 
     def redefine_magnetic_walls_as_artificial_walls(self):
         geodata_tmp = np.copy(self.geodata)
-        ic(self.geodata)
         ind = np.where(geodata_tmp[:, 2] == 3)
-        ic(ind)
-        geodata_tmp[ind, 3] = np.zeros(len(ind))
+        geodata_tmp[ind, 2] = 0
         # save -ascii geodata.n geodata
         df = pd.DataFrame(geodata_tmp)
         df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
 
-    def run_multipac_exe(self):
-        ic('it got here')
+    def run_multipac_exe(self, mode):
+        self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
         cwd = fr'{self.folder}'
         multipacpath = fr'{self.parent_dir}\exe\own_exe\Multipac.exe'
 
         if os.path.exists(multipacpath):
-            subprocess.call(multipacpath, cwd=cwd)
-            # subprocess.call(eigenCpath, cwd=cwd)
-        ic("\tDone running eigenC_bin.exe")
+            ic([multipacpath, mode])
+            subprocess.call([multipacpath, mode], cwd=cwd)
 
-    def save_ascii(self, data, filename):
+    def save_ascii(self, data, filename, transpose=False):
         df = pd.DataFrame(data)
+        if transpose:
+            df = df.T
         df.to_csv(fr'{self.folder}\{filename}', sep=r' ', index=False, header=False, float_format='%.7E')
 
     def load_ascii(self, filename):
@@ -2437,20 +2525,17 @@ class MultipactingControl:
         # # --------------------------------------------------------------------
         return k, u, siirto
 
-    def normalize_u(self, wall=0):
-        ic("Inside normalize_u")
-        job = 0
-        if wall == 0:
-            E0 = self.peak_cavity_field()
-            # normalize u
-            kama0 = spio.loadmat(fr"{self.folder}\kama0.mat")
-            index = kama0['index']
-            u = kama0['u']
-            k = kama0['k']
-            u = u / E0
+    def normalize_u(self):
+        E0 = self.peak_cavity_field()
+        # normalize u
+        kama0 = spio.loadmat(fr"{self.folder}\kama0.mat")
+        index = kama0['index']
+        u = kama0['u']
+        k = kama0['k']
+        u = u / E0
 
-            kama_n = {'index': index, 'u': u, 'k': k}
-            spio.savemat(fr'{self.folder}\kama_n.mat', kama_n, format='4')
+        kama_n = {'index': index, 'u': u, 'k': k}
+        spio.savemat(fr'{self.folder}\kama_n.mat', kama_n, format='4')
 
     @staticmethod
     def inttri(p):

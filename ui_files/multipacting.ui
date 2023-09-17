@@ -636,6 +636,13 @@
           <item row="11" column="0">
            <widget class="QWidget" name="w_Plots" native="true">
             <layout class="QGridLayout" name="gridLayout_6">
+             <item row="0" column="2">
+              <widget class="QPushButton" name="pb_Refresh">
+               <property name="text">
+                <string>Refresh</string>
+               </property>
+              </widget>
+             </item>
              <item row="3" column="1">
               <widget class="QRadioButton" name="rb_Show_E_Field">
                <property name="text">
@@ -709,6 +716,13 @@
                </property>
               </widget>
              </item>
+             <item row="1" column="3">
+              <widget class="QRadioButton" name="rb_Show_Initial_Points">
+               <property name="text">
+                <string/>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label_20">
                <property name="text">
@@ -726,20 +740,6 @@
                </property>
               </widget>
              </item>
-             <item row="1" column="3">
-              <widget class="QRadioButton" name="rb_Show_Initial_Points">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="3">
-              <widget class="QRadioButton" name="rb_Show_SEY">
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
              <item row="2" column="2">
               <widget class="QLabel" name="label_25">
                <property name="text">
@@ -747,10 +747,10 @@
                </property>
               </widget>
              </item>
-             <item row="0" column="2">
-              <widget class="QPushButton" name="pb_Refresh">
+             <item row="2" column="3">
+              <widget class="QRadioButton" name="rb_Show_SEY">
                <property name="text">
-                <string>Refresh</string>
+                <string/>
                </property>
               </widget>
              </item>
