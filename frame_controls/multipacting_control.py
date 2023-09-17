@@ -300,9 +300,9 @@ class MultipactingControl:
         v00 = c0 * np.sqrt(1 - 1 / ((v0 * q0 / (m0 * c0 ** 2) + 1) ** 2))  # initial velocity (relativistic)
         # v00 = np.sqrt(2*v0*q0/m0)                 # (classical)
         ctype = 1  # compute counter functions
-        tol = 1e-3  # tolerance for the ODE solver
-        emin = 1  # not required for eigenmode analysis
-        emax = 10  # not required for eigenmode analysis
+        tol = eval(self.ui.le_ODE_Solver_Tolerance.text())  # tolerance for the ODE solver
+        emin = self.ui.dsb_Impact_Energy_Min.value()  # not required for eigenmode analysis
+        emax = self.ui.dsb_Impact_Energy_Max.value()  # not required for eigenmode analysis
         self.param = [freq, V0, gamma, v00, N, ctype, tol, emin, emax]
         # save -ascii param param
         self.save_ascii(self.param, 'param')
@@ -1059,7 +1059,7 @@ class MultipactingControl:
                 if s > 0:
                     # plot_triplot(3)
                     print('To select the field level press the mouse buttom on Figure 5.')
-                    print('To finish press return on Figure 5.');
+                    print('To finish press return on Figure 5.')
 
                     # [x, y] = ginput
                     # x = x[len(x)]
@@ -1094,11 +1094,11 @@ class MultipactingControl:
                 flevel = flevel[ind]
 
                 if C(ind) == 0:
-                    print('For a chosen field level the counter function is zero.');
-                    print('Recalculate the Distance map for an other field level.');
+                    print('For a chosen field level the counter function is zero.')
+                    print('Recalculate the Distance map for an other field level.')
                 else:
                     if s > 0:
-                        print('                                                ');
+                        print('                                                ')
 
                     print('Calculating the distance function.')
                     if s > 0:

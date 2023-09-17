@@ -2154,7 +2154,6 @@ def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_
         plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
 
 
-
 def drawCavity_flat_top(shape_space, n_cell, project_folder):
     plt.rcParams["figure.figsize"] = (12, 3)
     midJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]

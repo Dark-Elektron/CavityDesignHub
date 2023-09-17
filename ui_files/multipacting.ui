@@ -33,8 +33,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>810</width>
-           <height>1030</height>
+           <width>789</width>
+           <height>1037</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
@@ -360,36 +360,15 @@
           <item row="5" column="0">
            <widget class="QWidget" name="w_Multipacting_Solver_Input" native="true">
             <layout class="QGridLayout" name="gridLayout_3">
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="dsb_Impact_Energy_Min"/>
+             </item>
              <item row="0" column="0">
               <widget class="QLabel" name="label">
                <property name="text">
                 <string>Reflection Coefficient</string>
                </property>
               </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>Number of Impacts</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="label_9">
-               <property name="text">
-                <string>Initial Velocity</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>Impact Energy</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="dsb_Impact_Energy_Min"/>
              </item>
              <item row="1" column="2">
               <widget class="QDoubleSpinBox" name="dsb_Impact_Energy_Max">
@@ -407,26 +386,6 @@
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
-              <widget class="QSpinBox" name="sb_Number_Of_Impacts">
-               <property name="minimum">
-                <number>10</number>
-               </property>
-               <property name="value">
-                <number>20</number>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1">
-              <widget class="QDoubleSpinBox" name="dsb_Initial_Velocity">
-               <property name="minimum">
-                <double>1.100000000000000</double>
-               </property>
-               <property name="value">
-                <double>2.000000000000000</double>
-               </property>
-              </widget>
-             </item>
              <item row="0" column="1">
               <widget class="QDoubleSpinBox" name="dsb_Reflection_Coeff_Re">
                <property name="minimum">
@@ -440,8 +399,63 @@
                </property>
               </widget>
              </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Number of Impacts</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Initial Velocity</string>
+               </property>
+              </widget>
+             </item>
              <item row="0" column="2">
               <widget class="QDoubleSpinBox" name="dsb_Reflection_Coeff_Im"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Impact Energy</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QLabel" name="label_26">
+               <property name="text">
+                <string>ODE Solver Tolerance</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1" colspan="2">
+              <widget class="QSpinBox" name="sb_Number_Of_Impacts">
+               <property name="minimum">
+                <number>10</number>
+               </property>
+               <property name="value">
+                <number>20</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1" colspan="2">
+              <widget class="QDoubleSpinBox" name="dsb_Initial_Velocity">
+               <property name="minimum">
+                <double>1.100000000000000</double>
+               </property>
+               <property name="value">
+                <double>2.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="1" colspan="2">
+              <widget class="QLineEdit" name="le_ODE_Solver_Tolerance">
+               <property name="text">
+                <string>1e-3</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>

@@ -757,5 +757,6 @@
     "multipacting_dsb_Mesh_Constant": 5.0,
     "multipacting_dsb_Relative_Epsilon": 1.0,
     "multipacting_cb_Geometry": "C3795",
-    "multipacting_pb_Plots": true
+    "multipacting_pb_Plots": true,
+    "multipacting_le_ODE_Solver_Tolerance": "1e-3"
 }
