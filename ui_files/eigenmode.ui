@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
+    <width>490</width>
     <height>1205</height>
    </rect>
   </property>
@@ -189,8 +189,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>337</width>
-           <height>1131</height>
+           <width>468</width>
+           <height>1152</height>
           </rect>
          </property>
          <property name="styleSheet">
@@ -362,6 +362,9 @@
              </item>
              <item row="3" column="1">
               <widget class="QLineEdit" name="le_No_Of_Modes">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Careful with increasing the number of modes. It reduces the accuracy of the solution.&lt;/p&gt;&lt;p&gt;Since it is currently not know how to easily control the mesh for SLANS, it is safer to simulate for fewer number of modes. Ideally, corresponding to the number of cavity cells. It may also be frequency dependent.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="text">
                 <string>2</string>
                </property>

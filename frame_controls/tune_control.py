@@ -3259,6 +3259,58 @@ class OptimizationControl:
 
         return interval
 
+    def mode_trap_score(self, invar, mode_list_input):
+        mt_score_list = []
+        for mode in mode_list_input:
+            x, y = [], []
+            path = os.path.join(os.getcwd(), r"SLANS_data_C{}\Cavity{}\cavity_mm_{}.af".format(mid_cell_cid, invar, mode))
+            print("PATH:: ", path)
+            with open(path, 'r') as f:
+                for ll in f.readlines():
+                    ll = ll.strip()
+                    x.append(float(ll.split(' ')[0]))
+                    y.append(float(ll.split(' ')[1]))
+
+            y_abs = [abs(t) for t in y]
+            # plt.plot(x, y_abs)
+
+            y_flat = []
+            y_mx = max(y_abs)
+
+            for v in y_abs:
+                if v <= 0.1*y_mx:
+                    y_flat.append(0)
+                else:
+                    y_flat.append(v)
+
+            # plt.plot(x, y_flat)
+
+            peaks, _ = sps.find_peaks(y_flat)
+
+            # calculate mt_score
+            y_peaks = np.array(y_flat)[peaks]
+
+            plt.scatter(np.array(x)[peaks], y_peaks, label="{},{}".format(invar, mode))
+
+            print("PEAKS:: ", y_peaks)
+            if y_peaks[0] != 0:
+                y_peaks_norm = [abs(t) / y_peaks[0] for t in y_peaks]
+
+                print("\t\t\t", y_peaks_norm)
+
+                if 1.05*y_peaks[0] >= max(y_peaks):
+                    mt_score = -(sum(y_peaks_norm)-1)/(len(y_peaks_norm)-1)
+                else:
+                    mt_score = (sum(y_peaks_norm)-1)/(len(y_peaks_norm)-1)
+
+                print("\t\t\t", 1/mt_score)
+                mt_score_list.append(mt_score)
+                print("MODE LIST:: ", mode_list_input)
+            else:
+                print("\t\t\tDividing by zero, skipped!")
+
+        return mt_score_list
+
     # def continue_check(self):
     #     path = f'{self.main_control.projectDir}/' \
     #            f'Cavities/pseudo_{self.proof_filename(self.ui.le_Generated_Shape_Space_Name.text())}'

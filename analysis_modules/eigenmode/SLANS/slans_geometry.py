@@ -136,7 +136,7 @@ class SLANSGeometry(Geometry):
             run_save_directory = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}'
 
         # Write SLANS Geometry
-        print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))
+        # print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))
         with open(Path(fr'{run_save_directory}/{filename}.geo'), 'w') as f:
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
@@ -276,11 +276,17 @@ class SLANSGeometry(Geometry):
         else:
             kwargs = {}
 
-        print(str(filepath))
+        # print(str(filepath))
         subprocess.call([genmesh_path, str(filepath), '-b'], cwd=cwd, **kwargs)
         path = run_save_directory
 
-        beta, f_shift, n_modes = 1, 0, no_of_cells + 1
+        if n_modes < no_of_cells:
+            n_modes = no_of_cells
+
+        if f_shift < 0:
+            f_shift = 0
+
+        beta, f_shift, n_modes = 1, f_shift, n_modes + 1
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
@@ -293,20 +299,20 @@ class SLANSGeometry(Geometry):
         # check if corresponding file exists at before the executable is called
         if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.geo'):
             subprocess.call([slansc_path, str(filepath), '-b'], cwd=cwd, **kwargs)  # settings, number of modes, etc
-            ic("Done with slansc")
+            # ic("Done with slansc")
 
             if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.gem'):
                 subprocess.call([slansm_path, str(filepath), '-b'], cwd=cwd, **kwargs)
-                ic("Done with slansm")
+                # ic("Done with slansm")
 
                 if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/aslans.mtx') \
                         and os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/bslans.mtx'):
                     subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, **kwargs)
-                    ic("Done with slanss")
+                    # ic("Done with slanss")
 
                     if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.res'):
                         subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, **kwargs)
-                        ic("Done with slansre")
+                        # ic("Done with slansre")
 
         # save json file
         shape = {'IC': update_alpha(mid_cells_par),
@@ -405,7 +411,7 @@ class SLANSGeometry(Geometry):
         right_cell = cells_par.loc[no_of_cells - 1, :].tolist()
 
         # this checks whether input is from gui or from the optimisation
-        print(type(cells_par))
+        # print(type(cells_par))
         if isinstance(cells_par, pd.DataFrame):
             self.set_geom_parameters_multicell(no_of_cells, mid_cells, left_cell, right_cell, beampipes)
         else:
@@ -727,7 +733,6 @@ class SLANSGeometry(Geometry):
         if subdir == '':
             run_save_directory = Path(fr'{parentDir}/{projectDir}/{fid}')
         else:
-            print("it's here", fid)
             run_save_directory = parentDir / fr'SimulationData/SLANS/{subdir}/{fid}'
 
         # Write Slans Geometry
@@ -954,8 +959,8 @@ class SLANSGeometry(Geometry):
                 os.mkdir(new_path)
                 path = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}'
 
-        print(path)
-        print(type(path))
+        # print(path)
+        # print(type(path))
         if os.path.exists(path):
             shutil.rmtree(path)
             os.mkdir(path)
