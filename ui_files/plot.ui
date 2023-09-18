@@ -323,7 +323,7 @@
                        <item row="0" column="0">
                         <widget class="QTabWidget" name="tabWidget">
                          <property name="currentIndex">
-                          <number>0</number>
+                          <number>1</number>
                          </property>
                          <property name="movable">
                           <bool>true</bool>
@@ -771,8 +771,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>844</width>
-                                <height>813</height>
+                                <width>230</width>
+                                <height>91</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1094,9 +1094,9 @@
                               <property name="geometry">
                                <rect>
                                 <x>0</x>
-                                <y>-62</y>
-                                <width>845</width>
-                                <height>1182</height>
+                                <y>0</y>
+                                <width>444</width>
+                                <height>1190</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
@@ -1518,7 +1518,7 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>778</width>
+                                          <width>205</width>
                                           <height>339</height>
                                          </rect>
                                         </property>

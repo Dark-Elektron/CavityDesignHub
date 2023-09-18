@@ -126,6 +126,7 @@ class PlotControl:
         self.args_dict_clone = {}
         self.other_data = {}
         self.ax_obj_dict = {}
+        self.plot_elements_table = {}
         self.operation_points = pd.DataFrame()
         # baseline matplotlib line.Line2D objects
         self.axes_decorations_dict = {"xlabel": "x",
@@ -1344,6 +1345,47 @@ class PlotControl:
                                                                                        picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
                             self.ax_right.set_ylabel('$Y$ [dB]')
+                elif filename.split('.')[-1] == 'txt':
+                    # get sheets
+                    if filter_[0] == "None" or value == "":
+                        self.other_data_filtered = self.other_data[key][id_]
+                    else:
+                        self.other_data_filtered = self.other_data[key][id_][
+                            self.other_data[key][id_][filter_[0]] == value]
+
+                    x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
+                    self.freq_glob = x_data
+                    for j in range(len(requestY)):
+                        y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
+                        args["plot data"][id_].update({j: {"x": x_data, "y": y}})
+
+                        if axis == 'Left':
+                            if type_[0] == 'Line':
+                                args["plot object"][id_].update(
+                                    {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                            else:
+                                args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
+                                                                                 marker=style, markersize=10.0,
+                                                                                 markeredgecolor="black",
+                                                                                 label=requestY[j], picker=True)})
+                            # mplcursors.cursor(args["plot object"][id_][j])
+                            self.ax.set_ylabel('$Y$ []')
+                            self.ax.set_xlabel('$X$ []')
+                        else:
+                            if type_[0] == 'Line':
+                                args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, label=requestY[j],
+                                                                                       linewidth=2,
+                                                                                       linestyle=style,
+                                                                                       picker=True)})
+                            else:
+                                args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, linestyle='None',
+                                                                                       marker=style,
+                                                                                       markeredgecolor="black",
+                                                                                       markersize=10.0,
+                                                                                       label="Legend",
+                                                                                       picker=True)})
+                            # mplcursors.cursor(args["plot object"][id_][j])
+                            self.ax_right.set_ylabel('$Y$ [dB]')
             else:
                 # try to filter self.other_data
                 filter_ = [args["plot inputs"]['Filter'][0].lineEdit().text(), args["plot inputs"]['Filter'][1].text()]
@@ -1750,33 +1792,62 @@ class PlotControl:
         self.plot()
 
     def populate_plot_elements_table(self):
-        self.le_Xlabel = QLineEdit("$f [MHz]$")
-        self.ui.tw_Plot_Elements.setCellWidget(0, 2, self.le_Xlabel)
-        self.sb_XLabel_Size = QSpinBox()
-        self.ui.tw_Plot_Elements.setCellWidget(0, 0, self.sb_XLabel_Size)
-        self.sb_XLabel_Tick_Size = QSpinBox()
-        self.ui.tw_Plot_Elements.setCellWidget(0, 1, self.sb_XLabel_Tick_Size)
+        le_Xlabel = QLineEdit("$f [MHz]$")
+        le_Xlabel.setObjectName('le_Xlabel')
+        self.ui.tw_Plot_Elements.setCellWidget(0, 2, le_Xlabel)
+        self.plot_elements_table['le_Xlabel'] = le_Xlabel
 
-        self.le_Ylabel = QLineEdit("$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$")
-        self.ui.tw_Plot_Elements.setCellWidget(1, 2, self.le_Ylabel)
-        self.sb_YLabel_Size = QSpinBox()
-        self.ui.tw_Plot_Elements.setCellWidget(1, 0, self.sb_YLabel_Size)
-        self.sb_YLabel_Tick_Size = QSpinBox()
-        self.ui.tw_Plot_Elements.setCellWidget(1, 1, self.sb_YLabel_Tick_Size)
+        sb_XLabel_Size = QSpinBox()
+        sb_XLabel_Size.setObjectName('sb_XLabel_Size')
+        self.ui.tw_Plot_Elements.setCellWidget(0, 0, sb_XLabel_Size)
+        self.plot_elements_table['sb_XLabel_Size'] = sb_XLabel_Size
+
+        sb_XLabel_Tick_Size = QSpinBox()
+        sb_XLabel_Tick_Size.setObjectName('sb_XLabel_Tick_Siz')
+        self.ui.tw_Plot_Elements.setCellWidget(0, 1, sb_XLabel_Tick_Size)
+        self.plot_elements_table['sb_XLabel_Tick_Size'] = sb_XLabel_Tick_Size
+
+        le_Ylabel = QLineEdit("$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$")
+        le_Ylabel.setObjectName('le_Ylabel')
+        self.ui.tw_Plot_Elements.setCellWidget(1, 2, le_Ylabel)
+        self.plot_elements_table['le_Ylabel'] = le_Ylabel
+
+        sb_YLabel_Size = QSpinBox()
+        sb_YLabel_Size.setObjectName('sb_YLabel_Size')
+        self.ui.tw_Plot_Elements.setCellWidget(1, 0, sb_YLabel_Size)
+        self.plot_elements_table['sb_YLabel_Size'] = sb_YLabel_Size
+
+        sb_YLabel_Tick_Size = QSpinBox()
+        sb_YLabel_Tick_Size.setObjectName('sb_YLabel_Tick_Size')
+        self.ui.tw_Plot_Elements.setCellWidget(1, 1, sb_YLabel_Tick_Size)
         self.ui.tw_Plot_Elements.setColumnWidth(0, 150)
+        self.plot_elements_table['sb_YLabel_Tick_Size'] = sb_YLabel_Tick_Size
 
-        self.le_Legend = QLineEdit()
-        self.ui.tw_Plot_Elements.setCellWidget(2, 2, self.le_Legend)
-        self.sb_Legend_Size = QSpinBox()
-        self.ui.tw_Plot_Elements.setCellWidget(2, 0, self.sb_Legend_Size)
-        self.sb_Legend_Marker_Size = QSpinBox()
-        self.ui.tw_Plot_Elements.setCellWidget(2, 1, self.sb_Legend_Marker_Size)
+        le_Legend = QLineEdit()
+        le_Legend.setObjectName('le_Legend')
+        self.ui.tw_Plot_Elements.setCellWidget(2, 2, le_Legend)
+        self.plot_elements_table['le_Legend'] = le_Legend
+
+        sb_Legend_Size = QSpinBox()
+        sb_Legend_Size.setObjectName('sb_Legend_Size')
+        self.ui.tw_Plot_Elements.setCellWidget(2, 0, sb_Legend_Size)
+        self.plot_elements_table['sb_Legend_Size'] = sb_Legend_Size
+
+        sb_Legend_Marker_Size = QSpinBox()
+        sb_Legend_Marker_Size.setObjectName('sb_Legend_Marker_Size')
+        self.ui.tw_Plot_Elements.setCellWidget(2, 1, sb_Legend_Marker_Size)
         self.ui.tw_Plot_Elements.setColumnWidth(1, 150)
+        self.plot_elements_table['sb_Legend_Marker_Size'] = sb_Legend_Marker_Size
 
-        self.le_Title = QLineEdit()
-        self.ui.tw_Plot_Elements.setCellWidget(3, 2, self.le_Title)
-        self.sb_Title_Size = QSpinBox()
-        self.ui.tw_Plot_Elements.setCellWidget(3, 0, self.sb_Title_Size)
+        le_Title = QLineEdit()
+        le_Title.setObjectName('le_Title')
+        self.ui.tw_Plot_Elements.setCellWidget(3, 2, le_Title)
+        self.plot_elements_table['le_Title'] = le_Title
+
+        sb_Title_Size = QSpinBox()
+        sb_Title_Size.setObjectName('sb_Title_Size')
+        self.ui.tw_Plot_Elements.setCellWidget(3, 0, sb_Title_Size)
+        self.plot_elements_table['sb_Title_Size'] = sb_Title_Size
 
     @staticmethod
     def switchRequest(cb_Request, request_dict_long, request_dict_trans, cb_Code):
@@ -2302,7 +2373,8 @@ class PlotControl:
 
         if filename.split('.')[-1] == 'txt':
             # load file txt
-            df = fr.txt_reader(filename, "\t")
+            # df = fr.txt_reader(filename, "\t")
+            df = pd.read_csv(filename, header=None, sep='\s+')
             self.pts_dict[pid]["plot data"] = df
 
             for cb in cb_list:
@@ -2351,9 +2423,15 @@ class PlotControl:
                     cb.addItem(f"{a}")
 
         if filename.split('.')[-1] == 'txt':
+            self.plot_dict[i]["plot inputs"]['Id'].addItem('TXT')
+            self.plot_dict[i]["plot inputs"]['Id'].setCurrentText('TXT')
+
             # load file txt
-            df = fr.txt_reader(filename, "\t")
-            self.other_data[i] = df
+            # df = fr.txt_reader(filename, "\t")
+            df = pd.read_csv(filename, header=None, sep='\s+')
+            # rename columns to string
+            df.columns = [f'{cname}' for cname in df.columns]
+            self.other_data[i] = {'TXT': df}
 
             for cb in cb_list:
                 # clear combobox item if any
@@ -2365,7 +2443,8 @@ class PlotControl:
 
         if filename.split('.')[-1] == 'json':
             # load file txt
-            df = fr.json_reader(filename)
+            # df = fr.json_reader(filename)
+            df = pd.read_json(filename)
             self.other_data[i] = df
 
             for cb in cb_list:
@@ -2390,17 +2469,17 @@ class PlotControl:
             ax_current = self.ax_right
             ax_other = self.ax
 
-        xlabel = self.le_Xlabel.text()
-        ylabel = self.le_Ylabel.text()
-        title = self.le_Title.text()
-        xsize = self.sb_XLabel_Size.value()
-        ysize = self.sb_YLabel_Size.value()
-        title_size = self.sb_Title_Size.value()
-        xtick_size = self.sb_XLabel_Tick_Size.value()
-        ytick_size = self.sb_YLabel_Tick_Size.value()
-        legend_size = self.sb_Legend_Size.value()
+        xlabel = self.plot_elements_table['le_Xlabel'].text()
+        ylabel = self.plot_elements_table['le_Ylabel'].text()
+        title = self.plot_elements_table['le_Title'].text()
+        xsize = self.plot_elements_table['sb_XLabel_Size'].value()
+        ysize = self.plot_elements_table['sb_YLabel_Size'].value()
+        title_size = self.plot_elements_table['sb_Title_Size'].value()
+        xtick_size = self.plot_elements_table['sb_XLabel_Tick_Size'].value()
+        ytick_size = self.plot_elements_table['sb_YLabel_Tick_Size'].value()
+        legend_size = self.plot_elements_table['sb_Legend_Size'].value()
 
-        legend_labels = self.le_Legend.text().split("%%")
+        legend_labels = self.plot_elements_table['le_Legend'].text().split("%%")
 
         # update plot
         ax_current.set_xlabel(xlabel, fontsize=xsize)
@@ -2453,6 +2532,28 @@ class PlotControl:
 
     def serialise(self, state_dict):
         serialise(state_dict, self.w_Plot, marker='plot')
+        
+        # serialise plot objects table widget
+        for k, v in self.plot_elements_table.items():
+            if v.objectName() != "" and 'qt_' not in v.objectName():
+                if isinstance(v, QPushButton):
+                    if v.isCheckable():
+                        state_dict['plot_' + v.objectName()] = v.isChecked()
+
+                if isinstance(v, QComboBox):
+                    state_dict['plot_' + v.objectName()] = v.currentText()
+
+                if isinstance(v, QLineEdit):
+                    state_dict['plot_' + v.objectName()] = v.text()
+
+                if isinstance(v, QSpinBox):
+                    state_dict['plot_' + v.objectName()] = v.value()
+
+                if isinstance(v, QDoubleSpinBox):
+                    state_dict['plot_' + v.objectName()] = v.value()
+
+                if isinstance(v, QCheckBox):
+                    state_dict['plot_' + v.objectName()] = v.checkState()
 
         # serialize table widget
         table_widget_state = {}
@@ -2490,6 +2591,64 @@ class PlotControl:
         deserialise(state_dict, self.w_Plot, marker='plot')
 
         try:
+            # deserialise plot element table
+            for k, v in self.plot_elements_table.items():
+                if v.objectName() != "" and 'qt_' not in v.objectName():
+                    if isinstance(v, QPushButton):
+                        if v.isCheckable():
+                            if not v.isChecked() == state_dict['plot_' + v.objectName()]:
+                                v.toggle()
+
+                    if isinstance(v, QComboBox):
+                        v.setCurrentText(state_dict['plot_' + v.objectName()])
+
+                        # if isinstance(v, QCheckableComboBox):
+                        try:
+                            selection = state_dict['plot_' + v.objectName()].split(', ')
+                            # try to select copied selection
+                            for txt in selection:
+                                if txt in v.texts:
+                                    item = v.model().item(v.texts.index(txt))
+                                    item.setCheckState(2)
+                        except AttributeError:
+                            pass
+
+                    if isinstance(v, QLineEdit):
+                        v.setText(state_dict['plot_' + v.objectName()])
+
+                    if isinstance(v, QSpinBox):
+                        v.setValue(int(state_dict['plot_' + v.objectName()]))
+
+                    if isinstance(v, QDoubleSpinBox):
+                        v.setValue(float(state_dict['plot_' + v.objectName()]))
+
+                    if isinstance(v, QCheckBox):
+                        v.setCheckState(state_dict['plot_' + v.objectName()])
+
+            # serialise plot objects table widget
+
+            # deserialise plots
+            for k, v in self.plot_elements_table.items():
+                if v.objectName() != "" and 'qt_' not in v.objectName():
+                    if isinstance(v, QPushButton):
+                        if v.isCheckable():
+                            state_dict['plot_' + v.objectName()] = v.isChecked()
+
+                    if isinstance(v, QComboBox):
+                        state_dict['plot_' + v.objectName()] = v.currentText()
+
+                    if isinstance(v, QLineEdit):
+                        state_dict['plot_' + v.objectName()] = v.text()
+
+                    if isinstance(v, QSpinBox):
+                        state_dict['plot_' + v.objectName()] = v.value()
+
+                    if isinstance(v, QDoubleSpinBox):
+                        state_dict['plot_' + v.objectName()] = v.value()
+
+                    if isinstance(v, QCheckBox):
+                        state_dict['plot_' + v.objectName()] = v.checkState()
+
             table_widget_state = state_dict['plot_table_widget']
             # print(table_widget_state)
             # self.ui.tableWidget.setRowCount(0)

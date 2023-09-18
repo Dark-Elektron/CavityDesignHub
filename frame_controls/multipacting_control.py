@@ -5,12 +5,12 @@ import scipy.sparse as sps
 import scipy.sparse.linalg as spsl
 import scipy.io as spio
 import pandas as pd
-from PyQt5.QtGui import *
 from matplotlib import colors
 from scipy.signal import find_peaks
 from termcolor import colored
 from ui_files.multipacting import Ui_Multipacting
 import psutil
+import scipy.interpolate as sci
 
 from utils.shared_functions import *
 
@@ -139,6 +139,13 @@ class MultipactingControl:
         self.ui.dsb_Initial_Sites_Min.valueChanged.connect(lambda: self.plot_initials())
         self.ui.dsb_Initial_Sites_Max.valueChanged.connect(lambda: self.plot_initials())
         self.ui.dsb_Initial_Sites_Step.valueChanged.connect(lambda: self.plot_initials())
+
+        self.ui.rb_Show_Counter_Function.clicked.connect(
+            lambda: self.plot_multipac_triplot('counter_function', self.ui.cb_Geometry.currentText()))
+        self.ui.rb_Show_Final_Impact_Energy.clicked.connect(
+            lambda: self.plot_multipac_triplot('final_impact_energy', self.ui.cb_Geometry.currentText()))
+        self.ui.rb_Show_Enhanced_Counter_Function.clicked.connect(
+            lambda: self.plot_multipac_triplot('enhanced_counter_function', self.ui.cb_Geometry.currentText()))
 
         # cancel
         # self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
@@ -496,6 +503,8 @@ class MultipactingControl:
 
         """
 
+        self.reset_plot()
+
         if self.mesh is None:
             self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
             self.mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
@@ -658,16 +667,21 @@ class MultipactingControl:
         displayed_geoms = self.geo_ui.cb_Shape_Space_Keys.currentText().split(', ')
         # get current text
         text = self.ui.cb_Geometry.currentText()
+        text_ccb = self.ui.ccb_Geometry_Plot_Options.currentText()
 
         # clear combobox
         self.ui.cb_Geometry.clear()
+        self.ui.ccb_Geometry_Plot_Options.clear()
+        self.ui.ccb_Geometry_Plot_Options.addItem('All')
 
         # populate combobox
         for geoms in displayed_geoms:
             self.ui.cb_Geometry.addItem(geoms)
+            self.ui.ccb_Geometry_Plot_Options.addItem(geoms)
 
         # try:
         self.ui.cb_Geometry.setCurrentText(text)  # seems to work without try and exception
+        self.ui.ccb_Geometry_Plot_Options.setCurrentText(text_ccb)  # seems to work without try and exception
         # except Exception as e:
         #     print(e)
 
@@ -1120,7 +1134,7 @@ class MultipactingControl:
                 # save -ascii initials initials
                 self.save_mat({'flevel': flevel}, 'distance_flevel.mat')
                 self.save_ascii(flevel, 'flevel')
-                self.save_ascii(initials, 'initials', transpose=True)
+                self.save_ascii(initials, 'initials')
 
                 # type of output data is redefined
                 # load param
@@ -1176,70 +1190,55 @@ class MultipactingControl:
             # load Ddistance
             Ddistance = self.load_mat("Ddistance.mat")
             D = Ddistance['D']
+            ic(D)
 
-            if min(min(abs(D))) == 2:
-                print('Distance map is zero. Recalculate the distance map for an other field level.')
+            if min(abs(D)) == 2:
+                ic('Distance map is zero. Recalculate the distance map for an other field level.')
             else:
                 s = 0
-                if s == 0:
-                    [val, yi0] = min(abs(D))
-                else:
-                    print('To select the initial point press the mouse buttom on Figure 6.')
-                    print('To finish press return on Figure 6.')
+                yi0 = np.argmin(np.abs(D))
+                if s != 0:
+                    ic('To select the initial point press the mouse buttom on Figure 6.')
+                    ic('To finish press return on Figure 6.')
                     # yi0 = self.plot_distance(1, side)
 
                 if D[yi0] == -2:
-                    print('For a chosen initial point the distance map is zero.')
-                    print('Rerun Trajectory in menu Run and choose an other initial point.')
+                    ic('For a chosen initial point the distance map is zero.')
+                    ic('Rerun Trajectory in menu Run and choose an other initial point.')
                 else:
-                    if s > 0:
-                        print('                                               ')
-                    print('Calculating an electron trajectory.')
+                    ic('Calculating an electron trajectory.')
                     # the initial place of an electron
 
-                    # load counter_initials :: already loaded
-                    # load distance_flevel :: already loaded
-                    self.counter_initials = self.load_mat('counter_initials.mat')
-                    self.distance_flevel = self.load_mat('distance_flevel.mat')
+                    # load counter_initials
+                    # load distance_flevel
+                    initials = self.load_mat('counter_initials.mat')['initials']
+                    flevel = self.load_mat('distance_flevel.mat')['flevel']
 
                     # type of output data is redefined
                     # load param
-                    self.param[5] = 3
+                    param = self.load_ascii('param')
+                    param[5] = 3
                     # save -ascii param param
-                    self.save_ascii(self.param, 'paraam')
+                    self.save_ascii(param, 'param')
 
                     # set the field level
                     # save -ascii flevel flevel
-                    self.save_ascii(self.flevel, 'flevel')
+                    self.save_ascii(flevel, 'flevel')
 
-                    self.initials = self.initials[yi0, :]
+                    initials = initials[yi0, :]
                     # save -ascii initials initials
-                    self.save_ascii(self.initials, 'initials', transpose=True)
+                    self.save_ascii(initials, 'initials')
 
-                    # load fieldparam
-                    gtype = self.fieldparam[0]
-                    if gtype == 1:
-                        # redefine magnetic walls as artificial walls
-                        # load geodata.n
-                        # geodata_tmp = geodata;
-                        # ind = find(geodata(:,3)==3);
-                        # geodata(ind,3) = zeros(length(ind),1);
-                        # save -ascii geodata.n geodata
-                        self.redefine_magnetic_walls_as_artificial_walls()
+                    self.redefine_magnetic_walls_as_artificial_walls()
 
                     # % run the main program
                     # !Multipac mp
                     self.run_multipac_exe('mp')
 
-                    if gtype == 1:
-                        # save -ascii geodata.n geodata
-                        self.save_ascii(self.geodata, 'geodata.n')
+                    self.save_ascii(self.geodata, 'geodata.n')
 
-                    if s == 1:
-                        print('Calculation of an electron trajectory finished.')
-                        print('                                               ')
-                        print('To plot the trajectory. Choose Plot Trajectory in menu Outputs.')
-                        print('                                               ')
+                    ic('Calculation of an electron trajectory finished.')
+                    ic('To plot the trajectory. Choose Plot Trajectory in menu Outputs.')
 
     def plot_distance(self):
         pass
@@ -1303,6 +1302,8 @@ class MultipactingControl:
                 ic('Plotting the fields. An arrow plot.')
 
             # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
+
+            self.reset_plot()
             self.plot_cavity_fields(ptype)
 
     def plot_cavity_fields(self, ptype):
@@ -1372,7 +1373,11 @@ class MultipactingControl:
                         self.ax.set_xlabel('z axis [m]')
                         self.ax.set_ylabel('r axis [m]')
                         self.ax.set_title(r'Electric field |$E$| [V/m]')
-                        self.fig.colorbar(value[0], ax=self.ax)
+                        # self.fig.colorbar(value[0], ax=self.ax)
+                    elif key == 'triplot':
+                        for v in value:
+                            v.remove()
+                        self.plot_dict['triplot'] = []
                     else:
                         for v in value:
                             v.set_visible(False)
@@ -1385,12 +1390,21 @@ class MultipactingControl:
                         self.ax.set_title(r'Magnetic field |$B_\phi$| [T]')
                         self.ax.set_xlabel('z axis [m]')
                         self.ax.set_ylabel('r axis [m]')
-                        self.fig.colorbar(value[0], ax=self.ax)
+                        # self.fig.colorbar(value[0], ax=self.ax)
+                    elif key == 'triplot':
+                        for v in value:
+                            v.remove()
+                        self.plot_dict['triplot'] = []
                     else:
                         for v in value:
                             v.set_visible(False)
 
             # self.cavity_geometry_plot = self.ax.plot(gz, gr, '-b')
+            self.ax.set_yscale('linear')
+            # self.ax.set_xlim(self.xlim[0], self.xlim[1])
+            # self.ax.set_ylim(self.ylim[0], self.ylim[1])
+            self.ax.autoscale()
+            self.ax.set_aspect('equal', adjustable='datalim')
             self.fig.canvas.draw_idle()
             self.fig.canvas.flush_events()
 
@@ -1433,165 +1447,148 @@ class MultipactingControl:
         plt.tight_layout()
         plt.show()
 
-    def plot_multipac_triplot(self, Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot', layout=None,
-                              min_max=None):
-        use_input_min_max = False
-        if layout is None:
-            layout = [[0], [1], [2]]
+    def reset_plot(self):
+        # hide all existing lines in plot
+        for line in self.ax.lines:
+            line.set_visible(True)
+        self.ax.set_aspect('equal', adjustable='datalim')
 
-        # mpl.rcParams['figure.figsize'] = [6, 7]
+    def plot_multipac_triplot(self, kind, label):
+        self.xlim, self.ylim = self.ax.get_xlim(), self.ax.get_ylim()
 
-        # if kind == 'triplot':
-        figsize = (10, 3 * len(layout))
-        fig, axs = plt.subplot_mosaic(layout, figsize=figsize)
+        self.plot_dict['triplot'] = []
+
+        # hide all existing lines in plot
+        for line in self.ax.lines:
+            line.set_visible(False)
+
+        # hide field plots, mesh, etc
+        for key, value in self.plot_dict.items():
+            for v in value:
+                v.set_visible(False)
+
+        self.ax.set_aspect('auto')
+
         kwargs = {"width": 0.1, "alpha": 1, "ec": 'k', "lw": 0.5}
 
-        for Eacc, Epk_Eacc, folder, label in zip(Eacc_list, Epk_Eacc_list, folders, labels):
-            # load_output_data
-            # files
-            fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
-                      "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
-            data = {}
-            # files_folder = "D:\Dropbox\multipacting\MPGUI21"
-            for f in fnames:
-                if ".mat" in f:
-                    data[f] = spio.loadmat(fr"{folder}\\{f}")
-                else:
-                    data[f] = pd.read_csv(fr"{folder}\\{f}", sep='\s+', header=None)
+        fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
+                  "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
+        data = self.load_multiple(fnames)
 
-            A = data["Acounter.mat"]["A"][:, 0]
-            At = data["Atcounter.mat"]["At"]
-            C = data["Ccounter.mat"]["C"][:, 0]
-            Ef = data["Efcounter.mat"]["Ef"][:, 0]
-            flevel = data["counter_flevels.mat"]["flevel"]
-            initials = data["counter_initials.mat"]["initials"]
+        A = data["Acounter.mat"]["A"][:, 0]
+        At = data["Atcounter.mat"]["At"]
+        C = data["Ccounter.mat"]["C"][:, 0]
+        Ef = data["Efcounter.mat"]["Ef"][:, 0]
+        flevel = data["counter_flevels.mat"]["flevel"]
+        initials = data["counter_initials.mat"]["initials"]
 
-            secy1 = data["secy1"].to_numpy()
-            Pow = flevel
-            n = len(initials[:, 0]) / 2  # number of initials in the bright set
-            N = int(data["param"].to_numpy()[4])  # number of impacts
-            U = flevel
-            Efl = flevel[:, 0]
-            q = 1.6021773e-19
-            Efq = Ef / q
+        secy1 = np.array(data["secy1"])
+        Pow = flevel
+        n = len(initials[:, 0]) / 2  # number of initials in the bright set
+        N = int(data["param"][4])  # number of impacts
+        U = flevel
+        Efl = flevel[:, 0]
+        q = 1.6021773e-19
+        Efq = Ef / q
 
-            e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
-            e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
-            val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
+        e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
+        e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
+        val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
 
-            if kind == 'counter_function' or kind == 'triplot':
-                if kind == 'counter_function':
-                    ax = axs[0]
-                else:
-                    ax = axs[0]
-                # ax.semilogy(Efl / (Epk_Eacc * 1e6), C / n, lw=1.5, label=label, marker='o', mec='k')
-                ax.bar(Efl / (Epk_Eacc * 1e6), C / n, label=label, **kwargs)
-                # ax.set_yscale('log')
-                ax.set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
-                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
-                # ax.set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
+        if kind == 'counter_function' or kind == 'triplot':
+            if kind == 'counter_function':
+                ax = self.ax
+            else:
+                ax = self.ax
 
-                if min_max:
-                    if len(min_max) == 2:
-                        use_input_min_max = True
+            # ax.semilogy(Efl/1e6, C / n, lw=1.5, label=label, marker='o', mec='k')
+            bar = ax.bar(Efl/1e6, C / n, label=label, **kwargs)
+            self.plot_dict['triplot'].append(bar)
+            ax.set_yscale('log')
+            ax.set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
+            ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            ax.set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
+            ax.set_ylim(0, np.max([0.1, self.ax.get_ylim()[1]]))
 
-                if use_input_min_max:
-                    ax.set_xlim(min_max[0], min_max[1])
-                else:
-                    ax.set_xlim(np.amin(Efl) / (Epk_Eacc * 1e6), np.amax(Efl) / (Epk_Eacc * 1e6))
+            # plot peak operating field
+            # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+            # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+            #         size=12, rotation=90,
+            #         transform=ax.get_xaxis_transform(), ha='right', va='center')
 
-                ax.set_ylim(0, np.max([0.1, axs[0].get_ylim()[1]]))
+            ax.minorticks_on()
 
-                # plot peak operating field
-                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=ax.get_xaxis_transform(), ha='right', va='center')
+        if kind == 'final_impact_energy' or kind == 'triplot':
+            if kind == 'final_impact_energy':
+                ax = self.ax
+            else:
+                ax = self.ax
+            # ax.plot(Efl/1e6, Efq, lw=1.5, label=label, marker='o', mec='k')
+            bar = ax.bar(Efl/1e6, Efq/1e6, label=label, **kwargs)
+            self.plot_dict['triplot'].append(bar)
+            # ax.set_yscale('log')
 
-                ax.minorticks_on()
+            self.ax.plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
+            e0 = sci.interp1d(secy1[0:e1 + 1, 1], secy1[0:e1 + 1, 0])(1)
+            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)], [e0, e0], '-r')
+            self.plot_dict['triplot'].append(bar)
+            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)],
+                    [secy1[e2, 0], secy1[e2, 0]], '-r')
+            self.plot_dict['triplot'].append(bar)
+            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)],
+                    [secy1[e3, 0], secy1[e3, 0]], '--r')
+            self.plot_dict['triplot'].append(bar)
 
-            if kind == 'final_impact_energy' or kind == 'triplot':
-                if kind == 'final_impact_energy':
-                    ax = axs[0]
-                else:
-                    ax = axs[1]
-                # ax.plot(Efl / (Epk_Eacc * 1e6), Efq, lw=1.5, label=label, marker='o', mec='k')
-                ax.bar(Efl / (Epk_Eacc * 1e6), Efq, label=label, **kwargs)
-                ax.set_yscale('log')
+            ax.set_ylabel("$Ef_" + "{" + f"{N}" + "} [eV]$")
+            ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            ax.set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
+            ax.set_ylim(0, self.ax.get_ylim()[1])
 
-                # axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
-                e0 = sci.interp1d(secy1[0:e1 + 1, 1], secy1[0:e1 + 1, 0])(1)
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)], [e0, e0], '-r')
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)],
-                        [secy1[e2, 0], secy1[e2, 0]], '-r')
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)],
-                        [secy1[e3, 0], secy1[e3, 0]], '--r')
+            # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+            # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+            #         size=12, rotation=90,
+            #         transform=ax.get_xaxis_transform(), ha='right', va='center')
 
-                ax.set_ylabel("$Ef_" + "{" + f"{N}" + "} [eV]$")
-                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
-                # ax.set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
+            ax.minorticks_on()
 
-                if min_max:
-                    if len(min_max) == 2:
-                        use_input_min_max = True
+        if kind == 'enhanced_counter_function' or kind == 'triplot':
+            if kind == 'enhanced_counter_function':
+                ax = self.ax
+            else:
+                ax = self.ax
 
-                if use_input_min_max:
-                    ax.set_xlim(min_max[0], min_max[1])
-                else:
-                    ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
-                ax.set_ylim(0, axs[0].get_ylim()[1])
+            # ax.plot(Efl/1e6, (A + 1) / n, lw=1.5, label=label, marker='o', mec='k')
+            bar = ax.bar(Efl/1e6, (A + 1) / n, label=label, **kwargs)
+            self.plot_dict['triplot'].append(bar)
+            ax.set_yscale('log')
+            ax.set_xlabel('$V$ [MV]')
+            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)], [1, 1], '-r')
+            self.plot_dict['triplot'].append(bar)
 
-                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=ax.get_xaxis_transform(), ha='right', va='center')
+            ax.set_ylim(np.min((A + 1) / n), ax.get_ylim()[1])
+            ax.set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
+            ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            ax.set_title('$\mathbf{Enhanced~counter~function}$')
 
-                ax.minorticks_on()
+            # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+            # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+            #         size=12, rotation=90,
+            #         transform=ax.get_xaxis_transform(), ha='right', va='center')
 
-            if kind == 'enhanced_counter_function' or kind == 'triplot':
-                if kind == 'enhanced_counter_function':
-                    ax = axs[0]
-                else:
-                    ax = axs[2]
+            ax.minorticks_on()
 
-                # ax.plot(Efl / (Epk_Eacc * 1e6), (A + 1) / n, lw=1.5, label=label, marker='o', mec='k')
-                ax.bar(Efl / (Epk_Eacc * 1e6), (A + 1) / n, label=label, **kwargs)
-                ax.set_yscale('log')
-                ax.set_xlabel('$V$ [MV]')
-                ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)], [1, 1], '-r')
+        # self.ax.legend(loc='upper right')
 
-                if min_max:
-                    if len(min_max) == 2:
-                        use_input_min_max = True
-
-                if use_input_min_max:
-                    ax.set_xlim(min_max[0], min_max[1])
-                else:
-                    ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
-                ax.set_ylim(np.min((A + 1) / n), ax.get_ylim()[1])
-                ax.set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
-                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
-                # ax.set_title('$\mathbf{Enhanced~counter~function}$')
-
-                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                        size=12, rotation=90,
-                        transform=ax.get_xaxis_transform(), ha='right', va='center')
-
-                ax.minorticks_on()
-
-        axs[0].legend(loc='upper right')
-
-        fig.tight_layout()
-        fig.savefig(fr'D:\Dropbox\Quick presentation files\Multipacting_{label}_multipac_{kind}.png')
-        plt.show()
-        plt.close(fig)
+        # fig.tight_layout()
+        # fig.savefig(fr'D:\Dropbox\Quick presentation files\Multipacting_{label}_multipac_{kind}.png')
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
 
     def plot_trajectory(self, loc='center'):
-        fieldparams = pd.read_csv(fr"{self.folder}\\fieldparam", sep='\s+', header=None).to_numpy()
-        geodata = pd.read_csv(fr"{self.folder}\\geodata.n", sep='\s+', header=None).to_numpy()
-        param = pd.read_csv(fr"{self.folder}\\param", sep='\s+', header=None).to_numpy()
-        elecpath = pd.read_csv(fr"{self.folder}\\elecpath", sep='\s+', header=None).to_numpy()
+        fieldparams = self.load_ascii('fieldparam')
+        geodata = self.load_ascii('geodata.n')
+        param = self.load_ascii('param')
+        elecpath = self.load_ascii('elecpath')
 
         gtype = fieldparams[0]
 
@@ -1609,7 +1606,7 @@ class MultipactingControl:
         n = np.shape(elecpath)[0]
         if n == 1:
             pat = []
-            ic(['No electron emission. Please, define a new initial point.'])
+            ic('No electron emission. Please, define a new initial point.')
         else:
             pat = elecpath[1:n, [0, 2, 3, 5, 6, 7]]
 
@@ -1629,21 +1626,21 @@ class MultipactingControl:
             fig, axs = plt.subplot_mosaic([[0, 0, 2, 2, 2]], figsize=(10, 4))
             pat = pat * 1e3  # convert to mm for plotting
 
-            axs[0].plot(bo[1, :], bo[0, :], lw=2)
-            axs[0].plot(pat[:, 1], pat[:, 0], '-r', lw=1)
-            axs[0].margins(x=0.01, y=0.01)
+            self.ax.plot(bo[1, :], bo[0, :], lw=2)
+            self.ax.plot(pat[:, 1], pat[:, 0], '-r', lw=1)
+            self.ax.margins(x=0.01, y=0.01)
             # fig.suptitle(f'MultiPac 2.1       Electron Trajectory,   N = {N},     ')
-            axs[0].set_xlabel(f'z-axis [mm],  \nFlight time {dt[0]:.2f} periods')
-            axs[0].set_ylabel('r-axis [mm]')
+            self.ax.set_xlabel(f'z-axis [mm],  \nFlight time {dt[0]:.2f} periods')
+            self.ax.set_ylabel('r-axis [mm]')
 
-            # axs[0].set_xlim(right=2*(axs[0].get_xlim()[1] - axs[0].get_xlim()[0]))
+            # self.ax.set_xlim(right=2*(self.ax.get_xlim()[1] - self.ax.get_xlim()[0]))
 
             if loc == 'center':
-                axin = axs[0].inset_axes([0.275, 0.1, 0.45, 0.45])
+                axin = self.ax.inset_axes([0.275, 0.1, 0.45, 0.45])
             elif loc == 'left':
-                axin = axs[0].inset_axes([0.05, 0.5, 0.45, 0.45])
+                axin = self.ax.inset_axes([0.05, 0.5, 0.45, 0.45])
             else:
-                axin = axs[0].inset_axes([0.5, 0.5, 0.45, 0.45])
+                axin = self.ax.inset_axes([0.5, 0.5, 0.45, 0.45])
 
             axin.set_xticklabels([])
             axin.set_yticklabels([])
@@ -1667,21 +1664,21 @@ class MultipactingControl:
 
             axin.set_xlim([min2, max2])
             axin.set_ylim([min1 - 0.05, max1 + 0.05])
-            axs[0].indicate_inset_zoom(axin)
+            self.ax.indicate_inset_zoom(axin)
             # axin.set_xlim([max(min(bo[1, :]), min(pat[:, 1] - 1)), min(max(bo[1, :]), max(pat[:, 1] + 1))])
 
             # axin.set_xlabel('z-axis [mm]')
             # axin.set_ylabel('r-axis [mm]')
 
-            axs[2].plot(pat[:, 4] * par[0] * 1e-3, pat[:, 0], 'r', pat[hit, 4] * par[0] * 1e-3, pat[hit, 0], 'ro',
+            self.ax.plot(pat[:, 4] * par[0] * 1e-3, pat[:, 0], 'r', pat[hit, 4] * par[0] * 1e-3, pat[hit, 0], 'ro',
                         markerfacecolor="None")
 
-            # axs[2].set_ylim(top=max(pat[:, 0]))
+            # self.ax.set_ylim(top=max(pat[:, 0]))
 
-            axs[2].set_xlabel(
+            self.ax.set_xlabel(
                 f"Time in [1/f], \nAverage energy {avegene:.2f} eV \nFinal energy " + "$E_f=$" + fr"{finaene[0]:.2f} eV")
-            axs[2].set_ylabel('r-axis [m]')
-            axs[2].margins(x=0.01, y=0.01)
+            self.ax.set_ylabel('r-axis [m]')
+            self.ax.margins(x=0.01, y=0.01)
 
             fig.tight_layout(pad=2.5)
             plt.show()

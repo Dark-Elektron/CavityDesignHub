@@ -218,19 +218,78 @@
     "Wakefield_Scale": "1",
     "plot_table_widget": {
         "0": {
-            "Code": "ABCI",
-            "Folder": "",
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Assembly/Eigenmode_C3795_2DQW_1FPC.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
-                    "All"
+                    "All",
+                    "Sheet1"
                 ],
-                ""
+                "Sheet1"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "",
-                ""
+                "Frequency [MHz]",
+                "Z [kOhm]"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "o"
+            ],
+            "Filter": [
+                "Pol",
+                "M"
+            ]
+        },
+        "1": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Assembly/Eigenmode_C3795_2DQW_1FPC.xlsx",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "Sheet1"
+                ],
+                "Sheet1"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "Frequency [MHz]",
+                "Z_T [kOhm/m]"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Scatter",
+                "P"
+            ],
+            "Filter": [
+                "Pol",
+                "D"
+            ]
+        },
+        "2": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Wakefield/WL_C3795_2DQW_ref_mesh/Export/C3795LongitudinalZ_kOhm.txt",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "TXT"
+                ],
+                "TXT"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "0",
+                "1"
             ],
             "Toggle": 2,
             "ScaleX": "1",
@@ -244,10 +303,230 @@
                 "",
                 ""
             ]
+        },
+        "3": {
+            "Code": "Other",
+            "Folder": "D:/CST Studio/5. tt/Wakefield/W_C3795_2DQW_ref_mesh/Export/C3795_TransverseZ_kOhm_m.txt",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "TXT"
+                ],
+                "TXT"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "0",
+                "1"
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Line",
+                "-"
+            ],
+            "Filter": [
+                "",
+                ""
+            ]
+        },
+        "4": {
+            "Code": "ABCI",
+            "Folder": "D:/Dropbox/CavityDesignHub/PhD_Thesis/SimulationData/ABCI",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All",
+                    "3794",
+                    "C3795",
+                    "C3795_2",
+                    "C3795_5",
+                    "C3795_old",
+                    "C3795_orig_2",
+                    "C3795_round2",
+                    "C3795_round2_2",
+                    "FCC_UROS5",
+                    "TESLA_800MHz_s0.6616"
+                ],
+                "C3795"
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "",
+                ""
+            ],
+            "Toggle": 2,
+            "ScaleX": "1000",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Line",
+                "-"
+            ],
+            "Filter": [
+                "",
+                ""
+            ]
+        },
+        "5": {
+            "Code": "ABCI",
+            "Folder": "D:/Dropbox/CavityDesignHub/PhD_Thesis/SimulationData/ABCI",
+            "Polarization": "Trans",
+            "Id": [
+                [
+                    "All",
+                    "3794",
+                    "C3795",
+                    "C3795_old",
+                    "C3795_round2",
+                    "FCC_UROS5",
+                    "TESLA_800MHz_s0.6616"
+                ],
+                "C3795"
+            ],
+            "Request": [
+                "Transverse Impedance Magnitude",
+                "",
+                ""
+            ],
+            "Toggle": 2,
+            "ScaleX": "1000",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Line",
+                "-"
+            ],
+            "Filter": [
+                "",
+                ""
+            ]
         }
     },
     "plot_objects_attr": {
-        "lines": [],
+        "lines": [
+            {
+                "ls": "None",
+                "color": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ],
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
+                "mew": 1.0,
+                "mfc": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ]
+            },
+            {
+                "ls": "None",
+                "color": [
+                    0.9882352941176471,
+                    0.5529411764705883,
+                    0.3843137254901961
+                ],
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
+                "mew": 1.0,
+                "mfc": [
+                    0.9882352941176471,
+                    0.5529411764705883,
+                    0.3843137254901961
+                ]
+            },
+            {
+                "ls": "-",
+                "color": [
+                    0.5529411764705883,
+                    0.6274509803921569,
+                    0.796078431372549
+                ],
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": [
+                    0.5529411764705883,
+                    0.6274509803921569,
+                    0.796078431372549
+                ],
+                "mew": 1.0,
+                "mfc": [
+                    0.5529411764705883,
+                    0.6274509803921569,
+                    0.796078431372549
+                ]
+            },
+            {
+                "ls": "-",
+                "color": [
+                    0.9058823529411765,
+                    0.5411764705882353,
+                    0.7647058823529411
+                ],
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": [
+                    0.9058823529411765,
+                    0.5411764705882353,
+                    0.7647058823529411
+                ],
+                "mew": 1.0,
+                "mfc": [
+                    0.9058823529411765,
+                    0.5411764705882353,
+                    0.7647058823529411
+                ]
+            },
+            {
+                "ls": "-",
+                "color": [
+                    0.6509803921568628,
+                    0.8470588235294118,
+                    0.32941176470588235
+                ],
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": [
+                    0.6509803921568628,
+                    0.8470588235294118,
+                    0.32941176470588235
+                ],
+                "mew": 1.0,
+                "mfc": [
+                    0.6509803921568628,
+                    0.8470588235294118,
+                    0.32941176470588235
+                ]
+            },
+            {
+                "ls": "-",
+                "color": [
+                    1.0,
+                    0.8509803921568627,
+                    0.1843137254901961
+                ],
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": [
+                    1.0,
+                    0.8509803921568627,
+                    0.1843137254901961
+                ],
+                "mew": 1.0,
+                "mfc": [
+                    1.0,
+                    0.8509803921568627,
+                    0.1843137254901961
+                ]
+            }
+        ],
         "collections": [],
         "patches": []
     },
@@ -556,8 +835,8 @@
     "wakefield_cb_Shape_Space_Keys": "",
     "wakefield_cb_Shape_Entry_Mode": "Load",
     "wakefield_ccb_Populate_Objectives": "",
-    "wakefield_cb_Polarization_ABCI": "Monopole",
-    "wakefield_le_Wakelength": "50",
+    "wakefield_cb_Polarization_ABCI": "Both",
+    "wakefield_le_Wakelength": "100",
     "wakefield_sb_No_Of_Processors_ABCI": 1,
     "wakefield_qt_spinbox_lineedit": "1",
     "wakefield_le_NFS": "10000",
@@ -573,9 +852,9 @@
     "wakefield_le_Marker": "",
     "wakefield_ccb_Operation_Points": "",
     "wakefield_le_Machine_Parameters_Filename": "",
-    "wakefield_sb_Wake_Potential_Points": 2001,
+    "wakefield_sb_Wake_Potential_Points": 20001,
     "wakefield_le_Wake_Offset": "Automatic",
-    "wakefield_le_Bunch_Length": "50",
+    "wakefield_le_Bunch_Length": "40",
     "wakefield_le_Beam_Offset": "5",
     "wakefield_sb_Std_Dev": 5,
     "plot_pb_Custom_Color": false,
@@ -645,8 +924,8 @@
     "Geometry_sb_N_Modules": 1,
     "Geometry_le_N_Cells": "2",
     "Geometry_cb_Shape_Entry_Mode": "Load",
-    "Geometry_le_Shape_Space": "D:/Dropbox/CavityDesignHub/PhD_Thesis/Cavities/selected_shapes_800MHz_mid_end_comparison.json",
-    "Geometry_cb_Shape_Space_Keys": "C3795",
+    "Geometry_le_Shape_Space": "D:/Dropbox/CavityDesignHub/PhD_Thesis/Cavities/cavities.json",
+    "Geometry_cb_Shape_Space_Keys": "C3795, FCC_UROS5",
     "Geometry_le_Scale": "1",
     "Geometry_pb_Right_Cell": false,
     "Geometry_pb_Left_Cell": false,
@@ -758,5 +1037,17 @@
     "multipacting_dsb_Relative_Epsilon": 1.0,
     "multipacting_cb_Geometry": "C3795",
     "multipacting_pb_Plots": true,
-    "multipacting_le_ODE_Solver_Tolerance": "1e-3"
+    "multipacting_le_ODE_Solver_Tolerance": "1e-3",
+    "plot_le_Xlabel": "$f [MHz]$",
+    "plot_sb_XLabel_Size": 14,
+    "plot_sb_XLabel_Tick_Siz": 14,
+    "plot_le_Ylabel": "$Z_{\\parallel, \\perp} ~[\\mathrm{k\\Omega}, \\mathrm{k\\Omega/m}]$",
+    "plot_sb_YLabel_Size": 14,
+    "plot_sb_YLabel_Tick_Size": 14,
+    "plot_le_Legend": "",
+    "plot_sb_Legend_Size": 14,
+    "plot_sb_Legend_Marker_Size": 14,
+    "plot_le_Title": "",
+    "plot_sb_Title_Size": 14,
+    "multipacting_ccb_Geometry_Plot_Options": ""
 }
