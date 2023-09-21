@@ -3,9 +3,7 @@ import os
 import shutil
 import subprocess
 from math import floor
-
 import numpy as np
-from scipy.signal import find_peaks
 from utils.file_reader import FileReader
 from geometry_manual import Geometry
 from slans_code import SLANS

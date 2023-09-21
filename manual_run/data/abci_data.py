@@ -4,13 +4,13 @@ import shutil
 import pandas as pd
 from PyQt5.QtWidgets import QMessageBox
 
-from file_reader import FileReader
-import multiprocessing as mp
-fr = FileReader()
-
 import scipy.signal as sps
 import numpy as np
 from termcolor import colored
+from file_reader import FileReader
+import multiprocessing as mp
+
+fr = FileReader()
 
 file_color = 'cyan'
 
@@ -192,26 +192,42 @@ class ABCIData:
         if MROT == 0:
             self.plot_decorations = {0: [r'Cavity Shape Input', r'Z-axis (m)', 'R-axis (m)'],
                                      1: [r'Cavity Shape Used', r'Z-axis (m)', 'R-axis (m)'],
-                                     2: [r'Wake Potentials', r'Distance from Bunch Head S (m)', r'Scaled Wake Potential W (S)'],
-                                     3: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Real $Z_L$ ($k\Omega$) '],
-                                     4: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Imag $Z_L$ ($k\Omega$) '],
-                                     5: [r'Frequency Spectrum of Loss Factor', 'Frequency f (GHz)', r'$dk_L/df$ (V/pC/GHz) '],
-                                     6: [r'Loss Factor Spectrum Integrated up to F', 'Frequency f (GHz)', r'$k_L$(F) (V/pC)'],
-                                     7: [r'Real Part of Long. + Log Impedance', 'Frequency f (GHz)', r'Real $Z_{L+LOG}$ ($k\Omega$)'],
-                                     8: [r'Imaginary Part of Long. + Log Impedance', 'Frequency f (GHz)', r'Imag $Z_{L+LOG}$ ($k\Omega$)'],
-                                     9: [r'Spectrum of Long. + Log Loss Factor', 'Frequency f (GHz)', r'$dk_L/df$ ($V/pC/GHz$)'],
-                                     10: [r'Long. + Log Factor Integrated up to F', 'Frequency f (GHz)', r'$k_L$(F) (V/pC)']
+                                     2: [r'Wake Potentials', r'Distance from Bunch Head S (m)',
+                                         r'Scaled Wake Potential W (S)'],
+                                     3: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)',
+                                         r'Real $Z_L$ ($k\Omega$) '],
+                                     4: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)',
+                                         r'Imag $Z_L$ ($k\Omega$) '],
+                                     5: [r'Frequency Spectrum of Loss Factor', 'Frequency f (GHz)',
+                                         r'$dk_L/df$ (V/pC/GHz) '],
+                                     6: [r'Loss Factor Spectrum Integrated up to F', 'Frequency f (GHz)',
+                                         r'$k_L$(F) (V/pC)'],
+                                     7: [r'Real Part of Long. + Log Impedance', 'Frequency f (GHz)',
+                                         r'Real $Z_{L+LOG}$ ($k\Omega$)'],
+                                     8: [r'Imaginary Part of Long. + Log Impedance', 'Frequency f (GHz)',
+                                         r'Imag $Z_{L+LOG}$ ($k\Omega$)'],
+                                     9: [r'Spectrum of Long. + Log Loss Factor', 'Frequency f (GHz)',
+                                         r'$dk_L/df$ ($V/pC/GHz$)'],
+                                     10: [r'Long. + Log Factor Integrated up to F', 'Frequency f (GHz)',
+                                          r'$k_L$(F) (V/pC)']
                                      }
         else:
             self.plot_decorations = {0: [r'Cavity Shape Input', r'Z-axis (m)', r'R-axis (m)'],
                                      1: [r'Cavity Shape Used', r'Z-axis (m)', r'R-axis (m)'],
-                                     2: [r'Wake Potentials', r'Distance from Bunch Head S (m)', r'Scaled Wake Potential W (S)'],
-                                     3: [r'Real Part of Azimuthal Impedance', r'Frequency f (GHz)', r'Real $Z_A$ ($k\Omega/m$) '],
-                                     4: [r'Imaginary Part of Azimuthal Impedance', r'Frequency f (GHz)', r'Imag $Z_A$ ($k\Omega/m$) '],
-                                     5: [r'Real Part of Transverse Impedance', r'Frequency f (GHz)', r'Real $Z_T$ ($k\Omega/m$) '],
-                                     6: [r'Imaginary Part of Transverse Impedance', r'Frequency f (GHz)', r'Imag $Z_T$ ($k\Omega/m$) '],
-                                     7: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Real $Z_L$ ($k\Omega/m^2$) '],
-                                     8: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Imag $Z_L$ ($k\Omega/m^2$) ']}
+                                     2: [r'Wake Potentials', r'Distance from Bunch Head S (m)',
+                                         r'Scaled Wake Potential W (S)'],
+                                     3: [r'Real Part of Azimuthal Impedance', r'Frequency f (GHz)',
+                                         r'Real $Z_A$ ($k\Omega/m$) '],
+                                     4: [r'Imaginary Part of Azimuthal Impedance', r'Frequency f (GHz)',
+                                         r'Imag $Z_A$ ($k\Omega/m$) '],
+                                     5: [r'Real Part of Transverse Impedance', r'Frequency f (GHz)',
+                                         r'Real $Z_T$ ($k\Omega/m$) '],
+                                     6: [r'Imaginary Part of Transverse Impedance', r'Frequency f (GHz)',
+                                         r'Imag $Z_T$ ($k\Omega/m$) '],
+                                     7: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)',
+                                         r'Real $Z_L$ ($k\Omega/m^2$) '],
+                                     8: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)',
+                                         r'Imag $Z_L$ ($k\Omega/m^2$) ']}
 
         return self.plot_decorations
 
@@ -281,7 +297,7 @@ class ABCIData:
             for i, h in enumerate(self.y):
                 if (l < z_0707 < h):
 
-                    if (f0-0.01 < self.x[i] < f0):
+                    if (f0 - 0.01 < self.x[i] < f0):
                         wz = [l, h]
                         wx = [self.x[i - 1], self.x[i]]
                         break
@@ -290,7 +306,7 @@ class ABCIData:
             # print_(f'\t{wx, wz}')
 
             # interpolate
-            fl = wx[0] + (wx[1]-wx[0])*(z_0707-wz[0])/(wz[1]-wz[0])
+            fl = wx[0] + (wx[1] - wx[0]) * (z_0707 - wz[0]) / (wz[1] - wz[0])
             fl_list.append(fl)
 
         return fl_list
@@ -317,24 +333,24 @@ class ABCIData:
             # print_(f'\t{wx, wz}')
 
             # interpolate
-            fr = wx[0] + (wx[1]-wx[0])*(z_0707-wz[0])/(wz[1]-wz[0])
+            fr = wx[0] + (wx[1] - wx[0]) * (z_0707 - wz[0]) / (wz[1] - wz[0])
             fr_list.append(fr)
 
         return fr_list
 
     def _get_Q(self):
-        Q = [f0/bw for f0, bw in zip(self.x_peaks, self.BW)]
+        Q = [f0 / bw for f0, bw in zip(self.x_peaks, self.BW)]
         return Q
 
     def _get_RQ(self):
         if self.MROT == 0:
-            R_Q = [2*zz*1e3/q for zz, q in zip(self.y_peaks, self.Q)]
+            R_Q = [2 * zz * 1e3 / q for zz, q in zip(self.y_peaks, self.Q)]
             # print_(f'R/Q: {R_Q}')
         else:
-            c = 299792458 # m / s
-            k = [2*np.pi*f0*1e9/c for f0 in self.x_peaks]
-            R_Q_m = [2*zz*1e3/q for zz, q in zip(self.y_peaks, self.Q)]
-            R_Q = [r_q_m/kk for r_q_m, kk in zip(R_Q_m, k)]
+            c = 299792458  # m / s
+            k = [2 * np.pi * f0 * 1e9 / c for f0 in self.x_peaks]
+            R_Q_m = [2 * zz * 1e3 / q for zz, q in zip(self.y_peaks, self.Q)]
+            R_Q = [r_q_m / kk for r_q_m, kk in zip(R_Q_m, k)]
             # print_(f'R/Q: {R_Q}')
 
         return R_Q
@@ -348,11 +364,12 @@ class ABCIData:
         fig.suptitle('Vertically stacked subplots')
         axs[1].bar(self.x_peaks, self.R_Q, width=0.01, alpha=1)
 
-
         axs[0].plot(self.x, self.y)
         axs[0].scatter(self.x_peaks, self.y_peaks)
-        color = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c', '#ed718b', '#2ccf8b', '#fded21', '#8248d2', '#4c3a27', '#000000',
-                 '#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c', '#ed718b', '#2ccf8b', '#fded21', '#8248d2', '#4c3a27', '#000000']
+        color = ['#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c', '#ed718b', '#2ccf8b', '#fded21',
+                 '#8248d2', '#4c3a27', '#000000',
+                 '#008fd5', '#fc4f30', '#e5ae38', '#6d904f', '#8b8b8b', '#810f7c', '#ed718b', '#2ccf8b', '#fded21',
+                 '#8248d2', '#4c3a27', '#000000']
 
         for key, val in self.bands.items():
             tol = 0.05
@@ -368,7 +385,8 @@ class ABCIDataExtraction:
     def __init__(self):
         pass
 
-    def multiple_folders_data(self, shape_space, abci_data_dir, request, save_excel, mon_interval=None, dip_interval=None, parallel=False):
+    def multiple_folders_data(self, shape_space, abci_data_dir, request, save_excel, mon_interval=None,
+                              dip_interval=None, parallel=False):
         # process interval
         # Zmax
         if mon_interval is None:
@@ -382,13 +400,15 @@ class ABCIDataExtraction:
             dip_interval = self.process_interval(dip_interval)
 
         reply = "Yes"
+
         def button_clicked(i):
             return i.text()
 
         if os.path.exists(f'{save_excel}.xlsx') and not parallel:
             msg = QMessageBox()
             msg.setWindowTitle("File Exist")
-            msg.setText(f"Hey Chief, seems you've already processed the data for this folder. Do you want to overwrite it?")
+            msg.setText(
+                f"Hey Chief, seems you've already processed the data for this folder. Do you want to overwrite it?")
             msg.setIcon(QMessageBox.Question)
             msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
             msg.setDefaultButton(QMessageBox.No)
@@ -599,8 +619,10 @@ class ABCIDataExtraction:
                 calc_k_loss()
                 # save excel
                 try:
-                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req, "alpha": alpha,
-                            'k_loss_M0': k_loss_M0, 'k_loss_long': k_loss_array_longitudinal, 'k_loss_trans': k_loss_array_transverse}
+                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req,
+                            "alpha": alpha,
+                            'k_loss_M0': k_loss_M0, 'k_loss_long': k_loss_array_longitudinal,
+                            'k_loss_trans': k_loss_array_transverse}
 
                     df = pd.DataFrame.from_dict(data)
                     df.to_excel(f'{save_excel}.xlsx', index=False)
@@ -613,7 +635,8 @@ class ABCIDataExtraction:
 
                 # save excel
                 try:
-                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req, "alpha": alpha}
+                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req,
+                            "alpha": alpha}
 
                     # add impedance lists
                     for i, msk in enumerate(mon_interval):
@@ -632,8 +655,10 @@ class ABCIDataExtraction:
 
                 # save excel
                 try:
-                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req, "alpha": alpha,
-                            'k_loss_M0': k_loss_M0, 'k_loss_long': k_loss_array_longitudinal, 'k_loss_trans': k_loss_array_transverse}
+                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req,
+                            "alpha": alpha,
+                            'k_loss_M0': k_loss_M0, 'k_loss_long': k_loss_array_longitudinal,
+                            'k_loss_trans': k_loss_array_transverse}
 
                     # add impedance lists
                     for i, msk in enumerate(mon_interval):
@@ -648,7 +673,8 @@ class ABCIDataExtraction:
                 except Exception as e:
                     print("Oops! Encountered some error trying to save file: ", e)
 
-    def multiple_folders_data_parallel(self, shape_space, abci_data_folder, proc_count, request, save_excel, temp_folder, mon_interval=None, dip_interval=None):
+    def multiple_folders_data_parallel(self, shape_space, abci_data_folder, proc_count, request, save_excel,
+                                       temp_folder, mon_interval=None, dip_interval=None):
 
         # create temporary folder
         if os.path.exists(fr"{temp_folder}"):
@@ -695,8 +721,8 @@ class ABCIDataExtraction:
 
     def process_interval(self, interval_list):
         interval = []
-        for i in range(len(interval_list)-1):
-            interval.append([interval_list[i], interval_list[i+1]])
+        for i in range(len(interval_list) - 1):
+            interval.append([interval_list[i], interval_list[i + 1]])
 
         return interval
 
@@ -744,6 +770,6 @@ if __name__ == '__main__':
     print(y)
 
     import matplotlib.pyplot as plt
+
     plt.plot(x, y)
     plt.show()
-

@@ -3,10 +3,10 @@
 # License: BSD Style.
 import random
 
-import mayavi
-import numpy as np
-from tvtk.api import tvtk
-from mayavi.scripts import mayavi2
+# import mayavi
+# import numpy as np
+# from tvtk.api import tvtk
+# from mayavi.scripts import mayavi2
 
 
 # @mayavi2.standalone
@@ -50,7 +50,7 @@ from mayavi.scripts import mayavi2
 # mlab.show()
 import numpy as np
 from scipy.spatial import Delaunay
-from mayavi import mlab
+# from mayavi import mlab
 
 if __name__ == '__main__':
 
@@ -58,17 +58,17 @@ if __name__ == '__main__':
     Y2 = np.array([0.5, 0.45, 1, 0.5])
     Z2 = np.array([0, 1, 0.5,0])
 
-    # use scipy for delaunay:
-    p2d = np.vstack([X2,Y2]).T
-    d2d = Delaunay(p2d)
-
-    fig = mlab.figure(1, bgcolor=(1, 0.7, 1), fgcolor=(0.5, 0.5, 0.5))
-
-    # Generate triangular Mesh:
-    tmesh = mlab.triangular_mesh(X2, Y2, Z2, d2d.vertices,
-                                 scalars=Y2, colormap='jet')
-
-    # Simple plot.
-    mlab.outline(extent=(0,1,0,1,0,1))
-    mlab.axes(extent=(0,1,0,1,0,1))
-    mlab.show()
+    # # use scipy for delaunay:
+    # p2d = np.vstack([X2,Y2]).T
+    # d2d = Delaunay(p2d)
+    #
+    # fig = mlab.figure(1, bgcolor=(1, 0.7, 1), fgcolor=(0.5, 0.5, 0.5))
+    #
+    # # Generate triangular Mesh:
+    # tmesh = mlab.triangular_mesh(X2, Y2, Z2, d2d.vertices,
+    #                              scalars=Y2, colormap='jet')
+    #
+    # # Simple plot.
+    # mlab.outline(extent=(0,1,0,1,0,1))
+    # mlab.axes(extent=(0,1,0,1,0,1))
+    # mlab.show()

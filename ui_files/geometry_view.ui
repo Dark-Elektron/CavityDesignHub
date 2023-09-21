@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1191</width>
+    <width>1182</width>
     <height>995</height>
    </rect>
   </property>
@@ -40,7 +40,7 @@
           <string notr="true">border-radius: 15px;</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="0" colspan="2">
+          <item row="0" column="0">
            <layout class="QGridLayout" name="gl_Plot_Area"/>
           </item>
          </layout>

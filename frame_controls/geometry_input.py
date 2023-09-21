@@ -84,6 +84,7 @@ class GeometryInputControl:
         # self.ui.pb_Expansion.setEnabled(False)
 
         self.ui.le_N_Cells.editingFinished.connect(lambda: self.draw_shape_from_shape_space())
+        self.ui.le_Scale.editingFinished.connect(lambda: self.draw_shape_from_shape_space())
 
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
@@ -148,7 +149,9 @@ class GeometryInputControl:
                 bc = [bc_dict[self.win.eigenmode_widget.ui.cb_LBC.currentText()],
                       bc_dict[self.win.eigenmode_widget.ui.cb_RBC.currentText()]]
 
-                plot_cavity_geometry(self.plot, IC, OC, OC_R, BP, n_cell, bc)
+                scale = float(self.ui.le_Scale.text())
+
+                plot_cavity_geometry(self.plot, IC, OC, OC_R, BP, n_cell, bc, scale)
                 ci += 1
             if ci > 4:  # maximum of only 10 plots
                 break
@@ -199,7 +202,29 @@ class GeometryInputControl:
         #     pass
 
     def serialise(self, state_dict):
+        """
+        Serialise w_GeometryInput
+        Parameters
+        ----------
+        state_dict: json
+            Dictionary of state of GUI widgets
+
+        Returns
+        -------
+
+        """
         serialise(state_dict, self.w_GeometryInput, marker='Geometry')
 
     def deserialise(self, state_dict):
+        """
+        Deserialise w_GeometryInput
+        Parameters
+        ----------
+        state_dict: dict
+            Dictionary of state of GUI widgets
+
+        Returns
+        -------
+
+        """
         deserialise(state_dict, self.w_GeometryInput, marker='Geometry')

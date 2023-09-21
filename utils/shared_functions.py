@@ -76,6 +76,34 @@ def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
 
 
 def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
+    """
+    Calls to :py:func:`utils.shared_function.ellipse_tangent`
+    Parameters
+    ----------
+    A: float
+        Equator ellipse dimension
+    B: float
+        Equator ellipse dimension
+    a: float
+        Iris ellipse dimension
+    b: float
+        Iris ellipse dimension
+    Ri: float
+        Iris radius
+    L: float
+        Cavity half cell length
+    Req: float
+        Cavity equator radius
+    L_bp: float
+        Cavity beampipe length
+    tangent_check: bool
+        If set to True, the calculated tangent line as well as the ellipses are plotted and shown
+
+    Returns
+    -------
+    df: pandas.Dataframe
+        Pandas dataframe containing information on the results from fsolve
+    """
     # data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
     #         [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     #
@@ -669,6 +697,17 @@ def button_clicked(button):
 
 
 def text_to_list(txt):
+    """
+    Converts text entered in QLineEdit to Python list
+    Parameters
+    ----------
+    txt: str
+        String from QLineEdit
+
+    Returns
+    -------
+
+    """
     if "range" in txt:
         txt = txt.replace('range', '')
         ll = ast.literal_eval(txt)
@@ -951,6 +990,19 @@ def get_geometric_parameters(frame_control, code, scales=None):
 
 
 def scale_cavity_geometry(shape, scale):
+    """
+    Scale cavity geometry parameters
+    Parameters
+    ----------
+    shape: dict
+        Python dictionary of cavity geometry parameters
+    scale: float
+        Desired scale
+
+    Returns
+    -------
+
+    """
     shape['IC'] = list(np.array(shape['IC']) * scale)
     shape['OC'] = list(np.array(shape['OC']) * scale)
     shape['FREQ'] = shape['FREQ'] / scale
@@ -963,6 +1015,19 @@ def scale_cavity_geometry(shape, scale):
 
 
 def validating(le, default='1'):
+    """
+    Validate QLineEdit meant to accept only numbers
+    Parameters
+    ----------
+    le: QLineEdit
+        QLineEdit object
+    default: str
+        Set the value that the QLineEdit.text() defaults to
+
+    Returns
+    -------
+
+    """
     validation_rule = QDoubleValidator(0, 1e12, 10)
     if validation_rule.validate(le.text(), 20)[0] == QValidator.Acceptable:
         le.setFocus()
@@ -986,6 +1051,23 @@ def validating(le, default='1'):
 
 
 def load_shape_space_open_file(frame_control, le, cb, start_folder=''):
+    """
+    Load shape space from json file to Python dictionary, opens a file dialog
+    Parameters
+    ----------
+    frame_control: QWidget
+        Frame control object
+    le: QLineEdit
+        QLineEdit object to get filepath from
+    cb: QCheckableComboBox
+        QCheckableComboBox to save geometry keys in the json file to for selection later
+    start_folder: str, path
+        Opens a file dialog for json file selection
+
+    Returns
+    -------
+
+    """
     # clear combobox
     frame_control.ui.cb_Shape_Space_Keys.clear()
     frame_control.ui.cb_Shape_Space_Keys.addItem('All')
@@ -1012,6 +1094,21 @@ def load_shape_space_open_file(frame_control, le, cb, start_folder=''):
 
 
 def load_shape_space(frame_control, le, cb):
+    """
+    Load shape space from json file to Python dictionary
+    Parameters
+    ----------
+    frame_control: QWidget
+        Frame control object
+    le: QLineEdit
+        QLineEdit object to get filepath from
+    cb: QCheckableComboBox
+        QCheckableComboBox to save geometry keys in the json file to for selection later
+
+    Returns
+    -------
+
+    """
     filename = le.text()
     if os.path.exists(filename):
         try:
@@ -1035,6 +1132,34 @@ def load_shape_space(frame_control, le, cb):
 
 
 def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, projectDir):
+    """
+    Uncertainty quantification (work in progress)
+    Parameters
+    ----------
+    key
+    shape:
+
+    qois:
+        Quantities of interest
+    n_cells: int
+        Number of cavity cells
+    n_modules: int
+        Number of cavity modules
+    n_modes: int
+        Number of modes calculated for
+    f_shift:
+        Frequency shift (eigenmode solver)
+    bc: int
+        Boundary condition
+    parentDir: str, path
+        GUI directory
+    projectDir: str, path
+        Project directory
+
+    Returns
+    -------
+
+    """
     err = False
     result_dict_slans = {}
     slans_obj_list = qois
@@ -1153,6 +1278,29 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
 
 def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None,
                                        beampipe='none', plot=False):
+    """
+    Write cavity geometry to be used by Multipac for multipacting analysis
+    Parameters
+    ----------
+    file_path: str
+        File path to write geometry to
+    n_cell: int
+        Number of cavity cells
+    mid_cell: list, ndarray
+        Array of cavity middle cells' geometric parameters
+    end_cell_left: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    end_cell_right: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    beampipe: str {"left", "right", "both", "none"}
+        Specify if beam pipe is on one or both ends or at no end at all
+    plot: bool
+        If True, the cavity geometry is plotted for viewing
+
+    Returns
+    -------
+
+    """
     if plot:
         plt.rcParams["figure.figsize"] = (12, 2)
 
@@ -1576,14 +1724,39 @@ def arcTo(x_center, y_center, a, b, step, start, end, plot=True):
     return inbox
 
 
-def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc):
+def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
+    """
+    Plot cavity geometry for display in w_GeometryView
+    Parameters
+    ----------
+    plot: Plot object
+        Matplotlib plot object from plotter
+    IC: list, ndarray
+        Inner Cell geometric parameters list
+    OC: list, ndarray
+        Left outer Cell geometric parameters list
+    OC_R: list, ndarray
+        Right outer Cell geometric parameters list
+    BP: str {"left", "right", "both", "none"}
+        Specify if beam pipe is on one or both ends or at no end at all
+    n_cell: int
+        Number of cavity cells
+    bc: list
+        List specifying the left and right boundary conditions' color
+    scale: float
+        Scale of the cavity geometry
+
+    Returns
+    -------
+
+    """
     fig = plot.fig
     ax = plot.ax
 
     # 21578127116
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(IC)[:7] * 1e-3
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(OC)[:7] * 1e-3
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(OC_R)[:7] * 1e-3
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(IC)[:7] * scale * 1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(OC)[:7] * scale * 1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(OC_R)[:7] * scale * 1e-3
 
     step = 1  # step in boundary points in mm
     L_bp_l = 4 * L_m  # 0.0001  #
@@ -1861,6 +2034,29 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc):
 
 
 def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none', plot=False):
+    """
+    Write cavity geometry to be used by Multipac for multipacting analysis
+    Parameters
+    ----------
+    file_path: str
+        File path to write geometry to
+    n_cell: int
+        Number of cavity cells
+    mid_cell: list, ndarray
+        Array of cavity middle cells' geometric parameters
+    end_cell_left: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    end_cell_right: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    beampipe: str {"left", "right", "both", "none"}
+        Specify if beam pipe is on one or both ends or at no end at all
+    plot: bool
+        If True, the cavity geometry is plotted for viewing
+
+    Returns
+    -------
+
+    """
     if plot:
         plt.rcParams["figure.figsize"] = (12, 2)
 
@@ -2167,6 +2363,21 @@ def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_
 
 
 def drawCavity_flat_top(shape_space, n_cell, project_folder):
+    """
+    Draw cavity with flat tops. See :cite:t:`zheng2019rf`.
+    Parameters
+    ----------
+    shape_space: dict
+        Python dictionary containing cavity geometry dimensions
+    n_cell: int
+        Number of cavity cells
+    project_folder: str
+        Project folder
+
+    Returns
+    -------
+
+    """
     plt.rcParams["figure.figsize"] = (12, 3)
     midJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
     endJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
@@ -2484,6 +2695,23 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
 
 
 def serialise(state_dict, widget=None, visited_widgets=None, marker=''):
+    """
+    Serialise PyQt5 GUI widgets
+    Parameters
+    ----------
+    state_dict: dict
+        Python dictionary of state of GUI widgets
+    widget: QWidget
+        PyQt5 GUI widget to be serialised
+    visited_widgets: list
+        List of QWidgets already serialised
+    marker: str
+        Unique marker for QWidget to be serialised
+
+    Returns
+    -------
+
+    """
     if visited_widgets is None:
         visited_widgets = set()
 
@@ -2517,6 +2745,23 @@ def serialise(state_dict, widget=None, visited_widgets=None, marker=''):
 
 
 def deserialise(state_dict, widget, visited_widgets=None, marker=''):
+    """
+    Deserialise PyQt5 GUI widgets
+    Parameters
+    ----------
+    state_dict: dict
+        Python dictionary of state of GUI widgets
+    widget: QWidget
+        PyQt5 GUI widget to be deserialised
+    visited_widgets: list
+        List of QWidgets already deserialised
+    marker: str
+        Unique marker for QWidget to be deserialised
+
+    Returns
+    -------
+
+    """
     try:
         if visited_widgets is None:
             visited_widgets = set()

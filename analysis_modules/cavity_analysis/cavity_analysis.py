@@ -2739,7 +2739,7 @@ def plot_brillouin(op_freq, p, cst_result_folder=None):
     plt.show()
 
 
-plot_brillouin(801.55, 2)
+# plot_brillouin(801.55, 2)
 
 
 def mucol_study():

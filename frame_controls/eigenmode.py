@@ -189,6 +189,12 @@ class EigenmodeControl:
         self.end_routine_thread.start()
 
     def write_to_text_edit(self):
+        """
+        Writes information about the eigenmode simulation to QTextEdit
+        Returns
+        -------
+
+        """
         try:
             # reset QTextEdit
             self.ui.textEdit.clear()
@@ -235,6 +241,12 @@ class EigenmodeControl:
             ic('Exception in slans, run_pauseroutine: ', e)
 
     def run_pause_resume_stop_routine(self):
+        """
+        Controls the running, pausing and stopping of simulation
+        Returns
+        -------
+
+        """
         if self.process_state == 'none':
             # change pause/resume icon to pause icon
             self.ui.pb_Pause_Resume.setIcon(self.pause_icon)
@@ -350,6 +362,12 @@ class EigenmodeControl:
             return "Does not exist"
 
     def exe_control(self):
+        """
+        Control SLANS executable files
+        Returns
+        -------
+
+        """
         # Slans
         self.ui.pb_Genmsh.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\genmesh2.exe")))
         self.ui.pb_Sl.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\Sl.exe")))
@@ -360,6 +378,16 @@ class EigenmodeControl:
         self.ui.pb_MTFView.clicked.connect(lambda: self.run_slans_exe(Path(r"SLANS_exe\Mtfview\mtfview.exe")))
 
     def run_slans_exe(self, path):
+        """
+        Runs SLANS executable files
+        Parameters
+        ----------
+        path
+
+        Returns
+        -------
+
+        """
         path = self.main_control.parentDir / fr"exe\{path}"
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
@@ -419,21 +447,72 @@ class EigenmodeControl:
         # self.ui.w_Load_Manual.setGraphicsEffect(shadow)
 
     def serialise(self, state_dict):
+        """
+        Serialises eigenmode setting UI control widgets
+        Parameters
+        ----------
+        state_dict: dict
+            Python dictionary to record the state of each widget associated with eigenmode UI
+
+        Returns
+        -------
+
+        """
         serialise(state_dict, self.w_Eigenmode, marker='eigenmode')
 
     def deserialise(self, state_dict):
-        deserialise(state_dict, self.w_Eigenmode, marker='eigenmode')
+        """
+        Deserialises eigenmode setting UI control widgets
+        Parameters
+        ----------
+        state_dict: dict
+            Python dictionary to record the state of each widget associated with eigenmode UI
 
-    @staticmethod
-    def show_hide_(wid1, wid2):
-        if wid1.currentText().lower() == 'parallel':
-            wid2.show()
-        else:
-            wid2.hide()
+        Returns
+        -------
+
+        """
+        deserialise(state_dict, self.w_Eigenmode, marker='eigenmode')
 
     @staticmethod
     def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, parentDir, projectDir,
                        progress_list, sub_dir='', UQ=False, solver='slans'):
+        """
+        Runs a single instance of SLANS (eigenmode analysis)
+        Parameters
+        ----------
+        n_cells: int
+            Number of cavity cells
+        n_modules: int
+            Number of cavity modules
+        processor_shape_space: dict
+            Dictionary containing geometric dimensions of cavity geometry
+        n_modes: int
+            Number of eigenmodes to be calculated
+        f_shift: float
+            Since the eigenmode solver uses the power method, a shift can be provided
+        bc: int
+            Boundary conditions {1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal}
+            bc=33 means `Magnetic Wall En = 0` boundary condition at both ends
+        pol: int {Monopole, Dipole}
+            Defines whether to calculate for monopole or dipole modes
+        parentDir: str | path
+            Parent directory
+        projectDir: str|path
+            Project directory
+        progress_list: list
+            Global list to record the progress of each parallel simulation thread
+        sub_dir: dir
+            Sub directory in which to write simulation results
+        UQ: bool
+            Toggles between performing uncertainty quanitification or not in addition to the nominal solution
+        solver: str {slans, native}
+            Select the eigenmdoe solver to use. Defaut is the SLANS solver
+
+        Returns
+        -------
+
+        """
         progress = 0
         # get length of processor
         # total_no_of_shapes = len(list(processor_shape_space.keys()))
@@ -522,6 +601,38 @@ class EigenmodeControl:
 
 
 def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDir, projectDir):
+    """
+
+    Parameters
+    ----------
+    key: str | int
+        Cavity geomery identifier
+    shape: dict
+        Dictionary containing geometric dimensions of cavity geometry
+    qois: list
+        Quantities of interest considered in uncertainty quantification
+    n_cells: int
+        Number of cavity cells
+    n_modules: int
+        Number of modules
+    n_modes: int
+        Number of eigenmodes to be calculated
+    f_shift: float
+        Since the eigenmode solver uses the power method, a shift can be provided
+    bc: int
+        Boundary conditions {1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal}
+        bc=33 means `Magnetic Wall En = 0` boundary condition at both ends
+    pol: int {Monopole, Dipole}
+        Defines whether to calculate for monopole or dipole modes
+    parentDir: str | path
+        Parent directory
+    projectDir: str|path
+        Project directory
+
+    Returns
+    -------
+
+    """
     err = False
     result_dict_slans = {}
     slans_obj_list = qois
@@ -640,6 +751,23 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
 
 
 def get_qoi_value(d, obj, n_cells, norm_length):
+    """
+    Gets the quantities of interest from simulation results
+    Parameters
+    ----------
+    d: dict
+        Dictionary containing several figures of merits from eigenmode solver
+    obj: list
+        List of objective functions
+    n_cells: int
+        Number of cells
+    norm_length: float
+        Normalisation length for :math: `E_\mathrm{acc}`
+
+    Returns
+    -------
+
+    """
     Req = d['CAVITY RADIUS'][n_cells-1] * 10  # convert to mm
     Freq = d['FREQUENCY'][n_cells-1]
     E_stored = d['STORED ENERGY'][n_cells-1]

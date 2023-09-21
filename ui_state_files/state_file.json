@@ -277,19 +277,19 @@
         },
         "2": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Wakefield/WL_C3795_2DQW_ref_mesh/Export/C3795LongitudinalZ_kOhm.txt",
+            "Folder": "D:/CST Studio/3. W/Wakefield/WakeLong_C3794(800MHz)_2HC_1FPC_LongitudinalZ_kOhm.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "TXT"
+                    "Sheet1"
                 ],
-                "TXT"
+                "Sheet1"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "0",
-                "1"
+                "Freq [MHz]",
+                "|Z_long| [kOhm]"
             ],
             "Toggle": 2,
             "ScaleX": "1",
@@ -306,19 +306,19 @@
         },
         "3": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Wakefield/W_C3795_2DQW_ref_mesh/Export/C3795_TransverseZ_kOhm_m.txt",
+            "Folder": "D:/CST Studio/3. W/Wakefield/WakeTrans_C3794(800MHz)_2HC_1FPC_TransverseZ [kOhm_m].xlsx",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "TXT"
+                    "Sheet1"
                 ],
-                "TXT"
+                "Sheet1"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "0",
-                "1"
+                "Freq [MHz]",
+                "|Z_trans| [kOhm/m]"
             ],
             "Toggle": 2,
             "ScaleX": "1",
@@ -341,6 +341,7 @@
                 [
                     "All",
                     "3794",
+                    "3794_s0.5",
                     "C3795",
                     "C3795_2",
                     "C3795_5",
@@ -351,7 +352,7 @@
                     "FCC_UROS5",
                     "TESLA_800MHz_s0.6616"
                 ],
-                "C3795"
+                "3794_s0.5"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
@@ -379,13 +380,14 @@
                 [
                     "All",
                     "3794",
+                    "3794_s0.5",
                     "C3795",
                     "C3795_old",
                     "C3795_round2",
                     "FCC_UROS5",
                     "TESLA_800MHz_s0.6616"
                 ],
-                "C3795"
+                "3794_s0.5"
             ],
             "Request": [
                 "Transverse Impedance Magnitude",
@@ -445,27 +447,6 @@
             {
                 "ls": "-",
                 "color": [
-                    0.5529411764705883,
-                    0.6274509803921569,
-                    0.796078431372549
-                ],
-                "lw": 2.0,
-                "ms": 6.0,
-                "mec": [
-                    0.5529411764705883,
-                    0.6274509803921569,
-                    0.796078431372549
-                ],
-                "mew": 1.0,
-                "mfc": [
-                    0.5529411764705883,
-                    0.6274509803921569,
-                    0.796078431372549
-                ]
-            },
-            {
-                "ls": "-",
-                "color": [
                     0.9058823529411765,
                     0.5411764705882353,
                     0.7647058823529411
@@ -524,6 +505,27 @@
                     1.0,
                     0.8509803921568627,
                     0.1843137254901961
+                ]
+            },
+            {
+                "ls": "-",
+                "color": [
+                    0.8980392156862745,
+                    0.7686274509803922,
+                    0.5803921568627451
+                ],
+                "lw": 2.0,
+                "ms": 6.0,
+                "mec": [
+                    0.8980392156862745,
+                    0.7686274509803922,
+                    0.5803921568627451
+                ],
+                "mew": 1.0,
+                "mfc": [
+                    0.8980392156862745,
+                    0.7686274509803922,
+                    0.5803921568627451
                 ]
             }
         ],
@@ -658,11 +660,11 @@
     "eigenmode_ccb_Populate_Objectives": "",
     "eigenmode_cb_LBC": "Magnetic Wall En=0",
     "eigenmode_le_Freq_Shift": "0",
-    "eigenmode_le_No_Of_Modes": "5",
+    "eigenmode_le_No_Of_Modes": "2",
     "eigenmode_cb_RBC": "Magnetic Wall En=0",
     "eigenmode_sb_No_Of_Processors_SLANS": 1,
     "eigenmode_qt_spinbox_lineedit": "1",
-    "eigenmode_cb_Polarization_SLANS": "Dipole",
+    "eigenmode_cb_Polarization_SLANS": "Monopole",
     "eigenmode_cb_Eigenproblem_Solver": "SLANS",
     "eigenmode_cb_Shape_Entry_Mode": "Load",
     "eigenmode_le_Shape_Space": "test",
@@ -922,11 +924,11 @@
     "Geometry_sb_N_Cells": 1,
     "Geometry_qt_spinbox_lineedit": "1",
     "Geometry_sb_N_Modules": 1,
-    "Geometry_le_N_Cells": "5",
+    "Geometry_le_N_Cells": "2",
     "Geometry_cb_Shape_Entry_Mode": "Load",
     "Geometry_le_Shape_Space": "D:/Dropbox/CavityDesignHub/PhD_Thesis/Cavities/cavities.json",
-    "Geometry_cb_Shape_Space_Keys": "C3795",
-    "Geometry_le_Scale": "1",
+    "Geometry_cb_Shape_Space_Keys": "3794",
+    "Geometry_le_Scale": "0.5",
     "Geometry_pb_Right_Cell": false,
     "Geometry_pb_Left_Cell": false,
     "Geometry_le_Req_ol": "345",
@@ -1035,7 +1037,7 @@
     "multipacting_dsb_Frequency": 801.58,
     "multipacting_dsb_Mesh_Constant": 5.0,
     "multipacting_dsb_Relative_Epsilon": 1.0,
-    "multipacting_cb_Geometry": "C3795",
+    "multipacting_cb_Geometry": "3794",
     "multipacting_pb_Plots": true,
     "multipacting_le_ODE_Solver_Tolerance": "1e-3",
     "plot_le_Xlabel": "$f [MHz]$",
