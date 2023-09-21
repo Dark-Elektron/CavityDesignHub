@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>959</width>
-    <height>622</height>
+    <width>904</width>
+    <height>1134</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,42 @@
    <item row="0" column="0">
     <widget class="QWidget" name="widget" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
+      <item row="1" column="0" colspan="3">
+       <widget class="QWidget" name="widget_3" native="true">
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>40</height>
+         </size>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <item row="0" column="1">
+          <widget class="QPushButton" name="pushButton">
+           <property name="text">
+            <string>Search</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLineEdit" name="lineEdit"/>
+         </item>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="3">
        <widget class="QWidget" name="widget_2" native="true">
         <property name="minimumSize">
          <size>
@@ -207,734 +242,670 @@ border-radius: 20px;</string>
         </layout>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QWidget" name="widget_3" native="true">
-        <property name="maximumSize">
-         <size>
-          <width>16777215</width>
-          <height>40</height>
-         </size>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_4">
-         <item row="0" column="1">
-          <widget class="QPushButton" name="pushButton">
-           <property name="text">
-            <string>Search</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QLineEdit" name="lineEdit"/>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="2" column="0">
+      <item row="3" column="0">
        <widget class="QWidget" name="widget_4" native="true">
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QPushButton" name="pb_Waveguide_Calculations">
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(194, 108, 255);</string>
-           </property>
-           <property name="text">
-            <string>CALCULATIONS</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0">
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="1">
           <widget class="QPushButton" name="pushButton_5">
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(160, 255, 192);</string>
-           </property>
            <property name="text">
             <string>Relations</string>
            </property>
           </widget>
          </item>
-         <item row="2" column="0">
-          <widget class="QPushButton" name="pb_Mode_Nomenclature">
-           <property name="maximumSize">
-            <size>
-             <width>150</width>
-             <height>150</height>
-            </size>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">background-color: rgb(255, 167, 66);</string>
-           </property>
+         <item row="0" column="0">
+          <widget class="QPushButton" name="pb_Waveguide_Calculations">
            <property name="text">
-            <string>Jacobian</string>
+            <string>CALCULATIONS</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="1" rowspan="3">
-          <widget class="QScrollArea" name="scrollArea">
-           <property name="widgetResizable">
-            <bool>true</bool>
+         <item row="0" column="2">
+          <spacer name="horizontalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
-           <widget class="QWidget" name="scrollAreaWidgetContents">
-            <property name="geometry">
-             <rect>
-              <x>0</x>
-              <y>0</y>
-              <width>813</width>
-              <height>462</height>
-             </rect>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QScrollArea" name="scrollArea">
+        <widget class="QWidget" name="scrollAreaWidgetContents">
+         <property name="geometry">
+          <rect>
+           <x>0</x>
+           <y>-14</y>
+           <width>770</width>
+           <height>941</height>
+          </rect>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QStackedWidget" name="stackedWidget">
+            <property name="currentIndex">
+             <number>0</number>
             </property>
-            <layout class="QGridLayout" name="gridLayout_6">
-             <item row="0" column="0">
-              <widget class="QStackedWidget" name="stackedWidget">
-               <property name="currentIndex">
-                <number>0</number>
-               </property>
-               <widget class="QWidget" name="page">
-                <layout class="QGridLayout" name="gridLayout_7">
-                 <item row="0" column="2">
-                  <widget class="QWidget" name="widget_6" native="true">
-                   <layout class="QGridLayout" name="gridLayout_9">
-                    <item row="5" column="0" colspan="3">
-                     <widget class="QPushButton" name="pb_Calculate_CWG">
-                      <property name="minimumSize">
-                       <size>
-                        <width>75</width>
-                        <height>75</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Calculate</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_8">
-                      <property name="text">
-                       <string>Freq</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0" colspan="3">
-                     <widget class="QToolBox" name="toolBox">
-                      <property name="currentIndex">
-                       <number>1</number>
-                      </property>
-                      <widget class="QWidget" name="page_3">
-                       <property name="geometry">
-                        <rect>
-                         <x>0</x>
-                         <y>0</y>
-                         <width>344</width>
-                         <height>198</height>
-                        </rect>
-                       </property>
-                       <attribute name="label">
-                        <string>Input</string>
-                       </attribute>
-                       <layout class="QGridLayout" name="gridLayout_11">
-                        <item row="0" column="0">
-                         <widget class="QScrollArea" name="scrollArea_2">
-                          <property name="widgetResizable">
-                           <bool>true</bool>
-                          </property>
-                          <widget class="QWidget" name="scrollAreaWidgetContents_2">
-                           <property name="geometry">
-                            <rect>
-                             <x>0</x>
-                             <y>0</y>
-                             <width>324</width>
-                             <height>178</height>
-                            </rect>
-                           </property>
-                           <layout class="QGridLayout" name="gridLayout_12">
-                            <item row="0" column="0">
-                             <widget class="QWidget" name="widget_7" native="true">
-                              <layout class="QGridLayout" name="gridLayout_13">
-                               <item row="2" column="0">
-                                <widget class="QLabel" name="label_11">
-                                 <property name="text">
-                                  <string>Radius</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="3" column="0">
-                                <widget class="QLabel" name="label_9">
-                                 <property name="text">
-                                  <string>Mode</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="2" column="1">
-                                <widget class="QLineEdit" name="le_R">
-                                 <property name="text">
-                                  <string>150</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="3" column="1">
-                                <widget class="QLineEdit" name="le_Mode_CWG">
-                                 <property name="text">
-                                  <string>te11</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="0" column="0" colspan="2">
-                                <widget class="QLabel" name="l_Image_CWG">
-                                 <property name="text">
-                                  <string>image</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="0" column="2" colspan="2">
-                                <widget class="QLabel" name="l_Formula_CWG">
-                                 <property name="text">
-                                  <string>formula</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="2" column="2" colspan="3">
-                                <widget class="QComboBox" name="cb_R_Dim">
-                                 <item>
-                                  <property name="text">
-                                   <string>mm</string>
-                                  </property>
-                                 </item>
-                                 <item>
-                                  <property name="text">
-                                   <string>cm</string>
-                                  </property>
-                                 </item>
-                                 <item>
-                                  <property name="text">
-                                   <string>m</string>
-                                  </property>
-                                 </item>
-                                </widget>
-                               </item>
-                              </layout>
-                             </widget>
-                            </item>
-                           </layout>
-                          </widget>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                      <widget class="QWidget" name="page_4">
-                       <property name="geometry">
-                        <rect>
-                         <x>0</x>
-                         <y>0</y>
-                         <width>344</width>
-                         <height>198</height>
-                        </rect>
-                       </property>
-                       <attribute name="label">
-                        <string>Table</string>
-                       </attribute>
-                       <layout class="QGridLayout" name="gridLayout_15">
-                        <item row="0" column="0">
-                         <widget class="QScrollArea" name="scrollArea_3">
-                          <property name="widgetResizable">
-                           <bool>true</bool>
-                          </property>
-                          <widget class="QWidget" name="scrollAreaWidgetContents_3">
-                           <property name="geometry">
-                            <rect>
-                             <x>0</x>
-                             <y>0</y>
-                             <width>307</width>
-                             <height>380</height>
-                            </rect>
-                           </property>
-                           <layout class="QGridLayout" name="gridLayout_16">
-                            <item row="0" column="0">
-                             <widget class="QWidget" name="widget_8" native="true">
-                              <layout class="QGridLayout" name="gridLayout_14">
-                               <item row="2" column="0">
-                                <widget class="QLabel" name="label_19">
-                                 <property name="text">
-                                  <string>TM</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="0" column="0">
-                                <widget class="QLabel" name="label_18">
-                                 <property name="text">
-                                  <string>TE</string>
-                                 </property>
-                                </widget>
-                               </item>
-                               <item row="1" column="0">
-                                <widget class="QTableWidget" name="tableWidget">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>0</width>
-                                   <height>150</height>
-                                  </size>
-                                 </property>
-                                 <row>
-                                  <property name="text">
-                                   <string>0</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>1</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>2</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>3</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>4</string>
-                                  </property>
-                                 </row>
-                                 <column>
-                                  <property name="text">
-                                   <string>1</string>
-                                  </property>
-                                 </column>
-                                 <column>
-                                  <property name="text">
-                                   <string>2</string>
-                                  </property>
-                                 </column>
-                                 <column>
-                                  <property name="text">
-                                   <string>3</string>
-                                  </property>
-                                 </column>
-                                 <column>
-                                  <property name="text">
-                                   <string>4</string>
-                                  </property>
-                                 </column>
-                                 <item row="0" column="0">
-                                  <property name="text">
-                                   <string>3.832</string>
-                                  </property>
-                                 </item>
-                                 <item row="0" column="1">
-                                  <property name="text">
-                                   <string>7.016</string>
-                                  </property>
-                                 </item>
-                                 <item row="0" column="2">
-                                  <property name="text">
-                                   <string>10.174</string>
-                                  </property>
-                                 </item>
-                                 <item row="1" column="0">
-                                  <property name="text">
-                                   <string>1.841</string>
-                                  </property>
-                                 </item>
-                                 <item row="1" column="1">
-                                  <property name="text">
-                                   <string>5.331</string>
-                                  </property>
-                                 </item>
-                                 <item row="1" column="2">
-                                  <property name="text">
-                                   <string>8.536</string>
-                                  </property>
-                                 </item>
-                                 <item row="2" column="0">
-                                  <property name="text">
-                                   <string>3.054</string>
-                                  </property>
-                                 </item>
-                                 <item row="2" column="1">
-                                  <property name="text">
-                                   <string>6.706</string>
-                                  </property>
-                                 </item>
-                                 <item row="2" column="2">
-                                  <property name="text">
-                                   <string>9.970</string>
-                                  </property>
-                                 </item>
-                                </widget>
-                               </item>
-                               <item row="3" column="0">
-                                <widget class="QTableWidget" name="tableWidget_3">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>0</width>
-                                   <height>150</height>
-                                  </size>
-                                 </property>
-                                 <row>
-                                  <property name="text">
-                                   <string>0</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>1</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>2</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>3</string>
-                                  </property>
-                                 </row>
-                                 <row>
-                                  <property name="text">
-                                   <string>4</string>
-                                  </property>
-                                 </row>
-                                 <column>
-                                  <property name="text">
-                                   <string>1</string>
-                                  </property>
-                                 </column>
-                                 <column>
-                                  <property name="text">
-                                   <string>2</string>
-                                  </property>
-                                 </column>
-                                 <column>
-                                  <property name="text">
-                                   <string>3</string>
-                                  </property>
-                                 </column>
-                                 <column>
-                                  <property name="text">
-                                   <string>4</string>
-                                  </property>
-                                 </column>
-                                 <item row="0" column="0">
-                                  <property name="text">
-                                   <string>2.405</string>
-                                  </property>
-                                 </item>
-                                 <item row="0" column="1">
-                                  <property name="text">
-                                   <string>5.520</string>
-                                  </property>
-                                 </item>
-                                 <item row="0" column="2">
-                                  <property name="text">
-                                   <string>8.654</string>
-                                  </property>
-                                 </item>
-                                 <item row="1" column="0">
-                                  <property name="text">
-                                   <string>3.832</string>
-                                  </property>
-                                 </item>
-                                 <item row="1" column="1">
-                                  <property name="text">
-                                   <string>7.016</string>
-                                  </property>
-                                 </item>
-                                 <item row="1" column="2">
-                                  <property name="text">
-                                   <string>10.174</string>
-                                  </property>
-                                 </item>
-                                 <item row="2" column="0">
-                                  <property name="text">
-                                   <string>5.135</string>
-                                  </property>
-                                 </item>
-                                 <item row="2" column="1">
-                                  <property name="text">
-                                   <string>8.417</string>
-                                  </property>
-                                 </item>
-                                 <item row="2" column="2">
-                                  <property name="text">
-                                   <string>11.620</string>
-                                  </property>
-                                 </item>
-                                </widget>
-                               </item>
-                              </layout>
-                             </widget>
-                            </item>
-                           </layout>
-                          </widget>
-                         </widget>
-                        </item>
-                       </layout>
-                      </widget>
-                     </widget>
-                    </item>
-                    <item row="0" column="0" colspan="3">
-                     <widget class="QLabel" name="label_16">
-                      <property name="text">
-                       <string>Circular WG</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QLabel" name="l_Frequency_CWG">
-                      <property name="minimumSize">
-                       <size>
-                        <width>0</width>
-                        <height>50</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Result</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="2">
-                     <widget class="QLabel" name="label_4">
-                      <property name="text">
-                       <string>MHz</string>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+            <widget class="QWidget" name="page">
+             <layout class="QGridLayout" name="gridLayout_7">
+              <item row="4" column="0">
+               <widget class="QPushButton" name="pb_Table">
+                <property name="text">
+                 <string>Table</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="0">
+               <widget class="QWidget" name="w_Rectangular_WG" native="true">
+                <layout class="QGridLayout" name="gridLayout_8">
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_13">
+                   <property name="text">
+                    <string>b</string>
+                   </property>
                   </widget>
                  </item>
-                 <item row="0" column="0">
-                  <widget class="QWidget" name="widget_5" native="true">
-                   <property name="maximumSize">
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_12">
+                   <property name="text">
+                    <string>a</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="0">
+                  <widget class="QLabel" name="label_5">
+                   <property name="text">
+                    <string>Freq</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0" colspan="2">
+                  <widget class="QLabel" name="label_3">
+                   <property name="text">
+                    <string>image</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="2" colspan="3">
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>formula</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLineEdit" name="le_M">
+                   <property name="text">
+                    <string>0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1" colspan="3">
+                  <widget class="QLineEdit" name="le_B">
+                   <property name="text">
+                    <string>100</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="4">
+                  <widget class="QComboBox" name="cb_A_Dim">
+                   <item>
+                    <property name="text">
+                     <string>mm</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cm</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>m</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="7" column="0" colspan="5">
+                  <widget class="QPushButton" name="pb_Calculate_RWG">
+                   <property name="text">
+                    <string>Calculate</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1" colspan="3">
+                  <widget class="QLineEdit" name="le_A">
+                   <property name="text">
+                    <string>200</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="2">
+                  <widget class="QLabel" name="label_10">
+                   <property name="text">
+                    <string>n</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QLineEdit" name="le_N">
+                   <property name="text">
+                    <string>1</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="4">
+                  <widget class="QLabel" name="label_2">
+                   <property name="text">
+                    <string>MHz</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="6" column="1" colspan="3">
+                  <widget class="QLabel" name="l_Frequency_RWG">
+                   <property name="minimumSize">
                     <size>
-                     <width>400</width>
-                     <height>16777215</height>
+                     <width>0</width>
+                     <height>50</height>
                     </size>
                    </property>
-                   <layout class="QGridLayout" name="gridLayout_8">
-                    <item row="3" column="0">
-                     <widget class="QLabel" name="label_13">
-                      <property name="text">
-                       <string>b</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="2" column="0">
-                     <widget class="QLabel" name="label_12">
-                      <property name="text">
-                       <string>a</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="8" column="0" colspan="5">
-                     <widget class="QPushButton" name="pb_Calculate_RWG">
-                      <property name="minimumSize">
-                       <size>
-                        <width>75</width>
-                        <height>75</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Calculate</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="0">
-                     <widget class="QLabel" name="label_5">
-                      <property name="text">
-                       <string>Freq</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="0" colspan="2">
-                     <widget class="QLabel" name="label_3">
-                      <property name="text">
-                       <string>image</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="1" column="2" colspan="3">
-                     <widget class="QLabel" name="label">
-                      <property name="text">
-                       <string>formula</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="6" column="1">
-                     <spacer name="verticalSpacer">
-                      <property name="orientation">
-                       <enum>Qt::Vertical</enum>
-                      </property>
-                      <property name="sizeHint" stdset="0">
-                       <size>
-                        <width>20</width>
-                        <height>40</height>
-                       </size>
-                      </property>
-                     </spacer>
-                    </item>
-                    <item row="0" column="0" colspan="5">
-                     <widget class="QLabel" name="label_14">
-                      <property name="text">
-                       <string>Rectangular WG</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="1">
-                     <widget class="QLineEdit" name="le_M">
-                      <property name="text">
-                       <string>0</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="1" colspan="3">
-                     <widget class="QLineEdit" name="le_B">
-                      <property name="text">
-                       <string>100</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="3" column="4">
-                     <widget class="QComboBox" name="cb_A_Dim">
-                      <item>
-                       <property name="text">
-                        <string>mm</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>cm</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>m</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="2" column="4">
-                     <widget class="QComboBox" name="cb_B_Dim">
-                      <item>
-                       <property name="text">
-                        <string>mm</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>cm</string>
-                       </property>
-                      </item>
-                      <item>
-                       <property name="text">
-                        <string>m</string>
-                       </property>
-                      </item>
-                     </widget>
-                    </item>
-                    <item row="2" column="1" colspan="3">
-                     <widget class="QLineEdit" name="le_A">
-                      <property name="text">
-                       <string>200</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="0">
-                     <widget class="QLabel" name="label_6">
-                      <property name="text">
-                       <string>m</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="2">
-                     <widget class="QLabel" name="label_10">
-                      <property name="text">
-                       <string>n</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="4" column="3">
-                     <widget class="QLineEdit" name="le_N">
-                      <property name="text">
-                       <string>1</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="4">
-                     <widget class="QLabel" name="label_2">
-                      <property name="text">
-                       <string>MHz</string>
-                      </property>
-                     </widget>
-                    </item>
-                    <item row="7" column="1" colspan="3">
-                     <widget class="QLabel" name="l_Frequency_RWG">
-                      <property name="minimumSize">
-                       <size>
-                        <width>0</width>
-                        <height>50</height>
-                       </size>
-                      </property>
-                      <property name="text">
-                       <string>Result</string>
-                      </property>
-                      <property name="alignment">
-                       <set>Qt::AlignCenter</set>
-                      </property>
-                     </widget>
-                    </item>
-                   </layout>
+                   <property name="text">
+                    <string>Result</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
                   </widget>
                  </item>
-                 <item row="0" column="1">
-                  <widget class="Line" name="line">
-                   <property name="orientation">
-                    <enum>Qt::Vertical</enum>
+                 <item row="2" column="4">
+                  <widget class="QComboBox" name="cb_B_Dim">
+                   <item>
+                    <property name="text">
+                     <string>mm</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cm</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>m</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_6">
+                   <property name="text">
+                    <string>m</string>
                    </property>
                   </widget>
                  </item>
                 </layout>
                </widget>
-               <widget class="QWidget" name="page_2">
-                <layout class="QGridLayout" name="gridLayout_10"/>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="pb_Rectangular_WG">
+                <property name="text">
+                 <string>Rectangular WG</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
                </widget>
-              </widget>
-             </item>
-            </layout>
+              </item>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="pb_Circular_WG">
+                <property name="text">
+                 <string>Circular WG</string>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="0">
+               <widget class="QWidget" name="w_Circular_WG" native="true">
+                <layout class="QGridLayout" name="gridLayout_13">
+                 <item row="4" column="0">
+                  <widget class="QLabel" name="label_8">
+                   <property name="text">
+                    <string>Freq</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_11">
+                   <property name="text">
+                    <string>Radius</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QLabel" name="label_9">
+                   <property name="text">
+                    <string>Mode</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0" colspan="2">
+                  <widget class="QLabel" name="l_Image_CWG">
+                   <property name="text">
+                    <string>image</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="1">
+                  <widget class="QLineEdit" name="le_R">
+                   <property name="text">
+                    <string>150</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="3" column="1">
+                  <widget class="QLineEdit" name="le_Mode_CWG">
+                   <property name="text">
+                    <string>te11</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="2" colspan="2">
+                  <widget class="QLabel" name="l_Formula_CWG">
+                   <property name="text">
+                    <string>formula</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="3">
+                  <widget class="QLabel" name="label_4">
+                   <property name="text">
+                    <string>MHz</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="4" column="1">
+                  <widget class="QLabel" name="l_Frequency_CWG">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>50</height>
+                    </size>
+                   </property>
+                   <property name="text">
+                    <string>Result</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="5" column="0" colspan="4">
+                  <widget class="QPushButton" name="pb_Calculate_CWG">
+                   <property name="text">
+                    <string>Calculate</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="2" column="2" colspan="2">
+                  <widget class="QComboBox" name="cb_R_Dim">
+                   <item>
+                    <property name="text">
+                     <string>mm</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>cm</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>m</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="5" column="0">
+               <widget class="QWidget" name="w_Table" native="true">
+                <layout class="QGridLayout" name="gridLayout_14">
+                 <item row="2" column="0">
+                  <widget class="QLabel" name="label_19">
+                   <property name="text">
+                    <string>TM</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="0" column="0">
+                  <widget class="QLabel" name="label_18">
+                   <property name="text">
+                    <string>TE</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item row="1" column="0">
+                  <widget class="QTableWidget" name="tableWidget">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>150</height>
+                    </size>
+                   </property>
+                   <row>
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>1</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>2</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>3</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>4</string>
+                    </property>
+                   </row>
+                   <column>
+                    <property name="text">
+                     <string>1</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>2</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>3</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>4</string>
+                    </property>
+                   </column>
+                   <item row="0" column="0">
+                    <property name="text">
+                     <string>3.832</string>
+                    </property>
+                   </item>
+                   <item row="0" column="1">
+                    <property name="text">
+                     <string>7.016</string>
+                    </property>
+                   </item>
+                   <item row="0" column="2">
+                    <property name="text">
+                     <string>10.174</string>
+                    </property>
+                   </item>
+                   <item row="1" column="0">
+                    <property name="text">
+                     <string>1.841</string>
+                    </property>
+                   </item>
+                   <item row="1" column="1">
+                    <property name="text">
+                     <string>5.331</string>
+                    </property>
+                   </item>
+                   <item row="1" column="2">
+                    <property name="text">
+                     <string>8.536</string>
+                    </property>
+                   </item>
+                   <item row="2" column="0">
+                    <property name="text">
+                     <string>3.054</string>
+                    </property>
+                   </item>
+                   <item row="2" column="1">
+                    <property name="text">
+                     <string>6.706</string>
+                    </property>
+                   </item>
+                   <item row="2" column="2">
+                    <property name="text">
+                     <string>9.970</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item row="3" column="0">
+                  <widget class="QTableWidget" name="tableWidget_3">
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>150</height>
+                    </size>
+                   </property>
+                   <row>
+                    <property name="text">
+                     <string>0</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>1</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>2</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>3</string>
+                    </property>
+                   </row>
+                   <row>
+                    <property name="text">
+                     <string>4</string>
+                    </property>
+                   </row>
+                   <column>
+                    <property name="text">
+                     <string>1</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>2</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>3</string>
+                    </property>
+                   </column>
+                   <column>
+                    <property name="text">
+                     <string>4</string>
+                    </property>
+                   </column>
+                   <item row="0" column="0">
+                    <property name="text">
+                     <string>2.405</string>
+                    </property>
+                   </item>
+                   <item row="0" column="1">
+                    <property name="text">
+                     <string>5.520</string>
+                    </property>
+                   </item>
+                   <item row="0" column="2">
+                    <property name="text">
+                     <string>8.654</string>
+                    </property>
+                   </item>
+                   <item row="1" column="0">
+                    <property name="text">
+                     <string>3.832</string>
+                    </property>
+                   </item>
+                   <item row="1" column="1">
+                    <property name="text">
+                     <string>7.016</string>
+                    </property>
+                   </item>
+                   <item row="1" column="2">
+                    <property name="text">
+                     <string>10.174</string>
+                    </property>
+                   </item>
+                   <item row="2" column="0">
+                    <property name="text">
+                     <string>5.135</string>
+                    </property>
+                   </item>
+                   <item row="2" column="1">
+                    <property name="text">
+                     <string>8.417</string>
+                    </property>
+                   </item>
+                   <item row="2" column="2">
+                    <property name="text">
+                     <string>11.620</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item row="6" column="0">
+               <spacer name="verticalSpacer">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>20</width>
+                  <height>40</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="page_2">
+             <layout class="QGridLayout" name="gridLayout_10"/>
+            </widget>
            </widget>
-          </widget>
-         </item>
-        </layout>
+          </item>
+          <item row="0" column="1">
+           <spacer name="horizontalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
+   <item row="0" column="1">
+    <spacer name="horizontalSpacer_3">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pb_Circular_WG</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Circular_WG</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>467</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>579</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Rectangular_WG</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Rectangular_WG</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>197</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>332</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Table</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Table</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>243</x>
+     <y>690</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>243</x>
+     <y>896</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

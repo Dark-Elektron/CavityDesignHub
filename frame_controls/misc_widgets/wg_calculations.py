@@ -9,15 +9,21 @@ import pandas as pd
 from ui_files.wg_calculations import Ui_WG_Calc
 from analysis_modules.data_module.abci_data import ABCIData
 from utils.file_reader import FileReader
+from utils.shared_functions import serialise, deserialise
 
 fr = FileReader()
 
 file_color = 'red'
 DEBUG = True
-def print_(*arg):
-    if DEBUG: print(colored(f'\t{arg}', file_color))
 
-c = 299792458 # m / s
+
+def print_(*arg):
+    if DEBUG:
+        print(colored(f'\t{arg}', file_color))
+
+
+c = 299792458  # m / s
+
 
 class WGCalcControl:
     def __init__(self, parent):
@@ -56,12 +62,12 @@ class WGCalcControl:
     def calculate_rwg(self):
         try:
             dim_dict = {'mm': 0, 'cm': 1, 'm': 3}
-            a = float(self.wgcalcUI.le_A.text())*10**dim_dict[self.wgcalcUI.cb_A_Dim.currentText()]
-            b = float(self.wgcalcUI.le_B.text())*10**dim_dict[self.wgcalcUI.cb_B_Dim.currentText()]
+            a = float(self.wgcalcUI.le_A.text()) * 10 ** dim_dict[self.wgcalcUI.cb_A_Dim.currentText()]
+            b = float(self.wgcalcUI.le_B.text()) * 10 ** dim_dict[self.wgcalcUI.cb_B_Dim.currentText()]
             m = float(self.wgcalcUI.le_M.text())
             n = float(self.wgcalcUI.le_N.text())
 
-            f = (c/(2*np.pi))*((m*np.pi/a)**2 + (n*np.pi/b)**2)**0.5
+            f = (c / (2 * np.pi)) * ((m * np.pi / a) ** 2 + (n * np.pi / b) ** 2) ** 0.5
             f = f * 1e-3
 
             self.wgcalcUI.l_Frequency_RWG.setText(f'{f}')
@@ -70,18 +76,17 @@ class WGCalcControl:
 
     def calculate_cwg(self):
         key = self.wgcalcUI.le_Mode_CWG.text().lower()
-        print(key)
         try:
             dim_dict = {'mm': 0, 'cm': 1, 'm': 3}
             dim = dim_dict[self.wgcalcUI.cb_R_Dim.currentText()]
             r = float(self.wgcalcUI.le_R.text())
-            r = r*10**dim
+            r = r * 10 ** dim
 
             mode_dict = {'te11': 1.841, 'tm01': 2.405, 'te21': 3.054, 'te01': 3.832, 'tm11': 3.832, 'tm21': 5.135,
                          'te12': 5.331, 'tm02': 5.520, 'te22': 6.706, 'te02': 7.016, 'tm12': 7.016, 'tm22': 8.417,
                          'te13': 8.536, 'tm03': 8.654, 'te23': 9.970, 'te03': 10.174, 'tm13': 10.174, 'tm23': 11.620}
 
-            f = mode_dict[key]*c/(2*np.pi*r)
+            f = mode_dict[key] * c / (2 * np.pi * r)
             f = f * 1e-3
 
             self.wgcalcUI.l_Frequency_CWG.setText(f'{f}')
@@ -106,3 +111,9 @@ class WGCalcControl:
         self.misc_control.g_Display.removeWidget(self.w_WGCalc)
         self.w_WGCalc.hide()
         self.misc_control.w_Misc.show()
+
+    def serialise(self, state_dict):
+        serialise(state_dict, self.w_WGCalc, marker='wg_calc')
+
+    def deserialise(self, state_dict):
+        deserialise(state_dict, self.w_WGCalc, marker='wg_calc')

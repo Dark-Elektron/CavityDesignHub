@@ -311,8 +311,11 @@ class ABCIGeometry(Geometry):
 
             exe_path = os.path.join(abci_path, parentDir / fr'exe\ABCI_exe\ABCI_MP64+.exe')
 
-            subprocess.call([exe_path, Path(fr'{run_save_directory}\Cavity_MROT_{MROT}.abc')],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if LCPUTM == 'T':
+                subprocess.call([exe_path, Path(fr'{run_save_directory}\Cavity_MROT_{MROT}.abc')])
+            else:
+                subprocess.call([exe_path, Path(fr'{run_save_directory}\Cavity_MROT_{MROT}.abc')],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             # save json file
             shape = {'IC': list(mid_cells_par),

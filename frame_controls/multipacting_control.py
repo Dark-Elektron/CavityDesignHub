@@ -1245,45 +1245,47 @@ class MultipactingControl:
 
     def plot_initials(self):
         self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
-        self.geodata = self.load_ascii('geodata.n')
-        self.create_inputs()
+        # check if folder exists
+        if os.path.exists(self.folder):
+            self.geodata = self.load_ascii('geodata.n')
+            self.create_inputs()
 
-        # Check if fieldparam file exists
-        file_exists = os.path.exists(fr'{self.folder}/fieldparam')
-        if file_exists > 0:
-            # Load fieldparam file
-            n = len(self.geodata)
-            gr = self.geodata[3:, 0]
-            gz = self.geodata[3:, 1]
-            ir = self.initials[:, 0]
-            iz = self.initials[:, 1]
-            m = len(ir)
+            # Check if fieldparam file exists
+            file_exists = os.path.exists(fr'{self.folder}/fieldparam')
+            if file_exists > 0:
+                # Load fieldparam file
+                n = len(self.geodata)
+                gr = self.geodata[3:, 0]
+                gz = self.geodata[3:, 1]
+                ir = self.initials[:, 0]
+                iz = self.initials[:, 1]
+                m = len(ir)
 
-            if self.ui.rb_Show_Initial_Points.isChecked():
-                if "Initials" in self.plot_dict.keys():
-                    # delete existing points from plot
-                    for line in self.plot_dict["Initials"]:
-                        line.remove()
+                if self.ui.rb_Show_Initial_Points.isChecked():
+                    if "Initials" in self.plot_dict.keys():
+                        # delete existing points from plot
+                        for line in self.plot_dict["Initials"]:
+                            line.remove()
 
-                initials_plot = self.ax.plot(gz, gr, '-r', iz, ir, 'bo', mfc='none')
-                self.ax.set_xlabel('z axis [m]')
-                self.ax.set_ylabel('r axis [m]')
-                self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
-                self.plot_dict['Initials'] = initials_plot
+                    initials_plot = self.ax.plot(gz, gr, '-r', iz, ir, 'bo', mfc='none')
+                    self.ax.set_xlabel('z axis [m]')
+                    self.ax.set_ylabel('r axis [m]')
+                    self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
+                    self.plot_dict['Initials'] = initials_plot
 
-                for key, value in self.plot_dict.items():
-                    if key == 'Initials':
-                        for v in value:
-                            v.set_visible(True)
-                        self.ax.set_xlabel('z axis [m]')
-                        self.ax.set_ylabel('r axis [m]')
-                        self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
-                    else:
-                        for v in value:
-                            v.set_visible(False)
+                    for key, value in self.plot_dict.items():
+                        if key == 'Initials':
+                            for v in value:
+                                v.set_visible(True)
+                            self.ax.set_xlabel('z axis [m]')
+                            self.ax.set_ylabel('r axis [m]')
+                            self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
+                        else:
+                            for v in value:
+                                v.set_visible(False)
 
-            self.fig.canvas.draw_idle()
-            self.fig.canvas.flush_events()
+                self.fig.canvas.draw_idle()
+                self.fig.canvas.flush_events()
 
     def plot_FEM_fields(self, ptype):
         ok2 = 0

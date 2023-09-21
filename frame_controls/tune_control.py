@@ -152,11 +152,11 @@ class TuneControl:
         self.ui.cb_Shape_Space_Generation_Algorithm.currentIndexChanged.connect(lambda: self.show_hide())
         self.ui.pb_Run.clicked.connect(lambda: self.generate_shape_space())
 
-        # change cavity display image
-        self.ui.cb_Cell_Type.currentTextChanged.connect(lambda: self.change_cavity_image())
-        self.ui.cb_LBP.stateChanged.connect(lambda: self.change_cavity_image())
-        self.ui.cb_RBP.stateChanged.connect(lambda: self.change_cavity_image())
-        self.ui.cb_Outer_Cell.stateChanged.connect(lambda: self.change_cavity_image())
+        # # change cavity display image
+        # self.ui.cb_Cell_Type.currentTextChanged.connect(lambda: self.change_cavity_image())
+        # self.ui.cb_LBP.stateChanged.connect(lambda: self.change_cavity_image())
+        # self.ui.cb_RBP.stateChanged.connect(lambda: self.change_cavity_image())
+        # self.ui.cb_Outer_Cell.stateChanged.connect(lambda: self.change_cavity_image())
 
         # # collapse other settings
         # self.ui.pb_Tune_Settings.clicked.connect(
@@ -403,7 +403,7 @@ class TuneControl:
         pg_ = pg
         pygraph = pg_.PlotWidget()
         pygraph.setBackground('w')
-        self.ui.gl_PyqtGraph.addWidget(pygraph, row, column, 1, 1)
+        # self.ui.gl_PyqtGraph.addWidget(pygraph, row, column, 1, 1)
 
         self.pg_list.append(pg_)
         self.pygraph_list.append(pygraph)
@@ -953,20 +953,20 @@ class TuneControl:
         else:
             self.ui.w_BC.hide()
 
-    def change_cavity_image(self):
-        if self.ui.cb_Cell_Type.currentText() == 'Mid Cell':
-            self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
-        elif self.ui.cb_Cell_Type.currentText() == 'End Cell':
-            self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
-        else:
-            if self.ui.cb_LBP.checkState() == 0 and self.ui.cb_Outer_Cell.checkState() == 0:
-                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
-            elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_Outer_Cell.checkState() == 2:
-                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
-            elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
-                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/one_cell.png"))
-            elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_Outer_Cell.checkState() == 0:
-                self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_same_cell.png"))
+    # def change_cavity_image(self):
+    #     if self.ui.cb_Cell_Type.currentText() == 'Mid Cell':
+    #         self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
+    #     elif self.ui.cb_Cell_Type.currentText() == 'End Cell':
+    #         self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
+    #     else:
+    #         if self.ui.cb_LBP.checkState() == 0 and self.ui.cb_Outer_Cell.checkState() == 0:
+    #             self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/mid_cell.png"))
+    #         elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_Outer_Cell.checkState() == 2:
+    #             self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_cell.png"))
+    #         elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_RBP.checkState() == 2:
+    #             self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/one_cell.png"))
+    #         elif self.ui.cb_LBP.checkState() == 2 and self.ui.cb_Outer_Cell.checkState() == 0:
+    #             self.ui.l_Cavity_Image.setPixmap(QPixmap(f":/imgs/images/end_same_cell.png"))
 
     @staticmethod
     def check_input(s):

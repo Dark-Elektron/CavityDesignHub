@@ -136,10 +136,19 @@ class GeometryInputControl:
             if key in self.ui.cb_Shape_Space_Keys.currentText():
                 IC = self.loaded_shape_space[key]["IC"]
                 OC = self.loaded_shape_space[key]["OC"]
+                if 'OC_R' in self.loaded_shape_space[key].keys():
+                    OC_R = self.loaded_shape_space[key]["OC_R"]
+                else:
+                    OC_R = OC
                 BP = self.loaded_shape_space[key]["BP"]
                 n_cell = int(self.ui.le_N_Cells.text())
+                # boundary conditions
+                bc_dict = {'Magnetic Wall En=0': 'b', 'Electric Wall Et=0': 'r',
+                           'Inner Contour': 'g', 'Axis': 'k', 'Metal': 'gray'}
+                bc = [bc_dict[self.win.eigenmode_widget.ui.cb_LBC.currentText()],
+                      bc_dict[self.win.eigenmode_widget.ui.cb_RBC.currentText()]]
 
-                plot_cavity_geometry(self.plot, IC, OC, BP, n_cell)
+                plot_cavity_geometry(self.plot, IC, OC, OC_R, BP, n_cell, bc)
                 ci += 1
             if ci > 4:  # maximum of only 10 plots
                 break

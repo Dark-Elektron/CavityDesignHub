@@ -197,7 +197,7 @@
           <string notr="true"/>
          </property>
          <layout class="QGridLayout" name="gridLayout_11">
-          <item row="8" column="0" alignment="Qt::AlignTop">
+          <item row="10" column="0" alignment="Qt::AlignTop">
            <widget class="QWidget" name="w_UQ" native="true">
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="1" column="1">
@@ -272,7 +272,20 @@
             </layout>
            </widget>
           </item>
-          <item row="11" column="0">
+          <item row="7" column="0">
+           <widget class="QPushButton" name="pb_Mesh">
+            <property name="text">
+             <string>Mesh</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="15" column="0">
            <spacer name="verticalSpacer_2">
             <property name="orientation">
              <enum>Qt::Vertical</enum>
@@ -298,7 +311,7 @@
             </property>
            </widget>
           </item>
-          <item row="9" column="0" alignment="Qt::AlignTop">
+          <item row="11" column="0" alignment="Qt::AlignTop">
            <widget class="QPushButton" name="pb_EXE">
             <property name="text">
              <string>EXE</string>
@@ -308,7 +321,7 @@
             </property>
            </widget>
           </item>
-          <item row="7" column="0" alignment="Qt::AlignTop">
+          <item row="9" column="0" alignment="Qt::AlignTop">
            <widget class="QPushButton" name="pb_Uncertainty_Quantification">
             <property name="text">
              <string>Uncertainty Quantification</string>
@@ -509,6 +522,11 @@
                  <string>Monopole</string>
                 </property>
                </item>
+               <item>
+                <property name="text">
+                 <string>Dipole</string>
+                </property>
+               </item>
               </widget>
              </item>
              <item row="7" column="0">
@@ -535,7 +553,7 @@
             </layout>
            </widget>
           </item>
-          <item row="10" column="0" alignment="Qt::AlignTop">
+          <item row="12" column="0" alignment="Qt::AlignTop">
            <widget class="QWidget" name="w_EXE" native="true">
             <property name="styleSheet">
              <string notr="true"/>
@@ -617,6 +635,91 @@
             </layout>
            </widget>
           </item>
+          <item row="13" column="0">
+           <widget class="QPushButton" name="pb_Message">
+            <property name="text">
+             <string>Messages</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QWidget" name="w_Mesh" native="true">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="dsb_Mesh_R"/>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>r</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QPushButton" name="pb_Show_Mesh">
+               <property name="text">
+                <string>Show Mesh</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_5">
+               <property name="text">
+                <string>z</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="dsb_Mesh_Z"/>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="14" column="0">
+           <widget class="QWidget" name="w_Message" native="true">
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="1" column="0">
+              <widget class="QTextEdit" name="textEdit">
+               <property name="readOnly">
+                <bool>false</bool>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QWidget" name="widget_2" native="true">
+               <layout class="QGridLayout" name="gridLayout_6">
+                <item row="0" column="1">
+                 <widget class="QPushButton" name="pb_Refresh">
+                  <property name="text">
+                   <string>Refresh</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <spacer name="horizontalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>40</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
          </layout>
         </widget>
        </widget>
@@ -687,6 +790,38 @@
     <hint type="destinationlabel">
      <x>407</x>
      <y>746</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Mesh</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Mesh</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>244</x>
+     <y>312</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>244</x>
+     <y>385</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pb_Message</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>w_Message</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>244</x>
+     <y>925</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>244</x>
+     <y>1047</y>
     </hint>
    </hints>
   </connection>

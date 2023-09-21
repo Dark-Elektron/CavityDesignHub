@@ -316,7 +316,7 @@ class MainWindow:
 
         self.frames_dict['Home'].append(self.ui.sa_Home)
         self.frames_dict['Geometry'] += [self.geometryview_widget.w_GeometryView, self.geometryinput_widget.w_GeometryInput]
-        self.frames_dict['Tune'].append(self.tune_widget.w_Tune)
+        self.frames_dict['Tune'] += [self.geometryview_widget.w_GeometryView, self.tune_widget.w_Tune]
         self.frames_dict['Wakefield'] += [self.geometryview_widget.w_GeometryView, self.wakefield_widget.w_Wakefield]
         self.frames_dict['Eigenmode'] += [self.geometryview_widget.w_GeometryView, self.eigenmode_widget.w_Eigenmode]
         self.frames_dict['Multipacting'] += [self.geometryview_widget.w_GeometryView, self.multipacting_widget.w_Multipacting]
@@ -342,7 +342,7 @@ class MainWindow:
         self.ui.g_Display.addWidget(w, 0, 1, 1, 1)
         w.show()
 
-        if key in ['Geometry', 'Eigenmode', 'Wakefield', 'Multipacting']:
+        if key in ['Geometry', 'Tune', 'Eigenmode', 'Wakefield', 'Multipacting']:
             # remove existing widgets
             index = self.geometryview_widget.ui.gl_InputWidgets.count() - 1
 
@@ -574,6 +574,9 @@ class MainWindow:
         # serialise multipacting
         self.multipacting_widget.serialise(state_dict)
 
+        # serialise misc
+        self.misc_widget.serialise(state_dict)
+
         # dump save state file
         with open(Path('ui_state_files/state_file.json'), 'w', encoding='utf-8') as file:
             file.write(json.dumps(state_dict, indent=4, ensure_ascii=False, separators=(',', ': ')))
@@ -627,6 +630,7 @@ class MainWindow:
             self.wakefield_widget.deserialise(state_dict)
             self.plot_widget.deserialise(state_dict)
             self.multipacting_widget.deserialise(state_dict)
+            self.misc_widget.deserialise(state_dict)
 
     def load_last_state(self):
         """

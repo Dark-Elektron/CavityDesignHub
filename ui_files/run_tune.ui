@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1342</width>
+    <width>562</width>
     <height>894</height>
    </rect>
   </property>
@@ -33,7 +33,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
@@ -74,8 +74,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>532</width>
-                <height>1495</height>
+                <width>491</width>
+                <height>1359</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -1888,8 +1888,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>530</width>
-                <height>1643</height>
+                <width>489</width>
+                <height>1563</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
@@ -2932,73 +2932,6 @@
           </layout>
          </widget>
         </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="w_PyqtGraph" native="true">
-      <layout class="QGridLayout" name="gridLayout_10">
-       <item row="0" column="0">
-        <layout class="QGridLayout" name="gl_PyqtGraph">
-         <item row="0" column="0">
-          <widget class="QWidget" name="widget_10" native="true">
-           <layout class="QGridLayout" name="gridLayout_6">
-            <item row="0" column="1">
-             <widget class="QWidget" name="widget_5" native="true">
-              <layout class="QGridLayout" name="gridLayout_9">
-               <item row="0" column="1">
-                <widget class="QLabel" name="l_Input_Help">
-                 <property name="minimumSize">
-                  <size>
-                   <width>25</width>
-                   <height>25</height>
-                  </size>
-                 </property>
-                 <property name="maximumSize">
-                  <size>
-                   <width>25</width>
-                   <height>25</height>
-                  </size>
-                 </property>
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px; font-weight:600; text-decoration: underline;&quot;&gt;Monte Carlo Generate&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;100.93 -&amp;gt; 100.93&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;[105.34] -&amp;gt; 105.34&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;[20, 40] -&amp;gt; [20, 40]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;[12.3, 56, ..., 24] -&amp;gt; [12.3, 24]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;linspace(20, 40, 5) -&amp;gt; [20, 40]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px; font-weight:600; text-decoration: underline;&quot;&gt;Grid Generate&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;100.93 -&amp;gt; 100.93&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;[105.34] -&amp;gt; 105.34&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;123.45, 56.4, 130 -&amp;gt; [123.45, 56.4, 130]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;[12.3, 56, ..., 24] -&amp;gt; [12.3, 56, ..., 24]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-family:'Segoe UI'; font-size:16px;&quot;&gt;linspace(20, 30, 3) -&amp;gt; [20, 25, 30]&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string/>
-                 </property>
-                 <property name="pixmap">
-                  <pixmap resource="../qss/icons.qrc">:/icons/icons/PNG/zoom.png</pixmap>
-                 </property>
-                 <property name="scaledContents">
-                  <bool>true</bool>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="l_Cavity_Image">
-              <property name="maximumSize">
-               <size>
-                <width>500</width>
-                <height>500</height>
-               </size>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-              <property name="pixmap">
-               <pixmap resource="../qss/icons.qrc">:/imgs/images/mid_cell.png</pixmap>
-              </property>
-              <property name="scaledContents">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-         </item>
-        </layout>
        </item>
       </layout>
      </widget>

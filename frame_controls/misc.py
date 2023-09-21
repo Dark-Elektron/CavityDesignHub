@@ -74,15 +74,12 @@ class MiscControl:
         self.g_Display.addWidget(w, 0, 1, 1, 1)
         w.show()
 
-    def show_hide_(self, wid1, wid2):
-        print('here')
-        if wid1.currentText().lower() == 'parallel':
-            wid2.show()
-        else:
-            wid2.hide()
-
     def serialise(self, state_dict):
         serialise(state_dict, self.w_Misc, marker='misc')
+        self.wgcalc_widget.serialise(state_dict)
+        self.modenom_widget.serialise(state_dict)
 
     def deserialise(self, state_dict):
         deserialise(state_dict, self.w_Misc, marker='misc')
+        self.wgcalc_widget.deserialise(state_dict)
+        self.modenom_widget.deserialise(state_dict)

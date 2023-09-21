@@ -293,7 +293,7 @@ def perform_geometry_checks(par_mid: list, par_end: list):
     return True
 
 
-def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
+def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type):
     """
     Writes cavity geometric data that can be imported into CST Studio
 
@@ -303,7 +303,7 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
         Cavity marker
     ic_: list, array like
         Inner cavity cell geometric variables
-    oc: list, array like
+    oc_l: list, array like
         Outer cavity cell geometric variables
     projectDir: str
         Project directory
@@ -315,7 +315,7 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
 
     """
     ic_ = update_alpha(ic_)
-    oc = update_alpha(oc)
+    oc_l = update_alpha(oc_l)
     if cell_type is None:
         # print("Writing parameters to file")
         path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
@@ -326,7 +326,7 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
                          'L_e', 'Req', 'alpha_e', 'key']
 
             value_list = [ic_[0], ic_[1], ic_[2], ic_[3], ic_[4], ic_[5], ic_[6], ic_[7],
-                          oc[0], oc[1], oc[2], oc[3], oc[4], oc[5], oc[6], oc[7], key]
+                          oc_l[0], oc_l[1], oc_l[2], oc_l[3], oc_l[4], oc_l[5], oc_l[6], oc_l[7], key]
 
             for i in range(len(name_list)):
                 if name_list[i] == 'key':
@@ -349,7 +349,9 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
                               'Aeq', 'Beq', 'ai', 'bi', 'Ri', 'L', 'Req', 'alpha', key]
             else:
                 value_list = [ic_[0], ic_[1], ic_[2], ic_[3], ic_[4], ic_[5], ic_[6], ic_[7],
-                              oc[0], oc[1], oc[2], oc[3], oc[4], oc[5], oc[6], oc[7], key]
+                              oc_r[0], oc_r[1], oc_r[2], oc_r[3], oc_r[4], oc_r[5], ic_[6], oc_l[7],
+                              oc_l[0], oc_l[1], oc_l[2], oc_l[3], oc_l[4], oc_l[5], ic_[6], oc_l[7],
+                              key]
 
             for i in range(len(name_list)):
                 if name_list[i] == 'key':
@@ -359,8 +361,8 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
 
         with open(path_mc, 'w') as f:
             name_list = ['Aeq', 'Beq', 'ai', 'bi', 'Ri', 'L', 'Req', 'alpha',
-                         'Aeq_er', 'Beq_er', 'ai_er', 'bi_er', 'Ri_er', 'L_er', 'Req', 'alpha_er',
-                         'Aeq_el', 'Beq_el', 'ai_el', 'bi_el', 'Ri_el', 'L_el', 'Req', 'alpha_el', 'key']
+                         'Aeq_er', 'Beq_er', 'ai_er', 'bi_er', 'Ri_er', 'L_er', 'Req_er', 'alpha_er',
+                         'Aeq_el', 'Beq_el', 'ai_el', 'bi_el', 'Ri_el', 'L_el', 'Req_el', 'alpha_el', 'key']
 
             if cell_type == 'Mid Cell':
                 value_list = [ic_[0], ic_[1], ic_[2], ic_[3], ic_[4], ic_[5], ic_[6], ic_[7],
@@ -369,8 +371,8 @@ def write_cst_paramters(key, ic_, oc, projectDir, cell_type):
                               key]
             else:
                 value_list = [ic_[0], ic_[1], ic_[2], ic_[3], ic_[4], ic_[5], ic_[6], ic_[7],
-                              oc[0], oc[1], oc[2], oc[3], oc[4], oc[5], oc[6], oc[7],
-                              'Aeq_er', 'Beq_er', 'ai_er', 'bi_er', 'Ri_er', 'L_er', 'Req', 'alpha_er',
+                              oc_r[0], oc_r[1], oc_r[2], oc_r[3], oc_r[4], oc_r[5], ic_[6], oc_r[7],
+                              oc_l[0], oc_l[1], oc_l[2], oc_l[3], oc_l[4], oc_l[5], ic_[6], oc_l[7],
                               key]
 
             for i in range(len(name_list)):
@@ -1574,14 +1576,14 @@ def arcTo(x_center, y_center, a, b, step, start, end, plot=True):
     return inbox
 
 
-def plot_cavity_geometry(plot, IC, OC, BP, n_cell):
+def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc):
     fig = plot.fig
     ax = plot.ax
 
     # 21578127116
     A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(IC)[:7] * 1e-3
     A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(OC)[:7] * 1e-3
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(OC)[:7] * 1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(OC_R)[:7] * 1e-3
 
     step = 1  # step in boundary points in mm
     L_bp_l = 4 * L_m  # 0.0001  #
@@ -1625,6 +1627,11 @@ def plot_cavity_geometry(plot, IC, OC, BP, n_cell):
     lineTo(start_point, [-shift, Ri_el], step)
     pt = [-shift, Ri_el]
     geo.append([pt[1], pt[0]])
+
+    # draw left boundary condition
+    ax.plot([-shift, -shift], [-Ri_el, Ri_el],
+            [-shift-0.2*L_m, -shift-0.2*L_m], [-0.5*Ri_el, 0.5*Ri_el],
+            [-shift-0.4*L_m, -shift-0.4*L_m], [-0.1*Ri_el, 0.1*Ri_el], c=bc[0], lw=4, zorder=100)
 
     # ADD BEAM PIPE LENGTH
     if L_bp_l != 0:
@@ -1838,13 +1845,18 @@ def plot_cavity_geometry(plot, IC, OC, BP, n_cell):
     # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
     geo.append([pt[1], pt[0]])
 
+    # draw rightt boundary condition
+    ax.plot([shift, shift], [-Ri_er, Ri_er],
+            [shift+0.2*L_m, shift+0.2*L_m], [-0.5*Ri_er, 0.5*Ri_er],
+            [shift+0.4*L_m, shift+0.4*L_m], [-0.1*Ri_er, 0.1*Ri_er], c=bc[1], lw=4, zorder=100)
+
     # CLOSE PATH
     # lineTo(pt, start_point, step)
     # geo.append([start_point[1], start_point[0]])
     geo = np.array(geo)
 
-    ax.plot(geo[:, 1], geo[:, 0], lw=4)
-    ax.plot(geo[:, 1], -geo[:, 0], lw=4)
+    top = ax.plot(geo[:, 1], geo[:, 0], lw=4)
+    bottom = ax.plot(geo[:, 1], -geo[:, 0], lw=4, c=top[0].get_color())
     fig.canvas.draw()
 
 

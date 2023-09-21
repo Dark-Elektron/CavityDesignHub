@@ -197,7 +197,7 @@ class Tuner:
                                       n_modes=n_cell_last_run+1, fid=key, parentDir=parentDir, projectDir=projectDir)
 
                     # write cst_studio parameters
-                    write_cst_paramters(key, inner_cell, outer_cell, projectDir, cell_type)
+                    write_cst_paramters(key, inner_cell, outer_cell, outer_cell, projectDir, cell_type)
 
                     # write tune results
                     if cell_type == 'Mid Cell':

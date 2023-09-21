@@ -1,3 +1,4 @@
+import os.path
 import subprocess
 import time
 import multiprocessing as mp
@@ -92,6 +93,8 @@ class EigenmodeControl:
         self.progress_bar.setValue(0)
         self.progress_bar.hide()
 
+        self.ui.pb_Refresh.clicked.connect(lambda: self.write_to_text_edit())
+
     def signals(self):
         # run eigenmode solver
         self.ui.pb_Run.clicked.connect(lambda: self.run_slans())
@@ -100,6 +103,8 @@ class EigenmodeControl:
         self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
         self.ui.pb_Pause_Resume.clicked.connect(
             lambda: self.pause() if self.process_state == 'running' else self.resume())
+        self.ui.cb_LBC.currentTextChanged.connect(lambda: self.geo_control.draw_shape_from_shape_space())
+        self.ui.cb_RBC.currentTextChanged.connect(lambda: self.geo_control.draw_shape_from_shape_space())
 
     def run_slans(self):
         # get analysis parameters
@@ -107,6 +112,7 @@ class EigenmodeControl:
         n_modules = self.geo_ui.sb_N_Modules.value()
         f_shift = float(self.ui.le_Freq_Shift.text())
         n_modes = float(self.ui.le_No_Of_Modes.text())
+        pol = self.ui.cb_Polarization_SLANS.currentText()
 
         # boundary conditions
         lbc = self.ui.cb_LBC.currentIndex()+1
@@ -155,7 +161,7 @@ class EigenmodeControl:
                     processor_shape_space[key] = val
 
             service = mp.Process(target=self.run_sequential, args=(
-                n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.main_control.parentDir,
+                n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, self.main_control.parentDir,
                 self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(),
                 UQ, eigenproblem_solver))
 
@@ -182,6 +188,52 @@ class EigenmodeControl:
         self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
         self.end_routine_thread.start()
 
+    def write_to_text_edit(self):
+        try:
+            # reset QTextEdit
+            self.ui.textEdit.clear()
+            errorFormat = '&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:red;">{}</span>'
+            warningFormat = '&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:orange;">{}</span>'
+            validFormat = '&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:green;">{}</span>'
+            for cav in self.shape_space.keys():
+                # print out results form svl file to QTextEdit
+                lbc = self.ui.cb_LBC.currentIndex() + 1
+                rbc = self.ui.cb_RBC.currentIndex() + 1
+
+                # check if file exists
+                filename = fr'{self.main_control.projectDir}/SimulationData/SLANS/' \
+                           fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/cavity_{lbc}{rbc}.svl'
+                if os.path.exists(filename):
+                    # Open the file for reading
+                    with open(filename, 'r') as file:
+                        # Read all lines
+                        lines = file.readlines()
+
+                    # Filter lines containing the keyword 'ACCURACY'
+                    filtered_lines = [line.strip() for line in lines if ('ACCURACY' in line or 'FREQUENCY' in line)]
+                    accuracy = filtered_lines[::2]
+                    frequency = filtered_lines[1::2]
+
+                    # cavity name
+                    self.ui.textEdit.append(fr'<b>{cav}</b>')
+                    # Print the filtered lines
+                    for acc, freq in zip(accuracy, frequency):
+                        # check if accuracy is below threshold
+                        a = float(acc.split(' ')[-1])
+                        f = freq.split(' ')
+                        if a > 1e-3:
+                            self.ui.textEdit.append(errorFormat.format(
+                                f'\tFreq.: {f[-2].strip()} {f[-1].strip()}, Accuracy: {a}'))
+                        elif 1e-5 < a <= 1e-3:
+                            self.ui.textEdit.append(warningFormat.format(
+                                f'\tFreq.: {f[-2].strip()} {f[-1].strip()}, Accuracy: {a}'))
+                        else:
+                            self.ui.textEdit.append(validFormat.format(
+                                f'\tFreq.: {f[-2].strip()} {f[-1].strip()}, Accuracy: {a}'))
+
+        except Exception as e:
+            ic('Exception in slans, run_pauseroutine: ', e)
+
     def run_pause_resume_stop_routine(self):
         if self.process_state == 'none':
             # change pause/resume icon to pause icon
@@ -193,6 +245,9 @@ class EigenmodeControl:
 
             # enable run button in case it was disabled
             self.ui.pb_Run.setEnabled(True)
+
+            # click message buttion
+            self.ui.pb_Refresh.click()
 
         if self.process_state == "running":
             # enable run, pause/resume and cancel buttons
@@ -377,7 +432,7 @@ class EigenmodeControl:
             wid2.hide()
 
     @staticmethod
-    def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, parentDir, projectDir,
+    def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, parentDir, projectDir,
                        progress_list, sub_dir='', UQ=False, solver='slans'):
         progress = 0
         # get length of processor
@@ -415,19 +470,20 @@ class EigenmodeControl:
                     # # create folders for all keys
                     slans_geom.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir)
 
-                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'],
-                                        projectDir=projectDir, cell_type="None")
-
                     if 'OC_R' in shape.keys():
+                        write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],
+                                            projectDir=projectDir, cell_type="None")
                         slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
                                           n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
-                                          bc=bc, beampipes=shape['BP'],
+                                          bc=bc, pol=pol, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
                                           expansion=expansion, expansion_r=expansion_r)
                     else:
+                        write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
+                                            projectDir=projectDir, cell_type="None")
                         slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
                                           n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
-                                          bc=bc, beampipes=shape['BP'],
+                                          bc=bc, pol=pol, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
                                           expansion=expansion, expansion_r=expansion_r)
 
@@ -435,7 +491,7 @@ class EigenmodeControl:
                 if UQ:
                     uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
                        n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
-                       f_shift=f_shift, bc=bc, parentDir=parentDir, projectDir=projectDir)
+                       f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir)
 
                 print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
 
@@ -465,7 +521,7 @@ class EigenmodeControl:
                             req_mode_num=int(n_modes), plot=False)
 
 
-def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, projectDir):
+def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDir, projectDir):
     err = False
     result_dict_slans = {}
     slans_obj_list = qois
@@ -528,11 +584,11 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, parentDir, pr
             slans_geom.createFolder(fid, projectDir, subdir=sub_dir)
             try:
                 slans_geom.cavity(n_cells, n_modules, par_mid, par_end, par_end,
-                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
                                   parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
             except KeyError:
                 slans_geom.cavity(n_cells, n_modules, par_mid, par_end, par_end,
-                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
                                   parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
 
         filename = projectDir / fr'SimulationData\SLANS\{key}\{fid}\cavity_{bc}.svl'

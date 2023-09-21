@@ -443,17 +443,17 @@ if __name__ == '__main__':
     plt.rcParams["figure.figsize"] = (10, 3)
     sim_folder = r"D:\CST Studio\3. W\Module"
     # sim_folder = r"D:\CST Studio\5. tt\Assembly"
-    # folders = ["E_C3794_390_665_EE", "E_C3794_665_1000_EE", "E_C3794_1000_1400_EE", "E_C3794_1400_1800_EE", "E_C3794_1800_2200_EE"]
-    # folders = ["E_C3794_390_665", "E_C3794_665_1000", "E_C3794_1000_1400_MM", "E_C3794_1400_1800_MM", "E_C3794_1800_2200_MM"]
-    # folders = ["E_C3795_700_1250", "E_C3795_1250_1450", "E_C3795_1450_1650", "E_C3795_1650_1850", "E_C3795_1850_2050", "E_C3795_2050_2250"]
-    # folders = ["E_C3795_2DQW_700_1250_ref_mesh", "E_C3795_2DQW_1250_1450_ref_mesh", "E_C3795_2DQW_1450_1650_ref_mesh",
-    #            "E_C3795_2DQW_1650_1850_ref_mesh", "E_C3795_2DQW_1850_2050_ref_mesh", "E_C3795_2DQW_2050_2250_ref_mesh"]
-    folders = ["E_3794_2HC_1FPC_Optimized", "E_3794_2HC_1FPC_Optimized_1000", "E_3794_2HC_1FPC_Optimized_1250",
-               "E_3794_2HC_1FPC_Optimized_1400"]
+    unique_marker = 'Eigenmode_3794(800MHz)_2HC_1FPC'
+    folders = []
+    for filepath in os.listdir(sim_folder):
+        if unique_marker in filepath:
+            if os.path.isdir(os.path.join(sim_folder, filepath)):
+                folders.append(filepath)
+    ic(folders)
     req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
            "RQT", "Z_kOhm", "Z_T_kOhm_m"]
     # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]
-    name = "E_C3794_2HC"
+    name = unique_marker
 
     eigenmode_analysis(sim_folder, folders, req, name)
 

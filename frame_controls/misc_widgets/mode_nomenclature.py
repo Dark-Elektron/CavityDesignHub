@@ -10,6 +10,7 @@ import pandas as pd
 from ui_files.mode_nomenclature import Ui_Mode_Nom
 from analysis_modules.data_module.abci_data import ABCIData
 from utils.file_reader import FileReader
+from utils.shared_functions import serialise, deserialise
 
 fr = FileReader()
 
@@ -48,3 +49,9 @@ class ModeNomControl:
         self.misc_control.g_Display.removeWidget(self.w_ModeNom)
         self.w_ModeNom.hide()
         self.misc_control.w_Misc.show()
+
+    def serialise(self, state_dict):
+        serialise(state_dict, self.w_ModeNom, marker='mode_num')
+
+    def deserialise(self, state_dict):
+        deserialise(state_dict, self.w_ModeNom, marker='mode_num')

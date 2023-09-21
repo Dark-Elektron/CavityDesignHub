@@ -39,23 +39,6 @@ class Ui_GeometryView(object):
         self.gridLayout_6 = QtWidgets.QGridLayout(self.w_Show_Cavity)
         self.gridLayout_6.setContentsMargins(0, 0, 0, 0)
         self.gridLayout_6.setObjectName("gridLayout_6")
-        self.widget_4 = QtWidgets.QWidget(self.w_Show_Cavity)
-        self.widget_4.setMaximumSize(QtCore.QSize(16777215, 70))
-        self.widget_4.setObjectName("widget_4")
-        self.gridLayout_5 = QtWidgets.QGridLayout(self.widget_4)
-        self.gridLayout_5.setContentsMargins(0, -1, 0, -1)
-        self.gridLayout_5.setObjectName("gridLayout_5")
-        self.pushButton = QtWidgets.QPushButton(self.widget_4)
-        self.pushButton.setMinimumSize(QtCore.QSize(75, 0))
-        self.pushButton.setMaximumSize(QtCore.QSize(75, 16777215))
-        self.pushButton.setObjectName("pushButton")
-        self.gridLayout_5.addWidget(self.pushButton, 0, 0, 1, 1)
-        self.pushButton_2 = QtWidgets.QPushButton(self.widget_4)
-        self.pushButton_2.setMinimumSize(QtCore.QSize(75, 0))
-        self.pushButton_2.setMaximumSize(QtCore.QSize(75, 16777215))
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.gridLayout_5.addWidget(self.pushButton_2, 0, 1, 1, 1)
-        self.gridLayout_6.addWidget(self.widget_4, 1, 1, 1, 1)
         self.gl_Plot_Area = QtWidgets.QGridLayout()
         self.gl_Plot_Area.setObjectName("gl_Plot_Area")
         self.gridLayout_6.addLayout(self.gl_Plot_Area, 0, 0, 1, 2)
@@ -68,8 +51,6 @@ class Ui_GeometryView(object):
     def retranslateUi(self, GeometryView):
         _translate = QtCore.QCoreApplication.translate
         GeometryView.setWindowTitle(_translate("GeometryView", "Form"))
-        self.pushButton.setText(_translate("GeometryView", "Reset"))
-        self.pushButton_2.setText(_translate("GeometryView", "Save"))
 
 
 if __name__ == "__main__":

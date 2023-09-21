@@ -35,13 +35,14 @@ class SLANSGeometry(Geometry):
             self.slans = None
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
-               fid=None, bc=33, f_shift='default', beta=1, n_modes=None, beampipes='None',
+               fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
                parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None):
         """
         Write geometry file and run eigenmode analysis with SLANS
 
         Parameters
         ----------
+        pol
         expansion
         no_of_cells: int
             Number of cells
@@ -103,6 +104,10 @@ class SLANSGeometry(Geometry):
         if expansion_r is not None:
             end_R = 2
 
+        p = ''
+        if pol != 'Monopole':
+            p = '_2'
+
         # # Beam pipe length
         # if end_L == 1:
         #     self.Rbp_L = self.ri_L
@@ -127,7 +132,7 @@ class SLANSGeometry(Geometry):
         BC_Left = floor(bc / 10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
         BC_Right = bc % 10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
 
-        filename = f'cavity_{bc}'
+        filename = f'cavity_{bc}{p}'
 
         # change save directory
         if subdir == '':
@@ -260,7 +265,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = parentDir / fr'exe/SLANS_exe/genmesh2.exe'
+        genmesh_path = parentDir / fr'exe/SLANS{p}_exe/genmesh2.exe'
         filepath = Path(fr'{run_save_directory}/{filename}')
 
         # folder for exe to write to
@@ -290,29 +295,29 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = parentDir / fr'exe/SLANS_exe/slansc'
-        slansm_path = parentDir / fr'exe/SLANS_exe/slansm'
-        slanss_path = parentDir / fr'exe/SLANS_exe/slanss'
-        slansre_path = parentDir / fr'exe/SLANS_exe/slansre'
+        slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc{p}'
+        slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm{p}'
+        slanss_path = parentDir / fr'exe/SLANS{p}_exe/slanss{p}'
+        slansre_path = parentDir / fr'exe/SLANS{p}_exe/slansre{p}'
 
         # print(cwd)
         # check if corresponding file exists at before the executable is called
         if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.geo'):
+            ic('Starting slansc')
             subprocess.call([slansc_path, str(filepath), '-b'], cwd=cwd, **kwargs)  # settings, number of modes, etc
-            # ic("Done with slansc")
+            ic("Done with slansc, starting slansm")
 
             if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.gem'):
                 subprocess.call([slansm_path, str(filepath), '-b'], cwd=cwd, **kwargs)
-                # ic("Done with slansm")
+                ic("Done with slansm")
 
-                if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/aslans.mtx') \
-                        and os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/bslans.mtx'):
+                if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/bslans.mtx'):
                     subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, **kwargs)
-                    # ic("Done with slanss")
+                    ic("Done with slanss")
 
                     if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.res'):
                         subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, **kwargs)
-                        # ic("Done with slansre")
+                        ic("Done with slansre")
 
         # save json file
         shape = {'IC': update_alpha(mid_cells_par),
@@ -543,7 +548,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = parentDir / fr'exe/SLANS_exe/genmesh2.exe'
+        genmesh_path = parentDir / fr'exe/SLANS{p}_exe/genmesh2.exe'
         filepath = Path(fr'{run_save_directory}/{filename}')
 
         # folder for exe to write to
@@ -570,10 +575,10 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = parentDir / fr'exe/SLANS_exe/slansc'
-        slansm_path = parentDir / fr'exe/SLANS_exe/slansm'
-        slanss_path = parentDir / fr'exe/SLANS_exe/slanss'
-        slansre_path = parentDir / fr'exe/SLANS_exe/slansre'
+        slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc'
+        slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm'
+        slanss_path = parentDir / fr'exe/SLANS{p}_exe/slanss'
+        slansre_path = parentDir / fr'exe/SLANS{p}_exe/slansre'
 
         # print(cwd)
         subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
@@ -651,7 +656,7 @@ class SLANSGeometry(Geometry):
         with open(Path(fr'{run_save_directory}/qois.json'), "w") as f:
             json.dump(d, f, indent=4, separators=(',', ': '))
 
-    def cavity_multicell_full(self, no_of_modules=1, cells_par=None, fid=None, bc=33,
+    def cavity_multicell_full(self, no_of_modules=1, cells_par=None, fid=None, bc=33, pol='Monopole',
                               f_shift='default', beta=1, n_modes=None, beampipes="None",
                               parentDir=None, projectDir=None, subdir=''):
 
@@ -815,7 +820,11 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = parentDir / fr'exe/SLANS_exe/genmesh2.exe'
+        p = ''
+        if pol != 'Monopole':
+            p = 2
+
+        genmesh_path = parentDir / fr'exe/SLANS{p}_exe/genmesh2.exe'
         filepath = fr'{run_save_directory}/{filename}'
 
         # folder for exe to write to
@@ -842,10 +851,10 @@ class SLANSGeometry(Geometry):
 
         self.write_dtr(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = parentDir / fr'exe/SLANS_exe/slansc'
-        slansm_path = parentDir / fr'exe/SLANS_exe/slansm'
-        slanss_path = parentDir / fr'exe/SLANS_exe/slanss'
-        slansre_path = parentDir / fr'exe/SLANS_exe/slansre'
+        slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc'
+        slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm'
+        slanss_path = parentDir / fr'exe/SLANS{p}_exe/slanss'
+        slansre_path = parentDir / fr'exe/SLANS{p}_exe/slansre'
 
         # print(cwd)
         subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
@@ -926,6 +935,24 @@ class SLANSGeometry(Geometry):
 
     @staticmethod
     def write_dtr(path, filename, beta, f_shift, n_modes):
+        with open(r"{}/{}.dtr".format(path, filename), 'w') as f:
+            f.write(':          Date:02/04/16 \n')
+            f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
+            f.write('{:g} :number of search modes\n'.format(n_modes - 1))
+            f.write('9.99999997E-007 :convergence accuracy\n')
+            f.write('50 :maximum number of iterations\n')
+            f.write('0 :continue iterations or not 1,0\n')
+            f.write(' {:g}. :initial frequency shift MHz\n'.format(f_shift))
+            f.write('1 :wave type 1-E, 2-H\n')
+            f.write(' 1 :struct. 1-cav,2-per.str,3-w.guid.,4-l.-hom.\n')
+            f.write('0 :symmetry yes or not 1,0\n')
+            f.write(' 1 :number of met.surfaces, then:sign and sigma\n')
+            f.write('5  1.\n')
+            f.write('0 : number of mark volumes,then:sign,EPS,MU,TGE,TGM\n')
+            f.write('{:g} : beta (v/c)\n'.format(beta))
+
+    @staticmethod
+    def write_dtr_2(path, filename, beta, f_shift, n_modes):
         with open(r"{}/{}.dtr".format(path, filename), 'w') as f:
             f.write(':          Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
