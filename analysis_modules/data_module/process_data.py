@@ -426,7 +426,7 @@ for path in os.listdir(dir_path):
         results_slans = pd.read_excel(fr"{dir_path}/{path}/results_slans.xlsx", "Sheet1", index_col=0)
 
         df = pd.merge(results_slans, results_abci, on=['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req'])
-        df = df.add_suffix(f'_{path}', axis=0)
+        df = df.add_suffix(f'_{path}')
         ic(df)
 
         df.to_excel(f'{dir_path}/{path}/results_abci_slans.xlsx')
