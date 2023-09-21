@@ -63,7 +63,7 @@ class GeometryInputControl:
         self.ui.cb_Inner_Cell.setCheckState(2)
         self.ui.cb_Inner_Cell.setEnabled(False)
 
-        # create pause and resume1 icons to avoid creating them over and over again
+        # # create pause and resume1 icons to avoid creating them over and over again
         self.pause_icon = QIcon()
         self.pause_icon.addPixmap(QPixmap(f":/icons/icons/PNG/pause.png"), QIcon.Normal, QIcon.Off)
         self.resume_icon = QIcon()
@@ -88,8 +88,7 @@ class GeometryInputControl:
 
         # load shape space
         self.ui.pb_Select_Shape_Space.clicked.connect(
-            lambda: load_shape_space_open_file(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys,
-                                               start_folder=str(self.main_control.projectDir / "Cavities")))
+            lambda: open_file(self.ui.le_Shape_Space, start_folder=str(self.main_control.projectDir / "Cavities")))
         self.ui.le_Shape_Space.textChanged.connect(
             lambda: load_shape_space(self, self.ui.le_Shape_Space, self.ui.cb_Shape_Space_Keys))
 
@@ -206,7 +205,7 @@ class GeometryInputControl:
         Serialise w_GeometryInput
         Parameters
         ----------
-        state_dict: json
+        state_dict: dict
             Dictionary of state of GUI widgets
 
         Returns

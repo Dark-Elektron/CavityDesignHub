@@ -1050,17 +1050,13 @@ def validating(le, default='1'):
 #     return inner_cell, outer_cell_left, outer_cell_right
 
 
-def load_shape_space_open_file(frame_control, le, cb, start_folder=''):
+def open_file(le, start_folder=''):
     """
     Load shape space from json file to Python dictionary, opens a file dialog
     Parameters
     ----------
-    frame_control: QWidget
-        Frame control object
     le: QLineEdit
         QLineEdit object to get filepath from
-    cb: QCheckableComboBox
-        QCheckableComboBox to save geometry keys in the json file to for selection later
     start_folder: str, path
         Opens a file dialog for json file selection
 
@@ -1068,26 +1064,15 @@ def load_shape_space_open_file(frame_control, le, cb, start_folder=''):
     -------
 
     """
-    # clear combobox
-    frame_control.ui.cb_Shape_Space_Keys.clear()
-    frame_control.ui.cb_Shape_Space_Keys.addItem('All')
+
+    if os.path.exists(start_folder):
+        pass
+    else:
+        os.mkdir(start_folder)
 
     filename, _ = QFileDialog.getOpenFileName(None, "Open File", str(start_folder), "Json Files (*.json)")
     try:
         le.setText(filename)
-        with open(filename, 'r') as file:
-            dd = json.load(file)
-
-        if dd:
-            # clear combobox
-            frame_control.ui.cb_Shape_Space_Keys.clear()
-            frame_control.ui.cb_Shape_Space_Keys.addItem('All')
-
-            # populate checkboxes with key
-            for col in dd.keys():
-                cb.addItem(fr'{col}')
-
-            frame_control.loaded_shape_space = dd
 
     except Exception as e:
         print('Failed to open file:: ', e)
@@ -1098,7 +1083,7 @@ def load_shape_space(frame_control, le, cb):
     Load shape space from json file to Python dictionary
     Parameters
     ----------
-    frame_control: QWidget
+    frame_control: GeometryInputControl
         Frame control object
     le: QLineEdit
         QLineEdit object to get filepath from
@@ -1118,8 +1103,8 @@ def load_shape_space(frame_control, le, cb):
 
             if dd:
                 # clear combobox
-                frame_control.ui.cb_Shape_Space_Keys.clear()
-                frame_control.ui.cb_Shape_Space_Keys.addItem('All')
+                cb.clear()
+                cb.addItem('All')
 
                 # populate checkboxes with key
                 for col in dd.keys():

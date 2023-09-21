@@ -149,7 +149,7 @@ def get_beam_spectrum(wp):
              # "bucket_fill": bucket_fill,
              "power ratio": 54.2 / 22.1}
 
-    ic(mucol)
+    # ic(mucol)
 
     wp_dict = {"Z": Z, "W": W, "H": H, "ttbar": ttbar, "MuCol": mucol}
 
@@ -208,66 +208,68 @@ def get_beam_spectrum(wp):
     return beam_spectrum, wp_dict[wp]
 
 
-result_folder = r'D:\CST Studio\LONGITIDUNAL_WAKE_TESLA_CAVITY_100m\Export'
-result_folder = r'D:\CST Studio\5. tt\Wakefield\WL_C3795_4DQW_1FPC\Export'
-result_folder = r'D:\CST Studio\5. tt\Assembly\W_C3795_2DQW_DN_L\Export'
-result_folder = r'D:\CST Studio\5. tt\Assembly\W_C3795_2DQW_DN_L\Export'
-result_folder = r'D:\CST Studio\MuCol_Study\Assembly\Wakefield\NLSF_9_cell_2DQW_Trans\Export'
-# result_folder = r'D:\CST Studio\MuCol_Study\Assembly\Wakefield\ERL_MA_9_cell_2DQW_Trans\Export'
+if __name__ == '__main__':
 
-# beam_spectrum = scipy.io.loadmat('Beam_Spectrum_save.mat')
-# beam_spectrum, wp = get_beam_spectrum('ttbar')
-beam_spectrum, wp = get_beam_spectrum('MuCol')
-f_harm = beam_spectrum["f"]
-N_port = 4
+    result_folder = r'D:\CST Studio\LONGITIDUNAL_WAKE_TESLA_CAVITY_100m\Export'
+    result_folder = r'D:\CST Studio\5. tt\Wakefield\WL_C3795_4DQW_1FPC\Export'
+    result_folder = r'D:\CST Studio\5. tt\Assembly\W_C3795_2DQW_DN_L\Export'
+    result_folder = r'D:\CST Studio\5. tt\Assembly\W_C3795_2DQW_DN_L\Export'
+    result_folder = r'D:\CST Studio\MuCol_Study\Assembly\Wakefield\NLSF_9_cell_2DQW_Trans\Export'
+    # result_folder = r'D:\CST Studio\MuCol_Study\Assembly\Wakefield\ERL_MA_9_cell_2DQW_Trans\Export'
 
-Charge_dist = loadtxt(f"{result_folder}/Particle Beams_ParticleBeam1_Charge distribution spectrum.txt", comments="#", unpack=False)
-Long_Imp = loadtxt(f"{result_folder}/Particle Beams_ParticleBeam1_Wake impedance_Z.txt", comments="#", unpack=False)
+    # beam_spectrum = scipy.io.loadmat('Beam_Spectrum_save.mat')
+    # beam_spectrum, wp = get_beam_spectrum('ttbar')
+    beam_spectrum, wp = get_beam_spectrum('MuCol')
+    f_harm = beam_spectrum["f"]
+    N_port = 4
 
-Charge_dist_interpolated_function = interp1d(Charge_dist[:, 0], Charge_dist[:, 1], 'cubic')
+    Charge_dist = loadtxt(f"{result_folder}/Particle Beams_ParticleBeam1_Charge distribution spectrum.txt", comments="#", unpack=False)
+    Long_Imp = loadtxt(f"{result_folder}/Particle Beams_ParticleBeam1_Wake impedance_Z.txt", comments="#", unpack=False)
 
-Charge_dist_interpolated = Charge_dist_interpolated_function(Long_Imp[:, 0])
+    Charge_dist_interpolated_function = interp1d(Charge_dist[:, 0], Charge_dist[:, 1], 'cubic')
 
-Port_summation = 0
-Port_signal = []
-for i in range(N_port):
-    filename = f"{result_folder}/Power_Excitation (pb)_Power Accepted per Port_Port {i+1}.txt"
-    data = loadtxt(filename, comments="#", unpack=False)
-    data[:, 1] = (2 / np.pi) * data[:, 1] / Charge_dist_interpolated ** 2
-    Port_signal.append(data)
-    Port_summation = Port_summation + abs(data[:, 1])
+    Charge_dist_interpolated = Charge_dist_interpolated_function(Long_Imp[:, 0])
 
-Long_Imp_interp_f = interp1d(Long_Imp[:, 0], Long_Imp[:, 1], 'cubic')
-Long_Imp_interp = Long_Imp_interp_f(f_harm / 1e6)
+    Port_summation = 0
+    Port_signal = []
+    for i in range(N_port):
+        filename = f"{result_folder}/Power_Excitation (pb)_Power Accepted per Port_Port {i+1}.txt"
+        data = loadtxt(filename, comments="#", unpack=False)
+        data[:, 1] = (2 / np.pi) * data[:, 1] / Charge_dist_interpolated ** 2
+        Port_signal.append(data)
+        Port_summation = Port_summation + abs(data[:, 1])
+
+    Long_Imp_interp_f = interp1d(Long_Imp[:, 0], Long_Imp[:, 1], 'cubic')
+    Long_Imp_interp = Long_Imp_interp_f(f_harm / 1e6)
 
 
-Port_interp = np.empty((np.size(f_harm), N_port))
-power_port = np.empty((np.size(f_harm), N_port))
+    Port_interp = np.empty((np.size(f_harm), N_port))
+    power_port = np.empty((np.size(f_harm), N_port))
 
-for i in range(N_port):
-    Port_interp_f = interp1d(Long_Imp[:, 0], Port_signal[i][:, 1], 'cubic')
-    Port_interp[:, i] = Port_interp_f(f_harm / 1e6)
-    power_port[:, i] = 2 * abs(beam_spectrum["I"] ** 2) * abs(Port_interp[:, i])
+    for i in range(N_port):
+        Port_interp_f = interp1d(Long_Imp[:, 0], Port_signal[i][:, 1], 'cubic')
+        Port_interp[:, i] = Port_interp_f(f_harm / 1e6)
+        power_port[:, i] = 2 * abs(beam_spectrum["I"] ** 2) * abs(Port_interp[:, i])
 
-power_imp = 2 * abs(beam_spectrum["I"] ** 2) * Long_Imp_interp
-# ind1 = np.argwhere(f_harm > 0.85e9)[0, 0]
-# ind2 = np.argwhere(f_harm > 2e9)[0, 0]
-# 1300 MHz
-ind1 = np.argwhere(f_harm > (0.85e9)/0.85*1.31)[0, 0]
-ind2 = np.argwhere(f_harm > (2e9)/0.85*1.31)[0, 0]
+    power_imp = 2 * abs(beam_spectrum["I"] ** 2) * Long_Imp_interp
+    # ind1 = np.argwhere(f_harm > 0.85e9)[0, 0]
+    # ind2 = np.argwhere(f_harm > 2e9)[0, 0]
+    # 1300 MHz
+    ind1 = np.argwhere(f_harm > (0.85e9)/0.85*1.31)[0, 0]
+    ind2 = np.argwhere(f_harm > (2e9)/0.85*1.31)[0, 0]
 
-power_imp_distribution = [sum(power_imp[ind1:ind2]), 0, 0]
-power_imp_distribution[1] = sum(power_imp[ind2:])
-power_imp_distribution[2] = power_imp_distribution[0] + power_imp_distribution[1] + power_imp_distribution[1] * wp["power ratio"]
+    power_imp_distribution = [sum(power_imp[ind1:ind2]), 0, 0]
+    power_imp_distribution[1] = sum(power_imp[ind2:])
+    power_imp_distribution[2] = power_imp_distribution[0] + power_imp_distribution[1] + power_imp_distribution[1] * wp["power ratio"]
 
-power_port_distribution = sum(power_port[ind1:ind2, :])
-power_port_distribution = np.c_[power_port_distribution, sum(power_port[ind2:, :])]
-power_port_distribution = np.c_[power_port_distribution, (
-        power_port_distribution[:, 0]
-        + power_port_distribution[:, 1]
-        + power_port_distribution[:, 1] * wp["power ratio"])]
+    power_port_distribution = sum(power_port[ind1:ind2, :])
+    power_port_distribution = np.c_[power_port_distribution, sum(power_port[ind2:, :])]
+    power_port_distribution = np.c_[power_port_distribution, (
+            power_port_distribution[:, 0]
+            + power_port_distribution[:, 1]
+            + power_port_distribution[:, 1] * wp["power ratio"])]
 
-power_port_all = sum(power_port_distribution)
-power_port_percent = 100 * power_port_distribution[:, 2] / power_port_all[2]
+    power_port_all = sum(power_port_distribution)
+    power_port_percent = 100 * power_port_distribution[:, 2] / power_port_all[2]
 
-print(power_port_percent)
+    print(power_port_percent)

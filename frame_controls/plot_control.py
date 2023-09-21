@@ -1,4 +1,5 @@
 import itertools
+import os.path
 
 import pandas as pd
 import scipy
@@ -544,11 +545,16 @@ class PlotControl:
         # animate_height(self.ui.w_Plot_Args, 0, 200, True))
 
         # signal for threshold
-        self.ui.pb_Load_Machine_Parameters.clicked.connect(lambda: self.load_operating_points())
+        self.ui.pb_Load_Machine_Parameters.clicked.connect(
+            lambda: open_file(self.ui.le_Machine_Parameters_Filename,
+                              start_folder=str(self.main_control.projectDir / "OperatingPoints")))
         self.ui.cb_Longitudinal_Threshold.stateChanged.connect(
             lambda: self.calc_limits('monopole', self.ui.ccb_Operation_Points.currentText()))
         self.ui.cb_Transverse_Threshold.stateChanged.connect(
             lambda: self.calc_limits('dipole', self.ui.ccb_Operation_Points.currentText()))
+
+        self.ui.le_Machine_Parameters_Filename.textChanged.connect(
+            lambda: self.load_operating_points(self.ui.le_Machine_Parameters_Filename.text()))
 
         # signal for inset plot
         self.ui.cb_Show_Hide_Inset.clicked.connect(lambda: self.plot_inset())
@@ -1088,7 +1094,6 @@ class PlotControl:
                     else:
                         # plot with modified inputs
                         self.plot_other(self.plot_dict[pid], pid)
-                        print("It is instead in here")
                 else:
                     # pop previous entry from plot and dictionary
                     for vals in self.plot_dict[pid]['plot object'].values():
@@ -1873,9 +1878,7 @@ class PlotControl:
             row = self.ui.tableWidget.currentRow()
             self.row = row
 
-    def load_operating_points(self):
-        filename, _ = QFileDialog.getOpenFileName(
-            None, "Open File", fr"{self.main_control.projectDir}/Cavities", "Json Files (*.json)")
+    def load_operating_points(self, filename):
         try:
             self.ui.le_Machine_Parameters_Filename.setText(filename)
             with open(filename, 'r') as file:
@@ -2039,9 +2042,12 @@ class PlotControl:
                 indx = np.argmin(abs(f_list - pos[0]))
                 x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
 
-                ab = self.plt.add_text(r"$\mathrm{" + fr"{labels[i]}" + r"}$",
-                                       box="Round4", xy=(x, y),
-                                       xycoords='axes fraction', size=14)
+                lab = labels[i].split('_')
+                if len(lab) > 1:
+                    txt = r"$\mathrm{" + fr"{labels[i].split('_')[0]}_" + "\mathrm{" + fr"{labels[i].split('_')[1]}" + r"}}$"
+                else:
+                    txt = r"$\mathrm{" + fr"{labels[i]}" + r"}$"
+                ab = self.plt.add_text(txt, box="Round4", xy=(x, y), xycoords='axes fraction', size=14)
                 # ab = self.ax.text(1, z[200], f'{text[i]}')
 
                 # keep record
@@ -2049,7 +2055,7 @@ class PlotControl:
                 self.baseline_line_objects.append(ab)
 
             self.ax.autoscale(True, axis='y')
-            self.fig.canvas.blit()
+            self.fig.canvas.draw_idle()
             self.fig.canvas.flush_events()
         else:
             # plot baselines
@@ -2087,12 +2093,10 @@ class PlotControl:
             if not inverse:
                 x_out = xlim[0] + xin * x_delta
                 y_out = ylim[0] ** (1 - yin) * ylim[1] ** yin
-                print("\t", x_out, y_out)
             else:
                 x_delta2 = xin - xlim[0]
                 x_out = x_delta2 / x_delta
                 y_out = np.log(yin / ylim[0]) / np.log(ylim[1] / ylim[0])
-                print("\t", x_out, y_out)
 
         else:
             xlim = axis_obj_in.get_xlim()
@@ -2122,7 +2126,8 @@ class PlotControl:
 
         self.ax.autoscale(True, axis='y')
         self.ax.relim()
-        self.plt.blit()
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
 
     def populate_cutoff_combobox(self, cutoff):
         cutoff.clear()

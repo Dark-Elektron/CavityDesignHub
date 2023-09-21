@@ -84,34 +84,36 @@ def calc_tm_analytical(m, n, theta, radius, component='abs'):
         return Ez, Hz
 
 
-plot_settings()
-mpl.rcParams['figure.figsize'] = [5, 5]
+if __name__ == '__main__':
 
-R = 80e-3
-m, n = [1, 1]
+    plot_settings()
+    mpl.rcParams['figure.figsize'] = [5, 5]
 
-# create radial grid
-r = np.linspace(1e-6, R, 500)
-theta = np.linspace(0, 2 * np.pi, 500)
-radius_matrix, theta_matrix = np.meshgrid(r, theta)
-ax = plt.subplot(111, polar=True)
-# ax.plot(theta_matrix, radius_matrix, color='r', ls='none', marker='.')
-Emag, Hmag = calc_te_analytical(m, n, theta_matrix, radius_matrix)
-ax.contour(theta_matrix, radius_matrix, Emag, levels=30, cmap='RdBu')
+    R = 80e-3
+    m, n = [1, 1]
 
-x_tr = 20e-3
-ax.plot(np.linspace(0, 2 * np.pi, 500), x_tr*np.ones(500), c='k')
+    # create radial grid
+    r = np.linspace(1e-6, R, 500)
+    theta = np.linspace(0, 2 * np.pi, 500)
+    radius_matrix, theta_matrix = np.meshgrid(r, theta)
+    ax = plt.subplot(111, polar=True)
+    # ax.plot(theta_matrix, radius_matrix, color='r', ls='none', marker='.')
+    Emag, Hmag = calc_te_analytical(m, n, theta_matrix, radius_matrix)
+    ax.contour(theta_matrix, radius_matrix, Emag, levels=30, cmap='RdBu')
 
-ax.plot([0, 0], [0, x_tr], [0, np.pi/(2*m)], [0, x_tr], c='r', marker='o', mfc='none', lw=2, ms=10)
-ax.plot([0, np.pi/4], [0, x_tr], [0, np.pi/4+np.pi/(2*m)], [0, x_tr], c='b', ls='--', marker='+', lw=2, ms=10)
+    x_tr = 20e-3
+    ax.plot(np.linspace(0, 2 * np.pi, 500), x_tr*np.ones(500), c='k')
 
-# get E field at certa
-ic(calc_te_analytical(m, n, np.pi/15, x_tr))
-ic(calc_te_analytical(m, n, np.pi/15 + np.pi/(2*m), x_tr))
-ic(calc_te_analytical(m, n, np.pi/3, x_tr))
-ic(calc_te_analytical(m, n, np.pi/4+np.pi/(2*m), x_tr))
+    ax.plot([0, 0], [0, x_tr], [0, np.pi/(2*m)], [0, x_tr], c='r', marker='o', mfc='none', lw=2, ms=10)
+    ax.plot([0, np.pi/4], [0, x_tr], [0, np.pi/4+np.pi/(2*m)], [0, x_tr], c='b', ls='--', marker='+', lw=2, ms=10)
 
-# ax.contour(theta_matrix, radius_matrix, Hmag, linestyles='--', cmap='gray')
-# ax.get_xaxis().set_visible(False)
-ax.get_yaxis().set_visible(False)
-plt.show()
+    # get E field at certa
+    ic(calc_te_analytical(m, n, np.pi/15, x_tr))
+    ic(calc_te_analytical(m, n, np.pi/15 + np.pi/(2*m), x_tr))
+    ic(calc_te_analytical(m, n, np.pi/3, x_tr))
+    ic(calc_te_analytical(m, n, np.pi/4+np.pi/(2*m), x_tr))
+
+    # ax.contour(theta_matrix, radius_matrix, Hmag, linestyles='--', cmap='gray')
+    # ax.get_xaxis().set_visible(False)
+    ax.get_yaxis().set_visible(False)
+    plt.show()

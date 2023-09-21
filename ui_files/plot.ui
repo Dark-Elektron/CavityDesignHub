@@ -754,7 +754,7 @@
                           </size>
                          </property>
                          <property name="currentIndex">
-                          <number>2</number>
+                          <number>1</number>
                          </property>
                          <widget class="QWidget" name="pg_Plot_Decorations">
                           <layout class="QGridLayout" name="gridLayout_2">
@@ -771,8 +771,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>230</width>
-                                <height>91</height>
+                                <width>844</width>
+                                <height>808</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1095,7 +1095,7 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>444</width>
+                                <width>845</width>
                                 <height>1190</height>
                                </rect>
                               </property>
@@ -1518,7 +1518,7 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>205</width>
+                                          <width>778</width>
                                           <height>339</height>
                                          </rect>
                                         </property>

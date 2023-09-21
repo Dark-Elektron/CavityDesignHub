@@ -1,11 +1,7 @@
-import os
 import shutil
-import time
 from distutils import dir_util
-from pathlib import Path
 import matplotlib as mpl
 import scipy.io as spio
-
 import scipy.interpolate as sci
 import mplcursors
 import pandas as pd
@@ -14,14 +10,10 @@ from tqdm import tqdm
 import time
 from analysis_modules.tune.tuners.tuner import Tuner
 from analysis_modules.data_module.abci_data import ABCIData
-import numpy as np
-import multiprocessing as mp
-from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from manual_run.slans.slansEigen import SLANSEigen
 from analysis_modules.eigenmode.customEig.run_field_solver import Model
 from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from utils.shared_functions import *
-import psutil
 
 slans_geom = SLANSEigen()
 abci_geom = ABCIGeometry()

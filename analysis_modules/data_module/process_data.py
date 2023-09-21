@@ -415,22 +415,22 @@ if __name__ == '__main__':
     #     # print(val)
 #################################################
 
-#############
-# get simulation data from multiple folders
-dir_path = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data'
-df_all = pd.DataFrame()
-for path in os.listdir(dir_path):
-    if os.path.exists(fr"{dir_path}/{path}/results_abci.xlsx") and os.path.exists(fr"{dir_path}/{path}/results_slans.xlsx"):
-        # load shape space
-        results_abci = pd.read_excel(fr"{dir_path}/{path}/results_abci.xlsx", "Sheet1", index_col=0)
-        results_slans = pd.read_excel(fr"{dir_path}/{path}/results_slans.xlsx", "Sheet1", index_col=0)
+    #############
+    # get simulation data from multiple folders
+    dir_path = r'D:\Dropbox\2D_Codes\ABCI_software\Python_ABCI\Data'
+    df_all = pd.DataFrame()
+    for path in os.listdir(dir_path):
+        if os.path.exists(fr"{dir_path}/{path}/results_abci.xlsx") and os.path.exists(fr"{dir_path}/{path}/results_slans.xlsx"):
+            # load shape space
+            results_abci = pd.read_excel(fr"{dir_path}/{path}/results_abci.xlsx", "Sheet1", index_col=0)
+            results_slans = pd.read_excel(fr"{dir_path}/{path}/results_slans.xlsx", "Sheet1", index_col=0)
 
-        df = pd.merge(results_slans, results_abci, on=['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req'])
-        df = df.add_suffix(f'_{path}')
-        ic(df)
+            df = pd.merge(results_slans, results_abci, on=['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req'])
+            df = df.add_suffix(f'_{path}')
+            ic(df)
 
-        df.to_excel(f'{dir_path}/{path}/results_abci_slans.xlsx')
-        df_all = pd.concat([df_all, df], axis=0)
+            df.to_excel(f'{dir_path}/{path}/results_abci_slans.xlsx')
+            df_all = pd.concat([df_all, df], axis=0)
 
-df_all.to_excel(f'{dir_path}/all_results_abci_slans.xlsx')
+    df_all.to_excel(f'{dir_path}/all_results_abci_slans.xlsx')
 

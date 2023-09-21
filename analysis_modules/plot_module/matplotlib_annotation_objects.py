@@ -180,7 +180,6 @@ class DraggableText:
         DraggableText.lock = self
 
         # draw everything but the selected text and store the pixel buffer
-        print(self.text.figure)
         canvas = self.text.figure.canvas
         axes = self.text.axes
         self.text.set_animated(True)

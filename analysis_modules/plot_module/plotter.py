@@ -353,7 +353,8 @@ class Plot(FigureCanvasQTAgg):
                     # set color picker color
 
                     # check format in which color was given
-                    if isinstance(self.selected_object.get_color(), list) or isinstance(self.selected_object.get_color(), tuple):
+                    if isinstance(self.selected_object.get_color(), list) \
+                            or isinstance(self.selected_object.get_color(), tuple):
                         color = mpl.colors.to_hex(self.selected_object.get_color())
                     else:
                         color = self.selected_object.get_color()
@@ -387,7 +388,6 @@ class Plot(FigureCanvasQTAgg):
         # set press to false
 
     def on_pick(self, event):
-
         ########################################################
         # # legend toggle
         # # on the pick event, find the orig line corresponding to the
@@ -596,14 +596,18 @@ class Plot(FigureCanvasQTAgg):
 
         Parameters
         ----------
-        text
+        text: str
+            Matplotlib annotation text
         box
-        xy
-        xycoords
+        xy: tuple
+            Coordinates of annotation text
+        xycoords: str {data, axis}
+            Coordinate system reference
         xytext
         textcoords
         size
-        rotation
+        rotation: float
+            Annotation text rotation
         arrowprops
 
         Returns
