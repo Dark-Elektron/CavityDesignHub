@@ -2047,37 +2047,38 @@ class PlotControl:
                     txt = r"$\mathrm{" + fr"{labels[i].split('_')[0]}_" + "\mathrm{" + fr"{labels[i].split('_')[1]}" + r"}}$"
                 else:
                     txt = r"$\mathrm{" + fr"{labels[i]}" + r"}$"
-                ab = self.plt.add_text(txt, box="Round4", xy=(x, y), xycoords='axes fraction', size=14)
+
+                ab = self.plt.add_text(txt, box="Square", xy=(x, y), xycoords='axes fraction', size=14)
                 # ab = self.ax.text(1, z[200], f'{text[i]}')
 
                 # keep record
                 self.baseline_line_objects.append(aa[0])
                 self.baseline_line_objects.append(ab)
-
-            self.ax.autoscale(True, axis='y')
-            self.fig.canvas.draw_idle()
-            self.fig.canvas.flush_events()
         else:
             # plot baselines
             for i, z in enumerate(Z_list):
                 aa = self.ax.axhline(z, ls='--', c='k')
 
-                # # transform axes coordinates to data coordinates
-                # pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
+                pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
                 # pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
-                # indx = np.argmin(abs(f_list - pos[0]))
-                # x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
-                # ab = self.plt.add_text(r"$\mathrm{" + fr"{labels[i]}" + r"}$",
-                #                        box="Round4", xy=(x, y),
-                #                        xycoords='axes fraction', size=14)
+                indx = np.argmin(abs(f_list - pos[0]))
+                x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z, True)
+
+                lab = labels[i].split('_')
+                if len(lab) > 1:
+                    txt = r"$\mathrm{" + fr"{labels[i].split('_')[0]}_" + "\mathrm{" + fr"{labels[i].split('_')[1]}" + r"}}$"
+                else:
+                    txt = r"$\mathrm{" + fr"{labels[i]}" + r"}$"
+
+                ab = self.plt.add_text(txt, box="Square", xy=(x, y), xycoords='axes fraction', size=14)
 
                 # keep record
                 self.baseline_line_objects.append(aa)
-                # self.baseline_line_objects.append(ab)
+                self.baseline_line_objects.append(ab)
 
-            self.ax.autoscale(True, axis='y')
-            self.fig.canvas.blit()
-            self.fig.canvas.flush_events()
+        self.ax.autoscale(True, axis='y')
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
 
     @staticmethod
     def axis_data_coords_sys_transform(axis_obj_in, xin, yin, inverse=False):

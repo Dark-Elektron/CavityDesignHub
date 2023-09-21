@@ -61,7 +61,6 @@ fr = FileReader()
 myappid = u'll'  # arbitrary string
 if os.name == 'nt':
     ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
-
 DEBUG = True
 AN_DURATION = 250
 
