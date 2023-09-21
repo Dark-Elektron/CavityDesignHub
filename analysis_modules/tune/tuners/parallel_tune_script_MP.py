@@ -9,10 +9,10 @@ from termcolor import colored
 from analysis_modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 import shutil
 from distutils.dir_util import copy_tree
-from analysis_modules.cavity_analysis.analysis_codes import Analysis
+# from analysis_modules.cavity_analysis.analysis_codes import Analysis
 from utils.file_reader import FileReader
 
-analysis = Analysis()
+# analysis = Analysis()
 slans_geom = SLANSGeometry()
 fr = FileReader()
 
@@ -21,8 +21,10 @@ file_color = 'cyan'
 # DEBUG = True
 DEBUG = True
 
+
 def print_(*arg):
-    if DEBUG: print(colored(fr'\t{arg}', file_color, on_color='on_white'))
+    if DEBUG:
+        print(colored(fr'\t{arg}', file_color, on_color='on_white'))
 
 
 def run_MP():
@@ -74,17 +76,22 @@ def run_MP():
                     processor_shape_space[key] = val
             print(f'Processor {p}: {processor_shape_space}')
 
-            service = mp.Process(target=run_sequential, args=(processor_shape_space, resume, p, parentDir, projectDir, tuner,
-                                                              tune_variable, iter_set, cell_type))
-            service.start()
-            processes.append(service)
+            # service = mp.Process(target=run_sequential,
+            #                      args=(processor_shape_space, resume, p, parentDir, projectDir, tuner,
+            #                            tune_variable, iter_set, cell_type))
+            # service.start()
+            # processes.append(service)
 
         except Exception as e:
             print_("Exception in run_MP::", e)
 
-def run_sequential(pseudo_shape_space_proc, resume, p, parentDir, projectDir, tuner, tune_variable, iter_set, cell_type):
-    analysis.GSSEC(pseudo_shape_space_proc, parentDir, projectDir, resume=resume, proc=p, tuner=tuner,
-                   tune_variable=tune_variable, iter_set=iter_set, cell_type=cell_type) #, last_key=last_key This would have to be tested again #val2
+
+# def run_sequential(pseudo_shape_space_proc, resume, p, parentDir, projectDir, tuner, tune_variable, iter_set,
+#                    cell_type):
+#     analysis.GSSEC(pseudo_shape_space_proc, parentDir, projectDir, resume=resume, proc=p, tuner=tuner,
+#                    tune_variable=tune_variable, iter_set=iter_set,
+#                    cell_type=cell_type)  # , last_key=last_key This would have to be tested again #val2
+
 
 def overwriteFolder(invar, projectDir):
     print_("IT's in overwrite")
@@ -93,14 +100,17 @@ def overwriteFolder(invar, projectDir):
         shutil.rmtree(path)
     os.makedirs(path)
 
+
 def copyFiles(invar, parentDir, projectDir):
     src = fr"{parentDir}\exe\SLANS_exe"
     dst = fr"{projectDir}\SimulationData\SLANS\Cavity_process_{invar}\SLANS_exe"
     copy_tree(src, dst)
 
+
 def remove_readonly(func, path, excinfo):
     os.chmod(path, stat.S_IWRITE)
     func(path)
+
 
 if __name__ == '__main__':
     run_MP()

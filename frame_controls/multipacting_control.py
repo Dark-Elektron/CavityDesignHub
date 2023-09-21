@@ -101,29 +101,13 @@ class MultipactingControl:
         self.initUI()
 
     def initUI(self):
-        # self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
         pass
-        # # create pause and resume icons to avoid creating them over and over again
-        # self.pause_icon = QIcon()
-        # self.pause_icon.addPixmap(QPixmap(f":/icons/icons/PNG/pause.png"), QIcon.Normal, QIcon.Off)
-        # self.resume_icon = QIcon()
-        # self.resume_icon.addPixmap(QPixmap(f":/icons/icons/PNG/resume.png"), QIcon.Normal, QIcon.Off)
-        #
-        # # process state
-        # self.process_state = 'none'
-        # self.run_pause_resume_stop_routine()
-
-        # create progress bar object and add to widget
-        # self.progress_bar = QProgressBar(self.ui.w_Simulation_Controls)
-        # self.progress_bar.setMaximum(100)
-        # self.progress_bar.setValue(0)
-        # self.ui.gl_Simulation_Controls.addWidget(self.progress_bar, 0, 4, 1, 1)
-        # self.progress_bar.hide()
 
     def signals(self):
         self.ui.pb_Generate_Mesh.clicked.connect(lambda: self.generate_mesh())
         self.ui.pb_Generate_Fields.clicked.connect(lambda: self.run_field_solver())
         self.ui.pb_Run_Multipac.clicked.connect(lambda: self.run_mpanalysis(create_inputs=True))
+
         # run multipacting solver
         self.ui.pb_Run.clicked.connect(lambda: self.run())
 
@@ -156,15 +140,12 @@ class MultipactingControl:
         # self.ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.draw_shape_from_shape_space())
 
     def get_parameters(self):
-        # Program save_parameters.m
-        # -------------------------------------------------------------------------
-        # Save the input arguments to file mpgui_inputs.mat.
-        #
-        # -------------------------------------------------------------------------
-        # CALLS TO : check_geodata.m
-        # 15/12/00 : Pasi Yla-Oijala - Rolf Nevanlinna Institute
-        # -------------------------------------------------------------------------
+        """
+        Get Multipac simulation parameters
+        Returns
+        -------
 
+        """
         self.gtype = self.ui.cb_Geometry_Type.currentIndex() + 1
         unit_multiplier = {'Hz': 1, 'kHz': 1e3, 'MHz': 1e6, 'GHz': 1e9}
         unit = self.ui.cb_Frequency_Unit.currentText()
@@ -187,20 +168,6 @@ class MultipactingControl:
         self.flstep = self.ui.dsb_Field_Levels_Step.value()
         self.flmax = self.ui.dsb_Field_Levels_Max.value()
 
-        # save the inputs parameters to the file mpgui_inputs.mat
-        # save mpgui_inputs gtype freq epsr d1 R d2 N v0 emin emax dphi zmin dx ...
-        #      zmax flmin flstep flmax
-        # input_parameters = {'Geometry Type': self.gtype, 'Frequency': freq, 'Relative Epsilon': epsr, 'Grid Constant': d1,
-        #                     'Reflection Coefficient': R, 'Mesh Constant': d2, 'Number of Impacts': N,
-        #                     'Initial Velocity': v0, 'Min Impact Energy': emin, 'Max Impact Energy': emax,
-        #                     'Phase Step': dphi, 'min Z': zmin, 'Space Step': dx, 'max z': zmax,
-        #                     'Min Field Levels': flmin, 'Max Field Levels': flstep, 'Field Levels Step': flmax
-        #                     }
-        # save to json
-
-        # with open('inputs.json', 'w') as f:
-        #     json.dump(input_parameters, f)
-
     def refresh_plots(self):
         self.plot_dict = {}
         if self.ui.rb_Show_Mesh.isChecked():
@@ -209,6 +176,21 @@ class MultipactingControl:
             self.plot_cavity_fields('contour')
 
     def run(self, req_mode_num=None, plot=False, gridcons=0.005):
+        """
+        Run Multipac: Mesh generator -> Field (eigenmode) solver -> Multipacting solver
+        Parameters
+        ----------
+        req_mode_num: int
+            Number of modes to calculate for
+        plot: bool
+            If True, results are plotted as Multipac runs
+        gridcons: int | float
+            Grid constant
+
+        Returns
+        -------
+
+        """
         # self.get_parameters()
         self.shape_space = get_geometric_parameters(self.geo_control, 'ABCI', text_to_list(self.geo_ui.le_Scale.text()))
 
@@ -236,12 +218,6 @@ class MultipactingControl:
 
             # run multipacting simulation
             self.run_mpanalysis()
-
-    def set_name(self, name):
-        self.name = name
-
-    def set_folder(self, folder):
-        self.folder = folder
 
     def create_inputs(self):
         """
@@ -615,18 +591,25 @@ class MultipactingControl:
         self.fig.canvas.flush_events()
 
     def run_field_solver(self, n_modes=None, freq=None, req_mode_num=None, show_plots=True, search=True):
-        # Function program cavity_field(s)
-        # -----------------------------------------------------------------------
-        # Runs the field solver for computing the EM fields in a cavity with
-        # magnetic ends.
-        # INPUT  s : 1 - display messages, 0 - display only a few messages
-        #
-        # -----------------------------------------------------------------------
-        # CALLS TO : print.m, make_model_cavity.m, plot_mesh.m, eigen.m,
-        #            calculate_fields.m, plot_FEM_fields.m, clear_window.m
-        # 10/04/00 : Pasi Yla-Oijala, Rolf Nevanlinna Institute
-        # ------------------------------------------------------------------------
+        """
+        Run eigenmode solver
+        Parameters
+        ----------
+        n_modes: int
+            Number of modes
+        freq: float
+            Target frequency
+        req_mode_num: int
+            Number of modes required
+        show_plots: bool
+            If True, plots are shown at runtime
+        search: bool
+            If True, a the input frequency ``freq`` is searched for and ``req_mode_num`` is ignored
 
+        Returns
+        -------
+
+        """
         if self.geodata is None:
             return
 
@@ -907,6 +890,17 @@ class MultipactingControl:
         self.calculate_QoI()
 
     def run_mpanalysis(self, create_inputs=False):
+        """
+        Runs multipacting analysis
+        Parameters
+        ----------
+        create_inputs: bool
+            Used to create new inputs allowing to reuse already calculated mesh fields
+
+        Returns
+        -------
+
+        """
         if create_inputs:
             # create inputs
             self.create_inputs()
@@ -1000,6 +994,12 @@ class MultipactingControl:
         self.plot_trajectory()
 
     def calculate_counters(self):
+        """
+        Calculates the counter function, final impact energy and enhanced counter function
+        Returns
+        -------
+
+        """
         checks = ['counter_initials.mat', 'counter_flevels.mat', 'param', 'geodata.n', 'secy1',
                   'fieldparam']
         filesexist = True
@@ -1058,6 +1058,12 @@ class MultipactingControl:
             ic("Done calculating counter")
 
     def calculate_distance(self):
+        """
+        Calculates distance map
+        Returns
+        -------
+
+        """
 
         # check_inputs : requires :: counter_intials.mat, counter_flevels.mat, param, geodata.n, secy1
         # check_outputs(0) : requires :: Ccounter.mat, Acounter.mat, Efcounter.mat
@@ -1170,6 +1176,12 @@ class MultipactingControl:
                     print('To calculate an electron trajectory, choose Trajectory in menu Run.')
 
     def calculate_trajectory(self):
+        """
+        Compute particle trajectory for a single field value
+        Returns
+        -------
+
+        """
         # check_inputs: requires: counter_initials.mat, counter_flevels.mat, param, geodata.n, secy1
         # check_distance: requires: Ddistance.mat, distance_flevel.mat
 
@@ -1241,9 +1253,21 @@ class MultipactingControl:
                     ic('To plot the trajectory. Choose Plot Trajectory in menu Outputs.')
 
     def plot_distance(self):
+        """
+        Plots distance map
+        Returns
+        -------
+
+        """
         pass
 
     def plot_initials(self):
+        """
+        Plot initial particle points
+        Returns
+        -------
+
+        """
         self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
         # check if folder exists
         if os.path.exists(self.folder):
@@ -1288,6 +1312,17 @@ class MultipactingControl:
                 self.fig.canvas.flush_events()
 
     def plot_FEM_fields(self, ptype):
+        """
+        Plot calculated field values
+        Parameters
+        ----------
+        ptype: str {'contour', 'arrow'}
+            Plot type
+
+        Returns
+        -------
+
+        """
         ok2 = 0
         if os.path.exists(fr'{self.folder}/geodata.n'):
             files = ['fields.mat', 'Er.mat', 'Ez.mat', 'H.mat', 'fieldparam']
@@ -1426,6 +1461,12 @@ class MultipactingControl:
             ax.set_title(r'Electric field |$E$| [V/m]')
 
     def plot_sey(self):
+        """
+        Plots the secondary emission yield (SEY) curve
+        Returns
+        -------
+
+        """
         fig, ax = plt.subplots()
         x_label = "Incident Energy [eV]"
         y_label = "SEY"
@@ -1450,6 +1491,12 @@ class MultipactingControl:
         plt.show()
 
     def reset_plot(self):
+        """
+        Resets plot
+        Returns
+        -------
+
+        """
         # hide all existing lines in plot
         for line in self.ax.lines:
             line.set_visible(True)
@@ -1587,6 +1634,16 @@ class MultipactingControl:
         self.fig.canvas.flush_events()
 
     def plot_trajectory(self, loc='center'):
+        """
+        Plot particle trajectory for single field value
+        Parameters
+        ----------
+        loc
+
+        Returns
+        -------
+
+        """
         fieldparams = self.load_ascii('fieldparam')
         geodata = self.load_ascii('geodata.n')
         param = self.load_ascii('param')
@@ -1728,6 +1785,12 @@ class MultipactingControl:
         return data
 
     def calculate_QoI(self):
+        """
+        Calculate quantities of interest
+        Returns
+        -------
+
+        """
         ic("\t\tCalculating QoIs")
 
         # geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()

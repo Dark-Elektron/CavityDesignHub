@@ -3,7 +3,11 @@ import shutil
 import time
 from distutils import dir_util
 from pathlib import Path
+import matplotlib as mpl
+import scipy.io as spio
 
+import scipy.interpolate as sci
+import mplcursors
 import pandas as pd
 from termcolor import colored
 from tqdm import tqdm
@@ -721,136 +725,136 @@ class Cavity:
                 error('The working point entered is not valid. See below for the proper input structure.')
                 show_valid_operating_point_structure()
 
-    @staticmethod
-    def uq(shape_space, objectives, solver_dict, solver_args_dict):
-        for key, shape in shape_space.items():
-            err = False
-            result_dict_slans, result_dict_abci = {}, {}
-            run_slans, run_abci = False, False
-            slans_obj_list, abci_obj_list = [], []
-            for o in objectives:
-
-                if o[1] in ["Req", "freq", "Q", "E", "R/Q", "Epk/Eacc", "Bpk/Eacc"]:
-                    result_dict_slans[o[1]] = {'expe': [], 'stdDev': []}
-                    run_slans = True
-                    slans_obj_list.append(o)
-
-                if o[1].split(' ')[0] in ['ZL', 'ZT', 'k_loss', 'k_kick']:
-                    # ic(o)
-                    result_dict_abci[o[1]] = {'expe': [], 'stdDev': []}
-                    run_abci = True
-                    abci_obj_list.append(o)
-
-            # EXAMPLE: p_true = np.array([1, 2, 3, 4, 5]).T
-            p_true = shape['IC'][0:5]
-            # ic(p_true)
-            rdim = len(p_true)  # How many variabels will be considered as random in our case 5
-            degree = 1
-
-            #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
-            nodes = np.array(0)  # initialization
-            weights = np.array(0)  # initialization
-            flag_stroud = 1
-            if flag_stroud == 1:
-                nodes, weights, bpoly = quad_stroud3(rdim, degree)
-                nodes = 2. * nodes - 1.
-            elif flag_stroud == 2:
-                nodes, weights, bpoly = quad_stroud3(rdim, degree)  # change to stroud 5 later
-                nodes = 2. * nodes - 1.
-            else:
-                ic('flag_stroud==1 or flag_stroud==2')
-
-            #  mean value of geometrical parameters
-            p_init = np.zeros(np.shape(p_true))
-
-            no_parm, no_sims = np.shape(nodes)
-            # ic(no_sims)
-            delta = 0.05  # or 0.1
-
-            if run_abci:
-                # ic("here in ANCI UQ")
-                Ttab_val_f = []
-                solver, solver_args = solver_dict['abci'], solver_args_dict['abci']
-                n_cells = solver_args['n_cells']
-                n_modules = solver_args['n_modules']
-                MROT = solver_args['MROT']
-                MT = solver_args['MT']
-                NFS = solver_args['NFS']
-                UBT = solver_args['UBT']
-                bunch_length = solver_args['bunch_length']
-                DDR_SIG = solver_args['DDR_SIG']
-                DDZ_SIG = solver_args['DDZ_SIG']
-                parentDir = solver_args['parentDir']
-                projectDir = solver_args['projectDir']
-                progress_list = solver_args['progress_list']
-                WG_M = solver_args['WG_M']
-                marker = solver_args['marker']
-
-                proc = solver_args['proc']
-                sub_dir = fr'{key}'  # the simulation runs at the quadrature points
-                # are saved to the key of the mean value run
-                no_error = True
-                for i in range(no_sims):
-                    skip = False
-                    p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
-                    p_init[1] = p_true[1] * (1 + delta * nodes[1, i])
-                    p_init[2] = p_true[2] * (1 + delta * nodes[2, i])
-                    p_init[3] = p_true[3] * (1 + delta * nodes[3, i])
-                    p_init[4] = p_true[4] * (1 + delta * nodes[4, i])
-
-                    par_mid = np.append(p_init, shape['IC'][5:]).tolist()
-                    par_end = par_mid
-
-                    ok = perform_geometry_checks(par_mid, par_end)
-                    if not ok:
-                        no_error = False
-                        break
-
-                    fid = fr'{key}_Q{i}'
-
-                    # check if folder exists and skip if it does
-                    if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{key}\{fid}'):
-                        skip = True
-
-                    if not skip:
-                        #  run your model using SLANC or CST
-                        # # create folders for all keys
-                        solver.createFolder(fid, projectDir, subdir=sub_dir)
-                        for wi in range(MROT):
-                            solver.cavity(n_cells, n_modules, par_mid, par_end, par_end, fid=fid, MROT=wi,
-                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, beampipes=None, bunch_length=bunch_length,
-                                          MT=MT, NFS=NFS, UBT=UBT,
-                                          parentDir=parentDir, projectDir=projectDir, WG_M='',
-                                          marker='', sub_dir=sub_dir
-                                          )
-
-                    # get objective function values
-                    abci_folder = fr'{projectDir}\SimulationData\ABCI\{key}'
-                    if os.path.exists(abci_folder):
-                        # ic(abci_obj_list)
-                        obj_result = get_wakefield_objectives_value(fid, abci_obj_list, abci_folder)
-                        # ic(obj_result)
-
-                        tab_val_f = obj_result
-                        if 'error' in obj_result:
-                            no_error = False
-                            ic(obj_result)
-                            ic("Encountered an error")
-                            break
-                        Ttab_val_f.append(tab_val_f)
-                    else:
-                        no_error = False
-
-                if no_error:
-                    v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)
-                    # append results to dict
-                    # ic(v_expe_fobj, v_stdDev_fobj)
-                    for i, o in enumerate(abci_obj_list):
-                        result_dict_abci[o[1]]['expe'].append(v_expe_fobj[i])
-                        result_dict_abci[o[1]]['stdDev'].append(v_stdDev_fobj[i])
-
-                    with open(fr"{projectDir}\SimulationData\ABCI\{key}\uq.json", 'w') as file:
-                        file.write(json.dumps(result_dict_abci, indent=4, separators=(',', ': ')))
+    # @staticmethod
+    # def uq(shape_space, objectives, solver_dict, solver_args_dict):
+    #     for key, shape in shape_space.items():
+    #         err = False
+    #         result_dict_slans, result_dict_abci = {}, {}
+    #         run_slans, run_abci = False, False
+    #         slans_obj_list, abci_obj_list = [], []
+    #         for o in objectives:
+    #
+    #             if o[1] in ["Req", "freq", "Q", "E", "R/Q", "Epk/Eacc", "Bpk/Eacc"]:
+    #                 result_dict_slans[o[1]] = {'expe': [], 'stdDev': []}
+    #                 run_slans = True
+    #                 slans_obj_list.append(o)
+    #
+    #             if o[1].split(' ')[0] in ['ZL', 'ZT', 'k_loss', 'k_kick']:
+    #                 # ic(o)
+    #                 result_dict_abci[o[1]] = {'expe': [], 'stdDev': []}
+    #                 run_abci = True
+    #                 abci_obj_list.append(o)
+    #
+    #         # EXAMPLE: p_true = np.array([1, 2, 3, 4, 5]).T
+    #         p_true = shape['IC'][0:5]
+    #         # ic(p_true)
+    #         rdim = len(p_true)  # How many variabels will be considered as random in our case 5
+    #         degree = 1
+    #
+    #         #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
+    #         nodes = np.array(0)  # initialization
+    #         weights = np.array(0)  # initialization
+    #         flag_stroud = 1
+    #         if flag_stroud == 1:
+    #             nodes, weights, bpoly = quad_stroud3(rdim, degree)
+    #             nodes = 2. * nodes - 1.
+    #         elif flag_stroud == 2:
+    #             nodes, weights, bpoly = quad_stroud3(rdim, degree)  # change to stroud 5 later
+    #             nodes = 2. * nodes - 1.
+    #         else:
+    #             ic('flag_stroud==1 or flag_stroud==2')
+    #
+    #         #  mean value of geometrical parameters
+    #         p_init = np.zeros(np.shape(p_true))
+    #
+    #         no_parm, no_sims = np.shape(nodes)
+    #         # ic(no_sims)
+    #         delta = 0.05  # or 0.1
+    #
+    #         if run_abci:
+    #             # ic("here in ANCI UQ")
+    #             Ttab_val_f = []
+    #             solver, solver_args = solver_dict['abci'], solver_args_dict['abci']
+    #             n_cells = solver_args['n_cells']
+    #             n_modules = solver_args['n_modules']
+    #             MROT = solver_args['MROT']
+    #             MT = solver_args['MT']
+    #             NFS = solver_args['NFS']
+    #             UBT = solver_args['UBT']
+    #             bunch_length = solver_args['bunch_length']
+    #             DDR_SIG = solver_args['DDR_SIG']
+    #             DDZ_SIG = solver_args['DDZ_SIG']
+    #             parentDir = solver_args['parentDir']
+    #             projectDir = solver_args['projectDir']
+    #             progress_list = solver_args['progress_list']
+    #             WG_M = solver_args['WG_M']
+    #             marker = solver_args['marker']
+    #
+    #             proc = solver_args['proc']
+    #             sub_dir = fr'{key}'  # the simulation runs at the quadrature points
+    #             # are saved to the key of the mean value run
+    #             no_error = True
+    #             for i in range(no_sims):
+    #                 skip = False
+    #                 p_init[0] = p_true[0] * (1 + delta * nodes[0, i])
+    #                 p_init[1] = p_true[1] * (1 + delta * nodes[1, i])
+    #                 p_init[2] = p_true[2] * (1 + delta * nodes[2, i])
+    #                 p_init[3] = p_true[3] * (1 + delta * nodes[3, i])
+    #                 p_init[4] = p_true[4] * (1 + delta * nodes[4, i])
+    #
+    #                 par_mid = np.append(p_init, shape['IC'][5:]).tolist()
+    #                 par_end = par_mid
+    #
+    #                 ok = perform_geometry_checks(par_mid, par_end)
+    #                 if not ok:
+    #                     no_error = False
+    #                     break
+    #
+    #                 fid = fr'{key}_Q{i}'
+    #
+    #                 # check if folder exists and skip if it does
+    #                 if os.path.exists(fr'{projectDir}\SimulationData\ABCI\{key}\{fid}'):
+    #                     skip = True
+    #
+    #                 if not skip:
+    #                     #  run your model using SLANC or CST
+    #                     # # create folders for all keys
+    #                     solver.createFolder(fid, projectDir, subdir=sub_dir)
+    #                     for wi in range(MROT):
+    #                         solver.cavity(n_cells, n_modules, par_mid, par_end, par_end, fid=fid, MROT=wi,
+    #                                       DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, beampipes=None, bunch_length=bunch_length,
+    #                                       MT=MT, NFS=NFS, UBT=UBT,
+    #                                       parentDir=parentDir, projectDir=projectDir, WG_M='',
+    #                                       marker='', sub_dir=sub_dir
+    #                                       )
+    #
+    #                 # get objective function values
+    #                 abci_folder = fr'{projectDir}\SimulationData\ABCI\{key}'
+    #                 if os.path.exists(abci_folder):
+    #                     # ic(abci_obj_list)
+    #                     obj_result = get_wakefield_objectives_value(fid, abci_obj_list, abci_folder)
+    #                     # ic(obj_result)
+    #
+    #                     tab_val_f = obj_result
+    #                     if 'error' in obj_result:
+    #                         no_error = False
+    #                         ic(obj_result)
+    #                         ic("Encountered an error")
+    #                         break
+    #                     Ttab_val_f.append(tab_val_f)
+    #                 else:
+    #                     no_error = False
+    #
+    #             if no_error:
+    #                 v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights)
+    #                 # append results to dict
+    #                 # ic(v_expe_fobj, v_stdDev_fobj)
+    #                 for i, o in enumerate(abci_obj_list):
+    #                     result_dict_abci[o[1]]['expe'].append(v_expe_fobj[i])
+    #                     result_dict_abci[o[1]]['stdDev'].append(v_stdDev_fobj[i])
+    #
+    #                 with open(fr"{projectDir}\SimulationData\ABCI\{key}\uq.json", 'w') as file:
+    #                     file.write(json.dumps(result_dict_abci, indent=4, separators=(',', ': ')))
 
     def set_wall_material(self, wm):
         self.wall_material = wm
@@ -1524,45 +1528,45 @@ class Cavities:
 
         plt.show()
 
-    def plot_ql_vs_pin(self):
-        """
-        Plot loaded quality factor versus input power for fundamental power coupler (FPC)
-
-        Returns
-        -------
-
-        """
-        label = [cav.name for cav in self.cavities_list]
-
-        # geometry
-        n_cells = [cav.n_cells for cav in self.cavities_list]  # 4
-        l_cell = [cav.l_cell_mid for cav in self.cavities_list]  # m
-        G = [cav.G for cav in self.cavities_list]  # 273.2 # 0.00948*Q_factor*(f/1300)**0.5
-        b = [cav.b for cav in self.cavities_list]
-        geometry = [n_cells, l_cell, G, b]
-
-        # QOI
-        R_Q = [cav.R_Q for cav in self.cavities_list]  # 411   # c Ohm linac definition
-        f0 = [cav.op_freq for cav in self.cavities_list]
-        QOI = [f0, R_Q]
-
-        # RF
-        # Vrf = [2*0.1e9, 2*0.1e9, 2*0.75e9]  #   #2*0.75e9
-        # Vrf = [2*0.12e9, 2*0.12e9, 2*1e9, 2*0.44e9]  #   #2*0.75e9 update
-        Vrf = [cav.v_rf for cav in self.cavities_list]  # #ttbar
-        # Eacc = [20e6, 20e6, 20e6]
-        Eacc = [cav.op_field for cav in self.cavities_list]  # update
-        RF = [Eacc, Vrf]
-
-        # MACHINE
-        # I0 = [1390e-3, 1390e-3, 147e-3, 147e-3]  # mA
-        I0 = [WP[cav.wp]['I0 [mA]'] * 1e-3 for cav in self.cavities_list]
-        # rho = [10.76e3, 10.76e3, 10.76e3, 10.76e3]  # bending radius
-        rho = [MACHINE['rho [m]'] for cav in self.cavities_list]  # bending radius
-        E0 = [WP[cav.wp]['E [GeV]'] for cav in self.cavities_list]  # Beam energy GeV
-        machine = [I0, rho, E0]
-
-        self.ql_pin(label, geometry, RF, QOI, machine)
+    # def plot_ql_vs_pin(self):
+    #     """
+    #     Plot loaded quality factor versus input power for fundamental power coupler (FPC)
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #     label = [cav.name for cav in self.cavities_list]
+    #
+    #     # geometry
+    #     n_cells = [cav.n_cells for cav in self.cavities_list]  # 4
+    #     l_cell = [cav.l_cell_mid for cav in self.cavities_list]  # m
+    #     G = [cav.G for cav in self.cavities_list]  # 273.2 # 0.00948*Q_factor*(f/1300)**0.5
+    #     b = [cav.b for cav in self.cavities_list]
+    #     geometry = [n_cells, l_cell, G, b]
+    #
+    #     # QOI
+    #     R_Q = [cav.R_Q for cav in self.cavities_list]  # 411   # c Ohm linac definition
+    #     f0 = [cav.op_freq for cav in self.cavities_list]
+    #     QOI = [f0, R_Q]
+    #
+    #     # RF
+    #     # Vrf = [2*0.1e9, 2*0.1e9, 2*0.75e9]  #   #2*0.75e9
+    #     # Vrf = [2*0.12e9, 2*0.12e9, 2*1e9, 2*0.44e9]  #   #2*0.75e9 update
+    #     Vrf = [cav.v_rf for cav in self.cavities_list]  # #ttbar
+    #     # Eacc = [20e6, 20e6, 20e6]
+    #     Eacc = [cav.op_field for cav in self.cavities_list]  # update
+    #     RF = [Eacc, Vrf]
+    #
+    #     # MACHINE
+    #     # I0 = [1390e-3, 1390e-3, 147e-3, 147e-3]  # mA
+    #     I0 = [WP[cav.wp]['I0 [mA]'] * 1e-3 for cav in self.cavities_list]
+    #     # rho = [10.76e3, 10.76e3, 10.76e3, 10.76e3]  # bending radius
+    #     rho = [MACHINE['rho [m]'] for cav in self.cavities_list]  # bending radius
+    #     E0 = [WP[cav.wp]['E [GeV]'] for cav in self.cavities_list]  # Beam energy GeV
+    #     machine = [I0, rho, E0]
+    #
+    #     self.ql_pin(label, geometry, RF, QOI, machine)
 
     def plot_cryomodule_comparison(self):
         """

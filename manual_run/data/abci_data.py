@@ -3,7 +3,6 @@ import os
 import shutil
 import pandas as pd
 from PyQt5.QtWidgets import QMessageBox
-
 import scipy.signal as sps
 import numpy as np
 from termcolor import colored

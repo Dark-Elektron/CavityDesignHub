@@ -1,6 +1,5 @@
 import os
 import shutil
-
 import scipy
 from PyQt5.QtWidgets import QMessageBox
 import multiprocessing as mp
@@ -12,7 +11,7 @@ fr = FileReader()
 
 
 class SLANSData:
-    ##### COMPLETE CODE
+    # COMPLETE CODE
     def __init__(self, dirc, fid, bc):
         self.title_dict = {}
         self.data_dict = {}
@@ -39,7 +38,7 @@ class SLANSData:
         self.get_0D_plot_data()
 
         # print(self.mode_count)
-        for mode in range(1, self.mode_count+1):
+        for mode in range(1, self.mode_count + 1):
             data_dict[mode] = {}
             data_dict[mode] = {}
 
@@ -64,7 +63,6 @@ class SLANSData:
             data_dict[mode] = {}
             data_dict[mode] = {}
 
-
             fields_on_plane_data = {}
             Ez, Er, Emag, Hi = [], [], [], []
             print(fr"{self.path}/Cavity{self.fid}/cavity_{self.bc}.pam")
@@ -72,7 +70,7 @@ class SLANSData:
                 # print(f.read())
                 for l in f:
                     # print([float(x) for x in l.strip().split(' ') if x !=''])
-                    ll = [float(x) for x in l.strip().split(' ') if x !='']
+                    ll = [float(x) for x in l.strip().split(' ') if x != '']
 
                     Ez.append(ll[0])
                     Er.append(ll[1])
@@ -82,7 +80,6 @@ class SLANSData:
                         Hi.append(0)
                     else:
                         Hi.append(ll[3])
-
 
             #### GET R AND Z LIMITS AND INTERVALS
             print("\t\tGetting r and z")
@@ -121,7 +118,7 @@ class SLANSData:
             Hi_mat_masked = np.ma.masked_where(Emag_mat_masked == 0, Hi_mat)
 
             Ez_dict = {'R': Rmsh, 'Z': Zmsh, "Ez": Ez_mat_masked}
-            Er_dict = {'R': Rmsh,'Z': Zmsh, "Er": Er_mat_masked}
+            Er_dict = {'R': Rmsh, 'Z': Zmsh, "Er": Er_mat_masked}
             Emag_dict = {'R': Rmsh, 'Z': Zmsh, "Emag": Emag_mat_masked}
             Hi_dict = {'R': Rmsh, 'Z': Zmsh, "Hi": Hi_mat_masked}
 
@@ -258,35 +255,36 @@ class SLANSDataExtraction:
 
                     d_0d = slans_data.get_0D_plot_data()
 
-                    E_stored = d_0d['STORED ENERGY'][mode-1]
-                    Rsh = d_0d['SHUNT IMPEDANCE'][mode-1]  # MOhm
-                    Q = d_0d['QUALITY FACTOR'][mode-1]
-                    Epk = d_0d['MAXIMUM ELEC. FIELD'][mode-1]  # MV/m
-                    Hpk = d_0d['MAXIMUM MAG. FIELD'][mode-1]  # A/m
+                    E_stored = d_0d['STORED ENERGY'][mode - 1]
+                    Rsh = d_0d['SHUNT IMPEDANCE'][mode - 1]  # MOhm
+                    Q = d_0d['QUALITY FACTOR'][mode - 1]
+                    Epk = d_0d['MAXIMUM ELEC. FIELD'][mode - 1]  # MV/m
+                    Hpk = d_0d['MAXIMUM MAG. FIELD'][mode - 1]  # A/m
                     # Vacc = d_0d['ACCELERATION'][mode-1]
-                    Eavg = d_0d['AVERAGE E.FIELD ON AXIS'][mode-1]  # MV/m
-                    Rsh_Q = d_0d['EFFECTIVE IMPEDANCE'][mode-1]  # Ohm
+                    Eavg = d_0d['AVERAGE E.FIELD ON AXIS'][mode - 1]  # MV/m
+                    Rsh_Q = d_0d['EFFECTIVE IMPEDANCE'][mode - 1]  # Ohm
                     # Epk_Eacc = d_0d['KM (Emax/Accel.rate)'][mode-1]  #
                     # Bpk_Eacc = d_0d['KH (Hmax*Z0/Accel.rate)'][mode-1]  # mT/(MV/m)
 
-                    Vacc = np.sqrt(Rsh_Q * E_stored * np.pi * 400.79 * 1e6) * 1e-6 # factor of 2, remember circuit and accelerator definition
-                    Eacc = Vacc/(374*1e-3) # factor of 2, remember circuit and accelerator definition
-                    Epk_Eacc = Epk/(Eacc)
-                    Bpk_Eacc = (Hpk*4*np.pi*1e-7)*1e3/(Eacc)
+                    Vacc = np.sqrt(
+                        Rsh_Q * E_stored * np.pi * 400.79 * 1e6) * 1e-6  # factor of 2, remember circuit and accelerator definition
+                    Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+                    Epk_Eacc = Epk / (Eacc)
+                    Bpk_Eacc = (Hpk * 4 * np.pi * 1e-7) * 1e3 / (Eacc)
 
                     E_stored_arr.append(E_stored)
-                    Rsh_arr.append(2*Rsh) # corrected to accelerator definition
+                    Rsh_arr.append(2 * Rsh)  # corrected to accelerator definition
                     Q_arr.append(Q)
                     Epk_arr.append(Epk)
                     Hpk_arr.append(Hpk)
                     Eacc_arr.append(Eacc)
                     Epk_Eacc_arr.append(Epk_Eacc)
                     Bpk_Eacc_arr.append(Bpk_Eacc)
-                    Rsh_Q_arr.append(2*Rsh_Q) # corrected to accelerator definition
+                    Rsh_Q_arr.append(2 * Rsh_Q)  # corrected to accelerator definition
 
-                    f_0, f_pi = d_0d['FREQUENCY'][0], d_0d['FREQUENCY'][mode-1]
-                    kcc = 2*(f_pi-f_0)/(f_pi+f_0)
-                    kcc_arr.append(kcc*100)
+                    f_0, f_pi = d_0d['FREQUENCY'][0], d_0d['FREQUENCY'][mode - 1]
+                    kcc = 2 * (f_pi - f_0) / (f_pi + f_0)
+                    kcc_arr.append(kcc * 100)
                     append_geom_parameters(value["IC"])
                     key_list.append(key)
 
@@ -319,10 +317,12 @@ class SLANSDataExtraction:
 
                             new_save = False
                         else:
-                            with pd.ExcelWriter(f'{save_excel}_Axis_Fields.xlsx', engine="openpyxl", mode='a') as writer:
+                            with pd.ExcelWriter(f'{save_excel}_Axis_Fields.xlsx', engine="openpyxl",
+                                                mode='a') as writer:
                                 df_axis_field.to_excel(writer, sheet_name=f'{key}')
 
-                            with pd.ExcelWriter(f'{save_excel}_Surface_Fields.xlsx', engine="openpyxl", mode='a') as writer:
+                            with pd.ExcelWriter(f'{save_excel}_Surface_Fields.xlsx', engine="openpyxl",
+                                                mode='a') as writer:
                                 df_surface_field.to_excel(writer, sheet_name=f'{key}')
 
             print(request)
@@ -333,21 +333,26 @@ class SLANSDataExtraction:
 
                 # save excel
                 if save_excel:
-                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req, "alpha": alpha,
-                            f'E_stored_{mode}': E_stored_arr, f'Rsh_{mode}': Rsh_arr, f'Q_{mode}': Q_arr, f'Epk_{mode}': Epk_arr, f'Hpk_{mode}': Hpk_arr, f'Eacc_{mode}': Eacc_arr,
-                            f'Rsh/Q_{mode}': Rsh_Q_arr, f'Epk/Eacc_{mode}': Epk_Eacc_arr, f'Bpk/Eacc_{mode}': Bpk_Eacc_arr, f'kcc_{mode}': kcc_arr}
+                    data = {'key': key_list, 'A': A, 'B': B, 'a': a, 'b': b, 'Ri': Ri, 'L': L, 'Req': Req,
+                            "alpha": alpha,
+                            f'E_stored_{mode}': E_stored_arr, f'Rsh_{mode}': Rsh_arr, f'Q_{mode}': Q_arr,
+                            f'Epk_{mode}': Epk_arr, f'Hpk_{mode}': Hpk_arr, f'Eacc_{mode}': Eacc_arr,
+                            f'Rsh/Q_{mode}': Rsh_Q_arr, f'Epk/Eacc_{mode}': Epk_Eacc_arr,
+                            f'Bpk/Eacc_{mode}': Bpk_Eacc_arr, f'kcc_{mode}': kcc_arr}
 
                     df = pd.DataFrame.from_dict(data)
                     df.to_excel(f'{save_excel}.xlsx', index=False)
 
             if request == '1D node_editor':
-                if not os.path.exists(f'{save_excel}_Axis_Fields.xlsx') and not os.path.exists(f'{save_excel}_Surface_Fields.xlsx'):
+                if not os.path.exists(f'{save_excel}_Axis_Fields.xlsx') and not os.path.exists(
+                        f'{save_excel}_Surface_Fields.xlsx'):
                     get_1D_plot_data()
                 else:
                     print(f"Hey Chief, seems you've already processed the {save_excel} data for this folder. "
                           "Delete the file to reprocess or rename save_excel argument")
 
-    def multiple_folders_data_parallel(self, shape_space, slans_data_folder, proc_count, mode, bc, request, save_excel, temp_folder):
+    def multiple_folders_data_parallel(self, shape_space, slans_data_folder, proc_count, mode, bc, request, save_excel,
+                                       temp_folder):
         # create temporary folder
         if os.path.exists(fr"{temp_folder}"):
             pass
@@ -418,10 +423,10 @@ if __name__ == '__main__':
     Q = data['QUALITY FACTOR'][mode - 1]
     Epk = data['MAXIMUM ELEC. FIELD'][mode - 1]  # MV/m
     Hpk = data['MAXIMUM MAG. FIELD'][mode - 1]  # A/m
-    Vacc = data['ACCELERATION'][mode-1]
+    Vacc = data['ACCELERATION'][mode - 1]
     Eavg = data['AVERAGE E.FIELD ON AXIS'][mode - 1]  # MV/m
     Rsh_Q = data['EFFECTIVE IMPEDANCE'][mode - 1]  # Ohm
-    Epk_Eacc = data['KM (Emax/Accel.rate)'][mode-1]  #
-    Bpk_Eacc = data['KH (Hmax*Z0/Accel.rate)'][mode-1]  # mT/(MV/m)
+    Epk_Eacc = data['KM (Emax/Accel.rate)'][mode - 1]  #
+    Bpk_Eacc = data['KH (Hmax*Z0/Accel.rate)'][mode - 1]  # mT/(MV/m)
 
     print(Epk_Eacc, Bpk_Eacc)

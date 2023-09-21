@@ -8,8 +8,10 @@ slans_geom = SLANSGeometry()
 
 file_color = 'cyan'
 
+
 def print_(*arg):
     print(colored(f'\t\t\t{arg}', file_color))
+
 
 def run_mpi():
     # print_("\tRUNNING MPI")
@@ -29,21 +31,22 @@ def run_mpi():
 
     # share process by rank
     shape_space_len = len(shape_space)
-    share = round(shape_space_len/size)
+    share = round(shape_space_len / size)
 
     keys = list(shape_space.keys())
 
     if rank < size:
-        proc_keys_list = keys[rank*share:rank*share + share]
+        proc_keys_list = keys[rank * share:rank * share + share]
     else:
-        proc_keys_list = keys[rank*share:]
+        proc_keys_list = keys[rank * share:]
 
     # print_("Process {} got {}".format(rank, proc_list))
 
-    for key in proc_keys_list:# get parameters from key
+    for key in proc_keys_list:  # get parameters from key
         try:
             # run slans code
-            slans_geom.cavity(n_cells, n_modules, shape_space[key]['MC'], shape_space[key]['LC'], shape_space[key]['RC'],
+            slans_geom.cavity(n_cells, n_modules, shape_space[key]['MC'], shape_space[key]['LC'],
+                              shape_space[key]['RC'],
                               n_modes=n_modes, fid="{}".format(key), f_shift=f_shift, beampipes=shape_space[key]['BP'],
                               parentDir=parentDir, projectDir=projectDir)
 
@@ -51,6 +54,7 @@ def run_mpi():
             print_("EXCEPTION CAUGHT:: ", e)
             print_("\t\tPROCESS {}, KEY {} COULD NOT COMPLETE THE CODE".format(rank, key))
             pass
+
 
 if __name__ == '__main__':
     # print("\tRUNNING MPI from main")
