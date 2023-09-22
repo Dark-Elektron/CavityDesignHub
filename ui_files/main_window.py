@@ -155,7 +155,7 @@ class Ui_MainWindow(object):
         self.sa_Home.setWidgetResizable(True)
         self.sa_Home.setObjectName("sa_Home")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 1014, 1028))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 955, 1028))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_5 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_5.setSpacing(20)
@@ -330,7 +330,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 565, 958))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 532, 958))
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
         self.gridLayout_3.setObjectName("gridLayout_3")
@@ -354,6 +354,8 @@ class Ui_MainWindow(object):
         self.gridLayout_8.setContentsMargins(-1, 0, -1, 0)
         self.gridLayout_8.setObjectName("gridLayout_8")
         self.label_6 = QtWidgets.QLabel(self.w_Pane)
+        self.label_6.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_6.setObjectName("label_6")
         self.gridLayout_8.addWidget(self.label_6, 7, 1, 1, 1)
         self.pb_rBack = QtWidgets.QPushButton(self.w_Pane)
@@ -392,18 +394,28 @@ class Ui_MainWindow(object):
         self.pb_rEigenmode.setObjectName("pb_rEigenmode")
         self.gridLayout_8.addWidget(self.pb_rEigenmode, 5, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.label = QtWidgets.QLabel(self.w_Pane)
+        self.label.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label.setObjectName("label")
         self.gridLayout_8.addWidget(self.label, 2, 1, 1, 1)
         self.label_7 = QtWidgets.QLabel(self.w_Pane)
+        self.label_7.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_7.setObjectName("label_7")
         self.gridLayout_8.addWidget(self.label_7, 8, 1, 1, 1)
         self.label_5 = QtWidgets.QLabel(self.w_Pane)
+        self.label_5.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_5.setObjectName("label_5")
         self.gridLayout_8.addWidget(self.label_5, 6, 1, 1, 1)
         self.label_3 = QtWidgets.QLabel(self.w_Pane)
+        self.label_3.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_3.setObjectName("label_3")
         self.gridLayout_8.addWidget(self.label_3, 4, 1, 1, 1)
         self.label_4 = QtWidgets.QLabel(self.w_Pane)
+        self.label_4.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_4.setObjectName("label_4")
         self.gridLayout_8.addWidget(self.label_4, 5, 1, 1, 1)
         self.pb_rPlot = QtWidgets.QPushButton(self.w_Pane)
@@ -417,6 +429,8 @@ class Ui_MainWindow(object):
         self.pb_rPlot.setObjectName("pb_rPlot")
         self.gridLayout_8.addWidget(self.pb_rPlot, 9, 0, 1, 1, QtCore.Qt.AlignLeft)
         self.label_8 = QtWidgets.QLabel(self.w_Pane)
+        self.label_8.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_8.setObjectName("label_8")
         self.gridLayout_8.addWidget(self.label_8, 9, 1, 1, 1)
         self.pb_rHome = QtWidgets.QPushButton(self.w_Pane)
@@ -475,9 +489,13 @@ class Ui_MainWindow(object):
         self.pb_rGeometry.setObjectName("pb_rGeometry")
         self.gridLayout_8.addWidget(self.pb_rGeometry, 3, 0, 1, 1)
         self.label_9 = QtWidgets.QLabel(self.w_Pane)
+        self.label_9.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_9.setObjectName("label_9")
         self.gridLayout_8.addWidget(self.label_9, 3, 1, 1, 1)
         self.label_10 = QtWidgets.QLabel(self.w_Pane)
+        self.label_10.setStyleSheet("font: 7pt \"Segoe UI\";\n"
+"color: rgb(255, 255, 255);")
         self.label_10.setObjectName("label_10")
         self.gridLayout_8.addWidget(self.label_10, 10, 1, 1, 1)
         self.gridLayout_4.addWidget(self.w_Pane, 0, 0, 1, 1)

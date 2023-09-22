@@ -11,6 +11,7 @@ class QLatexLabel(QtWidgets.QWidget):
     def __init__(self, text, parent=None):
 
         self.text = text
+        self.text_object = None
 
         if parent is None:
             super().__init__()
@@ -44,31 +45,35 @@ class QLatexLabel(QtWidgets.QWidget):
     def draw_text(self):
         self._figure.clear()
         try:
-            text = self._figure.suptitle(
+            self.text_object = self._figure.suptitle(
                 self.text,
                 x=0.0,
                 y=1.0,
                 horizontalalignment='left',
                 verticalalignment='top',
-                size=11, c='dimgray'  # QtGui.QFont().pointSize() * 1.5
+                size=8, c='dimgray'  # QtGui.QFont().pointSize() * 1.5
             )
         except:
-            text = self._figure.suptitle(
+            self.text_object = self._figure.suptitle(
                 self.text.strip(r"$"),
                 x=0.0,
                 y=1.0,
                 horizontalalignment='left',
                 verticalalignment='top',
-                size=11, c='dimgray'  # QtGui.QFont().pointSize() * 1.5
+                size=8, c='dimgray'  # QtGui.QFont().pointSize() * 1.5
             )
         self._canvas.draw()
 
-        (x0, y0), (x1, y1) = text.get_window_extent().get_points()
+        (x0, y0), (x1, y1) = self.text_object.get_window_extent().get_points()
         w = x1 - x0
         h = y1 - y0
 
         self._figure.set_size_inches(w / 100, h / 100)
         self.setFixedSize(int(w), int(h))
+
+    def set_color(self, color):
+        self.text_object.set_color(color)
+        self._canvas.draw()
 
 # if __name__ == '__main__':
 #     from sys import argv, exit

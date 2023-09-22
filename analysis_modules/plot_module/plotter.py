@@ -190,6 +190,12 @@ class Plot(FigureCanvasQTAgg):
         self.ax.spines['left'].set_color(color)
         self.ax.spines['right'].set_color(color)
 
+        # set legend frame color
+        if self.ax.get_legend():
+            self.ax.get_legend().get_frame().set_edgecolor(color)
+            for text in self.ax.get_legend().get_texts():
+                text.set_color(color)
+
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()
 
@@ -426,7 +432,7 @@ class Plot(FigureCanvasQTAgg):
 
         # vis = not origline.get_visible()
         # origline.set_visible(vis)
-        # # Change the alpha on the line in the legend so we can see what lines
+        # # Change the alpha on the line in the legend, so we can see what lines
         # # have been toggled
         # if vis:
         #     legline.set_alpha(1.0)

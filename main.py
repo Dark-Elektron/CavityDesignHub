@@ -532,6 +532,9 @@ class MainWindow:
         self.geometryview_widget.plot.set_axes_elements_color()
         self.postprocess_widget.ppplot.plt.set_axes_elements_color()
 
+        # change latexlabel colors
+        self.plot_widget.set_latex_text_color()
+
         # if self.ui.hs_Theme.value() == 0:
         #     self.stylesheet_filename = 'qss/aqua.qss'
         #     self.loadStylesheet(self.stylesheet_filename)

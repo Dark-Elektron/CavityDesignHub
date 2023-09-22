@@ -887,7 +887,7 @@
     "plot_le_Plot_Text_2": "Text",
     "plot_dsb_Axvline_X": 0.1,
     "plot_cb_Linestyle": "-",
-    "plot_pb_View_Machines": false,
+    "plot_pb_View_Machines": true,
     "plot_cb_Threshold_Line_Color": "Black",
     "plot_cb_Threshold_Linestyle": "-",
     "plot_cb_Frange_Unit": "MHz",
@@ -1040,7 +1040,7 @@
     "multipacting_cb_Geometry": "3794",
     "multipacting_pb_Plots": true,
     "multipacting_le_ODE_Solver_Tolerance": "1e-3",
-    "plot_le_Xlabel": "$f [MHz]$",
+    "plot_le_Xlabel": "$f ~[\\mathrm{MHz}]$",
     "plot_sb_XLabel_Size": 14,
     "plot_sb_XLabel_Tick_Siz": 14,
     "plot_le_Ylabel": "$Z_{\\parallel, \\perp} ~[\\mathrm{k\\Omega}, \\mathrm{k\\Omega/m}]$",
@@ -1069,5 +1069,6 @@
     "wg_calc_le_R": "150",
     "wg_calc_le_Mode_CWG": "te11",
     "wg_calc_cb_R_Dim": "mm",
-    "mode_num_lineEdit": ""
+    "mode_num_lineEdit": "",
+    "plot_pb_Peaks": true
 }

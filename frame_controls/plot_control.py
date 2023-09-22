@@ -621,7 +621,7 @@ class PlotControl:
         cutoff = QCheckableComboBox()
         cutoff.addItem("All")
         cutoff.setMinimumWidth(150)
-        self.ui.gl_Cutoff.addWidget(cutoff, 2, 0, 1, 1)
+        self.ui.gl_Cutoff.addWidget(cutoff, 2, 1, 1, 1)
         self.populate_cutoff_combobox(cutoff)
 
         self.ui.le_Ri_Cutoff_List.editingFinished.connect(lambda: self.populate_cutoff_combobox(cutoff))
@@ -632,6 +632,7 @@ class PlotControl:
         self.ui.w_Machines_View.hide()
 
         self.populate_plot_elements_table()
+        self.set_latex_text_color()
 
     def plot(self):
         # try:
@@ -673,12 +674,12 @@ class PlotControl:
         lines2, labels2 = self.ax_right.get_legend_handles_labels()
 
         if self.ui.cb_Active_Axis.currentText() == 'Left':
-            self.leg = self.ax.legend(lines + lines2, labels + labels2, loc='lower left', prop={'size': 18})
+            self.leg = self.ax.legend(lines + lines2, labels + labels2, edgecolor='k', facecolor='none', loc='lower left', prop={'size': 18})
 
             if self.ax_right.get_legend() is not None:
                 self.ax_right.get_legend().remove()
         else:
-            self.leg = self.ax_right.legend(lines + lines2, labels + labels2, loc='lower left', prop={'size': 18})
+            self.leg = self.ax_right.legend(lines + lines2, labels + labels2, edgecolor='k', facecolor='none', loc='lower left', prop={'size': 18})
             if self.ax.get_legend() is not None:
                 self.ax.get_legend().remove()
 
@@ -1797,7 +1798,7 @@ class PlotControl:
         self.plot()
 
     def populate_plot_elements_table(self):
-        le_Xlabel = QLineEdit("$f [MHz]$")
+        le_Xlabel = QLineEdit("$f ~\mathrm{[MHz]}$")
         le_Xlabel.setObjectName('le_Xlabel')
         self.ui.tw_Plot_Elements.setCellWidget(0, 2, le_Xlabel)
         self.plot_elements_table['le_Xlabel'] = le_Xlabel
@@ -1853,6 +1854,9 @@ class PlotControl:
         sb_Title_Size.setObjectName('sb_Title_Size')
         self.ui.tw_Plot_Elements.setCellWidget(3, 0, sb_Title_Size)
         self.plot_elements_table['sb_Title_Size'] = sb_Title_Size
+
+        # set completers
+        self.set_completer()
 
     @staticmethod
     def switchRequest(cb_Request, request_dict_long, request_dict_trans, cb_Code):
@@ -2517,7 +2521,7 @@ class PlotControl:
             # remove old legend
             legend_other.remove()
 
-        self.leg = ax_current.legend(lines + lines2, labels, fontsize=legend_size)
+        self.leg = ax_current.legend(lines + lines2, labels, edgecolor='k', facecolor='none', fontsize=legend_size)
 
         self.leg.set_zorder(10)
         self.leg.set_draggable(state=True, use_blit=True)
@@ -2535,6 +2539,46 @@ class PlotControl:
     @staticmethod
     def set_line_properties(line, attr_dict):
         line.set(attr_dict)
+
+    def get_stylesheet(self):
+        return self.w_Plot.styleSheet()
+
+    def set_latex_text_color(self):
+        if self.main_ui.cb_Theme.currentText() not in ['Light VS', 'Solarized Light']:
+            color = 'white'
+        else:
+            color = 'k'
+
+        for i in range(1, 24):
+            eval(f"self.ui.latexLabel_{i}.set_color('{color}')")
+
+    def set_completer(self):
+        # set XLabel completer
+        names = [r"$f ~[\mathrm{MHz}]$"]
+        completer = QCompleter(names)
+        self.plot_elements_table['le_Xlabel'].setCompleter(completer)
+
+        # set YLabel completer
+        names = [r"$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$",
+                 r"$Z_{\parallel} ~[\mathrm{k\Omega}]$",
+                 r"$Z_{\perp} ~[\mathrm{\mathrm{k\Omega/m}]$", r"$S~\mathrm{[dB]}$"]
+
+        completer = QCompleter(names)
+        self.plot_elements_table['le_Ylabel'].setCompleter(completer)
+
+        # set legend completer
+        names = [r"Monopole",
+                 r"Monopole%%Dipole",
+                 r"Monopole%%Dipole%%Quadrupole",
+                 r"Monopole%%Dipole%%Quadrupole%%Sextupole",
+                 r"Monopole%%Dipole%%Quadrupole%%Sextupole%%Octupole",
+                 r"Monopole%%Dipole%%Quadrupole%%Sextupole%%Octupole%%Decapole",
+                 r"$Z_{\parallel} ~[\mathrm{k\Omega}]$",
+                 r"$Z_{\perp} ~[\mathrm{\mathrm{k\Omega/m}]$",
+                 r"$S~\mathrm{[dB]}$"]
+
+        completer = QCompleter(names)
+        self.plot_elements_table['le_Legend'].setCompleter(completer)
 
     def serialise(self, state_dict):
         serialise(state_dict, self.w_Plot, marker='plot')
@@ -2715,6 +2759,3 @@ class PlotControl:
             self.fig.canvas.draw_idle()
         except (KeyError, TypeError) as e:
             print("Could not deserialize plot_control.py: ", e)
-
-    def get_stylesheet(self):
-        return self.w_Plot.styleSheet()
