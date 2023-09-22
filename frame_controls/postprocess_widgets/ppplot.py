@@ -11,6 +11,9 @@ class PPPlot:
         self.ui = Ui_PPPlot()
         self.ui.setupUi(self.w_PPPlot)
 
+        self.main_control = parent.main_control
+        self.main_ui = parent.main_ui
+
         # Plot
         self.plt = Plot(self)
         self.ui.gl_Plot_Area.addWidget(self.plt)
@@ -27,3 +30,6 @@ class PPPlot:
 
     def initUI(self):
         pass
+
+    def get_stylesheet(self):
+        return self.w_PPPlot.styleSheet()

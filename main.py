@@ -85,6 +85,7 @@ class MainWindow:
         self.frames_dict = None
         self.last_frame = None
         self.tray_buttons_dict = None
+
         self.main_win = QMainWindow()
         self.main_win.closeEvent = self.closeEvent
 
@@ -163,8 +164,9 @@ class MainWindow:
         # Dark High Contrast   : DARK_HIGH_CONTRAST
         # stylesheet = qtvsc.load_stylesheet(qtvsc.Theme.DARK_VS)
 
-        stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.last_saved_theme])
-        self.main_win.setStyleSheet(stylesheet)
+        self.stylesheet = qtvsc.load_stylesheet(self.theme_dict[self.last_saved_theme])
+        self.main_win.setStyleSheet(self.stylesheet)
+
         # self.main_win.setStyleSheet("*{font-size: 13px;}")
 
         # self.ui.pb_rHome.enterEvent = self.tray_animation
@@ -525,6 +527,11 @@ class MainWindow:
 
         self.last_saved_theme = self.ui.cb_Theme.currentText()
 
+        # update plot objects color
+        self.plot_widget.plt.set_axes_elements_color()
+        self.geometryview_widget.plot.set_axes_elements_color()
+        self.postprocess_widget.ppplot.plt.set_axes_elements_color()
+
         # if self.ui.hs_Theme.value() == 0:
         #     self.stylesheet_filename = 'qss/aqua.qss'
         #     self.loadStylesheet(self.stylesheet_filename)
@@ -724,6 +731,9 @@ class MainWindow:
         file.open(QFile.ReadOnly | QFile.Text)
         stylesheet = file.readAll()
         self.main_win.setStyleSheet(str(stylesheet.data(), encoding="utf-8"))
+
+    def get_stylesheet(self):
+        return self.stylesheet
 
     def show(self):
         self.main_win.showMaximized()

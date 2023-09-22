@@ -20,3 +20,6 @@ class GeometryViewControl:
         self.plot.ax.set_aspect('equal', adjustable='datalim')
         self.ui.gl_Plot_Area.addWidget(self.plot)
         self.ui.sp_Left_Right_Container.setStretchFactor(1, 1)
+
+    def get_stylesheet(self):
+        return self.w_GeometryView.styleSheet()

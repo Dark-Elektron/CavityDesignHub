@@ -2716,3 +2716,5 @@ class PlotControl:
         except (KeyError, TypeError) as e:
             print("Could not deserialize plot_control.py: ", e)
 
+    def get_stylesheet(self):
+        return self.w_Plot.styleSheet()

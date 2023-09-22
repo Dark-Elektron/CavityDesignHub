@@ -114,6 +114,7 @@ class Plot(FigureCanvasQTAgg):
 
         # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
         self.toolbar = NavigationToolbar(self, None)
+        self.set_axes_elements_color()
 
         # create new axis
         self.create_secondary_axes()
@@ -164,6 +165,33 @@ class Plot(FigureCanvasQTAgg):
 
     def signals(self):
         pass
+
+    def set_axes_elements_color(self, color=None):
+        if color is None:
+            if self.toolbar.pb_Transparency.isChecked():
+                if self.parent_.main_ui.cb_Theme.currentText() not in ['Light VS', 'Solarized Light']:
+                    color = 'white'
+                else:
+                    color = 'k'
+            else:
+                color = 'k'
+
+        # Set the axis label color
+        self.ax.xaxis.label.set_color(color)
+        self.ax.yaxis.label.set_color(color)
+
+        # Set the tick color
+        self.ax.tick_params(axis='x', colors=color)
+        self.ax.tick_params(axis='y', colors=color)
+
+        # Set the spine (border) color
+        self.ax.spines['bottom'].set_color(color)
+        self.ax.spines['top'].set_color(color)
+        self.ax.spines['left'].set_color(color)
+        self.ax.spines['right'].set_color(color)
+
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
 
     def change_scale(self, arg):
         self.ax.set_yscale(arg)

@@ -33,11 +33,12 @@ class MyCustomToolbar(NavigationToolbar):
                      ('Customize', 'Edit axis, curve and image parameters', 'options', 'edit_parameters'),
                      ('Plot format', 'Edit rcParams, curve and image parameters', 'options', 'rcParams'),
                      (None, None, None, None),
-                     ('Linear', 'Save the figure', 'lin', 'linear_scale'),
-                     ('Log', 'Save the figure', 'log', 'log_scale'),
-                     ('Decibel', 'Save the figure', 'dB', 'decibel_scale'),
+                     ('Linear', 'Linear scale', 'lin', 'linear_scale'),
+                     ('Log', 'Log scale', 'log', 'log_scale'),
+                     ('Decibel', 'Decibel', 'dB', 'decibel_scale'),
                      (None, None, None, None),
-                     ('Grid', 'Toggle Grid', 'dB', 'toggle_grid'),
+                     ('Grid', 'Toggle Grid', 'grid', 'toggle_grid'),
+                     ('Transparency', 'Toggle Transparency', 'transparency', 'toggle_transparency'),
                      (None, None, None, None),
                      ("Size", None, None, None),
                      ('Save', 'Save the figure', 'save', 'save_figure'),
@@ -64,9 +65,17 @@ class MyCustomToolbar(NavigationToolbar):
                     self.cb_Save_Plot_Settings.addItem(a)
                 self.addWidget(self.cb_Save_Plot_Settings)
             elif text == 'Grid':
-                self.cb_Grid = QCheckBox()
-                self.cb_Grid.clicked.connect(lambda: self.toggle_grid())
-                self.addWidget(self.cb_Grid)
+                self.pb_Grid = QPushButton()
+                self.pb_Grid.setCheckable(True)
+                self.pb_Grid.setToolTip('Toggle grid')
+                self.pb_Grid.clicked.connect(lambda: self.toggle_grid())
+                self.addWidget(self.pb_Grid)
+            elif text == 'Transparency':
+                self.pb_Transparency = QPushButton()
+                self.pb_Transparency.setCheckable(True)
+                self.pb_Transparency.setToolTip('Toggle transparency')
+                self.pb_Transparency.clicked.connect(lambda: self.toggle_transparency())
+                self.addWidget(self.pb_Transparency)
 
             else:
                 a = self.addAction(self._icon(image_file + '.png'),
@@ -125,7 +134,13 @@ class MyCustomToolbar(NavigationToolbar):
 
                         self.canvas.fig.set_size_inches(width, height)  # , forward=False
 
+                self.canvas.set_axes_elements_color(color='k')
+
+                # change spine, label and ticks to default black color before saving
                 self.canvas.fig.savefig(fileName, transparent=True, bbox_inches='tight', pad_inches=0.2)
+
+                # revert to display color
+                self.canvas.set_axes_elements_color()
 
                 # restore windows size
                 self.canvas.fig.set_size_inches(fig_size[0], fig_size[1])  # actual size = 8*dpi, 6*dpi; dpi = 100
@@ -163,11 +178,26 @@ class MyCustomToolbar(NavigationToolbar):
         pass
 
     def toggle_grid(self):
-        if self.cb_Grid.checkState() == 2:
-            self.canvas.fig.get_axes()[0].grid(True, 'both')
+        if self.pb_Grid.isChecked():
+            for ax in self.canvas.fig.get_axes():
+                ax.grid(True, 'both')
         else:
-            self.canvas.fig.get_axes()[0].grid(False)
-        self.canvas.draw()
+            for ax in self.canvas.fig.get_axes():
+                ax.grid(False)
+
+        self.canvas.draw_idle()
+        self.canvas.flush_events()
+
+    def toggle_transparency(self):
+        if self.pb_Transparency.isChecked():
+            for ax in self.canvas.fig.get_axes():
+                ax.set_facecolor('none')
+            self.canvas.fig.set_facecolor('none')
+        else:
+            for ax in self.canvas.fig.get_axes():
+                ax.set_facecolor('white')
+            self.canvas.fig.set_facecolor('white')
+        self.canvas.set_axes_elements_color()
 
     def rcParams(self):
         # pop up plot properties widget

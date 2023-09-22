@@ -17,13 +17,14 @@ class QLatexLabel(QtWidgets.QWidget):
         else:
             super().__init__(parent=parent)
 
-        self.l = QVBoxLayout(self)
-        self.l.setContentsMargins(0, 0, 0, 0)
+        self.ll = QVBoxLayout(self)
+        self.ll.setContentsMargins(0, 0, 0, 0)
 
         r, g, b, a = self.palette().base().color().getRgbF()
-        self._figure = Figure(edgecolor=(r, g, b), facecolor=(r, g, b))
+        self._figure = Figure(edgecolor=(r, g, b), facecolor='none')
         self._canvas = FigureCanvas(self._figure)
-        self.l.addWidget(self._canvas)
+        # self._canvas.setStyleSheet("background-color:transparent;")
+        self.ll.addWidget(self._canvas)
         self.draw_text()
 
     def get_text(self):
@@ -49,7 +50,7 @@ class QLatexLabel(QtWidgets.QWidget):
                 y=1.0,
                 horizontalalignment='left',
                 verticalalignment='top',
-                size=11 #QtGui.QFont().pointSize() * 1.5
+                size=11, c='dimgray'  # QtGui.QFont().pointSize() * 1.5
             )
         except:
             text = self._figure.suptitle(
@@ -58,7 +59,7 @@ class QLatexLabel(QtWidgets.QWidget):
                 y=1.0,
                 horizontalalignment='left',
                 verticalalignment='top',
-                size=11 #QtGui.QFont().pointSize() * 1.5
+                size=11, c='dimgray'  # QtGui.QFont().pointSize() * 1.5
             )
         self._canvas.draw()
 
