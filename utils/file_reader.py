@@ -59,24 +59,24 @@ class FileReader:
 
     def svl_reader(self, filename):
         dict = {
-              'TITLE': [],
-              'CAVITY RADIUS': [],
-              'LENGTH': [],
-              'FREQUENCY': [],
-              'LENGTH OF WAVE': [],
-              'WAVE VALUE': [],
-              'QUALITY FACTOR': [],
-              'STORED ENERGY': [],
-              'TRANSIT TIME': [],
-              'EFFECTIVE IMPEDANCE': [],
-              'SHUNT IMPEDANCE': [],
-              'MAXIMUM MAG. FIELD': [],
-              'MAXIMUM ELEC. FIELD': [],
-              'ACCELERATION': [],
-              'ACCELERATION RATE': [],
-              'AVERAGE E.FIELD ON AXIS': [],
-              'KM (Emax/Accel.rate)': [],
-              'KH (Hmax*Z0/Accel.rate)': [],
+            'TITLE': [],
+            'CAVITY RADIUS': [],
+            'LENGTH': [],
+            'FREQUENCY': [],
+            'LENGTH OF WAVE': [],
+            'WAVE VALUE': [],
+            'QUALITY FACTOR': [],
+            'STORED ENERGY': [],
+            'TRANSIT TIME': [],
+            'EFFECTIVE IMPEDANCE': [],
+            'SHUNT IMPEDANCE': [],
+            'MAXIMUM MAG. FIELD': [],
+            'MAXIMUM ELEC. FIELD': [],
+            'ACCELERATION': [],
+            'ACCELERATION RATE': [],
+            'AVERAGE E.FIELD ON AXIS': [],
+            'KM (Emax/Accel.rate)': [],
+            'KH (Hmax*Z0/Accel.rate)': [],
         }
         with open(filename, 'r') as f:
             data = f.readlines()
@@ -135,6 +135,86 @@ class FileReader:
 
         return dict
 
+    def sv2_reader(self, filename):
+        dict = {
+            'Number of azimuth variation': [],
+            'Frequency': [],
+            'Length of wave': [],
+            'Wave value': [],
+            'Quality factor': [],
+            'Stored energy': [],
+            'Transverse impedance/Q': [],
+            'Eff.transverce impedance': [],
+            'Eff.shunt tran.impedance': [],
+            'Enmax/Hrmax': [],
+            'Enmax': [],
+            'Zemax(cm), Remax(cm)': [],
+            'Htmax': [],
+            'Zhmax(cm), Rhmax(cm)': [],
+            'Htmax/Heff': [],
+            'Hrmin(A/m), Z(cm)': [],
+            'Hrmax(A/m), Z(cm)': []
+        }
+
+        with open(filename, 'r') as f:
+            data = f.readlines()
+            for i, line in enumerate(data):
+                if 'Number of azimuth variation' in line:
+                    dict['Number of azimuth variation'].append(self._process_line(line, 'Number of azimuth variation'))
+
+                if 'Frequency' in line:
+                    dict['Frequency'].append(self._process_line(line, 'Frequency'))
+
+                if 'Length of wave' in line:
+                    dict['Length of wave'].append(self._process_line(line, 'Length of wave'))
+
+                if 'Wave value' in line:
+                    dict['Wave value'].append(self._process_line(line, 'Wave value'))
+
+                if 'Quality factor' in line:
+                    dict['Quality factor'].append(self._process_line(line, 'Quality factor'))
+
+                if 'Stored energy' in line:
+                    dict['Stored energy'].append(self._process_line(line, 'Stored energy'))
+
+                if 'Transverse impedance/Q' in line:
+                    dict['Transverse impedance/Q'].append(self._process_line(line, 'Transverse impedance/Q'))
+
+                if 'Eff.transverce impedance' in line:
+                    dict['Eff.transverce impedance'].append(self._process_line(line, 'Eff.transverce impedance'))
+
+                if 'Eff.shunt tran.impedance' in line:
+                    dict['Eff.shunt tran.impedance'].append(self._process_line(line, 'Eff.shunt tran.impedance'))
+
+                if 'Enmax/Hrmax' in line:
+                    dict['Enmax/Hrmax'].append(self._process_line(line, 'Enmax/Hrmax'))
+
+                if 'Enmax' in line:
+                    dict['Enmax'].append(self._process_line(line, 'Enmax'))
+
+                if 'Zemax(cm), Remax(cm)' in line and not 'RATE' in line:
+                    dict['Zemax(cm), Remax(cm)'].append(self._process_line(line, 'Zemax(cm)'))
+                    dict['Zemax(cm), Remax(cm)'].append(self._process_line(line, 'Remax(cm)'))
+
+                if 'Htmax' in line:
+                    dict['Htmax'].append(self._process_line(line, 'Htmax'))
+
+                if 'Zhmax(cm), Rhmax(cm)' in line:
+                    dict['Zhmax(cm), Rhmax(cm)'].append(self._process_line(line, 'Zhmax(cm)'))
+                    dict['Zhmax(cm), Rhmax(cm)'].append(self._process_line(line, 'Rhmax(cm)'))
+
+                if 'Htmax/Heff' in line:
+                    dict['Htmax/Heff'].append(self._process_line(line, 'Htmax/Heff'))
+
+                if 'Hrmin(A/m), Z(cm)' in line:
+                    dict['Hrmin(A/m), Z(cm)'].append(self._process_line(line, 'Hrmin(A/m)'))
+                    dict['Hrmin(A/m), Z(cm)'].append(self._process_line(line, 'Z(cm)'))
+
+                if 'Hrmax(A/m), Z(cm)' in line:
+                    dict['Hrmax(A/m), Z(cm)'].append(self._process_line(line, 'Hrmax(A/m)'))
+                    dict['Hrmax(A/m), Z(cm)'].append(self._process_line(line, 'Z(cm)'))
+        return dict
+
     def top_reader(self):
         pass
 
@@ -150,7 +230,7 @@ class FileReader:
             else:
                 print(f'Expected header length of {len(list(df.columns))}, got {len(header)}.')
 
-        try: # this is to try to return a dataframe of cavity variables if the json file is a shape space
+        try:  # this is to try to return a dataframe of cavity variables if the json file is a shape space
             t = df[:][:1].loc["IC"]
             dd = t.apply(pd.Series)
             dd = dd.set_axis(["A", "B", "ai", "bi", "Ri", "L", "Req", "alpha"], axis=1, inplace=False)

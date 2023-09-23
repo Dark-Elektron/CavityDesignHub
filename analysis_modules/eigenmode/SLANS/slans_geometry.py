@@ -293,7 +293,10 @@ class SLANSGeometry(Geometry):
 
         beta, f_shift, n_modes = 1, f_shift, n_modes + 1
 
-        self.write_dtr(path, filename, beta, f_shift, n_modes)
+        if pol == 'Monopole':
+            self.write_dtr(path, filename, beta, f_shift, n_modes)
+        else:
+            self.write_dtr_2(path, filename, beta, f_shift, n_modes)
 
         slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc{p}'
         slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm{p}'
@@ -315,7 +318,17 @@ class SLANSGeometry(Geometry):
                     subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                     ic("Done with slanss")
 
+                    if pol != 'Monopole':
+                        slanssh_path = parentDir / fr'exe/SLANS{p}_exe/slanssh{p}'
+                        slanse_path = parentDir / fr'exe/SLANS{p}_exe/slanse{p}'
+                        slansr2b_path = parentDir / fr'exe/SLANS{p}_exe/slansr2b{p}'
+                        if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.res'):
+                            subprocess.call([slanssh_path, str(filepath)], cwd=cwd, **kwargs)
+                            subprocess.call([slanse_path, str(filepath)], cwd=cwd, **kwargs)
+                            subprocess.call([slansr2b_path, str(filepath)], cwd=cwd, **kwargs)
+
                     if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.res'):
+                        ic('Starting slansre')
                         subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                         ic("Done with slansre")
 
@@ -327,72 +340,102 @@ class SLANSGeometry(Geometry):
         with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
         try:
-            filename = Path(fr'{run_save_directory}/cavity_33.svl')
-            d = fr.svl_reader(filename)
+            if pol == 'Monopole':
+                filename = Path(fr'{run_save_directory}/{filename}.svl')
+                d = fr.svl_reader(filename)
 
-            Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
-            Freq = d['FREQUENCY'][no_of_cells - 1]
-            E_stored = d['STORED ENERGY'][no_of_cells - 1]
-            Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
-            Q = d['QUALITY FACTOR'][no_of_cells - 1]
-            Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
-            Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
-            # Vacc = dict['ACCELERATION'][no_of_cells - 1]
-            Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
-            r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
-            G = 0.00948 * Q * np.sqrt(Freq / 1300)
-            GR_Q = G * 2 * r_Q
+                Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
+                Freq = d['FREQUENCY'][no_of_cells - 1]
+                E_stored = d['STORED ENERGY'][no_of_cells - 1]
+                Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
+                Q = d['QUALITY FACTOR'][no_of_cells - 1]
+                Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
+                Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
+                # Vacc = dict['ACCELERATION'][no_of_cells - 1]
+                Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
+                r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
+                G = 0.00948 * Q * np.sqrt(Freq / 1300)
+                GR_Q = G * 2 * r_Q
 
-            Vacc = np.sqrt(
-                2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
-            # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
-            norm_length = 2 * mid_cells_par[5]
-            Eacc = Vacc / (
-                    no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
-            Epk_Eacc = Epk / Eacc
-            Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
-            Bpk_Eacc = Bpk / Eacc
+                Vacc = np.sqrt(
+                    2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
+                # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+                norm_length = 2 * mid_cells_par[5]
+                Eacc = Vacc / (
+                        no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
+                Epk_Eacc = Epk / Eacc
+                Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
+                Bpk_Eacc = Bpk / Eacc
 
-            # cel to cell coupling factor
-            f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
-            f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
-            kcc = 2 * f_diff / f_add * 100
+                # cel to cell coupling factor
+                f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
+                f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
+                kcc = 2 * f_diff / f_add * 100
 
-            try:
-                # field flatness
-                ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
-                # get max in each cell
-                peaks, _ = find_peaks(ax_field['y_abs'])
-                E_abs_peaks = ax_field['y_abs'][peaks]
-                # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
-                ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
-            except FileNotFoundError:
-                ff = 0
+                try:
+                    # field flatness
+                    ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
+                    # get max in each cell
+                    peaks, _ = find_peaks(ax_field['y_abs'])
+                    E_abs_peaks = ax_field['y_abs'][peaks]
+                    # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+                    ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
+                except FileNotFoundError:
+                    ff = 0
 
-            d = {
-                "Req [mm]": Req,
-                "Normalization Length [mm]": norm_length,
-                "N Cells": no_of_cells,
-                "freq [MHz]": Freq,
-                "Q []": Q,
-                "E [MV/m]": E_stored,
-                "Vacc [MV]": Vacc,
-                "Eacc [MV/m]": Eacc,
-                "Epk [MV/m]": Epk,
-                "Hpk [A/m]": Hpk,
-                "Bpk [mT]": Bpk,
-                "kcc [%]": kcc,
-                "ff [%]": ff,
-                "Rsh [Ohm]": Rsh,
-                "R/Q [Ohm]": 2 * r_Q,
-                "Epk/Eacc []": Epk_Eacc,
-                "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
-                "G [Ohm]": G,
-                "GR/Q [Ohm^2]": GR_Q
-            }
+                d = {
+                    "Req [mm]": Req,
+                    "Normalization Length [mm]": norm_length,
+                    "N Cells": no_of_cells,
+                    "freq [MHz]": Freq,
+                    "Q []": Q,
+                    "E [MV/m]": E_stored,
+                    "Vacc [MV]": Vacc,
+                    "Eacc [MV/m]": Eacc,
+                    "Epk [MV/m]": Epk,
+                    "Hpk [A/m]": Hpk,
+                    "Bpk [mT]": Bpk,
+                    "kcc [%]": kcc,
+                    "ff [%]": ff,
+                    "Rsh [Ohm]": Rsh,
+                    "R/Q [Ohm]": 2 * r_Q,
+                    "Epk/Eacc []": Epk_Eacc,
+                    "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
+                    "G [Ohm]": G,
+                    "GR/Q [Ohm^2]": GR_Q
+                }
 
-            with open(Path(fr'{run_save_directory}/qois.json'), "w") as f:
-                json.dump(d, f, indent=4, separators=(',', ': '))
+                with open(Path(fr'{run_save_directory}/qois.json'), "w") as f:
+                    json.dump(d, f, indent=4, separators=(',', ': '))
+            else:
+                filename = Path(fr'{run_save_directory}/{filename}.sv2')
+                d = fr.sv2_reader(filename)
+
+                no_azimuthal = d['Number of azimuth variation'][no_of_cells - 1]
+                Freq = d['Frequency'][no_of_cells - 1]
+                L = d['Length of wave'][no_of_cells - 1]
+                E_stored = d['Stored energy'][no_of_cells - 1]  # J
+                Q = d['Quality factor'][no_of_cells - 1]
+                r_Q = d['Eff.transverce impedance'][no_of_cells - 1]  # Ohm
+                r_QT = d['Eff.shunt tran.impedance'][no_of_cells - 1]  # Ohm
+                G = 0.00948 * Q * np.sqrt(Freq / 1300)
+                GR_Q = G * 2 * r_Q
+
+                d = {
+                    'Number of azimuth variation': no_azimuthal,
+                    "N Cells": no_of_cells,
+                    "freq [MHz]": Freq,
+                    "Q []": Q,
+                    "Stored energy [J]": E_stored,
+                    "R/Q [Ohm]": 2 * r_Q,
+                    "R/QT [Ohm]": 2 * r_QT,
+                    "G [Ohm]": G,
+                    "GR/Q [Ohm^2]": GR_Q
+                }
+
+                with open(Path(fr'{run_save_directory}/qois2.json'), "w") as f:
+                    json.dump(d, f, indent=4, separators=(',', ': '))
+
         except FileNotFoundError as e:
             print("Simulation failed", e)
 
@@ -935,8 +978,8 @@ class SLANSGeometry(Geometry):
 
     @staticmethod
     def write_dtr(path, filename, beta, f_shift, n_modes):
-        with open(r"{}/{}.dtr".format(path, filename), 'w') as f:
-            f.write(':          Date:02/04/16 \n')
+        with open(fr"{path}/{filename}.dtr", 'w') as f:
+            f.write(':Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
             f.write('{:g} :number of search modes\n'.format(n_modes - 1))
             f.write('9.99999997E-007 :convergence accuracy\n')
@@ -953,14 +996,15 @@ class SLANSGeometry(Geometry):
 
     @staticmethod
     def write_dtr_2(path, filename, beta, f_shift, n_modes):
-        with open(r"{}/{}.dtr".format(path, filename), 'w') as f:
-            f.write(':          Date:02/04/16 \n')
+        with open(fr"{path}/{filename}.dtr", 'w') as f:
+            f.write(':  Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
             f.write('{:g} :number of search modes\n'.format(n_modes - 1))
             f.write('9.99999997E-007 :convergence accuracy\n')
             f.write('50 :maximum number of iterations\n')
             f.write('0 :continue iterations or not 1,0\n')
             f.write(' {:g}. :initial frequency shift MHz\n'.format(f_shift))
+            f.write(' {:g}. :number of azimuth variations\n'.format(1))
             f.write('1 :wave type 1-E, 2-H\n')
             f.write(' 1 :struct. 1-cav,2-per.str,3-w.guid.,4-l.-hom.\n')
             f.write('0 :symmetry yes or not 1,0\n')
@@ -989,8 +1033,11 @@ class SLANSGeometry(Geometry):
         # print(path)
         # print(type(path))
         if os.path.exists(path):
-            shutil.rmtree(path)
-            os.mkdir(path)
+            try:
+                shutil.rmtree(path)
+                os.mkdir(path)
+            except PermissionError:
+                pass
         else:
             os.mkdir(path)
 

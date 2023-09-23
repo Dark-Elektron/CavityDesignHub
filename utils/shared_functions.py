@@ -1743,9 +1743,22 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
     A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(OC)[:7] * scale * 1e-3
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(OC_R)[:7] * scale * 1e-3
 
+    if BP.lower() == 'both':
+        L_bp_l = 4 * L_m
+        L_bp_r = 4 * L_m
+
+    elif BP.lower() == 'left':
+        L_bp_l = 4 * L_m
+        L_bp_r = 0.0001
+
+    elif BP.lower() == 'right':
+        L_bp_l = 0.0001
+        L_bp_r = 4 * L_m
+    else:
+        L_bp_l = 0.0001
+        L_bp_r = 0.0001
+
     step = 1  # step in boundary points in mm
-    L_bp_l = 4 * L_m  # 0.0001  #
-    L_bp_r = 4 * L_m  # 0.0001  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2

@@ -34,6 +34,8 @@ def print_(*arg):
 
 class MultipactingControl:
     def __init__(self, parent):
+        self.secy = None
+        self.fid = None
         self.initials = None
         self.folder = None
         self.cwd = None
@@ -104,9 +106,9 @@ class MultipactingControl:
         pass
 
     def signals(self):
-        self.ui.pb_Generate_Mesh.clicked.connect(lambda: self.generate_mesh())
-        self.ui.pb_Generate_Fields.clicked.connect(lambda: self.run_field_solver())
-        self.ui.pb_Run_Multipac.clicked.connect(lambda: self.run_mpanalysis(create_inputs=True))
+        self.ui.pb_Generate_Mesh.clicked.connect(lambda: self.run(which='Generate Mesh'))
+        self.ui.pb_Generate_Fields.clicked.connect(lambda: self.run(which='Generate Fields'))
+        self.ui.pb_Run_Multipacting.clicked.connect(lambda: self.run(which='Run Multipacting'))
 
         # run multipacting solver
         self.ui.pb_Run.clicked.connect(lambda: self.run())
@@ -115,9 +117,9 @@ class MultipactingControl:
         self.ui.rb_Show_H_Field.clicked.connect(lambda: self.plot_cavity_fields('contour'))
         self.ui.rb_Show_Mesh.clicked.connect(lambda: self.plot_mesh())
         self.ui.rb_Show_Initial_Points.clicked.connect(lambda: self.plot_initials())
+        self.ui.rb_Show_Trajectory.clicked.connect(lambda: self.plot_trajectory())
 
         self.ui.rb_Show_None.clicked.connect(lambda: self.hide_plots())
-        self.geo_ui.cb_Shape_Space_Keys.currentTextChanged.connect(lambda: self.update_displayed_geometry_combobox())
         self.ui.pb_Refresh.clicked.connect(lambda: self.refresh_plots())
 
         self.ui.dsb_Initial_Sites_Min.valueChanged.connect(lambda: self.plot_initials())
@@ -131,6 +133,8 @@ class MultipactingControl:
         self.ui.rb_Show_Enhanced_Counter_Function.clicked.connect(
             lambda: self.plot_multipac_triplot('enhanced_counter_function', self.ui.cb_Geometry.currentText()))
 
+        self.main_ui.pb_rMultipacting.clicked.connect(lambda: self.update_displayed_geometry_combobox())
+        self.main_ui.pb_Multipacting_Analysis.clicked.connect(lambda: self.update_displayed_geometry_combobox())
         # cancel
         # self.ui.pb_Cancel.clicked.connect(lambda: self.cancel())
         # self.ui.pb_Pause_Resume.clicked.connect(lambda: self.pause() if
@@ -175,7 +179,7 @@ class MultipactingControl:
         if self.ui.rb_Show_E_Field.isChecked() or self.ui.rb_Show_H_Field.isChecked():
             self.plot_cavity_fields('contour')
 
-    def run(self, req_mode_num=None, plot=False, gridcons=0.005):
+    def run(self, req_mode_num=None, plot=False, gridcons=0.005, which='Run All'):
         """
         Run Multipac: Mesh generator -> Field (eigenmode) solver -> Multipacting solver
         Parameters
@@ -186,6 +190,8 @@ class MultipactingControl:
             If True, results are plotted as Multipac runs
         gridcons: int | float
             Grid constant
+        which: str {'Generate Mesh', 'Generate Fields', 'Run Multipacting', 'Run All'}
+            Selects executable file to call
 
         Returns
         -------
@@ -196,7 +202,8 @@ class MultipactingControl:
 
         # write geometry(ies)
         for fid, value in self.shape_space.items():
-            self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{fid}'
+            self.fid = fid
+            self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{fid}_n{self.geo_ui.le_N_Cells.text()}'
             # create folder
             if not os.path.exists(fr'{self.folder}'):
                 os.mkdir(fr'{self.folder}')
@@ -210,14 +217,18 @@ class MultipactingControl:
             # create inputs
             self.create_inputs()
 
-            # generate mesh
-            self.generate_mesh(plot=True, gridcons=gridcons)
+            if which == 'Generate Mesh' or which == 'Run All':
+                ic('Generating mesh, in here')
+                # generate mesh
+                self.generate_mesh(plot=True, gridcons=gridcons)
 
-            # run field solver
-            self.run_field_solver(freq=self.freq, req_mode_num=req_mode_num, show_plots=True)
+            if which == 'Generate Fields' or which == 'Run All':
+                # run field solver
+                self.run_field_solver(freq=self.freq, req_mode_num=req_mode_num, show_plots=True)
 
-            # run multipacting simulation
-            self.run_mpanalysis()
+            if which == 'Run Multipacting' or which == 'Run All':
+                # run multipacting simulation
+                self.run_mpanalysis()
 
     def create_inputs(self):
         """
@@ -470,126 +481,6 @@ class MultipactingControl:
         if plot:
             self.plot_mesh()
 
-    def plot_mesh(self):
-        """
-        Plot generated mesh
-
-        Returns
-        -------
-
-        """
-
-        self.reset_plot()
-
-        if self.mesh is None:
-            self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
-            self.mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
-
-        if not os.path.exists(fr"{self.folder}\mesh.mat"):
-            ic(['The mesh does not exists. There might have been an error in generating the mesh.'])
-            return
-
-        if not os.path.exists(fr"{self.folder}\fieldparam"):
-            ic('Parameter file fieldparam does not exist.')
-            return
-
-        # gtype = self.fieldparam[0]
-        # if gtype == 1:
-        #     ic('\tPlotting the mesh.')
-        # else:
-        #     ic('\tPlotting the mesh. Blue area for streching.')
-
-        if 'Mesh' not in list(self.plot_dict.keys()):
-            coord = self.mesh['coord']
-            etopol = self.mesh['etopol']
-            alue = self.mesh['alue']
-            tyyppi = self.mesh['tyyppi']
-            boundary = self.mesh['boundary']
-            edges = self.mesh['edges']
-
-            x_min = min(coord[:, 0])
-            x_max = max(coord[:, 0])
-            y_min = min(coord[:, 1])
-            y_max = max(coord[:, 1])
-
-            mesh_plot1 = self.ax.plot([x_min, x_max, x_max, x_min], [y_min, y_min, y_max, y_max], 'k.')[0]
-            mesh_plot1.set_visible(False)
-            self.plot_dict['Mesh'] = [mesh_plot1]
-
-            koko, pois = np.shape(etopol)
-            ala = 0.0
-            X = np.zeros((4, koko))
-            Y = np.zeros((4, koko))
-            C = np.zeros((0, koko))
-            for i in range(koko):
-                n1 = int(etopol[i, 0]) - 1
-                x1 = coord[n1, 0]
-                y1 = coord[n1, 1]
-                n2 = int(etopol[i, 1]) - 1
-                x2 = coord[n2, 0]
-                y2 = coord[n2, 1]
-                n3 = int(etopol[i, 1]) - 1
-                x3 = coord[n3, 0]
-                y3 = coord[n3, 1]
-                X[:, i] = np.array([x1, x2, x3, x1]).T
-                Y[:, i] = np.array([y1, y2, y3, y1]).T
-
-                osa = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
-                ala = ala + osa
-                mesh_plot2 = self.ax.plot([x1, x2, x3, x1], [y1, y2, y3, y1], 'k')[0]
-                mesh_plot2.set_visible(False)
-                self.plot_dict['Mesh'].append(mesh_plot2)
-
-            mask = np.where(alue.T[0] == 0)[0]
-            # mesh_plot3 = self.ax.fill(X[:, mask], Y[:, mask], 'b')
-            # print(mesh_plot3, type(mesh_plot3))
-            # mesh_plot3.set_visible(False)
-            # self.plot_dict['Mesh'].append(mesh_plot3)
-
-            # mask = np.where(tyyppi.T[0] == 1)[0]
-            # mesh_plot4 = self.ax.fill(X[:, mask], Y[:, mask], 'k')[0]
-            # mesh_plot4.set_visible(False)
-            # self.plot_dict['Mesh'].append(mesh_plot4)
-
-            mask = np.where(tyyppi.T[0] == 2)[0]
-            mesh_plot5 = self.ax.fill(X[:, mask], Y[:, mask], 'g')[0]
-            mesh_plot5.set_visible(False)
-            self.plot_dict['Mesh'].append(mesh_plot5)
-
-            mask = np.where(edges[:, 2] > 0)[0]  # no bouncing
-            for i in range(len(mask)):
-                i1 = int(edges[mask[i], 0]) - 1
-                i2 = int(edges[mask[i], 1]) - 1
-
-                mesh_plot6 = self.ax.plot([coord[i1, 0], coord[i2, 0]], [coord[i1, 1], coord[i2, 1]], 'k')[0]
-                mesh_plot6.set_visible(False)
-                self.plot_dict['Mesh'].append(mesh_plot6)
-
-            mask = np.where(boundary == 3)
-            for i in range(len(mask)):
-                mesh_plot7 = self.ax.plot(coord[mask[i], 0], coord[(mask[i] - 1, 1)], 'b*')[0]
-                mesh_plot7.set_visible(False)
-                self.plot_dict['Mesh'].append(mesh_plot7)
-
-            mask = np.where(boundary == 0)[0]
-            mesh_plot8 = self.ax.plot(coord[mask, 0], coord[mask, 1], 'w*')[0]
-            mesh_plot8.set_visible(False)
-            self.plot_dict['Mesh'].append(mesh_plot8)
-
-        if self.ui.rb_Show_Mesh.isChecked():
-            for key, value in self.plot_dict.items():
-                if key == 'Mesh':
-                    for v in value:
-                        v.set_visible(True)
-                    self.ax.set_xlabel('z axis [m]')
-                    self.ax.set_ylabel('r axis [m]')
-                else:
-                    for v in value:
-                        v.set_visible(False)
-
-        self.fig.canvas.draw_idle()
-        self.fig.canvas.flush_events()
-
     def run_field_solver(self, n_modes=None, freq=None, req_mode_num=None, show_plots=True, search=True):
         """
         Run eigenmode solver
@@ -642,12 +533,18 @@ class MultipactingControl:
         # compute and plot the fields
         self.calculate_fields()
 
+        # save normalised eigenvalues for multipacting
+        self.normalize_u()
+
         if show_plots:
             ic("Plotting fields")
             self.plot_FEM_fields('contour')
 
     def update_displayed_geometry_combobox(self):
-        displayed_geoms = self.geo_ui.cb_Shape_Space_Keys.currentText().split(', ')
+        # self.get_parameters()
+        self.shape_space = get_geometric_parameters(self.geo_control, 'ABCI', text_to_list(self.geo_ui.le_Scale.text()))
+        # displayed_geoms = self.geo_ui.cb_Shape_Space_Keys.currentText().split(', ')
+
         # get current text
         text = self.ui.cb_Geometry.currentText()
         text_ccb = self.ui.ccb_Geometry_Plot_Options.currentText()
@@ -658,9 +555,9 @@ class MultipactingControl:
         self.ui.ccb_Geometry_Plot_Options.addItem('All')
 
         # populate combobox
-        for geoms in displayed_geoms:
-            self.ui.cb_Geometry.addItem(geoms)
-            self.ui.ccb_Geometry_Plot_Options.addItem(geoms)
+        for fid in self.shape_space.keys():
+            self.ui.cb_Geometry.addItem(fid)
+            self.ui.ccb_Geometry_Plot_Options.addItem(fid)
 
         # try:
         self.ui.cb_Geometry.setCurrentText(text)  # seems to work without try and exception
@@ -710,15 +607,16 @@ class MultipactingControl:
 
         # !eigenC_bin
         cwd = fr'{self.folder}'
+        ic(cwd, self.parent_dir)
         if self.parent_dir is not None:
             eigenCpath = fr'{self.parent_dir}\exe\own_exe\eigenC_bin.exe'
         else:
             eigenCpath = fr'..\..\..\exe\own_exe\eigenC_bin.exe'
 
         if os.path.exists(eigenCpath):
-            subprocess.call(eigenCpath, cwd=cwd,
-                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-            # subprocess.call(eigenCpath, cwd=cwd)
+            # subprocess.call(eigenCpath, cwd=cwd,
+            #                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            subprocess.call(eigenCpath, cwd=cwd)
         ic("\tDone running eigenC_bin.exe")
 
         cinfo = spio.loadmat(fr"{self.folder}\cinfo.mat")['cinfo'][0]
@@ -781,6 +679,7 @@ class MultipactingControl:
 
         # fieldparam = pd.read_csv(fr"{self.folder}\fieldparam", sep='\s+', header=None).to_numpy().T[0]
         self.eig_freq = eigen_freq
+
         self.fieldparam[1] = eigen_freq
         df = pd.DataFrame(self.fieldparam)
         df.to_csv(fr'{self.folder}\fieldparam', index=False, header=False, float_format='%.7E')
@@ -791,9 +690,6 @@ class MultipactingControl:
                  }
 
         spio.savemat(f"{self.folder}/kama0.mat", kama0, format='4')
-
-        # save normalised eigenvalues for multipacting
-        self.normalize_u()
 
         ic("\t\tDone with eigen")
         return eigen_freq
@@ -889,7 +785,7 @@ class MultipactingControl:
 
         self.calculate_QoI()
 
-    def run_mpanalysis(self, create_inputs=False):
+    def run_mpanalysis(self):
         """
         Runs multipacting analysis
         Parameters
@@ -901,9 +797,6 @@ class MultipactingControl:
         -------
 
         """
-        if create_inputs:
-            # create inputs
-            self.create_inputs()
 
         # load geometry and mesh if they are none
         if self.geodata is None:
@@ -916,6 +809,14 @@ class MultipactingControl:
             self.fields = self.load_mat('fields.mat')
         if self.initials is None:
             self.initials = self.load_ascii('initials')
+        if self.secy is None:
+            # check if an secy exist in the folder otherwise load from exe folder
+            if os.path.exists(fr'{self.folder}/secy1'):
+                self.secy = self.load_ascii(fr'secy1')
+            else:
+                self.secy = pd.read_csv(fr'{self.parent_dir}\exe\own_exe\secy1', sep='\s+', header=None).to_numpy()
+                # write to folder
+                self.save_ascii(self.secy, fr'secy1')
 
         # if len(varargin) < 1:
         #     s = 1
@@ -1052,7 +953,8 @@ class MultipactingControl:
                 loaded.append(self.load_ascii(f))
             #
             # save Ccounter C, Acounter A, Atcounter At, Efcounter Ef
-            for n, (f1, f2) in enumerate(zip(['C', 'A', 'At', 'Ef'], ['Ccounter', 'Acounter', 'Atcounter', 'Efcounter'])):
+            for n, (f1, f2) in enumerate(
+                    zip(['C', 'A', 'At', 'Ef'], ['Ccounter', 'Acounter', 'Atcounter', 'Efcounter'])):
                 self.save_mat({f1: loaded[n]}, fr'{f2}.mat')
 
             ic("Done calculating counter")
@@ -1076,6 +978,7 @@ class MultipactingControl:
                 print(fr'{ch} is missing. Choose Counter Functions in menu Run.')
 
         if filesexist:
+            ic('Field exists for distance calculation')
             # load_output_data
             filenames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
                          "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
@@ -1239,7 +1142,7 @@ class MultipactingControl:
 
                     initials = initials[yi0, :]
                     # save -ascii initials initials
-                    self.save_ascii(initials, 'initials')
+                    self.save_ascii(initials, 'initials', transpose=True)
 
                     self.redefine_magnetic_walls_as_artificial_walls()
 
@@ -1268,48 +1171,177 @@ class MultipactingControl:
         -------
 
         """
-        self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
+        self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.fid}_n{self.geo_ui.le_N_Cells.text()}'
+
         # check if folder exists
+        ok = 1
         if os.path.exists(self.folder):
-            self.geodata = self.load_ascii('geodata.n')
+            try:
+                self.geodata = self.load_ascii('geodata.n')
+            except FileNotFoundError:
+                ok = 0
             self.create_inputs()
+            if ok:
+                # Check if fieldparam file exists
+                file_exists = os.path.exists(fr'{self.folder}/fieldparam')
+                if file_exists > 0:
+                    # Load fieldparam file
+                    n = len(self.geodata)
+                    gr = self.geodata[3:, 0]
+                    gz = self.geodata[3:, 1]
+                    ir = self.initials[:, 0]
+                    iz = self.initials[:, 1]
+                    m = len(ir)
 
-            # Check if fieldparam file exists
-            file_exists = os.path.exists(fr'{self.folder}/fieldparam')
-            if file_exists > 0:
-                # Load fieldparam file
-                n = len(self.geodata)
-                gr = self.geodata[3:, 0]
-                gz = self.geodata[3:, 1]
-                ir = self.initials[:, 0]
-                iz = self.initials[:, 1]
-                m = len(ir)
+                    if self.ui.rb_Show_Initial_Points.isChecked():
+                        if "Initials" in self.plot_dict.keys():
+                            # delete existing points from plot
+                            for line in self.plot_dict["Initials"]:
+                                line.remove()
 
-                if self.ui.rb_Show_Initial_Points.isChecked():
-                    if "Initials" in self.plot_dict.keys():
-                        # delete existing points from plot
-                        for line in self.plot_dict["Initials"]:
-                            line.remove()
+                        initials_plot = self.ax.plot(gz, gr, '-r', iz, ir, 'bo', mfc='none')
+                        self.ax.set_xlabel('z axis [m]')
+                        self.ax.set_ylabel('r axis [m]')
+                        self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
+                        self.plot_dict['Initials'] = initials_plot
 
-                    initials_plot = self.ax.plot(gz, gr, '-r', iz, ir, 'bo', mfc='none')
-                    self.ax.set_xlabel('z axis [m]')
-                    self.ax.set_ylabel('r axis [m]')
-                    self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
-                    self.plot_dict['Initials'] = initials_plot
+                        for key, value in self.plot_dict.items():
+                            if key == 'Initials':
+                                for v in value:
+                                    v.set_visible(True)
+                                self.ax.set_xlabel('z axis [m]')
+                                self.ax.set_ylabel('r axis [m]')
+                                self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
+                            else:
+                                for v in value:
+                                    v.set_visible(False)
 
-                    for key, value in self.plot_dict.items():
-                        if key == 'Initials':
-                            for v in value:
-                                v.set_visible(True)
-                            self.ax.set_xlabel('z axis [m]')
-                            self.ax.set_ylabel('r axis [m]')
-                            self.ax.set_title(f'MultiPac 2.0        Initial Points         number of points ')
-                        else:
-                            for v in value:
-                                v.set_visible(False)
+                    self.fig.canvas.draw_idle()
+                    self.fig.canvas.flush_events()
 
-                self.fig.canvas.draw_idle()
-                self.fig.canvas.flush_events()
+    def plot_mesh(self):
+        """
+        Plot generated mesh
+
+        Returns
+        -------
+
+        """
+
+        self.reset_plot()
+        ok = 1
+        if self.mesh is None:
+            self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}_n{self.geo_ui.le_N_Cells.text()}'
+            try:
+                self.mesh = spio.loadmat(fr"{self.folder}\mesh.mat")
+            except FileNotFoundError:
+                ok = 0
+
+        if not os.path.exists(fr"{self.folder}\mesh.mat"):
+            ic('The mesh does not exists. There might have been an error in generating the mesh.')
+            return
+
+        if ok:
+            if not os.path.exists(fr"{self.folder}\fieldparam"):
+                ic('Parameter file fieldparam does not exist.')
+                return
+
+            # gtype = self.fieldparam[0]
+            # if gtype == 1:
+            #     ic('\tPlotting the mesh.')
+            # else:
+            #     ic('\tPlotting the mesh. Blue area for streching.')
+
+            if 'Mesh' not in list(self.plot_dict.keys()):
+                coord = self.mesh['coord']
+                etopol = self.mesh['etopol']
+                alue = self.mesh['alue']
+                tyyppi = self.mesh['tyyppi']
+                boundary = self.mesh['boundary']
+                edges = self.mesh['edges']
+
+                x_min = min(coord[:, 0])
+                x_max = max(coord[:, 0])
+                y_min = min(coord[:, 1])
+                y_max = max(coord[:, 1])
+
+                mesh_plot1 = self.ax.plot([x_min, x_max, x_max, x_min], [y_min, y_min, y_max, y_max], 'k.')[0]
+                mesh_plot1.set_visible(False)
+                self.plot_dict['Mesh'] = [mesh_plot1]
+
+                koko, pois = np.shape(etopol)
+                ala = 0.0
+                X = np.zeros((4, koko))
+                Y = np.zeros((4, koko))
+                C = np.zeros((0, koko))
+                for i in range(koko):
+                    n1 = int(etopol[i, 0]) - 1
+                    x1 = coord[n1, 0]
+                    y1 = coord[n1, 1]
+                    n2 = int(etopol[i, 1]) - 1
+                    x2 = coord[n2, 0]
+                    y2 = coord[n2, 1]
+                    n3 = int(etopol[i, 1]) - 1
+                    x3 = coord[n3, 0]
+                    y3 = coord[n3, 1]
+                    X[:, i] = np.array([x1, x2, x3, x1]).T
+                    Y[:, i] = np.array([y1, y2, y3, y1]).T
+
+                    osa = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1)
+                    ala = ala + osa
+                    mesh_plot2 = self.ax.plot([x1, x2, x3, x1], [y1, y2, y3, y1], 'k')[0]
+                    mesh_plot2.set_visible(False)
+                    self.plot_dict['Mesh'].append(mesh_plot2)
+
+                mask = np.where(alue.T[0] == 0)[0]
+                # mesh_plot3 = self.ax.fill(X[:, mask], Y[:, mask], 'b')
+                # print(mesh_plot3, type(mesh_plot3))
+                # mesh_plot3.set_visible(False)
+                # self.plot_dict['Mesh'].append(mesh_plot3)
+
+                # mask = np.where(tyyppi.T[0] == 1)[0]
+                # mesh_plot4 = self.ax.fill(X[:, mask], Y[:, mask], 'k')[0]
+                # mesh_plot4.set_visible(False)
+                # self.plot_dict['Mesh'].append(mesh_plot4)
+
+                mask = np.where(tyyppi.T[0] == 2)[0]
+                mesh_plot5 = self.ax.fill(X[:, mask], Y[:, mask], 'g')[0]
+                mesh_plot5.set_visible(False)
+                self.plot_dict['Mesh'].append(mesh_plot5)
+
+                mask = np.where(edges[:, 2] > 0)[0]  # no bouncing
+                for i in range(len(mask)):
+                    i1 = int(edges[mask[i], 0]) - 1
+                    i2 = int(edges[mask[i], 1]) - 1
+
+                    mesh_plot6 = self.ax.plot([coord[i1, 0], coord[i2, 0]], [coord[i1, 1], coord[i2, 1]], 'k')[0]
+                    mesh_plot6.set_visible(False)
+                    self.plot_dict['Mesh'].append(mesh_plot6)
+
+                mask = np.where(boundary == 3)
+                for i in range(len(mask)):
+                    mesh_plot7 = self.ax.plot(coord[mask[i], 0], coord[(mask[i] - 1, 1)], 'b*')[0]
+                    mesh_plot7.set_visible(False)
+                    self.plot_dict['Mesh'].append(mesh_plot7)
+
+                mask = np.where(boundary == 0)[0]
+                mesh_plot8 = self.ax.plot(coord[mask, 0], coord[mask, 1], 'w*')[0]
+                mesh_plot8.set_visible(False)
+                self.plot_dict['Mesh'].append(mesh_plot8)
+
+            if self.ui.rb_Show_Mesh.isChecked():
+                for key, value in self.plot_dict.items():
+                    if key == 'Mesh':
+                        for v in value:
+                            v.set_visible(True)
+                        self.ax.set_xlabel('z axis [m]')
+                        self.ax.set_ylabel('r axis [m]')
+                    else:
+                        for v in value:
+                            v.set_visible(False)
+
+            self.fig.canvas.draw_idle()
+            self.fig.canvas.flush_events()
 
     def plot_FEM_fields(self, ptype):
         """
@@ -1356,109 +1388,112 @@ class MultipactingControl:
         -------
 
         """
-
+        ok = 1
         if self.geodata is None:
-            self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
-            self.geodata = pd.read_csv(fr'{self.folder}\geodata.n', sep='\s+', header=None).to_numpy()
+            self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}_n{self.geo_ui.le_N_Cells.text()}'
+            try:
+                self.geodata = pd.read_csv(fr'{self.folder}\geodata.n', sep='\s+', header=None).to_numpy()
+            except FileNotFoundError:
+                ok = 0
+        if ok:
+            n = len(self.geodata[:, 0])
+            gr = self.geodata[3:n, 0]
+            gz = self.geodata[3:n, 1]
 
-        n = len(self.geodata[:, 0])
-        gr = self.geodata[3:n, 0]
-        gz = self.geodata[3:n, 1]
+            # load the field values
+            # load fields Er Ez H I1 I2 zz rr z r
 
-        # load the field values
-        # load fields Er Ez H I1 I2 zz rr z r
+            if self.fields is None:
+                self.fields = spio.loadmat(fr"{self.folder}\fields.mat")
+            Er = self.fields['Er']
+            Ez = self.fields['Ez']
+            H = self.fields['H']
+            I1 = self.fields['I1']
+            I2 = self.fields['I2']
+            zz = self.fields['zz']
+            rr = self.fields['rr']
+            z = self.fields['z']
+            r = self.fields['r']
 
-        if self.fields is None:
-            self.fields = spio.loadmat(fr"{self.folder}\fields.mat")
-        Er = self.fields['Er']
-        Ez = self.fields['Ez']
-        H = self.fields['H']
-        I1 = self.fields['I1']
-        I2 = self.fields['I2']
-        zz = self.fields['zz']
-        rr = self.fields['rr']
-        z = self.fields['z']
-        r = self.fields['r']
+            # plot the fields
+            if ptype == 'contour':  # a pcolor plot
+                if 'E-Field' not in self.plot_dict.keys():
+                    # ic(I2.shape, I1.shape, Er.shape)
+                    Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
+                    Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
+                    EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2).T
 
-        # plot the fields
-        if ptype == 'contour':  # a pcolor plot
-            if 'E-Field' not in self.plot_dict.keys():
-                # ic(I2.shape, I1.shape, Er.shape)
-                Er = np.reshape(Er, (max(I1.shape), max(I2.shape)))
-                Ez = np.reshape(Ez, (max(I1.shape), max(I2.shape)))
-                EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2).T
+                    E_field_plot = self.ax.pcolor(zz, rr, EE, cmap='jet')
+                    E_field_plot_ = self.ax.pcolor(zz, -rr, EE, cmap='jet')
+                    E_field_plot.set_visible(False)
+                    E_field_plot_.set_visible(False)
+                    self.plot_dict['E-Field'] = [E_field_plot, E_field_plot_]
 
-                E_field_plot = self.ax.pcolor(zz, rr, EE, cmap='jet')
-                E_field_plot_ = self.ax.pcolor(zz, -rr, EE, cmap='jet')
-                E_field_plot.set_visible(False)
-                E_field_plot_.set_visible(False)
-                self.plot_dict['E-Field'] = [E_field_plot, E_field_plot_]
+                if 'H-Field' not in self.plot_dict.keys():
+                    HH = np.reshape(H, (max(I1.shape), max(I2.shape))).T
+                    H_field_plot = self.ax.pcolor(zz, rr, HH, cmap='jet')
+                    H_field_plot_ = self.ax.pcolor(zz, -rr, HH, cmap='jet')
+                    H_field_plot.set_visible(False)
+                    H_field_plot_.set_visible(False)
+                    self.plot_dict['H-Field'] = [H_field_plot, H_field_plot_]
 
-            if 'H-Field' not in self.plot_dict.keys():
-                HH = np.reshape(H, (max(I1.shape), max(I2.shape))).T
-                H_field_plot = self.ax.pcolor(zz, rr, HH, cmap='jet')
-                H_field_plot_ = self.ax.pcolor(zz, -rr, HH, cmap='jet')
-                H_field_plot.set_visible(False)
-                H_field_plot_.set_visible(False)
-                self.plot_dict['H-Field'] = [H_field_plot, H_field_plot_]
+                if self.ui.rb_Show_E_Field.isChecked():
+                    for key, value in self.plot_dict.items():
+                        if key == 'E-Field':
+                            for v in value:
+                                v.set_visible(True)
+                            self.ax.set_xlabel('z axis [m]')
+                            self.ax.set_ylabel('r axis [m]')
+                            self.ax.set_title(r'Electric field |$E$| [V/m]')
+                            # self.fig.colorbar(value[0], ax=self.ax)
+                        elif key == 'triplot':
+                            for v in value:
+                                v.remove()
+                            self.plot_dict['triplot'] = []
+                        else:
+                            for v in value:
+                                v.set_visible(False)
 
-            if self.ui.rb_Show_E_Field.isChecked():
-                for key, value in self.plot_dict.items():
-                    if key == 'E-Field':
-                        for v in value:
-                            v.set_visible(True)
-                        self.ax.set_xlabel('z axis [m]')
-                        self.ax.set_ylabel('r axis [m]')
-                        self.ax.set_title(r'Electric field |$E$| [V/m]')
-                        # self.fig.colorbar(value[0], ax=self.ax)
-                    elif key == 'triplot':
-                        for v in value:
-                            v.remove()
-                        self.plot_dict['triplot'] = []
-                    else:
-                        for v in value:
-                            v.set_visible(False)
+                if self.ui.rb_Show_H_Field.isChecked():
+                    for key, value in self.plot_dict.items():
+                        if key == 'H-Field':
+                            for v in value:
+                                v.set_visible(True)
+                            self.ax.set_title(r'Magnetic field |$B_\phi$| [T]')
+                            self.ax.set_xlabel('z axis [m]')
+                            self.ax.set_ylabel('r axis [m]')
+                            # self.fig.colorbar(value[0], ax=self.ax)
+                        elif key == 'triplot':
+                            for v in value:
+                                v.remove()
+                            self.plot_dict['triplot'] = []
+                        else:
+                            for v in value:
+                                v.set_visible(False)
 
-            if self.ui.rb_Show_H_Field.isChecked():
-                for key, value in self.plot_dict.items():
-                    if key == 'H-Field':
-                        for v in value:
-                            v.set_visible(True)
-                        self.ax.set_title(r'Magnetic field |$B_\phi$| [T]')
-                        self.ax.set_xlabel('z axis [m]')
-                        self.ax.set_ylabel('r axis [m]')
-                        # self.fig.colorbar(value[0], ax=self.ax)
-                    elif key == 'triplot':
-                        for v in value:
-                            v.remove()
-                        self.plot_dict['triplot'] = []
-                    else:
-                        for v in value:
-                            v.set_visible(False)
+                # self.cavity_geometry_plot = self.ax.plot(gz, gr, '-b')
+                self.ax.set_yscale('linear')
+                # self.ax.set_xlim(self.xlim[0], self.xlim[1])
+                # self.ax.set_ylim(self.ylim[0], self.ylim[1])
+                self.ax.autoscale()
+                self.ax.set_aspect('equal', adjustable='datalim')
+                self.fig.canvas.draw_idle()
+                self.fig.canvas.flush_events()
 
-            # self.cavity_geometry_plot = self.ax.plot(gz, gr, '-b')
-            self.ax.set_yscale('linear')
-            # self.ax.set_xlim(self.xlim[0], self.xlim[1])
-            # self.ax.set_ylim(self.ylim[0], self.ylim[1])
-            self.ax.autoscale()
-            self.ax.set_aspect('equal', adjustable='datalim')
-            self.fig.canvas.draw_idle()
-            self.fig.canvas.flush_events()
+            else:
+                EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2)
+                fig, ax = plt.subplots()
+                # arrow(F,A,gridcons,'f','s','k')
+                # ic(EE.min(), np.min(EE))
+                skip = slice(None, None, 8)
+                ax.quiver(z[skip], r[skip], Ez[skip], Er[skip], EE[skip], cmap='coolwarm',
+                          norm=colors.LogNorm(vmin=np.min(EE) + 0.1, vmax=np.max(EE)),
+                          minlength=3)
 
-        else:
-            EE = np.sqrt(abs(Er) ** 2 + abs(Ez) ** 2)
-            fig, ax = plt.subplots()
-            # arrow(F,A,gridcons,'f','s','k')
-            ic(EE.min(), np.min(EE))
-            skip = slice(None, None, 8)
-            ax.quiver(z[skip], r[skip], Ez[skip], Er[skip], EE[skip], cmap='coolwarm',
-                      norm=colors.LogNorm(vmin=np.min(EE) + 0.1, vmax=np.max(EE)),
-                      minlength=3)
-
-            ax.plot(gz, gr, '-b')
-            ax.set_xlabel('z axis [m]')
-            ax.set_ylabel('r axis [m]')
-            ax.set_title(r'Electric field |$E$| [V/m]')
+                ax.plot(gz, gr, '-b')
+                ax.set_xlabel('z axis [m]')
+                ax.set_ylabel('r axis [m]')
+                ax.set_title(r'Electric field |$E$| [V/m]')
 
     def plot_sey(self):
         """
@@ -1522,116 +1557,122 @@ class MultipactingControl:
 
         fnames = ["Ccounter.mat", "Acounter.mat", "Atcounter.mat", "Efcounter.mat", "param",
                   "geodata.n", "secy1", "counter_flevels.mat", "counter_initials.mat"]
-        data = self.load_multiple(fnames)
+        ok = 1
+        data = {}
+        try:
+            data = self.load_multiple(fnames)
+        except FileNotFoundError:
+            ok = 0
 
-        A = data["Acounter.mat"]["A"][:, 0]
-        At = data["Atcounter.mat"]["At"]
-        C = data["Ccounter.mat"]["C"][:, 0]
-        Ef = data["Efcounter.mat"]["Ef"][:, 0]
-        flevel = data["counter_flevels.mat"]["flevel"]
-        initials = data["counter_initials.mat"]["initials"]
+        if ok:
+            A = data["Acounter.mat"]["A"][:, 0]
+            At = data["Atcounter.mat"]["At"]
+            C = data["Ccounter.mat"]["C"][:, 0]
+            Ef = data["Efcounter.mat"]["Ef"][:, 0]
+            flevel = data["counter_flevels.mat"]["flevel"]
+            initials = data["counter_initials.mat"]["initials"]
 
-        secy1 = np.array(data["secy1"])
-        Pow = flevel
-        n = len(initials[:, 0]) / 2  # number of initials in the bright set
-        N = int(data["param"][4])  # number of impacts
-        U = flevel
-        Efl = flevel[:, 0]
-        q = 1.6021773e-19
-        Efq = Ef / q
+            secy1 = np.array(data["secy1"])
+            Pow = flevel
+            n = len(initials[:, 0]) / 2  # number of initials in the bright set
+            N = int(data["param"][4])  # number of impacts
+            U = flevel
+            Efl = flevel[:, 0]
+            q = 1.6021773e-19
+            Efq = Ef / q
 
-        e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
-        e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
-        val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
+            e1 = np.min(np.where(secy1[:, 1] >= 1))  # lower threshold
+            e2 = np.max(np.where(secy1[:, 1] >= 1))  # upper threshold
+            val, e3 = np.max(secy1[:, 1]), np.argmax(secy1[:, 1])  # maximum secondary yield
 
-        if kind == 'counter_function' or kind == 'triplot':
-            if kind == 'counter_function':
-                ax = self.ax
-            else:
-                ax = self.ax
+            if kind == 'counter_function' or kind == 'triplot':
+                if kind == 'counter_function':
+                    ax = self.ax
+                else:
+                    ax = self.ax
 
-            # ax.semilogy(Efl/1e6, C / n, lw=1.5, label=label, marker='o', mec='k')
-            bar = ax.bar(Efl/1e6, C / n, label=label, **kwargs)
-            self.plot_dict['triplot'].append(bar)
-            ax.set_yscale('log')
-            ax.set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
-            ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
-            ax.set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
-            ax.set_ylim(0, np.max([0.1, self.ax.get_ylim()[1]]))
+                # ax.semilogy(Efl/1e6, C / n, lw=1.5, label=label, marker='o', mec='k')
+                bar = ax.bar(Efl / 1e6, C / n, label=label, **kwargs)
+                self.plot_dict['triplot'].append(bar)
+                ax.set_yscale('log')
+                ax.set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
+                ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                ax.set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
+                ax.set_ylim(0, np.max([0.1, self.ax.get_ylim()[1]]))
 
-            # plot peak operating field
-            # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-            # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-            #         size=12, rotation=90,
-            #         transform=ax.get_xaxis_transform(), ha='right', va='center')
+                # plot peak operating field
+                # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                #         size=12, rotation=90,
+                #         transform=ax.get_xaxis_transform(), ha='right', va='center')
 
-            ax.minorticks_on()
+                ax.minorticks_on()
 
-        if kind == 'final_impact_energy' or kind == 'triplot':
-            if kind == 'final_impact_energy':
-                ax = self.ax
-            else:
-                ax = self.ax
-            # ax.plot(Efl/1e6, Efq, lw=1.5, label=label, marker='o', mec='k')
-            bar = ax.bar(Efl/1e6, Efq/1e6, label=label, **kwargs)
-            self.plot_dict['triplot'].append(bar)
-            # ax.set_yscale('log')
+            if kind == 'final_impact_energy' or kind == 'triplot':
+                if kind == 'final_impact_energy':
+                    ax = self.ax
+                else:
+                    ax = self.ax
+                # ax.plot(Efl/1e6, Efq, lw=1.5, label=label, marker='o', mec='k')
+                bar = ax.bar(Efl / 1e6, Efq / 1e6, label=label, **kwargs)
+                self.plot_dict['triplot'].append(bar)
+                # ax.set_yscale('log')
 
-            self.ax.plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
-            e0 = sci.interp1d(secy1[0:e1 + 1, 1], secy1[0:e1 + 1, 0])(1)
-            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)], [e0, e0], '-r')
-            self.plot_dict['triplot'].append(bar)
-            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)],
-                    [secy1[e2, 0], secy1[e2, 0]], '-r')
-            self.plot_dict['triplot'].append(bar)
-            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)],
-                    [secy1[e3, 0], secy1[e3, 0]], '--r')
-            self.plot_dict['triplot'].append(bar)
+                self.ax.plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
+                e0 = sci.interp1d(secy1[0:e1 + 1, 1], secy1[0:e1 + 1, 0])(1)
+                bar = ax.plot([np.min(Efl / 1e6), np.max(Efl / 1e6)], [e0, e0], '-r')
+                self.plot_dict['triplot'].append(bar)
+                bar = ax.plot([np.min(Efl / 1e6), np.max(Efl / 1e6)],
+                              [secy1[e2, 0], secy1[e2, 0]], '-r')
+                self.plot_dict['triplot'].append(bar)
+                bar = ax.plot([np.min(Efl / 1e6), np.max(Efl / 1e6)],
+                              [secy1[e3, 0], secy1[e3, 0]], '--r')
+                self.plot_dict['triplot'].append(bar)
 
-            ax.set_ylabel("$Ef_" + "{" + f"{N}" + "} [eV]$")
-            ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
-            ax.set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
-            ax.set_ylim(0, self.ax.get_ylim()[1])
+                ax.set_ylabel("$Ef_" + "{" + f"{N}" + "} [eV]$")
+                ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                ax.set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
+                ax.set_ylim(0, self.ax.get_ylim()[1])
 
-            # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-            # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-            #         size=12, rotation=90,
-            #         transform=ax.get_xaxis_transform(), ha='right', va='center')
+                # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                #         size=12, rotation=90,
+                #         transform=ax.get_xaxis_transform(), ha='right', va='center')
 
-            ax.minorticks_on()
+                ax.minorticks_on()
 
-        if kind == 'enhanced_counter_function' or kind == 'triplot':
-            if kind == 'enhanced_counter_function':
-                ax = self.ax
-            else:
-                ax = self.ax
+            if kind == 'enhanced_counter_function' or kind == 'triplot':
+                if kind == 'enhanced_counter_function':
+                    ax = self.ax
+                else:
+                    ax = self.ax
 
-            # ax.plot(Efl/1e6, (A + 1) / n, lw=1.5, label=label, marker='o', mec='k')
-            bar = ax.bar(Efl/1e6, (A + 1) / n, label=label, **kwargs)
-            self.plot_dict['triplot'].append(bar)
-            ax.set_yscale('log')
-            ax.set_xlabel('$V$ [MV]')
-            bar = ax.plot([np.min(Efl/1e6), np.max(Efl/1e6)], [1, 1], '-r')
-            self.plot_dict['triplot'].append(bar)
+                # ax.plot(Efl/1e6, (A + 1) / n, lw=1.5, label=label, marker='o', mec='k')
+                bar = ax.bar(Efl / 1e6, (A + 1) / n, label=label, **kwargs)
+                self.plot_dict['triplot'].append(bar)
+                ax.set_yscale('log')
+                ax.set_xlabel('$V$ [MV]')
+                bar = ax.plot([np.min(Efl / 1e6), np.max(Efl / 1e6)], [1, 1], '-r')
+                self.plot_dict['triplot'].append(bar)
 
-            ax.set_ylim(np.min((A + 1) / n), ax.get_ylim()[1])
-            ax.set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
-            ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
-            ax.set_title('$\mathbf{Enhanced~counter~function}$')
+                ax.set_ylim(np.min((A + 1) / n), ax.get_ylim()[1])
+                ax.set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
+                ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+                ax.set_title('$\mathbf{Enhanced~counter~function}$')
 
-            # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-            # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-            #         size=12, rotation=90,
-            #         transform=ax.get_xaxis_transform(), ha='right', va='center')
+                # ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                # ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                #         size=12, rotation=90,
+                #         transform=ax.get_xaxis_transform(), ha='right', va='center')
 
-            ax.minorticks_on()
+                ax.minorticks_on()
 
-        # self.ax.legend(loc='upper right')
+            # self.ax.legend(loc='upper right')
 
-        # fig.tight_layout()
-        # fig.savefig(fr'D:\Dropbox\Quick presentation files\Multipacting_{label}_multipac_{kind}.png')
-        self.fig.canvas.draw_idle()
-        self.fig.canvas.flush_events()
+            # fig.tight_layout()
+            # fig.savefig(fr'D:\Dropbox\Quick presentation files\Multipacting_{label}_multipac_{kind}.png')
+            self.fig.canvas.draw_idle()
+            self.fig.canvas.flush_events()
 
     def plot_trajectory(self, loc='center'):
         """
@@ -1644,103 +1685,103 @@ class MultipactingControl:
         -------
 
         """
-        fieldparams = self.load_ascii('fieldparam')
-        geodata = self.load_ascii('geodata.n')
-        param = self.load_ascii('param')
-        elecpath = self.load_ascii('elecpath')
 
-        gtype = fieldparams[0]
+        # self.ax.set_xlim(right=2*(self.ax.get_xlim()[1] - self.ax.get_xlim()[0]))
+        axin1 = self.ax.inset_axes([0.1, 0.15, 0.35, 0.4])
+        axin2 = self.ax.inset_axes([0.6, 0.15, 0.35, 0.4])
+        for fid in self.ui.ccb_Geometry_Plot_Options.currentText().split(', '):
+            self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{fid}_n{self.geo_ui.le_N_Cells.text()}'
+            if self.ui.rb_Show_Trajectory:
+                self.ax.clear()
+                fieldparams = self.load_ascii('fieldparam')
+                geodata = self.load_ascii('geodata.n')
+                param = self.load_ascii('param')
+                elecpath = self.load_ascii('elecpath')
 
-        ng = len(geodata[:, 0])
-        bo = geodata[3:ng, 0:2].T
-        wr = []
-        wz = []
+                gtype = fieldparams[0]
 
-        # convert boundary and electron path to mm
-        bo = bo * 1e3
+                ng = len(geodata[:, 0])
+                bo = geodata[3:ng, 0:2].T
+                wr = []
+                wz = []
 
-        eps = np.spacing(1.0)
-        par = param
+                # convert boundary and electron path to mm
+                bo = bo * 1e3
 
-        n = np.shape(elecpath)[0]
-        if n == 1:
-            pat = []
-            ic('No electron emission. Please, define a new initial point.')
-        else:
-            pat = elecpath[1:n, [0, 2, 3, 5, 6, 7]]
+                eps = np.spacing(1.0)
+                par = param
 
-            N = par[4]
-            hit = np.array(np.where(pat[:, 5] != 0))
-            hit = hit[:, np.arange(1, len(hit[0]), 2)]
-            speed = np.sqrt(pat[hit, 2] ** 2 + pat[hit, 3] ** 2)
-            c = 2.9979e8
-            M = 9.1093879e-31
-            q = 1.6021773e-19
-            energy = (1 / np.sqrt(1.0 - (speed ** 2 / c ** 2)) - 1) * M * c ** 2. / q
-            avegene = np.mean(energy)
-            finaene = energy[:, len(energy)]
-            maxiene = np.max(energy)
-            dt = abs(np.min(pat[:, 4]) - np.max(pat[:, 4])) * par[0]
+                n = np.shape(elecpath)[0]
+                if n == 1:
+                    pat = []
+                    ic('No electron emission. Please, define a new initial point.')
+                else:
+                    pat = elecpath[1:n, [0, 2, 3, 5, 6, 7]]
 
-            fig, axs = plt.subplot_mosaic([[0, 0, 2, 2, 2]], figsize=(10, 4))
-            pat = pat * 1e3  # convert to mm for plotting
+                    N = par[4]
+                    hit = np.array(np.where(pat[:, 5] != 0))
+                    hit = hit[:, np.arange(1, len(hit[0]), 2)]
+                    speed = np.sqrt(pat[hit, 2] ** 2 + pat[hit, 3] ** 2)
+                    c = 2.9979e8
+                    M = 9.1093879e-31
+                    q = 1.6021773e-19
+                    energy = (1 / np.sqrt(1.0 - (speed ** 2 / c ** 2)) - 1) * M * c ** 2. / q
+                    avegene = np.mean(energy)
+                    finaene = energy[:, len(energy)]
+                    maxiene = np.max(energy)
+                    dt = abs(np.min(pat[:, 4]) - np.max(pat[:, 4])) * par[0]
 
-            self.ax.plot(bo[1, :], bo[0, :], lw=2)
-            self.ax.plot(pat[:, 1], pat[:, 0], '-r', lw=1)
-            self.ax.margins(x=0.01, y=0.01)
-            # fig.suptitle(f'MultiPac 2.1       Electron Trajectory,   N = {N},     ')
-            self.ax.set_xlabel(f'z-axis [mm],  \nFlight time {dt[0]:.2f} periods')
-            self.ax.set_ylabel('r-axis [mm]')
+                    pat = pat * 1e3  # convert to mm for plotting
 
-            # self.ax.set_xlim(right=2*(self.ax.get_xlim()[1] - self.ax.get_xlim()[0]))
+                    plot1 = self.ax.plot(bo[1, :], bo[0, :], lw=2)
+                    plot2 = self.ax.plot(pat[:, 1], pat[:, 0], '-r', lw=1)
+                    self.ax.margins(x=0.01, y=0.01)
+                    # fig.suptitle(f'MultiPac 2.1       Electron Trajectory,   N = {N},     ')
+                    self.ax.set_xlabel(f'z-axis [mm],  \nFlight time {dt[0]:.2f} periods')
+                    self.ax.set_ylabel('r-axis [mm]')
 
-            if loc == 'center':
-                axin = self.ax.inset_axes([0.275, 0.1, 0.45, 0.45])
-            elif loc == 'left':
-                axin = self.ax.inset_axes([0.05, 0.5, 0.45, 0.45])
-            else:
-                axin = self.ax.inset_axes([0.5, 0.5, 0.45, 0.45])
+                    #
+                    axin1.plot(bo[1, :], bo[0, :], lw=2)
+                    axin1.plot(pat[:, 1], pat[:, 0], '-r', pat[hit, 1], pat[hit, 0], 'ro', lw=1)
 
-            axin.set_xticklabels([])
-            axin.set_yticklabels([])
+                    min1 = np.min(pat[:, 0])
+                    max1 = np.max(pat[:, 0])
 
-            #
-            axin.plot(bo[1, :], bo[0, :], lw=2)
-            axin.plot(pat[:, 1], pat[:, 0], '-r', pat[hit, 1], pat[hit, 0], 'ro', lw=1)
+                    if np.min(pat[:, 1]) < 0:
+                        min2 = np.min(pat[:, 1])
+                    else:
+                        min2 = np.min(pat[:, 1])
 
-            min1 = np.min(pat[:, 0]) - eps * 1e3
-            max1 = np.max(pat[:, 0]) + eps * 1e3
+                    if np.max(pat[:, 1]) < 0:
+                        max2 = np.max(pat[:, 1])
+                    else:
+                        max2 = max(pat[:, 1])
 
-            if np.min(pat[:, 1]) < 0:
-                min2 = 1.1 * np.min(pat[:, 1]) - eps * 1e3
-            else:
-                min2 = 0.9 * np.min(pat[:, 1]) - eps * 1e3
+                    axin1.set_xlim([min2 - 0.05, max2 + 0.05])
+                    axin1.set_ylim([min1 - 0.05, max1 + 0.05])
+                    axin1.tick_params(labelsize=12)
+                    self.ax.indicate_inset_zoom(axin1)
+                    # axin.set_xlim([max(min(bo[1, :]), min(pat[:, 1] - 1)), min(max(bo[1, :]), max(pat[:, 1] + 1))])
 
-            if np.max(pat[:, 1]) < 0:
-                max2 = 0.9 * np.max(pat[:, 1]) + eps * 1e3
-            else:
-                max2 = 1.1 * max(pat[:, 1]) + eps * 1e3
+                    axin1.set_xlabel('z-axis [mm]', fontsize=12)
+                    axin1.set_ylabel('r-axis [mm]', fontsize=12)
 
-            axin.set_xlim([min2, max2])
-            axin.set_ylim([min1 - 0.05, max1 + 0.05])
-            self.ax.indicate_inset_zoom(axin)
-            # axin.set_xlim([max(min(bo[1, :]), min(pat[:, 1] - 1)), min(max(bo[1, :]), max(pat[:, 1] + 1))])
+                    axin2.plot(pat[:, 4] * par[0] * 1e-3, pat[:, 0], 'r', pat[hit, 4] * par[0] * 1e-3, pat[hit, 0],
+                               'ro',
+                               markerfacecolor="None")
 
-            # axin.set_xlabel('z-axis [mm]')
-            # axin.set_ylabel('r-axis [mm]')
+                    self.ax.set_ylim(top=max(pat[:, 0]) + 0.05)
 
-            self.ax.plot(pat[:, 4] * par[0] * 1e-3, pat[:, 0], 'r', pat[hit, 4] * par[0] * 1e-3, pat[hit, 0], 'ro',
-                        markerfacecolor="None")
+                    axin2.set_xlabel(
+                        f"Time in [1/f], \nAverage energy {avegene:.2f} eV \nFinal energy " + "$E_f=$" + fr"{finaene[0]:.2f} eV", fontsize=12)
+                    axin2.set_ylabel('r-axis [m]', fontsize=12)
+                    # xtick
+                    axin2.tick_params(labelsize=12)
+                    axin2.margins(x=0.01, y=0.01)
 
-            # self.ax.set_ylim(top=max(pat[:, 0]))
-
-            self.ax.set_xlabel(
-                f"Time in [1/f], \nAverage energy {avegene:.2f} eV \nFinal energy " + "$E_f=$" + fr"{finaene[0]:.2f} eV")
-            self.ax.set_ylabel('r-axis [m]')
-            self.ax.margins(x=0.01, y=0.01)
-
-            fig.tight_layout(pad=2.5)
-            plt.show()
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+        self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}_n{self.geo_ui.le_N_Cells.text()}'
 
     def redefine_magnetic_walls_as_artificial_walls(self):
         geodata_tmp = np.copy(self.geodata)
@@ -1751,9 +1792,12 @@ class MultipactingControl:
         df.to_csv(fr'{self.folder}\geodata.n', sep=r' ', index=False, header=False, float_format='%.7E')
 
     def run_multipac_exe(self, mode):
-        self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.ui.cb_Geometry.currentText()}'
+        self.folder = fr'{self.projectDir}\SimulationData\Multipacting\{self.fid}_n{self.geo_ui.le_N_Cells.text()}'
+
         cwd = fr'{self.folder}'
+        ic(cwd)
         multipacpath = fr'{self.parent_dir}\exe\own_exe\Multipac.exe'
+        ic(os.path.exists(cwd))
 
         if os.path.exists(multipacpath):
             subprocess.call([multipacpath, mode], cwd=cwd)
@@ -2348,8 +2392,7 @@ class MultipactingControl:
 
         # compute the field on the boundary
         # load geodata.n
-        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+',
-                              header=None).to_numpy()
+        geodata = pd.read_csv(fr"{self.folder}\geodata.n", sep='\s+', header=None).to_numpy()
 
         n = len(geodata[:, 0])
         ind = np.where(geodata[3:n, 2] == 1)
@@ -2379,8 +2422,9 @@ class MultipactingControl:
         cwd = fr'{self.folder}'
         multipacPath = fr'{self.folder}\Multipac.exe'
         if os.path.exists(multipacPath):
-            subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
-                            stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            # subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd,
+            #                 stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+            subprocess.call([multipacPath, 'fields', '-b'], cwd=cwd)
 
         Er = spio.loadmat(fr"{self.folder}\Er.mat")['Er']
         Ez = spio.loadmat(fr"{self.folder}\Ez.mat")['Ez']
@@ -2537,13 +2581,14 @@ class MultipactingControl:
         offset = {'offset': offset}
         # save offset offset -v4
         spio.savemat(f"{self.folder}/offset.mat", offset, format='4')
-        ic(offset)
-        # options.disp = 0
 
         # !eigenC_bin
 
         ic('self.eee: started eigenmode analysis')
-        eigenCpath = fr'{self.folder}\eigenC_bin.exe'
+        if self.parent_dir is not None:
+            eigenCpath = fr'{self.parent_dir}\exe\own_exe\eigenC_bin.exe'
+        else:
+            eigenCpath = fr'..\..\..\exe\own_exe\eigenC_bin.exe'
         if os.path.exists(eigenCpath):
             subprocess.call(eigenCpath, cwd=self.folder,
                             stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
@@ -2612,6 +2657,7 @@ class MultipactingControl:
 
         kama_n = {'index': index, 'u': u, 'k': k}
         spio.savemat(fr'{self.folder}\kama_n.mat', kama_n, format='4')
+        ic('Done here saving normalised fields')
 
     @staticmethod
     def inttri(p):
