@@ -222,7 +222,6 @@ class DraggableText:
             # self.x, self.y = fig.transFigure.inversed().transform()
             self.x, self.y = axes.transData.inverted().transform((self.x, self.y))
             self.text.set_position((self.x, self.y))
-            print('in here', self.text.get_position())
         elif self.text.xycoords == 'axes fraction':
 
             # calculate relative position as fraction of figure

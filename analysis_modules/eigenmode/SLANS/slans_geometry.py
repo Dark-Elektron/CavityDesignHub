@@ -1000,7 +1000,7 @@ class SLANSGeometry(Geometry):
             f.write(':  Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
             f.write('{:g} :number of search modes\n'.format(n_modes - 1))
-            f.write('9.99999997E-007 :convergence accuracy\n')
+            f.write('9.99999997E-008 :convergence accuracy\n')
             f.write('50 :maximum number of iterations\n')
             f.write('0 :continue iterations or not 1,0\n')
             f.write(' {:g}. :initial frequency shift MHz\n'.format(f_shift))

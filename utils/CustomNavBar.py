@@ -41,6 +41,7 @@ class MyCustomToolbar(NavigationToolbar):
                      ('Transparency', 'Toggle Transparency', 'transparency', 'toggle_transparency'),
                      (None, None, None, None),
                      ("Size", None, None, None),
+                     ("dpi", None, None, None),
                      ('Save', 'Save the figure', 'save', 'save_figure'),
                      ]
 
@@ -64,17 +65,31 @@ class MyCustomToolbar(NavigationToolbar):
                 for a in plot_settings_options:
                     self.cb_Save_Plot_Settings.addItem(a)
                 self.addWidget(self.cb_Save_Plot_Settings)
+            elif text == 'dpi':
+                # size definitions
+                dpi_options = ['100', '300', '600', '1000', '1200']
+                self.cb_Dpi_Settings = QComboBox()
+                for a in dpi_options:
+                    self.cb_Dpi_Settings.addItem(a)
+                self.addWidget(self.cb_Dpi_Settings)
             elif text == 'Grid':
                 self.pb_Grid = QPushButton()
                 self.pb_Grid.setCheckable(True)
                 self.pb_Grid.setToolTip('Toggle grid')
                 self.pb_Grid.clicked.connect(lambda: self.toggle_grid())
+                self.pb_Grid.setFixedSize(QSize(25, 25))
+                icon = self._icon(image_file)
+                self.pb_Grid.setIcon(icon)
+
                 self.addWidget(self.pb_Grid)
             elif text == 'Transparency':
                 self.pb_Transparency = QPushButton()
                 self.pb_Transparency.setCheckable(True)
                 self.pb_Transparency.setToolTip('Toggle transparency')
                 self.pb_Transparency.clicked.connect(lambda: self.toggle_transparency())
+                self.pb_Transparency.setFixedSize(QSize(25, 25))
+                icon = self._icon(image_file)
+                self.pb_Transparency.setIcon(icon)
                 self.addWidget(self.pb_Transparency)
 
             else:
@@ -137,7 +152,7 @@ class MyCustomToolbar(NavigationToolbar):
                 self.canvas.set_axes_elements_color(color='k')
 
                 # change spine, label and ticks to default black color before saving
-                self.canvas.fig.savefig(fileName, transparent=True, bbox_inches='tight', pad_inches=0.2)
+                self.canvas.fig.savefig(fileName, transparent=True, bbox_inches='tight', pad_inches=0.2, dpi=int(self.cb_Dpi_Settings.currentText()))
 
                 # revert to display color
                 self.canvas.set_axes_elements_color()

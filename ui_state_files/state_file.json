@@ -1,6 +1,6 @@
 {
     "Project Directory": "D:\\Dropbox\\CavityDesignHub\\PhD_Thesis",
-    "Theme": "Abyss",
+    "Theme": "Solarized Light",
     "Frequency": "1300",
     "Cell_Type": 1,
     "Tune_Option": 1,
@@ -219,77 +219,77 @@
     "plot_table_widget": {
         "0": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Assembly/Eigenmode_C3795_2DQW_1FPC.xlsx",
+            "Folder": "C:/Users/sosoho/.qucs/pillbox_prj/HC_magnetic_coupling.csv",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "Sheet1"
+                    "CSV"
                 ],
-                "Sheet1"
+                "CSV"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "Frequency [MHz]",
-                "Z [kOhm]"
+                "frequency",
+                "r dB(S[2,1])"
             ],
             "Toggle": 2,
-            "ScaleX": "1",
+            "ScaleX": "1e-6",
             "ScaleY": "1",
             "Axis": "Left",
             "Type": [
-                "Scatter",
-                "o"
+                "Line",
+                "--"
             ],
             "Filter": [
-                "Pol",
-                "M"
+                "",
+                ""
             ]
         },
         "1": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/5. tt/Assembly/Eigenmode_C3795_2DQW_1FPC.xlsx",
+            "Folder": "C:/Users/sosoho/.qucs/pillbox_prj/HC_electric_coupling.csv",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "Sheet1"
+                    "CSV"
                 ],
-                "Sheet1"
+                "CSV"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "Frequency [MHz]",
-                "Z_T [kOhm/m]"
+                "frequency",
+                "r SdB"
             ],
             "Toggle": 2,
-            "ScaleX": "1",
+            "ScaleX": "1e-6",
             "ScaleY": "1",
             "Axis": "Left",
             "Type": [
-                "Scatter",
-                "P"
+                "Line",
+                "--"
             ],
             "Filter": [
-                "Pol",
-                "D"
+                "",
+                ""
             ]
         },
         "2": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/3. W/Wakefield/WakeLong_C3794(800MHz)_2HC_1FPC_LongitudinalZ_kOhm.xlsx",
+            "Folder": "D:/CST Studio/COMPUMAG/Couplers/HC_new/Export/S1(1),2(1)_1D_ScaleAxis.txt",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "Sheet1"
+                    "TXT"
                 ],
-                "Sheet1"
+                "TXT"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "Freq [MHz]",
-                "|Z_long| [kOhm]"
+                "0",
+                "1"
             ],
             "Toggle": 2,
             "ScaleX": "1",
@@ -306,96 +306,22 @@
         },
         "3": {
             "Code": "Other",
-            "Folder": "D:/CST Studio/3. W/Wakefield/WakeTrans_C3794(800MHz)_2HC_1FPC_TransverseZ [kOhm_m].xlsx",
+            "Folder": "D:/CST Studio/COMPUMAG/Couplers/HC_new/Export/S1(3),2(1)_1D_ScaleAxis.txt",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "Sheet1"
+                    "TXT"
                 ],
-                "Sheet1"
+                "TXT"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "Freq [MHz]",
-                "|Z_trans| [kOhm/m]"
+                "0",
+                "1"
             ],
             "Toggle": 2,
             "ScaleX": "1",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Line",
-                "-"
-            ],
-            "Filter": [
-                "",
-                ""
-            ]
-        },
-        "4": {
-            "Code": "ABCI",
-            "Folder": "D:/Dropbox/CavityDesignHub/PhD_Thesis/SimulationData/ABCI",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "3794",
-                    "3794_s0.5",
-                    "C3795",
-                    "C3795_2",
-                    "C3795_5",
-                    "C3795_old",
-                    "C3795_orig_2",
-                    "C3795_round2",
-                    "C3795_round2_2",
-                    "FCC_UROS5",
-                    "TESLA_800MHz_s0.6616"
-                ],
-                "3794_s0.5"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "",
-                ""
-            ],
-            "Toggle": 2,
-            "ScaleX": "1000",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Line",
-                "-"
-            ],
-            "Filter": [
-                "",
-                ""
-            ]
-        },
-        "5": {
-            "Code": "ABCI",
-            "Folder": "D:/Dropbox/CavityDesignHub/PhD_Thesis/SimulationData/ABCI",
-            "Polarization": "Trans",
-            "Id": [
-                [
-                    "All",
-                    "3794",
-                    "3794_s0.5",
-                    "C3795",
-                    "C3795_old",
-                    "C3795_round2",
-                    "FCC_UROS5",
-                    "TESLA_800MHz_s0.6616"
-                ],
-                "3794_s0.5"
-            ],
-            "Request": [
-                "Transverse Impedance Magnitude",
-                "",
-                ""
-            ],
-            "Toggle": 2,
-            "ScaleX": "1000",
             "ScaleY": "1",
             "Axis": "Left",
             "Type": [
@@ -411,15 +337,15 @@
     "plot_objects_attr": {
         "lines": [
             {
-                "ls": "None",
-                "color": [
+                "ls": "--",
+                "color": "#66c2a5",
+                "lw": 3.0,
+                "ms": 6.0,
+                "mec": [
                     0.4,
                     0.7607843137254902,
                     0.6470588235294118
                 ],
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
                 "mew": 1.0,
                 "mfc": [
                     0.4,
@@ -428,15 +354,15 @@
                 ]
             },
             {
-                "ls": "None",
-                "color": [
+                "ls": "--",
+                "color": "#fc8d62",
+                "lw": 3.0,
+                "ms": 6.0,
+                "mec": [
                     0.9882352941176471,
                     0.5529411764705883,
                     0.3843137254901961
                 ],
-                "lw": 1.5,
-                "ms": 10.0,
-                "mec": "black",
                 "mew": 1.0,
                 "mfc": [
                     0.9882352941176471,
@@ -446,87 +372,29 @@
             },
             {
                 "ls": "-",
-                "color": [
-                    0.9058823529411765,
-                    0.5411764705882353,
-                    0.7647058823529411
-                ],
-                "lw": 2.0,
+                "color": "#8da0cb",
+                "lw": 3.0,
                 "ms": 6.0,
                 "mec": [
-                    0.9058823529411765,
-                    0.5411764705882353,
-                    0.7647058823529411
+                    0.5529411764705883,
+                    0.6274509803921569,
+                    0.796078431372549
                 ],
                 "mew": 1.0,
                 "mfc": [
-                    0.9058823529411765,
-                    0.5411764705882353,
-                    0.7647058823529411
+                    0.5529411764705883,
+                    0.6274509803921569,
+                    0.796078431372549
                 ]
             },
             {
                 "ls": "-",
-                "color": [
-                    0.6509803921568628,
-                    0.8470588235294118,
-                    0.32941176470588235
-                ],
-                "lw": 2.0,
+                "color": "#8eba42",
+                "lw": 3.0,
                 "ms": 6.0,
-                "mec": [
-                    0.6509803921568628,
-                    0.8470588235294118,
-                    0.32941176470588235
-                ],
+                "mec": "#8eba42",
                 "mew": 1.0,
-                "mfc": [
-                    0.6509803921568628,
-                    0.8470588235294118,
-                    0.32941176470588235
-                ]
-            },
-            {
-                "ls": "-",
-                "color": [
-                    1.0,
-                    0.8509803921568627,
-                    0.1843137254901961
-                ],
-                "lw": 2.0,
-                "ms": 6.0,
-                "mec": [
-                    1.0,
-                    0.8509803921568627,
-                    0.1843137254901961
-                ],
-                "mew": 1.0,
-                "mfc": [
-                    1.0,
-                    0.8509803921568627,
-                    0.1843137254901961
-                ]
-            },
-            {
-                "ls": "-",
-                "color": [
-                    0.8980392156862745,
-                    0.7686274509803922,
-                    0.5803921568627451
-                ],
-                "lw": 2.0,
-                "ms": 6.0,
-                "mec": [
-                    0.8980392156862745,
-                    0.7686274509803922,
-                    0.5803921568627451
-                ],
-                "mew": 1.0,
-                "mfc": [
-                    0.8980392156862745,
-                    0.7686274509803922,
-                    0.5803921568627451
-                ]
+                "mfc": "#8eba42"
             }
         ],
         "collections": [],
@@ -863,12 +731,12 @@
     "plot_dsb_Alpha": 1.0,
     "plot_qt_spinbox_lineedit": "",
     "plot_cb_Line_Style": "-",
-    "plot_dsb_Line_Width": 1.5,
-    "plot_cb_Marker": "P",
+    "plot_dsb_Line_Width": 3.0,
+    "plot_cb_Marker": "o",
     "plot_db_Marker_Size": 10.0,
     "plot_": "Presentation",
-    "plot_dsb_Threshold": 0.5,
-    "plot_cb_Peaks_Marker_Style": "x",
+    "plot_dsb_Threshold": 0.1,
+    "plot_cb_Peaks_Marker_Style": "o",
     "plot_comboBox_3": "angle",
     "plot_le_Plot_Text": "",
     "plot_cb_Bbox": "None",
@@ -885,9 +753,9 @@
     "plot_sb_Rotation": 0,
     "plot_cb_Text_Box": "None",
     "plot_le_Plot_Text_2": "Text",
-    "plot_dsb_Axvline_X": 0.1,
-    "plot_cb_Linestyle": "-",
-    "plot_pb_View_Machines": true,
+    "plot_dsb_Axvline_X": 440.0,
+    "plot_cb_Linestyle": "--",
+    "plot_pb_View_Machines": false,
     "plot_cb_Threshold_Line_Color": "Black",
     "plot_cb_Threshold_Linestyle": "-",
     "plot_cb_Frange_Unit": "MHz",
@@ -915,7 +783,7 @@
     "plot_cb_Patch_Type": "Rectangle",
     "plot_cb_Active_Axis": "Left Axis",
     "plot_pb_Plot_Decorations": false,
-    "plot_pb_Machine_Parameters": true,
+    "plot_pb_Machine_Parameters": false,
     "plot_pb_Plot_Element_Format": false,
     "plot_pb_Plot_Area_Menu": false,
     "plot_sb_Layer": 2.0,
@@ -1012,7 +880,7 @@
     "plot_cb_Longitudinal_Threshold": 0,
     "plot_cb_Show_Hide_Inset": 0,
     "plot_cb_Show_Wakefield_Parameters": 0,
-    "plot_cb_Plot_Peaks": 0,
+    "plot_cb_Plot_Peaks": 2,
     "multipacting_pb_Field_Solver_Input": true,
     "multipacting_pb_Multipacting_Solver_Input": true,
     "multipacting_pb_Initial_Sites": true,
@@ -1043,10 +911,10 @@
     "plot_le_Xlabel": "$f ~[\\mathrm{MHz}]$",
     "plot_sb_XLabel_Size": 14,
     "plot_sb_XLabel_Tick_Siz": 14,
-    "plot_le_Ylabel": "$Z_{\\parallel, \\perp} ~[\\mathrm{k\\Omega}, \\mathrm{k\\Omega/m}]$",
+    "plot_le_Ylabel": "$S21~\\mathrm{[dB]}$",
     "plot_sb_YLabel_Size": 14,
     "plot_sb_YLabel_Tick_Size": 14,
-    "plot_le_Legend": "",
+    "plot_le_Legend": "Equiv. Circuit (H coupling)%%Equiv. Circuit (E coupling)%%CST Model (TE11)%%CST Model (TM01)",
     "plot_sb_Legend_Size": 14,
     "plot_sb_Legend_Marker_Size": 14,
     "plot_le_Title": "",
@@ -1070,5 +938,6 @@
     "wg_calc_le_Mode_CWG": "te11",
     "wg_calc_cb_R_Dim": "mm",
     "mode_num_lineEdit": "",
-    "plot_pb_Peaks": true
+    "plot_pb_Peaks": true,
+    "plot_dsb_Marker_Size": 6.0
 }

@@ -520,6 +520,14 @@ class PlotControl:
         self.ui.pb_Reset_Colors.clicked.connect(lambda: self.reset_colors())
         # self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
         self.le_Color.textChanged.connect(lambda: self.plt.update_object_properties({'color': self.le_Color.text()}))
+        self.ui.dsb_Line_Width.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'lw': self.ui.dsb_Line_Width.value()}))
+        self.ui.cb_Line_Style.currentTextChanged.connect(
+            lambda: self.plt.update_object_properties({'ls': self.ui.cb_Line_Style.currentText()}))
+        self.ui.cb_Marker.currentTextChanged.connect(
+            lambda: self.plt.update_object_properties({'marker': self.ui.cb_Marker.currentText()}))
+        self.ui.dsb_Marker_Size.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'ms': self.ui.dsb_Marker_Size.value()}))
         self.ui.dsb_Alpha.valueChanged.connect(
             lambda: self.plt.update_object_properties({'alpha': self.ui.dsb_Alpha.value()}))
         self.ui.sb_Layer.valueChanged.connect(
@@ -1323,11 +1331,12 @@ class PlotControl:
                     for j in range(len(requestY)):
                         y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
                         args["plot data"][id_].update({j: {"x": x_data, "y": y}})
-
+                        ic('In here')
                         if axis == 'Left':
                             if type_[0] == 'Line':
                                 args["plot object"][id_].update(
-                                    {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                                    {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style,
+                                                                                       picker=True)})
                             else:
                                 args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
                                                                                  marker=style, markersize=10.0,
@@ -1351,7 +1360,7 @@ class PlotControl:
                                                                                        picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
                             self.ax_right.set_ylabel('$Y$ [dB]')
-                elif filename.split('.')[-1] == 'txt':
+                elif filename.split('.')[-1].lower() == 'txt' or filename.split('.')[-1].lower() == 'csv':
                     # get sheets
                     if filter_[0] == "None" or value == "":
                         self.other_data_filtered = self.other_data[key][id_]
@@ -1368,7 +1377,8 @@ class PlotControl:
                         if axis == 'Left':
                             if type_[0] == 'Line':
                                 args["plot object"][id_].update(
-                                    {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                                    {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style,
+                                                     picker=True)})
                             else:
                                 args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
                                                                                  marker=style, markersize=10.0,
@@ -1410,7 +1420,8 @@ class PlotControl:
                     if axis == 'Left':
                         if type_[0] == 'Line':
                             args["plot object"][id_].update(
-                                {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                                {j: self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style,
+                                                 picker=True)})
                         else:
                             args["plot object"][id_].update(
                                 {j: self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
@@ -1422,7 +1433,8 @@ class PlotControl:
                     else:
                         if type_[0] == 'Line':
                             args["plot object"][id_].update(
-                                {j: self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)})
+                                {j: self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style,
+                                                       picker=True)})
                         else:
                             args["plot object"][id_].update(
                                 {j: self.ax_right.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
@@ -1659,8 +1671,8 @@ class PlotControl:
         le_ScaleY = QLineEdit()
         le_ScaleY.setText('1')
         table.setCellWidget(row_ind, 7, le_ScaleY)
-        le_ScaleX.editingFinished.connect(lambda: validating(le_ScaleX, default='1'))
-        le_ScaleY.editingFinished.connect(lambda: validating(le_ScaleY, default='1'))
+        # le_ScaleX.editingFinished.connect(lambda: validating(le_ScaleX, default='1'))
+        # le_ScaleY.editingFinished.connect(lambda: validating(le_ScaleY, default='1'))
 
         # axis
         axis_list = ['Left', 'Right', 'Top', 'Bottom']
@@ -2041,10 +2053,10 @@ class PlotControl:
                 # x, y = inv.transform((f_list[indx], z[indx]))
                 # print(x, y)
 
-                pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
+                pos = self.plt.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
                 # pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
                 indx = np.argmin(abs(f_list - pos[0]))
-                x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
+                x, y = self.plt.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
 
                 lab = labels[i].split('_')
                 if len(lab) > 1:
@@ -2063,10 +2075,10 @@ class PlotControl:
             for i, z in enumerate(Z_list):
                 aa = self.ax.axhline(z, ls='--', c='k')
 
-                pos = self.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
+                pos = self.plt.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
                 # pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
                 indx = np.argmin(abs(f_list - pos[0]))
-                x, y = self.axis_data_coords_sys_transform(self.ax, f_list[indx], z, True)
+                x, y = self.plt.axis_data_coords_sys_transform(self.ax, f_list[indx], z, True)
 
                 lab = labels[i].split('_')
                 if len(lab) > 1:
@@ -2083,43 +2095,6 @@ class PlotControl:
         self.ax.autoscale(True, axis='y')
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()
-
-    @staticmethod
-    def axis_data_coords_sys_transform(axis_obj_in, xin, yin, inverse=False):
-        """ inverse = False : Axis => Data
-                    = True  : Data => Axis
-        """
-        if axis_obj_in.get_yscale() == 'log':
-            xlim = axis_obj_in.get_xlim()
-            ylim = axis_obj_in.get_ylim()
-
-            x_delta = xlim[1] - xlim[0]
-
-            if not inverse:
-                x_out = xlim[0] + xin * x_delta
-                y_out = ylim[0] ** (1 - yin) * ylim[1] ** yin
-            else:
-                x_delta2 = xin - xlim[0]
-                x_out = x_delta2 / x_delta
-                y_out = np.log(yin / ylim[0]) / np.log(ylim[1] / ylim[0])
-
-        else:
-            xlim = axis_obj_in.get_xlim()
-            ylim = axis_obj_in.get_ylim()
-
-            x_delta = xlim[1] - xlim[0]
-            y_delta = ylim[1] - ylim[0]
-
-            if not inverse:
-                x_out = xlim[0] + xin * x_delta
-                y_out = ylim[0] + yin * y_delta
-            else:
-                x_delta2 = xin - xlim[0]
-                y_delta2 = yin - ylim[0]
-                x_out = x_delta2 / x_delta
-                y_out = y_delta2 / y_delta
-
-        return x_out, y_out
 
     def remove_baselines(self):
         for line in self.baseline_line_objects:
@@ -2290,7 +2265,7 @@ class PlotControl:
                 self.populate_IDs(data_dir, cb_pol, ccb)
         else:
             filename, _ = QFileDialog.getOpenFileName(None, "Open File", start_dir,
-                                                      "Excel Files (*.txt *.xlsx *.json)")
+                                                      "Excel Files (*.txt *.csv *.xlsx *.json)")
             if filename != '':
                 le.setText(filename)
 
@@ -2432,7 +2407,7 @@ class PlotControl:
                 for a in dd.keys():
                     cb.addItem(f"{a}")
 
-        if filename.split('.')[-1] == 'txt':
+        if filename.split('.')[-1].lower() == 'txt':
             self.plot_dict[i]["plot inputs"]['Id'].addItem('TXT')
             self.plot_dict[i]["plot inputs"]['Id'].setCurrentText('TXT')
 
@@ -2442,6 +2417,37 @@ class PlotControl:
             # rename columns to string
             df.columns = [f'{cname}' for cname in df.columns]
             self.other_data[i] = {'TXT': df}
+
+            for cb in cb_list:
+                # clear combobox item if any
+                cb.clear()
+                cb.addItem("All")
+
+                for a in df.keys():
+                    cb.addItem(f"{a}")
+
+        if filename.split('.')[-1].lower() == 'csv':
+            self.plot_dict[i]["plot inputs"]['Id'].addItem('CSV')
+            self.plot_dict[i]["plot inputs"]['Id'].setCurrentText('CSV')
+
+            delimeter = ','
+            # detect delimeter
+            with open(filename) as f:
+                firstline = f.readline()
+                delim_comma_count = firstline.count(',')
+                delim_semi_colon_count = firstline.count(';')
+
+            if delim_comma_count == 0 and delim_semi_colon_count == 0:
+                delimeter = '\s+'
+            elif delim_semi_colon_count > 0:
+                delimeter = ';'
+
+            # load file txt
+            # df = fr.txt_reader(filename, "\t")
+            df = pd.read_csv(filename, sep=delimeter)
+            # rename columns to string
+            df.columns = [f'{cname}' for cname in df.columns]
+            self.other_data[i] = {'CSV': df}
 
             for cb in cb_list:
                 # clear combobox item if any

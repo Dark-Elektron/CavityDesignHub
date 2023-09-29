@@ -1,5 +1,7 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/PNG/grid.png</file>
+    <file>icons/PNG/transparency.png</file>
     <file>icons/PNG/tree_collapse.png</file>
     <file>icons/PNG/tree_expand.png</file>
     <file>icons/PNG/geometry.png</file>

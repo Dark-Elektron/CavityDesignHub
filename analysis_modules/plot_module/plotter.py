@@ -505,37 +505,44 @@ class Plot(FigureCanvasQTAgg):
 
     def update_object_properties(self, props):
         if self.selected_object is not None:
-            if isinstance(self.selected_object, matplotlib.legend.Legend):
-                pass
-            elif isinstance(self.selected_object, matplotlib.lines.Line2D) or isinstance(self.selected_object, matplotlib.collections.PathCollection):
+            # if isinstance(self.selected_object, matplotlib.legend.Legend):
+            #     pass
+            # elif isinstance(self.selected_object, matplotlib.lines.Line2D) or isinstance(self.selected_object, matplotlib.collections.PathCollection):
 
-                if 'color' in props.keys():
-                    color = props['color']
+                # if 'color' in props.keys():
+                #     color = props['color']
+                #
+                #     self.selected_object.set_color(color)
+                #     self.selected_object.set_markerfacecolor(color)
+                #     self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
+                #     self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
+                #     self.parent_.le_Color.setText(color)
+                #     self.parent_.pb_Color.setText(color)
+                #     # copy the image to the GUI state, but screen might not be changed yet
+                # if 'alpha' in props.keys():
+                #     alpha = props['alpha']
+                #     self.selected_object.set_alpha(alpha)
+                # if 'lw' in props.keys():
+                #     lw = props['lw']
+                #     self.selected_object.set_linewidth(lw)
+                # if 'ls' in props.keys():
+                #     ls = props['ls']
+                #     self.selected_object.set_linestyle(ls)
+                # if 'zorder' in props.keys():
+                #     zorde./;r = props['zorder']
+                #     self.selected_object.set_zorder(zorder)
+            self.selected_object.set(**props)
 
-                    self.selected_object.set_color(color)
-                    self.selected_object.set_markerfacecolor(color)
-                    self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
-                    self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
-                    self.parent_.le_Color.setText(color)
-                    self.parent_.pb_Color.setText(color)
-                    # copy the image to the GUI state, but screen might not be changed yet
-                if 'alpha' in props.keys():
-                    alpha = props['alpha']
-                    self.selected_object.set_alpha(alpha)
-                if 'zorder' in props.keys():
-                    zorder = props['zorder']
-                    self.selected_object.set_zorder(zorder)
-
-            elif isinstance(self.selected_object, matplotlib.patches.Rectangle) or isinstance(self.selected_object, matplotlib.patches.Circle):
-                if 'color' in props.keys():
-                    color = props['color']
-                    self.selected_object.set(facecolor=color)
-                if 'alpha' in props.keys():
-                    alpha = props['alpha']
-                    self.selected_object.set_alpha(alpha)
-                if 'zorder' in props.keys():
-                    zorder = props['zorder']
-                    self.selected_object.set_zorder(zorder)
+            # elif isinstance(self.selected_object, matplotlib.patches.Rectangle) or isinstance(self.selected_object, matplotlib.patches.Circle):
+            #     if 'color' in props.keys():
+            #         color = props['color']
+            #         self.selected_object.set(facecolor=color)
+            #     if 'alpha' in props.keys():
+            #         alpha = props['alpha']
+            #         self.selected_object.set_alpha(alpha)
+            #     if 'zorder' in props.keys():
+            #         zorder = props['zorder']
+            #         self.selected_object.set_zorder(zorder)
 
             self.draw_idle()
             self.flush_events()
@@ -692,13 +699,23 @@ class Plot(FigureCanvasQTAgg):
     def add_axvline(self, x):
 
         # add vertical line
-        axvline = self.ax_right.axvline(x, label=f"{x}", ls='--', c='gray', picker=True)
+        # axvline = self.ax_right.axvline(x, ls='--', c='gray', picker=True)
+        axvline = self.ax.axvline(x, ls='--', c='gray', picker=True)
         self.draw_idle()
         self.flush_events()
 
         dt = DraggableAxvline(axvline)
         dt.connect()
-        self.axvline_dict[f"{id(axvline)}"] = dt
+        # self.axvline_dict[f"{id(axvline)}"] = dt
+
+        # get y text position from axis position. Position x is not used
+        pos = self.axis_data_coords_sys_transform(self.ax, x, 0.05, inverse=False)
+
+        # ylim = self.ax.get_ylim()
+        ab = self.add_text(fr"$f = {x}$ [MHz]", box="None", xy=(x, pos[1]), xycoords='data', size=14, rotation=90)
+
+        # update axes object dictionary
+        self.axvline_dict.update({f"{id(axvline)}": [dt, ab]})
 
         return axvline
 
@@ -783,6 +800,43 @@ class Plot(FigureCanvasQTAgg):
         self.text_dict = {}
         self.axvline_dict = {}
 
+    @staticmethod
+    def axis_data_coords_sys_transform(axis_obj_in, xin, yin, inverse=False):
+        """ inverse = False : Axis => Data
+                    = True  : Data => Axis
+        """
+        if axis_obj_in.get_yscale() == 'log':
+            xlim = axis_obj_in.get_xlim()
+            ylim = axis_obj_in.get_ylim()
+
+            x_delta = xlim[1] - xlim[0]
+
+            if not inverse:
+                x_out = xlim[0] + xin * x_delta
+                y_out = ylim[0] ** (1 - yin) * ylim[1] ** yin
+            else:
+                x_delta2 = xin - xlim[0]
+                x_out = x_delta2 / x_delta
+                y_out = np.log(yin / ylim[0]) / np.log(ylim[1] / ylim[0])
+
+        else:
+            xlim = axis_obj_in.get_xlim()
+            ylim = axis_obj_in.get_ylim()
+
+            x_delta = xlim[1] - xlim[0]
+            y_delta = ylim[1] - ylim[0]
+
+            if not inverse:
+                x_out = xlim[0] + xin * x_delta
+                y_out = ylim[0] + yin * y_delta
+            else:
+                x_delta2 = xin - xlim[0]
+                y_delta2 = yin - ylim[0]
+                x_out = x_delta2 / x_delta
+                y_out = y_delta2 / y_delta
+
+        return x_out, y_out
+
     def change_background(self, color='white'):
         self.ax.set_facecolor(color)
         self.fig.patch.set_facecolor(color)
@@ -812,7 +866,7 @@ class Plot(FigureCanvasQTAgg):
             self.parentUI.dsb_Line_Width.setValue(self.selected_object.get_linewidth())
             self.parentUI.cb_Line_Style.setCurrentText(self.selected_object.get_linestyle())
             self.parentUI.cb_Marker.setCurrentText(self.selected_object.get_marker())
-            self.parentUI.db_Marker_Size.setValue(self.selected_object.get_markersize())
+            self.parentUI.dsb_Marker_Size.setValue(self.selected_object.get_markersize())
 
 
 class ZoomPan:

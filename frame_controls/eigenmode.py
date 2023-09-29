@@ -112,7 +112,7 @@ class EigenmodeControl:
         n_modules = self.geo_ui.sb_N_Modules.value()
         f_shift = float(self.ui.le_Freq_Shift.text())
         n_modes = float(self.ui.le_No_Of_Modes.text())
-        pol = self.ui.cb_Polarization_SLANS.currentText()
+        self.pol = self.ui.cb_Polarization_SLANS.currentText()
 
         # boundary conditions
         lbc = self.ui.cb_LBC.currentIndex()+1
@@ -161,7 +161,7 @@ class EigenmodeControl:
                     processor_shape_space[key] = val
 
             service = mp.Process(target=self.run_sequential, args=(
-                n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, self.main_control.parentDir,
+                n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.pol, self.main_control.parentDir,
                 self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(),
                 UQ, eigenproblem_solver))
 
@@ -207,8 +207,13 @@ class EigenmodeControl:
                 rbc = self.ui.cb_RBC.currentIndex() + 1
 
                 # check if file exists
-                filename = fr'{self.main_control.projectDir}/SimulationData/SLANS/' \
-                           fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/cavity_{lbc}{rbc}.svl'
+                if self.pol == 'Monopole':
+                    filename = fr'{self.main_control.projectDir}/SimulationData/SLANS/' \
+                               fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/cavity_{lbc}{rbc}.svl'
+                else:
+                    filename = fr'{self.main_control.projectDir}/SimulationData/SLANS/' \
+                               fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/cavity_{lbc}{rbc}_2.sv2'
+
                 if os.path.exists(filename):
                     # Open the file for reading
                     with open(filename, 'r') as file:
@@ -216,7 +221,10 @@ class EigenmodeControl:
                         lines = file.readlines()
 
                     # Filter lines containing the keyword 'ACCURACY'
-                    filtered_lines = [line.strip() for line in lines if ('ACCURACY' in line or 'FREQUENCY' in line)]
+                    if self.pol == 'Monopole':
+                        filtered_lines = [line.strip() for line in lines if ('ACCURACY' in line or 'FREQUENCY' in line)]
+                    else:
+                        filtered_lines = [line.strip() for line in lines if ('accuracy' in line or 'Frequency' in line)]
                     accuracy = filtered_lines[::2]
                     frequency = filtered_lines[1::2]
 
@@ -391,60 +399,6 @@ class EigenmodeControl:
         path = self.main_control.parentDir / fr"exe\{path}"
         t = Thread(target=subprocess.call, args=(path,))
         t.start()
-    #
-    # def draw_shape_from_shape_space(self):
-    #     ci = 0
-    #
-    #     # remove existing cells
-    #     self.plot.ax.clear()  #removed for testing
-    #     self.plot.fig.canvas.draw()  #removed for testing
-    #     # self.graphicsView.removeCells()
-    #     for key in self.loaded_shape_space.keys():
-    #         if key in self.ui.cb_Shape_Space_Keys.currentText():
-    #             IC = self.loaded_shape_space[key]["IC"]
-    #             OC = self.loaded_shape_space[key]["OC"]
-    #             BP = self.loaded_shape_space[key]["BP"]
-    #             n_cell = int(self.ui.le_N_Cells.text())
-    #             # self.graphicsView.drawCells(IC, OC, BP,
-    #             #                             QColor(colors[ci][0], colors[ci][1], colors[ci][2], colors[ci][3]))
-    #
-    #             plot_cavity_geometry(self.plot, IC, OC, BP, n_cell)
-    #             ci += 1
-    #         if ci > 4:  # maximum of only 10 plots
-    #             break
-
-    # def ui_effects(self):
-    #
-    #     shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-    #     shadow.setColor(QColor(0, 0, 0, 77))
-
-        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        # shadow.setColor(QColor(0, 0, 0, 77))
-        # self.ui.w_Inner_Cell.setGraphicsEffect(shadow)
-        #
-        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        # shadow.setColor(QColor(0, 0, 0, 77))
-        # self.ui.w_Outer_Cell_L.setGraphicsEffect(shadow)
-        #
-        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        # shadow.setColor(QColor(0, 0, 0, 77))
-        # self.ui.w_Outer_Cell_R.setGraphicsEffect(shadow)
-        #
-        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        # shadow.setColor(QColor(0, 0, 0, 77))
-        # self.ui.w_Expansion.setGraphicsEffect(shadow)
-
-        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        # shadow.setColor(QColor(0, 0, 0, 77))
-        # self.ui.w_Simulation_Controls.setGraphicsEffect(shadow)
-
-        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        # shadow.setColor(QColor(0, 0, 0, 77))
-        # self.ui.w_Show_Cavity.setGraphicsEffect(shadow)
-
-        # shadow = QGraphicsDropShadowEffect(blurRadius=5, xOffset=5, yOffset=5)
-        # shadow.setColor(QColor(0, 0, 0, 77))
-        # self.ui.w_Load_Manual.setGraphicsEffect(shadow)
 
     def serialise(self, state_dict):
         """
