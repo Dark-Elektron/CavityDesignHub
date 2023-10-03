@@ -133,7 +133,7 @@ class GeometryInputControl:
         self.plot.fig.canvas.draw()
 
         for key in self.loaded_shape_space.keys():
-            if key in self.ui.cb_Shape_Space_Keys.currentText():
+            if self.ui.cb_Shape_Space_Keys.currentText().split(', ').count(key) > 0:
                 IC = self.loaded_shape_space[key]["IC"]
                 OC = self.loaded_shape_space[key]["OC"]
                 if 'OC_R' in self.loaded_shape_space[key].keys():

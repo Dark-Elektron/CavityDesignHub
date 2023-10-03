@@ -71,9 +71,9 @@ class Tuner:
             freq = 0
             alpha_i = 0
             alpha_o = 0
-            if resume == "Yes" and os.path.exists(fr'{projectDir}/SimulationData/SLANS/{key}'):
+            if resume == "Yes" and os.path.exists(fr'{projectDir}/SimulationData/SLANS_opt/{key}'):
                 # if folder exist, read value
-                filename = fr'{projectDir}/SimulationData/SLANS/{key}/cavity_{bc}.svl'
+                filename = fr'{projectDir}/SimulationData/SLANS_opt/{key}/cavity_{bc}.svl'
                 try:
                     data_dict = fr.svl_reader(filename)
                     # print(data_dict)
@@ -194,10 +194,10 @@ class Tuner:
 
                     slans_geom.cavity(n_cell_last_run, 1, inner_cell, outer_cell, outer_cell, f_shift=0, bc=bc,
                                       beampipes=beampipes, proc=proc,
-                                      n_modes=n_cell_last_run+1, fid=key, parentDir=parentDir, projectDir=projectDir)
+                                      n_modes=n_cell_last_run+1, fid=key, parentDir=parentDir, projectDir=projectDir, opt=True)
 
                     # write cst_studio parameters
-                    write_cst_paramters(key, inner_cell, outer_cell, outer_cell, projectDir, cell_type)
+                    write_cst_paramters(key, inner_cell, outer_cell, outer_cell, projectDir, cell_type, opt=True)
 
                     # write tune results
                     if cell_type == 'Mid Cell':
@@ -211,7 +211,7 @@ class Tuner:
 
             # clear folder after every run. This is to avoid copying of wrong values to save folder
             # processor folder
-            proc_fold = fr'{projectDir}/SimulationData/SLANS/_process_{proc}'
+            proc_fold = fr'{projectDir}/SimulationData/SLANS_opt/_process_{proc}'
             keep = ['SLANS_exe']
             for item in os.listdir(proc_fold):
                 if item not in keep:  # If it isn't in the list for retaining
@@ -236,7 +236,7 @@ class Tuner:
 
     @staticmethod
     def save_tune_result(d, projectDir, key):
-        with open(fr"{projectDir}\SimulationData\SLANS\{key}\tune_res.json", 'w') as file:
+        with open(fr"{projectDir}\SimulationData\SLANS_opt\{key}\tune_res.json", 'w') as file:
             file.write(json.dumps(d, indent=4, separators=(',', ': ')))
 
     # if __name__ == '__main__':

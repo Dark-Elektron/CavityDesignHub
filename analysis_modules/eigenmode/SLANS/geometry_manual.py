@@ -17,12 +17,29 @@ class Geometry:
         self.A_M, self.B_M, self.a_M, self.b_M, self.ri_M, self.L_M, self.Req_M = [None for _ in range(7)]
         self.A_L, self.B_L, self.a_L, self.b_L, self.ri_L, self.L_L, self.Req_L = [None for _ in range(7)]
         self.A_R, self.B_R, self.a_R, self.b_R, self.ri_R, self.L_R, self.Req_R = [None for _ in range(7)]
+
+        self.WG_mesh = None
+        self.WG_R = None
+        self.WG_L = None
+        self.left_beam_pipe, self.right_beam_pipe = None, None
+        self.mid_cell, self.right_end_cell, self.left_end_cell = None, None, None
+
+        self.Rbp_L, self.at_L, self.bt_L, self.c_L, self.x_L = None, None, None, None, None
+        self.Rbp_R, self.at_R, self.bt_R, self.c_R, self.x_R = None, None, None, None, None
+
+        self.Jxy, self.Jx1, self.Jx2 = None, None, None
+        self.Jx1_bp, self.Jx2_bp = None, None
+        self.Jy0, self.Jy1, self.Jy2, self.Jy3 = None, None, None, None
+        self.Jy0_bp, self.Jy1_bp, self.Jy2_bp, self.Jy3_bp = None, None, None, None
+        self.Jxy_al, self.Jxy_bp, self.Jxy_all, self.Jxy_bp_y = None, None, None, None
+        self.Jxy_all_bp = None
+
         if win:
             self.win = win
             self.ui = win.ui
 
     def set_geom_parameters(self, n_cells, mid_cells_par=None, l_end_cell_par=None,
-                            r_end_cell_par=None, beampipes=None, expansion=None, expansion_r=None):
+                            r_end_cell_par=None, beampipes=None, expansion=None, expansion_r=None, mesh=None):
         self.u = 1
         self.n = n_cells
 
@@ -63,7 +80,7 @@ class Geometry:
             self.WG_R = 4 * self.L_M + self.x_R
 
         if beampipes == 'left':
-            self.WG_L = 4 * self.L_M + self.x_L  # self.ui.dsb_Lbp_L.value()*self.u   # Length of the beam pipe connecting to the cavity
+            self.WG_L = 4 * self.L_M + self.x_L  # Length of the beam pipe connecting to the cavity
 
         if beampipes == 'right':
             self.WG_R = 4 * self.L_M + self.x_R  # Right Waveguide
@@ -73,7 +90,15 @@ class Geometry:
 
         self.WG_mesh = round(self.WG_L / 5)*self.u  # /5 for ende_type 1
         # print_(self.L_M, self.WG_L, self.WG_mesh)
-        self.Jxy = 44  # 60 for end type 1
+        if mesh:
+            self.Jxy = mesh[0]  # 60 for end type 1
+            self.Jxy_bp = mesh[1]
+            self.Jxy_bp_y = mesh[2]
+        else:
+            self.Jxy = 44  # 60 for end type 1
+            self.Jxy_bp = 30
+            self.Jxy_bp_y = 35
+
         self.Jx1 = round((19 / 50) * self.Jxy)  # 19/50 for end_type 1
         self.Jx2 = self.Jxy / 2 - self.Jx1
 
@@ -83,8 +108,6 @@ class Geometry:
         self.Jy3 = self.Jxy - self.Jy2 - self.Jy1 - self.Jy0
         self.Jxy_all = [0, self.Jxy, self.Jx1, self.Jx2, self.Jy0, self.Jy1, self.Jy2, self.Jy3]
 
-        self.Jxy_bp = 30
-        self.Jxy_bp_y = 35
         self.Jx1_bp = round((19 / 50) * self.Jxy_bp)
         self.Jx2_bp = self.Jxy_bp / 2 - self.Jx1_bp
 
@@ -94,7 +117,8 @@ class Geometry:
         self.Jy3_bp = self.Jxy_bp_y - self.Jy2_bp - self.Jy1_bp - self.Jy0_bp
         self.Jxy_all_bp = [0, self.Jxy_bp, self.Jx1_bp, self.Jx2_bp, self.Jy0_bp, self.Jy1_bp, self.Jy2_bp, self.Jy3_bp]
 
-    def set_geom_parameters_multicell(self, n_cells, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None, beampipes=None):
+    def set_geom_parameters_multicell(self, n_cells, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
+                                      beampipes=None):
         self.u = 1
         self.n = n_cells
 

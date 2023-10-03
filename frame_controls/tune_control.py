@@ -1,9 +1,9 @@
 import datetime
 import math
+import os.path
 import random
 import shutil
 from pathlib import Path
-
 import scipy.signal as sps
 from scipy.stats import qmc
 from math import floor
@@ -20,7 +20,6 @@ from distutils import dir_util
 from analysis_modules.tune.tuners.tuner import Tuner
 from utils.shared_classes import *
 from utils.shared_functions import *
-
 from analysis_modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 
 slans_geom = SLANSGeometry()  # parallel implementation of code, consider making the two separate classes 1
@@ -1457,17 +1456,19 @@ class OptimizationControl:
 
             self.f2_interp = [np.zeros(self.n_interp) for _ in range(len(self.objectives))]
 
-            # clear folder to avoid reading from previous optimization attempt
-            folders = [Path(fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"),
-                       Path(fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\ABCI")]
+            folders = [Path(fr"{self.projectDir}\SimulationData\SLANS_opt"),
+                       Path(fr"{self.projectDir}\SimulationData\ABCI_opt")]
 
-            # folders = [fr"D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS"]
+            # clear folder to avoid reading from previous optimization attempt
             for folder in folders:
-                for filename in os.listdir(folder):
-                    try:
-                        shutil.rmtree(folder / fr"{filename}")
-                    except NotADirectoryError:
-                        os.remove(folder / fr"{filename}")
+                if os.path.exists(folder):
+                    for filename in os.listdir(folder):
+                        try:
+                            shutil.rmtree(folder / fr"{filename}")
+                        except NotADirectoryError:
+                            os.remove(folder / fr"{filename}")
+                else:
+                    os.mkdir(folder)
 
         # optimize by page rank
         # remove the lowest ranking members
@@ -1517,11 +1518,6 @@ class OptimizationControl:
 
         pseudo_shape_space = self.remove_duplicate_values(pseudo_shape_space)
 
-        # pseudo_shape_space_name = f'{self.projectDir}/Cavities/pseudo_{self.proof_filename("EA.json")}'
-        #
-        # with open(pseudo_shape_space_name, 'w') as file:
-        #     file.write(json.dumps(pseudo_shape_space, indent=4, separators=(',', ': ')))
-
         ############################
         # run tune
         n_cells = self.ui.sb_Norm_Length_N_Cells.value()
@@ -1532,19 +1528,18 @@ class OptimizationControl:
         for o in self.objectives:
             if o[1] in ["freq", "Epk/Eacc", "Bpk/Eacc", "R/Q", "G", "Q0"]:
                 # process tune results
-                params = {}
                 obj_result = []
                 tune_result = []
                 processed_keys = []
                 for key in pseudo_shape_space.keys():
-                    filename = self.projectDir / fr'SimulationData\SLANS\{key}\cavity_33.svl'
+                    filename = self.projectDir / fr'SimulationData\SLANS_opt\{key}\cavity_33.svl'
                     try:
                         params = fr.svl_reader(filename)
                         obj = self.get_objectives_value(params, self.objectives, norm_length, n_cells)
                         # print(obj, tr)
                         # read tune results
                         d_tune_res = {'Req': 0, 'L': 0, 'freq': 0}
-                        with open(self.projectDir / fr'SimulationData\SLANS\{key}\tune_res.json', "r") as infile:
+                        with open(self.projectDir / fr'SimulationData\SLANS_opt\{key}\tune_res.json', "r") as infile:
                             d_tune_res = json.load(infile)
 
                         obj_result.append(obj)
@@ -1554,19 +1549,74 @@ class OptimizationControl:
                         pass
 
                 # after removing duplicates, dataframe might change size
+                ic(processed_keys)
+                ic(df)
                 df = df.loc[df['key'].isin(processed_keys)]
+                ic(df)
                 # print(tune_result)
                 # replace Req wÖith tuned Req
+                ic(tune_result)
                 df[['Req', 'L', 'alpha_i', 'alpha_o', 'freq']] = tune_result
-
+                ic(df)
                 # append objective column to dataframe only from slans results
-                obj_slans = [o[1] for o in self.objectives if 'Z' not in o[1]]
+                obj_slans = [o[1] for o in self.objectives if o[1] in ["freq", "Epk/Eacc", "Bpk/Eacc", "R/Q", "G", "Q0"]]
                 ic(obj_result)
                 ic(obj_slans)
                 df[obj_slans] = obj_result
-            # print("In here to evaluate wakfield")
+            elif o[1] in ["mts monopole", 'mts dipole']:
+                ic("Inside here where i want it to be")
+                # process tune results
+                obj_vars = self.ui.ccb_Populate_Objectives.currentText().split(', ')
+                for i, obj_var in enumerate(obj_vars):
+                    if obj_var == "mts monopole" or obj_var == "mts dipole":
+                        goal = self.ui.tw_Objectives.cellWidget(i, 1).currentText()
+                        if goal == 'equal':
+                            fshift = float(self.ui.tw_Objectives.item(i, 2).text())
+                ic(fshift)
+                obj_result = []
+                tune_result = []
+                processed_keys = []
+                # run dipole simulation with frequency shift
+                if o[1] == "mts monopole":
+                    slans_shape_space = self.run_slans_parallel(df, n_cells, fshift, 'monopole')
+                    for key, val in slans_shape_space.items():
+                        filename = self.projectDir / fr'SimulationData\SLANS_opt\{key}\cavity_33.svl'
+                        try:
+                            params = fr.svl_reader(filename)
+                            obj = self.get_objectives_value(params, self.objectives, norm_length, n_cells)
+
+                            obj_result.append(obj)
+
+                            df_slans_mts = pd.DataFrame(obj, columns=[key, o[1]])
+                            ic(df_slans_mts)
+                            df = df.merge(df_slans_mts, on='key', how='inner')
+                            ic(df)
+                        except FileNotFoundError:
+                            pass
+                else:
+                    ic(df)
+                    slans_shape_space = self.run_slans_parallel(df, n_cells, fshift, 'dipole')
+                    for key, val in slans_shape_space.items():
+                        filename = self.projectDir / fr'SimulationData\SLANS_opt\{key}_n1\cavity_33_2.sv2'
+                        ic(filename)
+                        try:
+                            ic('inside here')
+                            params = fr.sv2_reader(filename)
+                            ic('successfully read')
+                            obj = params['Frequency'][-1]
+                            obj_result.append([key, obj])
+                            ic(obj_result)
+                            processed_keys.append(key)
+                            ic(df)
+                        except FileNotFoundError:
+                            pass
+
+                    df_slans_mts = pd.DataFrame(obj_result, columns=['key', o[1]])
+                    ic(df_slans_mts)
+                    df = df.merge(df_slans_mts, on='key', how='inner')
+
             elif "ZL" in o[1] or "ZT" in o[1] or "k_loss" in o[1] or "k_kick" in o[1]:
-                print("In here to evaluate wakfield0")
+                print("In here to evaluate wakfield")
                 # run wakefield analysis and return shape space
                 wake_shape_space = self.run_wakefield_parallel(df)
                 # print("In here to evaluate wakfield1")
@@ -1615,7 +1665,7 @@ class OptimizationControl:
             # get uq_parameters
             uq_result_dict = {}
             for key in shape_space.keys():
-                filename_slans = self.projectDir / fr'SimulationData\SLANS\{key}\uq.json'
+                filename_slans = self.projectDir / fr'SimulationData\SLANS_opt\{key}\uq.json'
                 filename_abci = self.projectDir / fr'SimulationData\ABCI\{key}\uq.json'
                 if os.path.exists(filename_slans):  # and os.path.exists(filename_abci):
                     uq_result_dict[key] = []
@@ -1736,8 +1786,8 @@ class OptimizationControl:
                     df[f'rank_{obj[1]}'] = df[obj[1]].rank() * self.weights[i]
                 elif obj[0] == "max":
                     df[f'rank_{obj[1]}'] = df[obj[1]].rank(ascending=False) * self.weights[i]
-                elif obj[0] == "equal":  # define properly later
-                    continue
+                elif obj[0] == "equal" and obj[1] != 'freq':  # define properly later
+                    df[f'rank_{obj[1]}'] = (df[obj[1]] - fshift).abs().rank() * self.weights[i]
 
                 # if 'total_rank' in df.columns:
                 df[f'total_rank'] = df[f'total_rank'] + df[f'rank_{obj[1]}']
@@ -1769,7 +1819,7 @@ class OptimizationControl:
                 # self.ax1.plot(f1, pareto_poly_fit(f1), '-', c='k')
                 f2_interp = np.interp(f1, pareto_shapes_sorted[obj0], pareto_shapes_sorted[obj[1]])
                 ic(max(np.abs(f2_interp)))
-                rel_error = np.linalg.norm(f2_interp - self.f2_interp[i])/max(np.abs(f2_interp))
+                rel_error = np.linalg.norm(f2_interp - self.f2_interp[i]) / max(np.abs(f2_interp))
                 obj_error.append(rel_error)
 
                 self.f2_interp[i] = f2_interp
@@ -1798,7 +1848,7 @@ class OptimizationControl:
             return
 
         # save dataframe
-        filename = fr"{self.projectDir}\SimulationData\SLANS\Generation{n}.xlsx"
+        filename = fr"{self.projectDir}\SimulationData\SLANS_opt\Generation{n}.xlsx"
         self.recursive_save(self.df_global, filename, reorder_indx)
         # ic(self.df_global)
 
@@ -1972,7 +2022,7 @@ class OptimizationControl:
                     fid = fr'{key}_Q{i}'
 
                     # check if folder exists and skip if it does
-                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{key}\{fid}'):
+                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS_opt\{key}\{fid}'):
                         skip = True
                         # ic("Skipped: ", fid, fr'{projectDir}\SimulationData\ABCI\{key}\{fid}')
 
@@ -1985,7 +2035,7 @@ class OptimizationControl:
                         solver.cavity(n_cells, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes,
                                       fid=fid,
                                       parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
-                    filename = fr'{projectDir}\SimulationData\SLANS\{key}\{fid}\cavity_33.svl'
+                    filename = fr'{projectDir}\SimulationData\SLANS_opt\{key}\{fid}\cavity_33.svl'
 
                     if os.path.exists(filename):
                         params = fr.svl_reader(filename)
@@ -1999,7 +2049,7 @@ class OptimizationControl:
                                 err = True
                                 break
 
-                        # ic('SLANS', obj_result)
+                        # ic('SLANS_opt', obj_result)
                         tab_val_f = obj_result
 
                         Ttab_val_f.append(tab_val_f)
@@ -2007,7 +2057,7 @@ class OptimizationControl:
                         err = True
 
                 # # add original point
-                # filename = fr'{projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
+                # filename = fr'{projectDir}\SimulationData\SLANS_opt\{key}\cavity_33.svl'
                 # params = fr.svl_reader(filename)
                 # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
                 # tab_val_f = obj_result
@@ -2024,7 +2074,7 @@ class OptimizationControl:
                     result_dict_slans[o[1]]['expe'].append(v_expe_fobj[i])
                     result_dict_slans[o[1]]['stdDev'].append(v_stdDev_fobj[i])
 
-                with open(fr"{projectDir}\SimulationData\SLANS\{key}\uq.json", 'w') as file:
+                with open(fr"{projectDir}\SimulationData\SLANS_opt\{key}\uq.json", 'w') as file:
                     file.write(json.dumps(result_dict_slans, indent=4, separators=(',', ': ')))
 
             if run_abci:
@@ -2208,7 +2258,7 @@ class OptimizationControl:
                 for key, val in pseudo_shape_space.items():
                     if key in proc_keys_list:
                         # check if folder alsready exists
-                        if not os.path.exists(fr'{self.projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'):
+                        if not os.path.exists(fr'{self.projectDir}\SimulationData\SLANS_opt\{key}\cavity_33.svl'):
                             processor_shape_space[key] = val
 
                 if 'End' in self.ui.cb_Cell_Type_Optimization.currentText():
@@ -2218,8 +2268,8 @@ class OptimizationControl:
 
                 tune_variable = self.ui.cb_Tune_Variable.currentText()
                 service = mp.Process(target=self.run_sequential,
-                                     args=(processor_shape_space, "Yes", p, 33, r"D:\Dropbox\CavityDesignHub",
-                                           r"D:\Dropbox\CavityDesignHub\Cavity800", "EA.json", 'PyTuner',
+                                     args=(processor_shape_space, "Yes", p, 33, self.parentDir,
+                                           self.projectDir, "EA.json", 'PyTuner',
                                            tune_variable, ["Linear Interpolation", 1e-3, 10], cell_type, [],
                                            None, True, n_cells))
                 service.start()
@@ -2229,6 +2279,73 @@ class OptimizationControl:
             p.join()
 
         self.processes = []
+
+    def run_slans_parallel(self, df, n_cells, fshift, pol):
+
+        proc_count = self.ui.sb_Processors_Count.value()
+
+        # get geometric parameters
+        df = df.loc[:, ['key', 'A', 'B', 'a', 'b', 'Ri', 'L', 'Req', "alpha_i", "alpha_o"]]
+        shape_space = {}
+
+        df = df.set_index('key')
+        for index, row in df.iterrows():
+            rw = row.tolist()
+            if self.ui.cb_Cell_Type_Optimization.currentText() == 'End-Mid Cell':
+
+                A_i = self.check_input(self.ui.le_A_i_opt.text())[0]
+                B_i = self.check_input(self.ui.le_B_i_opt.text())[0]
+                a_i = self.check_input(self.ui.le_a_i_opt.text())[0]
+                b_i = self.check_input(self.ui.le_b_i_opt.text())[0]
+                Ri_i = self.check_input(self.ui.le_Ri_i_opt.text())[0]
+                L_i = self.check_input(self.ui.le_L_i_opt.text())[0]
+                Req_i = self.check_input(self.ui.le_Req_i_opt.text())[0]
+                alpha_i = self.check_input(self.ui.le_Alpha_opt.text())[0]
+
+                IC = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req_i, alpha_i]
+
+                shape_space[f'{index}'] = {'IC': IC, 'OC': rw, 'OC_R': rw, 'BP': 'left'}
+            else:
+                shape_space[f'{index}'] = {'IC': rw, 'OC': rw, 'OC_R': rw, 'BP': 'left'}
+
+        # split shape_space for different processes/ MPI share process by rank
+        keys = list(shape_space.keys())
+
+        # check if number of processors selected is greater than the number of keys in the pseudo shape space
+        if proc_count > len(keys):
+            proc_count = len(keys)
+
+        shape_space_len = len(keys)
+        share = floor(shape_space_len / proc_count)
+
+        self.processes = []
+        for pc in range(proc_count):
+            if True:
+                if pc < proc_count - 1:
+                    proc_keys_list = keys[pc * share:pc * share + share]
+                else:
+                    proc_keys_list = keys[pc * share:]
+
+                processor_shape_space = {}
+                for key, val in shape_space.items():
+                    if key in proc_keys_list:
+                        # check if folder already exists
+                        if not os.path.exists(
+                                fr'{self.projectDir}\SimulationData\SLANS_opt\{key}\cavity_{fshift}_33.svl'):
+                            processor_shape_space[key] = val
+
+                service = mp.Process(target=self.run_sequential_slans,
+                                     args=(n_cells, 1, processor_shape_space, n_cells, fshift, 33, pol,
+                                           self.parentDir, self.projectDir, []))
+
+                service.start()
+                self.processes.append(service)
+
+        for pc in self.processes:
+            pc.join()
+
+        self.processes = []
+        return shape_space
 
     def run_wakefield_parallel(self, df):
         # get analysis parameters
@@ -2834,8 +2951,9 @@ class OptimizationControl:
                     elites[f'{o[1]}'] = df.sort_values(f'{o[1]}')
                 elif o[0] == "max":
                     elites[f'{o[1]}'] = df.sort_values(f'{o[1]}', ascending=False)
-                elif o[0] == "equal":
-                    continue
+                elif o[0] == "equal" and o[1] != 'freq':
+                    elites[f'{o[1]}'] = (df[o[1]] - float(o[2])).abs().sort_values(f'{o[1]}')
+
         ic(elites)
         obj_dict = {}
         for o in self.objectives:
@@ -3215,7 +3333,7 @@ class OptimizationControl:
 
     @staticmethod
     def overwriteFolder(invar, projectDir):
-        path = fr"{projectDir}\SimulationData\SLANS\_process_{invar}"
+        path = fr"{projectDir}\SimulationData\SLANS_opt\_process_{invar}"
 
         if os.path.exists(path):
             shutil.rmtree(path)
@@ -3226,7 +3344,7 @@ class OptimizationControl:
     @staticmethod
     def copyFiles(invar, parentDir, projectDir):
         src = fr"{parentDir}\exe\SLANS_exe"
-        dst = fr"{projectDir}\SimulationData\SLANS\_process_{invar}\SLANS_exe"
+        dst = fr"{projectDir}\SimulationData\SLANS_opt\_process_{invar}\SLANS_exe"
 
         dir_util.copy_tree(src, dst)
 
@@ -3239,6 +3357,136 @@ class OptimizationControl:
                    cell_type=cell_type, progress_list=progress_list, convergence_list=convergence_list,
                    save_last=save_last,
                    n_cell_last_run=n_cells)  # last_key=last_key This would have to be tested again #val2
+
+    @staticmethod
+    def run_sequential_slans(n_cell, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, parentDir, projectDir,
+                             progress_list, sub_dir='', UQ=False, solver='slans', mesh=None):
+        """
+        Runs a single instance of SLANS (eigenmode analysis)
+        Parameters
+        ----------
+        n_cell: int
+            Number of cavity cells
+        n_modules: int
+            Number of cavity modules
+        processor_shape_space: dict
+            Dictionary containing geometric dimensions of cavity geometry
+        n_modes: int
+            Number of eigenmodes to be calculated
+        f_shift: float
+            Since the eigenmode solver uses the power method, a shift can be provided
+        bc: int
+            Boundary conditions {1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal}
+            bc=33 means `Magnetic Wall En = 0` boundary condition at both ends
+        pol: int {Monopole, Dipole}
+            Defines whether to calculate for monopole or dipole modes
+        parentDir: str | path
+            Parent directory
+        projectDir: str|path
+            Project directory
+        progress_list: list
+            Global list to record the progress of each parallel simulation thread
+        sub_dir: dir
+            Sub directory in which to write simulation results
+        UQ: bool
+            Toggles between performing uncertainty quantification or not in addition to the nominal solution
+        solver: str {slans, native}
+            Select the eigenmode solver to use. Default is the SLANS solver
+        mesh: list [Jxy, Jxy_bp, Jxy_bp_y]
+            Mesh definition for logical mesh:
+            Jxy -> Number of elements of logical mesh along JX and JY
+            Jxy_bp -> Number of elements of logical mesh along JX in beampipe
+            Jxy_bp_y -> Number of elements of logical mesh along JY in beampipe
+
+        Returns
+        -------
+
+        """
+        progress = 0
+        # get length of processor
+        # total_no_of_shapes = len(list(processor_shape_space.keys()))
+
+        for key, shape in processor_shape_space.items():
+            if solver.lower() == 'slans':
+
+                # run SLANS code
+                start_time = time.time()
+                expansion = None
+                expansion_r = None
+
+                if "EXPANSION" in shape.keys():
+                    expansion = shape['EXPANSION']
+
+                if 'EXPANSION_R' in shape.keys():
+                    expansion_r = shape['EXPANSION_R']
+
+                # if len(n_cells) == 1:
+                #     n_cells = n_cells[0]
+                #     # # create folders for all keys
+                #     slans_geom.createFolder(key, projectDir, subdir=sub_dir)
+                #
+                #     write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+                #
+                # if 'OC_R' in shape.keys(): slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
+                # shape['OC_R'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
+                # expansion_r=expansion_r) else: slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
+                # shape['OC'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
+                # expansion_r=expansion_r) else:
+
+                # # create folders for all keys
+                slans_geom_seq.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir, opt=True)
+
+                if 'OC_R' in shape.keys():
+                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],
+                                        projectDir=projectDir, cell_type="None", opt=True)
+                    slans_geom_seq.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                          bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                          expansion=expansion, expansion_r=expansion_r, mesh=mesh, opt=True)
+                else:
+                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
+                                        projectDir=projectDir, cell_type="None", opt=True)
+                    slans_geom_seq.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                          bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                          expansion=expansion, expansion_r=expansion_r, mesh=mesh, opt=True)
+
+                # # run UQ
+                # if UQ:
+                #     uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
+                #        n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
+                #        f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir)
+                #
+                # print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
+                #
+                # # update progress
+                # progress_list.append(progress + 1)
+
+            # else:
+            #     # run own eigenmode code
+            #     folder = projectDir / fr'SimulationData\NativeEig'
+            #     mod = Model(folder=folder, name=f"{key}", parent_dir=parentDir)
+            #
+            #     try:
+            #         # convert first to m.
+            #         mid_cell = np.array(shape['IC']) * 1e-3
+            #         end_cell_left = np.array(shape['OC']) * 1e-3
+            #         end_cell_right = np.array(shape['OC_R']) * 1e-3
+            #
+            #         mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
+            #                 req_mode_num=int(n_modes), plot=False)
+            #     except KeyError:
+            #         # convert first to m.
+            #         mid_cell = np.array(shape['IC']) * 1e-3
+            #         end_cell_left = np.array(shape['OC']) * 1e-3
+            #         end_cell_right = np.array(shape['OC']) * 1e-3
+            #
+            #         mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
+            #                 req_mode_num=int(n_modes), plot=False)
 
     @staticmethod
     def text_to_list(ll):
@@ -3263,7 +3511,8 @@ class OptimizationControl:
         mt_score_list = []
         for mode in mode_list_input:
             x, y = [], []
-            path = os.path.join(os.getcwd(), r"SLANS_data_C{}\Cavity{}\cavity_mm_{}.af".format(mid_cell_cid, invar, mode))
+            path = os.path.join(os.getcwd(),
+                                r"SLANS_data_C{}\Cavity{}\cavity_mm_{}.af".format(mid_cell_cid, invar, mode))
             print("PATH:: ", path)
             with open(path, 'r') as f:
                 for ll in f.readlines():
@@ -3278,7 +3527,7 @@ class OptimizationControl:
             y_mx = max(y_abs)
 
             for v in y_abs:
-                if v <= 0.1*y_mx:
+                if v <= 0.1 * y_mx:
                     y_flat.append(0)
                 else:
                     y_flat.append(v)
@@ -3298,12 +3547,12 @@ class OptimizationControl:
 
                 print("\t\t\t", y_peaks_norm)
 
-                if 1.05*y_peaks[0] >= max(y_peaks):
-                    mt_score = -(sum(y_peaks_norm)-1)/(len(y_peaks_norm)-1)
+                if 1.05 * y_peaks[0] >= max(y_peaks):
+                    mt_score = -(sum(y_peaks_norm) - 1) / (len(y_peaks_norm) - 1)
                 else:
-                    mt_score = (sum(y_peaks_norm)-1)/(len(y_peaks_norm)-1)
+                    mt_score = (sum(y_peaks_norm) - 1) / (len(y_peaks_norm) - 1)
 
-                print("\t\t\t", 1/mt_score)
+                print("\t\t\t", 1 / mt_score)
                 mt_score_list.append(mt_score)
                 print("MODE LIST:: ", mode_list_input)
             else:

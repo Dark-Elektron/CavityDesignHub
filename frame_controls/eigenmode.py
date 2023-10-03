@@ -25,6 +25,7 @@ def print_(*arg):
 
 class EigenmodeControl:
     def __init__(self, parent):
+        self.pol = None
         self.animation = None
         self.pause_icon = None
         self.resume_icon = None
@@ -113,6 +114,7 @@ class EigenmodeControl:
         f_shift = float(self.ui.le_Freq_Shift.text())
         n_modes = float(self.ui.le_No_Of_Modes.text())
         self.pol = self.ui.cb_Polarization_SLANS.currentText()
+        mesh = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value()]
 
         # boundary conditions
         lbc = self.ui.cb_LBC.currentIndex()+1
@@ -163,7 +165,7 @@ class EigenmodeControl:
             service = mp.Process(target=self.run_sequential, args=(
                 n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.pol, self.main_control.parentDir,
                 self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(),
-                UQ, eigenproblem_solver))
+                UQ, eigenproblem_solver, mesh))
 
             service.start()
 
@@ -430,12 +432,12 @@ class EigenmodeControl:
 
     @staticmethod
     def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, parentDir, projectDir,
-                       progress_list, sub_dir='', UQ=False, solver='slans'):
+                       progress_list, sub_dir='', UQ=False, solver='slans', mesh=None):
         """
         Runs a single instance of SLANS (eigenmode analysis)
         Parameters
         ----------
-        n_cells: int
+        n_cells: int, list
             Number of cavity cells
         n_modules: int
             Number of cavity modules
@@ -459,9 +461,14 @@ class EigenmodeControl:
         sub_dir: dir
             Sub directory in which to write simulation results
         UQ: bool
-            Toggles between performing uncertainty quanitification or not in addition to the nominal solution
+            Toggles between performing uncertainty quantification or not in addition to the nominal solution
         solver: str {slans, native}
-            Select the eigenmdoe solver to use. Defaut is the SLANS solver
+            Select the eigenmode solver to use. Default is the SLANS solver
+        mesh: list [Jxy, Jxy_bp, Jxy_bp_y]
+            Mesh definition for logical mesh:
+            Jxy -> Number of elements of logical mesh along JX and JY
+            Jxy_bp -> Number of elements of logical mesh along JX in beampipe
+            Jxy_bp_y -> Number of elements of logical mesh along JY in beampipe
 
         Returns
         -------
@@ -510,7 +517,7 @@ class EigenmodeControl:
                                           n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
                                           bc=bc, pol=pol, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                          expansion=expansion, expansion_r=expansion_r)
+                                          expansion=expansion, expansion_r=expansion_r, mesh=mesh)
                     else:
                         write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
                                             projectDir=projectDir, cell_type="None")
@@ -518,7 +525,7 @@ class EigenmodeControl:
                                           n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
                                           bc=bc, pol=pol, beampipes=shape['BP'],
                                           parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                          expansion=expansion, expansion_r=expansion_r)
+                                          expansion=expansion, expansion_r=expansion_r, mesh=mesh)
 
                 # run UQ
                 if UQ:

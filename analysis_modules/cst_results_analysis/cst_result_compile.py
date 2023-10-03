@@ -137,7 +137,7 @@ def eigenmode_analysis(sim_folder, folders, requests, name):
     # print(f, max(df["RQT_kOhm_m"]))
     # write_threshold(fr"{sim_folder}\Lossy_Eigenmode_results")
 
-    # df = df.sort_values(by=['Frequency (Multiple Modes)'])
+    df = df.sort_values(by=['Frequency (Multiple Modes)'])
     recursive_save(df, fr"{sim_folder}\{name}")
 
 
@@ -441,9 +441,10 @@ def plot_frequency_line(ee_file, mm_file):
 
 if __name__ == '__main__':
     plt.rcParams["figure.figsize"] = (10, 3)
-    sim_folder = r"D:\CST Studio\3. W\Module"
-    # sim_folder = r"D:\CST Studio\5. tt\Assembly"
-    unique_marker = 'Eigenmode_3794(800MHz)_2HC_1FPC'
+    # sim_folder = r"D:\CST Studio\3. W\Module"
+    # unique_marker = 'Eigenmode_3794(800MHz)_2HC_1FPC'
+    sim_folder = r"D:\CST Studio\5. tt\Assembly"
+    unique_marker = 'ref_mesh'
     folders = []
     for filepath in os.listdir(sim_folder):
         if unique_marker in filepath:

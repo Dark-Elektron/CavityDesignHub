@@ -33,6 +33,7 @@ class PyTune:
             fid = '_process_0'
         else:
             fid = f'_process_{proc}'
+
         # get parameters
         freq_list = []
         tv_list = []
@@ -40,8 +41,8 @@ class PyTune:
 
         slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc,
                           beampipes=beampipes, proc=proc, fid=fid,
-                          parentDir=parentDir, projectDir=projectDir)
-        dirc = fr'{projectDir}\SimulationData\SLANS\{fid}\cavity_{bc}.svl'
+                          parentDir=parentDir, projectDir=projectDir, opt=True)
+        dirc = fr'{projectDir}\SimulationData\SLANS_opt\{fid}\cavity_{bc}.svl'
 
         d = fr.svl_reader(dirc)
 
@@ -54,6 +55,7 @@ class PyTune:
         tv = tv + 2
 
         par_end[indx] = tv
+        # ic(par_end)
 
         tol = iter_set[1]
         # max_iter = iter_set[2]
@@ -64,11 +66,11 @@ class PyTune:
         # control_switch = True
 
         while abs(error) > tol:
-            # print(par_mid, par_end)
+            # print('this point', par_mid, par_end)
             # run slans cavity code
             slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc,
                               beampipes=beampipes, proc=proc, fid=fid,
-                              parentDir=parentDir, projectDir=projectDir)
+                              parentDir=parentDir, projectDir=projectDir, opt=True)
 
             # get results and compare with set value
             d = fr.svl_reader(dirc)
@@ -83,6 +85,7 @@ class PyTune:
             if target_freq < freq < f_max and freq < f_max:
                 f_max = freq
                 # tv_max = tv
+            # ic(target_freq)
 
             # calculate slope of line from base point to new point
 
@@ -109,7 +112,7 @@ class PyTune:
 
             # if equal, break else continue with new shape
             error = target_freq - freq_list[-1]
-            print(error, tol)
+            # print(error, tol)
 
             if n > 20:
                 print('Maximum number of iterations exceeded. No solution found.')
@@ -130,7 +133,7 @@ class PyTune:
                 break
 
             # check if alpha is less than or greater than 90.5
-            print('here')
+            # print('here')
             if par_mid == par_end:
                 alpha, error_msg = calculate_alpha(par_mid[0], par_mid[1], par_mid[2],
                                                         par_mid[3], par_mid[4], tv, par_mid[6], 0)
@@ -160,10 +163,11 @@ class PyTune:
         # return best answer from iteration
         min_error = [abs(x-target_freq) for x in freq_list]
         key = min_error.index(min(min_error))
+
         # print(tv_list, freq_list)
-        import matplotlib.pyplot as plt
-        plt.scatter(tv_list, freq_list)
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.scatter(tv_list, freq_list)
+        # plt.show()
 
         return tv_list[key], freq_list[key]
 
@@ -180,8 +184,8 @@ class PyTune:
         Req_list = []
         error = 1
         slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid,
-                          parentDir=parentDir, projectDir=projectDir)
-        dirc = fr'{projectDir}\SimulationData\SLANS\{fid}\cavity_{bc}.svl'
+                          parentDir=parentDir, projectDir=projectDir, opt=True)
+        dirc = fr'{projectDir}\SimulationData\SLANS_opt\{fid}\cavity_{bc}.svl'
         d = fr.svl_reader(dirc)
 
         Req = par_end[6]
@@ -203,7 +207,7 @@ class PyTune:
         while abs(error) > tol:
             # run slans cavity code
             slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc,
-                              fid=fid, parentDir=parentDir, projectDir=projectDir)
+                              fid=fid, parentDir=parentDir, projectDir=projectDir, opt=True)
 
             # get results and compare with set value
             d = fr.svl_reader(dirc)
@@ -317,5 +321,5 @@ class PyTune:
     def write_output(tv_list, freq_list, fid, projectDir):
         dd = {"tv": tv_list, "freq": freq_list}
 
-        with open(fr"{projectDir}\SimulationData\SLANS\{fid}\convergence_output.json", "w") as outfile:
+        with open(fr"{projectDir}\SimulationData\SLANS_opt\{fid}\convergence_output.json", "w") as outfile:
             json.dump(dd, outfile, indent=4, separators=(',', ': '))

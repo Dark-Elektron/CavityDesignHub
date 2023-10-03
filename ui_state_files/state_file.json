@@ -1,6 +1,6 @@
 {
     "Project Directory": "D:\\Dropbox\\CavityDesignHub\\PhD_Thesis",
-    "Theme": "Solarized Light",
+    "Theme": "Solarized Dark",
     "Frequency": "1300",
     "Cell_Type": 1,
     "Tune_Option": 1,
@@ -169,7 +169,7 @@
     "ylabeltick_size": 18,
     "legend_size": 13,
     "Filename": "NLSF_end",
-    "CCB Populate Objectives": "freq, Epk/Eacc, Bpk/Eacc, R/Q",
+    "CCB Populate Objectives": "freq, mts dipole",
     "Optimization Objective Table": {
         "0": {
             "0": {
@@ -183,30 +183,10 @@
         },
         "1": {
             "0": {
-                "QLabel": "Epk/Eacc"
+                "QLabel": "mts dipole"
             },
             "1": {
-                "QComboBox": 0
-            },
-            "2": {},
-            "3": {}
-        },
-        "2": {
-            "0": {
-                "QLabel": "Bpk/Eacc"
-            },
-            "1": {
-                "QComboBox": 0
-            },
-            "2": {},
-            "3": {}
-        },
-        "3": {
-            "0": {
-                "QLabel": "R/Q"
-            },
-            "1": {
-                "QComboBox": 1
+                "QComboBox": 2
             },
             "2": {},
             "3": {}
@@ -219,27 +199,27 @@
     "plot_table_widget": {
         "0": {
             "Code": "Other",
-            "Folder": "C:/Users/sosoho/.qucs/pillbox_prj/HC_magnetic_coupling.csv",
+            "Folder": "D:/CST Studio/5. tt/Wakefield/WakeLong_C3795_2DQW_1FPC_LongitudinalZ_kOhm.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "CSV"
+                    "Sheet1"
                 ],
-                "CSV"
+                "Sheet1"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "frequency",
-                "r dB(S[2,1])"
+                "Freq [MHz]",
+                "|Z_long| [kOhm]"
             ],
             "Toggle": 2,
-            "ScaleX": "1e-6",
+            "ScaleX": "1",
             "ScaleY": "1",
             "Axis": "Left",
             "Type": [
                 "Line",
-                "--"
+                "-"
             ],
             "Filter": [
                 "",
@@ -248,98 +228,44 @@
         },
         "1": {
             "Code": "Other",
-            "Folder": "C:/Users/sosoho/.qucs/pillbox_prj/HC_electric_coupling.csv",
+            "Folder": "D:/CST Studio/5. tt/Assembly/Eigenmode_C3795_2DQW_1FPC.xlsx",
             "Polarization": "Long",
             "Id": [
                 [
                     "All",
-                    "CSV"
+                    "Sheet1"
                 ],
-                "CSV"
+                "Sheet1"
             ],
             "Request": [
                 "Longitudinal Impedance Magnitude",
-                "frequency",
-                "r SdB"
-            ],
-            "Toggle": 2,
-            "ScaleX": "1e-6",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Line",
-                "--"
-            ],
-            "Filter": [
-                "",
-                ""
-            ]
-        },
-        "2": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/COMPUMAG/Couplers/HC_new/Export/S1(1),2(1)_1D_ScaleAxis.txt",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "TXT"
-                ],
-                "TXT"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "0",
-                "1"
+                "Frequency [MHz]",
+                "Z [kOhm]"
             ],
             "Toggle": 2,
             "ScaleX": "1",
             "ScaleY": "1",
             "Axis": "Left",
             "Type": [
-                "Line",
-                "-"
+                "Scatter",
+                "P"
             ],
             "Filter": [
-                "",
-                ""
-            ]
-        },
-        "3": {
-            "Code": "Other",
-            "Folder": "D:/CST Studio/COMPUMAG/Couplers/HC_new/Export/S1(3),2(1)_1D_ScaleAxis.txt",
-            "Polarization": "Long",
-            "Id": [
-                [
-                    "All",
-                    "TXT"
-                ],
-                "TXT"
-            ],
-            "Request": [
-                "Longitudinal Impedance Magnitude",
-                "0",
-                "1"
-            ],
-            "Toggle": 2,
-            "ScaleX": "1",
-            "ScaleY": "1",
-            "Axis": "Left",
-            "Type": [
-                "Line",
-                "-"
-            ],
-            "Filter": [
-                "",
-                ""
+                "Pol",
+                "M"
             ]
         }
     },
     "plot_objects_attr": {
         "lines": [
             {
-                "ls": "--",
-                "color": "#66c2a5",
-                "lw": 3.0,
+                "ls": "-",
+                "color": [
+                    0.4,
+                    0.7607843137254902,
+                    0.6470588235294118
+                ],
+                "lw": 2.0,
                 "ms": 6.0,
                 "mec": [
                     0.4,
@@ -354,47 +280,21 @@
                 ]
             },
             {
-                "ls": "--",
-                "color": "#fc8d62",
-                "lw": 3.0,
-                "ms": 6.0,
-                "mec": [
-                    0.9882352941176471,
-                    0.5529411764705883,
-                    0.3843137254901961
+                "ls": "None",
+                "color": [
+                    0.9058823529411765,
+                    0.5411764705882353,
+                    0.7647058823529411
                 ],
+                "lw": 1.5,
+                "ms": 10.0,
+                "mec": "black",
                 "mew": 1.0,
                 "mfc": [
-                    0.9882352941176471,
-                    0.5529411764705883,
-                    0.3843137254901961
+                    0.9058823529411765,
+                    0.5411764705882353,
+                    0.7647058823529411
                 ]
-            },
-            {
-                "ls": "-",
-                "color": "#8da0cb",
-                "lw": 3.0,
-                "ms": 6.0,
-                "mec": [
-                    0.5529411764705883,
-                    0.6274509803921569,
-                    0.796078431372549
-                ],
-                "mew": 1.0,
-                "mfc": [
-                    0.5529411764705883,
-                    0.6274509803921569,
-                    0.796078431372549
-                ]
-            },
-            {
-                "ls": "-",
-                "color": "#8eba42",
-                "lw": 3.0,
-                "ms": 6.0,
-                "mec": "#8eba42",
-                "mew": 1.0,
-                "mfc": "#8eba42"
             }
         ],
         "collections": [],
@@ -527,8 +427,8 @@
     "eigenmode_pb_EXE": false,
     "eigenmode_ccb_Populate_Objectives": "",
     "eigenmode_cb_LBC": "Magnetic Wall En=0",
-    "eigenmode_le_Freq_Shift": "0",
-    "eigenmode_le_No_Of_Modes": "5",
+    "eigenmode_le_Freq_Shift": "1910",
+    "eigenmode_le_No_Of_Modes": "2",
     "eigenmode_cb_RBC": "Magnetic Wall En=0",
     "eigenmode_sb_No_Of_Processors_SLANS": 1,
     "eigenmode_qt_spinbox_lineedit": "1",
@@ -630,14 +530,14 @@
     "tune_pb_Opt_Objectives": true,
     "tune_pb_Opt_Parameters": true,
     "tune_pb_Opt_Constraints": false,
-    "tune_le_Ri_i_opt": "73.84",
-    "tune_le_a_i_opt": "37.94",
+    "tune_le_Ri_i_opt": "72",
+    "tune_le_a_i_opt": "30.22",
     "tune_le_L_i_opt": "93.5",
     "tune_le_Alpha_opt": "93.92",
-    "tune_le_A_i_opt": "51.05",
-    "tune_le_b_i_opt": "27.22",
-    "tune_le_B_i_opt": "50.85",
-    "tune_le_Req_i_opt": "173.2763",
+    "tune_le_A_i_opt": "62.22",
+    "tune_le_b_i_opt": "23.11",
+    "tune_le_B_i_opt": "66.13",
+    "tune_le_Req_i_opt": "171.2",
     "tune_ccb_Populate_Constraints": "",
     "tune_": "freq, Epk/Eacc, Bpk/Eacc, R/Q",
     "tune_sb_Chaos_Factor": 50,
@@ -645,19 +545,19 @@
     "tune_sb_Crossover_Factor": 50,
     "tune_cb_Init_Generation_Method": "LHS",
     "tune_cb_Optimize_By": "Pareto",
-    "tune_sb_Initial_Points": 100,
-    "tune_sb_N_Generation": 5,
+    "tune_sb_Initial_Points": 20,
+    "tune_sb_N_Generation": 2,
     "tune_sb_Mutation_Factor": 50,
     "tune_sb_Sobol_Sequence_Index": 2,
-    "tune_sb_N_Elites_To_Cross": 15,
+    "tune_sb_N_Elites_To_Cross": 2,
     "tune_sb_Norm_Length_N_Cells": 1,
-    "tune_db_Norm_Length": 115.4,
-    "tune_dsb_Tune_Frequency": 1300.0,
-    "tune_cb_Tune_Variable": "Req",
-    "tune_sb_Processors_Count": 1,
+    "tune_db_Norm_Length": 187.0,
+    "tune_dsb_Tune_Frequency": 801.58,
+    "tune_cb_Tune_Variable": "L",
+    "tune_sb_Processors_Count": 10,
     "tune_pb_Optimization_Settings": true,
-    "tune_ccb_Populate_Objectives": "freq, Epk/Eacc, Bpk/Eacc, R/Q",
-    "tune_cb_Cell_Type_Optimization": "Mid Cell",
+    "tune_ccb_Populate_Objectives": "freq, mts dipole",
+    "tune_cb_Cell_Type_Optimization": "End-Mid Cell",
     "tune_cb_Optimization_Algorithm": "Evolutionary algorithm",
     "wakefield_": "",
     "wakefield_pb_EXE": false,
@@ -792,10 +692,10 @@
     "Geometry_sb_N_Cells": 1,
     "Geometry_qt_spinbox_lineedit": "1",
     "Geometry_sb_N_Modules": 1,
-    "Geometry_le_N_Cells": "5",
+    "Geometry_le_N_Cells": "1",
     "Geometry_cb_Shape_Entry_Mode": "Load",
     "Geometry_le_Shape_Space": "D:/Dropbox/CavityDesignHub/PhD_Thesis/Cavities/cavities.json",
-    "Geometry_cb_Shape_Space_Keys": "C3795",
+    "Geometry_cb_Shape_Space_Keys": "C3795_end",
     "Geometry_le_Scale": "1",
     "Geometry_pb_Right_Cell": false,
     "Geometry_pb_Left_Cell": false,
@@ -880,7 +780,7 @@
     "plot_cb_Longitudinal_Threshold": 0,
     "plot_cb_Show_Hide_Inset": 0,
     "plot_cb_Show_Wakefield_Parameters": 0,
-    "plot_cb_Plot_Peaks": 2,
+    "plot_cb_Plot_Peaks": 0,
     "multipacting_pb_Field_Solver_Input": true,
     "multipacting_pb_Multipacting_Solver_Input": true,
     "multipacting_pb_Initial_Sites": true,
@@ -911,10 +811,10 @@
     "plot_le_Xlabel": "$f ~[\\mathrm{MHz}]$",
     "plot_sb_XLabel_Size": 14,
     "plot_sb_XLabel_Tick_Siz": 14,
-    "plot_le_Ylabel": "$S21~\\mathrm{[dB]}$",
+    "plot_le_Ylabel": "$Z_{\\parallel} ~[\\mathrm{k\\Omega}]$",
     "plot_sb_YLabel_Size": 14,
     "plot_sb_YLabel_Tick_Size": 14,
-    "plot_le_Legend": "Equiv. Circuit (H coupling)%%Equiv. Circuit (E coupling)%%CST Model (TE11)%%CST Model (TM01)",
+    "plot_le_Legend": "Wakefield%%Eigenmode",
     "plot_sb_Legend_Size": 14,
     "plot_sb_Legend_Marker_Size": 14,
     "plot_le_Title": "",
@@ -939,5 +839,8 @@
     "wg_calc_cb_R_Dim": "mm",
     "mode_num_lineEdit": "",
     "plot_pb_Peaks": true,
-    "plot_dsb_Marker_Size": 6.0
+    "plot_dsb_Marker_Size": 6.0,
+    "eigenmode_sb_Mesh_Jxy_Cell": 44,
+    "eigenmode_sb_Mesh_Jx_BP": 30,
+    "eigenmode_sb_Mesh_Jy_BP": 35
 }

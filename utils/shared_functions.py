@@ -2,6 +2,7 @@ import ast
 import copy
 import json
 import os
+# from datetime import time
 from PyQt5.QtGui import QDoubleValidator, QValidator
 from PyQt5.QtWidgets import *
 from icecream import ic
@@ -12,8 +13,10 @@ from scipy.optimize import fsolve
 import numpy as np
 from PyQt5.QtCore import *
 from utils.file_reader import FileReader
+# from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 
 fr = FileReader()
+# slans_geom = SLANSGeometry()
 
 AN_DURATION = 250
 global animate
@@ -34,9 +37,9 @@ def update_alpha(cell):
 
     """
     if len(cell) == 8:
-        A, B, a, b, Ri, L, Req, _ = cell
+        A, B, a, b, Ri, L, Req = cell[:7]
     else:
-        A, B, a, b, Ri, L, Req = cell
+        A, B, a, b, Ri, L, Req = cell[:7]
     alpha = calculate_alpha(A, B, a, b, Ri, L, Req, 0)
     cell = [A, B, a, b, Ri, L, Req, alpha[0]]
 
@@ -113,7 +116,7 @@ def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
     #
     #     # ic(df)
 
-    data = ([0+L_bp, Ri + b, L+L_bp, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    data = ([0 + L_bp, Ri + b, L + L_bp, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
     checks = {"non-reentrant": [0.45, -0.45],
               "reentrant": [0.85, -0.85],
               "expansion": [0.15, -0.01]}
@@ -321,7 +324,7 @@ def perform_geometry_checks(par_mid: list, par_end: list):
     return True
 
 
-def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type):
+def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type, opt=False):
     """
     Writes cavity geometric data that can be imported into CST Studio
 
@@ -344,9 +347,14 @@ def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type):
     """
     ic_ = update_alpha(ic_)
     oc_l = update_alpha(oc_l)
+    if opt:
+        slans_folder = 'SLANS_opt'
+    else:
+        slans_folder = 'SLANS'
+
     if cell_type is None:
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
+        path = fr'{projectDir}/SimulationData/{slans_folder}/{key}/{key}.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -364,8 +372,8 @@ def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type):
 
     else:
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/SLANS/{key}/{key}.txt'
-        path_mc = fr'{projectDir}/SimulationData/SLANS/{key}/{key}_Multicell.txt'
+        path = fr'{projectDir}/SimulationData/{slans_folder}/{key}/{key}.txt'
+        path_mc = fr'{projectDir}/SimulationData/{slans_folder}/{key}/{key}_Multicell.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -919,7 +927,8 @@ def get_geometric_parameters(frame_control, code, scales=None):
                                                                                         for Ri_or in outer_cell_R_space[
                                                                                             4]:
                                                                                             for L_or in \
-                                                                                            outer_cell_R_space[5]:
+                                                                                                    outer_cell_R_space[
+                                                                                                        5]:
                                                                                                 # for Req_or in outer_cell_R_space[6]:
                                                                                                 inner_cell = [A_i, B_i,
                                                                                                               a_i, b_i,
@@ -1726,7 +1735,7 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
         Specify if beam pipe is on one or both ends or at no end at all
     n_cell: int
         Number of cavity cells
-    bc: list
+    bc: list, ndarray
         List specifying the left and right boundary conditions' color
     scale: float
         Scale of the cavity geometry
@@ -1801,8 +1810,8 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
 
     # draw left boundary condition
     ax.plot([-shift, -shift], [-Ri_el, Ri_el],
-            [-shift-0.2*L_m, -shift-0.2*L_m], [-0.5*Ri_el, 0.5*Ri_el],
-            [-shift-0.4*L_m, -shift-0.4*L_m], [-0.1*Ri_el, 0.1*Ri_el], c=bc[0], lw=4, zorder=100)
+            [-shift - 0.2 * L_m, -shift - 0.2 * L_m], [-0.5 * Ri_el, 0.5 * Ri_el],
+            [-shift - 0.4 * L_m, -shift - 0.4 * L_m], [-0.1 * Ri_el, 0.1 * Ri_el], c=bc[0], lw=4, zorder=100)
 
     # ADD BEAM PIPE LENGTH
     if L_bp_l != 0:
@@ -1833,37 +1842,70 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
             geo.append([pt[1], pt[0]])
 
             if n_cell == 1:
-                # EQUATOR ARC TO NEXT POINT
-                # half of bounding box is required,
-                # start is the lower coordinate of the bounding box and end is the upper
-                pts = arcTo(L_el + L_bp_l - shift, Req - B_er, A_er, B_er, step, [pt[0], Req - B_er],
-                            [L_el + L_er - x2er + 2 * L_bp_l - shift, Req])
-                pt = [L_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
-                for pp in pts:
-                    if (np.around(pp, 12) != np.around(pt, 12)).all():
-                        geo.append([pp[1], pp[0]])
-                geo.append([pt[1], pt[0]])
+                if L_bp_r > 1:
+                    # EQUATOR ARC TO NEXT POINT
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_el + L_bp_l - shift, Req - B_er, A_er, B_er, step, [pt[0], Req - B_er],
+                                [L_el + L_er - x2er + + L_bp_l + L_bp_r - shift, Req])
+                    pt = [L_el + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            geo.append([pp[1], pp[0]])
+                    geo.append([pt[1], pt[0]])
 
-                # STRAIGHT LINE TO NEXT POINT
-                lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
-                pt = [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
-                geo.append([pt[1], pt[0]])
+                    # STRAIGHT LINE TO NEXT POINT
+                    lineTo(pt, [L_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step)
+                    pt = [L_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er]
+                    geo.append([pt[1], pt[0]])
 
-                # ARC
-                # half of bounding box is required,
-                # start is the lower coordinate of the bounding box and end is the upper
-                pts = arcTo(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
-                            [L_bp_l + L_el + L_er - shift, y1er])
+                    # ARC
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
+                                [L_bp_l + L_el + L_er - shift, y1er])
 
-                pt = [L_bp_l + L_el + L_er - shift, Ri_er]
-                for pp in pts:
-                    if (np.around(pp, 12) != np.around(pt, 12)).all():
-                        geo.append([pp[1], pp[0]])
+                    pt = [L_bp_l + L_el + L_er - shift, Ri_er]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            geo.append([pp[1], pp[0]])
 
-                geo.append([pt[1], pt[0]])
+                    geo.append([pt[1], pt[0]])
 
-                # calculate new shift
-                shift = shift - (L_el + L_er)
+                    # calculate new shift
+                    shift = shift - (L_el + L_er)
+                else:
+                    # EQUATOR ARC TO NEXT POINT
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, [pt[0], Req - B_m],
+                                [L_m + L_m - x2 + 2 * L_bp_l - shift, Req])
+                    pt = [L_m + L_m - x2 + 2 * L_bp_l - shift, y2]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            geo.append([pp[1], pp[0]])
+
+                    geo.append([pt[1], pt[0]])
+
+                    # STRAIGHT LINE TO NEXT POINT
+                    lineTo(pt, [L_m + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+                    pt = [L_m + L_m - x1 + 2 * L_bp_l - shift, y1]
+                    geo.append([pt[1], pt[0]])
+
+                    # ARC
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_m + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
+                                [L_bp_l + L_m + L_m - shift, y1])
+                    pt = [L_bp_l + L_m + L_m - shift, Ri_m]
+
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            geo.append([pp[1], pp[0]])
+                    geo.append([pt[1], pt[0]])
+
+                    # calculate new shift
+                    shift = shift - L_m
 
             else:
                 # EQUATOR ARC TO NEXT POINT
@@ -2004,7 +2046,7 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
     # reset shift
     shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
 
-    if L_bp_r != 0:  # if there's a problem, check here.
+    if L_bp_r > 0:  # if there's a problem, check here.
         lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell - 1) * L_m + L_el + L_er - shift, Ri_er], step)
         pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
         geo.append([pt[1], pt[0]])
@@ -2018,8 +2060,8 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
 
     # draw rightt boundary condition
     ax.plot([shift, shift], [-Ri_er, Ri_er],
-            [shift+0.2*L_m, shift+0.2*L_m], [-0.5*Ri_er, 0.5*Ri_er],
-            [shift+0.4*L_m, shift+0.4*L_m], [-0.1*Ri_er, 0.1*Ri_er], c=bc[1], lw=4, zorder=100)
+            [shift + 0.2 * L_m, shift + 0.2 * L_m], [-0.5 * Ri_er, 0.5 * Ri_er],
+            [shift + 0.4 * L_m, shift + 0.4 * L_m], [-0.1 * Ri_er, 0.1 * Ri_er], c=bc[1], lw=4, zorder=100)
 
     # CLOSE PATH
     # lineTo(pt, start_point, step)
@@ -2031,7 +2073,8 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
     fig.canvas.draw()
 
 
-def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none', plot=False):
+def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none',
+                           plot=False):
     """
     Write cavity geometry to be used by Multipac for multipacting analysis
     Parameters
@@ -2377,12 +2420,14 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
 
     """
     plt.rcParams["figure.figsize"] = (12, 3)
-    midJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
+    midJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90,
+                        20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
     endJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
     endJlab_r = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
 
     # cepc
-    midCEPC = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
+    midCEPC = np.array(
+        [94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
     endCEPC = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
     endCEPC_r = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
 
@@ -2397,7 +2442,7 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
     L_bp_r = 4 * L_m  # 0.0000  #
 
     # calculate shift
-    shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2)*lft + L_er + lft_er) / 2
+    shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2) * lft + L_er + lft_er) / 2
     # shift = 0
     # shift = L_m  # for end cell
 
@@ -2603,7 +2648,7 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # calculate new shift
-                shift = shift - 2*L_m - lft
+                shift = shift - 2 * L_m - lft
             else:
                 print("else")
                 # DRAW ARC:
@@ -2670,17 +2715,22 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
         # BEAM PIPE
         # reset shift
         print("pt before", pt)
-        shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2)*lft + L_er + lft_er) / 2
-        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + (n_cell-2)*lft + lft_el + lft_er + L_el + L_er - shift, Ri_er], step)
+        shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2) * lft + L_er + lft_er) / 2
+        lineTo(pt,
+               [L_bp_r + L_bp_l + 2 * (n_cell - 1) * L_m + (n_cell - 2) * lft + lft_el + lft_er + L_el + L_er - shift,
+                Ri_er], step)
 
         if L_bp_r != 0:
-            pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r + (n_cell-2)*lft + lft_el + lft_er - shift, Ri_er]
+            pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r + (n_cell - 2) * lft + lft_el + lft_er - shift,
+                  Ri_er]
             fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
             print("pt after", pt)
 
         # END PATH
-        lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + (n_cell-2)*lft + lft_el + lft_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
-        pt = [2 * (n_cell-1) * L_m + L_el + L_er + (n_cell-2)*lft + lft_el + lft_er + L_bp_l + L_bp_r - shift, 0]
+        lineTo(pt,
+               [2 * (n_cell - 1) * L_m + L_el + L_er + (n_cell - 2) * lft + lft_el + lft_er + L_bp_l + L_bp_r - shift,
+                0], step)  # to add beam pipe to right
+        pt = [2 * (n_cell - 1) * L_m + L_el + L_er + (n_cell - 2) * lft + lft_el + lft_er + L_bp_l + L_bp_r - shift, 0]
         # lineTo(pt, [2 * n_cell * L_er + L_bp_l - shift, 0], step)
         # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
@@ -2721,22 +2771,22 @@ def serialise(state_dict, widget=None, visited_widgets=None, marker=''):
     if widget.objectName() != "" and 'qt_' not in widget.objectName():
         if isinstance(widget, QPushButton):
             if widget.isCheckable():
-                state_dict[f'{marker}_'+widget.objectName()] = widget.isChecked()
+                state_dict[f'{marker}_' + widget.objectName()] = widget.isChecked()
 
         if isinstance(widget, QComboBox):
-            state_dict[f'{marker}_'+widget.objectName()] = widget.currentText()
+            state_dict[f'{marker}_' + widget.objectName()] = widget.currentText()
 
         if isinstance(widget, QLineEdit):
-            state_dict[f'{marker}_'+widget.objectName()] = widget.text()
+            state_dict[f'{marker}_' + widget.objectName()] = widget.text()
 
         if isinstance(widget, QSpinBox):
-            state_dict[f'{marker}_'+widget.objectName()] = widget.value()
+            state_dict[f'{marker}_' + widget.objectName()] = widget.value()
 
         if isinstance(widget, QDoubleSpinBox):
-            state_dict[f'{marker}_'+widget.objectName()] = widget.value()
+            state_dict[f'{marker}_' + widget.objectName()] = widget.value()
 
         if isinstance(widget, QCheckBox):
-            state_dict[f'{marker}_'+widget.objectName()] = widget.checkState()
+            state_dict[f'{marker}_' + widget.objectName()] = widget.checkState()
 
     for child_widget in widget.findChildren(QWidget):
         serialise(state_dict, child_widget, visited_widgets, marker)
@@ -2772,15 +2822,15 @@ def deserialise(state_dict, widget, visited_widgets=None, marker=''):
         if widget.objectName() != "" and 'qt_' not in widget.objectName():
             if isinstance(widget, QPushButton):
                 if widget.isCheckable():
-                    if not widget.isChecked() == state_dict[f'{marker}_'+widget.objectName()]:
+                    if not widget.isChecked() == state_dict[f'{marker}_' + widget.objectName()]:
                         widget.toggle()
 
             if isinstance(widget, QComboBox):
-                widget.setCurrentText(state_dict[f'{marker}_'+widget.objectName()])
+                widget.setCurrentText(state_dict[f'{marker}_' + widget.objectName()])
 
                 # if isinstance(widget, QCheckableComboBox):
                 try:
-                    selection = state_dict[f'{marker}_'+widget.objectName()].split(', ')
+                    selection = state_dict[f'{marker}_' + widget.objectName()].split(', ')
                     # try to select copied selection
                     for txt in selection:
                         if txt in widget.texts:
@@ -2790,16 +2840,16 @@ def deserialise(state_dict, widget, visited_widgets=None, marker=''):
                     pass
 
             if isinstance(widget, QLineEdit):
-                widget.setText(state_dict[f'{marker}_'+widget.objectName()])
+                widget.setText(state_dict[f'{marker}_' + widget.objectName()])
 
             if isinstance(widget, QSpinBox):
-                widget.setValue(int(state_dict[f'{marker}_'+widget.objectName()]))
+                widget.setValue(int(state_dict[f'{marker}_' + widget.objectName()]))
 
             if isinstance(widget, QDoubleSpinBox):
-                widget.setValue(float(state_dict[f'{marker}_'+widget.objectName()]))
+                widget.setValue(float(state_dict[f'{marker}_' + widget.objectName()]))
 
             if isinstance(widget, QCheckBox):
-                widget.setCheckState(state_dict[f'{marker}_'+widget.objectName()])
+                widget.setCheckState(state_dict[f'{marker}_' + widget.objectName()])
 
         for child_widget in widget.findChildren(QWidget):
             deserialise(state_dict, child_widget, visited_widgets, marker)

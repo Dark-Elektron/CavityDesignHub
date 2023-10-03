@@ -33,7 +33,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
@@ -1887,7 +1887,7 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-274</y>
                 <width>489</width>
                 <height>1563</height>
                </rect>
@@ -2796,6 +2796,16 @@
                     <item>
                      <property name="text">
                       <string>ZT</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mts monopole</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>mts dipole</string>
                      </property>
                     </item>
                     <item>

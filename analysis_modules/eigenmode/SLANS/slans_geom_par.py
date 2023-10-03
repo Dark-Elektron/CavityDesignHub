@@ -24,7 +24,7 @@ class SLANSGeometry(Geometry):
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, f_shift='default', beta=1, n_modes=2, proc=0, beampipes=None,
-               parentDir=None, projectDir=None):
+               parentDir=None, projectDir=None, opt=False):
 
         if os.path.exists(projectDir):
             os.chdir(projectDir)
@@ -41,7 +41,7 @@ class SLANSGeometry(Geometry):
 
         # create folder
         if fid != "_0":
-            check = self.createFolder()
+            check = self.createFolder(opt)
 
         n = no_of_cells  # Number of cells
         axi_sym = 2  # 1: flat, 2:axisymmetric
@@ -78,9 +78,15 @@ class SLANSGeometry(Geometry):
 
         filename = f'cavity_{bc}'
 
+        if opt:  # consider making better. This was just an adhoc fix
+            run_save_directory = projectDir / fr'SimulationData/SLANS_opt/{fid}'
+        else:
+            # change save directory
+            run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}'
+
         # Write Slans Geometry
         # with open(f"{projectDir}/SimulationData/SLANS/{fid}/{filename}.geo", 'w') as f:
-        with open(f"{projectDir}/SimulationData/SLANS/{fid}/{filename}.geo", 'w') as f:
+        with open(f"{run_save_directory}/{filename}.geo", 'w') as f:
             # print("it got here")
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
             # print(n)
@@ -208,11 +214,11 @@ class SLANSGeometry(Geometry):
         # Slans run
         genmesh_path = fr'{parentDir}\exe\SLANS_exe\genmesh2.exe'
         # filepath = fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}'
-        filepath = fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}'
+        filepath = fr'{run_save_directory}\{filename}'
 
         # folder for exe to write to
-        # cwd = fr'{projectDir}\SimulationData\SLANS\{fid}'
-        cwd = fr'{projectDir}\SimulationData\SLANS\{fid}'
+        # cwd = fr'{run_save_directory}'
+        cwd = fr'{run_save_directory}'
 
         # the next two lines suppress pop up windows from the slans codes
         # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
@@ -221,7 +227,7 @@ class SLANSGeometry(Geometry):
 
         subprocess.call([genmesh_path, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
         # path = fr'{projectDir}\SimulationData\SLANS\Cavity{self.fid}'
-        path = fr'{projectDir}\SimulationData\SLANS\{self.fid}'
+        path = fr'{run_save_directory}'
 
         beta, f_shift, n_modes = 1, 0, no_of_cells + 1
 
@@ -231,22 +237,24 @@ class SLANSGeometry(Geometry):
         slansm_path = fr'{parentDir}\exe\SLANS_exe\slansm'
         slanss_path = fr'{parentDir}\exe\SLANS_exe\slanss'
         slansre_path = fr'{parentDir}\exe\SLANS_exe\slansre'
-
+        # print(run_save_directory)
         # check if corresponding file exists at before the executable is called
-        if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.geo'):
+        if os.path.exists(fr'{run_save_directory}\{filename}.geo'):
+            # print('inside slansc')
             subprocess.call([slansc_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)  # settings, number of modes, etc
 
-            if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.gem'):
+            if os.path.exists(fr'{run_save_directory}\{filename}.gem'):
+                # print('inside slansm')
                 subprocess.call([slansm_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
-                if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\aslans.mtx') \
-                        and os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\bslans.mtx'):
+                if os.path.exists(fr'{run_save_directory}\aslans.mtx') \
+                        and os.path.exists(fr'{run_save_directory}\bslans.mtx'):
+                    # print('inside slanss')
                     subprocess.call([slanss_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
 
-                    if os.path.exists(fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}.res'):
+                    if os.path.exists(fr'{run_save_directory}\{filename}.res'):
+                        # print('inside slansre')
                         subprocess.call([slansre_path, '{}'.format(filepath), '-b'], cwd=cwd, startupinfo=startupinfo)
-
-        run_save_directory = f"{projectDir}/SimulationData/SLANS/{fid}"
 
         # save json file
         shape = {'IC': update_alpha(mid_cells_par),
@@ -339,9 +347,12 @@ class SLANSGeometry(Geometry):
             f.write('0 : number of mark volumes,then:sign,EPS,MU,TGE,TGM\n')
             f.write('{:g} : beta (v/c)\n'.format(beta))
 
-    def createFolder(self):
+    def createFolder(self, opt=False):
         path = os.getcwd()
-        path = os.path.join(path, f"SimulationData/SLANS/{self.fid}")
+        if opt:
+            path = os.path.join(path, f"SimulationData/SLANS_opt/{self.fid}")
+        else:
+            path = os.path.join(path, f"SimulationData/SLANS/{self.fid}")
         if os.path.exists(path):
             pass
         else:

@@ -279,61 +279,137 @@ class Coupler:
 
         # plt.show()
 
-    def DQWType(self):
+    def DQWType(self, **kwargs):
         # This is the main script that runs all the functions needed
         # Functions needed in order to run this script:
         # hook_design.m
         # hook_Z_total.m
         # parallel.m
         # trans_line.m
-
         # Initial values see fig. 1 of report (url: goo.gl/z3V7Ld )###
-        d_tube, dc = 103e-3, 38e-3  # m, Fixed value
-        d1, d2, d3 = 22e-3, 12.4e-3, 12.4e-3  # m, Fixed diameter values (choice)
-        Z1 = 50  # To be calculated via CST Studio because of the excentricity of the transmission line with the tube
-        Z2 = self.trans_line_impedance(d2, d_tube)
-        Z3 = self.trans_line_impedance(d3, dc)
+        if 'Lc' not in list(kwargs.keys()):
+            Lc = 9.7785e-9  # m, Fixed value
+        else:
+            Lc = kwargs['Lc'].val
+        if 'Cc' not in list(kwargs.keys()):
+            Cc = 11.51e-12  # m, Fixed value
+        else:
+            Cc = kwargs['Cc'].val
+
+        if 'Ln' not in list(kwargs.keys()):
+            Ln = 14.23e-9  # m, Fixed value
+        else:
+            Ln = kwargs['Ln'].val
+        if 'Cn' not in list(kwargs.keys()):
+            Cn = 2.76e-12  # m, Fixed value
+        else:
+            Cn = kwargs['Cn'].val
+
+        if 'l1' not in list(kwargs.keys()):
+            l1 = 2.82e-2
+        else:
+            l1 = kwargs['l1'].val
+
+        if 'l2' not in list(kwargs.keys()):
+            l2 = 8e-2
+        else:
+            l2 = kwargs['l2'].val
+
+        if 'l3' not in list(kwargs.keys()):
+            l3 = 3.5e-2
+        else:
+            l3 = kwargs['l3'].val
+
+        if 'l4' not in list(kwargs.keys()):
+            l4 = 2.65e-2
+        else:
+            l4 = kwargs['l4'].val
+
+        if 'Z1' not in list(kwargs.keys()):
+            Z1 = 148.113
+        else:
+            Z1 = kwargs['Z1'].val
+
+        if 'Z2' not in list(kwargs.keys()):
+            Z2 = 26.84
+        else:
+            Z2 = kwargs['Z2'].val
+
+        if 'M' not in list(kwargs.keys()):
+            M = 2.86e-9  # m, Fixed diameter values (choice)
+        else:
+            M = kwargs['M'].val
+
+        if 'Z3' not in list(kwargs.keys()):
+            Z3 = 405.88
+        else:
+            Z3 = kwargs['Z3'].val
+
+        if 'Z4' not in list(kwargs.keys()):
+            Z4 = 177.45
+        else:
+            Z4 = kwargs['Z4'].val
+
+        if 'C2t' not in list(kwargs.keys()):
+            C2t = 0.35e-12  # m, Fixed value
+        else:
+            C2t = kwargs['C2t'].val
+
+        if 'Ct' not in list(kwargs.keys()):
+            Ct = 4.17e-12  # m, Fixed value
+        else:
+            Ct = kwargs['Ct'].val
+
+        if 'Zp2' not in list(kwargs.keys()):
+            Zp2 = 58  # m, Fixed value
+        else:
+            Zp2 = kwargs['Zp2'].val
+
+        # # Initial values see fig. 1 of report (url: goo.gl/z3V7Ld )###
+        # d_tube, dc = 103e-3, 38e-3  # m, Fixed value
+        # d1, d2, d3 = 22e-3, 12.4e-3, 12.4e-3  # m, Fixed diameter values (choice)
+        # Z1 = 50  # To be calculated via CST Studio because of the excentricity of the transmission line with the tube
+        # Z2 = self.trans_line_impedance(d2, d_tube)
+        # Z3 = self.trans_line_impedance(d3, dc)
 
         # f_FM, f1, f2 = 400.79e6, 488e6, 520e6  # MHz, FM freq, 1st and 2nd dipole resonance freq.
-        f_FM, f1, f2 = 400.79e6, 518.89e6, 531.98e6  # MHz, FM freq, 1st and 2nd dipole resonance freq.
+        # f_FM, f1, f2 = 400.79e6, 518.89e6, 531.98e6  # MHz, FM freq, 1st and 2nd dipole resonance freq.
         # print(Z2, Z3, np.sqrt(f1 * f2))
 
-        Ln = 50e-9  # H, has to calculated from CST Studio. Related to the insertion depth
-        Zt = 112  # Ohm, this line resistance is used in Z_total calculation. see Frank Gerigk's thesis
+        # Ln = 50e-9  # H, has to calculated from CST Studio. Related to the insertion depth
+        # Zt = 112  # Ohm, this line resistance is used in Z_total calculation. see Frank Gerigk's thesis
 
         Z = 50  # Ohm, terminating impedance
-        Q = 10
-        c0 = 299792458
-        l2 = 10e-3  # Fixed, determined experimentally
+        # Q = 10
+        # c0 = 299792458
+        # l2 = 10e-3  # Fixed, determined experimentally
 
-        nk = 2
-        dk_max = 0.05
-        dk = 0.028  # k correction factor
-
-        # terminating transformar
-        lZ, dZ = 30e-3, 18.4e-3
+        # nk = 2
+        # dk_max = 0.05
+        # dk = 0.028  # k correction factor
+        #
+        # # terminating transformar
+        # lZ, dZ = 30e-3, 18.4e-3
 
         # hook_design function - uses the procedure in Gerigks thesis to give theoretical results
         # this results serve as a basis in order to begin optimization
-        l1, l3, tm, Cn, Ct, C2t, M, L1n, C1n, L2, C2 = self.hook_design(f_FM, f1, f2, Ln, Z1, Z2, Z3, Zt, Z, Q, c0, l2,
-                                                                        dk)
+        # l1, l3, tm, Cn, Ct, C2t, M, L1n, C1n, L2, C2 = self.hook_design(f_FM, f1, f2, Ln, Z1, Z2, Z3, Zt, Z, Q, c0, l2,
+        #                                                                 dk)
 
         # notch parameters
-        d12 = d3
-        Z12 = Z3  # same diameter trans lines
-        l12 = l3  # approximately, consider variation
-        L12 = 22e-9  # set to M for now
-        C12 = 360 / 360 * coaxial_plate_capacitor(r_in=36.5e-3, r_out=51.5e-3, L=49.6e-3)
+        # d12 = d3
+        # Z12 = Z3  # same diameter trans lines
+        # l12 = l3  # approximately, consider variation
+        # L12 = 22e-9  # set to M for now
+        # C12 = 360 / 360 * coaxial_plate_capacitor(r_in=36.5e-3, r_out=51.5e-3, L=49.6e-3)
 
-        Z_total_E = self.dqw_Z_total_electric_couping(self.freq_range, Z, Z1, Z12, Z2, Z3, l1, l12, l2, l3, Ln, L12, Ct,
-                                                      C2t, C12, M)
+        Z_total_E = self.dqw_Z_total_electric_couping(self.freq_range, Z, Z1, Z2, Z3, Z4, l1, l2, l3, l4, Ln, Lc, Cn, Cc, Ct, C2t, M, Zp2)
         # conductance in dB (vector)
-        self.Y_dB = 20 * np.log10(np.real(1 / np.array(Z_total_E)) / max(np.real(1 / np.array(Z_total_E))))
+        self.Y_dB = 20 * np.log10(np.real(1 / np.array(Z_total_E)))
         # plt.plot(freq_range, Y_dB, label="DQW E coupl.", c='r')
 
-        Z_total_M = self.dqw_Z_total_magnetic_couping(self.freq_range, Z, Z1, Z12, Z2, Z3, l1, l12, l2, l3, Ln, L12, Ct,
-                                                      C2t, C12, M)
-        self.Y_dB_magnetic = 20 * np.log10(np.real(np.array(Z_total_M)) / max(np.real(np.array(Z_total_M))))
+        Z_total_M = self.dqw_Z_total_magnetic_couping(self.freq_range, Z, Z1, Z2, Z3, Z4, l1, l2, l3, l4, Ln, Lc, Cn, Cc, Ct, C2t, M, Zp2)
+        self.Y_dB_magnetic = 20 * np.log10(np.real(np.array(Z_total_M)))
         # plt.plot(freq_range, Y_dB_magnetic, label="DQW H coupl.", c='r', ls='--')
 
         # self.sweep_hook(f1, f2, Z, Z1, Z2, Z3, l1, l2, l3, Ln, Cn, Ct, C2t, M)
@@ -924,6 +1000,174 @@ class Coupler:
             mplcursors.cursor(plt.plot(freq, Y_H, ls='--'))
         plt.show()
 
+    def sweep_dqw_circuit(self, f1, f2, Z, Z12, Z3, Z4, l12, l3, l4, Lh, Ch, Cc, C34, Lm, Zp2):
+        freq_range = self.freq_range
+        dB_thresh = 1  # a threshold in dB error (concerning the 7 dB difference)
+        f_thresh = 5e6  # a threshold in frequency position of the resonance
+        dB_difference = 7  # the difference in dB between the two resonances (the Ytotal difference in dB)
+        n = 20
+
+        # creation of Ct values matrix for the optimization procedure
+        nC34 = n  # number of different values to be checked
+        delta_C34 = np.linspace(-C34 / 2, C34 / 2, nC34)
+
+        # creation of l1 values matrix for the optimization procedure
+        nCc = n  # number of different values to be checked
+        delta_Cc = np.linspace(-Cc / 2, Cc / 2, nCc)
+
+        #  creation of l3 values matrix for the optimization procedure
+        nLm = n  # number of different values to be checked
+        delta_Lm = np.linspace(-Lm / 2, Lm / 2, nLm)
+
+        #  creation of l3 values matrix for the optimization procedure
+        nZ12 = n  # number of different values to be checked
+        delta_Z12 = np.linspace(-Z12 / 2, Z12 / 2, nZ12)
+
+        # initiation of matrixes in order to save the generated data
+
+        counter = 0
+        solution = 0
+
+        # denp.ping on the width of the values for Ct l1 and l3 and the thresholds there might be more than one results
+        # that will satisfy the criteria that were given. This value is used in
+        # order to put a maximum on the amount of this results - if there are too
+        # many results this means that the threshold and the values used are not
+        # working very well
+        max_solutions_given = 30
+
+        remaining_minutes = 0
+
+        # here, the optimization begins. It is a brut force type so there are three for loops
+        # each one for every variable that is being examined (Ct, l1, l3)
+        peaks1 = []
+        peaks2 = []
+        freq1 = []
+        freq2 = []
+        values1 = []
+        values2 = []
+        cr_freq = []
+        cr_Y = []
+        cr_Y_H = []
+        result = []
+
+        count = 0
+
+        for i in tqdm(range(0, nC34), desc='outer'):
+            for j in range(0, nCc):
+                # for p in range(0, nLm):
+                for q in range(0, nZ12):
+                    # this is just for the Loading window
+                    counter = counter + 1
+
+                    # this temp (temporary) variables are used in order to put a
+                    # small change every time in the actual value (actual_value + Delta_actual_value)
+                    C34_temp = C34 + delta_C34[i]
+                    Cc_temp = Cc + delta_Cc[j]
+                    # Lm_temp = Lm + delta_Lm[p]
+                    Z12_temp = Z12 + delta_Z12[q]
+
+                    # hook_Z_total function computes the total complex resistance
+                    # for different freqs (vector)
+                    # of the equivalent circuit (it is just resistances in series and in parallel)
+
+                    Z_total_E = self.hook_Z_total_electric_couping(self.freq_range, Z, Z12_temp, Z3, Z4, l12, l3, l4,
+                                                                   Lh, Ch, Cc_temp, C34_temp, Lm, Zp2)
+                    # conductance in dB (vector)
+                    self.Y_dB = 20 * np.log10(np.real(1 / np.array(Z_total_E)) / max(np.real(1 / np.array(Z_total_E))))
+
+                    Z_total_M = self.hook_Z_total_magnetic_couping(self.freq_range, Z, Z12_temp, Z3, Z4, l12, l3, l4,
+                                                                   Lh, Ch, Cc_temp, C34_temp, Lm, Zp2)
+                    self.Y_dB_magnetic = 20 * np.log10(np.real(np.array(Z_total_M)) / max(np.real(np.array(Z_total_M))))
+
+                    # plot(Y_dB)
+                    # because of the need to have two resonances, findpeaks function is used
+                    # in order to make the check if the maxima are on the level and
+                    # the frequency that is needed
+                    peaks, _ = sps.find_peaks(self.Y_dB_magnetic)
+
+                    # if there are no or only one peak, the algorithm skips this
+                    # step
+                    if len(peaks) <= 1:
+                        continue
+
+                    value1 = self.Y_dB_magnetic[peaks][0]
+                    value2 = self.Y_dB_magnetic[peaks][1]
+                    peak1 = peaks[0]
+                    peak2 = peaks[1]
+
+                    # save peaks for plot later
+                    peaks1.append(peak1)
+                    peaks2.append(peak2)
+                    freq1.append(freq_range[peak1])
+                    freq2.append(freq_range[peak2])
+                    values1.append(value1)
+                    values2.append(value2)
+                    count = count + 1
+                    # ic(peak1, peak2, value1, value2)
+                    # ic('\t', freq_range[peak1], freq_range[peak2])
+                    # check if value of first and second peaks is zero
+                    if 3 <= abs(value1 - value2) <= 5 and (abs(value1) < abs(value2)):
+
+                        f1_error = abs(f1 - freq_range[peak1])
+                        f2_error = abs(f2 - freq_range[peak2])
+
+                        if f1_error < f_thresh and f2_error < f_thresh:
+                            print("Found one solution")
+                            cr_freq.append(freq_range)
+                            cr_Y.append(self.Y_dB)
+                            cr_Y_H.append(self.Y_dB_magnetic)
+
+                            # plt.plot(freq_range, self.Y_dB)  # if there is a result, it is being plotted
+                            mplcursors.cursor(plt.plot(self.freq_range, self.Y_dB, label="E coupl."))
+                            mplcursors.cursor(plt.plot(self.freq_range, self.Y_dB_magnetic, label="H coupl.", ls='--'))
+                            plt.show()
+
+                            result.append(
+                                [Z, Z12_temp, Z3, Z4, l12, l3, l4, Lh, Ch, Cc_temp, C34_temp, Lm, Zp2, value1, value2,
+                                 freq_range[peak1], freq_range[peak2], peak1, peak2, f1_error, f2_error])
+                            ic(Z12_temp, Cc_temp, C34_temp)
+
+                    # if there are many solutions that satisfies our criteria (odd situation)
+                    # the algorithm breaks the loop (enough is enough :))
+                    if max_solutions_given <= solution:
+                        break
+
+                    # the errors between the given values and the original ones are
+                    # calculated here
+                    f1_error = abs(f1 - freq_range[peak1])
+                    f2_error = abs(f2 - freq_range[peak2])
+
+                    dB_dist = value2 - value1
+                    dB_error = abs(dB_dist - dB_difference)
+
+                    # if the sum of the errors exceed the sum of the error
+                    # threshold given by the user the algorithm skips this step
+                    if f1_error / f_thresh > 1:
+                        continue
+                    if f2_error / f_thresh > 1:
+                        continue
+                    if dB_error / dB_thresh > 1:
+                        continue
+
+                    # counter given in order to save multiple solutions
+                    solution = solution + 1
+
+                    # solutions saving (consult this in order to distinct what is what in the results)
+                    # Results(solution,:) = [Ct_temp, l1_temp, l3_temp, i, j, p, value1, value2, freq(peak1),
+                    # freq(peak2),peak1,peak2]
+
+                    # just some calculations for the remaining minutes of the
+                    # optimization. Info is being displayed at the command window.
+        # print(cr_freq)
+        # print(cr_Y)
+        for i, r in enumerate(result):
+            print(f"{i}: {r}")
+
+        for freq, Y, Y_H in zip(cr_freq, cr_Y, cr_Y_H):
+            mplcursors.cursor(plt.plot(freq, Y))
+            mplcursors.cursor(plt.plot(freq, Y_H, ls='--'))
+        plt.show()
+
     def LHCProbeType(self):
         # This is the main script that runs all the functions needed
         # same approach as the hook coupler also here (more detailed commenting at hook_model.m)
@@ -1235,7 +1479,7 @@ class Coupler:
 
         return Ztot
 
-    def dqw_Z_total_electric_couping(self, freq_range, Z, Z1, Z12, Z2, Z3, l1, l12, l2, l3, Ln, L12, Ct, C2t, C12, M):
+    def dqw_Z_total_electric_couping(self, freq_range, Z, Z1, Z2, Z3, Z4, l1, l2, l3, l4, Ln, Lc, Cn, Cc, Ct, C2t, M, Zp2):
         # this function computes the total resistance
         Ztot = []
 
@@ -1245,19 +1489,20 @@ class Coupler:
             Za = self.parallel(Z, 1 / (1j * w * Ct))
             # trans_line function computes the resistance at the input of a
             # transmission line given (Z0, ZL, length, ang. freq_range)
-            Zb = self.trans_line(Z3, Za, l3, w)
+            Zb = self.trans_line(Z4, Za, l4, w)
             Zc = 1 / (1j * w * C2t) + Zb
-            Zd = self.trans_line(Z2, Zc, l2, w)
+            Zd = self.trans_line(Z3, Zc, l3, w)
             Ze = self.parallel(1j * w * M, Zd)
-            Ze12 = self.trans_line(Z12, Ze, l12, w)
-            Ze12 = self.parallel(Ze12, 1j * (w * L12 - 1 / (C12 * w)))
+            Ze12 = self.trans_line(Z2, Ze, l2, w)
+            Ze12 = self.parallel(Ze12, 1j * (w * Ln - 1 / (Cn * w)))
             Zf = self.trans_line(Z1, Ze12, l1, w)
-            Zg = 1j * (w * Ln) + Zf
+            Zg = Zf + 1j * (w * Lc - 1 / (Cc * w))
+            Zg = self.parallel(Zg, Zp2)
             Ztot.append(Zg)
 
         return Ztot
 
-    def dqw_Z_total_magnetic_couping(self, freq_range, Z, Z1, Z12, Z2, Z3, l1, l12, l2, l3, Ln, L12, Ct, C2t, C12, M):
+    def dqw_Z_total_magnetic_couping(self, freq_range, Z, Z1, Z2, Z3, Z4, l1, l2, l3, l4, Ln, Lc, Cn, Cc, Ct, C2t, M, Zp2):
         # this function computes the total resistance
         Ztot = []
 
@@ -1267,14 +1512,15 @@ class Coupler:
             Za = self.parallel(Z, 1 / (1j * w * Ct))
             # trans_line function computes the resistance at the input of a
             # transmission line given (Z0, ZL, length, ang. freq_range)
-            Zb = self.trans_line(Z3, Za, l3, w)
+            Zb = self.trans_line(Z4, Za, l4, w)
             Zc = 1 / (1j * w * C2t) + Zb
-            Zd = self.trans_line(Z2, Zc, l2, w)
+            Zd = self.trans_line(Z3, Zc, l3, w)
             Ze = self.parallel(1j * w * M, Zd)
-            Ze12 = self.trans_line(Z12, Ze, l12, w)
-            Ze12 = self.parallel(Ze12, 1j * (w * L12 - 1 / (C12 * w)))
+            Ze12 = self.trans_line(Z2, Ze, l2, w)
+            Ze12 = self.parallel(Ze12, 1j * (w * Ln - 1 / (Cn * w)))
             Zf = self.trans_line(Z1, Ze12, l1, w)
-            Zg = self.parallel(Zf, 1j * (w * Ln))
+            Zg = self.parallel(Zf, 1j * (w * Lc - 1 / (Cc * w)))
+            Zg = self.parallel(Zg, Zp2)
             Ztot.append(Zg)
 
         return Ztot
@@ -1842,6 +2088,60 @@ def hc_1mm():
     ic(cp, cm, Cc, Cc*cp, Cc*cm)
 
 
+def dqw_1mm():
+    # Ch
+    Ch = 3.15
+    cp, cm = calculate_parallel_plate_capacitor_rect(68.05, 15, 5.05, 1, 0, 1)
+    ic(cp, cm, Ch, Ch*cp, Ch*cm)
+
+    # Lh
+    Lh = 50
+    lp, lm = calculate_loop_inductance(18, 59.8, 0, 1)
+    ic(lp, lm, Lh, Lh*lp, Lh*lm)
+
+    # l12
+    l12 = 21.52
+    ic(-1, 1, l12, l12-1, l12+1)
+
+    # Z12
+    Z12 = 73.263
+    zp, zm = calculate_coaxial_transline_offset(18, 103, 0, 0)
+    ic(zp, zm, Z12, Z12*zp, Z12*zm)
+
+    # l3
+    l3 = 1
+    ic(-1, 1, l3, l3-1, l3+1)
+
+    # Z3
+    Z3 = 112
+    zp, zm = calculate_coaxial_transline_offset(18, 103, 0, 0)
+    ic(zp, zm, Z3, Z3*zp, Z3*zm)
+
+    # Lm
+    Lm = 4.9
+    lp, lm = calculate_loop_inductance(18, 59.8, 1, 1)
+    ic(lp, lm, Lm, Lm*lp, Lm*lm)
+
+    # C34
+    C34 = 2.158
+    cp, cm = calculate_parallel_plate_capacitor_offset(28.5, 3.34786, 1, 1)
+    ic(cp, cm, C34, C34*cp, C34*cm)
+
+    # l4
+    l4 = 7.38
+    ic(-1, 1, l4, l4-1, l4+1)
+
+    # Z4
+    Z4 = 153.3
+    zp, zm = calculate_coaxial_transline_offset(11.457539, 103, 1, 0)
+    ic(zp, zm, Z4, Z4*zp, Z4*zm)
+
+    # Cc
+    Cc = 11.076
+    cp, cm = calculate_coaxial_capacitor_offset(31.01, 47, 10, 0, 1, 0, 10)
+    ic(cp, cm, Cc, Cc*cp, Cc*cm)
+
+
 def hc_10_percent():
 
     diff = 0.1
@@ -1900,16 +2200,16 @@ def hc_10_percent():
 
 
 if __name__ == '__main__':
-    # hc_1mm()
-    hc_10_percent()
+    hc_1mm()
+    # hc_10_percent()
 
     # plt.rcParams["figure.figsize"] = (11, 5)
     coupler = Coupler()
-    coupler.set_freq_range(250, 600, 1000)
+    coupler.set_freq_range(500, 1300, 10000)
     #
     # # f = coupler.CEPCHookType
-    # # f = coupler.DQWType(freq_range, 3e6)
-    f = coupler.LHCHookType_direct_circuit
+    f = coupler.DQWType
+    # f = coupler.LHCHookType_direct_circuit
     # # f = coupler.transline_capacitor_parallel
     # # f = coupler.transline_inductor_parallel
     # # f = coupler.transline_ind_par_cap_par
@@ -1925,10 +2225,16 @@ if __name__ == '__main__':
     # #                        'd1': [1e-4, 50e-3, 20e-3], 'le': [5e-3, 200e-3, 50e-3], 'de': [5e-3, 200e-3, 50e-3],
     # #                        "L": [1e-10, 50e-9, 20e-9], "eps_r": [1, 10, 1]})
     #
-    coupler.add_slider(f, {'Zp2': [50000, 500000, 271136], 'C34': [0.1e-12, 10e-12, 2e-12], 'Lh': [30e-9, 70e-9, 50e-9]})
+    coupler.add_slider(f, {'C2t': [0.001e-12, 5e-12, 0.349e-12],
+                           'Ln': [0.01e-9, 50e-9, 14.23e-9],
+                           'Cn': [0.001e-12, 5e-12, 2.76e-12]})
     coupler.plot()
     # coupler.LHCHookType(freq_range, 3e6)
 
     # # optimise
     # f1, f2, Z, Z12, Z3, Z4, l12, l3, l4, Lh, Ch, Cc, C34, Lm, Zp2 = [489.4e6, 524.75e6, 50, 96, 112, 153.3, 21.52e-2, 1e-2, 7.38e-2, 50e-9, 3.15e-12, 18.3e-12, 2e-12, 4.9e-9, 906]
     # coupler.sweep_hook_circuit(f1, f2, Z, Z12, Z3, Z4, l12, l3, l4, Lh, Ch, Cc, C34, Lm, Zp2)
+
+    # # optimise dqw coupler
+    f1, f2, Z, Z12, Z3, Z4, l12, l3, l4, Lh, Ch, Cc, C34, Lm, Zp2 = [489.4e6, 524.75e6, 50, 96, 112, 153.3, 21.52e-2, 1e-2, 7.38e-2, 50e-9, 3.15e-12, 18.3e-12, 2e-12, 4.9e-9, 906]
+    coupler.sweep_hook_circuit(f1, f2, Z, Z12, Z3, Z4, l12, l3, l4, Lh, Ch, Cc, C34, Lm, Zp2)

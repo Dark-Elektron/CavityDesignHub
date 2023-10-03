@@ -36,7 +36,7 @@ class SLANSGeometry(Geometry):
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None):
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh=None, opt=False):
         """
         Write geometry file and run eigenmode analysis with SLANS
 
@@ -72,6 +72,11 @@ class SLANSGeometry(Geometry):
             Project directory
         subdir: str
             Sub directory to save simulation results to
+        mesh: list [Jxy, Jxy_bp, Jxy_bp_y]
+            Mesh definition for logical mesh:
+            Jxy -> Number of elements of logical mesh along JX and JY
+            Jxy_bp -> Number of elements of logical mesh along JX in beampipe
+            Jxy_bp_y -> Number of elements of logical mesh along JY in beampipe
 
         Returns
         -------
@@ -81,7 +86,7 @@ class SLANSGeometry(Geometry):
         # this checks whether input is from gui or from the optimisation
         if mid_cells_par is not None:
             self.set_geom_parameters(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par,
-                                     beampipes, expansion=expansion, expansion_r=expansion_r)
+                                     beampipes, expansion=expansion, expansion_r=expansion_r, mesh=mesh)
         else:
             self.set_geom_parameters(no_of_cells)
 
@@ -134,11 +139,14 @@ class SLANSGeometry(Geometry):
 
         filename = f'cavity_{bc}{p}'
 
-        # change save directory
-        if subdir == '':
-            run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}'
+        if opt:  # consider making better. This was just an adhoc fix
+            run_save_directory = projectDir / fr'SimulationData/SLANS_opt/{fid}'
         else:
-            run_save_directory = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}'
+            # change save directory
+            if subdir == '':
+                run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}'
+            else:
+                run_save_directory = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}'
 
         # Write SLANS Geometry
         # print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))
@@ -293,7 +301,7 @@ class SLANSGeometry(Geometry):
 
         beta, f_shift, n_modes = 1, f_shift, n_modes + 1
 
-        if pol == 'Monopole':
+        if pol.lower() == 'monopole':
             self.write_dtr(path, filename, beta, f_shift, n_modes)
         else:
             self.write_dtr_2(path, filename, beta, f_shift, n_modes)
@@ -305,16 +313,16 @@ class SLANSGeometry(Geometry):
 
         # print(cwd)
         # check if corresponding file exists at before the executable is called
-        if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.geo'):
+        if os.path.exists(fr'{run_save_directory}/{filename}.geo'):
             ic('Starting slansc')
             subprocess.call([slansc_path, str(filepath), '-b'], cwd=cwd, **kwargs)  # settings, number of modes, etc
             ic("Done with slansc, starting slansm")
 
-            if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.gem'):
+            if os.path.exists(fr'{run_save_directory}/{filename}.gem'):
                 subprocess.call([slansm_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                 ic("Done with slansm")
 
-                if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/bslans.mtx'):
+                if os.path.exists(fr'{run_save_directory}/bslans.mtx'):
                     subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                     ic("Done with slanss")
 
@@ -322,12 +330,14 @@ class SLANSGeometry(Geometry):
                         slanssh_path = parentDir / fr'exe/SLANS{p}_exe/slanssh{p}'
                         slanse_path = parentDir / fr'exe/SLANS{p}_exe/slanse{p}'
                         slansr2b_path = parentDir / fr'exe/SLANS{p}_exe/slansr2b{p}'
-                        if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.res'):
+                        if os.path.exists(fr'{run_save_directory}/{filename}.res'):
                             subprocess.call([slanssh_path, str(filepath)], cwd=cwd, **kwargs)
                             subprocess.call([slanse_path, str(filepath)], cwd=cwd, **kwargs)
+                            ic('Starting slansr2')
                             subprocess.call([slansr2b_path, str(filepath)], cwd=cwd, **kwargs)
+                            ic('Done with slansr2')
 
-                    if os.path.exists(projectDir / fr'SimulationData/SLANS/{fid}/{filename}.res'):
+                    if os.path.exists(fr'{run_save_directory}/{filename}.res'):
                         ic('Starting slansre')
                         subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, **kwargs)
                         ic("Done with slansre")
@@ -1014,21 +1024,25 @@ class SLANSGeometry(Geometry):
             f.write('{:g} : beta (v/c)\n'.format(beta))
 
     @staticmethod
-    def createFolder(fid, projectDir, subdir=''):
+    def createFolder(fid, projectDir, subdir='', filename=None, opt=False):
+        if opt:
+            slans_folder = 'SLANS_opt'
+        else:
+            slans_folder = 'SLANS'
         # change save directory
-        path = projectDir / fr'SimulationData/SLANS/{fid}'
+        path = projectDir / fr'SimulationData/{slans_folder}/{fid}'
         if subdir == '':
             pass
         else:
-            new_path = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}'
+            new_path = projectDir / fr'SimulationData/{slans_folder}/{subdir}/{fid}'
             if os.path.exists(new_path):
                 path = new_path
             else:
-                if not os.path.exists(projectDir / fr'SimulationData/SLANS/{subdir}'):
-                    os.mkdir(projectDir / fr'SimulationData/SLANS/{subdir}')
+                if not os.path.exists(projectDir / fr'SimulationData/{slans_folder}/{subdir}'):
+                    os.mkdir(projectDir / fr'SimulationData/{slans_folder}/{subdir}')
 
                 os.mkdir(new_path)
-                path = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}'
+                path = projectDir / fr'SimulationData/{slans_folder}/{subdir}/{fid}'
 
         # print(path)
         # print(type(path))

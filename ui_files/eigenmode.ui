@@ -651,32 +651,83 @@
           <item row="8" column="0">
            <widget class="QWidget" name="w_Mesh" native="true">
             <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="1">
-              <widget class="QDoubleSpinBox" name="dsb_Mesh_R"/>
-             </item>
-             <item row="0" column="0">
+             <item row="1" column="0">
               <widget class="QLabel" name="label_4">
+               <property name="toolTip">
+                <string>No. of elements of logical mesh along cell x and y.</string>
+               </property>
                <property name="text">
-                <string>r</string>
+                <string>Jxy Cell</string>
                </property>
               </widget>
              </item>
-             <item row="2" column="1">
+             <item row="4" column="1">
               <widget class="QPushButton" name="pb_Show_Mesh">
                <property name="text">
                 <string>Show Mesh</string>
                </property>
               </widget>
              </item>
-             <item row="1" column="0">
+             <item row="2" column="0">
               <widget class="QLabel" name="label_5">
+               <property name="toolTip">
+                <string>No. of elements of logical mesh along cell x in beampipe.</string>
+               </property>
                <property name="text">
-                <string>z</string>
+                <string>Jx Beampipe</string>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QDoubleSpinBox" name="dsb_Mesh_Z"/>
+              <widget class="QSpinBox" name="sb_Mesh_Jxy_Cell">
+               <property name="toolTip">
+                <string>No. of elements of logical mesh in cell along xy.</string>
+               </property>
+               <property name="value">
+                <number>44</number>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QSpinBox" name="sb_Mesh_Jx_BP">
+               <property name="toolTip">
+                <string>No. of elements of logical mesh along x in beampipe.</string>
+               </property>
+               <property name="value">
+                <number>30</number>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Jy Beampipe</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1">
+              <widget class="QSpinBox" name="sb_Mesh_Jy_BP">
+               <property name="toolTip">
+                <string>No. of elements of logical mesh along y in beampipe.</string>
+               </property>
+               <property name="value">
+                <number>35</number>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0" colspan="2">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Mesh elements must not exceed 10,000 elements in total</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0">
+              <widget class="QPushButton" name="pb_Mesh_Defaults">
+               <property name="text">
+                <string>Defaults</string>
+               </property>
+              </widget>
              </item>
             </layout>
            </widget>
