@@ -56,7 +56,7 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="5">
+         <item row="0" column="3">
           <widget class="QPushButton" name="pb_Pause_Resume">
            <property name="maximumSize">
             <size>
@@ -83,16 +83,6 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Sub Folder</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLineEdit" name="le_Run_Save_Folder"/>
-         </item>
-         <item row="0" column="3">
           <widget class="QPushButton" name="pb_Run">
            <property name="maximumSize">
             <size>
@@ -121,7 +111,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="6">
+         <item row="0" column="4">
           <widget class="QPushButton" name="pb_Cancel">
            <property name="maximumSize">
             <size>
@@ -160,7 +150,7 @@
            </property>
           </spacer>
          </item>
-         <item row="0" column="4">
+         <item row="0" column="2">
           <widget class="QProgressBar" name="pb_Progress_Bar">
            <property name="format">
             <string>%v/%m</string>

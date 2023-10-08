@@ -137,6 +137,10 @@ class PlotControl:
                                       "legend": []}
         self.other_data_filtered = {}
         self.row = None
+        
+        # setup QTableWidget
+        self.tableWidget = TableWidgetDragDrop(self)
+        self.ui.gridLayout_29.addWidget(self.tableWidget, 1, 0, 1, 5)
 
         self.initUI()
         self.signals()
@@ -568,7 +572,7 @@ class PlotControl:
         self.ui.cb_Show_Hide_Inset.clicked.connect(lambda: self.plot_inset())
 
         # add plot
-        self.ui.pb_Add_Row.clicked.connect(self.add_row)
+        self.ui.pb_Add_Row.clicked.connect(self.tableWidget.add_row)
         # clear plots
         self.ui.pb_Clear.clicked.connect(lambda: self.clear_plots())
 
@@ -612,7 +616,7 @@ class PlotControl:
         # self.createPlotTypeWidget()
         self.ui.w_Custom_Color.hide()
         # add row to table
-        self.ui.tableWidget.setRowCount(1)  # and one row in the table
+        self.tableWidget.setRowCount(1)  # and one row in the table
         self.table_control()
 
         # set plot menu initial size to zero and disable plot buttons
@@ -620,9 +624,9 @@ class PlotControl:
         # self.ui.w_Plot_Area_Buttons.setDisabled(True)
 
         # tableWidget initializations
-        self.ui.tableWidget.mousePressEvent = self.mousePressEvent
-        self.ui.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
-        self.ui.tableWidget.customContextMenuRequested.connect(self.generateMenu)
+        self.tableWidget.mousePressEvent = self.mousePressEvent
+        self.tableWidget.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.tableWidget.customContextMenuRequested.connect(self.generateMenu)
         self.set_table_size()
 
         # add checkable combobox
@@ -1469,285 +1473,7 @@ class PlotControl:
 
     def table_control(self):
         # fill the first line
-        self.create_new_row(0, self.ui.tableWidget)
-
-    def create_new_row(self, row_ind, table):
-        """
-
-        Parameters
-        ----------
-        row_ind
-        table
-
-        Returns
-        -------
-
-        """
-
-        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
-        # Toggle on/off
-        w_Toggle_Close = QWidget()
-        l_Toggle_Close_Widget = QHBoxLayout()
-        w_Toggle_Close.setLayout(l_Toggle_Close_Widget)
-        table.setCellWidget(row_ind, 0, w_Toggle_Close)
-
-        cb_toggle = QCheckBox()
-        cb_toggle.setCheckState(Qt.Checked)
-        cb_toggle.stateChanged.connect(lambda: self.plot())
-
-        pb_Delete_Row = QPushButton()
-        pb_Delete_Row.setMinimumSize(QtCore.QSize(20, 20))
-        pb_Delete_Row.setMaximumSize(QtCore.QSize(20, 20))
-        pb_Delete_Row.setText("")
-        icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/icons/icons/PNG/stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        pb_Delete_Row.setIcon(icon3)
-        pb_Delete_Row.setIconSize(QtCore.QSize(20, 20))
-        pb_Delete_Row.clicked.connect(lambda: self.remove_row(pb_Delete_Row))
-
-        l_Toggle_Close_Widget.setSpacing(0)
-        l_Toggle_Close_Widget.setContentsMargins(0, 0, 0, 0)
-        l_Toggle_Close_Widget.addWidget(cb_toggle)
-        l_Toggle_Close_Widget.addWidget(pb_Delete_Row)
-
-        # Code
-        cb_code = QComboBox()
-        cb_code.addItem("ABCI")
-        cb_code.addItem("SLANS")
-        cb_code.addItem("Other")
-        table.setCellWidget(row_ind, 1, cb_code)
-
-        # Folder widget
-        w_Folder = QWidget()
-        w_Folder.setContentsMargins(0, 0, 0, 0)
-
-        l_Folder_Widget = QHBoxLayout()
-        w_Folder.setLayout(l_Folder_Widget)
-        le_Folder = QLineEdit()
-        le_Folder.setReadOnly(True)
-        le_Folder.setSizePolicy(sizePolicy)
-        pb_Open_Folder = QPushButton('...')
-        pb_Open_Folder.setMaximumWidth(100)
-        pb_Open_Folder.setMinimumWidth(50)
-        pb_Open_Folder.setSizePolicy(sizePolicy)
-        # signal to change place holder text is 'Other'
-        cb_code.currentIndexChanged.connect(lambda: le_Folder.setPlaceholderText(
-            'Select file') if cb_code.currentText() == 'Other' else le_Folder.setPlaceholderText('Select Folder'))
-
-        l_Folder_Widget.setSpacing(0)
-        l_Folder_Widget.setContentsMargins(0, 0, 0, 0)
-        l_Folder_Widget.addWidget(le_Folder)
-        l_Folder_Widget.addWidget(pb_Open_Folder)
-        table.setCellWidget(row_ind, 2, w_Folder)
-
-        # Polarisation
-        cb_pol = QComboBox()
-        cb_pol.addItem("Long")
-        cb_pol.addItem("Trans")
-        table.setCellWidget(row_ind, 3, cb_pol)
-        # signal to disable polarisation when cb_code item is 'Other'
-        cb_code.currentIndexChanged.connect(
-            lambda: cb_pol.setDisabled(True) if cb_code.currentText() == 'Other' else cb_pol.setEnabled(True))
-
-        # Id
-        ccb_Id = QCheckableComboBox()
-        ccb_Id.addItem("All")
-        table.setCellWidget(row_ind, 4, ccb_Id)
-        # signal to disable id when cb_code item is 'Other'
-        cb_code.currentIndexChanged.connect(
-            lambda: ccb_Id.setDisabled(True) if cb_code.currentText() == 'Other' else ccb_Id.setEnabled(True))
-
-        # push button signal
-        pb_Open_Folder.clicked.connect(
-            lambda: self.open_(le_Folder, cb_pol, ccb_Id, 'File',
-                               start_dir=f"{self.main_control.projectDir}")
-            if cb_code.currentText() == 'Other' else
-            self.open_(le_Folder, cb_pol, ccb_Id, 'Folder',
-                       start_dir=f"{self.main_control.projectDir}/SimulationData/{cb_code.currentText()}"))
-        # le_Folder.textChanged.connect(lambda: )
-
-        cb_pol.currentIndexChanged.connect(
-            lambda: self.populate_IDs(le_Folder.text(), cb_pol,
-                                      ccb_Id) if cb_code.currentText() == 'Other' else self.populate_IDs(
-                le_Folder.text(), cb_pol, ccb_Id))
-
-        # Request
-        # Request widget
-        w_Request = QWidget()
-        l_Request_Widget = QHBoxLayout()
-        l_Request_Widget.setContentsMargins(0, 0, 0, 0)
-        l_Request_Widget.setSpacing(0)
-        w_Request.setLayout(l_Request_Widget)
-
-        request_dict_long = {0: 'Longitudinal Impedance Magnitude',
-                             1: r'Cavity Shape Input',
-                             2: r'Cavity Shape Used',
-                             3: r'Wake Potentials',
-                             4: r'Real Part of Longitudinal Impedance',
-                             5: r'Imaginary Part of Longitudinal Impedance',
-                             6: r'Frequency Spectrum of Loss Factor',
-                             7: r'Loss Factor Spectrum Integrated up to F',
-                             8: r'Real Part of Long. + Log Impedance',
-                             9: r'Imaginary Part of Long. + Log Impedance',
-                             10: r'Spectrum of Long. + Log Loss Factor',
-                             11: r'Long. + Log Factor Integrated up to F'
-                             }
-
-        request_dict_trans = {0: 'Transverse Impedance Magnitude',
-                              1: r'Cavity Shape Input',
-                              2: r'Cavity Shape Used',
-                              3: r'Wake Potentials',
-                              4: r'Real Part of Azimuthal Impedance',
-                              5: r'Imaginary Part of Azimuthal Impedance',
-                              6: r'Real Part of Transverse Impedance',
-                              7: r'Imaginary Part of Transverse Impedance',
-                              8: r'Real Part of Longitudinal Impedance',
-                              9: r'Imaginary Part of Longitudinal Impedance'
-                              }
-
-        cb_request = QComboBox()
-        cb_request.setSizePolicy(sizePolicy)
-        for req in request_dict_long.values():
-            cb_request.addItem(req)
-        # cb_request.setStyleSheet('background-color: yellow;')
-
-        # create widget with two comboboxes
-        cb_X = QComboBox()
-        cb_Y = QCheckableComboBox()
-        cb_X.setSizePolicy(sizePolicy)
-        cb_Y.setSizePolicy(sizePolicy)
-
-        # place cb_request and le_request in request widget layout
-        l_Request_Widget.addWidget(cb_request)
-        l_Request_Widget.addWidget(cb_X)
-        l_Request_Widget.addWidget(cb_Y)
-
-        # hide le_request
-        cb_X.hide()
-        cb_Y.hide()
-
-        # add widget to table
-        # w_Request.setStyleSheet('background-color: blue;')
-        table.setCellWidget(row_ind, 5, w_Request)
-
-        # Filter
-        # Filter widget
-        w_Filter = QWidget()
-        l_Filter_Widget = QHBoxLayout()
-        l_Filter_Widget.setSpacing(0)
-        l_Filter_Widget.setContentsMargins(0, 0, 0, 0)
-        w_Filter.setLayout(l_Filter_Widget)
-
-        # checkable combo box
-        ccb_Filter = QCheckableComboBox()
-        ccb_Filter.setSizePolicy(sizePolicy)
-        ccb_Filter.addItem("All")
-        l_Filter_Widget.addWidget(ccb_Filter)
-
-        # line edit
-        le_Value = QLineEdit()
-        l_Filter_Widget.addWidget(le_Value)
-        le_Value.setSizePolicy(sizePolicy)
-
-        table.setCellWidget(row_ind, 10, w_Filter)
-
-        # add signal to le_Folder after editing to update cb_X and cb_Y
-        key = self.plotID_count
-        le_Folder.textChanged.connect(lambda: self.populate_combobox([cb_X, cb_Y, ccb_Filter], le_Folder.text(), key))
-
-        # signal to disable polarisation when cb_code item is 'Other'
-        cb_code.currentIndexChanged.connect(lambda: self.show_hide_request_widgets(cb_code, cb_request, cb_X, cb_Y))
-
-        # add signal to switch between longitudinal and transverse
-        cb_pol.currentIndexChanged.connect(
-            lambda: self.switchRequest(cb_request, request_dict_long, request_dict_trans, cb_pol))
-
-        # ScaleX
-        le_ScaleX = QLineEdit()
-        le_ScaleX.setText('1')
-        table.setCellWidget(row_ind, 6, le_ScaleX)
-
-        # ScaleY
-        le_ScaleY = QLineEdit()
-        le_ScaleY.setText('1')
-        table.setCellWidget(row_ind, 7, le_ScaleY)
-        # le_ScaleX.editingFinished.connect(lambda: validating(le_ScaleX, default='1'))
-        # le_ScaleY.editingFinished.connect(lambda: validating(le_ScaleY, default='1'))
-
-        # axis
-        axis_list = ['Left', 'Right', 'Top', 'Bottom']
-        cb_axis = QComboBox()
-        for a in axis_list:
-            cb_axis.addItem(a)
-
-        table.setCellWidget(row_ind, 8, cb_axis)
-
-        # type
-        w_Type = QWidget()
-        l_Type_Widget = QHBoxLayout()
-        l_Type_Widget.setSpacing(0)
-        l_Type_Widget.setContentsMargins(0, 0, 0, 0)
-        w_Type.setLayout(l_Type_Widget)
-        type_list = ['Line', 'Scatter', 'Bar']
-
-        # check box
-        cb_type = QComboBox()
-        cb_type.setSizePolicy(sizePolicy)
-        for a in type_list:
-            cb_type.addItem(a)
-
-        l_Type_Widget.addWidget(cb_type)
-        # check box
-        cb_style = QComboBox()
-        cb_style.setSizePolicy(sizePolicy)
-        l_Type_Widget.addWidget(cb_style)
-
-        line_style = ['-', '--', ':', '-.']
-        scatter_marker = ['x', 'o', '+', 'P', 'X', 'd', '>', '^', 'v', 'H']
-
-        # fill default
-        for a in line_style:
-            cb_style.addItem(a)
-
-        # signal for combobox
-        cb_type.currentIndexChanged.connect(
-            lambda: self.populate_combobox_list(cb_style, line_style)
-            if cb_type.currentText() == "Line"
-            else self.populate_combobox_list(cb_style, scatter_marker))
-
-        table.setCellWidget(row_ind, 9, w_Type)
-
-        # pb_Color = QPushButton()
-        # menu = QMenu()
-        # menu.triggered.connect(lambda x: pb_Color.setStyleSheet(f"background-color: {x.defaultWidget().text()};"))
-        # menu.triggered.connect(lambda x: pb_Color.setText(x.defaultWidget().text()))
-        # # menu.triggered.connect(lambda x: print(x.defaultWidget().text()))
-        # pb_Color.setMenu(menu)
-        #
-        # for k, vals in MATPLOTLIB_COLORS.items():
-        #     sub_menu = menu.addMenu(k)
-        #     for v in vals:
-        #         l = QLabel(str(v))
-        #         action = QWidgetAction(sub_menu)
-        #         l.setStyleSheet(f"background-color: {v};")
-        #         action.setDefaultWidget(l)
-        #         sub_menu.addAction(action)
-        #         # action.triggered.connect(lambda: pb_Color.setStyleSheet(f"background-color: {v};"))
-        #         # action.triggered.connect(lambda: pb_Color.setText(str(v)))
-        #
-        # table.setCellWidget(row_ind, 10, pb_Color)
-
-        args_dict = {'Code': cb_code, 'Folder': [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget],
-                     'Polarization': cb_pol, 'Id': ccb_Id,
-                     'Request': [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget], 'Toggle': cb_toggle,
-                     'Remove': pb_Delete_Row, 'ScaleX': le_ScaleX, 'ScaleY': le_ScaleY, 'Axis': cb_axis,
-                     'Type': [cb_type, cb_style], 'Filter': [ccb_Filter, le_Value]}
-
-        self.plot_dict[key] = {"plot inputs": None, "plot data": {}, "plot object": {},
-                               "plot data inputs": None}
-
-        self.plot_dict[key]["plot inputs"] = args_dict
-        self.plotID_count += 1
+        self.tableWidget.create_new_row(0, self.tableWidget)
 
     def generateMenu(self, pos):
         # Get index
@@ -1755,59 +1481,16 @@ class PlotControl:
         item1 = menu.addAction("Add Row")
         item2 = menu.addAction("Delete Row")
         # Make the menu display in the normal position
-        screenPos = self.ui.tableWidget.mapToGlobal(pos)
+        screenPos = self.tableWidget.mapToGlobal(pos)
 
         # Click on a menu item to return, making it blocked
         action = menu.exec(screenPos)
         if action == item1:
-            self.add_row()
+            self.tableWidget.add_row()
         if action == item2:
-            self.remove_row(self.row)
+            self.tableWidget.remove_row(self.row)
         else:
             return
-
-    def add_row(self):
-        # get current number of rows
-        n = self.ui.tableWidget.rowCount()
-
-        # add new row
-        self.ui.tableWidget.setRowCount(n + 1)  # and one row in the table
-        self.create_new_row(n, self.ui.tableWidget)
-
-    def remove_row(self, pb_Remove):
-
-        # remove from table
-        n = self.ui.tableWidget.rowCount()
-        row = 0
-        key = 0
-        code = "ABCI"
-        for i, (k, val) in enumerate(self.plot_dict.items()):
-            if val["plot inputs"]['Remove'] == pb_Remove:
-                row = i
-                key = k
-                code = val["plot inputs"]['Code'].currentText()
-
-        self.ui.tableWidget.removeRow(row)
-        # reset number of rows
-        self.ui.tableWidget.setRowCount(n - 1)
-
-        if code == "ABCI":
-            for line2D in self.plot_dict[key]['plot object'].values():
-                line2D[0].remove()
-        else:
-            for vals in self.plot_dict[key]['plot object'].values():
-                for line2D in vals.values():
-                    line2D[0].remove()
-
-        # reset plot data, plot object and plot data inputs
-        self.plot_dict[key]["plot data"] = {}
-        self.plot_dict[key]["plot object"] = {}
-        self.plot_dict[key]["plot data inputs"] = {}
-
-        self.plot_dict[key] = {}
-        del self.plot_dict[key]
-
-        self.plot()
 
     def populate_plot_elements_table(self):
         le_Xlabel = QLineEdit("$f ~\mathrm{[MHz]}$")
@@ -1891,7 +1574,7 @@ class PlotControl:
 
     def mousePressEvent(self, event):
         if event.buttons() & Qt.RightButton:
-            row = self.ui.tableWidget.currentRow()
+            row = self.tableWidget.currentRow()
             self.row = row
 
     def load_operating_points(self, filename):
@@ -2175,7 +1858,7 @@ class PlotControl:
                 vl = self.ax.axvline(freq, ls='--', c='k')  # label=f"{sc[0]} cutoff (Ri={sc[1]})",
 
                 # get y text position from axis position. Position x is not used
-                pos = self.axis_data_coords_sys_transform(self.ax, freq, 0.05, inverse=False)
+                pos = self.plt.axis_data_coords_sys_transform(self.ax, freq, 0.05, inverse=False)
 
                 # ylim = self.ax.get_ylim()
                 ab = self.plt.add_text(r"$f_\mathrm{c," + f"{sc[0]}" + r"} (R_\mathrm{i} = "
@@ -2302,16 +1985,16 @@ class PlotControl:
                     item.setCheckState(2)
 
     def set_table_size(self):
-        self.ui.tableWidget.setColumnWidth(0, 50)
-        self.ui.tableWidget.setColumnWidth(1, 75)
-        self.ui.tableWidget.setColumnWidth(2, 200)
-        self.ui.tableWidget.setColumnWidth(3, 100)
-        self.ui.tableWidget.setColumnWidth(4, 300)
-        self.ui.tableWidget.setColumnWidth(5, 200)
-        self.ui.tableWidget.setColumnWidth(6, 75)
-        self.ui.tableWidget.setColumnWidth(7, 75)
-        self.ui.tableWidget.setColumnWidth(8, 75)
-        self.ui.tableWidget.setColumnWidth(10, 100)
+        self.tableWidget.setColumnWidth(0, 50)
+        self.tableWidget.setColumnWidth(1, 75)
+        self.tableWidget.setColumnWidth(2, 200)
+        self.tableWidget.setColumnWidth(3, 100)
+        self.tableWidget.setColumnWidth(4, 300)
+        self.tableWidget.setColumnWidth(5, 200)
+        self.tableWidget.setColumnWidth(6, 75)
+        self.tableWidget.setColumnWidth(7, 75)
+        self.tableWidget.setColumnWidth(8, 75)
+        self.tableWidget.setColumnWidth(10, 100)
 
     @staticmethod
     def validating(le):
@@ -2707,10 +2390,10 @@ class PlotControl:
 
             table_widget_state = state_dict['plot_table_widget']
             # print(table_widget_state)
-            # self.ui.tableWidget.setRowCount(0)
+            # self.tableWidget.setRowCount(0)
             for i, (k, v) in enumerate(table_widget_state.items()):
                 if i > 0:
-                    self.add_row()
+                    self.tableWidget.add_row()
 
                 args_dict = self.plot_dict[i]['plot inputs']
 
@@ -2765,3 +2448,414 @@ class PlotControl:
             self.fig.canvas.draw_idle()
         except (KeyError, TypeError) as e:
             print("Could not deserialize plot_control.py: ", e)
+
+
+class TableWidgetDragDrop(QTableWidget):
+    def __init__(self, parent):
+        super().__init__()
+        self.plot_control = parent
+
+        self.setAcceptDrops(True)
+        self.setDragEnabled(True)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.setDefaultDropAction(QtCore.Qt.TargetMoveAction)
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setObjectName("tableWidget")
+        self.setColumnCount(11)
+        self.setRowCount(0)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(0, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(1, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(2, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(4, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(5, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(6, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(7, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(8, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(9, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.setHorizontalHeaderItem(10, item)
+        self.horizontalHeader().setStretchLastSection(True)
+
+        _translate = QtCore.QCoreApplication.translate
+
+        item = self.horizontalHeaderItem(1)
+        item.setText(_translate("Plot", "Code"))
+        item = self.horizontalHeaderItem(2)
+        item.setText(_translate("Plot", "File/Folder"))
+        item = self.horizontalHeaderItem(3)
+        item.setText(_translate("Plot", "Polarisation"))
+        item = self.horizontalHeaderItem(4)
+        item.setText(_translate("Plot", "ID"))
+        item = self.horizontalHeaderItem(5)
+        item.setText(_translate("Plot", "Request"))
+        item = self.horizontalHeaderItem(6)
+        item.setText(_translate("Plot", "ScaleX"))
+        item = self.horizontalHeaderItem(7)
+        item.setText(_translate("Plot", "ScaleY"))
+        item = self.horizontalHeaderItem(8)
+        item.setText(_translate("Plot", "Axis"))
+        item = self.horizontalHeaderItem(9)
+        item.setText(_translate("Plot", "Type"))
+        item = self.horizontalHeaderItem(10)
+        item.setText(_translate("Plot", "Filter"))
+
+    def dragEnterEvent(self, event: QtGui.QDragEnterEvent) -> None:
+        if event.mimeData().hasUrls:
+            event.accept()
+        else:
+            event.ignore()
+
+    def dragMoveEvent(self, event: QtGui.QDragMoveEvent) -> None:
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            event.accept()
+        else:
+            event.ignore()
+            
+    def dropEvent(self, event: QtGui.QDropEvent) -> None:
+        if event.mimeData().hasUrls():
+            event.setDropAction(Qt.CopyAction)
+            for url in event.mimeData().urls():
+                if url.isLocalFile():
+                    filepath = str(url.toLocalFile())
+                    if filepath.split('.')[-1].lower() in ['xlsx', 'txt', 'csv']:
+                        self.add_row()
+                        key = self.plot_control.plotID_count - 1
+                        self.plot_control.plot_dict[key]["plot inputs"]['Code'].setCurrentText('Other')
+                        self.plot_control.plot_dict[key]["plot inputs"]['Folder'][0].setText(filepath)
+
+            event.accept()
+
+    def add_row(self):
+        # get current number of rows
+        n = self.rowCount()
+
+        # add new row
+        self.setRowCount(n + 1)  # and one row in the table
+        self.create_new_row(n, self)
+
+    def create_new_row(self, row_ind, table):
+        """
+
+        Parameters
+        ----------
+        row_ind
+        table
+
+        Returns
+        -------
+
+        """
+
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        # Toggle on/off
+        w_Toggle_Close = QWidget()
+        l_Toggle_Close_Widget = QHBoxLayout()
+        w_Toggle_Close.setLayout(l_Toggle_Close_Widget)
+        table.setCellWidget(row_ind, 0, w_Toggle_Close)
+
+        cb_toggle = QCheckBox()
+        cb_toggle.setCheckState(Qt.Checked)
+        cb_toggle.stateChanged.connect(lambda: self.plot_control.plot())
+
+        pb_Delete_Row = QPushButton()
+        pb_Delete_Row.setMinimumSize(QtCore.QSize(20, 20))
+        pb_Delete_Row.setMaximumSize(QtCore.QSize(20, 20))
+        pb_Delete_Row.setText("")
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/icons/icons/PNG/stop.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        pb_Delete_Row.setIcon(icon3)
+        pb_Delete_Row.setIconSize(QtCore.QSize(20, 20))
+        pb_Delete_Row.clicked.connect(lambda: self.remove_row(pb_Delete_Row))
+
+        l_Toggle_Close_Widget.setSpacing(0)
+        l_Toggle_Close_Widget.setContentsMargins(0, 0, 0, 0)
+        l_Toggle_Close_Widget.addWidget(cb_toggle)
+        l_Toggle_Close_Widget.addWidget(pb_Delete_Row)
+
+        # Code
+        cb_code = QComboBox()
+        cb_code.addItem("ABCI")
+        cb_code.addItem("SLANS")
+        cb_code.addItem("Other")
+        table.setCellWidget(row_ind, 1, cb_code)
+
+        # Folder widget
+        w_Folder = QWidget()
+        w_Folder.setContentsMargins(0, 0, 0, 0)
+
+        l_Folder_Widget = QHBoxLayout()
+        w_Folder.setLayout(l_Folder_Widget)
+        le_Folder = QLineEdit()
+        le_Folder.setReadOnly(True)
+        le_Folder.setSizePolicy(sizePolicy)
+        pb_Open_Folder = QPushButton('...')
+        pb_Open_Folder.setMaximumWidth(100)
+        pb_Open_Folder.setMinimumWidth(50)
+        pb_Open_Folder.setSizePolicy(sizePolicy)
+        # signal to change place holder text is 'Other'
+        cb_code.currentIndexChanged.connect(lambda: le_Folder.setPlaceholderText(
+            'Select file') if cb_code.currentText() == 'Other' else le_Folder.setPlaceholderText('Select Folder'))
+
+        l_Folder_Widget.setSpacing(0)
+        l_Folder_Widget.setContentsMargins(0, 0, 0, 0)
+        l_Folder_Widget.addWidget(le_Folder)
+        l_Folder_Widget.addWidget(pb_Open_Folder)
+        table.setCellWidget(row_ind, 2, w_Folder)
+
+        # Polarisation
+        cb_pol = QComboBox()
+        cb_pol.addItem("Long")
+        cb_pol.addItem("Trans")
+        table.setCellWidget(row_ind, 3, cb_pol)
+        # signal to disable polarisation when cb_code item is 'Other'
+        cb_code.currentIndexChanged.connect(
+            lambda: cb_pol.setDisabled(True) if cb_code.currentText() == 'Other' else cb_pol.setEnabled(True))
+
+        # Id
+        ccb_Id = QCheckableComboBox()
+        ccb_Id.addItem("All")
+        table.setCellWidget(row_ind, 4, ccb_Id)
+        # signal to disable id when cb_code item is 'Other'
+        cb_code.currentIndexChanged.connect(
+            lambda: ccb_Id.setDisabled(True) if cb_code.currentText() == 'Other' else ccb_Id.setEnabled(True))
+
+        # push button signal
+        pb_Open_Folder.clicked.connect(
+            lambda: self.plot_control.open_(le_Folder, cb_pol, ccb_Id, 'File',
+                               start_dir=f"{self.plot_control.main_control.projectDir}")
+            if cb_code.currentText() == 'Other' else
+            self.plot_control.open_(le_Folder, cb_pol, ccb_Id, 'Folder',
+                       start_dir=f"{self.plot_control.main_control.projectDir}/SimulationData/{cb_code.currentText()}"))
+        # le_Folder.textChanged.connect(lambda: )
+
+        cb_pol.currentIndexChanged.connect(
+            lambda: self.plot_control.populate_IDs(le_Folder.text(), cb_pol,
+                                      ccb_Id) if cb_code.currentText() == 'Other' else self.plot_control.populate_IDs(
+                le_Folder.text(), cb_pol, ccb_Id))
+
+        # Request
+        # Request widget
+        w_Request = QWidget()
+        l_Request_Widget = QHBoxLayout()
+        l_Request_Widget.setContentsMargins(0, 0, 0, 0)
+        l_Request_Widget.setSpacing(0)
+        w_Request.setLayout(l_Request_Widget)
+
+        request_dict_long = {0: 'Longitudinal Impedance Magnitude',
+                             1: r'Cavity Shape Input',
+                             2: r'Cavity Shape Used',
+                             3: r'Wake Potentials',
+                             4: r'Real Part of Longitudinal Impedance',
+                             5: r'Imaginary Part of Longitudinal Impedance',
+                             6: r'Frequency Spectrum of Loss Factor',
+                             7: r'Loss Factor Spectrum Integrated up to F',
+                             8: r'Real Part of Long. + Log Impedance',
+                             9: r'Imaginary Part of Long. + Log Impedance',
+                             10: r'Spectrum of Long. + Log Loss Factor',
+                             11: r'Long. + Log Factor Integrated up to F'
+                             }
+
+        request_dict_trans = {0: 'Transverse Impedance Magnitude',
+                              1: r'Cavity Shape Input',
+                              2: r'Cavity Shape Used',
+                              3: r'Wake Potentials',
+                              4: r'Real Part of Azimuthal Impedance',
+                              5: r'Imaginary Part of Azimuthal Impedance',
+                              6: r'Real Part of Transverse Impedance',
+                              7: r'Imaginary Part of Transverse Impedance',
+                              8: r'Real Part of Longitudinal Impedance',
+                              9: r'Imaginary Part of Longitudinal Impedance'
+                              }
+
+        cb_request = QComboBox()
+        cb_request.setSizePolicy(sizePolicy)
+        for req in request_dict_long.values():
+            cb_request.addItem(req)
+        # cb_request.setStyleSheet('background-color: yellow;')
+
+        # create widget with two comboboxes
+        cb_X = QComboBox()
+        cb_Y = QCheckableComboBox()
+        cb_X.setSizePolicy(sizePolicy)
+        cb_Y.setSizePolicy(sizePolicy)
+
+        # place cb_request and le_request in request widget layout
+        l_Request_Widget.addWidget(cb_request)
+        l_Request_Widget.addWidget(cb_X)
+        l_Request_Widget.addWidget(cb_Y)
+
+        # hide le_request
+        cb_X.hide()
+        cb_Y.hide()
+
+        # add widget to table
+        # w_Request.setStyleSheet('background-color: blue;')
+        table.setCellWidget(row_ind, 5, w_Request)
+
+        # Filter
+        # Filter widget
+        w_Filter = QWidget()
+        l_Filter_Widget = QHBoxLayout()
+        l_Filter_Widget.setSpacing(0)
+        l_Filter_Widget.setContentsMargins(0, 0, 0, 0)
+        w_Filter.setLayout(l_Filter_Widget)
+
+        # checkable combo box
+        ccb_Filter = QCheckableComboBox()
+        ccb_Filter.setSizePolicy(sizePolicy)
+        ccb_Filter.addItem("All")
+        l_Filter_Widget.addWidget(ccb_Filter)
+
+        # line edit
+        le_Value = QLineEdit()
+        l_Filter_Widget.addWidget(le_Value)
+        le_Value.setSizePolicy(sizePolicy)
+
+        table.setCellWidget(row_ind, 10, w_Filter)
+
+        # add signal to le_Folder after editing to update cb_X and cb_Y
+        key = self.plot_control.plotID_count
+        le_Folder.textChanged.connect(lambda: self.plot_control.populate_combobox([cb_X, cb_Y, ccb_Filter], le_Folder.text(), key))
+
+        # signal to disable polarisation when cb_code item is 'Other'
+        cb_code.currentIndexChanged.connect(lambda: self.plot_control.show_hide_request_widgets(cb_code, cb_request, cb_X, cb_Y))
+
+        # add signal to switch between longitudinal and transverse
+        cb_pol.currentIndexChanged.connect(
+            lambda: self.plot_control.switchRequest(cb_request, request_dict_long, request_dict_trans, cb_pol))
+
+        # ScaleX
+        le_ScaleX = QLineEdit()
+        le_ScaleX.setText('1')
+        table.setCellWidget(row_ind, 6, le_ScaleX)
+
+        # ScaleY
+        le_ScaleY = QLineEdit()
+        le_ScaleY.setText('1')
+        table.setCellWidget(row_ind, 7, le_ScaleY)
+        # le_ScaleX.editingFinished.connect(lambda: validating(le_ScaleX, default='1'))
+        # le_ScaleY.editingFinished.connect(lambda: validating(le_ScaleY, default='1'))
+
+        # axis
+        axis_list = ['Left', 'Right', 'Top', 'Bottom']
+        cb_axis = QComboBox()
+        for a in axis_list:
+            cb_axis.addItem(a)
+
+        table.setCellWidget(row_ind, 8, cb_axis)
+
+        # type
+        w_Type = QWidget()
+        l_Type_Widget = QHBoxLayout()
+        l_Type_Widget.setSpacing(0)
+        l_Type_Widget.setContentsMargins(0, 0, 0, 0)
+        w_Type.setLayout(l_Type_Widget)
+        type_list = ['Line', 'Scatter', 'Bar']
+
+        # check box
+        cb_type = QComboBox()
+        cb_type.setSizePolicy(sizePolicy)
+        for a in type_list:
+            cb_type.addItem(a)
+
+        l_Type_Widget.addWidget(cb_type)
+        # check box
+        cb_style = QComboBox()
+        cb_style.setSizePolicy(sizePolicy)
+        l_Type_Widget.addWidget(cb_style)
+
+        line_style = ['-', '--', ':', '-.']
+        scatter_marker = ['x', 'o', '+', 'P', 'X', 'd', '>', '^', 'v', 'H']
+
+        # fill default
+        for a in line_style:
+            cb_style.addItem(a)
+
+        # signal for combobox
+        cb_type.currentIndexChanged.connect(
+            lambda: self.plot_control.populate_combobox_list(cb_style, line_style)
+            if cb_type.currentText() == "Line"
+            else self.plot_control.populate_combobox_list(cb_style, scatter_marker))
+
+        table.setCellWidget(row_ind, 9, w_Type)
+
+        # pb_Color = QPushButton()
+        # menu = QMenu()
+        # menu.triggered.connect(lambda x: pb_Color.setStyleSheet(f"background-color: {x.defaultWidget().text()};"))
+        # menu.triggered.connect(lambda x: pb_Color.setText(x.defaultWidget().text()))
+        # # menu.triggered.connect(lambda x: print(x.defaultWidget().text()))
+        # pb_Color.setMenu(menu)
+        #
+        # for k, vals in MATPLOTLIB_COLORS.items():
+        #     sub_menu = menu.addMenu(k)
+        #     for v in vals:
+        #         l = QLabel(str(v))
+        #         action = QWidgetAction(sub_menu)
+        #         l.setStyleSheet(f"background-color: {v};")
+        #         action.setDefaultWidget(l)
+        #         sub_menu.addAction(action)
+        #         # action.triggered.connect(lambda: pb_Color.setStyleSheet(f"background-color: {v};"))
+        #         # action.triggered.connect(lambda: pb_Color.setText(str(v)))
+        #
+        # table.setCellWidget(row_ind, 10, pb_Color)
+
+        args_dict = {'Code': cb_code, 'Folder': [le_Folder, pb_Open_Folder, w_Folder, l_Folder_Widget],
+                     'Polarization': cb_pol, 'Id': ccb_Id,
+                     'Request': [cb_request, cb_X, cb_Y, w_Request, l_Request_Widget], 'Toggle': cb_toggle,
+                     'Remove': pb_Delete_Row, 'ScaleX': le_ScaleX, 'ScaleY': le_ScaleY, 'Axis': cb_axis,
+                     'Type': [cb_type, cb_style], 'Filter': [ccb_Filter, le_Value]}
+
+        self.plot_control.plot_dict[key] = {"plot inputs": None, "plot data": {}, "plot object": {},
+                               "plot data inputs": None}
+
+        self.plot_control.plot_dict[key]["plot inputs"] = args_dict
+        self.plot_control.plotID_count += 1
+
+    def remove_row(self, pb_Remove):
+
+        # remove from table
+        n = self.rowCount()
+        row = 0
+        key = 0
+        code = "ABCI"
+        for i, (k, val) in enumerate(self.plot_control.plot_dict.items()):
+            if val["plot inputs"]['Remove'] == pb_Remove:
+                row = i
+                key = k
+                code = val["plot inputs"]['Code'].currentText()
+
+        self.removeRow(row)
+        # reset number of rows
+        self.setRowCount(n - 1)
+
+        if code == "ABCI":
+            for line2D in self.plot_control.plot_dict[key]['plot object'].values():
+                line2D[0].remove()
+        else:
+            for vals in self.plot_control.plot_dict[key]['plot object'].values():
+                for line2D in vals.values():
+                    line2D[0].remove()
+
+        # reset plot data, plot object and plot data inputs
+        self.plot_control.plot_dict[key]["plot data"] = {}
+        self.plot_control.plot_dict[key]["plot object"] = {}
+        self.plot_control.plot_dict[key]["plot data inputs"] = {}
+
+        self.plot_control.plot_dict[key] = {}
+        del self.plot_control.plot_dict[key]
+
+        self.plot_control.plot()
+
+

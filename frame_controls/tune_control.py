@@ -1524,6 +1524,34 @@ class OptimizationControl:
         norm_length = self.ui.db_Norm_Length.value()
 
         self.run_tune_parallel(pseudo_shape_space, n_cells)
+        # get successfully tuned geometries and filter initial generation dictionary
+        processed_keys = []
+        tune_result = []
+        for key in pseudo_shape_space.keys():
+            filename = self.projectDir / fr'SimulationData\SLANS_opt\{key}\cavity_33.svl'
+            try:
+                params = fr.svl_reader(filename)
+                obj = self.get_objectives_value(params, self.objectives, norm_length, n_cells)
+                # print(obj, tr)
+                # read tune results
+                d_tune_res = {'Req': 0, 'L': 0, 'freq': 0}
+                with open(self.projectDir / fr'SimulationData\SLANS_opt\{key}\tune_res.json', "r") as infile:
+                    d_tune_res = json.load(infile)
+
+                tune_result.append(list(d_tune_res.values()))
+                processed_keys.append(key)
+            except FileNotFoundError:
+                pass
+
+        # after removing duplicates, dataframe might change size
+        # ic(processed_keys)
+        # ic(df)
+        df = df.loc[df['key'].isin(processed_keys)]
+        # ic(df)
+        # replace Req with tuned Req
+        # ic(tune_result)
+        df.loc[:, ['Req', 'L', 'alpha_i', 'alpha_o', 'freq']] = tune_result
+        ic(df)
 
         for o in self.objectives:
             if o[1] in ["freq", "Epk/Eacc", "Bpk/Eacc", "R/Q", "G", "Q0"]:
@@ -1823,11 +1851,12 @@ class OptimizationControl:
                 obj_error.append(rel_error)
 
                 self.f2_interp[i] = f2_interp
-
-        self.interp_error.append(max(obj_error))
-        ic(max(obj_error), np.average(self.interp_error))
-        self.interp_error_avg.append(np.average(self.interp_error))
-        ic(self.interp_error, self.interp_error_avg)
+        ic(obj_error)
+        if len(obj_error) != 0:
+            self.interp_error.append(max(obj_error))
+            ic(max(obj_error), np.average(self.interp_error))
+            self.interp_error_avg.append(np.average(self.interp_error))
+            ic(self.interp_error, self.interp_error_avg)
 
         df = df.loc[reorder_indx, :]
         # reset index
@@ -2951,8 +2980,10 @@ class OptimizationControl:
                     elites[f'{o[1]}'] = df.sort_values(f'{o[1]}')
                 elif o[0] == "max":
                     elites[f'{o[1]}'] = df.sort_values(f'{o[1]}', ascending=False)
-                elif o[0] == "equal" and o[1] != 'freq':
-                    elites[f'{o[1]}'] = (df[o[1]] - float(o[2])).abs().sort_values(f'{o[1]}')
+                elif o[0] == "equal":
+                    ic(df[o[1]] - float(o[2]))
+                    ic((df[o[1]] - float(o[2])).abs().sort_values())
+                    elites[f'{o[1]}'] = (df[o[1]] - float(o[2])).abs().sort_values()
 
         ic(elites)
         obj_dict = {}
@@ -2965,8 +2996,8 @@ class OptimizationControl:
                 else:
                     obj_dict[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] = elites[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]']
             else:
-                if o[0] != 'equal':
-                    obj_dict[o[1]] = elites[o[1]]
+                # if o[0] != 'equal':
+                obj_dict[o[1]] = elites[o[1]]
 
         obj = {}
         for key, o in obj_dict.items():
@@ -3005,11 +3036,25 @@ class OptimizationControl:
                             ll.append(fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]')
                     inf_dict[key] = ll
                 else:
-                    inf_dict[key] = [o[1] for o in self.objectives if o[0] != 'equal']
+                    # inf_dict[key] = [o[1] for o in self.objectives if o[0] != 'equal']
+                    inf_dict[key] = [o[1] for o in self.objectives]
 
         ic(elites.keys())
+        ic(elites)
+        ic(inf_dict)
         n_elites_to_cross = self.ui.sb_N_Elites_To_Cross.value()
-        ic(n_elites_to_cross, len(elites))
+        ic(n_elites_to_cross, len(elites), df.shape[0])
+        ic(np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1))
+        ic(np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1))
+        ic(np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1))
+        ic(np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1))
+        ic(obj['mts dipole'])
+        ic(obj['mts dipole'].loc[0])
+        ic(obj['mts dipole'].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)])
+        ic(sum([obj[key].loc[np.random.randint(
+                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["A"] for key
+                                 in inf_dict["A"]]))
         for i in range(f):
             # (<obj>[<rank>][<variable>] -> (b[c[1]][0]
 

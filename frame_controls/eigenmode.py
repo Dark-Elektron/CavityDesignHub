@@ -164,7 +164,7 @@ class EigenmodeControl:
 
             service = mp.Process(target=self.run_sequential, args=(
                 n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.pol, self.main_control.parentDir,
-                self.main_control.projectDir, self.progress_list, self.ui.le_Run_Save_Folder.text(),
+                self.main_control.projectDir, self.progress_list, '',
                 UQ, eigenproblem_solver, mesh))
 
             service.start()
@@ -211,10 +211,10 @@ class EigenmodeControl:
                 # check if file exists
                 if self.pol == 'Monopole':
                     filename = fr'{self.main_control.projectDir}/SimulationData/SLANS/' \
-                               fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/cavity_{lbc}{rbc}.svl'
+                               fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/monopole/cavity_{lbc}{rbc}.svl'
                 else:
                     filename = fr'{self.main_control.projectDir}/SimulationData/SLANS/' \
-                               fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/cavity_{lbc}{rbc}_2.sv2'
+                               fr'{cav}_n{self.geo_ui.le_N_Cells.text()}/dipole/cavity_{lbc}{rbc}_2.sv2'
 
                 if os.path.exists(filename):
                     # Open the file for reading
@@ -508,7 +508,7 @@ class EigenmodeControl:
                 # expansion_r=expansion_r) else:
                 for n_cell in n_cells:
                     # # create folders for all keys
-                    slans_geom.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir)
+                    slans_geom.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir, pol=pol)
 
                     if 'OC_R' in shape.keys():
                         write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],

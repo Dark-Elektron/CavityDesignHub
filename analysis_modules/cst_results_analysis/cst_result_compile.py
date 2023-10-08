@@ -443,14 +443,15 @@ if __name__ == '__main__':
     plt.rcParams["figure.figsize"] = (10, 3)
     # sim_folder = r"D:\CST Studio\3. W\Module"
     # unique_marker = 'Eigenmode_3794(800MHz)_2HC_1FPC'
-    sim_folder = r"D:\CST Studio\5. tt\Assembly"
-    unique_marker = 'ref_mesh'
+    sim_folder = r"D:\CST Studio\PhD\W\Assembly"
+    unique_marker = 'C3794_4HC_1FPC_2'
     folders = []
     for filepath in os.listdir(sim_folder):
         if unique_marker in filepath:
             if os.path.isdir(os.path.join(sim_folder, filepath)):
                 folders.append(filepath)
     ic(folders)
+    folders = [unique_marker]
     req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
            "RQT", "Z_kOhm", "Z_T_kOhm_m"]
     # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]

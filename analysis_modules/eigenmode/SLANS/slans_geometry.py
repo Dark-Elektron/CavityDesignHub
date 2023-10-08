@@ -112,6 +112,9 @@ class SLANSGeometry(Geometry):
         p = ''
         if pol != 'Monopole':
             p = '_2'
+            subdir = 'dipole'
+        else:
+            subdir = 'monopole'
 
         # # Beam pipe length
         # if end_L == 1:
@@ -146,7 +149,7 @@ class SLANSGeometry(Geometry):
             if subdir == '':
                 run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}'
             else:
-                run_save_directory = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}'
+                run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}/{subdir}'
 
         # Write SLANS Geometry
         # print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))
@@ -1024,28 +1027,31 @@ class SLANSGeometry(Geometry):
             f.write('{:g} : beta (v/c)\n'.format(beta))
 
     @staticmethod
-    def createFolder(fid, projectDir, subdir='', filename=None, opt=False):
+    def createFolder(fid, projectDir, subdir='', filename=None, opt=False, pol='monopole'):
         if opt:
             slans_folder = 'SLANS_opt'
         else:
             slans_folder = 'SLANS'
         # change save directory
         path = projectDir / fr'SimulationData/{slans_folder}/{fid}'
+        if pol.lower() == 'monopole':
+            subdir = 'monopole'
+        else:
+            subdir = 'dipole'
+
         if subdir == '':
             pass
         else:
-            new_path = projectDir / fr'SimulationData/{slans_folder}/{subdir}/{fid}'
+            new_path = projectDir / fr'SimulationData/{slans_folder}/{fid}/{subdir}'
             if os.path.exists(new_path):
                 path = new_path
             else:
-                if not os.path.exists(projectDir / fr'SimulationData/{slans_folder}/{subdir}'):
-                    os.mkdir(projectDir / fr'SimulationData/{slans_folder}/{subdir}')
+                if not os.path.exists(projectDir / fr'SimulationData/{slans_folder}/{fid}'):
+                    os.mkdir(projectDir / fr'SimulationData/{slans_folder}/{fid}')
 
                 os.mkdir(new_path)
-                path = projectDir / fr'SimulationData/{slans_folder}/{subdir}/{fid}'
+                path = projectDir / fr'SimulationData/{slans_folder}/{fid}/{subdir}'
 
-        # print(path)
-        # print(type(path))
         if os.path.exists(path):
             try:
                 shutil.rmtree(path)

@@ -107,12 +107,6 @@ class Coupler:
         # plt.show()
 
     def LHCHookType_direct_circuit(self, **kwargs):
-        # This is the main script that runs all the functions needed
-        # Functions needed in order to run this script:
-        # hook_design.m
-        # hook_Z_total.m
-        # parallel.m
-        # trans_line.m
 
         # Initial values see fig. 1 of report (url: goo.gl/z3V7Ld )###
         if 'Lh' not in list(kwargs.keys()):
@@ -361,47 +355,11 @@ class Coupler:
             Ct = kwargs['Ct'].val
 
         if 'Zp2' not in list(kwargs.keys()):
-            Zp2 = 58  # m, Fixed value
+            Zp2 = 58899.2  # m, Fixed value
         else:
             Zp2 = kwargs['Zp2'].val
 
-        # # Initial values see fig. 1 of report (url: goo.gl/z3V7Ld )###
-        # d_tube, dc = 103e-3, 38e-3  # m, Fixed value
-        # d1, d2, d3 = 22e-3, 12.4e-3, 12.4e-3  # m, Fixed diameter values (choice)
-        # Z1 = 50  # To be calculated via CST Studio because of the excentricity of the transmission line with the tube
-        # Z2 = self.trans_line_impedance(d2, d_tube)
-        # Z3 = self.trans_line_impedance(d3, dc)
-
-        # f_FM, f1, f2 = 400.79e6, 488e6, 520e6  # MHz, FM freq, 1st and 2nd dipole resonance freq.
-        # f_FM, f1, f2 = 400.79e6, 518.89e6, 531.98e6  # MHz, FM freq, 1st and 2nd dipole resonance freq.
-        # print(Z2, Z3, np.sqrt(f1 * f2))
-
-        # Ln = 50e-9  # H, has to calculated from CST Studio. Related to the insertion depth
-        # Zt = 112  # Ohm, this line resistance is used in Z_total calculation. see Frank Gerigk's thesis
-
         Z = 50  # Ohm, terminating impedance
-        # Q = 10
-        # c0 = 299792458
-        # l2 = 10e-3  # Fixed, determined experimentally
-
-        # nk = 2
-        # dk_max = 0.05
-        # dk = 0.028  # k correction factor
-        #
-        # # terminating transformar
-        # lZ, dZ = 30e-3, 18.4e-3
-
-        # hook_design function - uses the procedure in Gerigks thesis to give theoretical results
-        # this results serve as a basis in order to begin optimization
-        # l1, l3, tm, Cn, Ct, C2t, M, L1n, C1n, L2, C2 = self.hook_design(f_FM, f1, f2, Ln, Z1, Z2, Z3, Zt, Z, Q, c0, l2,
-        #                                                                 dk)
-
-        # notch parameters
-        # d12 = d3
-        # Z12 = Z3  # same diameter trans lines
-        # l12 = l3  # approximately, consider variation
-        # L12 = 22e-9  # set to M for now
-        # C12 = 360 / 360 * coaxial_plate_capacitor(r_in=36.5e-3, r_out=51.5e-3, L=49.6e-3)
 
         Z_total_E = self.dqw_Z_total_electric_couping(self.freq_range, Z, Z1, Z2, Z3, Z4, l1, l2, l3, l4, Ln, Lc, Cn, Cc, Ct, C2t, M, Zp2)
         # conductance in dB (vector)
@@ -1485,43 +1443,38 @@ class Coupler:
 
         for p in range(0, len(freq_range)):
             w = 2 * np.pi * freq_range[p]
-            # parallel function gives the overall resistance for parallel resistances
-            Za = self.parallel(Z, 1 / (1j * w * Ct))
-            # trans_line function computes the resistance at the input of a
-            # transmission line given (Z0, ZL, length, ang. freq_range)
-            Zb = self.trans_line(Z4, Za, l4, w)
-            Zc = 1 / (1j * w * C2t) + Zb
-            Zd = self.trans_line(Z3, Zc, l3, w)
-            Ze = self.parallel(1j * w * M, Zd)
-            Ze12 = self.trans_line(Z2, Ze, l2, w)
-            Ze12 = self.parallel(Ze12, 1j * (w * Ln - 1 / (Cn * w)))
-            Zf = self.trans_line(Z1, Ze12, l1, w)
-            Zg = Zf + 1j * (w * Lc - 1 / (Cc * w))
-            Zg = self.parallel(Zg, Zp2)
-            Ztot.append(Zg)
+
+            Zt = self.parallel(Z, 1 / (1j * w * Ct))
+            Zt = self.trans_line(Z4, Zt, l4, w)
+            Zt = 1 / (1j * w * C2t) + Zt
+            Zt = self.trans_line(Z3, Zt, l3, w)
+            Zt = self.parallel(1j * w * M, Zt)
+            Zt = self.trans_line(Z2, Zt, l2, w)
+            Zt = self.parallel(Zt, 1j * (w * Ln - 1 / (Cn * w)))
+            Zt = self.trans_line(Z1, Zt, l1, w)
+            Zt = Zt + 1j * (w * Lc - 1 / (Cc * w))
+            Zt = self.parallel(Zt, Zp2)
+            Ztot.append(Zt)
 
         return Ztot
 
     def dqw_Z_total_magnetic_couping(self, freq_range, Z, Z1, Z2, Z3, Z4, l1, l2, l3, l4, Ln, Lc, Cn, Cc, Ct, C2t, M, Zp2):
         # this function computes the total resistance
         Ztot = []
-
         for p in range(0, len(freq_range)):
             w = 2 * np.pi * freq_range[p]
             # parallel function gives the overall resistance for parallel resistances
-            Za = self.parallel(Z, 1 / (1j * w * Ct))
-            # trans_line function computes the resistance at the input of a
-            # transmission line given (Z0, ZL, length, ang. freq_range)
-            Zb = self.trans_line(Z4, Za, l4, w)
-            Zc = 1 / (1j * w * C2t) + Zb
-            Zd = self.trans_line(Z3, Zc, l3, w)
-            Ze = self.parallel(1j * w * M, Zd)
-            Ze12 = self.trans_line(Z2, Ze, l2, w)
-            Ze12 = self.parallel(Ze12, 1j * (w * Ln - 1 / (Cn * w)))
-            Zf = self.trans_line(Z1, Ze12, l1, w)
-            Zg = self.parallel(Zf, 1j * (w * Lc - 1 / (Cc * w)))
-            Zg = self.parallel(Zg, Zp2)
-            Ztot.append(Zg)
+            Zt = self.parallel(Z, 1 / (1j * w * Ct))
+            Zt = self.trans_line(Z4, Zt, l4, w)
+            Zt = 1 / (1j * w * C2t) + Zt
+            Zt = self.trans_line(Z3, Zt, l3, w)
+            Zt = self.parallel(1j * w * M, Zt)
+            Zt = self.trans_line(Z2, Zt, l2, w)
+            Zt = self.parallel(Zt, 1j * (w * Ln - 1 / (Cn * w)))
+            Zt = self.trans_line(Z1, Zt, l1, w)
+            Zt = self.parallel(Zt, 1j * (w * Lc - 1 / (Cc * w)))
+            Zt = self.parallel(Zt, Zp2)
+            Ztot.append(Zt)
 
         return Ztot
 
@@ -1782,8 +1735,8 @@ class Coupler:
 
     @staticmethod
     def trans_line_impedance(din, dout):
-        Z = 60 * np.log(dout / din)
-        return Z
+        Zt = 60 * np.log(dout / din)
+        return Zt
 
     def circuit_2_3d(self, d1, d2, d3, d_tube, dc, l1, l2, l3, tm, C2t, Ct, Cn, Ln, lZ, dZ):
         # Calculate radius from the required capacitance and the spacing between the plates: C2t, d
@@ -2089,56 +2042,71 @@ def hc_1mm():
 
 
 def dqw_1mm():
-    # Ch
-    Ch = 3.15
-    cp, cm = calculate_parallel_plate_capacitor_rect(68.05, 15, 5.05, 1, 0, 1)
-    ic(cp, cm, Ch, Ch*cp, Ch*cm)
 
     # Lh
-    Lh = 50
-    lp, lm = calculate_loop_inductance(18, 59.8, 0, 1)
+    Lh = 175.3
+    lp, lm = calculate_loop_inductance(5.1, 25, 1, 1)
     ic(lp, lm, Lh, Lh*lp, Lh*lm)
 
-    # l12
-    l12 = 21.52
-    ic(-1, 1, l12, l12-1, l12+1)
+    # l1
+    l1 = 69.6619
+    ic(-1, 1, l1, l1-1, l1+1)
 
-    # Z12
-    Z12 = 73.263
-    zp, zm = calculate_coaxial_transline_offset(18, 103, 0, 0)
-    ic(zp, zm, Z12, Z12*zp, Z12*zm)
+    # Z1
+    Z1 = 171.028
+    zp, zm = calculate_coaxial_transline_offset(5.1, 51.5, 1, 1)
+    ic(zp, zm, Z1, Z1*zp, Z1*zm)
+
+    # Ln_
+    Ln_ = 12.5216
+    lp, lm = calculate_loop_inductance(5.1, 25, 1, 1)
+    ic(lp, lm, Ln_, Ln_*lp, Ln_*lm)
+
+    # Cn
+    Cn = 3.17299
+    cp, cm = calculate_coaxial_capacitor_offset(37.5, 51.5, 16, 1, 1, 1)
+    ic(cp, cm, Cn, Cn*cp, Cn*cm)
+
+    # l2
+    l2 = 37.7212
+    ic(-1, 1, l2, l2-1, l2+1)
+
+    # Z2
+    Z2 = 161.795
+    zp, zm = calculate_coaxial_transline_offset(10, 51.5, 1, 1)
+    ic(zp, zm, Z2, Z2*zp, Z2*zm)
 
     # l3
-    l3 = 1
+    l3 = 42.3186
     ic(-1, 1, l3, l3-1, l3+1)
 
     # Z3
-    Z3 = 112
-    zp, zm = calculate_coaxial_transline_offset(18, 103, 0, 0)
+    Z3 = 128.657
+    zp, zm = calculate_coaxial_transline_offset(8.3, 80, 1, 1)
     ic(zp, zm, Z3, Z3*zp, Z3*zm)
 
     # Lm
-    Lm = 4.9
-    lp, lm = calculate_loop_inductance(18, 59.8, 1, 1)
+    Lm = 2.08837
+    lp, lm = calculate_loop_inductance(10, 51.5, 1, 1)
     ic(lp, lm, Lm, Lm*lp, Lm*lm)
 
     # C34
-    C34 = 2.158
-    cp, cm = calculate_parallel_plate_capacitor_offset(28.5, 3.34786, 1, 1)
+    C34 = 0.648157
+    cp, cm = calculate_parallel_plate_capacitor_offset(12, 2.55, 1, 1)
     ic(cp, cm, C34, C34*cp, C34*cm)
 
     # l4
-    l4 = 7.38
+    l4 = 22.7167
     ic(-1, 1, l4, l4-1, l4+1)
 
     # Z4
-    Z4 = 153.3
-    zp, zm = calculate_coaxial_transline_offset(11.457539, 103, 1, 0)
+    Z4 = 200.75
+    zp, zm = calculate_coaxial_transline_offset(6.2, 19, 1, 1)
     ic(zp, zm, Z4, Z4*zp, Z4*zm)
 
     # Cc
-    Cc = 11.076
-    cp, cm = calculate_coaxial_capacitor_offset(31.01, 47, 10, 0, 1, 0, 10)
+    Cc = 11.5566
+    cp, cm = calculate_coaxial_capacitor_offset(3.6, 19, 5, 1, 1, 1, 10)
     ic(cp, cm, Cc, Cc*cp, Cc*cm)
 
 
@@ -2199,17 +2167,93 @@ def hc_10_percent():
     ic(cp, cm, Cc, Cc*cp, Cc*cm)
 
 
+def dqw_10_percent():
+
+    diff = 0.1
+    add_diff = False
+    # Lh
+    Lh = 175.3
+    lp, lm = calculate_loop_inductance(5.1, 25, diff, diff, add_diff=add_diff)
+    ic(lp, lm, Lh, Lh*lp, Lh*lm)
+
+    # l1
+    l1 = 69.6619
+    ic(-diff, diff, l1, l1-diff*l1, l1+diff*l1)
+
+    # Z1
+    Z1 = 171.028
+    zp, zm = calculate_coaxial_transline_offset(5.1, 51.5, diff, diff, add_diff=add_diff)
+    ic(zp, zm, Z1, Z1*zp, Z1*zm)
+
+    # Ln_
+    Ln_ = 12.5216
+    lp, lm = calculate_loop_inductance(5.1, 25, diff, diff, add_diff=add_diff)
+    ic(lp, lm, Ln_, Ln_*lp, Ln_*lm)
+
+    # Cn
+    Cn = 3.17299
+    cp, cm = calculate_coaxial_capacitor_offset(37.5, 51.5, 16, diff, diff, diff, add_diff=add_diff)
+    ic(cp, cm, Cn, Cn*cp, Cn*cm)
+
+    # l2
+    l2 = 37.7212
+    ic(-diff, diff, l2, l2-diff*l2, l2+diff*l2)
+
+    # Z2
+    Z2 = 161.795
+    zp, zm = calculate_coaxial_transline_offset(10, 51.5, diff, diff, add_diff=add_diff)
+    ic(zp, zm, Z2, Z2*zp, Z2*zm)
+
+    # l3
+    l3 = 42.3186
+    ic(-diff, diff, l3, l3-diff*l3, l3+diff*l3)
+
+    # Z3
+    Z3 = 128.657
+    zp, zm = calculate_coaxial_transline_offset(8.3, 80, diff, diff, add_diff=add_diff)
+    ic(zp, zm, Z3, Z3*zp, Z3*zm)
+
+    # Lm
+    Lm = 2.08837
+    lp, lm = calculate_loop_inductance(10, 51.5, diff, diff, add_diff=add_diff)
+    ic(lp, lm, Lm, Lm*lp, Lm*lm)
+
+    # C34
+    C34 = 0.648157
+    cp, cm = calculate_parallel_plate_capacitor_offset(12, 2.55, diff, diff, add_diff=add_diff)
+    ic(cp, cm, C34, C34*cp, C34*cm)
+
+    # l4
+    l4 = 22.7167
+    ic(-diff, diff, l4, l4-diff*l4, l4+diff*l4)
+
+    # Z4
+    Z4 = 200.75
+    zp, zm = calculate_coaxial_transline_offset(6.2, 19, diff, diff, add_diff=add_diff)
+    ic(zp, zm, Z4, Z4*zp, Z4*zm)
+
+    # Cc
+    Cc = 11.5566
+    cp, cm = calculate_coaxial_capacitor_offset(3.6, 19, 5, diff, diff, diff, 10, add_diff=add_diff)
+    ic(cp, cm, Cc, Cc*cp, Cc*cm)
+
+
 if __name__ == '__main__':
-    hc_1mm()
+    # hc_1mm()
     # hc_10_percent()
+    # dqw_1mm()
+    dqw_10_percent()
 
     # plt.rcParams["figure.figsize"] = (11, 5)
     coupler = Coupler()
     coupler.set_freq_range(500, 1300, 10000)
+    # coupler.set_freq_range(250, 600, 10000)
     #
     # # f = coupler.CEPCHookType
     f = coupler.DQWType
+    # f = coupler.DQWType_DN
     # f = coupler.LHCHookType_direct_circuit
+    # f = coupler.LHCHookType
     # # f = coupler.transline_capacitor_parallel
     # # f = coupler.transline_inductor_parallel
     # # f = coupler.transline_ind_par_cap_par
@@ -2219,15 +2263,15 @@ if __name__ == '__main__':
     # #                        "Z1": [20, 150, 50], 'dk': [0.01, 0.05, 0.028], 'l2': [1e-3, 100e-3, 10e-3]})
     # # coupler.add_slider(f, {'d2': [5e-3, 50e-3, 12.4e-3], 'd3': [5e-3, 100e-3, 12.4e-3],
     # #                        "Z1": [20, 150, 50], 'dk': [0.01, 0.05, 0.028], 'l2': [1e-3, 100e-3, 10e-3]})
-    # # coupler.add_slider(f, {'l1': [5e-3, 500e-3, 225e-3], 'l2': [5e-3, 500e-3, 225e-3], 'd1': [5e-3, 100e-3, 20e-3],
-    # #                        "le": [20e-3, 150e-3, 50e-3], 'de': [5e-3, 200e-3, 50e-3]})
+    # coupler.add_slider(f, {'l1': [5e-3, 500e-3, 225e-3], 'l2': [5e-3, 500e-3, 225e-3], 'd1': [5e-3, 100e-3, 20e-3],
+    #                        "le": [20e-3, 150e-3, 50e-3], 'de': [5e-3, 200e-3, 50e-3]})
     # # coupler.add_slider(f, {'l1': [1e-4, 500e-3, 225e-3], 'l2': [1e-4, 500e-3, 225e-3], 'l3': [1e-4, 500e-3, 225e-3],
     # #                        'd1': [1e-4, 50e-3, 20e-3], 'le': [5e-3, 200e-3, 50e-3], 'de': [5e-3, 200e-3, 50e-3],
     # #                        "L": [1e-10, 50e-9, 20e-9], "eps_r": [1, 10, 1]})
     #
-    coupler.add_slider(f, {'C2t': [0.001e-12, 5e-12, 0.349e-12],
-                           'Ln': [0.01e-9, 50e-9, 14.23e-9],
-                           'Cn': [0.001e-12, 5e-12, 2.76e-12]})
+    # coupler.add_slider(f, {'C2t': [0.001e-12, 5e-12, 0.349e-12],
+    #                        'Ln': [0.01e-9, 50e-9, 14.23e-9],
+    #                        'Cn': [0.001e-12, 5e-12, 2.76e-12]})
     coupler.plot()
     # coupler.LHCHookType(freq_range, 3e6)
 
