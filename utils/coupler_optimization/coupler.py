@@ -2244,9 +2244,11 @@ if __name__ == '__main__':
     # dqw_1mm()
     dqw_10_percent()
 
+
     # plt.rcParams["figure.figsize"] = (11, 5)
     coupler = Coupler()
     coupler.set_freq_range(500, 1300, 10000)
+
     # coupler.set_freq_range(250, 600, 10000)
     #
     # # f = coupler.CEPCHookType

@@ -196,7 +196,36 @@
     "Eigen_Scale": "1",
     "Wakefield_N_Cells_": "4",
     "Wakefield_Scale": "1",
-    "plot_table_widget": {},
+    "plot_table_widget": {
+        "0": {
+            "Code": "ABCI",
+            "Folder": "",
+            "Polarization": "Long",
+            "Id": [
+                [
+                    "All"
+                ],
+                ""
+            ],
+            "Request": [
+                "Longitudinal Impedance Magnitude",
+                "",
+                ""
+            ],
+            "Toggle": 2,
+            "ScaleX": "1",
+            "ScaleY": "1",
+            "Axis": "Left",
+            "Type": [
+                "Line",
+                "-"
+            ],
+            "Filter": [
+                "",
+                ""
+            ]
+        }
+    },
     "plot_objects_attr": {
         "lines": [],
         "collections": [],
@@ -329,12 +358,12 @@
     "eigenmode_pb_EXE": false,
     "eigenmode_ccb_Populate_Objectives": "",
     "eigenmode_cb_LBC": "Magnetic Wall En=0",
-    "eigenmode_le_Freq_Shift": "1910",
-    "eigenmode_le_No_Of_Modes": "2",
+    "eigenmode_le_Freq_Shift": "0",
+    "eigenmode_le_No_Of_Modes": "1",
     "eigenmode_cb_RBC": "Magnetic Wall En=0",
     "eigenmode_sb_No_Of_Processors_SLANS": 1,
     "eigenmode_qt_spinbox_lineedit": "1",
-    "eigenmode_cb_Polarization_SLANS": "Dipole",
+    "eigenmode_cb_Polarization_SLANS": "Monopole",
     "eigenmode_cb_Eigenproblem_Solver": "SLANS",
     "eigenmode_cb_Shape_Entry_Mode": "Load",
     "eigenmode_le_Shape_Space": "test",
@@ -596,8 +625,8 @@
     "Geometry_sb_N_Modules": 1,
     "Geometry_le_N_Cells": "1",
     "Geometry_cb_Shape_Entry_Mode": "Load",
-    "Geometry_le_Shape_Space": "D:/Dropbox/CavityDesignHub/PhD_Thesis/Cavities/cavities.json",
-    "Geometry_cb_Shape_Space_Keys": "C3795_end",
+    "Geometry_le_Shape_Space": "D:/Dropbox/CavityDesignHub/PhD_Thesis/Cavities/scee_piotr.json",
+    "Geometry_cb_Shape_Space_Keys": "f_opt, Epk_opt, Bpk_opt",
     "Geometry_le_Scale": "1",
     "Geometry_pb_Right_Cell": false,
     "Geometry_pb_Left_Cell": false,

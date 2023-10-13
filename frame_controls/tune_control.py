@@ -2015,9 +2015,7 @@ class OptimizationControl:
 
             #  mean value of geometrical parameters
             p_init = np.zeros(np.shape(p_true))
-
             no_parm, no_sims = np.shape(nodes)
-            # ic(no_sims)
             delta = 0.05  # or 0.1
 
             if run_slans:

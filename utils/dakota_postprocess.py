@@ -237,7 +237,7 @@ def plot_sobol(filefolder):
     reorder_index = ['dh', 'lh,ch', 'l1', 'ah', 'l3', 'c34,d34', 'l4', 'd4', 'le,de']
     # obj = [r"$S_\mathrm{max}~\mathrm{[dB]}$", r"$S_\mathrm{min}~\mathrm{[dB]}$", r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
     obj = [r"$S_\mathrm{max}~\mathrm{[dB]}$", r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
-    selection_index = [2, 5, 6]
+    selection_index = [0, 1, 2]
     # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal', group=group, reorder_index=reorder_index, normalise=False)#
     # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal', reorder_index=reorder_index, normalise=False)#
     plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal', selection_index=selection_index, normalise=False)#
@@ -255,22 +255,23 @@ def plot_settings():
     mpl.rcParams['legend.title_fontsize'] = 14
 
     mpl.rcParams['figure.figsize'] = [10, 6]
-    mpl.rcParams['figure.dpi'] = 300
+    mpl.rcParams['figure.dpi'] = 100
 
 
 if __name__ == '__main__':
     plot_settings()
-    plt.rcParams["figure.figsize"] = (6, 3.1)
+    plt.rcParams["figure.figsize"] = (8, 4)
     filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel"
     # filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_10%"
     # filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC_10%"
     # filefolder = fr"C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC__1mm"
     filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_DQW_1mm"
-    # filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_DQW_10%"
+    filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_DQW_10%"
+    filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_DN_DQW_10%"
     plot_sobol(filefolder)
 
-    # quadrature_nodes_to_cst_par_input(filefolder, n=4)
-    # combine_params_output(filefolder, 4)
+    # quadrature_nodes_to_cst_par_input(filefolder, n=5)
+    # combine_params_output(filefolder, 5)
 
     # get_pce(filefolder)
 
