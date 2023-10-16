@@ -1,23 +1,8 @@
-import json
-from scipy.optimize import fsolve
-from termcolor import colored
-from analysis_modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
-from utils.file_reader import FileReader
-import numpy as np
+from slans_geom_par import SLANSGeometry
 from itertools import groupby
 from utils.shared_functions import *
 
 slans_geom = SLANSGeometry()
-fr = FileReader()
-file_color = 'cyan'
-
-
-DEBUG = True
-
-
-def print_(*arg):
-    if DEBUG:
-        print(colored(f'\t\t\t{arg}', file_color))
 
 
 class PyTune:
@@ -42,9 +27,9 @@ class PyTune:
         slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc,
                           beampipes=beampipes, proc=proc, fid=fid,
                           parentDir=parentDir, projectDir=projectDir, opt=True)
-        dirc = fr'{projectDir}\SimulationData\SLANS_opt\{fid}\cavity_{bc}.svl'
+        dirc = fr'{projectDir}\{fid}\cavity_{bc}.svl'
 
-        d = fr.svl_reader(dirc)
+        d = svl_reader(dirc)
 
         tv = par_end[indx]
         freq = d['FREQUENCY'][0]
@@ -55,15 +40,11 @@ class PyTune:
         tv = tv + 2
 
         par_end[indx] = tv
-        # ic(par_end)
 
         tol = iter_set[1]
-        # max_iter = iter_set[2]
         n = 0
 
         f_min, f_max = 0, 0
-        # tv_min, tv_max = 0, 0
-        # control_switch = True
 
         while abs(error) > tol:
             # print('this point', par_mid, par_end)
@@ -73,7 +54,7 @@ class PyTune:
                               parentDir=parentDir, projectDir=projectDir, opt=True)
 
             # get results and compare with set value
-            d = fr.svl_reader(dirc)
+            d = svl_reader(dirc)
             freq = d['FREQUENCY'][0]
             freq_list.append(freq)
             tv_list.append(tv)
@@ -84,8 +65,6 @@ class PyTune:
 
             if target_freq < freq < f_max and freq < f_max:
                 f_max = freq
-                # tv_max = tv
-            # ic(target_freq)
 
             # calculate slope of line from base point to new point
 
@@ -94,13 +73,13 @@ class PyTune:
 
                 if iter_set[0] == "Linear Interpolation":
                     # calculate new Req with straight line formula
-                    step = m * (target_freq - freq_list[n+1])
+                    step = m * (target_freq - freq_list[n + 1])
                     if step > 10:
                         step = 10
                     if step < -10:
                         step = -10
 
-                    tv = tv_list[n+1] + step
+                    tv = tv_list[n + 1] + step
                 else:
                     # newton interpolation
                     a_s = self.divided_diff(freq_list, tv_list)[0, :]
@@ -136,19 +115,19 @@ class PyTune:
             # print('here')
             if par_mid == par_end:
                 alpha, error_msg = calculate_alpha(par_mid[0], par_mid[1], par_mid[2],
-                                                        par_mid[3], par_mid[4], tv, par_mid[6], 0)
+                                                   par_mid[3], par_mid[4], tv, par_mid[6], 0)
                 if alpha < 90.0 or error_msg != 1:
                     print("Mid cell alpha is less than 90", alpha, error_msg)
                     break
             else:
                 alpha, error_msg = calculate_alpha(par_end[0], par_end[1], par_end[2],
-                                                        par_end[3], par_end[4], tv, par_mid[6], 0)
+                                                   par_end[3], par_end[4], tv, par_mid[6], 0)
                 if alpha < 90.0 or error_msg != 1:
                     print("End cell alpha is less than 90", alpha, error_msg)
                     break
 
                 alpha, error_msg = calculate_alpha(par_mid[0], par_mid[1], par_mid[2],
-                                                        par_mid[3], par_mid[4], tv, par_mid[6], 0)
+                                                   par_mid[3], par_mid[4], tv, par_mid[6], 0)
                 if alpha < 90.0 or error_msg != 1:
                     print("Mid cell alpha is less than 90", alpha, error_msg)
                     break
@@ -161,7 +140,7 @@ class PyTune:
             n += 1
 
         # return best answer from iteration
-        min_error = [abs(x-target_freq) for x in freq_list]
+        min_error = [abs(x - target_freq) for x in freq_list]
         key = min_error.index(min(min_error))
 
         # print(tv_list, freq_list)
@@ -186,7 +165,7 @@ class PyTune:
         slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid,
                           parentDir=parentDir, projectDir=projectDir, opt=True)
         dirc = fr'{projectDir}\SimulationData\SLANS_opt\{fid}\cavity_{bc}.svl'
-        d = fr.svl_reader(dirc)
+        d = svl_reader(dirc)
 
         Req = par_end[6]
         freq = d['FREQUENCY'][0]
@@ -210,7 +189,7 @@ class PyTune:
                               fid=fid, parentDir=parentDir, projectDir=projectDir, opt=True)
 
             # get results and compare with set value
-            d = fr.svl_reader(dirc)
+            d = svl_reader(dirc)
             freq = d['FREQUENCY'][0]
             freq_list.append(freq)
             Req_list.append(Req)
@@ -230,7 +209,7 @@ class PyTune:
 
                 if iter_set[0] == "Linear Interpolation":
                     # calculate new Req with straight line formula
-                    Req = Req_list[n+1] + m * (target_freq - freq_list[n+1])
+                    Req = Req_list[n + 1] + m * (target_freq - freq_list[n + 1])
 
                 else:
                     # newton interpolation
@@ -251,17 +230,17 @@ class PyTune:
             # check if alpha is less or greater than 90.5
             if par_mid == par_end:
                 alpha, error_msg = calculate_alpha(par_mid[0], par_mid[1], par_mid[2],
-                                                        par_mid[3], par_mid[4], par_mid[5], Req, 0)
+                                                   par_mid[3], par_mid[4], par_mid[5], Req, 0)
                 if alpha < 90.0 or error_msg != 1:
                     break
             else:
                 alpha, error_msg = calculate_alpha(par_end[0], par_end[1], par_end[2],
-                                                        par_end[3], par_end[4], par_end[5], Req, 0)
+                                                   par_end[3], par_end[4], par_end[5], Req, 0)
                 if alpha < 90.0 or error_msg != 1:
                     break
 
                 alpha, error_msg = calculate_alpha(par_mid[0], par_mid[1], par_mid[2],
-                                                        par_mid[3], par_mid[4], par_mid[5], Req, 0)
+                                                   par_mid[3], par_mid[4], par_mid[5], Req, 0)
                 if alpha < 90.0 or error_msg != 1:
                     break
 
@@ -272,7 +251,7 @@ class PyTune:
             n += 1
 
         # return best answer from iteration
-        min_error = [abs(x-target_freq) for x in freq_list]
+        min_error = [abs(x - target_freq) for x in freq_list]
         key = min_error.index(min(min_error))
 
         # import matplotlib.pyplot as plt
@@ -323,3 +302,97 @@ class PyTune:
 
         with open(fr"{projectDir}\SimulationData\SLANS_opt\{fid}\convergence_output.json", "w") as outfile:
             json.dump(dd, outfile, indent=4, separators=(',', ': '))
+
+
+def svl_reader(filename):
+    dict = {
+        'TITLE': [],
+        'CAVITY RADIUS': [],
+        'LENGTH': [],
+        'FREQUENCY': [],
+        'LENGTH OF WAVE': [],
+        'WAVE VALUE': [],
+        'QUALITY FACTOR': [],
+        'STORED ENERGY': [],
+        'TRANSIT TIME': [],
+        'EFFECTIVE IMPEDANCE': [],
+        'SHUNT IMPEDANCE': [],
+        'MAXIMUM MAG. FIELD': [],
+        'MAXIMUM ELEC. FIELD': [],
+        'ACCELERATION': [],
+        'ACCELERATION RATE': [],
+        'AVERAGE E.FIELD ON AXIS': [],
+        'KM (Emax/Accel.rate)': [],
+        'KH (Hmax*Z0/Accel.rate)': [],
+    }
+    with open(filename, 'r') as f:
+        data = f.readlines()
+        for i, line in enumerate(data):
+            if '*SLANS*' in line:
+                dict['TITLE'].append(line)
+
+            if 'CAVITY RADIUS' in line:
+                dict['CAVITY RADIUS'].append(process_line(line, 'CAVITY RADIUS'))
+                dict['LENGTH'].append(process_line(line, 'LENGTH'))
+
+            if 'FREQUENCY' in line:
+                dict['FREQUENCY'].append(process_line(line, 'FREQUENCY'))
+
+            if 'LENGTH OF WAVE' in line:
+                dict['LENGTH OF WAVE'].append(process_line(line, 'LENGTH OF WAVE'))
+
+            if 'WAVE VALUE' in line:
+                dict['WAVE VALUE'].append(process_line(line, 'WAVE VALUE'))
+
+            if 'QUALITY FACTOR' in line:
+                dict['QUALITY FACTOR'].append(process_line(line, 'QUALITY FACTOR'))
+
+            if 'STORED ENERGY' in line:
+                dict['STORED ENERGY'].append(process_line(line, 'STORED ENERGY'))
+
+            if 'TRANSIT TIME' in line:
+                dict['TRANSIT TIME'].append(process_line(line, 'TRANSIT TIME'))
+
+            if 'EFFECTIVE IMPEDANCE' in line:
+                dict['EFFECTIVE IMPEDANCE'].append(process_line(line, 'EFFECTIVE IMPEDANCE'))
+
+            if 'SHUNT IMPEDANCE' in line:
+                dict['SHUNT IMPEDANCE'].append(process_line(line, 'SHUNT IMPEDANCE'))
+
+            if 'MAXIMUM MAG. FIELD' in line:
+                dict['MAXIMUM MAG. FIELD'].append(process_line(line, 'MAXIMUM MAG. FIELD'))
+
+            if 'MAXIMUM ELEC.FIELD' in line:
+                dict['MAXIMUM ELEC. FIELD'].append(process_line(line, 'MAXIMUM ELEC.FIELD'))
+
+            if 'ACCELERATION' in line and not 'RATE' in line:
+                dict['ACCELERATION'].append(process_line(line, 'ACCELERATION'))
+
+            if 'ACCELERATION RATE' in line:
+                dict['ACCELERATION RATE'].append(process_line(line, 'ACCELERATION RATE'))
+
+            if 'AVERAGE E.FIELD ON AXIS' in line:
+                dict['AVERAGE E.FIELD ON AXIS'].append(process_line(line, 'AVERAGE E.FIELD ON AXIS'))
+
+            if 'KM (Emax/Accel.rate)' in line:
+                dict['KM (Emax/Accel.rate)'].append(process_line(line, 'KM (Emax/Accel.rate)'))
+
+            if 'KH (Hmax*Z0/Accel.rate)' in line:
+                dict['KH (Hmax*Z0/Accel.rate)'].append(process_line(line, 'KH (Hmax*Z0/Accel.rate)'))
+
+    return dict
+
+
+def process_line(line, request):
+    # select substring from index
+    line = line[line.index(request):]
+    line = line.strip().split(" ")
+    # print(line)
+    res = 0
+    for val in line:
+        try:
+            res = float(val)
+            break
+        except:
+            continue
+    return res
