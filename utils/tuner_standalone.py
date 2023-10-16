@@ -1,13 +1,9 @@
 import time
 from analysis_modules.tune.tuners.pyTuner import PyTune
-from analysis_modules.eigenmode.SLANS.slansTuner import SLANSTune
-from utils.shared_classes import *
 from utils.shared_functions import *
 from utils.file_reader import FileReader
-from analysis_modules.eigenmode.SLANS.slans_geom_par import SLANSGeometry
 
 fr = FileReader()
-slans_geom = SLANSGeometry()
 
 
 class Tuner:
@@ -15,16 +11,38 @@ class Tuner:
         pass
 
     def tune(self, pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
-             proc=0, tuner_option='SLANS', tune_variable='Req', iter_set=None, cell_type='Mid Cell',
-             progress_list=None, convergence_list=None, save_last=True, n_cell_last_run=1):
+             proc=0, tune_variable='Req', iter_set=None, cell_type='Mid Cell'):
+        """
+
+        Parameters
+        ----------
+        pseudo_shape_space:
+        bc: str {'mm', 'ee'}
+            Boundary condition
+        parentDir: str, path
+            Directory containing SLANS exe files
+        projectDir: str, path
+            Directory to write results to
+        filename: str
+            Filename
+        resume: str {'Yes', 'No'}
+            If 'Yes', previously analysed geometries are not rerun. Previously analysed geometries are determined using
+            filenames
+        proc: 0
+        tune_variable: str {'Req', 'L'}
+            Use 'Req' to tune the equator radius for mid cells and 'L' to tune the half length for end cells
+        iter_set: int
+            Number of iterations to run
+        cell_type: str {'Mid Cell', 'End Cell'}
+            Type of cell to be tuned
+
+        Returns
+        -------
+
+        """
 
         # tuner
         pytune = PyTune()
-
-        if tuner_option == 'SLANS':
-            slans_tune = SLANSTune(parentDir, projectDir)
-        else:
-            slans_tune = None
 
         start = time.time()
         population = {}
@@ -46,23 +64,8 @@ class Tuner:
         error_msg2 = 1
 
         for key, pseudo_shape in pseudo_shape_space.items():
-            if len(pseudo_shape['IC']) == 7:
-                A_i, B_i, a_i, b_i, Ri_i, L_i, Req = pseudo_shape['IC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 8:
-                A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _ = pseudo_shape['IC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 9:
-                A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _, _ = pseudo_shape['IC']  # Req here is none but required
-            else:
-                print('There seems to be a problem with the mid cell geometry. Please check.')
-
-            if len(pseudo_shape['IC']) == 7:
-                A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o = pseudo_shape['OC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 8:
-                A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, _ = pseudo_shape['OC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 9:
-                A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, _, _ = pseudo_shape['OC']  # Req here is none but required
-            else:
-                print('There seems to be a problem with the end cell geometry. Please Check.')
+            A_i, B_i, a_i, b_i, Ri_i, L_i, Req = pseudo_shape['IC'][:7]
+            A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o = pseudo_shape['OC'][:7]
 
             beampipes = pseudo_shape['BP']
             target_freq = pseudo_shape['FREQ']
@@ -78,10 +81,10 @@ class Tuner:
                     data_dict = fr.svl_reader(filename)
                     # print(data_dict)
                     if tune_variable == 'Req':
-                        Req = data_dict['CAVITY RADIUS'][0]*10
+                        Req = data_dict['CAVITY RADIUS'][0] * 10
                         freq = data_dict['FREQUENCY'][0]
                     else:
-                        L = data_dict['LENGTH'][0]*10
+                        L = data_dict['LENGTH'][0] * 10
                         freq = data_dict['FREQUENCY'][0]
 
                         if cell_type == 'Mid Cell':
@@ -123,59 +126,40 @@ class Tuner:
 
                 # edit to check for key later
                 if key not in existing_keys:
-                    if tuner_option == 'SLANS' and slans_tune:
-                        if tune_variable == 'Req':
-                            # Tune cell to get Req
-                            Req, freq, alpha, h, e = slans_tune.mid_cell_tune(A_i, B_i, a_i, b_i, Ri_i, L_i, Req,
-                                                                              target_freq, proc=proc)
-                        else:
-                            L, freq, alpha, h, e = slans_tune.end_cell_tune(inner_cell, outer_cell,
-                                                                            target_freq, proc=proc)
-
-                            if cell_type == 'Mid Cell':
-                                L_i, L_o = L, L
-                            else:
-                                L_o = L
-
-                        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha]
-                        outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha]
+                    if tune_variable == 'Req':
+                        try:
+                            Req, freq = pytune.tuneR(inner_cell, outer_cell, target_freq, beampipes, bc,
+                                                     parentDir, projectDir, iter_set=iter_set, proc=proc)
+                        except FileNotFoundError:
+                            Req, freq = 0, 0
+                        # round
+                        Req, freq = Req, freq
                     else:
-                        if tune_variable == 'Req':
-                            try:
-                                Req, freq = pytune.tuneR(inner_cell, outer_cell, target_freq, beampipes, bc,
-                                                         parentDir, projectDir, iter_set=iter_set, proc=proc,
-                                                         conv_list=convergence_list)
-                            except FileNotFoundError:
-                                Req, freq = 0, 0
-                            # round
-                            Req, freq = Req, freq
+                        try:
+                            L, freq = pytune.tuneL(inner_cell, outer_cell, target_freq, beampipes, bc,
+                                                   parentDir, projectDir, iter_set=iter_set, proc=proc)
+                        except FileNotFoundError:
+                            L, freq = 0, 0
+
+                        if cell_type == 'Mid Cell':
+                            L_i, L_o = L, L
                         else:
-                            try:
-                                L, freq = pytune.tuneL(inner_cell, outer_cell, target_freq, beampipes, bc,
-                                                       parentDir, projectDir, iter_set=iter_set, proc=proc,
-                                                       conv_list=convergence_list)
-                            except FileNotFoundError:
-                                L, freq = 0, 0
+                            L_o = L
 
-                            if cell_type == 'Mid Cell':
-                                L_i, L_o = L, L
-                            else:
-                                L_o = L
+                    if Req == 0 or L_i == 0 or L_o == 0:
+                        alpha_i = 0
+                        alpha_o = 0
+                    else:
+                        alpha_i, error_msg1 = calculate_alpha(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0)
+                        alpha_o, error_msg2 = calculate_alpha(A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0)
 
-                        if Req == 0 or L_i == 0 or L_o == 0:
-                            alpha_i = 0
-                            alpha_o = 0
-                        else:
-                            alpha_i, error_msg1 = calculate_alpha(A_i, B_i, a_i, b_i, Ri_i, L_i, Req, 0)
-                            alpha_o, error_msg2 = calculate_alpha(A_o, B_o, a_o, b_o, Ri_o, L_o, Req, 0)
-
-                        inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha_i]
-                        outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha_o]
+                    inner_cell = [A_i, B_i, a_i, b_i, Ri_i, L_i, Req, alpha_i]
+                    outer_cell = [A_o, B_o, a_o, b_o, Ri_o, L_o, Req, alpha_o]
 
             result = "Failed"
             # # round
             # L, freq = round(L, 2), round(freq, 2)
-            if (1 - 0.001)*target_freq < round(freq, 2) < (1 + 0.001)*target_freq \
+            if (1 - 0.001) * target_freq < round(freq, 2) < (1 + 0.001) * target_freq \
                     and (90.0 <= alpha_i <= 180) \
                     and (90.0 <= alpha_o <= 180) and error_msg1 == 1 and error_msg2 == 1:
                 result = f"Success: {target_freq, freq}"
@@ -185,28 +169,13 @@ class Tuner:
                 else:
                     population[key] = {"IC": inner_cell, "OC": outer_cell, "BP": 'both', 'FREQ': freq}
 
-                # save last slans run if activated. Save only when condition is fulfilled
-                if save_last:
-                    # self.save_last(projectDir, proc, key)
-                    # print("n_cell tuner", n_cell_last_run)
-                    if 'End' in cell_type:
-                        beampipes = 'both'
+            # write tune results
+            if cell_type == 'Mid Cell':
+                d_tune_res = {'Req': Req, 'L': L_i, 'alpha_i': alpha_i, 'alpha_o': alpha_o, 'freq': freq}
+            else:
+                d_tune_res = {'Req': Req, 'L': L_o, 'alpha_i': alpha_i, 'alpha_o': alpha_o, 'freq': freq}
 
-                    slans_geom.cavity(n_cell_last_run, 1, inner_cell, outer_cell, outer_cell, f_shift=0, bc=bc,
-                                      beampipes=beampipes, proc=proc,
-                                      n_modes=n_cell_last_run+1, fid=key, parentDir=parentDir, projectDir=projectDir, opt=True)
-
-                    # write cst_studio parameters
-                    write_cst_paramters(key, inner_cell, outer_cell, outer_cell, projectDir, cell_type, opt=True)
-
-                    # write tune results
-                    if cell_type == 'Mid Cell':
-                        d_tune_res = {'Req': Req, 'L': L_i, 'alpha_i': alpha_i, 'alpha_o': alpha_o, 'freq': freq}
-                    else:
-                        d_tune_res = {'Req': Req, 'L': L_o, 'alpha_i': alpha_i, 'alpha_o': alpha_o, 'freq': freq}
-
-                    self.save_tune_result(d_tune_res, projectDir, key)
-
+            self.save_tune_result(d_tune_res, projectDir, key)
             print(f'Done Tuning Cavity {key}: {result}')
 
             # clear folder after every run. This is to avoid copying of wrong values to save folder
@@ -220,15 +189,6 @@ class Tuner:
                     except FileNotFoundError:
                         continue
 
-            # update progress
-            progress_list.append((progress + 1) / total_no_of_shapes)
-
-            # Update progressbar
-            progress += 1
-
-            # print("Saving Dictionary", f"shape_space{proc}.json")◙
-            # print("Done saving")
-
         end = time.time()
 
         runtime = end - start
@@ -239,18 +199,21 @@ class Tuner:
         with open(fr"{projectDir}\SimulationData\SLANS_opt\{key}\tune_res.json", 'w') as file:
             file.write(json.dumps(d, indent=4, separators=(',', ': ')))
 
-    # if __name__ == '__main__':
-#     #
-#     tune = Tuner()
-#
-#     tune_var =
-#     par_mid =
-#     par_end =
-#     target_freq = 400  # MHz
-#     beampipes =
-#     bc =  # boundary conditions
-#     parentDir = ""  # location of slans code. See folder structure in the function above
-#     projectDir = ""  # location to write results to
-#     iter_set =
-#     proc = 0
-#     tune.tune(self, tune_var, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir, iter_set, proc=0):
+
+if __name__ == '__main__':
+    #
+    tune = Tuner()
+
+    tune_var = 'Req'  # {'Req', 'L'}
+    par_mid = []
+    par_end = []
+    target_freq = 1300  # MHz
+    beampipes = 'none'  # {'none', 'both', 'left', 'right'}
+    bc = 'mm'  # boundary conditions
+    parentDir = ""  # location of slans code. See folder structure in the function above
+    projectDir = ""  # location to write results to
+    iter_set = 20
+    pseudo_shape_space = {}
+    filename = 'Test'
+    tune.tune(pseudo_shape_space, bc, parentDir, projectDir, filename, resume="No",
+              proc=0, tune_variable='Req', iter_set=iter_set, cell_type='Mid Cell')

@@ -46,23 +46,8 @@ class Tuner:
         error_msg2 = 1
 
         for key, pseudo_shape in pseudo_shape_space.items():
-            if len(pseudo_shape['IC']) == 7:
-                A_i, B_i, a_i, b_i, Ri_i, L_i, Req = pseudo_shape['IC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 8:
-                A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _ = pseudo_shape['IC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 9:
-                A_i, B_i, a_i, b_i, Ri_i, L_i, Req, _, _ = pseudo_shape['IC']  # Req here is none but required
-            else:
-                print('There seems to be a problem with the mid cell geometry. Please check.')
-
-            if len(pseudo_shape['IC']) == 7:
-                A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o = pseudo_shape['OC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 8:
-                A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, _ = pseudo_shape['OC']  # Req here is none but required
-            elif len(pseudo_shape['IC']) == 9:
-                A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o, _, _ = pseudo_shape['OC']  # Req here is none but required
-            else:
-                print('There seems to be a problem with the end cell geometry. Please Check.')
+            A_i, B_i, a_i, b_i, Ri_i, L_i, Req = pseudo_shape['IC'][:7]
+            A_o, B_o, a_o, b_o, Ri_o, L_o, Req_o = pseudo_shape['OC'][:7]  # Req here is none but required
 
             beampipes = pseudo_shape['BP']
             target_freq = pseudo_shape['FREQ']
