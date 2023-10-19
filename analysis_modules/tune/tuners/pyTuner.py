@@ -269,6 +269,11 @@ class PyTune:
             if conv_list:
                 conv_list[proc] = [Req_list, freq_list]
 
+
+            # condition for repeated last four values
+            if self.all_equal(freq_list[-2:]):
+                print("Converged. Solution found.")
+                break
             n += 1
 
         # return best answer from iteration

@@ -66,19 +66,18 @@ class SLANSGeometry(Geometry):
             zr12_BPR, alpha_BPR = self.slans.rz_conjug('right')  # zr12_R first column is z , second column is r
 
         # Set boundary conditions
-        BC_Left = floor(bc/10) # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        BC_Left = floor(bc/10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
         BC_Right = bc % 10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
 
         filename = f'cavity_{bc}'
 
         if opt:  # consider making better. This was just an adhoc fix
-            run_save_directory = projectDir / fr'{fid}'
+            run_save_directory = fr'{projectDir}/{fid}'
         else:
             # change save directory
-            run_save_directory = projectDir / fr'{fid}'
-
+            run_save_directory = fr'{projectDir}/{fid}'
+        # print(run_save_directory)
         # Write Slans Geometry
-        # with open(f"{projectDir}/SimulationData/SLANS/{fid}/{filename}.geo", 'w') as f:
         with open(f"{run_save_directory}/{filename}.geo", 'w') as f:
             # print("it got here")
             # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
@@ -200,7 +199,7 @@ class SLANSGeometry(Geometry):
 
         # Slans run
         genmesh_path = fr'{parentDir}\genmesh2.exe'
-        # filepath = fr'{projectDir}\SimulationData\SLANS\{fid}\{filename}'
+        # filepath = fr'{projectDir}\{fid}\{filename}'
         filepath = fr'{run_save_directory}\{filename}'
 
         # folder for exe to write to
@@ -213,7 +212,7 @@ class SLANSGeometry(Geometry):
         startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
 
         subprocess.call([genmesh_path, filepath, '-b'], cwd=cwd, startupinfo=startupinfo)
-        # path = fr'{projectDir}\SimulationData\SLANS\Cavity{self.fid}'
+        # path = fr'{projectDir}\Cavity{self.fid}'
         path = fr'{run_save_directory}'
 
         beta, f_shift, n_modes = 1, 0, no_of_cells + 1
@@ -330,9 +329,9 @@ class SLANSGeometry(Geometry):
     def createFolder(self, opt=False):
         path = os.getcwd()
         if opt:
-            path = os.path.join(path, f"SimulationData/SLANS_opt/{self.fid}")
+            path = os.path.join(path, f"{self.fid}")
         else:
-            path = os.path.join(path, f"SimulationData/SLANS/{self.fid}")
+            path = os.path.join(path, f"{self.fid}")
         if os.path.exists(path):
             pass
         else:

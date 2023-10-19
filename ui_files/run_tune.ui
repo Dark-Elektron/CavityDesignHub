@@ -33,7 +33,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
@@ -73,9 +73,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
-                <width>491</width>
-                <height>1359</height>
+                <y>-494</y>
+                <width>503</width>
+                <height>1261</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -259,7 +259,7 @@
                      </size>
                     </property>
                     <property name="text">
-                     <string>1e-4</string>
+                     <string>1e-3</string>
                     </property>
                    </widget>
                   </item>
@@ -1887,9 +1887,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-274</y>
-                <width>489</width>
-                <height>1563</height>
+                <y>0</y>
+                <width>501</width>
+                <height>1499</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">

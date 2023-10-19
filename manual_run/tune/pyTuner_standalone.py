@@ -1,6 +1,8 @@
-from slans_geom_par import SLANSGeometry
+from scipy.optimize import fsolve
+
+from slans_geom_par_standalone import SLANSGeometry
 from itertools import groupby
-from utils.shared_functions import *
+import numpy as np
 
 slans_geom = SLANSGeometry()
 
@@ -10,14 +12,9 @@ class PyTune:
         self.plot = None
 
     def tuneL(self, par_mid, par_end, target_freq, beampipes, bc,
-              parentDir, projectDir, iter_set, proc=0, conv_list=None):
+              parentDir, projectDir, iter_set, fid=0, conv_list=None):
         # tv => tune variable
         indx = 5
-
-        if proc == '':
-            fid = '_process_0'
-        else:
-            fid = f'_process_{proc}'
 
         # get parameters
         freq_list = []
@@ -25,7 +22,7 @@ class PyTune:
         error = 1
 
         slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc,
-                          beampipes=beampipes, proc=proc, fid=fid,
+                          beampipes=beampipes, fid=fid,
                           parentDir=parentDir, projectDir=projectDir, opt=True)
         dirc = fr'{projectDir}\{fid}\cavity_{bc}.svl'
 
@@ -50,7 +47,7 @@ class PyTune:
             # print('this point', par_mid, par_end)
             # run slans cavity code
             slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc,
-                              beampipes=beampipes, proc=proc, fid=fid,
+                              beampipes=beampipes, fid=fid,
                               parentDir=parentDir, projectDir=projectDir, opt=True)
 
             # get results and compare with set value
@@ -134,7 +131,7 @@ class PyTune:
             # print(alpha, error_msg)
             # update convergence list
             if conv_list:
-                conv_list[proc] = [tv_list, freq_list]
+                conv_list[fid] = [tv_list, freq_list]
             # self.write_output(tv_list, freq_list, fid, projectDir)
 
             n += 1
@@ -151,20 +148,15 @@ class PyTune:
         return tv_list[key], freq_list[key]
 
     def tuneR(self, par_mid, par_end, target_freq, beampipes, bc, parentDir, projectDir,
-              iter_set, proc=0, conv_list=None):
-
-        if proc == '':
-            fid = '_process_0'
-        else:
-            fid = f'_process_{proc}'
+              iter_set, fid=0, conv_list=None):
 
         # get parameters
         freq_list = []
         Req_list = []
         error = 1
-        slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc, fid=fid,
+        slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, fid=fid,
                           parentDir=parentDir, projectDir=projectDir, opt=True)
-        dirc = fr'{projectDir}\SimulationData\SLANS_opt\{fid}\cavity_{bc}.svl'
+        dirc = fr'{projectDir}\{fid}\cavity_{bc}.svl'
         d = svl_reader(dirc)
 
         Req = par_end[6]
@@ -185,7 +177,7 @@ class PyTune:
 
         while abs(error) > tol:
             # run slans cavity code
-            slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes, proc=proc,
+            slans_geom.cavity(1, 1, par_mid, par_end, par_mid, f_shift=0, bc=bc, beampipes=beampipes,
                               fid=fid, parentDir=parentDir, projectDir=projectDir, opt=True)
 
             # get results and compare with set value
@@ -232,22 +224,32 @@ class PyTune:
                 alpha, error_msg = calculate_alpha(par_mid[0], par_mid[1], par_mid[2],
                                                    par_mid[3], par_mid[4], par_mid[5], Req, 0)
                 if alpha < 90.0 or error_msg != 1:
+                    print("\tMid cell alpha is less than 90")
                     break
             else:
                 alpha, error_msg = calculate_alpha(par_end[0], par_end[1], par_end[2],
                                                    par_end[3], par_end[4], par_end[5], Req, 0)
                 if alpha < 90.0 or error_msg != 1:
+                    print("\tEnd cell alpha is less than 90")
                     break
 
                 alpha, error_msg = calculate_alpha(par_mid[0], par_mid[1], par_mid[2],
                                                    par_mid[3], par_mid[4], par_mid[5], Req, 0)
                 if alpha < 90.0 or error_msg != 1:
+                    print("\tMid cell alpha is less than 90")
                     break
 
             # update convergence list
             if conv_list:
-                conv_list[proc] = [Req_list, freq_list]
+                conv_list[fid] = [Req_list, freq_list]
+            # print([Req_list, freq_list])
 
+            # condition for repeated last four values
+            if self.all_equal(freq_list[-2:]):
+                print("\tConverged. Solution found.")
+                break
+
+            # print('\t', [Req_list, freq_list])
             n += 1
 
         # return best answer from iteration
@@ -296,12 +298,241 @@ class PyTune:
         g = groupby(iterable)
         return next(g, True) and not next(g, False)
 
-    @staticmethod
-    def write_output(tv_list, freq_list, fid, projectDir):
-        dd = {"tv": tv_list, "freq": freq_list}
 
-        with open(fr"{projectDir}\SimulationData\SLANS_opt\{fid}\convergence_output.json", "w") as outfile:
-            json.dump(dd, outfile, indent=4, separators=(',', ': '))
+def update_alpha(cell):
+    """
+    Update geometry json file variables to include the value of alpha
+
+    Parameters
+    ----------
+    cell:
+        Cavity geometry parameters
+
+    Returns
+    -------
+    List of cavity geometry parameters
+
+    """
+    if len(cell) == 8:
+        A, B, a, b, Ri, L, Req = cell[:7]
+    else:
+        A, B, a, b, Ri, L, Req = cell[:7]
+    alpha = calculate_alpha(A, B, a, b, Ri, L, Req, 0)
+    cell = [A, B, a, b, Ri, L, Req, alpha[0]]
+
+    return cell
+
+
+def calculate_alpha(A, B, a, b, Ri, L, Req, L_bp):
+    """
+    Calculates the largest angle the tangent line of two ellipses makes with the horizontal axis
+
+    Parameters
+    ----------
+    A: float
+    B: float
+    a: float
+    b: float
+    Ri: float
+    L: float
+    Req: float
+    L_bp: float
+
+    Returns
+    -------
+    alpha: float
+        Largest angle the tangent line of two ellipses makes with the horizontal axis
+    error_msg: int
+        State of the iteration, failed or successful. Refer to
+
+    """
+
+    df = tangent_coords(A, B, a, b, Ri, L, Req, L_bp)
+    x1, y1, x2, y2 = df[0]
+    error_msg = df[-2]
+
+    alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+    return alpha, error_msg
+
+
+def tangent_coords(A, B, a, b, Ri, L, Req, L_bp, tangent_check=False):
+    """
+    Calls to :py:func:`utils.shared_function.ellipse_tangent`
+    Parameters
+    ----------
+    A: float
+        Equator ellipse dimension
+    B: float
+        Equator ellipse dimension
+    a: float
+        Iris ellipse dimension
+    b: float
+        Iris ellipse dimension
+    Ri: float
+        Iris radius
+    L: float
+        Cavity half cell length
+    Req: float
+        Cavity equator radius
+    L_bp: float
+        Cavity beampipe length
+    tangent_check: bool
+        If set to True, the calculated tangent line as well as the ellipses are plotted and shown
+
+    Returns
+    -------
+    df: pandas.Dataframe
+        Pandas dataframe containing information on the results from fsolve
+    """
+    # data = ([0 + L_bp, Ri + b, L + L_bp, Req - B],
+    #         [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    #
+    # df = fsolve(ellipse_tangent,
+    #             np.array([a + L_bp, Ri + f[0] * b, L - A + L_bp, Req - f[1] * B]),
+    #             args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+    #
+    #     # ic(df)
+
+    data = ([0 + L_bp, Ri + b, L + L_bp, Req - B], [a, b, A, B])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+    checks = {"non-reentrant": [0.45, -0.45],
+              "reentrant": [0.85, -0.85],
+              "expansion": [0.15, -0.01]}
+
+    for key, ch in checks.items():
+        # check for non-reentrant cavity
+        df = fsolve(ellipse_tangent,
+                    np.array([a + L_bp, Ri + ch[0] * b, L - A + L_bp, Req + ch[1] * B]),
+                    args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+        # ic(df)
+        x1, y1, x2, y2 = df[0]
+        alpha = 180 - np.arctan2(y2 - y1, (x2 - x1)) * 180 / np.pi
+
+        if key == 'non-reentrant':
+            if 90 < alpha < 180:
+                return df
+        elif key == 'reentrant':
+            if 0 < alpha < 90:
+                return df
+        elif key == 'expansion':
+            if 90 < alpha < 180:
+                return df
+
+    # error_msg = df[-2]
+    # if error_msg == 4:
+    #     df = fsolve(ellipse_tangent, np.array([a + L_bp, Ri + 1.15 * b, L - A + L_bp, Req - 1.15 * B]),
+    #                 args=data, fprime=jac, xtol=1.49012e-12, full_output=True)
+
+    return df
+
+
+def ellipse_tangent(z, *data):
+    """
+    Calculates the coordinates of the tangent line that connects two ellipses
+
+    .. _ellipse tangent:
+
+    .. figure:: ../images/ellipse_tangent.png
+       :alt: ellipse tangent
+       :align: center
+       :width: 200px
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+
+    Returns
+    -------
+    list of four non-linear functions
+
+    Note
+    -----
+    The four returned non-linear functions are
+
+    .. math::
+
+       f_1 = \\frac{A^2b^2(x_1 - h)(y_2-q)}{a^2B^2(x_2-p)(y_1-k)} - 1
+
+       f_2 = \\frac{(x_1 - h)^2}{a^2} + \\frac{(y_1-k)^2}{b^2} - 1
+
+       f_3 = \\frac{(x_2 - p)^2}{A^2} + \\frac{(y_2-q)^2}{B^2} - 1
+
+       f_4 = \\frac{-b^2(x_1-x_2)(x_1-h)}{a^2(y_1-y_2)(y_1-k)} - 1
+    """
+
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    return f1, f2, f3, f4
+
+
+def jac(z, *data):
+    """
+    Computes the Jacobian of the non-linear system of ellipse tangent equations
+
+    Parameters
+    ----------
+    z: list, array like
+        Contains list of tangent points coordinate's variables ``[x1, y1, x2, y2]``.
+        See :numref:`ellipse tangent`
+    data: list, array like
+        Contains midpoint coordinates of the two ellipses and the dimensions of the ellipses
+        data = ``[coords, dim]``; ``coords`` = ``[h, k, p, q]``, ``dim`` = ``[a, b, A, B]``
+
+    Returns
+    -------
+    J: array like
+        Array of the Jacobian
+
+    """
+    coord, dim = data
+    h, k, p, q = coord
+    a, b, A, B = dim
+    x1, y1, x2, y2 = z
+
+    # f1 = A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k)) - 1
+    # f2 = (x1 - h) ** 2 / a ** 2 + (y1 - k) ** 2 / b ** 2 - 1
+    # f3 = (x2 - p) ** 2 / A ** 2 + (y2 - q) ** 2 / B ** 2 - 1
+    # f4 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k)) - 1
+
+    df1_dx1 = A ** 2 * b ** 2 * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+    df1_dy1 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k) ** 2)
+    df1_dx2 = - A ** 2 * b ** 2 * (x1 - h) * (y2 - q) / (a ** 2 * B ** 2 * (x2 - p) ** 2 * (y1 - k))
+    df1_dy2 = A ** 2 * b ** 2 * (x1 - h) / (a ** 2 * B ** 2 * (x2 - p) * (y1 - k))
+
+    df2_dx1 = 2 * (x1 - h) / a ** 2
+    df2_dy1 = 2 * (y1 - k) / b ** 2
+    df2_dx2 = 0
+    df2_dy2 = 0
+
+    df3_dx1 = 0
+    df3_dy1 = 0
+    df3_dx2 = 2 * (x2 - p) / A ** 2
+    df3_dy2 = 2 * (y2 - q) / B ** 2
+
+    df4_dx1 = -b ** 2 * ((x1 - x2) + (x1 - h)) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy1 = -b ** 2 * (x1 - x2) * (x1 - h) * ((y1 - y2) + (y1 - k)) / (a ** 2 * ((y1 - y2) * (y1 - k)) ** 2)
+    df4_dx2 = b ** 2 * (x1 - h) / (a ** 2 * (y1 - y2) * (y1 - k))
+    df4_dy2 = -b ** 2 * (x1 - x2) * (x1 - h) / (a ** 2 * (y1 - y2) ** 2 * (y1 - k))
+
+    J = [[df1_dx1, df1_dy1, df1_dx2, df1_dy2],
+         [df2_dx1, df2_dy1, df2_dx2, df2_dy2],
+         [df3_dx1, df3_dy1, df3_dx2, df3_dy2],
+         [df4_dx1, df4_dy1, df4_dx2, df4_dy2]]
+
+    return J
 
 
 def svl_reader(filename):
