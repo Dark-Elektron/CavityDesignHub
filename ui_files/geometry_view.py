@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_GeometryView(object):
     def setupUi(self, GeometryView):
         GeometryView.setObjectName("GeometryView")
-        GeometryView.resize(1191, 995)
+        GeometryView.resize(1182, 995)
         self.gridLayout = QtWidgets.QGridLayout(GeometryView)
         self.gridLayout.setObjectName("gridLayout")
         self.widget = QtWidgets.QWidget(GeometryView)
@@ -41,7 +41,7 @@ class Ui_GeometryView(object):
         self.gridLayout_6.setObjectName("gridLayout_6")
         self.gl_Plot_Area = QtWidgets.QGridLayout()
         self.gl_Plot_Area.setObjectName("gl_Plot_Area")
-        self.gridLayout_6.addLayout(self.gl_Plot_Area, 0, 0, 1, 2)
+        self.gridLayout_6.addLayout(self.gl_Plot_Area, 0, 0, 1, 1)
         self.gridLayout_2.addWidget(self.sp_Left_Right_Container, 0, 0, 1, 1)
         self.gridLayout.addWidget(self.widget, 0, 0, 1, 1)
 

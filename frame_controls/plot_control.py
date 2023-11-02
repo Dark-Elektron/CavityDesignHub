@@ -1240,7 +1240,7 @@ class PlotControl:
                             if type_ == 'Line':
                                 self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)
                             else:
-                                self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
+                                self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=15.0,
                                              markeredgecolor="black", label="Legend")
                             self.ax.set_ylabel('$Y$ []')
                             self.ax.set_xlabel('$X$ []')
@@ -1249,7 +1249,7 @@ class PlotControl:
                                 self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)
                             else:
                                 self.ax_right.plot(x_data, y, linestyle='None', markeredgecolor="black", marker=style,
-                                                   markersize=10.0,
+                                                   markersize=15.0,
                                                    label="Legend")
                             self.ax_right.set_ylabel('$Y$ [dB]')
             else:
@@ -1275,7 +1275,7 @@ class PlotControl:
                         if type_ == 'Line':
                             self.ax.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)
                         else:
-                            self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
+                            self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=15.0,
                                          markeredgecolor="black",
                                          label="Legend")
                         self.ax.set_ylabel('$Y$ []')
@@ -1284,7 +1284,7 @@ class PlotControl:
                         if type_ == 'Line':
                             self.ax_right.plot(x_data, y, label=requestY[j], linewidth=2, linestyle=style)
                         else:
-                            self.ax_right.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
+                            self.ax_right.plot(x_data, y, linestyle='None', marker=style, markersize=15.0,
                                                markeredgecolor="black",
                                                label="Legend")
                         self.ax_right.set_ylabel('$Y$ [dB]')
@@ -1343,7 +1343,7 @@ class PlotControl:
                                                                                        picker=True)})
                             else:
                                 args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
-                                                                                 marker=style, markersize=10.0,
+                                                                                 marker=style, markersize=15.0,
                                                                                  markeredgecolor="black",
                                                                                  label=requestY[j], picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
@@ -1359,7 +1359,7 @@ class PlotControl:
                                 args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, linestyle='None',
                                                                                        marker=style,
                                                                                        markeredgecolor="black",
-                                                                                       markersize=10.0,
+                                                                                       markersize=15.0,
                                                                                        label="Legend",
                                                                                        picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
@@ -1385,7 +1385,7 @@ class PlotControl:
                                                      picker=True)})
                             else:
                                 args["plot object"][id_].update({j: self.ax.plot(x_data, y, linestyle='None',
-                                                                                 marker=style, markersize=10.0,
+                                                                                 marker=style, markersize=15.0,
                                                                                  markeredgecolor="black",
                                                                                  label=requestY[j], picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
@@ -1401,7 +1401,7 @@ class PlotControl:
                                 args["plot object"][id_].update({j: self.ax_right.plot(x_data, y, linestyle='None',
                                                                                        marker=style,
                                                                                        markeredgecolor="black",
-                                                                                       markersize=10.0,
+                                                                                       markersize=15.0,
                                                                                        label="Legend",
                                                                                        picker=True)})
                             # mplcursors.cursor(args["plot object"][id_][j])
@@ -1428,7 +1428,7 @@ class PlotControl:
                                                  picker=True)})
                         else:
                             args["plot object"][id_].update(
-                                {j: self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
+                                {j: self.ax.plot(x_data, y, linestyle='None', marker=style, markersize=15.0,
                                                  markeredgecolor="black",
                                                  label="Legend", picker=True)})
                         # mplcursors.cursor(args["plot object"][id_][j])
@@ -1441,7 +1441,7 @@ class PlotControl:
                                                        picker=True)})
                         else:
                             args["plot object"][id_].update(
-                                {j: self.ax_right.plot(x_data, y, linestyle='None', marker=style, markersize=10.0,
+                                {j: self.ax_right.plot(x_data, y, linestyle='None', marker=style, markersize=15.0,
                                                        markeredgecolor="black",
                                                        label="Legend", picker=True)})
                         # mplcursors.cursor(args["plot object"][id_][j])
@@ -2250,7 +2250,7 @@ class PlotControl:
         # set YLabel completer
         names = [r"$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$",
                  r"$Z_{\parallel} ~[\mathrm{k\Omega}]$",
-                 r"$Z_{\perp} ~[\mathrm{\mathrm{k\Omega/m}]$", r"$S~\mathrm{[dB]}$"]
+                 r"$Z_{\perp} ~[\mathrm{\mathrm{k\Omega/m}]$", r"$S~\mathrm{[dB]}$", r"$Q_\mathrm{ext}$"]
 
         completer = QCompleter(names)
         self.plot_elements_table['le_Ylabel'].setCompleter(completer)
@@ -2264,7 +2264,9 @@ class PlotControl:
                  r"Monopole%%Dipole%%Quadrupole%%Sextupole%%Octupole%%Decapole",
                  r"$Z_{\parallel} ~[\mathrm{k\Omega}]$",
                  r"$Z_{\perp} ~[\mathrm{\mathrm{k\Omega/m}]$",
-                 r"$S~\mathrm{[dB]}$"]
+                 r"$S~\mathrm{[dB]}$",
+                 r"$S_\mathrm{21}-\alpha$%%$S_\mathrm{21}-\beta$",
+                 r"C3794-2HC-1FPC%%C3794-3HC(1)-1FPC%%C3794-3HC(2)-1FPC%%C3794-4HC(1)-1FPC%%C3794-4HC(2)-1FPC"]
 
         completer = QCompleter(names)
         self.plot_elements_table['le_Legend'].setCompleter(completer)

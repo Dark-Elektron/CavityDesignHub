@@ -17,6 +17,8 @@ class Ui_w_Tune(object):
         w_Tune.resize(562, 894)
         w_Tune.setStyleSheet("")
         self.gridLayout = QtWidgets.QGridLayout(w_Tune)
+        self.gridLayout.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout.setSpacing(0)
         self.gridLayout.setObjectName("gridLayout")
         self.sp_Left_Right_Container = QtWidgets.QSplitter(w_Tune)
         self.sp_Left_Right_Container.setOrientation(QtCore.Qt.Horizontal)
@@ -27,6 +29,7 @@ class Ui_w_Tune(object):
         self.widget.setObjectName("widget")
         self.gridLayout_7 = QtWidgets.QGridLayout(self.widget)
         self.gridLayout_7.setContentsMargins(0, 0, 0, 0)
+        self.gridLayout_7.setSpacing(0)
         self.gridLayout_7.setObjectName("gridLayout_7")
         self.tabWidget_3 = QtWidgets.QTabWidget(self.widget)
         self.tabWidget_3.setObjectName("tabWidget_3")
@@ -43,7 +46,7 @@ class Ui_w_Tune(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollArea.setObjectName("scrollArea")
         self.scrollAreaWidgetContents = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 491, 1359))
+        self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 535, 1359))
         self.scrollAreaWidgetContents.setStyleSheet("")
         self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
         self.gridLayout_14 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents)
@@ -629,7 +632,7 @@ class Ui_w_Tune(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollArea_2.setObjectName("scrollArea_2")
         self.scrollAreaWidgetContents_2 = QtWidgets.QWidget()
-        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, -274, 489, 1563))
+        self.scrollAreaWidgetContents_2.setGeometry(QtCore.QRect(0, 0, 511, 1563))
         self.scrollAreaWidgetContents_2.setObjectName("scrollAreaWidgetContents_2")
         self.gridLayout_3 = QtWidgets.QGridLayout(self.scrollAreaWidgetContents_2)
         self.gridLayout_3.setContentsMargins(0, 0, 0, 0)
@@ -1023,7 +1026,7 @@ class Ui_w_Tune(object):
         self.gridLayout.addWidget(self.sp_Left_Right_Container, 0, 0, 1, 1)
 
         self.retranslateUi(w_Tune)
-        self.tabWidget_3.setCurrentIndex(1)
+        self.tabWidget_3.setCurrentIndex(0)
         self.pb_Setup.toggled['bool'].connect(self.w_Setup.setVisible) # type: ignore
         self.pb_Tune_Multiple.toggled['bool'].connect(self.w_Tune_Multiple.setVisible) # type: ignore
         self.pb_Expansion.toggled['bool'].connect(self.w_Expansion.setVisible) # type: ignore
@@ -1050,7 +1053,7 @@ class Ui_w_Tune(object):
         self.label_14.setText(_translate("w_Tune", "Tolerance"))
         self.label_20.setText(_translate("w_Tune", "Iterative Method"))
         self.label_15.setText(_translate("w_Tune", "Max Iteration"))
-        self.le_Tolerance.setText(_translate("w_Tune", "1e-4"))
+        self.le_Tolerance.setText(_translate("w_Tune", "1e-3"))
         self.label_65.setText(_translate("w_Tune", "N Cells"))
         self.le_Freq.setToolTip(_translate("w_Tune", "Target frequency"))
         self.le_Freq.setText(_translate("w_Tune", "400.79"))

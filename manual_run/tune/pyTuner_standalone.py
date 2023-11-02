@@ -1,5 +1,4 @@
 from scipy.optimize import fsolve
-
 from slans_geom_par_standalone import SLANSGeometry
 from itertools import groupby
 import numpy as np

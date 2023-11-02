@@ -136,63 +136,63 @@ def create_evolution_animation(frame):
 if __name__ == '__main__':
     plot_settings()
 
-    ################### plot 2d ##################################
+    ################## plot 2d ##################################
     # grid_results_folder = fr'D:\Dropbox\CavityDesignHub\KWT_simulations\PostprocessingData\Data\grid_results.xlsx'
-    # fig, axs = plt.subplot_mosaic([[0, 1, 2], [3, 4, 5]], figsize=(12, 5.5))
-    #
-    # columns_array = [['Epk/Eacc', 'Bpk/Eacc'], ['Epk/Eacc', 'R/Q'], ['Bpk/Eacc', 'R/Q']]
-    # columns_par_array = [['A', 'B'], ['a', 'b'], ['A', 'Ri']]
-    # cmap = matplotlib.colormaps['Pastel2_r']
-    # norm = matplotlib.colors.Normalize(vmin=0, vmax=49)
-    #
-    # for i, (columns, columns_par) in enumerate(zip(columns_array, columns_par_array)):
-    #     grid_results = pd.read_excel(grid_results_folder, 'Sheet1')
-    #     qmc_pareto_shapes = pareto_front(grid_results, columns, axs[i], show='pareto',
-    #                  label=f'QMC \n({len(grid_results.index)} geoems.)',
-    #                  kwargs_dataframe={'facecolors': 'none', 'edgecolor': 'grey'},
-    #                  kwargs_pareto={'c': 'k', 'marker': 'o', 'mec': 'k'})
-    #
-    #     for r in [49]:
-    #         for lab, opt_code_result_folder, error_file in zip(['LHS2'],
-    #                [fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS\Generation{r}.xlsx'],
-    #                [fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS_LHS2\inerp_error_and_average.txt']):
-    #             opt_code_result = pd.read_excel(opt_code_result_folder, 'Sheet1')
-    #
-    #             pareto_shapes = pareto_front(opt_code_result, columns, axs[i], show='pareto',
-    #                             label=f"{lab}: G{r} \n({len(opt_code_result.index)} geoms).",
-    #                             kwargs_dataframe={'facecolors': 'none', 'edgecolor': 'b'},
-    #                             kwargs_pareto={'marker': 'o',
-    #                                         'mec': 'k'},
-    #                             # kwargs_pareto={'c': f'{matplotlib.colors.rgb2hex(cmap(norm(r)))}', 'marker': 'o',
-    #                             #                'mec': 'k'}
-    #                          )
-    #             axs[i+3].scatter(grid_results[columns_par[0]], grid_results[columns_par[1]], s=5)
-    #             axs[i+3].scatter(opt_code_result[columns_par[0]], opt_code_result[columns_par[1]], s=5)
-    #             axs[i+3].scatter(qmc_pareto_shapes[columns_par[0]], qmc_pareto_shapes[columns_par[1]], c='r', label='qmc', s=5)
-    #             axs[i+3].scatter(pareto_shapes[columns_par[0]], pareto_shapes[columns_par[1]], c='b', edgecolor='k', label='ea', s=5)
-    #
-    #             # load interpolation error
-    #             error = pd.read_csv(error_file, header=None, sep='\s+')
-    #             # axs[3].plot(error[0], label=lab)
-    #             # axs[4].plot(error[1], label=lab)
-    #
-    #     axs[i].set_xlabel(columns[0])
-    #     axs[i].set_ylabel(columns[1])
-    #     axs[i+3].set_xlabel(columns_par[0])
-    #     axs[i+3].set_ylabel(columns_par[1])
-    #
-    # # axs[i].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=10, loc='lower left', mode='expand')
-    # axs[0].legend()
-    # axs[3].legend()
-    #
-    # # axs[3].set_yscale('log')
-    # # axs[4].set_yscale('log')
-    # # axs[3].set_xlabel('Interpolation error')
-    # # axs[3].set_ylabel()
-    # # plot error
-    #
-    # plt.tight_layout()
-    # plt.show()
+    fig, axs = plt.subplot_mosaic([[0, 1, 2], [3, 4, 5]], figsize=(12, 5.5))
+
+    columns_array = [['Epk/Eacc', 'mts dipole'], ['Bpk/Eacc', 'mts dipole'], ['R/Q', 'mts dipole']]
+    columns_par_array = [['A', 'B'], ['a', 'b'], ['A', 'Ri']]
+    cmap = matplotlib.colormaps['Pastel2_r']
+    norm = matplotlib.colors.Normalize(vmin=0, vmax=49)
+
+    for i, (columns, columns_par) in enumerate(zip(columns_array, columns_par_array)):
+        # grid_results = pd.read_excel(grid_results_folder, 'Sheet1')
+        # qmc_pareto_shapes = pareto_front(grid_results, columns, axs[i], show='pareto',
+        #              label=f'QMC \n({len(grid_results.index)} geoems.)',
+        #              kwargs_dataframe={'facecolors': 'none', 'edgecolor': 'grey'},
+        #              kwargs_pareto={'c': 'k', 'marker': 'o', 'mec': 'k'})
+
+        for r in [25]:
+            for lab, opt_code_result_folder, error_file in zip(['LHS2'],
+                   [fr'D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS_opt\Generation{r}.xlsx'],
+                   [fr'D:\Dropbox\CavityDesignHub\Cavity800\SimulationData\SLANS_LHS2\inerp_error_and_average.txt']):
+                opt_code_result = pd.read_excel(opt_code_result_folder, 'Sheet1')
+
+                pareto_shapes = pareto_front(opt_code_result, columns, axs[i], show='all',
+                                label=f"{lab}: G{r} \n({len(opt_code_result.index)} geoms).",
+                                kwargs_dataframe={'facecolors': 'none', 'edgecolor': 'b'},
+                                kwargs_pareto={'marker': 'o',
+                                            'mec': 'k'},
+                                # kwargs_pareto={'c': f'{matplotlib.colors.rgb2hex(cmap(norm(r)))}', 'marker': 'o',
+                                #                'mec': 'k'}
+                             )
+                # axs[i+3].scatter(grid_results[columns_par[0]], grid_results[columns_par[1]], s=5)
+                axs[i+3].scatter(opt_code_result[columns_par[0]], opt_code_result[columns_par[1]], s=5)
+                # axs[i+3].scatter(qmc_pareto_shapes[columns_par[0]], qmc_pareto_shapes[columns_par[1]], c='r', label='qmc', s=5)
+                axs[i+3].scatter(pareto_shapes[columns_par[0]], pareto_shapes[columns_par[1]], c='b', edgecolor='k', label='ea', s=5)
+
+                # load interpolation error
+                error = pd.read_csv(error_file, header=None, sep='\s+')
+                # axs[3].plot(error[0], label=lab)
+                # axs[4].plot(error[1], label=lab)
+
+        axs[i].set_xlabel(columns[0])
+        axs[i].set_ylabel(columns[1])
+        axs[i+3].set_xlabel(columns_par[0])
+        axs[i+3].set_ylabel(columns_par[1])
+
+    # axs[i].legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=10, loc='lower left', mode='expand')
+    axs[0].legend()
+    axs[3].legend()
+
+    # axs[3].set_yscale('log')
+    # axs[4].set_yscale('log')
+    # axs[3].set_xlabel('Interpolation error')
+    # axs[3].set_ylabel()
+    # plot error
+
+    plt.tight_layout()
+    plt.show()
 
     # ################### plot surface #########################
     # grid_results_folder = fr'D:\Dropbox\CavityDesignHub\KWT_simulations\PostprocessingData\Data\grid_results.xlsx'
@@ -218,7 +218,7 @@ if __name__ == '__main__':
     #
     # plt.show()
 
-    fig, axs = plt.subplot_mosaic([[0, 1, 2], [3, 4, 5]], figsize=(12, 5.5))
-    ani = animation.FuncAnimation(fig=fig, func=create_evolution_animation, frames=49, interval=1000)
-    ani.save(filename="D:\Dropbox\Quick presentation files/ffmpeg_example.gif", writer="pillow")
-    # plt.show()
+    # fig, axs = plt.subplot_mosaic([[0, 1, 2], [3, 4, 5]], figsize=(12, 5.5))
+    # ani = animation.FuncAnimation(fig=fig, func=create_evolution_animation, frames=49, interval=1000)
+    # ani.save(filename="D:\Dropbox\Quick presentation files/ffmpeg_example.gif", writer="pillow")
+    # # plt.show()

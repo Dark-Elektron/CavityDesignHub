@@ -1,9 +1,8 @@
+import sys
 import time
-
 import pandas as pd
 from icecream import ic
 from scipy.optimize import fsolve
-
 from pyTuner_standalone import PyTune
 import json
 import os
@@ -21,7 +20,7 @@ class Tuner:
         Parameters
         ----------
         pseudo_shape_space:
-        bc: int {'33', '22'}
+        bc: int {33, 22}
             Boundary condition: 33->magnetic, 22->electric
         parentDir: str, path
             Directory containing SLANS exe files
@@ -533,29 +532,27 @@ def process_line(line, request):
 if __name__ == '__main__':
     tune = Tuner()
 
-    tune_var = 'Req'  # {'Req', 'L'}
-    par_mid = []
-    par_end = []
     beampipes = 'none'  # {'none', 'both', 'left', 'right'}
     bc = 33  # boundary conditions
-    parentDir = r"D:\Dropbox\CavityDesignHub\manual_run\slans\SLANS_exe"
+    parentDir = r"D:\Dropbox\CavityDesignHub\manual_run\slans\SLANS_exe"  # location of slans exe files
     projectDir = r"D:\Dropbox\CavityDesignHub\manual_run\tune\Tests"  # location to write results to
     iter_set = ["Linear Interpolation", 1e-3, 10]  # accuracy cannot be better than 1e-3
-    pseudo_shape_space = {"f_opt": {
-        "IC": [10.16698881, 58.71482539, 6.26252505, 27.0240481, 35, 57.7, 122.1067, 0],
-        "OC": [10.16698881, 58.71482539, 6.26252505, 27.0240481, 35, 57.7, 122.1067, 0],
-        "OC_R": [10.16698881, 58.71482539, 6.26252505, 27.0240481, 35, 57.7, 122.1067, 0],
-        "BP": "none",
-        "FREQ": 1300
-    }}
 
     # load shape space
-    data_A_b = pd.read_csv(r'D:\Dropbox\piotr\scee\initial_points_Sos.dat', names=['A', 'B', 'a', 'b '],header=None, sep='\s+')
+    data_A_b = pd.read_csv(r'D:\Dropbox\piotr\scee\initial_points_Sos.dat', names=['A', 'B', 'a', 'b '],
+                           header=None, sep='\s+')  #I
     data_Ri_Req = pd.DataFrame(index=range(len(data_A_b)), columns=['Ri', 'L', 'Req'])
     data_Ri_Req.loc[:, ['Ri', 'L', 'Req']] = [35, 57.7, 122.1067]
     df = pd.concat([data_A_b, data_Ri_Req], axis=1)
 
     pseudo_shape_space = {}
+    # pseudo_shape_space = {"f_opt": {
+    #     "IC": [10.16698881, 58.71482539, 6.26252505, 27.0240481, 35, 57.7, 122.1067],  # mid cell [A, B, a, b, Ri, L, Req]
+    #     "OC": [10.16698881, 58.71482539, 6.26252505, 27.0240481, 35, 57.7, 122.1067],  # left end cell
+    #     "OC_R": [10.16698881, 58.71482539, 6.26252505, 27.0240481, 35, 57.7, 122.1067],  # right end cell
+    #     "BP": "none",  # beampipe
+    #     "FREQ": 1300  # tune frequency
+    # }}  # format
     for key, row in df.iterrows():
         pseudo_shape_space[key] = {}
         pseudo_shape_space[key]['IC'] = list(row)

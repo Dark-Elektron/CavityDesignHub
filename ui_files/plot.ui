@@ -269,6 +269,21 @@
                  </property>
                  <widget class="QWidget" name="widget_6" native="true">
                   <layout class="QGridLayout" name="gridLayout_10">
+                   <property name="leftMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="topMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="rightMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="bottomMargin">
+                    <number>0</number>
+                   </property>
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
                    <item row="0" column="0">
                     <widget class="QSplitter" name="splitter">
                      <property name="orientation">
@@ -402,7 +417,7 @@
                                 <rect>
                                  <x>0</x>
                                  <y>0</y>
-                                 <width>614</width>
+                                 <width>636</width>
                                  <height>84</height>
                                 </rect>
                                </property>
@@ -1516,7 +1531,7 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>281</width>
+                                          <width>205</width>
                                           <height>339</height>
                                          </rect>
                                         </property>

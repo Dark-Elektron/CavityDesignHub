@@ -43,11 +43,8 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       <property name="horizontalSpacing">
+       <property name="spacing">
         <number>0</number>
-       </property>
-       <property name="verticalSpacing">
-        <number>6</number>
        </property>
        <item row="0" column="0">
         <widget class="QWidget" name="widget_3" native="true">
@@ -360,6 +357,21 @@ color: rgb(255, 255, 255);</string>
          </widget>
          <widget class="QWidget" name="widget_8" native="true">
           <layout class="QGridLayout" name="gridLayout_4">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <property name="spacing">
+            <number>0</number>
+           </property>
            <item row="0" column="1">
             <widget class="QWidget" name="widget" native="true">
              <layout class="QGridLayout" name="gridLayout_12">
@@ -434,8 +446,8 @@ color: rgb(255, 255, 255);</string>
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>955</width>
-                          <height>1028</height>
+                          <width>963</width>
+                          <height>1062</height>
                          </rect>
                         </property>
                         <layout class="QGridLayout" name="gridLayout_5">
@@ -809,10 +821,16 @@ P R O C E S S</string>
                   <property name="leftMargin">
                    <number>0</number>
                   </property>
+                  <property name="topMargin">
+                   <number>0</number>
+                  </property>
                   <property name="rightMargin">
                    <number>0</number>
                   </property>
                   <property name="bottomMargin">
+                   <number>0</number>
+                  </property>
+                  <property name="spacing">
                    <number>0</number>
                   </property>
                   <item row="1" column="1">
@@ -864,8 +882,8 @@ P R O C E S S</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>532</width>
-                       <height>958</height>
+                       <width>537</width>
+                       <height>1010</height>
                       </rect>
                      </property>
                      <layout class="QGridLayout" name="gridLayout_3">

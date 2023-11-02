@@ -17,6 +17,21 @@
    <string notr="true"/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <item row="0" column="0">
     <widget class="QSplitter" name="sp_Left_Right_Container">
      <property name="orientation">
@@ -30,6 +45,21 @@
        <string notr="true"/>
       </property>
       <layout class="QGridLayout" name="gridLayout_7">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <property name="spacing">
+        <number>0</number>
+       </property>
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
@@ -73,9 +103,9 @@
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-494</y>
-                <width>503</width>
-                <height>1261</height>
+                <y>0</y>
+                <width>535</width>
+                <height>1359</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -1888,8 +1918,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>501</width>
-                <height>1499</height>
+                <width>511</width>
+                <height>1563</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">

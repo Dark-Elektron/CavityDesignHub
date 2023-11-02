@@ -1587,7 +1587,8 @@ class OptimizationControl:
                 df[['Req', 'L', 'alpha_i', 'alpha_o', 'freq']] = tune_result
                 ic(df)
                 # append objective column to dataframe only from slans results
-                obj_slans = [o[1] for o in self.objectives if o[1] in ["freq", "Epk/Eacc", "Bpk/Eacc", "R/Q", "G", "Q0"]]
+                obj_slans = [o[1] for o in self.objectives if
+                             o[1] in ["freq", "Epk/Eacc", "Bpk/Eacc", "R/Q", "G", "Q0"]]
                 ic(obj_result)
                 ic(obj_slans)
                 df[obj_slans] = obj_result
@@ -2979,9 +2980,9 @@ class OptimizationControl:
                 elif o[0] == "max":
                     elites[f'{o[1]}'] = df.sort_values(f'{o[1]}', ascending=False)
                 elif o[0] == "equal":
-                    ic(df[o[1]] - float(o[2]))
-                    ic((df[o[1]] - float(o[2])).abs().sort_values())
-                    elites[f'{o[1]}'] = (df[o[1]] - float(o[2])).abs().sort_values()
+                    # ic(df[o[1]] - float(o[2]))
+                    # ic((df[o[1]] - float(o[2])).abs().sort_values())
+                    elites[f'{o[1]}'] = df.sort_values(f'{o[1]}')
 
         ic(elites)
         obj_dict = {}
@@ -3048,11 +3049,13 @@ class OptimizationControl:
         ic(np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1))
         ic(obj['mts dipole'])
         ic(obj['mts dipole'].loc[0])
+        ic(obj['mts dipole'].loc[1])
+        ic(obj['Epk/Eacc'].loc[1])
         ic(obj['mts dipole'].loc[np.random.randint(
-                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)])
-        ic(sum([obj[key].loc[np.random.randint(
-                                n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["A"] for key
-                                 in inf_dict["A"]]))
+            n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)])
+
+        ic(sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["A"] for key in inf_dict["A"]]))
+        # ic(sum([obj[key].loc[np.random.randint(n_elites_to_cross if n_elites_to_cross < df.shape[0] else df.shape[0] - 1)]["A"] for key in inf_dict["A"]]))
         for i in range(f):
             # (<obj>[<rank>][<variable>] -> (b[c[1]][0]
 
@@ -3309,6 +3312,8 @@ class OptimizationControl:
                     datapoints[fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] = datapoints[
                                                                              fr'|E[{o[1]}] - {o[2]}| + std[{o[1]}]'] * (
                                                                              -1)
+                else:
+                    datapoints[o[1]] = datapoints[o[1]] * (-1)
         # ic(datapoints)
         # convert datapoints to numpy array
 
