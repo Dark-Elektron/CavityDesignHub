@@ -23,7 +23,7 @@ def plot_settings():
     mpl.rcParams['legend.fontsize'] = 12
     mpl.rcParams['legend.title_fontsize'] = 12
 
-    mpl.rcParams['figure.dpi'] = 300
+    mpl.rcParams['figure.dpi'] = 100
 
     # Set the desired colormap
     plt.rcParams['axes.prop_cycle'] = plt.cycler('color', plt.cm.Set2.colors)
@@ -33,7 +33,7 @@ def plot_analytical():
     pass
 
 
-def calc_te_analytical(m, n, theta, radius, pol=None):
+def calc_te_analytical(m, n, theta, radius, pol=None, component='abs'):
     j_mn = jn_zeros(m, n)[n - 1]
     j_mn_p = jnp_zeros(m, n)[n - 1]
     A = 1
@@ -59,7 +59,7 @@ def calc_te_analytical(m, n, theta, radius, pol=None):
     return Emag, Hmag
 
 
-def calc_tm_analytical(m, n, theta, radius, component='abs'):
+def calc_tm_analytical(m, n, theta, radius, pol=None, component='abs'):
     j_mn = jn_zeros(m, n)[n - 1]
     j_mn_p = jnp_zeros(m, n)[n - 1]
     A = 1
@@ -91,10 +91,10 @@ def calc_tm_analytical(m, n, theta, radius, component='abs'):
 if __name__ == '__main__':
 
     plot_settings()
-    mpl.rcParams['figure.figsize'] = [6.5, 2.5]
+    mpl.rcParams['figure.figsize'] = [7, 3]
 
     R = 80e-3
-    m, n = [1, 1]
+    m, n = [0, 1]
 
     # create radial grid
     r = np.linspace(1e-6, R, 500)
@@ -105,12 +105,12 @@ if __name__ == '__main__':
     # ax.plot(theta_matrix, radius_matrix, color='r', ls='none', marker='.')
 
     for i, p in enumerate(pol):
-        Emag, Hmag = calc_te_analytical(m, n, theta_matrix, radius_matrix, p)
-        ax[i].contour(theta_matrix, radius_matrix, Emag, levels=30, cmap='RdBu')
+        Emag, Hmag = calc_tm_analytical(m, n, theta_matrix, radius_matrix, p)
+        ax[i].contour(theta_matrix, radius_matrix, Hmag, levels=30, cmap='RdBu')
         ax[i].set_title(r"$\mathrm{\alpha=" + f'{int(round(np.rad2deg(p)))}' + r"^\circ}$", y=-0.02)
 
-        Emag, Hmag = calc_te_analytical(m, n, theta_matrix, radius_matrix, p+np.pi/2)
-        ax[i+3].contour(theta_matrix, radius_matrix, Emag, levels=30, cmap='RdBu')
+        Emag, Hmag = calc_tm_analytical(m, n, theta_matrix, radius_matrix, p+np.pi/2)
+        ax[i+3].contour(theta_matrix, radius_matrix, Hmag, levels=30, cmap='RdBu')
         ax[i+3].set_title(r"$\mathrm{\beta=" + f'{int(round(np.rad2deg(p+np.pi/2))) if np.rad2deg(p+np.pi/2)<360 else int(round(np.rad2deg(p+np.pi/2)))-360}' + r"^\circ}$", y=-0.02)
 
         # x_tr = 20e-3
@@ -131,4 +131,11 @@ if __name__ == '__main__':
         ax[i+3].get_xaxis().set_visible(False)
         ax[i+3].get_yaxis().set_visible(False)
 
+    plt.show()
+
+    j_mn = jn_zeros(0, 1)[1 - 1]
+    kc = j_mn/R
+    var = kc*r
+    plt.plot(r, jvp(m, kc*r), c='b')
+    plt.plot(r, -1/2*var + 1/16*var**3-6/2304*var**5, c='r')
     plt.show()

@@ -35,7 +35,7 @@ class GA:
         self.f2_interp = np.zeros(self.n_interp)
         self.interp_error = []
         self.interp_error_avg = []
-        self.ng_max = 50
+        self.ng_max = 20
         self.df_global = None
 
         self.fig, axs = plt.subplot_mosaic([[1], [3]])
@@ -46,7 +46,7 @@ class GA:
         # self.x_bounds, self.y_bounds = [-0.5, 1.5], [-0.5, 1.5]
         # self.x_bounds, self.y_bounds = [0.1, 1], [0, 5]
         self.x_bounds, self.y_bounds = [0, 1], [0, 1]
-        self.fm, self.fc, self.fch = 100, 100, 100
+        self.fm, self.fc, self.fch = 50, 50, 50
 
     def run(self, n, df_ng=None):
         if n == 1 and df_ng is None:
@@ -125,8 +125,8 @@ class GA:
         # self.ax3.scatter(n, MSE_g, facecolors="None", edgecolors='k', lw=2)
 
         if n + 1 == self.ng_max:
-            self.ax1.scatter(pareto_shapes['f1'], pareto_shapes['f2'], marker='o', s=50,
-                             label=f'Pareto Front (Gen. {n - 1})', zorder=2, edgecolor='k')
+            self.ax1.scatter(pareto_shapes['f1'], pareto_shapes['f2'], marker='o', s=5,
+                             label=f'Pareto Front (Gen. {n - 1})', zorder=2, edgecolor='r')
             self.ax1.set_xlabel('f1')
             self.ax1.set_ylabel('f2')
             # self.ax2.scatter(pareto_var_comb['x'], pareto_var_comb['y'], marker='o', s=7, label=f'Pareto {n - 1}')

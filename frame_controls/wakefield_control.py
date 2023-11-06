@@ -87,6 +87,9 @@ class WakefieldControl:
         self.ui.pb_Pause_Resume.clicked.connect(
             lambda: self.pause() if self.process_state == 'running' else self.resume())
 
+        self.geo_ui.cb_Shape_Space_Keys.currentTextChanged.connect(
+            lambda: self.add_row(self.geo_ui.cb_Shape_Space_Keys.currentText().split(', ')))
+
     def initUI(self):
         self.ui.w_Save_Folder.setVisible(False)
         self.ui.w_Machine_Parameters.setEnabled(False)
@@ -435,24 +438,26 @@ class WakefieldControl:
 
     def get_table_entries(self):
         dd = {}
+        # ic(self.cav_operating_points)
         for key, val in self.cav_operating_points.items():
             for scale in text_to_list(self.geo_ui.le_Scale.text()):
                 for n_cell in text_to_list(self.geo_ui.le_N_Cells.text()):
 
                     if scale == 1 or scale == 0:
-                        if len(text_to_list(self.geo_ui.le_N_Cells.text())) == 1:
-                            folder_name = key
-                        else:
-                            folder_name = f"{key}_{n_cell}"
+                        # if len(text_to_list(self.geo_ui.le_N_Cells.text())) == 1:
+                        #     folder_name = key
+                        # else:
+                        folder_name = f"{key}_n{n_cell}"
                     else:
-                        if len(text_to_list(self.geo_ui.le_N_Cells.text())) == 1:
-                            folder_name = f"{key}_scale_{scale}"
-                        else:
-                            folder_name = f"{key}_scale_{scale}_{n_cell}"
+                        # if len(text_to_list(self.geo_ui.le_N_Cells.text())) == 1:
+                        #     folder_name = f"{key}_scale_{scale}"
+                        # else:
+                        folder_name = f"{key}_scale_{scale}_n{n_cell}"
 
-                    with open(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\qois.json') as \
+                    with open(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\monopole\qois.json') as \
                             json_file:
                         qois_slans = json.load(json_file)
+                        print('Found slans R/Q')
 
                     op_points = val['Operating Point'].currentText().split(', ')
                     n_cells = qois_slans['N Cells']
@@ -463,7 +468,7 @@ class WakefieldControl:
                     Nb = ast.literal_eval(val['Nb [1e11]'].text())
                     # freq = val['freq [MHz]'].value()
                     freq = qois_slans['freq [MHz]']
-                    dd.update({folder_name: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
+                    dd.update({key: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
         ic(dd)
         return dd
 

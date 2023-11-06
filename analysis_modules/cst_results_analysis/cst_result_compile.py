@@ -29,14 +29,9 @@ def compile_monopole(folder, request, cavity_half_len, n_cells):
 
             z, Ez = mode[0], mode[1]
 
-            # filter axis field if maximum is less than 1e4
-            if max(abs(Ez)) < 1e4:
-                # ic('Low axis field value: ', mode_number, max(abs(Ez)))
-                continue
-
             # # detect noisy field values
             # peaks, _ = scipy.signal.find_peaks(abs(Ez), height=2000)
-            # if len(peaks) > 20:
+            # if len(peaks) > 50:
             #     # ic('Noisy: Possibly Quadrupole: ', mode_number, "Number of peaks: ", len(peaks))
             #     continue
 
@@ -54,6 +49,11 @@ def compile_monopole(folder, request, cavity_half_len, n_cells):
             if field_ratio < 0.2:
                 beampipe_modes.append(mode_number)
                 # ic('Beampipe mode: ', mode_number)
+                continue
+
+            # filter axis field if maximum is less than 1e4
+            if Ez_cav_mx < 1e5:
+                # ic('Low axis field value: ', mode_number, max(abs(Ez)))
                 continue
 
             monopole_mode_num.append(mode_number)
@@ -446,18 +446,18 @@ if __name__ == '__main__':
     sim_folder = r"D:\CST Studio\PhD\W\Assembly"
     unique_marker = 'C3794_4HC_1FPC_2'
     folders = []
-    for filepath in os.listdir(sim_folder):
-        if unique_marker in filepath:
-            if os.path.isdir(os.path.join(sim_folder, filepath)):
-                folders.append(filepath)
-    ic(folders)
-    folders = [unique_marker]
-    req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
-           "RQT", "Z_kOhm", "Z_T_kOhm_m"]
-    # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]
-    name = unique_marker
-
-    eigenmode_analysis(sim_folder, folders, req, name)
+    # for filepath in os.listdir(sim_folder):
+    #     if unique_marker in filepath:
+    #         if os.path.isdir(os.path.join(sim_folder, filepath)):
+    #             folders.append(filepath)
+    # ic(folders)
+    # folders = [unique_marker]
+    # req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
+    #        "RQT", "Z_kOhm", "Z_T_kOhm_m"]
+    # # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]
+    # name = unique_marker
+    #
+    # eigenmode_analysis(sim_folder, folders, req, name)
 
     # sim_folder = r"D:\CST Studio\MuCol_Study\Couplers"
     # folders = ["DQW_1300MHz_Ri38mm"]
@@ -468,14 +468,14 @@ if __name__ == '__main__':
     # plot_threshold()
     # plot_threshold_Z()
 
-    # sim_folder = r"D:\CST Studio\3. W\Eigenmode\E_C3794"
+    sim_folder = r"D:\CST Studio\3. W\Module\E_3794_2HC_1FPC_Optimized_1000"
     # monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=0', 187, 2)
     # ic(monopole, len(monopole))
-    # monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=Ri', 187, 2)
-    # ic(monopole, len(monopole))
+    monopole = compile_monopole(sim_folder, 'e_Z (Z)', 187, 2)
+    ic(monopole, len(monopole))
 
 
     # ee_file = fr'D:\CST Studio\3. W\Eigenmode\E_C3794_EE.xlsx'
     # mm_file = fr'D:\CST Studio\3. W\Eigenmode\E_C3794_MM.xlsx'
-    # plot_frequency_line(ee_file, mm_file)
+    # plot_frequency_line(ee_file, ee_file)
 
