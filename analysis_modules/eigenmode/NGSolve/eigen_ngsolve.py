@@ -382,8 +382,8 @@ class NGSolveMEVP:
         # lamarnoldi = ArnoldiSolver(a.mat, m.mat, fes.FreeDofs(),
         #                         list(u.vecs), shift=300)
         # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
-        Req = mid_cells_par[-1]
-        L = mid_cells_par[-2]
+
+        A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
 
         # save json file
         shape = {'IC': update_alpha(mid_cells_par),
@@ -393,7 +393,7 @@ class NGSolveMEVP:
         with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
 
-        qois = self.evaluate_qois(cav_geom, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+        qois = self.evaluate_qois(cav_geom, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
         ic(qois)
 
         with open(fr'{run_save_directory}\qois.json', "w") as f:
@@ -479,14 +479,12 @@ class NGSolveMEVP:
         # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
 
     @staticmethod
-    def evaluate_qois(cav_geom, Req, L, gfu_E, gfu_H, mesh, freq_fes):
-        n = 2
+    def evaluate_qois(cav_geom, n, Req, L, gfu_E, gfu_H, mesh, freq_fes, beta=1):
         w = 2 * pi * freq_fes[n] * 1e6
-        beta = 1
 
         # calculate Vacc and Eacc
         Vacc = abs(Integrate(gfu_E[n][0] * exp(1j * w / (beta * c0) * x), mesh, definedon=mesh.Boundaries('b')))
-        Eacc = Vacc / (0.187 * 2 * n)
+        Eacc = Vacc / (L*1e-3 * 2 * n)
         # print(f"Vacc: {Vacc}")
         # print(f"Eacc: {Eacc}")
 
@@ -544,7 +542,7 @@ class NGSolveMEVP:
 
         qois = {
             "Req [mm]": Req,
-            "Normalization Length [mm]": L,
+            "Normalization Length [mm]": 2*L,
             "N Cells": n,
             "freq [MHz]": freq_fes[n],
             "Q []": Q,

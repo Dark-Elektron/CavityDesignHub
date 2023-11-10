@@ -124,7 +124,7 @@ class EigenmodeControl:
         bc = 10 * lbc + rbc
 
         # solver
-        eigenproblem_solver = self.ui.cb_Eigenproblem_Solver.currentText()
+        select_solver = self.ui.cb_Eigenproblem_Solver.currentText()
         proc_count = self.ui.sb_No_Of_Processors_SLANS.value()
 
         # uq
@@ -167,7 +167,7 @@ class EigenmodeControl:
             service = mp.Process(target=self.run_sequential, args=(
                 n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.pol, self.main_control.parentDir,
                 self.main_control.projectDir, self.progress_list, '',
-                UQ, eigenproblem_solver, mesh))
+                UQ, select_solver, mesh))
 
             service.start()
 
@@ -437,7 +437,7 @@ class EigenmodeControl:
 
     @staticmethod
     def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, parentDir, projectDir,
-                       progress_list, sub_dir='', UQ=False, solver='slans', mesh=None):
+                       progress_list, sub_dir='', UQ=False, select_solver='slans', mesh=None):
         """
         Runs a single instance of SLANS (eigenmode analysis)
         Parameters
@@ -484,7 +484,7 @@ class EigenmodeControl:
         # total_no_of_shapes = len(list(processor_shape_space.keys()))
 
         for key, shape in processor_shape_space.items():
-            if solver.lower() == 'slans':
+            if select_solver.lower() == 'slans':
                 solver = slans_geom
             else:
                 solver = ngsolve_mevp
