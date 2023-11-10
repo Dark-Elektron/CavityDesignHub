@@ -315,7 +315,7 @@ class SLANSEigen(Geometry):
                 "Bpk [mT]": Bpk,
                 "kcc [%]": kcc,
                 # "ff [%]": ff,
-                "Rsh [Ohm]": Rsh,
+                "Rsh [MOhm]": Rsh,
                 "R/Q [Ohm]": 2 * r_Q,
                 "Epk/Eacc []": Epk_Eacc,
                 "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,

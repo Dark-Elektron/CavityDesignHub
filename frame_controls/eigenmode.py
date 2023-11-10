@@ -9,9 +9,11 @@ from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.eigenmode import Ui_Eigenmode
 from utils.shared_classes import *
 from utils.shared_functions import *
+from analysis_modules.eigenmode.NGSolve.eigen_ngsolve import NGSolveMEVP
 from analysis_modules.eigenmode.customEig.run_field_solver import Model
 
 slans_geom = SLANSGeometry()
+ngsolve_mevp = NGSolveMEVP()
 fr = FileReader()
 
 file_color = 'green'
@@ -117,9 +119,9 @@ class EigenmodeControl:
         mesh = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value()]
 
         # boundary conditions
-        lbc = self.ui.cb_LBC.currentIndex()+1
-        rbc = self.ui.cb_RBC.currentIndex()+1
-        bc = 10*lbc + rbc
+        lbc = self.ui.cb_LBC.currentIndex() + 1
+        rbc = self.ui.cb_RBC.currentIndex() + 1
+        bc = 10 * lbc + rbc
 
         # solver
         eigenproblem_solver = self.ui.cb_Eigenproblem_Solver.currentText()
@@ -141,7 +143,7 @@ class EigenmodeControl:
         share = round(shape_space_len / proc_count)
 
         # get the total number of simulations to be run
-        num_sims = shape_space_len*len(n_cells)
+        num_sims = shape_space_len * len(n_cells)
         self.progress_bar.setMaximum(num_sims)
         self.progress_bar.show()
 
@@ -189,6 +191,9 @@ class EigenmodeControl:
 
         self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
         self.end_routine_thread.start()
+
+    def run_ngsolve_mevp(self):
+        pass
 
     def write_to_text_edit(self):
         """
@@ -480,85 +485,88 @@ class EigenmodeControl:
 
         for key, shape in processor_shape_space.items():
             if solver.lower() == 'slans':
-
-                # run SLANS code
-                start_time = time.time()
-                expansion = None
-                expansion_r = None
-
-                if "EXPANSION" in shape.keys():
-                    expansion = shape['EXPANSION']
-
-                if 'EXPANSION_R' in shape.keys():
-                    expansion_r = shape['EXPANSION_R']
-
-                # if len(n_cells) == 1:
-                #     n_cells = n_cells[0]
-                #     # # create folders for all keys
-                #     slans_geom.createFolder(key, projectDir, subdir=sub_dir)
-                #
-                #     write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
-                #
-                # if 'OC_R' in shape.keys(): slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
-                # shape['OC_R'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
-                # expansion_r=expansion_r) else: slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
-                # shape['OC'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
-                # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
-                # expansion_r=expansion_r) else:
-                for n_cell in n_cells:
-                    # # create folders for all keys
-                    slans_geom.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir, pol=pol)
-
-                    if 'OC_R' in shape.keys():
-                        write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],
-                                            projectDir=projectDir, cell_type="None")
-                        slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
-                                          bc=bc, pol=pol, beampipes=shape['BP'],
-                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                          expansion=expansion, expansion_r=expansion_r, mesh=mesh)
-                    else:
-                        write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
-                                            projectDir=projectDir, cell_type="None")
-                        slans_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
-                                          bc=bc, pol=pol, beampipes=shape['BP'],
-                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                          expansion=expansion, expansion_r=expansion_r, mesh=mesh)
-
-                # run UQ
-                if UQ:
-                    uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
-                       n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
-                       f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir)
-
-                print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
-
-                # update progress
-                progress_list.append(progress + 1)
-
+                solver = slans_geom
             else:
-                # run own eigenmode code
-                folder = projectDir / fr'SimulationData\NativeEig'
-                mod = Model(folder=folder, name=f"{key}", parent_dir=parentDir)
+                solver = ngsolve_mevp
 
-                try:
-                    # convert first to m.
-                    mid_cell = np.array(shape['IC'])*1e-3
-                    end_cell_left = np.array(shape['OC'])*1e-3
-                    end_cell_right = np.array(shape['OC_R'])*1e-3
+            # run SLANS code
+            start_time = time.time()
+            expansion = None
+            expansion_r = None
 
-                    mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
-                            req_mode_num=int(n_modes), plot=False)
-                except KeyError:
-                    # convert first to m.
-                    mid_cell = np.array(shape['IC'])*1e-3
-                    end_cell_left = np.array(shape['OC'])*1e-3
-                    end_cell_right = np.array(shape['OC'])*1e-3
+            if "EXPANSION" in shape.keys():
+                expansion = shape['EXPANSION']
 
-                    mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
-                            req_mode_num=int(n_modes), plot=False)
+            if 'EXPANSION_R' in shape.keys():
+                expansion_r = shape['EXPANSION_R']
+
+            # if len(n_cells) == 1:
+            #     n_cells = n_cells[0]
+            #     # # create folders for all keys
+            #     slans_geom.createFolder(key, projectDir, subdir=sub_dir)
+            #
+            #     write_cst_paramters(key, shape['IC'], shape['OC'], projectDir=projectDir, cell_type="None")
+            #
+            # if 'OC_R' in shape.keys(): slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
+            # shape['OC_R'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+            # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
+            # expansion_r=expansion_r) else: slans_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'],
+            # shape['OC'], n_modes=n_modes, fid=f"{key}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+            # parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, expansion=expansion,
+            # expansion_r=expansion_r) else:
+            for n_cell in n_cells:
+                # # create folders for all keys
+                solver.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir, pol=pol)
+
+                if 'OC_R' in shape.keys():
+                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],
+                                        projectDir=projectDir, cell_type="None")
+                    solver.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                  n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                  bc=bc, pol=pol, beampipes=shape['BP'],
+                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                  expansion=expansion, expansion_r=expansion_r, mesh=mesh)
+                else:
+                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
+                                        projectDir=projectDir, cell_type="None")
+                    solver.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                  n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                  bc=bc, pol=pol, beampipes=shape['BP'],
+                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                  expansion=expansion, expansion_r=expansion_r, mesh=mesh)
+
+            # run UQ
+            if UQ:
+                uq(key, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
+                   n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
+                   f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir)
+
+            print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
+
+            # update progress
+            progress_list.append(progress + 1)
+
+            # else:
+            #     # run own eigenmode code
+            #     folder = projectDir / fr'SimulationData\NativeEig'
+            #     mod = Model(folder=folder, name=f"{key}", parent_dir=parentDir)
+            #
+            #     try:
+            #         # convert first to m.
+            #         mid_cell = np.array(shape['IC'])*1e-3
+            #         end_cell_left = np.array(shape['OC'])*1e-3
+            #         end_cell_right = np.array(shape['OC_R'])*1e-3
+            #
+            #         mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
+            #                 req_mode_num=int(n_modes), plot=False)
+            #     except KeyError:
+            #         # convert first to m.
+            #         mid_cell = np.array(shape['IC'])*1e-3
+            #         end_cell_left = np.array(shape['OC'])*1e-3
+            #         end_cell_right = np.array(shape['OC'])*1e-3
+            #
+            #         mod.run(n_cells, mid_cell, end_cell_left, end_cell_right, beampipe=shape['BP'],
+            #                 req_mode_num=int(n_modes), plot=False)
 
 
 def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDir, projectDir):
@@ -666,7 +674,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
         filename = projectDir / fr'SimulationData\SLANS\{key}\{fid}\cavity_{bc}.svl'
         if os.path.exists(filename):
             params = fr.svl_reader(filename)
-            norm_length = 2*n_cells*shape['IC'][5]
+            norm_length = 2 * n_cells * shape['IC'][5]
 
             qois_result = get_qoi_value(params, slans_obj_list, n_cells, norm_length)
             print_(qois_result)
@@ -689,7 +697,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
     # params = fr.svl_reader(filename)
     # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
     # tab_val_f = obj_result
-        # Ttab_val_f.append(tab_val_f)
+    # Ttab_val_f.append(tab_val_f)
 
     # import matplotlib.pyplot as plt
     if not err:
@@ -729,16 +737,16 @@ def get_qoi_value(d, obj, n_cells, norm_length):
     -------
 
     """
-    Req = d['CAVITY RADIUS'][n_cells-1] * 10  # convert to mm
-    Freq = d['FREQUENCY'][n_cells-1]
-    E_stored = d['STORED ENERGY'][n_cells-1]
+    Req = d['CAVITY RADIUS'][n_cells - 1] * 10  # convert to mm
+    Freq = d['FREQUENCY'][n_cells - 1]
+    E_stored = d['STORED ENERGY'][n_cells - 1]
     # Rsh = d['SHUNT IMPEDANCE'][n_cells-1]  # MOhm
-    Q = d['QUALITY FACTOR'][n_cells-1]
-    Epk = d['MAXIMUM ELEC. FIELD'][n_cells-1]  # MV/m
-    Hpk = d['MAXIMUM MAG. FIELD'][n_cells-1]  # A/m
+    Q = d['QUALITY FACTOR'][n_cells - 1]
+    Epk = d['MAXIMUM ELEC. FIELD'][n_cells - 1]  # MV/m
+    Hpk = d['MAXIMUM MAG. FIELD'][n_cells - 1]  # A/m
     # Vacc = dict['ACCELERATION'][0]
     # Eavg = d['AVERAGE E.FIELD ON AXIS'][n_cells-1]  # MV/m
-    Rsh_Q = d['EFFECTIVE IMPEDANCE'][n_cells-1]  # Ohm
+    Rsh_Q = d['EFFECTIVE IMPEDANCE'][n_cells - 1]  # Ohm
 
     Vacc = np.sqrt(
         2 * Rsh_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6

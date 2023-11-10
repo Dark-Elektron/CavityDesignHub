@@ -1307,28 +1307,27 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
         else:
             end_cell_right = end_cell_left
 
-    # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req = mid_cell[:7]
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req = end_cell_left[:7]
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = end_cell_right[:7]
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(mid_cell[:7])*1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array(end_cell_left[:7])*1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array(end_cell_right[:7])*1e-3
 
-    step = 0.1  # step in boundary points in mm
+    step = 1  # step in boundary points in mm
 
     if beampipe.lower() == 'both':
         L_bp_l = 4 * L_m
         L_bp_r = 4 * L_m
     elif beampipe.lower() == 'none':
-        L_bp_l = 0.0001  # 4 * L_m  #
-        L_bp_r = 0.0001  # 4 * L_m  #
+        L_bp_l = 0.0  # 4 * L_m  #
+        L_bp_r = 0.0  # 4 * L_m  #
     elif beampipe.lower() == 'left':
         L_bp_l = 4 * L_m
-        L_bp_r = 0.0001
+        L_bp_r = 0.0
     elif beampipe.lower() == 'right':
-        L_bp_l = 0.0001
+        L_bp_l = 0.00
         L_bp_r = 4 * L_m
     else:
-        L_bp_l = 0.0001  # 4 * L_m  #
-        L_bp_r = 0.0001  # 4 * L_m  #
+        L_bp_l = 0.0  # 4 * L_m  #
+        L_bp_r = 0.0  # 4 * L_m  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -2740,6 +2739,345 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
         fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
 
     # plt.show()
+
+
+def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none',
+                           plot=False):
+    """
+    Write cavity geometry to be used by Multipac for multipacting analysis
+    Parameters
+    ----------
+    file_path: str
+        File path to write geometry to
+    n_cell: int
+        Number of cavity cells
+    mid_cell: list, ndarray
+        Array of cavity middle cells' geometric parameters
+    end_cell_left: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    end_cell_right: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    beampipe: str {"left", "right", "both", "none"}
+        Specify if beam pipe is on one or both ends or at no end at all
+    plot: bool
+        If True, the cavity geometry is plotted for viewing
+
+    Returns
+    -------
+
+    """
+    if plot:
+        plt.rcParams["figure.figsize"] = (12, 2)
+
+    if end_cell_left is None:
+        end_cell_left = mid_cell
+
+    if end_cell_right is None:
+        if end_cell_left is None:
+            end_cell_right = mid_cell
+        else:
+            end_cell_right = end_cell_left
+
+    # # TESLA end cell 2
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = np.array(mid_cell[:7])*1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array(end_cell_left[:7])*1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array(end_cell_right[:7])*1e-3
+
+    step = 1  # step in boundary points in mm
+
+    if beampipe.lower() == 'both':
+        L_bp_l = 4 * L_m
+        L_bp_r = 4 * L_m
+    elif beampipe.lower() == 'none':
+        L_bp_l = 0.0001  # 4 * L_m  #
+        L_bp_r = 0.0001  # 4 * L_m  #
+    elif beampipe.lower() == 'left':
+        L_bp_l = 4 * L_m
+        L_bp_r = 0.0001
+    elif beampipe.lower() == 'right':
+        L_bp_l = 0.0001
+        L_bp_r = 4 * L_m
+    else:
+        L_bp_l = 0.0001  # 4 * L_m  #
+        L_bp_r = 0.0001  # 4 * L_m  #
+
+    # calculate shift
+    shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
+    # shift = 0
+    # shift = L_m  # for end cell
+
+    df = tangent_coords(A_el, B_el, a_el, b_el, Ri_el, L_el, Req_m, L_bp_l)
+    x1el, y1el, x2el, y2el = df[0]
+
+    # CALCULATE x1, y1, x2, y2
+    df = tangent_coords(A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp_l)
+    x1, y1, x2, y2 = df[0]
+
+    # CALCULATE x1_er, y1_er, x2_er, y2_er
+    df = tangent_coords(A_er, B_er, a_er, b_er, Ri_er, L_er, Req_m, L_bp_r)
+    x1er, y1er, x2er, y2er = df[0]
+    default_folder = "D:\Dropbox\multipacting\MPGUI21"
+
+    if file_path is None:
+        file_path = default_folder
+
+    with open(fr'{file_path}\geodata.n', 'w') as fil:
+        fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
+        fil.write("   1.25000000e-02   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")  # a point inside the structure
+        fil.write("  -3.1415927e+00  -2.7182818e+00   0.0000000e+00   0.0000000e+00\n")  # a point outside the structure
+
+        # SHIFT POINT TO START POINT
+        start_point = [-shift, 0]
+        fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
+
+        lineTo(start_point, [-shift, Ri_el], step)
+        pt = [-shift, Ri_el]
+        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+        # ADD BEAM PIPE LENGTH
+        if L_bp_l != 0:
+            lineTo(pt, [L_bp_l - shift, Ri_el], step)
+            pt = [L_bp_l - shift, Ri_el]
+            print(pt)
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+        for n in range(1, n_cell + 1):
+            if n == 1:
+                # DRAW ARC:
+                pts = arcTo(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt, [-shift + x1el, y1el])
+                pt = [-shift + x1el, y1el]
+                for pp in pts:
+                    fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # DRAW LINE CONNECTING ARCS
+                lineTo(pt, [-shift + x2el, y2el], step)
+                pt = [-shift + x2el, y2el]
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+                pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el])
+                pt = [L_bp_l + L_el - shift, Req_el]
+                for pp in pts:
+                    fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                if n_cell == 1:
+                    # EQUATOR ARC TO NEXT POINT
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_el + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
+                                [L_el + L_er - x2er + 2 * L_bp_l - shift, Req_er])
+                    pt = [L_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # STRAIGHT LINE TO NEXT POINT
+                    lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
+                    pt = [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # ARC
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
+                                [L_bp_l + L_el + L_er - shift, y1er])
+
+                    pt = [L_bp_l + L_el + L_er - shift, Ri_er]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # calculate new shift
+                    shift = shift - (L_el + L_er)
+                    # ic(shift)
+                else:
+                    print("if else")
+                    # EQUATOR ARC TO NEXT POINT
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_el + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
+                                [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                    pt = [L_el + L_m - x2 + 2 * L_bp_l - shift, y2]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # STRAIGHT LINE TO NEXT POINT
+                    lineTo(pt, [L_el + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+                    pt = [L_el + L_m - x1 + 2 * L_bp_l - shift, y1]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # ARC
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_el + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
+                                [L_bp_l + L_el + L_m - shift, y1])
+                    pt = [L_bp_l + L_el + L_m - shift, Ri_m]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # calculate new shift
+                    shift = shift - (L_el + L_m)
+                    # ic(shift)
+
+            elif n > 1 and n != n_cell:
+                print("elif")
+                # DRAW ARC:
+                pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+                pt = [-shift + x1, y1]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # DRAW LINE CONNECTING ARCS
+                lineTo(pt, [-shift + x2, y2], step)
+                pt = [-shift + x2, y2]
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                pt = [L_bp_l + L_m - shift, Req_m]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # EQUATOR ARC TO NEXT POINT
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
+                            [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                pt = [L_m + L_m - x2 + 2 * L_bp_l - shift, y2]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # STRAIGHT LINE TO NEXT POINT
+                lineTo(pt, [L_m + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+                pt = [L_m + L_m - x1 + 2 * L_bp_l - shift, y1]
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # ARC
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_m + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
+                            [L_bp_l + L_m + L_m - shift, y1])
+                pt = [L_bp_l + L_m + L_m - shift, Ri_m]
+                ic(pt)
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # calculate new shift
+                shift = shift - 2*L_m
+            else:
+                print("else")
+                # DRAW ARC:
+                pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+                pt = [-shift + x1, y1]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # DRAW LINE CONNECTING ARCS
+                lineTo(pt, [-shift + x2, y2], step)
+                pt = [-shift + x2, y2]
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                pt = [L_bp_l + L_m - shift, Req_m]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # EQUATOR ARC TO NEXT POINT
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_m + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
+                            [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er])
+                pt = [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # STRAIGHT LINE TO NEXT POINT
+                lineTo(pt, [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step)
+                pt = [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er]
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                # ARC
+                # half of bounding box is required,
+                # start is the lower coordinate of the bounding box and end is the upper
+                pts = arcTo(L_m + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
+                            [L_bp_l + L_m + L_er - shift, y1er])
+                pt = [L_bp_l + L_m + L_er - shift, Ri_er]
+                for pp in pts:
+                    if (np.around(pp, 12) != np.around(pt, 12)).all():
+                        fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        print("Found one")
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+        # BEAM PIPE
+        # reset shift
+        print("pt before", pt)
+        shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
+
+        if L_bp_r != 0:  # if there's a problem, check here.
+            lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + L_el + L_er - shift, Ri_er], step)
+            pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, Ri_er]
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
+            print("pt after", pt)
+
+        # END PATH
+        lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
+        pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r - shift, 0]
+        # lineTo(pt, [2 * n_cell * L_er + L_bp_l - shift, 0], step)
+        # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
+        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
+
+        # CLOSE PATH
+        lineTo(pt, start_point, step)
+        fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
+    plt.gca().set_aspect('equal', 'box')
+    plt.show()
 
 
 def serialise(state_dict, widget=None, visited_widgets=None, marker=''):

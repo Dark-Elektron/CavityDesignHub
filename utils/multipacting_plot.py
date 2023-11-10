@@ -466,6 +466,8 @@ def plot_trajectory(files_folder, loc='center'):
         axs[2].margins(x=0.01, y=0.01)
 
         fig.tight_layout(pad=2.5)
+        axs[0].axes.set_aspect('equal')
+        axs[2].axes.set_aspect('equal')
         plt.show()
 
 

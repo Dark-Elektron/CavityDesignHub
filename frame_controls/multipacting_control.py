@@ -2324,7 +2324,7 @@ class MultipactingControl:
             "Bpk [mT]": mu0 * self.Hpk * 1e3,
             "kcc [%]": self.kcc,
             "ff [%]": self.ff,
-            "Rsh [Ohm]": self.R_Q * self.Q0,
+            "Rsh [MOhm]": self.R_Q * self.Q0,
             "R/Q [Ohm]": self.R_Q,
             "Epk/Eacc []": self.epk,
             "Bpk/Eacc [mT/MV/m]": self.bpk,

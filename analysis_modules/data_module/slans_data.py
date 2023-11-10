@@ -238,7 +238,7 @@ class SLANSDataExtraction:
                                        'A_i', 'B_i', 'a_i', 'b_i', 'Ri_i', 'L_i', 'Req', 'alpha_i',
                                        "Req [mm]", "Normalization Length [mm]", "N cells", "freq [MHz]", "Q []",
                                        "E [MV/m]", "Vacc [MV]", "Eacc [MV/m]", "Epk [MV/m]", "Hpk [A/m]", "Bpk [mT]",
-                                       "kcc [%]", "ff [%]", "Rsh [Ohm]", "R/Q [Ohm]",
+                                       "kcc [%]", "ff [%]", "Rsh [MOhm]", "R/Q [Ohm]",
                                        "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "GR/Q [Ohm^2]"])
 
             for key in dirs:
@@ -279,7 +279,7 @@ class SLANSDataExtraction:
                                     geometric_parameter['OC']
                     df.loc[key, ["Req [mm]", "Normalization Length [mm]", "N cells", "freq [MHz]", "Q []",
                                  "E [MV/m]", "Vacc [MV]", "Eacc [MV/m]", "Epk [MV/m]", "Hpk [A/m]", "Bpk [mT]",
-                                 "kcc [%]", "ff [%]", "Rsh [Ohm]", "R/Q [Ohm]",
+                                 "kcc [%]", "ff [%]", "Rsh [MOhm]", "R/Q [Ohm]",
                                  "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "GR/Q [Ohm^2]"]] = list(qois.values())
 
                 # print(key)
