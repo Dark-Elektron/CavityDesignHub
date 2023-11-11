@@ -39,7 +39,7 @@ class Geometry:
             self.ui = win.ui
 
     def set_geom_parameters(self, n_cells, mid_cells_par=None, l_end_cell_par=None,
-                            r_end_cell_par=None, beampipes=None, expansion=None, expansion_r=None, mesh=None):
+                            r_end_cell_par=None, beampipes=None, expansion=None, expansion_r=None, mesh_args=None):
         self.u = 1
         self.n = n_cells
 
@@ -90,10 +90,10 @@ class Geometry:
 
         self.WG_mesh = round(self.WG_L / 5)*self.u  # /5 for ende_type 1
         # print_(self.L_M, self.WG_L, self.WG_mesh)
-        if mesh:
-            self.Jxy = mesh[0]  # 60 for end type 1
-            self.Jxy_bp = mesh[1]
-            self.Jxy_bp_y = mesh[2]
+        if mesh_args:
+            self.Jxy = mesh_args[0]  # 60 for end type 1
+            self.Jxy_bp = mesh_args[1]
+            self.Jxy_bp_y = mesh_args[2]
         else:
             self.Jxy = 44  # 60 for end type 1
             self.Jxy_bp = 30

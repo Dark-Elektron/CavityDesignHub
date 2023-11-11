@@ -130,11 +130,11 @@ class EigenmodeControl:
         select_solver = self.ui.cb_Eigenproblem_Solver.currentText()
 
         if select_solver.lower() == 'slans':
-            mesh = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value(),
-                    self.ui.sb_Max_Iteration.value()]
+            mesh_args = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value(),
+                         self.ui.sb_Max_Iteration.value()]
         else:
-            mesh = [self.ui.sb_Max_Cells_Per_Wavelength.value(),
-                    self.ui.sb_Max_Iteration.value()]
+            mesh_args = [self.ui.sb_Max_Cells_Per_Wavelength.value(),
+                         self.ui.sb_Max_Iteration.value()]
 
         proc_count = self.ui.sb_No_Of_Processors_SLANS.value()
 
@@ -178,7 +178,7 @@ class EigenmodeControl:
             service = mp.Process(target=self.run_sequential, args=(
                 n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, self.pol, self.main_control.parentDir,
                 self.main_control.projectDir, self.progress_list, '',
-                UQ, select_solver, mesh))
+                UQ, select_solver, mesh_args))
 
             service.start()
 
@@ -373,7 +373,7 @@ class EigenmodeControl:
         # print(path)
         # path = os.path.join(path, fr"{}\{code}\{fid}")
         if os.path.exists(path):
-            print_("Simulation data already exists. Do you want to overwrite it?")
+            # print_("Simulation data already exists. Do you want to overwrite it?")
             msg = QMessageBox()
             msg.setWindowTitle("Folder Exist")
             msg.setText("Simulation data already exists. Do you want to overwrite it?")
@@ -458,7 +458,7 @@ class EigenmodeControl:
 
     @staticmethod
     def run_sequential(n_cells, n_modules, processor_shape_space, n_modes, f_shift, bc, pol, parentDir, projectDir,
-                       progress_list, sub_dir='', UQ=False, select_solver='slans', mesh=None):
+                       progress_list, sub_dir='', UQ=False, select_solver='slans', mesh_args=None):
         """
         Runs a single instance of SLANS (eigenmode analysis)
         Parameters
@@ -488,9 +488,9 @@ class EigenmodeControl:
             Sub directory in which to write simulation results
         UQ: bool
             Toggles between performing uncertainty quantification or not in addition to the nominal solution
-        solver: str {slans, native}
+        select_solver: str {slans, ngsolve}
             Select the eigenmode solver to use. Default is the SLANS solver
-        mesh: list [Jxy, Jxy_bp, Jxy_bp_y]
+        mesh_args: list [Jxy, Jxy_bp, Jxy_bp_y]
             Mesh definition for logical mesh:
             Jxy -> Number of elements of logical mesh along JX and JY
             Jxy_bp -> Number of elements of logical mesh along JX in beampipe
@@ -546,7 +546,7 @@ class EigenmodeControl:
                                   n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
                                   bc=bc, pol=pol, beampipes=shape['BP'],
                                   parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                  expansion=expansion, expansion_r=expansion_r, mesh=mesh)
+                                  expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
                 else:
                     write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
                                         projectDir=projectDir, cell_type="None")
@@ -554,7 +554,7 @@ class EigenmodeControl:
                                   n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
                                   bc=bc, pol=pol, beampipes=shape['BP'],
                                   parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                  expansion=expansion, expansion_r=expansion_r, mesh=mesh)
+                                  expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
 
             # run UQ
             if UQ:

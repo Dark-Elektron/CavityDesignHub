@@ -322,7 +322,7 @@ class Ui_Eigenmode(object):
         self.sb_Max_Cells_Per_Wavelength.setMinimum(4)
         self.sb_Max_Cells_Per_Wavelength.setMaximum(999)
         self.sb_Max_Cells_Per_Wavelength.setSingleStep(1)
-        self.sb_Max_Cells_Per_Wavelength.setProperty("value", 10)
+        self.sb_Max_Cells_Per_Wavelength.setProperty("value", 20)
         self.sb_Max_Cells_Per_Wavelength.setObjectName("sb_Max_Cells_Per_Wavelength")
         self.gridLayout_9.addWidget(self.sb_Max_Cells_Per_Wavelength, 0, 1, 1, 1)
         self.gridLayout_11.addWidget(self.w_NGSolve_Mesh, 9, 0, 1, 1)

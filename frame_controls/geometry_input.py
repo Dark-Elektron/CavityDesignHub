@@ -160,7 +160,7 @@ class GeometryInputControl:
         # print(path)
         # path = os.path.join(path, fr"{}\{code}\{fid}")
         if os.path.exists(path):
-            print_("Simulation data already exists. Do you want to overwrite it?")
+            # print_("Simulation data already exists. Do you want to overwrite it?")
             msg = QMessageBox()
             msg.setWindowTitle("Folder Exist")
             msg.setText("Simulation data already exists. Do you want to overwrite it?")

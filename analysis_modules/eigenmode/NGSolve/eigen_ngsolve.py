@@ -24,7 +24,7 @@ class NGSolveMEVP:
         pass
 
     @staticmethod
-    def ell_mdpt_grad(x_center, y_center, a, b, step, start, end, plot=True):
+    def ell_ips_grads(x_center, y_center, a, b, step, start, end, plot=True):
         h = x_center  # x-position of the center
         k = y_center  # y-position of the center
         a = a  # radius on the x-axis
@@ -39,26 +39,58 @@ class NGSolveMEVP:
         inbox = pts[inidx]
         inbox = inbox[inbox[:, 0].argsort()]
 
-        # get inbox midpoint
-        midpoint = inbox[int(len(inbox) / 2)]
-        grad_midpoint = b ** 2 / (2 * (midpoint[1] - k)) - (b ** 2 / a ** 2) * ((midpoint[0] - h) / (midpoint[1] - k))
-        #     print(midpoint, grad_midpoint)
+        ips, gipts, Nps = [], {}, 5
+        for n in range(1, Nps):
+            # get inbox midpoint
+            ip = inbox[int(n * len(inbox) / Nps)]  # <- spline interpolation point
+            gipt = b ** 2 / (2 * (ip[1] - k)) - (b ** 2 / a ** 2) * (
+                    (ip[0] - h) / (ip[1] - k))  # <- gradient at interpolation point
 
-        # plt.plot(inbox[:, 0], inbox[:, 1])
-        # x = np.array([midpoint[0] * 0.9, midpoint[0] * 1.1])
-        # y = grad_midpoint * x + midpoint[1] - grad_midpoint * midpoint[0]
-        # plt.plot(x, y)
-        # plot box
-        # x1, y1 = start
-        # x2, y2 = end
-        # plt.plot([x1, x2], [y1, y1], 'b')
-        # plt.plot([x1, x1], [y1, y2], 'b')
-        # plt.plot([x1, x2], [y2, y2], 'b')
-        # plt.plot([x2, x2], [y1, y2], 'b')
-        # plt.scatter(midpoint[0], midpoint[1], s=10, c='r')
+            ips.append(tuple(ip))
+            gipts[n] = tuple([1, gipt])
 
-        return tuple(midpoint), grad_midpoint
-    
+            # x = np.array([ip[0] * 0.98, ip[0] * 1.02])
+            # y = gipt * x + ip[1] - gipt * ip[0]
+        #         plt.plot(x, y)
+        #         plt.scatter(ip[0], ip[1], s=10, c='r')
+
+        #     # get inbox midpoint
+        #     midpoint = inbox[int(len(inbox)/2)]
+        #     grad_midpoint = b**2/(2*(midpoint[1]-k)) - (b**2/a**2)*((midpoint[0]-h)/(midpoint[1]-k))
+
+        #     # get midpoint neighbour 1
+        #     n1 = inbox[int(len(inbox)/4)]
+        #     grad_n1 = b**2/(2*(n1[1]-k)) - (b**2/a**2)*((n1[0]-h)/(n1[1]-k))
+
+        #     # get midpoint
+        #     n2 = inbox[int(3*len(inbox)/4)]
+        #     grad_n2 = b**2/(2*(n2[1]-k)) - (b**2/a**2)*((n2[0]-h)/(n2[1]-k))
+
+        #     x = np.array([midpoint[0]*0.98, midpoint[0]*1.02])
+        #     y = grad_midpoint*x + midpoint[1] - grad_midpoint*midpoint[0]
+
+        #     x1 = np.array([n1[0]*0.98, n1[0]*1.02])
+        #     y1 = grad_n1*x1 + n1[1] - grad_n1*n1[0]
+
+        #     x2 = np.array([n2[0]*0.98, n2[0]*1.02])
+        #     y2 = grad_n2*x2 + n2[1] - grad_n2*n2[0]
+
+        #     plt.plot(inbox[:, 0], inbox[:, 1])
+        #     plt.plot(x, y)
+        #     plt.plot(x1, y1)
+        #     plt.plot(x2, y2)
+
+        #     # plot box
+        #     xs, ys = start
+        #     xe, ye = end
+        #     plt.plot([xs, xe], [ys, ys], 'b')
+        #     plt.plot([xs, xs], [ys, ye], 'b')
+        #     plt.plot([xs, xe], [ye, ye], 'b')
+        #     plt.plot([xe, xe], [ys, ye], 'b')
+
+        nlast = len(ips) + 1
+        return ips, gipts, nlast
+
     def write_geometry(self, folder, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
                        beampipe='none', plot=False):
         """
@@ -149,9 +181,9 @@ class NGSolveMEVP:
             else:
                 end_cell_right = end_cell_left
 
-        A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(mid_cell[:7])*1e-3
-        A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(end_cell_left[:7])*1e-3
-        A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(end_cell_right[:7])*1e-3
+        A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(mid_cell[:7]) * 1e-3
+        A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(end_cell_left[:7]) * 1e-3
+        A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(end_cell_right[:7]) * 1e-3
 
         step = 0.1  # step in boundary points in mm
 
@@ -200,110 +232,121 @@ class NGSolveMEVP:
 
         for n in range(1, n_cell + 1):
             if n == 1:
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt, [-shift + x1el, y1el])
-                wp.Spline([mdpt, (-shift + x1el, y1el)],
-                          tangents={0: (1, 0), 1: (1, gd_mdpt), 2: (x2el - x1el, y2el - y1el)})  # <- draw iris arc
+                ips, gipts, nlast = self.ell_ips_grads(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt,
+                                                       [-shift + x1el, y1el])
+                wp.Spline([*ips, (-shift + x1el, y1el)],
+                          tangents={0: (1, 0), nlast: (x2el - x1el, y2el - y1el), **gipts})  # <- draw iris arc
 
                 wp.LineTo(*[-shift + x2el, y2el])  # <- draw tangent line
 
                 pt = [-shift + x2el, y2el]
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_el + L_bp_l - shift, Req - B_el, A_el, B_el, step, pt,
-                                      [L_bp_l + L_el - shift, Req])
-                wp.Spline([mdpt, (L_bp_l + L_el - shift, Req)],
-                          tangents={0: (x2el - x1el, y2el - y1el), 1: (1, gd_mdpt), 2: (1, 0)})  # <- draw left eq. arc
+                ips, gipts, nlast = self.ell_ips_grads(L_el + L_bp_l - shift, Req - B_el, A_el, B_el, step, pt,
+                                                       [L_bp_l + L_el - shift, Req])
+                wp.Spline([*ips, (L_bp_l + L_el - shift, Req)],
+                          tangents={0: (x2el - x1el, y2el - y1el), nlast: (1, 0), **gipts})  # <- draw left eq. arc
                 pt = [L_bp_l + L_el - shift, Req]
 
                 if n_cell == 1:
-                    mdpt, gd_mdpt = self.ell_mdpt_grad(L_el + L_bp_l - shift, Req - B_er, A_er, B_er, step, [pt[0], Req - B_er],
-                                          [L_el + L_er - x2er + L_bp_l + L_bp_r - shift, Req])
-                    wp.Spline([mdpt, (L_el + L_er - x2er + L_bp_l + L_bp_r - shift, y2er)],
-                              tangents={0: (1, 0), 1: (1, gd_mdpt),
-                                        2: (x2er - x1er, y1er - y2er)})  # <- draw left eq. arc
+                    ips, gipts, nlast = self.ell_ips_grads(L_el + L_bp_l - shift, Req - B_er, A_er, B_er, step,
+                                                           [pt[0], Req - B_er],
+                                                           [L_el + L_er - x2er + L_bp_l + L_bp_r - shift, Req])
+                    wp.Spline([*ips, (L_el + L_er - x2er + L_bp_l + L_bp_r - shift, y2er)],
+                              tangents={0: (1, 0), nlast: (x2er - x1er, y1er - y2er), **gipts})  # <- draw left eq. arc
 
                     wp.LineTo(*[L_el + L_er - x1er + + L_bp_l + L_bp_r - shift, y1er])  # <- draw tangent line
 
                     pt = [L_el + L_er - x1er + + L_bp_l + L_bp_r - shift, y1er]
-                    mdpt, gd_mdpt = self.ell_mdpt_grad(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
-                                          [L_bp_l + L_el + L_er - shift, y1er])
-                    wp.Spline([mdpt, (L_bp_l + L_el + L_er - shift, Ri_er)],
-                              tangents={0: (x2er - x1er, y1er - y2er), 1: (1, gd_mdpt),
-                                        2: (1, 0)})  # <- draw left eq. arc
+                    ips, gipts, nlast = self.ell_ips_grads(L_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step,
+                                                           [pt[0], Ri_er],
+                                                           [L_bp_l + L_el + L_er - shift, y1er])
+                    wp.Spline([*ips, (L_bp_l + L_el + L_er - shift, Ri_er)],
+                              tangents={0: (x2er - x1er, y1er - y2er), nlast: (1, 0), **gipts})  # <- draw left eq. arc
                     pt = [L_bp_l + L_el + L_er - shift, Ri_er]
 
                     # calculate new shift
                     shift = shift - (L_el + L_er)
                 else:
-                    mdpt, gd_mdpt = self.ell_mdpt_grad(L_el + L_bp_l - shift, Req - B_m, A_m, B_m, step, [pt[0], Req - B_m],
-                                          [L_el + L_m - x2 + 2 * L_bp_l - shift, Req])
-                    wp.Spline([mdpt, (L_el + L_m - x2 + 2 * L_bp_l - shift, y2)],
-                              tangents={0: (1, 0), 1: (1, gd_mdpt), 2: (x2 - x1, y1 - y2)})  # <- draw left eq. arc
+                    ips, gipts, nlast = self.ell_ips_grads(L_el + L_bp_l - shift, Req - B_m, A_m, B_m, step,
+                                                           [pt[0], Req - B_m],
+                                                           [L_el + L_m - x2 + 2 * L_bp_l - shift, Req])
+                    wp.Spline([*ips, (L_el + L_m - x2 + 2 * L_bp_l - shift, y2)],
+                              tangents={0: (1, 0), nlast: (x2 - x1, y1 - y2), **gipts})  # <- draw left eq. arc
 
                     wp.LineTo(*[L_el + L_m - x1 + 2 * L_bp_l - shift, y1])  # <- draw tangent line
 
                     pt = [L_el + L_m - x1 + 2 * L_bp_l - shift, y1]
-                    mdpt, gd_mdpt = self.ell_mdpt_grad(L_el + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
-                                          [L_bp_l + L_el + L_m - shift, y1])
-                    wp.Spline([mdpt, (L_bp_l + L_el + L_m - shift, Ri_m)],
-                              tangents={0: (x2 - x1, y1 - y2), 1: (1, gd_mdpt), 2: (1, 0)})  # <- draw left eq. arc
+                    ips, gipts, nlast = self.ell_ips_grads(L_el + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step,
+                                                           [pt[0], Ri_m],
+                                                           [L_bp_l + L_el + L_m - shift, y1])
+                    wp.Spline([*ips, (L_bp_l + L_el + L_m - shift, Ri_m)],
+                              tangents={0: (x2 - x1, y1 - y2), nlast: (1, 0), **gipts})  # <- draw left eq. arc
                     pt = [L_bp_l + L_el + L_m - shift, Ri_m]
 
                     # calculate new shift
                     shift = shift - (L_el + L_m)
 
             elif n > 1 and n != n_cell:
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
-                wp.Spline([mdpt, (-shift + x1, y1)],
-                          tangents={0: (1, 0), 1: (1, gd_mdpt), 2: (x2 - x1, y2 - y1)})  # <- draw iris arc
+                ips, gipts, nlast = self.ell_ips_grads(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt,
+                                                       [-shift + x1, y1])
+                wp.Spline([*ips, (-shift + x1, y1)],
+                          tangents={0: (1, 0), nlast: (x2 - x1, y2 - y1), **gipts})  # <- draw iris arc
 
                 wp.LineTo(*[-shift + x2, y2])  # <- draw tangent line
 
                 pt = [-shift + x2, y2]
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req])
-                wp.Spline([mdpt, (L_bp_l + L_m - shift, Req)],
-                          tangents={0: (x2 - x1, y2 - y1), 1: (1, gd_mdpt), 2: (1, 0)})  # <- draw left eq. arc
+                ips, gipts, nlast = self.ell_ips_grads(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, pt,
+                                                       [L_bp_l + L_m - shift, Req])
+                wp.Spline([*ips, (L_bp_l + L_m - shift, Req)],
+                          tangents={0: (x2 - x1, y2 - y1), nlast: (1, 0), **gipts})  # <- draw left eq. arc
 
                 pt = [L_bp_l + L_m - shift, Req]
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, [pt[0], Req - B_m],
-                                      [L_m + L_m - x2 + 2 * L_bp_l - shift, Req])
-                wp.Spline([mdpt, (L_m + L_m - x2 + 2 * L_bp_l - shift, y2)],
-                          tangents={0: (1, 0), 1: (1, gd_mdpt), 2: (x2 - x1, y1 - y2)})  # <- draw left eq. arc
+                ips, gipts, nlast = self.ell_ips_grads(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step,
+                                                       [pt[0], Req - B_m],
+                                                       [L_m + L_m - x2 + 2 * L_bp_l - shift, Req])
+                wp.Spline([*ips, (L_m + L_m - x2 + 2 * L_bp_l - shift, y2)],
+                          tangents={0: (1, 0), nlast: (x2 - x1, y1 - y2), **gipts})  # <- draw left eq. arc
 
                 wp.LineTo(*[L_m + L_m - x1 + 2 * L_bp_l - shift, y1])  # <- draw tangent line
 
                 pt = [L_m + L_m - x1 + 2 * L_bp_l - shift, y1]
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_m + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
-                                      [L_bp_l + L_m + L_m - shift, y1])
-                wp.Spline([mdpt, (L_bp_l + L_m + L_m - shift, Ri_m)],
-                          tangents={0: (x2 - x1, y1 - y2), 1: (1, gd_mdpt), 2: (1, 0)})  # <- draw left eq. arc
+                ips, gipts, nlast = self.ell_ips_grads(L_m + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step,
+                                                       [pt[0], Ri_m],
+                                                       [L_bp_l + L_m + L_m - shift, y1])
+                wp.Spline([*ips, (L_bp_l + L_m + L_m - shift, Ri_m)],
+                          tangents={0: (x2 - x1, y1 - y2), nlast: (1, 0), **gipts})  # <- draw left eq. arc
                 pt = [L_bp_l + L_m + L_m - shift, Ri_m]
 
                 # calculate new shift
                 shift = shift - 2 * L_m
             else:
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
-                wp.Spline([mdpt, (-shift + x1, y1)],
-                          tangents={0: (1, 0), 1: (1, gd_mdpt), 2: (x2 - x1, y2 - y1)})  # <- draw iris arc
+                ips, gipts, nlast = self.ell_ips_grads(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt,
+                                                       [-shift + x1, y1])
+                wp.Spline([*ips, (-shift + x1, y1)],
+                          tangents={0: (1, 0), nlast: (x2 - x1, y2 - y1), **gipts})  # <- draw iris arc
 
                 wp.LineTo(*[-shift + x2, y2])  # <- draw tangent line
 
                 pt = [-shift + x2, y2]
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req])
-                wp.Spline([mdpt, (L_bp_l + L_m - shift, Req)],
-                          tangents={0: (x2 - x1, y2 - y1), 1: (1, gd_mdpt), 2: (1, 0)})  # <- draw left eq. arc
+                ips, gipts, nlast = self.ell_ips_grads(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, pt,
+                                                       [L_bp_l + L_m - shift, Req])
+                wp.Spline([*ips, (L_bp_l + L_m - shift, Req)],
+                          tangents={0: (x2 - x1, y2 - y1), nlast: (1, 0), **gipts})  # <- draw left eq. arc
 
                 pt = [L_bp_l + L_m - shift, Req]
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_m + L_bp_l - shift, Req - B_er, A_er, B_er, step, [pt[0], Req - B_er],
-                                      [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req])
-                wp.Spline([mdpt, (L_m + L_er - x2er + L_bp_l + L_bp_r - shift, y2er)],
-                          tangents={0: (1, 0), 1: (1, gd_mdpt), 2: (x2er - x1er, y1er - y2er)})  # <- draw left eq. arc
+                ips, gipts, nlast = self.ell_ips_grads(L_m + L_bp_l - shift, Req - B_er, A_er, B_er, step,
+                                                       [pt[0], Req - B_er],
+                                                       [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req])
+                wp.Spline([*ips, (L_m + L_er - x2er + L_bp_l + L_bp_r - shift, y2er)],
+                          tangents={0: (1, 0), nlast: (x2er - x1er, y1er - y2er), **gipts})  # <- draw left eq. arc
 
                 wp.LineTo(*[L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er])  # <- draw tangent line
 
                 pt = [L_m + L_er - x1er + L_bp_l + L_bp_r - shift, y1er]
-                mdpt, gd_mdpt = self.ell_mdpt_grad(L_m + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
-                                      [L_bp_l + L_m + L_er - shift, y1er])
-                wp.Spline([mdpt, (L_bp_l + L_m + L_er - shift, Ri_er)],
-                          tangents={0: (x2er - x1er, y1er - y2er), 1: (1, gd_mdpt), 2: (1, 0)})  # <- draw left eq. arc
+                ips, gipts, nlast = self.ell_ips_grads(L_m + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step,
+                                                       [pt[0], Ri_er],
+                                                       [L_bp_l + L_m + L_er - shift, y1er])
+                wp.Spline([*ips, (L_bp_l + L_m + L_er - shift, Ri_er)],
+                          tangents={0: (x2er - x1er, y1er - y2er), nlast: (1, 0), **gipts})  # <- draw left eq. arc
                 pt = [L_bp_l + L_m + L_er - shift, Ri_er]
 
         # BEAM PIPE
@@ -321,13 +364,13 @@ class NGSolveMEVP:
         face.edges.Min(X).col = (1, 0, 0)
         face.edges.Min(Y).name = "b"
         face.edges.Min(Y).col = (1, 0, 0)
-        #     Draw(face)
+        # Draw(face)
 
         return face
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh=None, opt=False):
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False):
         """
         Write geometry file and run eigenmode analysis with NGSolveMEVP
 
@@ -383,23 +426,23 @@ class NGSolveMEVP:
                 run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}'
             else:
                 run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{subdir}'
-        # # write
-        # self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
+        # write
+        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
 
-        # # define geometry
-        # cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
-        #                        header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0]]
-        #
-        # pnts = list(cav_geom.itertuples(index=False, name=None))
-        # wp = WorkPlane()
-        # wp.MoveTo(*pnts[0])
-        # for p in pnts[1:]:
-        #     wp.LineTo(*p)
-        # wp.Close().Reverse()
-        # face = wp.Face()
+        # read geometry
+        cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
+                               header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0]]
 
-        # # get face from ngsolve geom
-        face = self.cavgeom_ngsolve(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
+        pnts = list(cav_geom.itertuples(index=False, name=None))
+        wp = WorkPlane()
+        wp.MoveTo(*pnts[0])
+        for p in pnts[1:]:
+            wp.LineTo(*p)
+        wp.Close().Reverse()
+        face = wp.Face()
+
+        # # get face from ngsolve geom <- coming later
+        # face = self.cavgeom_ngsolve(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
 
         # name the boundaries
         face.edges.Max(X).name = "r"
@@ -413,8 +456,7 @@ class NGSolveMEVP:
 
         # mesh
         A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
-        maxh = L/mesh[0]*1e-3
-        # print(maxh)
+        maxh = L / mesh_args[0] * 1e-3
         ngmesh = geo.GenerateMesh(maxh=maxh)
         mesh = Mesh(ngmesh)
 
@@ -447,7 +489,8 @@ class NGSolveMEVP:
             proj = IdentityMatrix() - gradmat @ invh1 @ gradmattrans @ m.mat
 
             projpre = proj @ pre.mat
-            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 3, maxit=mesh[1], printrates=False)
+            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 3, maxit=mesh_args[1],
+                                          printrates=False)
 
         # print out eigenvalues
         # print("Eigenvalues")
@@ -481,7 +524,8 @@ class NGSolveMEVP:
         with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
 
-        qois = self.evaluate_qois(face, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+        # qois = self.evaluate_qois(face, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+        qois = self.evaluate_qois(cav_geom, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
         ic(qois)
 
         with open(fr'{run_save_directory}\qois.json', "w") as f:
@@ -567,12 +611,12 @@ class NGSolveMEVP:
         # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
 
     @staticmethod
-    def evaluate_qois(face, n, Req, L, gfu_E, gfu_H, mesh, freq_fes, beta=1):
+    def evaluate_qois(cav_geom, n, Req, L, gfu_E, gfu_H, mesh, freq_fes, beta=1):
         w = 2 * pi * freq_fes[n] * 1e6
 
         # calculate Vacc and Eacc
         Vacc = abs(Integrate(gfu_E[n][0] * exp(1j * w / (beta * c0) * x), mesh, definedon=mesh.Boundaries('b')))
-        Eacc = Vacc / (L*1e-3 * 2 * n)
+        Eacc = Vacc / (L * 1e-3 * 2 * n)
         # print(f"Vacc: {Vacc}")
         # print(f"Eacc: {Eacc}")
 
@@ -585,30 +629,30 @@ class NGSolveMEVP:
         # print("R/Q: ", RoQ)
 
         # OLD GEOMETRY INPUT TYPE
-        # # calculate peak surface fields
-        # xpnts_surf = cav_geom[(cav_geom[0] > 0) & (cav_geom[1] > min(cav_geom[1])) & (cav_geom[1] < max(cav_geom[1]))]
-        # Esurf = [Norm(gfu_E[n])(mesh(xi, yi)) for indx, (xi, yi) in xpnts_surf.iterrows()]
-        # Epk = (max(Esurf))
-        # # print("Epk/Eacc", Epk / Eacc)
-        #
-        # # calculate peak surface fields
-        # xpnts = cav_geom[(cav_geom[0] > 0) & (cav_geom[1] > min(cav_geom[1])) & (cav_geom[1] < max(cav_geom[1]))]
-        # Hsurf = [Norm(gfu_H[n])(mesh(xi, yi)) for indx, (xi, yi) in xpnts.iterrows()]
-        # Hpk = (max(Hsurf))
-        # # print("Bpk/Eacc", mu0 * Hpk * 1e9 / Eacc)
-
         # calculate peak surface fields
-        pec_boundary = mesh.Boundaries("default")
-        bel = [xx.vertices for xx in pec_boundary.Elements()]
-        bel_unique = list(set(itertools.chain(*bel)))
-        xpnts_surf = sorted([mesh.vertices[xy.nr].point for xy in bel_unique])
-        Esurf = [Norm(gfu_E[n])(mesh(xi, yi)) for xi, yi in xpnts_surf]
+        xpnts_surf = cav_geom[(cav_geom[0] > 0) & (cav_geom[1] > min(cav_geom[1])) & (cav_geom[1] < max(cav_geom[1]))]
+        Esurf = [Norm(gfu_E[n])(mesh(xi, yi)) for indx, (xi, yi) in xpnts_surf.iterrows()]
         Epk = (max(Esurf))
         # print("Epk/Eacc", Epk / Eacc)
 
-        Hsurf = [Norm(gfu_H[n])(mesh(xi, yi)) for xi, yi in xpnts_surf]
+        # calculate peak surface fields
+        xpnts = cav_geom[(cav_geom[0] > 0) & (cav_geom[1] > min(cav_geom[1])) & (cav_geom[1] < max(cav_geom[1]))]
+        Hsurf = [Norm(gfu_H[n])(mesh(xi, yi)) for indx, (xi, yi) in xpnts.iterrows()]
         Hpk = (max(Hsurf))
         # print("Bpk/Eacc", mu0 * Hpk * 1e9 / Eacc)
+
+        # # calculate peak surface fields
+        # pec_boundary = mesh.Boundaries("default")
+        # bel = [xx.vertices for xx in pec_boundary.Elements()]
+        # bel_unique = list(set(itertools.chain(*bel)))
+        # xpnts_surf = sorted([mesh.vertices[xy.nr].point for xy in bel_unique])
+        # Esurf = [Norm(gfu_E[n])(mesh(xi, yi)) for xi, yi in xpnts_surf]
+        # Epk = (max(Esurf))
+        # # print("Epk/Eacc", Epk / Eacc)
+        #
+        # Hsurf = [Norm(gfu_H[n])(mesh(xi, yi)) for xi, yi in xpnts_surf]
+        # Hpk = (max(Hsurf))
+        # # print("Bpk/Eacc", mu0 * Hpk * 1e9 / Eacc)
 
         # calculate surface power loss
         sigma_cond = 5.96e7  # <- conduction of copper
@@ -628,15 +672,15 @@ class NGSolveMEVP:
         # print(f"Q: {Q}")
 
         # OLD
-        # # Get axis field
-        # xpnts_ax = np.linspace(min(cav_geom[1].tolist()), max(cav_geom[1].tolist()), 100)
-        # Eax = np.array([Norm(gfu_E[n])(mesh(xi, 0.0)) for xi in xpnts_ax])
-
         # Get axis field
-        xmin = face.vertices.Min(X)
-        xmax = face.vertices.Max(X)
-        xpnts_ax = np.linspace(xmin.p[0], xmax.p[0], 100)
+        xpnts_ax = np.linspace(min(cav_geom[1].tolist()), max(cav_geom[1].tolist()), 100)
         Eax = np.array([Norm(gfu_E[n])(mesh(xi, 0.0)) for xi in xpnts_ax])
+
+        # # Get axis field
+        # xmin = face.vertices.Min(X)
+        # xmax = face.vertices.Max(X)
+        # xpnts_ax = np.linspace(xmin.p[0], xmax.p[0], 100)
+        # Eax = np.array([Norm(gfu_E[n])(mesh(xi, 0.0)) for xi in xpnts_ax])
 
         # calculate field flatness
         peaks, _ = find_peaks(Eax)
@@ -651,7 +695,7 @@ class NGSolveMEVP:
 
         qois = {
             "Req [mm]": Req,
-            "Normalization Length [mm]": 2*L,
+            "Normalization Length [mm]": 2 * L,
             "N Cells": n,
             "freq [MHz]": freq_fes[n],
             "Q []": Q,

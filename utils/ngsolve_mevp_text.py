@@ -99,4 +99,4 @@ gfu = GridFunction(fes, multidim=len(evecs))
 for i in range(len(evecs)):
     gfu.vecs[i].data = evecs[i]
 
-Draw(Norm(gfu), mesh, order=2);
+Draw(Norm(gfu), mesh, order=2)

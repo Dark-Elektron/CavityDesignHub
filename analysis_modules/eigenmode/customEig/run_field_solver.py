@@ -36,7 +36,7 @@ class Model:
         self.eig_freq = None
         self.fields = None
         self.job = None
-        self.mesh = None
+        self.mesh_args = None
         self.fieldparam = None
         self.param = None
         self.folder = fr"{folder}\{name}"

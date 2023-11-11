@@ -36,7 +36,7 @@ class SLANSGeometry(Geometry):
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh=None, opt=False):
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False):
         """
         Write geometry file and run eigenmode analysis with SLANS
 
@@ -72,7 +72,7 @@ class SLANSGeometry(Geometry):
             Project directory
         subdir: str
             Sub directory to save simulation results to
-        mesh: list [Jxy, Jxy_bp, Jxy_bp_y]
+        mesh_args: list [Jxy, Jxy_bp, Jxy_bp_y]
             Mesh definition for logical mesh:
             Jxy -> Number of elements of logical mesh along JX and JY
             Jxy_bp -> Number of elements of logical mesh along JX in beampipe
@@ -86,7 +86,7 @@ class SLANSGeometry(Geometry):
         # this checks whether input is from gui or from the optimisation
         if mid_cells_par is not None:
             self.set_geom_parameters(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par,
-                                     beampipes, expansion=expansion, expansion_r=expansion_r, mesh=mesh)
+                                     beampipes, expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
         else:
             self.set_geom_parameters(no_of_cells)
 
