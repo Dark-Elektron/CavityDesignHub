@@ -63,7 +63,7 @@
        <item row="0" column="0">
         <widget class="QTabWidget" name="tabWidget_3">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tabWidget_3Page1">
           <attribute name="title">
@@ -104,8 +104,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>535</width>
-                <height>1359</height>
+                <width>539</width>
+                <height>1386</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -305,212 +305,7 @@
 }</string>
                  </property>
                  <layout class="QGridLayout" name="gridLayout_21">
-                  <item row="2" column="0">
-                   <widget class="QLabel" name="label_65">
-                    <property name="text">
-                     <string>N Cells</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="1">
-                   <widget class="QLineEdit" name="le_Freq">
-                    <property name="minimumSize">
-                     <size>
-                      <width>200</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="toolTip">
-                     <string>Target frequency</string>
-                    </property>
-                    <property name="text">
-                     <string>400.79</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="1">
-                   <widget class="QComboBox" name="cb_Tune_Option">
-                    <property name="minimumSize">
-                     <size>
-                      <width>200</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="toolTip">
-                     <string>Variable to tune</string>
-                    </property>
-                    <property name="styleSheet">
-                     <string notr="true"/>
-                    </property>
-                    <property name="frame">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Req</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>L</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_26">
-                    <property name="minimumSize">
-                     <size>
-                      <width>150</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>150</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Cell Type</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="4" column="1">
-                   <widget class="QComboBox" name="cb_Tuner">
-                    <property name="minimumSize">
-                     <size>
-                      <width>200</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Flexibility:&lt;/span&gt; SLANS Tuners are the mid and end cell tuners for Req and L respectively. Currently, the mid-cell tuner can only tune for Req and the end-cell tuner can only tune for L. PyTune offers more flexibility to cell combinations. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Timing:&lt;/span&gt; In terms of timing, sometimes PyTune is faster and at other times. PyTune also has a better chance of returning a result. This also means some degenerate shapes could be returned when a degerate set of input parameters are given so it is always good to check.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>PyTune</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>SLANS</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="4" column="0">
-                   <widget class="QLabel" name="label_11">
-                    <property name="minimumSize">
-                     <size>
-                      <width>150</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>150</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Tuner</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="2" column="1">
-                   <widget class="QSpinBox" name="sb_Tune_N_Cells">
-                    <property name="toolTip">
-                     <string>Number of cells</string>
-                    </property>
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_27">
-                    <property name="minimumSize">
-                     <size>
-                      <width>150</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>150</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Variable</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="3" column="0">
-                   <widget class="QLabel" name="label_51">
-                    <property name="minimumSize">
-                     <size>
-                      <width>150</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="maximumSize">
-                     <size>
-                      <width>150</width>
-                      <height>16777215</height>
-                     </size>
-                    </property>
-                    <property name="text">
-                     <string>Frequency</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="cb_Cell_Type">
-                    <property name="minimumSize">
-                     <size>
-                      <width>200</width>
-                      <height>0</height>
-                     </size>
-                    </property>
-                    <property name="toolTip">
-                     <string>Type of cell to tune</string>
-                    </property>
-                    <property name="frame">
-                     <bool>false</bool>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Mid Cell</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>End Cell</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>Custom Cell</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="6" column="0" colspan="2">
-                   <widget class="QPushButton" name="pb_Tune_Multiple">
-                    <property name="text">
-                     <string>Tune Multiple</string>
-                    </property>
-                    <property name="checkable">
-                     <bool>true</bool>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="7" column="0" colspan="2" alignment="Qt::AlignLeft">
+                  <item row="8" column="0" colspan="2" alignment="Qt::AlignLeft">
                    <widget class="QWidget" name="w_Tune_Multiple" native="true">
                     <layout class="QGridLayout" name="gridLayout_11">
                      <item row="2" column="0">
@@ -687,7 +482,7 @@
                     </layout>
                    </widget>
                   </item>
-                  <item row="5" column="0" colspan="2">
+                  <item row="6" column="0" colspan="2">
                    <widget class="QWidget" name="w_BC" native="true">
                     <layout class="QGridLayout" name="gridLayout_26">
                      <property name="leftMargin">
@@ -820,6 +615,232 @@
                       </widget>
                      </item>
                     </layout>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QSpinBox" name="sb_Tune_N_Cells">
+                    <property name="toolTip">
+                     <string>Number of cells</string>
+                    </property>
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="value">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="0" colspan="2">
+                   <widget class="QPushButton" name="pb_Tune_Multiple">
+                    <property name="text">
+                     <string>Tune Multiple</string>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_27">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Variable</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QComboBox" name="cb_Tune_Option">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>Variable to tune</string>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true"/>
+                    </property>
+                    <property name="frame">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Req</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>L</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_26">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Cell Type</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_11">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Tuner</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="0">
+                   <widget class="QLabel" name="label_65">
+                    <property name="text">
+                     <string>N Cells</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="3" column="1">
+                   <widget class="QLineEdit" name="le_Freq">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>Target frequency</string>
+                    </property>
+                    <property name="text">
+                     <string>400.79</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="1">
+                   <widget class="QComboBox" name="cb_Tuner">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Flexibility:&lt;/span&gt; SLANS Tuners are the mid and end cell tuners for Req and L respectively. Currently, the mid-cell tuner can only tune for Req and the end-cell tuner can only tune for L. PyTune offers more flexibility to cell combinations. &lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Timing:&lt;/span&gt; In terms of timing, sometimes PyTune is faster and at other times. PyTune also has a better chance of returning a result. This also means some degenerate shapes could be returned when a degerate set of input parameters are given so it is always good to check.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>PyTune</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>SLANS</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="3" column="0">
+                   <widget class="QLabel" name="label_51">
+                    <property name="minimumSize">
+                     <size>
+                      <width>150</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>150</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Frequency</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="cb_Cell_Type">
+                    <property name="minimumSize">
+                     <size>
+                      <width>200</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="toolTip">
+                     <string>Type of cell to tune</string>
+                    </property>
+                    <property name="frame">
+                     <bool>false</bool>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Mid Cell</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>End Cell</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>Custom Cell</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="5" column="0">
+                   <widget class="QLabel" name="label_12">
+                    <property name="text">
+                     <string>Solver</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="5" column="1">
+                   <widget class="QComboBox" name="cb_MEVP_Solver">
+                    <item>
+                     <property name="text">
+                      <string>SLANS</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>NGSolveMEVP</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>
@@ -1918,8 +1939,8 @@
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>511</width>
-                <height>1563</height>
+                <width>537</width>
+                <height>1577</height>
                </rect>
               </property>
               <layout class="QGridLayout" name="gridLayout_3">
@@ -2589,6 +2610,60 @@
                <item row="2" column="0">
                 <widget class="QWidget" name="widget_8" native="true">
                  <layout class="QGridLayout" name="gridLayout_31">
+                  <item row="4" column="1">
+                   <widget class="QSpinBox" name="sb_Processors_Count">
+                    <property name="minimum">
+                     <number>1</number>
+                    </property>
+                    <property name="value">
+                     <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="4" column="0">
+                   <widget class="QLabel" name="label_45">
+                    <property name="text">
+                     <string>Processes</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QComboBox" name="cb_Tune_Variable">
+                    <property name="toolTip">
+                     <string>Variable to tune</string>
+                    </property>
+                    <item>
+                     <property name="text">
+                      <string>Req</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>L</string>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                  <item row="1" column="1">
+                   <widget class="QDoubleSpinBox" name="dsb_Tune_Frequency">
+                    <property name="maximum">
+                     <double>10000000000000000139372116959414099130712064.000000000000000</double>
+                    </property>
+                    <property name="singleStep">
+                     <double>10.000000000000000</double>
+                    </property>
+                    <property name="value">
+                     <double>1300.000000000000000</double>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QLabel" name="label_61">
+                    <property name="text">
+                     <string>Tune Frequency</string>
+                    </property>
+                   </widget>
+                  </item>
                   <item row="2" column="3">
                    <widget class="QSpinBox" name="sb_Norm_Length_N_Cells">
                     <property name="minimum">
@@ -2596,6 +2671,13 @@
                     </property>
                     <property name="singleStep">
                      <number>1</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="0">
+                   <widget class="QLabel" name="label_60">
+                    <property name="text">
+                     <string>Tune Variable</string>
                     </property>
                    </widget>
                   </item>
@@ -2621,19 +2703,6 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="1" column="1">
-                   <widget class="QDoubleSpinBox" name="dsb_Tune_Frequency">
-                    <property name="maximum">
-                     <double>10000000000000000139372116959414099130712064.000000000000000</double>
-                    </property>
-                    <property name="singleStep">
-                     <double>10.000000000000000</double>
-                    </property>
-                    <property name="value">
-                     <double>1300.000000000000000</double>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="2" column="2">
                    <widget class="QLabel" name="label_64">
                     <property name="text">
@@ -2648,52 +2717,25 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="0" column="0">
-                   <widget class="QLabel" name="label_60">
-                    <property name="text">
-                     <string>Tune Variable</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item row="0" column="1">
-                   <widget class="QComboBox" name="cb_Tune_Variable">
-                    <property name="toolTip">
-                     <string>Variable to tune</string>
-                    </property>
-                    <item>
-                     <property name="text">
-                      <string>Req</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string>L</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                  <item row="1" column="0">
-                   <widget class="QLabel" name="label_61">
-                    <property name="text">
-                     <string>Tune Frequency</string>
-                    </property>
-                   </widget>
-                  </item>
                   <item row="3" column="0">
-                   <widget class="QLabel" name="label_45">
+                   <widget class="QLabel" name="label_13">
                     <property name="text">
-                     <string>Processes</string>
+                     <string>Solver</string>
                     </property>
                    </widget>
                   </item>
                   <item row="3" column="1">
-                   <widget class="QSpinBox" name="sb_Processors_Count">
-                    <property name="minimum">
-                     <number>1</number>
-                    </property>
-                    <property name="value">
-                     <number>1</number>
-                    </property>
+                   <widget class="QComboBox" name="cb_MEVP_Solver_Opt">
+                    <item>
+                     <property name="text">
+                      <string>SLANS</string>
+                     </property>
+                    </item>
+                    <item>
+                     <property name="text">
+                      <string>NGSolveMEVP</string>
+                     </property>
+                    </item>
                    </widget>
                   </item>
                  </layout>

@@ -568,6 +568,23 @@
                </item>
               </widget>
              </item>
+             <item row="8" column="0">
+              <widget class="QLabel" name="label_9">
+               <property name="text">
+                <string>Max Iteration</string>
+               </property>
+              </widget>
+             </item>
+             <item row="8" column="1">
+              <widget class="QSpinBox" name="sb_Max_Iteration">
+               <property name="minimum">
+                <number>10</number>
+               </property>
+               <property name="value">
+                <number>20</number>
+               </property>
+              </widget>
+             </item>
             </layout>
            </widget>
           </item>

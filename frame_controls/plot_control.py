@@ -1335,7 +1335,7 @@ class PlotControl:
                     for j in range(len(requestY)):
                         y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
                         args["plot data"][id_].update({j: {"x": x_data, "y": y}})
-                        ic('In here')
+                        # ic('In here')
                         if axis == 'Left':
                             if type_[0] == 'Line':
                                 args["plot object"][id_].update(

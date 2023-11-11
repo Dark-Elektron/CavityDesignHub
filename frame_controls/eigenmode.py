@@ -130,9 +130,11 @@ class EigenmodeControl:
         select_solver = self.ui.cb_Eigenproblem_Solver.currentText()
 
         if select_solver.lower() == 'slans':
-            mesh = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value()]
+            mesh = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value(),
+                    self.ui.sb_Max_Iteration.value()]
         else:
-            mesh = [self.ui.sb_Max_Cells_Per_Wavelength.value()]
+            mesh = [self.ui.sb_Max_Cells_Per_Wavelength.value(),
+                    self.ui.sb_Max_Iteration.value()]
 
         proc_count = self.ui.sb_No_Of_Processors_SLANS.value()
 
@@ -205,9 +207,14 @@ class EigenmodeControl:
         if self.ui.cb_Eigenproblem_Solver.currentText().lower() == 'slans':
             self.ui.w_SLANS_Mesh.show()
             self.ui.w_NGSolve_Mesh.hide()
+
+            # change max iteration
+            self.ui.sb_Max_Iteration.setValue(50)
         else:
             self.ui.w_SLANS_Mesh.hide()
             self.ui.w_NGSolve_Mesh.show()
+            # change max iteration
+            self.ui.sb_Max_Iteration.setValue(20)
 
     def write_to_text_edit(self):
         """

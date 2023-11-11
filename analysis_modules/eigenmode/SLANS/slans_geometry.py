@@ -305,9 +305,9 @@ class SLANSGeometry(Geometry):
         beta, f_shift, n_modes = 1, f_shift, n_modes + 1
 
         if pol.lower() == 'monopole':
-            self.write_dtr(path, filename, beta, f_shift, n_modes)
+            self.write_dtr(path, filename, beta, f_shift, n_modes, maxiter=mesh[3])
         else:
-            self.write_dtr_2(path, filename, beta, f_shift, n_modes)
+            self.write_dtr_2(path, filename, beta, f_shift, n_modes, maxiter=mesh[3])
 
         slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc{p}'
         slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm{p}'
@@ -990,13 +990,13 @@ class SLANSGeometry(Geometry):
             json.dump(d, f, indent=4, separators=(',', ': '))
 
     @staticmethod
-    def write_dtr(path, filename, beta, f_shift, n_modes):
+    def write_dtr(path, filename, beta, f_shift, n_modes, maxiter=50):
         with open(fr"{path}/{filename}.dtr", 'w') as f:
             f.write(':Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
             f.write('{:g} :number of search modes\n'.format(n_modes - 1))
             f.write('9.99999997E-007 :convergence accuracy\n')
-            f.write('50 :maximum number of iterations\n')
+            f.write(f'{maxiter} :maximum number of iterations\n')
             f.write('0 :continue iterations or not 1,0\n')
             f.write(' {:g}. :initial frequency shift MHz\n'.format(f_shift))
             f.write('1 :wave type 1-E, 2-H\n')
@@ -1008,13 +1008,13 @@ class SLANSGeometry(Geometry):
             f.write('{:g} : beta (v/c)\n'.format(beta))
 
     @staticmethod
-    def write_dtr_2(path, filename, beta, f_shift, n_modes):
+    def write_dtr_2(path, filename, beta, f_shift, n_modes, maxiter=50):
         with open(fr"{path}/{filename}.dtr", 'w') as f:
             f.write(':  Date:02/04/16 \n')
             f.write('{:g} :number of iterative modes 1-10\n'.format(n_modes))
             f.write('{:g} :number of search modes\n'.format(n_modes - 1))
             f.write('9.99999997E-008 :convergence accuracy\n')
-            f.write('50 :maximum number of iterations\n')
+            f.write(f'{maxiter} :maximum number of iterations\n')
             f.write('0 :continue iterations or not 1,0\n')
             f.write(' {:g}. :initial frequency shift MHz\n'.format(f_shift))
             f.write(' {:g}. :number of azimuth variations\n'.format(1))

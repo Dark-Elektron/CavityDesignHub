@@ -447,7 +447,7 @@ class NGSolveMEVP:
             proj = IdentityMatrix() - gradmat @ invh1 @ gradmattrans @ m.mat
 
             projpre = proj @ pre.mat
-            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 3, maxit=50, printrates=False)
+            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 3, maxit=mesh[1], printrates=False)
 
         # print out eigenvalues
         # print("Eigenvalues")

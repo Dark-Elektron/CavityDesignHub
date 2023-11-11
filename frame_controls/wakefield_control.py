@@ -283,7 +283,7 @@ class WakefieldControl:
         -------
 
         """
-        ic(row_ind, cavity, self.ui.tw_Operating_Points_Input.rowCount())
+        # ic(row_ind, cavity, self.ui.tw_Operating_Points_Input.rowCount())
         # Cavity
         l_cavity = QLabel()
         l_cavity.setText(f"{cavity}")
