@@ -98,6 +98,8 @@ class EigenmodeControl:
 
         self.ui.pb_Refresh.clicked.connect(lambda: self.write_to_text_edit())
 
+        self.change_mesh_input()
+
     def signals(self):
         # run eigenmode solver
         self.ui.pb_Run.clicked.connect(lambda: self.run_slans())
@@ -109,6 +111,8 @@ class EigenmodeControl:
         self.ui.cb_LBC.currentTextChanged.connect(lambda: self.geo_control.draw_shape_from_shape_space())
         self.ui.cb_RBC.currentTextChanged.connect(lambda: self.geo_control.draw_shape_from_shape_space())
 
+        self.ui.cb_Eigenproblem_Solver.currentTextChanged.connect(lambda: self.change_mesh_input())
+
     def run_slans(self):
         # get analysis parameters
         n_cells = text_to_list(self.geo_ui.le_N_Cells.text())
@@ -116,7 +120,6 @@ class EigenmodeControl:
         f_shift = float(self.ui.le_Freq_Shift.text())
         n_modes = float(self.ui.le_No_Of_Modes.text())
         self.pol = self.ui.cb_Polarization_SLANS.currentText()
-        mesh = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value()]
 
         # boundary conditions
         lbc = self.ui.cb_LBC.currentIndex() + 1
@@ -125,6 +128,12 @@ class EigenmodeControl:
 
         # solver
         select_solver = self.ui.cb_Eigenproblem_Solver.currentText()
+
+        if select_solver.lower() == 'slans':
+            mesh = [self.ui.sb_Mesh_Jxy_Cell.value(), self.ui.sb_Mesh_Jx_BP.value(), self.ui.sb_Mesh_Jy_BP.value()]
+        else:
+            mesh = [self.ui.sb_Max_Cells_Per_Wavelength.value()]
+
         proc_count = self.ui.sb_No_Of_Processors_SLANS.value()
 
         # uq
@@ -192,8 +201,13 @@ class EigenmodeControl:
         self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
         self.end_routine_thread.start()
 
-    def run_ngsolve_mevp(self):
-        pass
+    def change_mesh_input(self):
+        if self.ui.cb_Eigenproblem_Solver.currentText().lower() == 'slans':
+            self.ui.w_SLANS_Mesh.show()
+            self.ui.w_NGSolve_Mesh.hide()
+        else:
+            self.ui.w_SLANS_Mesh.hide()
+            self.ui.w_NGSolve_Mesh.show()
 
     def write_to_text_edit(self):
         """

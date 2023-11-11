@@ -202,7 +202,82 @@
           <string notr="true"/>
          </property>
          <layout class="QGridLayout" name="gridLayout_11">
+          <item row="7" column="0">
+           <widget class="QPushButton" name="pb_Mesh">
+            <property name="text">
+             <string>Mesh</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="12" column="0" alignment="Qt::AlignTop">
+           <widget class="QPushButton" name="pb_EXE">
+            <property name="text">
+             <string>EXE</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0" alignment="Qt::AlignTop">
+           <widget class="QPushButton" name="pb_Analysis_Settings">
+            <property name="text">
+             <string>Analysis Settings</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
           <item row="10" column="0" alignment="Qt::AlignTop">
+           <widget class="QPushButton" name="pb_Uncertainty_Quantification">
+            <property name="text">
+             <string>Uncertainty Quantification</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="16" column="0">
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="14" column="0">
+           <widget class="QPushButton" name="pb_Message">
+            <property name="text">
+             <string>Messages</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="11" column="0" alignment="Qt::AlignTop">
            <widget class="QWidget" name="w_UQ" native="true">
             <layout class="QGridLayout" name="gridLayout_7">
              <item row="1" column="1">
@@ -275,68 +350,6 @@
               </widget>
              </item>
             </layout>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QPushButton" name="pb_Mesh">
-            <property name="text">
-             <string>Mesh</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="15" column="0">
-           <spacer name="verticalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item row="5" column="0" alignment="Qt::AlignTop">
-           <widget class="QPushButton" name="pb_Analysis_Settings">
-            <property name="text">
-             <string>Analysis Settings</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="11" column="0" alignment="Qt::AlignTop">
-           <widget class="QPushButton" name="pb_EXE">
-            <property name="text">
-             <string>EXE</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="9" column="0" alignment="Qt::AlignTop">
-           <widget class="QPushButton" name="pb_Uncertainty_Quantification">
-            <property name="text">
-             <string>Uncertainty Quantification</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
            </widget>
           </item>
           <item row="6" column="0" alignment="Qt::AlignTop">
@@ -553,17 +566,12 @@
                  <string>NGSolve</string>
                 </property>
                </item>
-               <item>
-                <property name="text">
-                 <string>Native</string>
-                </property>
-               </item>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
-          <item row="12" column="0" alignment="Qt::AlignTop">
+          <item row="13" column="0" alignment="Qt::AlignTop">
            <widget class="QWidget" name="w_EXE" native="true">
             <property name="styleSheet">
              <string notr="true"/>
@@ -645,21 +653,8 @@
             </layout>
            </widget>
           </item>
-          <item row="13" column="0">
-           <widget class="QPushButton" name="pb_Message">
-            <property name="text">
-             <string>Messages</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
           <item row="8" column="0">
-           <widget class="QWidget" name="w_Mesh" native="true">
+           <widget class="QWidget" name="w_SLANS_Mesh" native="true">
             <layout class="QGridLayout" name="gridLayout_3">
              <item row="1" column="0">
               <widget class="QLabel" name="label_4">
@@ -742,7 +737,7 @@
             </layout>
            </widget>
           </item>
-          <item row="14" column="0">
+          <item row="15" column="0">
            <widget class="QWidget" name="w_Message" native="true">
             <layout class="QGridLayout" name="gridLayout_4">
              <item row="1" column="0">
@@ -776,6 +771,35 @@
                  </spacer>
                 </item>
                </layout>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="9" column="0">
+           <widget class="QWidget" name="w_NGSolve_Mesh" native="true">
+            <layout class="QGridLayout" name="gridLayout_9">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Max cells per wavelength</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QSpinBox" name="sb_Max_Cells_Per_Wavelength">
+               <property name="minimum">
+                <number>4</number>
+               </property>
+               <property name="maximum">
+                <number>999</number>
+               </property>
+               <property name="singleStep">
+                <number>1</number>
+               </property>
+               <property name="value">
+                <number>10</number>
+               </property>
               </widget>
              </item>
             </layout>
@@ -857,7 +881,7 @@
   <connection>
    <sender>pb_Mesh</sender>
    <signal>toggled(bool)</signal>
-   <receiver>w_Mesh</receiver>
+   <receiver>w_SLANS_Mesh</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
