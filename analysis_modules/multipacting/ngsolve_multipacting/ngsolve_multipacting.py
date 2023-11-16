@@ -204,6 +204,9 @@ class Integrators:
             particles_dummy.remove(lpi)
             particles.remove(lpi)
 
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
         # k2=================================================
         ku2 = h * self.lorentz_force(particles_dummy.u, particles_dummy.x, phi,
                                      tn + 2 * h / 3)  # <- particles dummy = particles.u + kn
@@ -234,6 +237,9 @@ class Integrators:
         if len(lpi) != 0:
             particles.remove(lpi)
 
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
         plot_path(particles)
 
     def rk2_23(self, particles, phi, tn, h):
@@ -258,6 +264,9 @@ class Integrators:
             particles_dummy.remove(lpi)
             particles.remove(lpi)
 
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
         # k2=================================================
         ku2 = h * self.lorentz_force(particles_dummy.u, particles_dummy.x, phi,
                                      tn + h / 2)  # <- particles dummy = particles.u + kn
@@ -288,6 +297,9 @@ class Integrators:
         if len(lpi) != 0:
             particles.remove(lpi)
 
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
         plot_path(particles)
 
     def rk4(self, particles, phi, tn, h):
@@ -321,7 +333,9 @@ class Integrators:
             particles.remove(lpi)
 
         #         print('Done with k1', np.shape(ku1), np.shape(particles_dummy.u))
-
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
         # k2=================================================
         ku2 = h * self.lorentz_force(particles_dummy.u, particles_dummy.x, phi,
                                      tn + h / 2)  # <- particles dummy = particles.u + kn
@@ -354,6 +368,9 @@ class Integrators:
             particles.remove(lpi)
         #         print('Done with k2', np.shape(ku1), np.shape(particles_dummy.u))
 
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
         # k3==================================================
         ku3 = h * self.lorentz_force(particles_dummy.u, particles_dummy.x, phi,
                                      tn + h / 2)  # <- particles dummy = particles.u + kn
@@ -388,6 +405,9 @@ class Integrators:
             particles.remove(lpi)
         #         print('Done with k3', np.shape(ku1), np.shape(particles_dummy.u))
 
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
         # k4=======================================================
         ku4 = h * self.lorentz_force(particles_dummy.u, particles_dummy.x, phi,
                                      tn + h)  # <- particles dummy = particles.u + kn
@@ -425,6 +445,10 @@ class Integrators:
         if len(lpi) != 0:
             particles.remove(lpi)
 
+        # check if all particles are lost
+        if particles.len == 0:
+            return False
+
         plot_path(particles)
 
     def rk_update_k(self, ku_list, kx_list, lpi):
@@ -460,13 +484,12 @@ class Integrators:
                 #                 print(pind+4, particles.x[pind+4])
                 print(exc)
                 break
-        #         if error:
-        #             return 0
 
         e = scl * np.array(e) * exp(1j * (w * tn + phi))
         # e = scl*np.array([gfu_E[n](mesh(*p)) for p in particles.x])*exp(1j*(w*t + phi))
         b = mu0 * scl * np.array([gfu_H[n](mesh(*p)) for p in pos]) * exp(1j * (w * tn + phi))
 
+        #         print(pos.shape, b.shape)
         k = q0 / m0 * np.sqrt(1 - (norm(u) / c0) ** 2) * (
                     e.real + cross(u, b.real) - (1 / c0 ** 2) * (dot(u, e.real) * u))  # <- relativistic
 
@@ -606,24 +629,27 @@ for epk in Epks_array:
 
     v_init = 2  # eV
     # v_init = [(), ()]  # <- initial velocities in eV
-    particles = Particles([0.01, 0.011], v_init, xsurf, cmap='cool')
-    particles2 = Particles([0.01, 0.011], v_init, xsurf, cmap='binary')
-    particles3 = Particles([0.01, 0.011], v_init, xsurf, cmap='Wistia')
-    particles4 = Particles([0.01, 0.011], v_init, xsurf, cmap='summer_r')
+    init_pos = [-0.05, 0.05]
+    particles = Particles(init_pos, v_init, xsurf, cmap='cool')
+    particles2 = Particles(init_pos, v_init, xsurf, cmap='binary')
+    particles3 = Particles(init_pos, v_init, xsurf, cmap='Wistia')
+    particles4 = Particles(init_pos, v_init, xsurf, cmap='summer_r')
 
     ax.plot(particles.bounds[:, 0], particles.bounds[:, 1], marker='o', ms=3, mec='k', mfc='none')
     print("No of initial particles: ", particles.len)
     print("= " * 50)
 
     t = 0
+    t2 = 0
     dt = 1e-11
+    dt2 = 5e-11
     w = 2 * np.pi * freq_fes[n] * 1e6
     PHI = [0]  # <- initial phase
 
     # move particles with initial velocity. ensure all initial positions after first move lie inside the bounds
-    particles.x = particles.x + particles.u * dt
+    particles.x = particles.x + particles.u * dt2
     particles2.x = particles2.x + particles2.u * dt
-    particles3.x = particles3.x + particles3.u * dt
+    particles3.x = particles3.x + particles3.u * dt2
     particles4.x = particles4.x + particles4.u * dt
 
     e_check_list = []
@@ -636,20 +662,30 @@ for epk in Epks_array:
     PLOT = False
 
     for phi in PHI:
-        while t < T and particles.len != 0:
-            particles.save_old()
+        while t < T:
+            #             if particles.len != 0:
+            #                 particles.save_old()
+            #                 integrators.forward_euler(particles, phi, t2, dt2)
+            #                 particles.update_record()
 
-            #             try:
-            integrators.forward_euler(particles, phi, t, dt)
-            integrators.rk4(particles2, phi, t, dt)
-            integrators.rk2(particles3, phi, t, dt)
-            integrators.rk2_23(particles4, phi, t, dt)
-            #             except:
-            #                 break
+            if particles2.len != 0:
+                particles2.save_old()
+                integrators.rk4(particles2, phi, t, dt)
+                particles2.update_record()
 
-            particles.update_record()
+            #             if particles3.len != 0:
+            #                 particles3.save_old()
+            #                 integrators.rk4(particles3, phi, t2, dt2)
+            #                 particles3.update_record()
+
+            #             if particles4.len != 0:
+            #                 particles4.save_old()
+            #                 integrators.rk2_23(particles4, phi, t, dt)
+            #                 particles4.update_record()
+
             counter += 1
             t += dt
+            t2 += dt2
 
     print(f'Epk: {epk}, Number of particles left: {particles.len}')
     no_of_remaining_particles.append(particles.len)
