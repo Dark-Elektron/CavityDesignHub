@@ -6,14 +6,14 @@ from scipy.optimize import fsolve
 
 def drawCavity(folder=None):
     # 21578127116
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
+    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
+    # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
+    # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
 
-    # # TESLA end cell 1
-    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = 42, 42, 12, 19, 35, 57.6524, 103.353
-    # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
-    # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
+    # TESLA end cell 1
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = 42, 42, 12, 19, 35, 57.6524, 103.353
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
 
     # midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
     #                      71.98698698698699, 93.5, 171.1929])*1e-3
@@ -28,9 +28,9 @@ def drawCavity(folder=None):
     # endTESLA_r = np.array([68.12, 68.12, 14.60, 20.76, 63.25, 92.14, 167.62]) * 1e-3
     #
     # # # # TESLA end cell 2
-    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3795
-    # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = midC3795
-    # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = midC3795
+    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midTESLA
+    # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = endTESLA_l
+    # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = endTESLA_r
 
     n_cell = 3
     step = 1  # step in boundary points in mm

@@ -19,7 +19,7 @@ setup(
     license=license,
     python_requires='>=3.0, <4',
     install_requires=[
-        'pandas==0.23.3',
+        'pandas>=2.0.0',
         'numpy>=1.14.5',
         'matplotlib>=2.2.0'
     ],
