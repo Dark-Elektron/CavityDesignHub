@@ -298,11 +298,11 @@ class ABCIGeometry(Geometry):
                 f.write(f' &BEAM  SIG = {SIG}, ISIG = {ISIG}, RDRIVE = {RDRIVE}, MROT = {MROT}  &END \n')
                 # f.write(' &BEAM  SIG = {}, MROT = {}, RDRIVE = {}  &END \n'.format(SIG, MROT, beam_offset))
                 f.write(f' &TIME  MT = {int(MT)} &END \n')
-                f.write(f' &WAKE  UBT = {int(UBT)}, LCRBW = .{LCRBW}. &END \n')
+                f.write(f' &WAKE  UBT = {int(UBT)}, LCRBW = .{LCRBW}., NFS = {NFS} &END \n')
                 # f.write(' &WAKE  UBT = {}, LCHIN = .F., LNAPOLY = .F., LNONAP = .F. &END \n'.format(UBT, wake_offset))
                 # f.write(' &WAKE R  = {}   &END \n'.format(wake_offset))
                 f.write(f' &PLOT  LCAVIN = .T., LCAVUS = .F., LPLW = .T., LFFT = .T., LSPEC = .T., '
-                        f'LINTZ = .F., LPATH = .T., NFS = {NFS} &END \n')
+                        f'LINTZ = .F., LPATH = .T. &END \n')
                 f.write(f' &PRIN  LMATPR = .{LMATPR}., LPRW = .{LPRW}., LPPW = .{LPPW}., LSVW = .{LSVW}., '
                         f'LSVWA = .{LSVWA}., LSVWT = .{LSVWT}., LSVWL = .{LSVWL}.,  LSVF = .{LSVF}.   &END\n')
                 f.write('\nSTOP\n')

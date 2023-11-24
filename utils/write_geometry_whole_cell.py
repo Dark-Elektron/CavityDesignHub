@@ -10,15 +10,15 @@ def drawCavity(folder=None):
     # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
     # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
 
-    # TESLA end cell 1
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = 42, 42, 12, 19, 35, 57.6524, 103.353
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 40.34, 40.34, 10, 13.5, 39, 55.716, 103.353
+    # # TESLA end cell 1
+    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = np.array([42, 42, 12, 19, 35, 57.6524, 103.353])*1e-3
+    # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array([40.34, 40.34, 10, 13.5, 39, 55.716, 103.353])*1e-3
+    # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array([40.34, 40.34, 10, 13.5, 39, 55.716, 103.353])*1e-3
 
-    # midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
-    #                      71.98698698698699, 93.5, 171.1929])*1e-3
-    # endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
-    #                      80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
+    midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
+                         71.98698698698699, 93.5, 171.1929])*1e-3
+    endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
+                         80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
     #
     # midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591])*1e-3
     # endFCCUROS5 = np.array([66.5, 51, 17, 23, 78, 85.77, 166.591]) * 1e-3
@@ -28,14 +28,14 @@ def drawCavity(folder=None):
     # endTESLA_r = np.array([68.12, 68.12, 14.60, 20.76, 63.25, 92.14, 167.62]) * 1e-3
     #
     # # # # TESLA end cell 2
-    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midTESLA
-    # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = endTESLA_l
-    # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = endTESLA_r
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3795
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = midC3795
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = midC3795
 
-    n_cell = 3
-    step = 1  # step in boundary points in mm
-    L_bp_l = 4 * L_m  # 0.0001  #
-    L_bp_r = 4 * L_m  # 0.0001  #
+    n_cell = 1
+    step = 0.1  # step in boundary points in mm
+    L_bp_l = 0.000  #4 * L_m  #
+    L_bp_r = 0.000  #4 * L_m  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -839,7 +839,7 @@ def arcTo2(x_center, y_center, a, b, step, start_angle, end_angle):
         # end point of curve
         x_end, y_end = u + a * np.cos(sa), v + b * np.sin(sa)
 
-        t = np.arange(ea, sa, np.pi / 70)
+        t = np.arange(ea, sa, np.pi / 200)
         # t = np.linspace(ea, sa, 100)
         # check if end angle is included, include if not
         if sa not in t:
@@ -849,7 +849,7 @@ def arcTo2(x_center, y_center, a, b, step, start_angle, end_angle):
         # end point of curve
         x_end, y_end = u + a * np.cos(ea), v + b * np.sin(ea)
 
-        t = np.arange(sa, ea, np.pi / 70)
+        t = np.arange(sa, ea, np.pi / 200)
         # t = np.linspace(ea, sa, 100)
         if ea not in t:
             t = np.append(t, ea)
@@ -869,7 +869,7 @@ def arcTo(x_center, y_center, a, b, step, start, end):
     a = a  # radius on the x-axis
     b = b  # radius on the y-axis
 
-    t = np.arange(0, 2 * np.pi, np.pi / 70)
+    t = np.arange(0, 2 * np.pi, np.pi / 100)
 
     x = u + a * np.cos(t)
     y = v + b * np.sin(t)
@@ -885,6 +885,6 @@ def arcTo(x_center, y_center, a, b, step, start, end):
 
 if __name__ == '__main__':
 
-    drawCavity()
+    drawCavity(r'D:\Dropbox\CavityDesignHub\utils')
     # drawCavity_flat_top()
     # drawCapacitor()

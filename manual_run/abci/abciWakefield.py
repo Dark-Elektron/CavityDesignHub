@@ -181,13 +181,12 @@ class ABCIWakefield(Geometry):
                     f.write('0 0 \n')
                     f.write('9999. 9999. \n')
 
-                f.write(' &BEAM  SIG = {}, MROT = {}  &END \n'.format(SIG, MROT))
+                f.write(' &BEAM  SIG = {}, MROT = {} &END \n'.format(SIG, MROT))
                 f.write(' &TIME  MT = {} &END \n'.format(MT))
-                f.write(' &WAKE  UBT = {} &END \n'.format(UBT))
+                f.write(' &WAKE  UBT = {}, NFS = {}  &END \n'.format(UBT, NFS))
                 f.write(' &WAKE   &END \n')
                 f.write(
-                    ' &PLOT  LCAVIN = .T., LCAVUS = .T., LPLW = .T., LFFT = .T., LSPEC = .T., LINTZ = .F., LPATH = .T., NFS = {} &END \n'.format(
-                        NFS))
+                    ' &PLOT  LCAVIN = .T., LCAVUS = .T., LPLW = .T., LFFT = .T., LSPEC = .T., LINTZ = .F., LPATH = .T.&END \n')
                 f.write(' &PRIN  LPRW = .T. ,LSVW = .T., LSVWL = .T.,  LSVF = .T.   &END\n')
                 f.write('\nSTOP\n')
 
