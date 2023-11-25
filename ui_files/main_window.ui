@@ -204,7 +204,7 @@ color: rgb(255, 255, 255);</string>
              </size>
             </property>
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter project name without spaces. &lt;/p&gt;&lt;p&gt; Click enter to create project.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter project name without spaces.&lt;/p&gt;&lt;p&gt;Click enter to create project.  &lt;/p&gt;&lt;p&gt;Ensure also that the project save directory does not contain a dot otherwise, ABCI crashes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -446,7 +446,7 @@ color: rgb(255, 255, 255);</string>
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>963</width>
+                          <width>958</width>
                           <height>1062</height>
                          </rect>
                         </property>
@@ -882,7 +882,7 @@ P R O C E S S</string>
                       <rect>
                        <x>0</x>
                        <y>0</y>
-                       <width>537</width>
+                       <width>534</width>
                        <height>1010</height>
                       </rect>
                      </property>
