@@ -1606,13 +1606,13 @@ def linspace(start, stop, step=1.):
     Output is: array([1., 1.5, 2., 2.5, 3.])
     """
     if start < stop:
-        ll = np.linspace(start, stop, int((stop - start) / abs(step) + 1))
+        ll = np.linspace(start, stop, int(np.ceil((stop - start) / abs(step) + 1)))
         if stop not in ll:
             ll = np.append(ll, stop)
 
         return ll
     else:
-        ll = np.linspace(stop, start, int((start - stop) / abs(step) + 1))
+        ll = np.linspace(stop, start, int(np.ceil((start - stop) / abs(step) + 1)))
         if start not in ll:
             ll = np.append(ll, start)
         return ll
@@ -1660,49 +1660,14 @@ def lineTo(prevPt, nextPt, step, plot=True):
         plt.plot(px, py)
 
 
-def arcTo2(x_center, y_center, a, b, step, start_angle, end_angle, plot=True):
-    u = x_center  # x-position of the center
-    v = y_center  # y-position of the center
-    a = a  # radius on the x-axis
-    b = b  # radius on the y-axis
-    sa = (start_angle / 360) * 2 * np.pi  # convert angle to radians
-    ea = (end_angle / 360) * 2 * np.pi  # convert angle to radians
-
-    if ea < sa:
-        # end point of curve
-        x_end, y_end = u + a * np.cos(sa), v + b * np.sin(sa)
-
-        t = np.arange(ea, sa, np.pi / 70)
-        # t = np.linspace(ea, sa, 100)
-        # check if end angle is included, include if not
-        if sa not in t:
-            t = np.append(t, sa)
-        t = t[::-1]
-    else:
-        # end point of curve
-        x_end, y_end = u + a * np.cos(ea), v + b * np.sin(ea)
-
-        t = np.arange(sa, ea, np.pi / 70)
-        # t = np.linspace(ea, sa, 100)
-        if ea not in t:
-            t = np.append(t, ea)
-
-    # print("t0 ", [(u + a * np.cos(t))[0], (v + b * np.sin(t))[0]])
-    # ic([u + a * np.cos(t), v + b * np.sin(t)])
-    # ic()
-    if plot:
-        plt.plot(u + a * np.cos(t), v + b * np.sin(t))
-
-    return [x_end, y_end]
-
-
 def arcTo(x_center, y_center, a, b, step, start, end, plot=True):
-    u = x_center  # x-position of the center
-    v = y_center  # y-position of the center
-    a = a  # radius on the x-axis
-    b = b  # radius on the y-axis
+    u = x_center  # <- x-position of the center
+    v = y_center  # <- y-position of the center
+    a = a  # <- radius on the x-axis
+    b = b  # <- radius on the y-axis
+    C = np.pi*(a+b)  # <- approximate perimeter of ellipse
 
-    t = np.arange(0, 2 * np.pi, np.pi / 70)
+    t = np.arange(0, 2 * np.pi, np.pi / int(C/step))
 
     x = u + a * np.cos(t)
     y = v + b * np.sin(t)

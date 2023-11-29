@@ -33,7 +33,7 @@ def drawCavity(folder=None):
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = midC3795
 
     n_cell = 1
-    step = 0.1  # step in boundary points in mm
+    step = 0.0005  # step in boundary points in mm
     L_bp_l = 0.000  #4 * L_m  #
     L_bp_r = 0.000  #4 * L_m  #
 
@@ -772,14 +772,15 @@ def linspace(start, stop, step=1.):
     This is inclusive to stop, so if start=1, stop=3, step=0.5
     Output is: array([1., 1.5, 2., 2.5, 3.])
   """
+    # print('\t\t', start, stop, int((stop - start) / abs(step) + 1))
     if start < stop:
-        ll = np.linspace(start, stop, int((stop - start) / abs(step) + 1))
+        ll = np.linspace(start, stop, int(np.ceil((stop - start) / abs(step) + 1)))
         if stop not in ll:
             ll = np.append(ll, stop)
 
         return ll
     else:
-        ll = np.linspace(stop, start, int((start - stop) / abs(step) + 1))
+        ll = np.linspace(stop, start, int(np.ceil((start - stop) / abs(step) + 1)))
         if start not in ll:
             ll = np.append(ll, start)
         return ll
@@ -788,7 +789,7 @@ def linspace(start, stop, step=1.):
 def lineTo(prevPt, nextPt, step):
     if prevPt[0] == nextPt[0]:
         # vertical line
-        # chwxk id nextPt is greater
+        # check id nextPt is greater
         if prevPt[1] < nextPt[1]:
             py = linspace(prevPt[1], nextPt[1], step)
         else:
@@ -824,52 +825,17 @@ def lineTo(prevPt, nextPt, step):
             py = linspace(nextPt[1], prevPt[1], step * np.sin(ang))
             py = py[::-1]
 
-    plt.plot(px, py)
-
-
-def arcTo2(x_center, y_center, a, b, step, start_angle, end_angle):
-    u = x_center  # x-position of the center
-    v = y_center  # y-position of the center
-    a = a  # radius on the x-axis
-    b = b  # radius on the y-axis
-    sa = (start_angle / 360) * 2 * np.pi  # convert angle to radians
-    ea = (end_angle / 360) * 2 * np.pi  # convert angle to radians
-
-    if ea < sa:
-        # end point of curve
-        x_end, y_end = u + a * np.cos(sa), v + b * np.sin(sa)
-
-        t = np.arange(ea, sa, np.pi / 200)
-        # t = np.linspace(ea, sa, 100)
-        # check if end angle is included, include if not
-        if sa not in t:
-            t = np.append(t, sa)
-        t = t[::-1]
-    else:
-        # end point of curve
-        x_end, y_end = u + a * np.cos(ea), v + b * np.sin(ea)
-
-        t = np.arange(sa, ea, np.pi / 200)
-        # t = np.linspace(ea, sa, 100)
-        if ea not in t:
-            t = np.append(t, ea)
-
-    # print("t0 ", [(u + a * np.cos(t))[0], (v + b * np.sin(t))[0]])
-    # ic([u + a * np.cos(t), v + b * np.sin(t)])
-    # ic()
-
-    plt.plot(u + a * np.cos(t), v + b * np.sin(t))
-
-    return [x_end, y_end]
+    plt.plot(px, py, marker='x')
 
 
 def arcTo(x_center, y_center, a, b, step, start, end):
-    u = x_center  # x-position of the center
-    v = y_center  # y-position of the center
-    a = a  # radius on the x-axis
-    b = b  # radius on the y-axis
+    u = x_center  # <- x-position of the center
+    v = y_center  # <- y-position of the center
+    a = a  # <- radius on the x-axis
+    b = b  # <- radius on the y-axis
+    C = np.pi*(a+b)  # <- approximate perimeter of ellipse
 
-    t = np.arange(0, 2 * np.pi, np.pi / 100)
+    t = np.arange(0, 2 * np.pi, np.pi / int(C/step))
 
     x = u + a * np.cos(t)
     y = v + b * np.sin(t)
@@ -878,7 +844,7 @@ def arcTo(x_center, y_center, a, b, step, start, end):
     inbox = pts[inidx]
     inbox = inbox[inbox[:, 0].argsort()]
 
-    plt.plot(inbox[:, 0], inbox[:, 1])
+    plt.plot(inbox[:, 0], inbox[:, 1], marker='+')
 
     return inbox
 
