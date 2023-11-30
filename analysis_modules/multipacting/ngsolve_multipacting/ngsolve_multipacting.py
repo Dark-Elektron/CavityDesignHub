@@ -1,17 +1,9 @@
-% % time
-# check with defined functions
 
-% matplotlib
-notebook
-# calling it a second time may prevent some graphics errors
-% matplotlib
-notebook
-plt.close()
-plt.rcParams["figure.figsize"] = (9, 4)
 import copy
 import time
 import matplotlib
 from matplotlib import cm
+import numpy as np
 
 
 def get_cmap(n, name='jet'):
