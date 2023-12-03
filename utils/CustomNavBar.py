@@ -33,8 +33,10 @@ class MyCustomToolbar(NavigationToolbar):
                      ('Customize', 'Edit axis, curve and image parameters', 'options', 'edit_parameters'),
                      ('Plot format', 'Edit rcParams, curve and image parameters', 'options', 'rcParams'),
                      (None, None, None, None),
-                     ('Linear', 'Linear scale', 'lin', 'linear_scale'),
-                     ('Log', 'Log scale', 'log', 'log_scale'),
+                     ('LinearX', 'Linear scale x', 'lin', 'linear_scale_x'),
+                     ('LinearY', 'Linear scale y', 'lin', 'linear_scale_y'),
+                     ('LogX', 'Log scale x', 'log', 'log_scale_x'),
+                     ('LogY', 'Log scale y', 'log', 'log_scale_y'),
                      ('Decibel', 'Decibel', 'dB', 'decibel_scale'),
                      (None, None, None, None),
                      ('Grid', 'Toggle Grid', 'grid', 'toggle_grid'),
@@ -183,11 +185,17 @@ class MyCustomToolbar(NavigationToolbar):
             pm.setMask(mask)
         return QIcon(pm)
 
-    def linear_scale(self):
-        self.canvas.change_scale('linear')
+    def linear_scale_x(self):
+        self.canvas.change_scale_x('linear')
 
-    def log_scale(self):
-        self.canvas.change_scale('log')
+    def log_scale_x(self):
+        self.canvas.change_scale_x('log')
+
+    def linear_scale_y(self):
+        self.canvas.change_scale_y('linear')
+
+    def log_scale_y(self):
+        self.canvas.change_scale_y('log')
 
     def decibel_scale(self):
         pass

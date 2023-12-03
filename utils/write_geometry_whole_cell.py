@@ -835,7 +835,7 @@ def arcTo(x_center, y_center, a, b, step, start, end):
     b = b  # <- radius on the y-axis
     C = np.pi*(a+b)  # <- approximate perimeter of ellipse
 
-    t = np.arange(0, 2 * np.pi, np.pi / int(C/step))
+    t = np.arange(0, 2 * np.pi, np.pi / int(np.ceil(C/step)))
 
     x = u + a * np.cos(t)
     y = v + b * np.sin(t)

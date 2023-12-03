@@ -199,7 +199,13 @@ class Plot(FigureCanvasQTAgg):
         self.fig.canvas.draw_idle()
         self.fig.canvas.flush_events()
 
-    def change_scale(self, arg):
+    def change_scale_x(self, arg):
+        self.ax.set_xscale(arg)
+        self.ax_right.set_xscale(arg)
+        self.fig.canvas.draw()
+        self.fig.canvas.flush_events()
+
+    def change_scale_y(self, arg):
         self.ax.set_yscale(arg)
         self.ax_right.set_yscale(arg)
         self.fig.canvas.draw()
