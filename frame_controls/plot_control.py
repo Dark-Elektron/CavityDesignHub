@@ -529,7 +529,7 @@ class PlotControl:
         self.ui.cb_Line_Style.currentTextChanged.connect(
             lambda: self.plt.update_object_properties({'ls': self.ui.cb_Line_Style.currentText()}))
         self.ui.cb_Marker.currentTextChanged.connect(
-            lambda: self.plt.update_object_properties({'marker': self.ui.cb_Marker.currentText()}))
+            lambda: self.plt.update_object_properties({'marker': self.ui.cb_Marker.currentText(), 'mec': 'k'}))
         self.ui.dsb_Marker_Size.valueChanged.connect(
             lambda: self.plt.update_object_properties({'ms': self.ui.dsb_Marker_Size.value()}))
         self.ui.dsb_Alpha.valueChanged.connect(
@@ -575,6 +575,10 @@ class PlotControl:
         self.ui.pb_Add_Row.clicked.connect(self.tableWidget.add_row)
         # clear plots
         self.ui.pb_Clear.clicked.connect(lambda: self.clear_plots())
+        # clear lines
+        self.ui.pb_Clear_Lines.clicked.connect(lambda: self.clear_lines())
+        # clear texts
+        self.ui.pb_Clear_Texts.clicked.connect(lambda: self.clear_texts())
 
         # signals for cutoff
         # self.ui.cb_Check_1.clicked.connect(lambda: self.plot_cutoff(0, self.ui.cb_Check_1))
@@ -713,6 +717,39 @@ class PlotControl:
         # except Exception as e:
         #     self.log.error("Please enter a valid argument: Exception: ", e)
 
+    def clear_lines(self):
+        keys = self.plot_dict.keys()
+        # reset plot dict
+        for key in keys:
+            self.plot_dict[key]["plot data"] = {}
+            self.plot_dict[key]["plot object"] = {}
+
+        # remove lines from axis
+        lines = self.ax.get_lines()
+        for line in lines:
+            line.remove()
+
+        # reset color cycler
+        self.ax.set_prop_cycle(None)
+        self.ax_right.set_prop_cycle(None)
+
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+
+    def clear_texts(self):
+        # remove texts from axis
+        annotations = [child for child in self.ax.get_children() if isinstance(child, matplotlib.text.Annotation)]
+        texts_count = len(annotations)
+        for i in range(texts_count):
+            annotations[i].remove()
+
+        self.plt.text_dict = {}
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+
+    def clear_patches(self):
+        pass
+
     def clear_plots(self):
 
         self.ax.cla()
@@ -723,17 +760,19 @@ class PlotControl:
             self.axins.remove()
             self.axins = None
 
+        keys = self.plot_dict.keys()
         # reset plot dict
-        for key, val in self.plot_dict.items():
+        for key in keys:
             self.plot_dict[key]["plot data"] = {}
             self.plot_dict[key]["plot object"] = {}
 
         # clear annotations
         self.plt.clear()
 
+        keys = self.ax_obj_dict.keys()
         # clear cutoff frequency lines
-        for _, val in self.ax_obj_dict.items():
-            del val
+        for key in keys:
+            del self.ax_obj_dict[key]
         self.ax_obj_dict = {}
 
         self.fig.canvas.draw_idle()
