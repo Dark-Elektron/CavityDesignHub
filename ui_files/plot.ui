@@ -417,7 +417,7 @@
                                 <rect>
                                  <x>0</x>
                                  <y>0</y>
-                                 <width>636</width>
+                                 <width>608</width>
                                  <height>84</height>
                                 </rect>
                                </property>
@@ -726,7 +726,7 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>794</width>
+                        <width>822</width>
                         <height>1199</height>
                        </rect>
                       </property>
@@ -2126,7 +2126,7 @@
                                   <widget class="QComboBox" name="cb_Marker">
                                    <item>
                                     <property name="text">
-                                     <string>&quot; &quot;</string>
+                                     <string>None</string>
                                     </property>
                                    </item>
                                    <item>

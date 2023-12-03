@@ -293,7 +293,7 @@ class MainWindow:
         self.ui.pb_Save_State.clicked.connect(lambda: self.serialise())
 
         # # load state file
-        # self.ui.pb_Load_State_File.clicked.connect(lambda: self.deserialise())
+        self.ui.pb_Load_State_File.clicked.connect(lambda: self.load_last_state())
 
         # expand/collapse session log
         self.ui.pb_Expand_Collapse_Log.clicked.connect(lambda: animate_width(self.ui.w_Log, 0, 375, True, 'min'))
@@ -650,10 +650,14 @@ class MainWindow:
 
         """
 
-        # try:
-        self.deserialise(Path('ui_state_files/state_file.json'))
-        # except AttributeError as e:
-        #     print("Could not deserialise state file: ", e)
+        try:
+            self.deserialise(Path('ui_state_files/state_file.json'))
+        except AttributeError as e:
+            try:
+                print("Could not deserialise state file: state_file.json", e)
+                self.deserialise(Path('ui_state_files/state_file.json'))
+            except AttributeError as e:
+                print("\t Could not deserialise state file: ui_state_files/state_file.json", e)
 
     def checkIfPathExist(self, directory, folder):
         path = Path(f"{directory}/{folder}")

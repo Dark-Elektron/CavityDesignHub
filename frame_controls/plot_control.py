@@ -1,6 +1,6 @@
 import itertools
 import os.path
-
+import matplotlib
 import pandas as pd
 import scipy
 from PyQt5 import QtGui
@@ -2220,9 +2220,42 @@ class PlotControl:
     @staticmethod
     def get_line_properties(line):
         attr_dict = {'ls': line.get_linestyle(), 'color': line.get_color(), 'lw': line.get_linewidth(),
+                     'marker': line.get_marker(),
                      'ms': line.get_markersize(), 'mec': line.get_markeredgecolor(), 'mew': line.get_markeredgewidth(),
                      'mfc': line.get_markerfacecolor()}
 
+        return attr_dict
+
+    @staticmethod
+    def get_annotation_properties(text):
+        if text.get_bbox_patch():
+            box = 'None'
+            boxstyle_obj = text.get_bbox_patch().get_boxstyle()
+            if isinstance(boxstyle_obj, matplotlib.patches.BoxStyle.Round):
+                 box = 'Round'
+            elif isinstance(boxstyle_obj, matplotlib.patches.BoxStyle.Square):
+                box = 'Square'
+            elif isinstance(boxstyle_obj, matplotlib.patches.BoxStyle.Round4):
+                box = 'Round4'
+            elif isinstance(boxstyle_obj, matplotlib.patches.BoxStyle.Ellipse):
+                box = 'Ellipse'
+
+            attr_dict = {'text': text.get_text(), 'color': text.get_color(), 'style': text.get_style(),
+                         'fontsize': text.get_fontsize(), 'rotation': text.get_rotation(), 'position': text.get_position(),
+                         'fontname': text.get_fontname(),
+                         'box': box,
+                         'usetex': text.get_usetex()}
+        else:
+            attr_dict = {'text': text.get_text(), 'color': text.get_color(), 'style': text.get_style(),
+                         'fontsize': text.get_fontsize(), 'rotation': text.get_rotation(), 'position': text.get_position(),
+                         'fontname': text.get_fontname(),
+                         # 'font': text.get_font(), 'bbox_patch': text.get_bbox_patch(),
+                         'usetex': text.get_usetex()}
+        # print(text.get_bbox_patch())
+        # print(text.get_bbox_patch().get_width())
+        # print(text.get_bbox_patch().get_boxstyle().stylename)
+        # print(text.get_bbox_patch().get_facecolor())
+        # print(text.get_bbox_patch().get_edgecolor())
         return attr_dict
 
     @staticmethod
@@ -2322,10 +2355,12 @@ class PlotControl:
 
         state_dict['plot_table_widget'] = table_widget_state
 
+        # print([child for child in ax.get_children() if isinstance(child, matplotlib.text.Annotation)])
         plot_objects_attr = {"lines": [self.get_line_properties(line) for line in self.ax.get_lines()],
                              "collections": [self.get_line_properties(coll) for coll in self.ax.collections],
-                             "patches": [],
+                             "annotations": [self.get_annotation_properties(text) for text in self.ax.get_children() if isinstance(text, matplotlib.text.Annotation)],
                              }
+
         state_dict['plot_objects_attr'] = plot_objects_attr
 
     def deserialise(self, state_dict):
@@ -2441,10 +2476,22 @@ class PlotControl:
                 for n, line in enumerate(self.ax.get_lines()):
                     line.set(**plot_objects_attr['lines'][n])
             except IndexError:
-                pass
+                print('Index error in deserialising line attributes.')
+            try:
+                for n, text_attr in enumerate(plot_objects_attr['annotations']):
+                    if 'box' in text_attr.keys():
+                        self.plt.add_text(text_attr['text'], text_attr['box'], xy=text_attr['position'], xycoords='axes fraction',
+                                          xytext=None, textcoords='data', size=text_attr['fontsize'],
+                                          rotation=text_attr['rotation'], arrowprops=None)
+                    else:
+                        self.plt.add_text(text_attr['text'], 'None', xy=text_attr['position'], xycoords='axes fraction',
+                                          xytext=None, textcoords='data', size=text_attr['fontsize'],
+                                          rotation=text_attr['rotation'], arrowprops=None)
+            except IndexError:
+                print('Index error in deserialising annotations attributes.')
 
-            # for n, coll in enumerate(self.ax.collections):
-            #     coll.set(**plot_objects_attr['collections'][n])
+            for n, coll in enumerate(self.ax.collections):
+                coll.set(**plot_objects_attr['collections'][n])
 
             self.update_labels()
             self.fig.canvas.draw_idle()
