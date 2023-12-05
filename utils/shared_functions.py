@@ -1311,7 +1311,7 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
     A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array(end_cell_left[:7])*1e-3
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array(end_cell_right[:7])*1e-3
 
-    step = 1  # step in boundary points in mm
+    step = 0.0005  # step in boundary points in mm
 
     if beampipe.lower() == 'both':
         L_bp_l = 4 * L_m
@@ -1722,16 +1722,16 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
 
     elif BP.lower() == 'left':
         L_bp_l = 4 * L_m
-        L_bp_r = 0.0001
+        L_bp_r = 0.000
 
     elif BP.lower() == 'right':
-        L_bp_l = 0.0001
+        L_bp_l = 0.000
         L_bp_r = 4 * L_m
     else:
-        L_bp_l = 0.0001
-        L_bp_r = 0.0001
+        L_bp_l = 0.000
+        L_bp_r = 0.000
 
-    step = 1  # step in boundary points in mm
+    step = 0.0005
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -2079,7 +2079,7 @@ def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_
     A_el, B_el, a_el, b_el, Ri_el, L_el, Req = end_cell_left[:7]
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req = end_cell_right[:7]
 
-    step = 1  # step in boundary points in mm
+    step = 0.0005
 
     if beampipe.lower() == 'both':
         L_bp_l = 4 * L_m
@@ -2748,7 +2748,7 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
     A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array(end_cell_left[:7])*1e-3
     A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array(end_cell_right[:7])*1e-3
 
-    step = 1  # step in boundary points in mm
+    step = 0.0005
 
     if beampipe.lower() == 'both':
         L_bp_l = 4 * L_m

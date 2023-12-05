@@ -1849,7 +1849,7 @@ class Cavity:
             Name given to the cavity. This is the name that will appear in plots.
         op_field:
             Electric field value at which the cavity is to operate.
-        wp: float
+        wp: str
             Working point of the cavity.
         op_temp: str
             Temperature at which the cavity is designed to operate
@@ -3170,6 +3170,57 @@ def h_study():
     # plt.show()
 
 
+def c3794_study():
+    # MUCOL STUDY
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
+
+    abci_dirs = [
+        fr"{parent_dir_abci}\C3794_n2\monopole"
+    ]
+
+    # RCS
+    V = 1 * 1e9  # <- V
+    wp = 'W'  # working point
+    sigma = 'SR_3.55mm'
+    machine = "FCC-ee"
+
+    C3794 = Cavity(vrf=V, inv_eta=745, name="C3794", op_field=10.61e6, op_temp='2K', material='bulkNb',
+                          wp=wp, sigma=sigma, plot_label="C3794",
+                          slans_dir=fr"{parent_dir_slans}\C3794",
+                          abci_dir=fr"{parent_dir_abci}\C3794", Q0=1e10)
+
+    cavities = Cavities([C3794], save_folder='C3794', machine=machine, particle='electron')
+
+    E_acc = np.linspace(0.5, 50, 100) * 1e6  # V/m
+    cavities.compare_power(E_acc=E_acc)
+    cavities.plot_power_comparison()
+    cavities.plot_compare_bar()
+    cavities.plot_compare_fm_bar()
+    cavities.plot_compare_hom_bar()
+
+    # print(cavities)
+    # print(c3795_tt)
+    cavities.plot_cavities_contour('mid')
+
+    cavities.plot_ql_vs_pin()
+    cavities.plot_cryomodule_comparison()
+    # cavities.plot_axis_fields()
+    # cavities.plot_surface_fields()
+
+    # makr summaries
+    cavities.make_latex_summary_tables()
+    cavities.make_excel_summary()
+
+    # multipacting
+    multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3794"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+
+    to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
+    # for tp in to_plot:
+    # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    # cavities.plot_dispersion()
+
 if __name__ == '__main__':
 
     wp = 'MuCol RCS Stage 1'  # working point
@@ -3177,8 +3228,9 @@ if __name__ == '__main__':
     sigma = 'SR_13.0mm'
     # mucol_study()
 
-    mucol_study_2()
+    # mucol_study_2()
     # mucol_study_3()
+    c3794_study()
     # print(PARTICLE['electron']['rc [m]'])
     # print(PARTICLE['muon']['rc [m]'])
     # print(PARTICLE['proton']['rc [m]'])

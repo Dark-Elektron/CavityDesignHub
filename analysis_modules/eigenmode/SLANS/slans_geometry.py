@@ -305,9 +305,9 @@ class SLANSGeometry(Geometry):
         beta, f_shift, n_modes = 1, f_shift, n_modes + 1
 
         if pol.lower() == 'monopole':
-            self.write_dtr(path, filename, beta, f_shift, n_modes, maxiter=mesh[3])
+            self.write_dtr(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
         else:
-            self.write_dtr_2(path, filename, beta, f_shift, n_modes, maxiter=mesh[3])
+            self.write_dtr_2(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
 
         slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc{p}'
         slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm{p}'
