@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import numpy as np
 from PyQt5.QtWidgets import *
+from matplotlib.widgets import RectangleSelector
 from termcolor import colored
 from frame_controls.edit_line2d import EditALine2DDialog
 from utils.file_reader import FileReader
@@ -90,9 +91,15 @@ class Plot(FigureCanvasQTAgg):
 
         # mouse constants
         self.PRESS = False
+        self.LEFT_PRESS = False
+        self.RIGHT_PRESS = False
         self.RELEASE = False
         self.MOTION = False
         self.PICK = False
+        self.DRAW = False
+
+        self.rect_temp = None
+        self.x0, self.y0 = 0, 0
 
         # plot appearance
         # self.aesthetics()
@@ -165,6 +172,12 @@ class Plot(FigureCanvasQTAgg):
 
     def signals(self):
         pass
+
+    def change_plot_mode(self, draw_checked):
+        if draw_checked == 2:
+            self.DRAW = True
+        else:
+            self.DRAW = False
 
     def set_axes_elements_color(self, color=None):
         if color is None:
@@ -259,14 +272,12 @@ class Plot(FigureCanvasQTAgg):
         # self.cid_axes_leave = self.fig.canvas.mpl_connect('axes_leave_event', self.leave_axes)
 
     def on_press(self, event):
-
         # check if zoom or pan mode is active to avoid selection of matplotlib objects
         if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
             return 0
 
         # get event position in fig size
         self.event_x, self.event_y = event.x, event.y
-
         # set global variable to True
         self.PRESS = True
 
@@ -374,48 +385,54 @@ class Plot(FigureCanvasQTAgg):
 
                 self.draw()
             else:
-                if event.inaxes is not None:
-                    for patch in self.ax.patches:
-                        if patch.contains(event)[0]:
-                            self.selected_object = patch
-                            # check format in which color was given
-                            if isinstance(patch.get_facecolor(), list) or isinstance(patch.get_facecolor(), tuple):
-                                color = mpl.colors.to_hex(patch.get_facecolor())
-                            else:
-                                color = patch.get_facecolor()
+                self.LEFT_PRESS = True
+                if self.DRAW:
+                    self.x0, self.y0 = event.xdata, event.ydata
+                    self.rect_temp = self.add_rectangle((self.x0, self.y0), 1, 1, ec='none', fc='red', alpha=0.3).rect
+                else:
+                    if event.inaxes is not None:
+                        for patch in self.ax.patches:
+                            if patch.contains(event)[0]:
+                                self.selected_object = patch
+                                # check format in which color was given
+                                if isinstance(patch.get_facecolor(), list) or isinstance(patch.get_facecolor(), tuple):
+                                    color = mpl.colors.to_hex(patch.get_facecolor())
+                                else:
+                                    color = patch.get_facecolor()
 
-                            self.color_widgets(color)
+                                self.color_widgets(color)
 
-                            # patch.set_edgecolor('red')  # Highlight the selected patch
-                            # self.fig.canvas.draw_idle()
-                # update color and properties
-                if isinstance(self.selected_object, matplotlib.lines.Line2D):
-                    # set color picker color
+                                # patch.set_edgecolor('red')  # Highlight the selected patch
+                                # self.fig.canvas.draw_idle()
+                    # update color and properties
+                    if isinstance(self.selected_object, matplotlib.lines.Line2D):
+                        # set color picker color
 
-                    # check format in which color was given
-                    if isinstance(self.selected_object.get_color(), list) \
-                            or isinstance(self.selected_object.get_color(), tuple):
-                        color = mpl.colors.to_hex(self.selected_object.get_color())
-                    else:
-                        color = self.selected_object.get_color()
+                        # check format in which color was given
+                        if isinstance(self.selected_object.get_color(), list) \
+                                or isinstance(self.selected_object.get_color(), tuple):
+                            color = mpl.colors.to_hex(self.selected_object.get_color())
+                        else:
+                            color = self.selected_object.get_color()
 
-                    self.color_widgets(color, self.selected_object)
+                        self.color_widgets(color, self.selected_object)
 
         if event.button == 2:  # MMB
             pass
 
         if event.button == 3:  # RIGHT
-            # selecting objects right click
-            if isinstance(self.selected_object, matplotlib.text.Annotation):
-                self.draggableTextContextMenuEvent(event)
-            elif isinstance(self.selected_object, matplotlib.lines.Line2D):
-                self.draggableAxvlineContextMenuEvent(event)
-            elif event.inaxes is not None:
-                for patch in self.ax.patches:
-                    if patch.contains(event)[0]:
-                        self.patchContextMenuEvent(event, patch)
-            else:
-                self.contextMenuEvent(event)
+                # selecting objects right click
+                if isinstance(self.selected_object, matplotlib.text.Annotation):
+                    self.draggableTextContextMenuEvent(event)
+
+                elif isinstance(self.selected_object, matplotlib.lines.Line2D):
+                    self.draggableAxvlineContextMenuEvent(event)
+                elif event.inaxes is not None:
+                    for patch in self.ax.patches:
+                        if patch.contains(event)[0]:
+                            self.patchContextMenuEvent(event, patch)
+                else:
+                    self.contextMenuEvent(event)
 
     def on_release(self, event):
         # check if zoom or pan mode is active to avoid selection of matplotlib objects
@@ -458,7 +475,6 @@ class Plot(FigureCanvasQTAgg):
 
         # check if zoom or pan mode is active to avoid selection of matplotlib objects
         if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
-
             return 0
 
         # vis = self.annot.get_visible()
@@ -474,6 +490,19 @@ class Plot(FigureCanvasQTAgg):
         #             self.annot.set_visible(False)
         #             self.fig.canvas.draw_idle()
         self.MOTION = True
+
+        if self.DRAW and self.PRESS and self.LEFT_PRESS:
+            x0, y0 = self.x0, self.y0
+            x1, y1 = event.xdata, event.ydata
+            if x0 and y0 and x1 and y1:
+                width = x1 - x0
+                height = y1 - y0
+
+                self.rect_temp.set_width(width)
+                self.rect_temp.set_height(height)
+                self.rect_temp.set_xy((self.x0, self.y0))
+                self.draw_idle()
+                self.flush_events()
 
         # if self.PRESS and self.MOTION:
 
@@ -562,6 +591,7 @@ class Plot(FigureCanvasQTAgg):
         arrowAct = contextMenu.addAction("Move axis marker to maximum")
 
         # get figure size and subtract from event.y because event.y counts bottom up.
+        # print(event.x, event.y, self.fig.get_size_inches()[1])
         action = contextMenu.exec_(
             self.mapToGlobal(QtCore.QPoint(event.x, int(self.fig.get_size_inches()[1] * self.fig.dpi) - event.y)))
 
@@ -764,6 +794,7 @@ class Plot(FigureCanvasQTAgg):
 
         # add to path dict
         self.patch_dict[f'{id(rect)}'] = dp
+        return dp
 
     def add_ellipse(self, pos, a, b, ec='b', fc='b', alpha=0.3):
         # add rectangule object

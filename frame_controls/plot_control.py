@@ -616,6 +616,9 @@ class PlotControl:
         self.ui.ccb_Operation_Points.currentTextChanged.connect(
             lambda: self.operation_points_selection(self.ui.ccb_Operation_Points.currentText()))
 
+        # change plot mode to draw
+        self.ui.cb_Draw.stateChanged.connect(lambda: self.plt.change_plot_mode(self.ui.cb_Draw.checkState()))
+
     def initUI(self):
         # self.createPlotTypeWidget()
         self.ui.w_Custom_Color.hide()

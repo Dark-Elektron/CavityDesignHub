@@ -17,23 +17,6 @@ class DraggableRectangle:
 
         # self.create_drag_points()
 
-    def create_drag_points(self):
-        x, y, width, height = self.rect.get_x(), self.rect.get_y(), self.rect.get_width(), self.rect.get_height()
-
-        # to ensure fixed width and height for the drag points always, convert fixed axes sizes (0.01, 0.01)
-        # to display units and then to datapoints.
-        xdisplay, ydisplay = self.rect.axes.transAxes.transform((0.005, 0.005))
-        xdata, ydata = self.rect.axes.transData.inverted().transform((xdisplay, ydisplay))
-
-        self.drag_points = [
-            Rectangle((x - 0.02, y - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True),
-            Rectangle((x + width - 0.02, y - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True),
-            Rectangle((x - 0.02, y + height - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True),
-            Rectangle((x + width - 0.02, y + height - 0.02), xdata, ydata, edgecolor='r', facecolor='r', picker=True)
-        ]
-        for drag_point in self.drag_points:
-            self.rect.axes.add_patch(drag_point)
-
     def connect(self):
         """connect to all the events we need"""
         self.cidpress = self.rect.figure.canvas.mpl_connect(
@@ -45,7 +28,6 @@ class DraggableRectangle:
 
     def on_press(self, event):
         """on button press we will see if the mouse is over us and store some data"""
-
         # check if zoom or pan mode is active to avoid selection of matplotlib objects
         if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
             return 0
@@ -606,6 +588,75 @@ class DraggableAxvline:
 
     def remove(self):
         self.axvline.remove()
+
+
+class DraggablePolygon:
+    lock = None
+    def __init__(self, poly):
+        self.press = None
+
+        self.geometry = [[0.0,0.0],[0.1,0.05],[0.2,0.15],[0.3,0.20],[0.4,0.25],[0.5,0.30],
+                    [0.6,0.25],[0.7,0.15],[0.8,0.05],[0.9,0.025],[1.0,0.0]]
+        # self.newGeometry = []
+        # poly = plt.Polygon(self.geometry, closed=True, fill=False, linewidth=3, color='#F97306')
+        # ax.add_patch(poly)
+
+        self.poly = poly
+
+    def connect(self):
+        'connect to all the events we need'
+        self.cidpress = self.poly.figure.canvas.mpl_connect(
+        'button_press_event', self.on_press)
+        self.cidrelease = self.poly.figure.canvas.mpl_connect(
+        'button_release_event', self.on_release)
+        self.cidmotion = self.poly.figure.canvas.mpl_connect(
+        'motion_notify_event', self.on_motion)
+
+    def on_press(self, event):
+        'on button press we will see if the mouse is over us and store some data'
+        if event.inaxes != self.poly.axes: return
+        if DraggablePolygon.lock is not None: return
+        contains, attrd = self.poly.contains(event)
+        if not contains: return
+
+        if not self.newGeometry:
+            x0, y0 = self.geometry[0]
+        else:
+            x0, y0 = self.newGeometry[0]
+
+        self.press = x0, y0, event.xdata, event.ydata
+        DraggablePolygon.lock = self
+
+    def on_motion(self, event):
+        'on motion we will move the rect if the mouse is over us'
+        if DraggablePolygon.lock is not self:
+            return
+        if event.inaxes != self.poly.axes: return
+        x0, y0, xpress, ypress = self.press
+        dx = event.xdata - xpress
+        dy = event.ydata - ypress
+
+        xdx = [i+dx for i,_ in self.geometry]
+        ydy = [i+dy for _,i in self.geometry]
+        self.newGeometry = [[a, b] for a, b in zip(xdx, ydy)]
+        self.poly.set_xy(self.newGeometry)
+        self.poly.figure.canvas.draw()
+
+    def on_release(self, event):
+        'on release we reset the press data'
+        if DraggablePolygon.lock is not self:
+            return
+
+        self.press = None
+        DraggablePolygon.lock = None
+        self.geometry = self.newGeometry
+
+    def disconnect(self):
+        'disconnect all the stored connection ids'
+        self.poly.figure.canvas.mpl_disconnect(self.cidpress)
+        self.poly.figure.canvas.mpl_disconnect(self.cidrelease)
+        self.poly.figure.canvas.mpl_disconnect(self.cidmotion)
+
 
 # fig = plt.figure()
 # ax = fig.add_subplot(111)

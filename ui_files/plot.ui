@@ -770,7 +770,7 @@
                           </size>
                          </property>
                          <property name="currentIndex">
-                          <number>2</number>
+                          <number>1</number>
                          </property>
                          <widget class="QWidget" name="pg_Plot_Decorations">
                           <layout class="QGridLayout" name="gridLayout_2">
@@ -799,8 +799,8 @@
                                <rect>
                                 <x>0</x>
                                 <y>0</y>
-                                <width>230</width>
-                                <height>91</height>
+                                <width>815</width>
+                                <height>893</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_58">
@@ -1122,9 +1122,9 @@
                               <property name="geometry">
                                <rect>
                                 <x>0</x>
-                                <y>0</y>
-                                <width>326</width>
-                                <height>1199</height>
+                                <y>-15</y>
+                                <width>794</width>
+                                <height>1216</height>
                                </rect>
                               </property>
                               <layout class="QGridLayout" name="gridLayout_19">
@@ -1552,7 +1552,7 @@
                                          <rect>
                                           <x>0</x>
                                           <y>0</y>
-                                          <width>205</width>
+                                          <width>749</width>
                                           <height>339</height>
                                          </rect>
                                         </property>
@@ -1962,6 +1962,23 @@
                                    <widget class="QPushButton" name="pb_Add_Patch">
                                     <property name="text">
                                      <string>Add</string>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="1" column="1">
+                                   <widget class="QCheckBox" name="cb_Draw">
+                                    <property name="layoutDirection">
+                                     <enum>Qt::LeftToRight</enum>
+                                    </property>
+                                    <property name="text">
+                                     <string/>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item row="1" column="0">
+                                   <widget class="QLabel" name="label_19">
+                                    <property name="text">
+                                     <string>Draw</string>
                                     </property>
                                    </widget>
                                   </item>
