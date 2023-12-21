@@ -9,7 +9,7 @@ import pandas as pd
 from scipy.signal import find_peaks
 from termcolor import colored
 from analysis_modules.eigenmode.SLANS.geometry_manual import Geometry
-from analysis_modules.eigenmode.SLANS.slans_code import SLANS, SLANS_Multicell, SLANS_Multicell_full
+from analysis_modules.eigenmode.SLANS.slans_code import SLANS, SLANS_Multicell, SLANS_Multicell_full, SLANS_Flattop
 
 from utils.file_reader import FileReader
 from utils.shared_functions import *
@@ -211,6 +211,429 @@ class SLANSGeometry(Geometry):
                                                               self.L_R, -self.Jy0, BC_Right))
 
                 f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.Jxy_bp * (
+                        (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
+                                                                1 if self.WG_L > 0 else 0) * self.WG_mesh + (
+                                                                1 if self.WG_R > 0 else 0) * self.WG_mesh)))
+                f.write('0 0 0 0 0 0 0 0 0')
+
+            # n>1
+            if n > 1:
+                if end_L == 2:
+                    self.slans.slans_bp_L(n, zr12_BPL, self.WG_L, f)
+
+                self.slans.slans_n1_L(n, zr12_L, self.WG_L, f)
+
+                for i in range(1, n):
+                    self.slans.slans_M(n, zr12_M, self.WG_L, f, i, end_type)
+
+                self.slans.slans_n1_R(n, zr12_R, self.WG_L, f)
+
+                if end_R == 2:
+                    self.slans.slans_bp_R(n, zr12_BPR, self.WG_L, f)
+
+                if self.WG_R > 0:
+                    if end_R == 2:
+                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(
+                            self.WG_L + self.WG_R + self.L_L + self.L_R +
+                            2 * (n - 1) * self.L_M, self.Rbp_R, self.WG_mesh))
+                    else:
+                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(
+                            self.WG_L + self.WG_R + self.L_L + self.L_R +
+                            2 * (n - 1) * self.L_M, self.Rbp_R, self.WG_mesh))
+
+                if end_R == 2:
+                    f.write('1 {:g} {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(
+                        self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, self.ri_R,
+                        -(self.Jxy_all_bp[5] + self.Jxy_all_bp[6] + self.Jxy_all_bp[7]), BC_Right))
+
+                f.write('1 {:g} 0 0 1 0 {:.0f} {:.0f} 0\n'.format(
+                    self.WG_L + self.WG_R + self.L_L + self.L_R + 2 * (n - 1) * self.L_M, -self.Jy0, BC_Right))
+
+                # gradual mesh decrease
+                if self.WG_R > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L +
+                                                                 self.L_R + 2 * (n - 1) * self.L_M,
+                                                                 -((1 if self.WG_R > 0 else 0) * self.WG_mesh)))
+
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L + self.L_L + 2 * (n - 1) * self.L_M - self.L_M,
+                                                             -(self.Jxy * 1)))
+
+                for i in range(n - 1, 1, -1):
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L +
+                                                                 self.L_L + 2 * (i - 1) * self.L_M - self.L_M,
+                                                                 -(self.Jxy * 1)))
+
+                f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(self.WG_L, -(self.Jxy * 1)))
+
+                if self.WG_L > 0:
+                    f.write('1 {:g} 0 0 1 {:.0f} 0 4 0\n'.format(0, -((1 if self.WG_L > 0 else 0) * self.WG_mesh + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))))
+
+                # # direct mesh decrease
+                # f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(
+                #     -(self.Jxy*n+self.Jxy_bp*((1 if end_R == 2 else 0)/2+(1 if end_L == 2 else 0)/2) +
+                #       (1 if self.WG_L > 0 else 0)*self.WG_mesh+(1 if self.WG_R > 0 else 0)*self.WG_mesh)))
+
+                f.write('0 0 0 0 0 0 0 0 0')
+
+        # Slans run
+        genmesh_path = parentDir / fr'exe/SLANS{p}_exe/genmesh2.exe'
+        filepath = Path(fr'{run_save_directory}/{filename}')
+
+        # folder for exe to write to
+        cwd = run_save_directory
+
+        # the next two lines suppress pop up windows from the slans codes
+        # the slans codes, however, still disrupts windows operation, sadly. This is the case even for the slans tuner
+        if os.name == 'nt':
+            startupinfo = subprocess.STARTUPINFO()
+            startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = subprocess.SW_HIDE
+            kwargs = {"startupinfo": startupinfo}
+        else:
+            kwargs = {}
+
+        # print(str(filepath))
+        subprocess.call([genmesh_path, str(filepath), '-b'], cwd=cwd, **kwargs)
+        path = run_save_directory
+
+        if n_modes < no_of_cells:
+            n_modes = no_of_cells
+
+        if f_shift < 0:
+            f_shift = 0
+
+        beta, f_shift, n_modes = 1, f_shift, n_modes + 1
+
+        if pol.lower() == 'monopole':
+            self.write_dtr(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
+        else:
+            self.write_dtr_2(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
+
+        slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc{p}'
+        slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm{p}'
+        slanss_path = parentDir / fr'exe/SLANS{p}_exe/slanss{p}'
+        slansre_path = parentDir / fr'exe/SLANS{p}_exe/slansre{p}'
+
+        # print(cwd)
+        # check if corresponding file exists at before the executable is called
+        if os.path.exists(fr'{run_save_directory}/{filename}.geo'):
+            ic('Starting slansc')
+            subprocess.call([slansc_path, str(filepath), '-b'], cwd=cwd, **kwargs)  # settings, number of modes, etc
+            ic("Done with slansc, starting slansm")
+
+            if os.path.exists(fr'{run_save_directory}/{filename}.gem'):
+                subprocess.call([slansm_path, str(filepath), '-b'], cwd=cwd, **kwargs)
+                ic("Done with slansm")
+
+                if os.path.exists(fr'{run_save_directory}/bslans.mtx'):
+                    subprocess.call([slanss_path, str(filepath), '-b'], cwd=cwd, **kwargs)
+                    ic("Done with slanss")
+
+                    if pol != 'Monopole':
+                        slanssh_path = parentDir / fr'exe/SLANS{p}_exe/slanssh{p}'
+                        slanse_path = parentDir / fr'exe/SLANS{p}_exe/slanse{p}'
+                        slansr2b_path = parentDir / fr'exe/SLANS{p}_exe/slansr2b{p}'
+                        if os.path.exists(fr'{run_save_directory}/{filename}.res'):
+                            subprocess.call([slanssh_path, str(filepath)], cwd=cwd, **kwargs)
+                            subprocess.call([slanse_path, str(filepath)], cwd=cwd, **kwargs)
+                            ic('Starting slansr2')
+                            subprocess.call([slansr2b_path, str(filepath)], cwd=cwd, **kwargs)
+                            ic('Done with slansr2')
+
+                    if os.path.exists(fr'{run_save_directory}/{filename}.res'):
+                        ic('Starting slansre')
+                        subprocess.call([slansre_path, str(filepath), '-b'], cwd=cwd, **kwargs)
+                        ic("Done with slansre")
+
+        # save json file
+        shape = {'IC': update_alpha(mid_cells_par),
+                 'OC': update_alpha(l_end_cell_par),
+                 'OC_R': update_alpha(r_end_cell_par)}
+
+        with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
+            json.dump(shape, f, indent=4, separators=(',', ': '))
+        try:
+            if pol == 'Monopole':
+                filename = Path(fr'{run_save_directory}/{filename}.svl')
+                d = fr.svl_reader(filename)
+
+                Req = d['CAVITY RADIUS'][no_of_cells - 1] * 10  # convert to mm
+                Freq = d['FREQUENCY'][no_of_cells - 1]
+                E_stored = d['STORED ENERGY'][no_of_cells - 1]
+                Rsh = d['SHUNT IMPEDANCE'][no_of_cells - 1]  # MOhm
+                Q = d['QUALITY FACTOR'][no_of_cells - 1]
+                Epk = d['MAXIMUM ELEC. FIELD'][no_of_cells - 1]  # MV/m
+                Hpk = d['MAXIMUM MAG. FIELD'][no_of_cells - 1]  # A/m
+                # Vacc = dict['ACCELERATION'][no_of_cells - 1]
+                Eavg = d['AVERAGE E.FIELD ON AXIS'][no_of_cells - 1]  # MV/m
+                r_Q = d['EFFECTIVE IMPEDANCE'][no_of_cells - 1]  # Ohm
+                G = 0.00948 * Q * np.sqrt(Freq / 1300)
+                GR_Q = G * 2 * r_Q
+
+                Vacc = np.sqrt(
+                    2 * r_Q * E_stored * 2 * np.pi * Freq * 1e6) * 1e-6  # factor of 2, circuit and accelerator definition
+                # Eacc = Vacc / (374 * 1e-3)  # factor of 2, remember circuit and accelerator definition
+                norm_length = 2 * mid_cells_par[5]
+                Eacc = Vacc / (
+                        no_of_cells * norm_length * 1e-3)  # for 1 cell factor of 2, circuit and accelerator definition
+                Epk_Eacc = Epk / Eacc
+                Bpk = (Hpk * 4 * np.pi * 1e-7) * 1e3
+                Bpk_Eacc = Bpk / Eacc
+
+                # cel to cell coupling factor
+                f_diff = d['FREQUENCY'][no_of_cells - 1] - d['FREQUENCY'][0]
+                f_add = (d['FREQUENCY'][no_of_cells - 1] + d['FREQUENCY'][0])
+                kcc = 2 * f_diff / f_add * 100
+
+                try:
+                    # field flatness
+                    ax_field = self.get_axis_field_data(run_save_directory, no_of_cells)
+                    # get max in each cell
+                    peaks, _ = find_peaks(ax_field['y_abs'])
+                    E_abs_peaks = ax_field['y_abs'][peaks]
+                    # ff = min(E_abs_peaks) / max(E_abs_peaks) * 100
+                    ff = (1 - ((max(E_abs_peaks) - min(E_abs_peaks))/np.average(E_abs_peaks))) * 100
+                except FileNotFoundError:
+                    ff = 0
+
+                d = {
+                    "Req [mm]": Req,
+                    "Normalization Length [mm]": norm_length,
+                    "N Cells": no_of_cells,
+                    "freq [MHz]": Freq,
+                    "Q []": Q,
+                    "E [MV/m]": E_stored,
+                    "Vacc [MV]": Vacc,
+                    "Eacc [MV/m]": Eacc,
+                    "Epk [MV/m]": Epk,
+                    "Hpk [A/m]": Hpk,
+                    "Bpk [mT]": Bpk,
+                    "kcc [%]": kcc,
+                    "ff [%]": ff,
+                    "Rsh [MOhm]": Rsh,
+                    "R/Q [Ohm]": 2 * r_Q,
+                    "Epk/Eacc []": Epk_Eacc,
+                    "Bpk/Eacc [mT/MV/m]": Bpk_Eacc,
+                    "G [Ohm]": G,
+                    "GR/Q [Ohm^2]": GR_Q
+                }
+
+                with open(Path(fr'{run_save_directory}/qois.json'), "w") as f:
+                    json.dump(d, f, indent=4, separators=(',', ': '))
+            else:
+                filename = Path(fr'{run_save_directory}/{filename}.sv2')
+                d = fr.sv2_reader(filename)
+
+                no_azimuthal = d['Number of azimuth variation'][no_of_cells - 1]
+                Freq = d['Frequency'][no_of_cells - 1]
+                L = d['Length of wave'][no_of_cells - 1]
+                E_stored = d['Stored energy'][no_of_cells - 1]  # J
+                Q = d['Quality factor'][no_of_cells - 1]
+                r_Q = d['Eff.transverce impedance'][no_of_cells - 1]  # Ohm
+                r_QT = d['Eff.shunt tran.impedance'][no_of_cells - 1]  # Ohm
+                G = 0.00948 * Q * np.sqrt(Freq / 1300)
+                GR_Q = G * 2 * r_Q
+
+                d = {
+                    'Number of azimuth variation': no_azimuthal,
+                    "N Cells": no_of_cells,
+                    "freq [MHz]": Freq,
+                    "Q []": Q,
+                    "Stored energy [J]": E_stored,
+                    "R/Q [Ohm]": 2 * r_Q,
+                    "R/QT [Ohm]": 2 * r_QT,
+                    "G [Ohm]": G,
+                    "GR/Q [Ohm^2]": GR_Q
+                }
+
+                with open(Path(fr'{run_save_directory}/qois2.json'), "w") as f:
+                    json.dump(d, f, indent=4, separators=(',', ': '))
+
+        except FileNotFoundError as e:
+            print("Simulation failed", e)
+
+    def cavity_flattop(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
+               fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False):
+        """
+        Write geometry file and run eigenmode analysis with SLANS
+
+        Parameters
+        ----------
+        pol
+        expansion
+        no_of_cells: int
+            Number of cells
+        no_of_modules: int
+            Number of modules
+        mid_cells_par: list, array like
+            Mid cell geometric parameters -> [A, B, a, b, Ri, L, Req, alpha]
+        l_end_cell_par: list, array like
+            Left end cell geometric parameters -> [A_el, B_el, a_el, b_el, Ri_el, L_el, Req, alpha_el]
+        r_end_cell_par: list, array like
+            Right end cell geometric parameters -> [A_er, B_er, a_er, b_er, Ri_er, L_er, Req, alpha_er]
+        fid: int, str
+            File id
+        bc: int
+            Boundary condition -> 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        f_shift: float
+            Eigenvalue frequency shift
+        beta: int, float
+            Velocity ratio :math: `\\beta = \frac{v}{c}`
+        n_modes: int
+            Number of modes
+        beampipes: {"left", "right", "both", "none"}
+            Specify if beam pipe is on one or both ends or at no end at all
+        parentDir: str
+            Parent directory
+        projectDir: str
+            Project directory
+        subdir: str
+            Sub directory to save simulation results to
+        mesh_args: list [Jxy, Jxy_bp, Jxy_bp_y]
+            Mesh definition for logical mesh:
+            Jxy -> Number of elements of logical mesh along JX and JY
+            Jxy_bp -> Number of elements of logical mesh along JX in beampipe
+            Jxy_bp_y -> Number of elements of logical mesh along JY in beampipe
+
+        Returns
+        -------
+
+        """
+
+        # this checks whether input is from gui or from the optimisation
+        if mid_cells_par is not None:
+            self.set_geom_parameters_flattop(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par,
+                                     beampipes, expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
+        else:
+            self.set_geom_parameters_flattop(no_of_cells)
+
+        self.slans = SLANS_Flattop(self.left_beam_pipe, self.left_end_cell, self.mid_cell, self.right_end_cell,
+                           self.right_beam_pipe, self.Jxy_all, self.Jxy_all_bp)
+
+        n = no_of_cells  # Number of cells
+        axi_sym = 2  # 1: flat, 2: axis-symmetric
+        unit = 3  # 1:m, 2:cm, 3:mm, 4:mkm
+        name_index = 1
+        sc = 1
+        end_type = 1  # if end_type = 1 the end HALF cell is changed for tuning.
+        # If end_type = 2 the WHOLE end cell is changed for tuning
+        end_L = 1  # if end_L = 1 the type of end cell is type a (without iris)
+        # if end_L = 2 the type of end cell is type b
+        end_R = 1
+
+        if expansion is not None:
+            end_L = 2
+        if expansion_r is not None:
+            end_R = 2
+
+        p = ''
+        if pol != 'Monopole':
+            p = '_2'
+            subdir = 'dipole'
+        else:
+            subdir = 'monopole'
+
+        # # Beam pipe length
+        # if end_L == 1:
+        #     self.Rbp_L = self.ri_L
+        #
+        # if end_R == 1:
+        #     self.Rbp_R = self.ri_R
+
+        # print_(self.WG_L, self.WG_R)
+
+        # Ellipse conjugate points x,y
+        zr12_L, alpha_L = self.slans.rz_conjug('left')  # zr12_R first column is z , second column is r
+        zr12_R, alpha_R = self.slans.rz_conjug('right')  # zr12_R first column is z , second column is r
+        zr12_M, alpha_M = self.slans.rz_conjug('mid')  # zr12_R first column is z , second column is r
+
+        if end_L == 2:
+            zr12_BPL, alpha_BPL = self.slans.rz_conjug('expansion')  # zr12_R first column is z , second column is r
+
+        if end_R == 2:
+            zr12_BPR, alpha_BPR = self.slans.rz_conjug('expansion_r')  # zr12_R first column is z , second column is r
+
+        # Set boundary conditions
+        BC_Left = floor(bc / 10)  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        BC_Right = bc % 10  # 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+
+        filename = f'cavity_{bc}{p}'
+
+        if opt:  # consider making better. This was just an adhoc fix
+            run_save_directory = projectDir / fr'SimulationData/SLANS_opt/{fid}'
+        else:
+            # change save directory
+            if subdir == '':
+                run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}'
+            else:
+                run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}/{subdir}'
+
+        # Write SLANS Geometry
+        # print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))
+        with open(Path(fr'{run_save_directory}/{filename}.geo'), 'w') as f:
+            # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
+            f.write('8 {:.0f} {:.0f} 2 {}\n'.format(
+                self.Jxy * n + self.WG_mesh * n + self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) +
+                (1 if self.WG_L > 0 else 0) * self.WG_mesh + (1 if self.WG_R > 0 else 0) * self.WG_mesh,
+                self.Jxy, unit))
+
+            f.write('10 0 0 0 0 0 0 0 0\n')
+            f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.ri_L, self.Jy0, BC_Left))
+
+            if end_L == 2:
+                f.write('1 0 {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.Rbp_L, self.Jxy_all_bp[5] + self.Jxy_all_bp[6] +
+                                                                  self.Jxy_all_bp[7], BC_Left))
+
+            if self.WG_L > 0:
+                if end_L == 2:
+                    f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L - self.x_L, self.Rbp_L, self.WG_mesh))
+                else:
+                    f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L, self.Rbp_L, self.WG_mesh))
+
+            # n == 1
+            if n == 1:
+                if self.Req_L != self.Req_R:
+                    print_('The equator radius of left and right cell are not equal')
+
+                # if exist('L_M') != 1:
+                #     L_M = []
+
+                if end_L == 2:
+                    self.slans.slans_bp_L(n, zr12_BPL, self.WG_L, f)
+
+                self.slans.slans_n1_L(n, zr12_L, self.WG_L, f)
+
+                # add flattop
+                print(self.l_L, self.WG_mesh)
+                f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L + self.L_L + self.l_L, self.Req_L, self.WG_mesh))
+
+                self.slans.slans_n1_R(n, zr12_R, self.WG_L, f)
+
+                if end_R == 2:
+                    self.slans.slans_bp_R(n, zr12_BPR, self.WG_L, f)
+
+                if self.WG_R > 0:
+                    if end_R == 2:
+                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.l_L +
+                                                                        self.L_R, self.Rbp_R,
+                                                                        self.WG_mesh))
+                    else:
+                        f.write('1 {:g} {:g} 0 1 {:.0f} 0 5 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.l_L +
+                                                                        self.L_R, self.Rbp_R,
+                                                                        self.WG_mesh))
+
+                if end_R == 2:
+                    f.write('1 {:g} {:g} 0 1 0 {:.0f} {:.0f} 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.l_L +
+                                                                         self.L_R, self.ri_R,
+                                                                         -(self.Jxy_all_bp[5] + self.Jxy_all_bp[6] +
+                                                                           self.Jxy_all_bp[7]), BC_Right))
+
+                f.write(
+                    '1 {:g} 0 0 1 0 {:.0f} {:.0f} 0\n'.format(self.WG_L + self.WG_R + self.L_L + self.l_L +
+                                                              self.L_R, -self.Jy0, BC_Right))
+
+                f.write('1 0 0 0 1 {:.0f} 0 4 0\n'.format(-(self.Jxy * n + self.WG_mesh * n + self.Jxy_bp * (
                         (1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2) + (
                                                                 1 if self.WG_L > 0 else 0) * self.WG_mesh + (
                                                                 1 if self.WG_R > 0 else 0) * self.WG_mesh)))

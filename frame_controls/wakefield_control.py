@@ -1,3 +1,4 @@
+import os.path
 import subprocess
 import time
 import multiprocessing as mp
@@ -454,10 +455,14 @@ class WakefieldControl:
                         # else:
                         folder_name = f"{key}_scale_{scale}_n{n_cell}"
 
-                    with open(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\monopole\qois.json') as \
-                            json_file:
+                    # check if SLANS or NGSolve simulation exist
+                    if os.path.exists(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\monopole\qois.json'):
+                        folder = self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\monopole\qois.json'
+                    else:
+                        folder = self.main_control.projectDir / fr'SimulationData\NGSolveMEVP\{folder_name}\qois.json'
+                    with open(folder, 'r') as json_file:
                         qois_slans = json.load(json_file)
-                        print('Found slans R/Q')
+                        print('Found slans/ngsolve R/Q')
 
                     op_points = val['Operating Point'].currentText().split(', ')
                     n_cells = qois_slans['N Cells']
@@ -665,22 +670,39 @@ class WakefieldControl:
                         fid = key
                     else:
                         fid = f"{key}_{n_cell}"
+                    if "CELL TYPE" in shape.keys():
+                        if shape['CELL TYPE'] == 'flattop':
+                            if MROT == 2:
+                                for m in range(2):
+                                    abci_geom.cavity_flattop(n_cell, n_modules, shape['IC'], shape['OC'], shape[OC_R],
+                                                     fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=UBT,
+                                                     bunch_length=bunch_length,
+                                                     DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
+                                                     projectDir=projectDir,
+                                                     WG_M=ii, marker=ii, **kwargs)
 
-                    if MROT == 2:
-                        for m in range(2):
-                            abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape[OC_R],
-                                             fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=UBT,
-                                             bunch_length=bunch_length,
-                                             DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
-                                             projectDir=projectDir,
-                                             WG_M=ii, marker=ii, **kwargs)
-
+                            else:
+                                abci_geom.cavity_flattop(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                                 fid=f"{key}_{n_cell}", MROT=MROT, MT=MT, NFS=NFS, UBT=UBT,
+                                                 bunch_length=bunch_length,
+                                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
+                                                 WG_M=ii, marker=ii, **kwargs)
                     else:
-                        abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                         fid=f"{key}_{n_cell}", MROT=MROT, MT=MT, NFS=NFS, UBT=UBT,
-                                         bunch_length=bunch_length,
-                                         DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
-                                         WG_M=ii, marker=ii, **kwargs)
+                        if MROT == 2:
+                            for m in range(2):
+                                abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape[OC_R],
+                                                 fid=fid, MROT=m, MT=MT, NFS=NFS, UBT=UBT,
+                                                 bunch_length=bunch_length,
+                                                 DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
+                                                 projectDir=projectDir,
+                                                 WG_M=ii, marker=ii, **kwargs)
+
+                        else:
+                            abci_geom.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                             fid=f"{key}_{n_cell}", MROT=MROT, MT=MT, NFS=NFS, UBT=UBT,
+                                             bunch_length=bunch_length,
+                                             DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir, projectDir=projectDir,
+                                             WG_M=ii, marker=ii, **kwargs)
 
                     # update progress
                     progress_list.append(progress + 1)

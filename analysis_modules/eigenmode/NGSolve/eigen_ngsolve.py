@@ -92,7 +92,7 @@ class NGSolveMEVP:
         return ips, gipts, nlast
 
     def write_geometry(self, folder, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
-                       beampipe='none', plot=False):
+                       beampipe='none', plot=False, cell_type='normal'):
         """
         Define geometry
 
@@ -147,7 +147,10 @@ class NGSolveMEVP:
                 exit()
 
         file_path = fr"{folder}\geodata.n"
-        write_cavity_for_custom_eig_solver(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+        if cell_type == 'normal':
+            write_cavity_for_custom_eig_solver(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+        else:
+            writeCavityForMultipac_flat_top(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
 
     def cavgeom_ngsolve(self, n_cell, mid_cell, end_cell_left, end_cell_right, beampipe='both', draw=False):
         """
@@ -457,6 +460,175 @@ class NGSolveMEVP:
         # mesh
         A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
         maxh = L / mesh_args[0] * 1e-3
+        ngmesh = geo.GenerateMesh(maxh=maxh)
+        mesh = Mesh(ngmesh)
+
+        # define finite element space
+        fes = HCurl(mesh, order=1, dirichlet='default')
+
+        u, v = fes.TnT()
+
+        a = BilinearForm(y * curl(u) * curl(v) * dx).Assemble()
+        m = BilinearForm(y * u * v * dx).Assemble()
+
+        apre = BilinearForm(y * curl(u) * curl(v) * dx + y * u * v * dx)
+        pre = Preconditioner(apre, "direct", inverse="sparsecholesky")
+
+        with TaskManager():
+            a.Assemble()
+            m.Assemble()
+            apre.Assemble()
+            freedof_matrix = a.mat.CreateSmoother(fes.FreeDofs())
+
+            # build gradient matrix as sparse matrix (and corresponding scalar FESpace)
+            gradmat, fesh1 = fes.CreateGradient()
+
+            gradmattrans = gradmat.CreateTranspose()  # transpose sparse matrix
+            math1 = gradmattrans @ m.mat @ gradmat  # multiply matrices
+            math1[0, 0] += 1  # fix the 1-dim kernel
+            invh1 = math1.Inverse(inverse="sparsecholesky", freedofs=fesh1.FreeDofs())
+
+            # build the Poisson projector with operator Algebra:
+            proj = IdentityMatrix() - gradmat @ invh1 @ gradmattrans @ m.mat
+
+            projpre = proj @ pre.mat
+            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 3, maxit=mesh_args[1],
+                                          printrates=False)
+
+        # print out eigenvalues
+        # print("Eigenvalues")
+        freq_fes = []
+        for i, lam in enumerate(evals):
+            freq_fes.append(c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6)
+            # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
+
+        # plot results
+        gfu_E = []
+        gfu_H = []
+        for i in range(len(evecs)):
+            w = 2 * pi * freq_fes[i] * 1e6
+            gfu = GridFunction(fes)
+            gfu.vec.data = evecs[i]
+
+            gfu_E.append(gfu)
+            gfu_H.append(1j / (mu0 * w) * curl(gfu))
+
+        # # alternative eigenvalue solver
+        # u = GridFunction(fes, multidim=30, name='resonances')
+        # lamarnoldi = ArnoldiSolver(a.mat, m.mat, fes.FreeDofs(),
+        #                         list(u.vecs), shift=300)
+        # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
+
+        # save json file
+        shape = {'IC': update_alpha(mid_cells_par),
+                 'OC': update_alpha(l_end_cell_par),
+                 'OC_R': update_alpha(r_end_cell_par)}
+
+        with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
+            json.dump(shape, f, indent=4, separators=(',', ': '))
+
+        # qois = self.evaluate_qois(face, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+        qois = self.evaluate_qois(cav_geom, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+        ic(qois)
+
+        with open(fr'{run_save_directory}\qois.json', "w") as f:
+            json.dump(qois, f, indent=4, separators=(',', ': '))
+
+    def cavity_flattop(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
+               fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False):
+        """
+        Write geometry file and run eigenmode analysis with NGSolveMEVP
+
+        Parameters
+        ----------
+        pol
+        expansion
+        no_of_cells: int
+            Number of cells
+        no_of_modules: int
+            Number of modules
+        mid_cells_par: list, array like
+            Mid cell geometric parameters -> [A, B, a, b, Ri, L, Req, alpha]
+        l_end_cell_par: list, array like
+            Left end cell geometric parameters -> [A_el, B_el, a_el, b_el, Ri_el, L_el, Req, alpha_el]
+        r_end_cell_par: list, array like
+            Right end cell geometric parameters -> [A_er, B_er, a_er, b_er, Ri_er, L_er, Req, alpha_er]
+        fid: int, str
+            File id
+        bc: int
+            Boundary condition -> 1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal
+        f_shift: float
+            Eigenvalue frequency shift
+        beta: int, float
+            Velocity ratio :math: `\\beta = \frac{v}{c}`
+        n_modes: int
+            Number of modes
+        beampipes: {"left", "right", "both", "none"}
+            Specify if beam pipe is on one or both ends or at no end at all
+        parentDir: str
+            Parent directory
+        projectDir: str
+            Project directory
+        subdir: str
+            Sub directory to save simulation results to
+        mesh: list [Jxy, Jxy_bp, Jxy_bp_y]
+            Mesh definition for logical mesh:
+            Jxy -> Number of elements of logical mesh along JX and JY
+            Jxy_bp -> Number of elements of logical mesh along JX in beampipe
+            Jxy_bp_y -> Number of elements of logical mesh along JY in beampipe
+
+        Returns
+        -------
+
+        """
+
+        # change save directory
+        if opt:  # consider making better. This was just an adhoc fix
+            run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP_opt/{fid}'
+        else:
+            # change save directory
+            if subdir == '':
+                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}'
+            else:
+                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{subdir}'
+        # write
+        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes, cell_type='flattop', plot=True)
+        print('done writing geometry')
+
+        # read geometry
+        cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
+                               header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0]]
+
+        print('heee')
+        pnts = list(cav_geom.itertuples(index=False, name=None))
+        wp = WorkPlane()
+        wp.MoveTo(*pnts[0])
+        for p in pnts[1:]:
+            wp.LineTo(*p)
+        wp.Close().Reverse()
+        face = wp.Face()
+        print('heee2')
+
+        # # get face from ngsolve geom <- coming later
+        # face = self.cavgeom_ngsolve(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
+
+        # name the boundaries
+        face.edges.Max(X).name = "r"
+        face.edges.Max(X).col = (1, 0, 0)
+        face.edges.Min(X).name = "l"
+        face.edges.Min(X).col = (1, 0, 0)
+        face.edges.Min(Y).name = "b"
+        face.edges.Min(Y).col = (1, 0, 0)
+        print('heee4')
+
+        geo = OCCGeometry(face, dim=2)
+        print('heee5')
+
+        # mesh
+        A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
+        maxh = L / mesh_args[0] *1e-3
+        print('maxh', maxh)
         ngmesh = geo.GenerateMesh(maxh=maxh)
         mesh = Mesh(ngmesh)
 

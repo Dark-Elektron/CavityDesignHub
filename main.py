@@ -637,7 +637,10 @@ class MainWindow:
             self.tune_widget.deserialise(state_dict)
             self.eigenmode_widget.deserialise(state_dict)
             self.wakefield_widget.deserialise(state_dict)
-            self.plot_widget.deserialise(state_dict)
+            try:
+                self.plot_widget.deserialise(state_dict)
+            except:
+                pass
             self.multipacting_widget.deserialise(state_dict)
             self.misc_widget.deserialise(state_dict)
 

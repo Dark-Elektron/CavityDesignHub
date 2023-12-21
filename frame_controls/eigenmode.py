@@ -539,22 +539,41 @@ class EigenmodeControl:
                 # # create folders for all keys
                 solver.createFolder(f"{key}_n{n_cell}", projectDir, subdir=sub_dir, pol=pol)
 
-                if 'OC_R' in shape.keys():
-                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],
-                                        projectDir=projectDir, cell_type="None")
-                    solver.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
-                                  n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
-                                  bc=bc, pol=pol, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                  expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
+                if "CELL TYPE" in shape.keys():
+                    if shape['CELL TYPE'] == 'flattop':
+                        if 'OC_R' in shape.keys():
+                            write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],
+                                                projectDir=projectDir, cell_type="None", solver=select_solver.lower())
+                            solver.cavity_flattop(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                          bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                          expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
+                        else:
+                            write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
+                                                projectDir=projectDir, cell_type="None", solver=select_solver.lower())
+                            solver.cavity_flattop(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                          n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                          bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                          expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
                 else:
-                    write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
-                                        projectDir=projectDir, cell_type="None")
-                    solver.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                  n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
-                                  bc=bc, pol=pol, beampipes=shape['BP'],
-                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
-                                  expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
+                    if 'OC_R' in shape.keys():
+                        write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC_R'],
+                                            projectDir=projectDir, cell_type="None", solver=select_solver.lower())
+                        solver.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                                      n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                      bc=bc, pol=pol, beampipes=shape['BP'],
+                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                      expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
+                    else:
+                        write_cst_paramters(f"{key}_n{n_cell}", shape['IC'], shape['OC'], shape['OC'],
+                                            projectDir=projectDir, cell_type="None", solver=select_solver.lower())
+                        solver.cavity(n_cell, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                      n_modes=n_modes, fid=f"{key}_n{n_cell}", f_shift=f_shift,
+                                      bc=bc, pol=pol, beampipes=shape['BP'],
+                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                      expansion=expansion, expansion_r=expansion_r, mesh_args=mesh_args)
 
             # run UQ
             if UQ:

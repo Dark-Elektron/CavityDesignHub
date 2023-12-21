@@ -106,6 +106,63 @@ class Geometry:
         self.Jy3_bp = self.Jxy_bp_y - self.Jy2_bp - self.Jy1_bp - self.Jy0_bp
         self.Jxy_all_bp = [0, self.Jxy_bp, self.Jx1_bp, self.Jx2_bp, self.Jy0_bp, self.Jy1_bp, self.Jy2_bp, self.Jy3_bp]
 
+    def set_geom_parameters_flattop(self, n_cells, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None):
+        # print(n_cells, mid_cells_par, l_end_cell_par, r_end_cell_par)
+
+        if l_end_cell_par is None:
+            l_end_cell_par = []
+
+        # check self.u for slans and abci
+        self.u = 1e-3
+        self.cell_structure = 2
+        self.n = n_cells
+
+        # print("Sets value")
+        self.A_M, self.B_M, self.a_M, self.b_M, self.ri_M, self.L_M, self.Req_M, self.l_M = \
+            [i * self.u for i in mid_cells_par][0:8]
+        self.A_L, self.B_L, self.a_L, self.b_L, self.ri_L, self.L_L, self.Req_L, self.l_L = \
+            [i * self.u for i in l_end_cell_par][0:8]
+        self.A_R, self.B_R, self.a_R, self.b_R, self.ri_R, self.L_R, self.Req_R, self.l_R = \
+            [i * self.u for i in r_end_cell_par][0:8]
+
+        self.c_L = 0 * self.u
+        self.Rbp_L = self.Req_L
+        self.at_L, self.bt_L, self.x_L = 0, 0, 0
+        self.left_beam_pipe = [self.c_L, self.Rbp_L, self.at_L, self.bt_L, self.x_L]
+        self.right_beam_pipe = self.left_beam_pipe
+
+        # for some strange reasons, I reversed the order eesh!!!
+        self.mid_cell = [self.Req_M, self.ri_M, self.L_M, self.A_M, self.B_M, self.a_M, self.b_M, self.l_M]
+        self.left_end_cell = [self.Req_L, self.ri_L, self.L_L, self.A_L, self.B_L, self.a_L, self.b_L, self.l_L]
+        self.right_end_cell = [self.Req_R, self.ri_R, self.L_R, self.A_R, self.B_R, self.a_R, self.b_R, self.l_R]
+        # print(self.mid_cell)
+
+        # beam pipe
+        self.WG_L = 4 * self.L_M  # self.ui.dsb_Lbp_L.value()*self.u # Length of the beam pipe connecting to the cavity
+        self.WG_R = self.WG_L  # Right Waveguide
+        # self.L_all = self.WG_L + self.WG_R + self.L_L
+        # + self.L_R + 2*(self.n - 1)*self.L_M # Total length of each cavity
+
+        self.Rbp_L = self.ri_L * self.u
+        self.at_L = 0 * self.u
+        self.bt_L = 0 * self.u
+        self.c_L = 0 * self.u
+        self.x_L = 0 * (self.c_L + self.at_L)
+        # self.x_L = 230*self.u # x_L is the length of the transition from iris to beam pipe
+
+        self.Rbp_R = self.ri_R * self.u
+        self.at_R = 0 * self.u
+        self.bt_R = 0 * self.u
+        self.c_R = 0 * self.u
+        self.x_R = 0 * (self.c_L + self.at_L)
+        # self.x_R = 230*self.u
+
+        self.left_beam_pipe = [self.c_L, self.Rbp_L, self.at_L, self.bt_L, self.x_L]
+        self.right_beam_pipe = self.left_beam_pipe
+
+        # Slans mesh parameters
+        self.WG_mesh = round(self.WG_L / 5) * self.u  # /5 for ende_type 1
+
     # def write_cst_paramters(self, fid):
     #     print("Writing parameters to file")
     #     cwd = os.getcwd()

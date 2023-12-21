@@ -443,21 +443,22 @@ if __name__ == '__main__':
     plt.rcParams["figure.figsize"] = (10, 3)
     # sim_folder = r"D:\CST Studio\3. W\Module"
     # unique_marker = 'Eigenmode_3794(800MHz)_2HC_1FPC'
-    sim_folder = r"D:\CST Studio\PhD\W\Assembly"
-    unique_marker = 'C3794_4HC_1FPC_2'
+    sim_folder = r"D:\CST Studio\PhD\tt\Assembly"
+    unique_marker = 'E_C3795_2DQW_DN'
     folders = []
-    # for filepath in os.listdir(sim_folder):
-    #     if unique_marker in filepath:
-    #         if os.path.isdir(os.path.join(sim_folder, filepath)):
-    #             folders.append(filepath)
-    # ic(folders)
-    # folders = [unique_marker]
-    # req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
-    #        "RQT", "Z_kOhm", "Z_T_kOhm_m"]
-    # # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]
-    # name = unique_marker
-    #
-    # eigenmode_analysis(sim_folder, folders, req, name)
+    for filepath in os.listdir(sim_folder):
+        if unique_marker in filepath:
+            if os.path.isdir(os.path.join(sim_folder, filepath)):
+                folders.append(filepath)
+    ic(folders)
+    folders = [unique_marker]
+    ic(folders)
+    req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
+           "RQT", "Z_kOhm", "Z_T_kOhm_m"]
+    # req = ["Frequency (Multiple Modes)", "R over Q beta=1 (Multiple Modes)", "RQT"]
+    name = unique_marker
+
+    eigenmode_analysis(sim_folder, folders, req, name)
 
     # sim_folder = r"D:\CST Studio\MuCol_Study\Couplers"
     # folders = ["DQW_1300MHz_Ri38mm"]
@@ -468,11 +469,11 @@ if __name__ == '__main__':
     # plot_threshold()
     # plot_threshold_Z()
 
-    sim_folder = r"D:\CST Studio\3. W\Module\E_3794_2HC_1FPC_Optimized_1000"
-    # monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=0', 187, 2)
+    # sim_folder = r"D:\CST Studio\3. W\Module\E_3794_2HC_1FPC_Optimized_1000"
+    # # monopole = compile_monopole(sim_folder, 'e_Z (Z)_x=0', 187, 2)
+    # # ic(monopole, len(monopole))
+    # monopole = compile_monopole(sim_folder, 'e_Z (Z)', 187, 2)
     # ic(monopole, len(monopole))
-    monopole = compile_monopole(sim_folder, 'e_Z (Z)', 187, 2)
-    ic(monopole, len(monopole))
 
 
     # ee_file = fr'D:\CST Studio\3. W\Eigenmode\E_C3794_EE.xlsx'

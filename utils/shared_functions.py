@@ -324,7 +324,7 @@ def perform_geometry_checks(par_mid: list, par_end: list):
     return True
 
 
-def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type, opt=False):
+def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type, opt=False, solver='slans'):
     """
     Writes cavity geometric data that can be imported into CST Studio
 
@@ -347,10 +347,13 @@ def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type, opt=False):
     """
     ic_ = update_alpha(ic_)
     oc_l = update_alpha(oc_l)
-    if opt:
-        slans_folder = 'SLANS_opt'
+    if solver.lower() == 'slans':
+        if opt:
+            folder = 'SLANS_opt'
+        else:
+            folder = 'SLANS'
     else:
-        slans_folder = 'SLANS'
+        folder = 'NGSolveMEVP'
 
     if cell_type is None:
         # print("Writing parameters to file")
@@ -372,8 +375,8 @@ def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type, opt=False):
 
     else:
         # print("Writing parameters to file")
-        path = fr'{projectDir}/SimulationData/{slans_folder}/{key}/{key}.txt'
-        path_mc = fr'{projectDir}/SimulationData/{slans_folder}/{key}/{key}_Multicell.txt'
+        path = fr'{projectDir}/SimulationData/{folder}/{key}/{key}.txt'
+        path_mc = fr'{projectDir}/SimulationData/{folder}/{key}/{key}_Multicell.txt'
 
         # print(path)
         with open(path, 'w') as f:
@@ -397,8 +400,8 @@ def write_cst_paramters(key, ic_, oc_l, oc_r, projectDir, cell_type, opt=False):
 
         with open(path_mc, 'w') as f:
             name_list = ['Aeq', 'Beq', 'ai', 'bi', 'Ri', 'L', 'Req', 'alpha',
-                         'Aeq_er', 'Beq_er', 'ai_er', 'bi_er', 'Ri_er', 'L_er', 'Req_er', 'alpha_er',
-                         'Aeq_el', 'Beq_el', 'ai_el', 'bi_el', 'Ri_el', 'L_el', 'Req_el', 'alpha_el', 'key']
+                         'Aeq_er', 'Beq_er', 'ai_er', 'bi_er', 'Ri_er', 'L_er', 'Req', 'alpha_er',
+                         'Aeq_el', 'Beq_el', 'ai_el', 'bi_el', 'Ri_el', 'L_el', 'Req', 'alpha_el', 'key']
 
             if cell_type == 'Mid Cell':
                 value_list = [ic_[0], ic_[1], ic_[2], ic_[3], ic_[4], ic_[5], ic_[6], ic_[7],
@@ -1308,8 +1311,8 @@ def write_cavity_for_custom_eig_solver(file_path, n_cell, mid_cell, end_cell_lef
             end_cell_right = end_cell_left
 
     A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(mid_cell[:7])*1e-3
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array(end_cell_left[:7])*1e-3
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array(end_cell_right[:7])*1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(end_cell_left[:7])*1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(end_cell_right[:7])*1e-3
 
     step = 0.0005  # step in boundary points in mm
 
@@ -1657,7 +1660,7 @@ def lineTo(prevPt, nextPt, step, plot=True):
             py = linspace(nextPt[1], prevPt[1], step * np.sin(ang))
             py = py[::-1]
     if plot:
-        plt.plot(px, py)
+        plt.plot(px, py, marker='x')
 
 
 def arcTo(x_center, y_center, a, b, step, start, end, plot=True):
@@ -1677,7 +1680,7 @@ def arcTo(x_center, y_center, a, b, step, start, end, plot=True):
     inbox = inbox[inbox[:, 0].argsort()]
 
     if plot:
-        plt.plot(inbox[:, 0], inbox[:, 1])
+        plt.plot(inbox[:, 0], inbox[:, 1], marker='x')
 
     return inbox
 
@@ -2038,7 +2041,7 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
 
 
 def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none',
-                           plot=False):
+                           plot=False, unit=1e-3):
     """
     Write cavity geometry to be used by Multipac for multipacting analysis
     Parameters
@@ -2074,12 +2077,11 @@ def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_
         else:
             end_cell_right = end_cell_left
 
-    # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req = mid_cell[:7]
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req = end_cell_left[:7]
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = end_cell_right[:7]
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(mid_cell[:7])*unit
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(end_cell_left[:7])*unit
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(end_cell_right[:7])*unit
 
-    step = 0.0005
+    step = 0.005
 
     if beampipe.lower() == 'both':
         L_bp_l = 4 * L_m
@@ -2367,51 +2369,71 @@ def writeCavityForMultipac(file_path, n_cell, mid_cell, end_cell_left=None, end_
         plt.rcParams["figure.figsize"] = plt.rcParamsDefault["figure.figsize"]
 
 
-def drawCavity_flat_top(shape_space, n_cell, project_folder):
+def writeCavityForMultipac_flat_top(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none',
+                           plot=False, unit=1e-3):
     """
-    Draw cavity with flat tops. See :cite:t:`zheng2019rf`.
+    Write cavity geometry to be used by Multipac for multipacting analysis
     Parameters
     ----------
-    shape_space: dict
-        Python dictionary containing cavity geometry dimensions
+    file_path: str
+        File path to write geometry to
     n_cell: int
         Number of cavity cells
-    project_folder: str
-        Project folder
+    mid_cell: list, ndarray
+        Array of cavity middle cells' geometric parameters
+    end_cell_left: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    end_cell_right: list, ndarray
+        Array of cavity left end cell's geometric parameters
+    beampipe: str {"left", "right", "both", "none"}
+        Specify if beam pipe is on one or both ends or at no end at all
+    plot: bool
+        If True, the cavity geometry is plotted for viewing
 
     Returns
     -------
 
     """
-    plt.rcParams["figure.figsize"] = (12, 3)
-    midJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90,
-                        20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
-    endJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
-    endJlab_r = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
+    if plot:
+        plt.rcParams["figure.figsize"] = (12, 2)
 
-    # cepc
-    midCEPC = np.array(
-        [94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
-    endCEPC = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
-    endCEPC_r = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
+    if end_cell_left is None:
+        end_cell_left = mid_cell
 
-    # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req, alpha, lft = midCEPC
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req, alpha_el, lft_el = midCEPC
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req, alpha_er, lft_er = midCEPC
+    if end_cell_right is None:
+        if end_cell_left is None:
+            end_cell_right = mid_cell
+        else:
+            end_cell_right = end_cell_left
 
-    n_cell = 2
-    step = 2  # step in boundary points in mm
-    L_bp_l = 4 * L_m  # 0.0000  #
-    L_bp_r = 4 * L_m  # 0.0000  #
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req, lft = np.array(mid_cell[:8])*1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req, lft_el = np.array(end_cell_left[:8])*1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req, lft_er = np.array(end_cell_right[:8])*1e-3
+
+    step = 0.001
+
+    if beampipe.lower() == 'both':
+        L_bp_l = 4 * L_m
+        L_bp_r = 4 * L_m
+    elif beampipe.lower() == 'none':
+        L_bp_l = 0.000  # 4 * L_m  #
+        L_bp_r = 0.000  # 4 * L_m  #
+    elif beampipe.lower() == 'left':
+        L_bp_l = 4 * L_m
+        L_bp_r = 0.000
+    elif beampipe.lower() == 'right':
+        L_bp_l = 0.000
+        L_bp_r = 4 * L_m
+    else:
+        L_bp_l = 0.000  # 4 * L_m  #
+        L_bp_r = 0.000  # 4 * L_m  #
 
     # calculate shift
-    shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2) * lft + L_er + lft_er) / 2
-    # shift = 0
-    # shift = L_m  # for end cell
+    shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
 
     # calculate angles outside loop
     # CALCULATE x1_el, y1_el, x2_el, y2_el
+
     df = tangent_coords(A_el, B_el, a_el, b_el, Ri_el, L_el, Req, L_bp_l)
     x1el, y1el, x2el, y2el = df[0]
 
@@ -2423,7 +2445,7 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
     df = tangent_coords(A_er, B_er, a_er, b_er, Ri_er, L_er, Req, L_bp_r)
     x1er, y1er, x2er, y2er = df[0]
 
-    with open(fr'{project_folder}\SimulationData\Multipacting\geodata.n', 'w') as fil:
+    with open(file_path, 'w') as fil:
         fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
         fil.write("   1.25000000e-02   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")  # a point inside the structure
         fil.write("  -3.1415927e+00  -2.7182818e+00   0.0000000e+00   0.0000000e+00\n")  # a point outside the structure
@@ -2440,7 +2462,6 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
         if L_bp_l != 0:
             lineTo(pt, [L_bp_l - shift, Ri_el], step)
             pt = [L_bp_l - shift, Ri_el]
-            print(pt)
             fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
         for n in range(1, n_cell + 1):
@@ -2516,7 +2537,7 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l + lft_el - shift, Req - B_m, A_m, B_m, step, [pt[0], Req - B_m],
-                                [L_el + L_m + lft_el - x2 + 2 * L_bp_l - shift, Req])
+                                [L_el + lft_el + L_m - x2 + 2 * L_bp_l - shift, Req])
                     pt = [L_el + lft_el + L_m - x2 + 2 * L_bp_l - shift, y2]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -2612,7 +2633,7 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # calculate new shift
-                shift = shift - 2 * L_m - lft
+                shift = shift - 2*L_m - (lft_el + lft)
             else:
                 print("else")
                 # DRAW ARC:
@@ -2642,7 +2663,7 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
 
                 # flat top
                 lineTo(pt, [L_bp_l + L_m + lft_er - shift, Req], step)
-                pt = [L_bp_l + L_el + lft_er - shift, Req]
+                pt = [L_bp_l + L_m + lft_er - shift, Req, Req]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # EQUATOR ARC TO NEXT POINT
@@ -2679,22 +2700,17 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
         # BEAM PIPE
         # reset shift
         print("pt before", pt)
-        shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2) * lft + L_er + lft_er) / 2
-        lineTo(pt,
-               [L_bp_r + L_bp_l + 2 * (n_cell - 1) * L_m + (n_cell - 2) * lft + lft_el + lft_er + L_el + L_er - shift,
-                Ri_er], step)
+        shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2)*lft + L_er + lft_er) / 2
+        lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + (n_cell-2)*lft + lft_el + lft_er + L_el + L_er - shift, Ri_er], step)
 
         if L_bp_r != 0:
-            pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r + (n_cell - 2) * lft + lft_el + lft_er - shift,
-                  Ri_er]
+            pt = [2 * (n_cell-1) * L_m + L_el + L_er + L_bp_l + L_bp_r + (n_cell-2)*lft + lft_el + lft_er - shift, Ri_er]
             fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
             print("pt after", pt)
 
         # END PATH
-        lineTo(pt,
-               [2 * (n_cell - 1) * L_m + L_el + L_er + (n_cell - 2) * lft + lft_el + lft_er + L_bp_l + L_bp_r - shift,
-                0], step)  # to add beam pipe to right
-        pt = [2 * (n_cell - 1) * L_m + L_el + L_er + (n_cell - 2) * lft + lft_el + lft_er + L_bp_l + L_bp_r - shift, 0]
+        lineTo(pt, [2 * (n_cell-1) * L_m + L_el + L_er + (n_cell-2)*lft + lft_el + lft_er + L_bp_l + L_bp_r - shift, 0], step)  # to add beam pipe to right
+        pt = [2 * (n_cell-1) * L_m + L_el + L_er + (n_cell-2)*lft + lft_el + lft_er + L_bp_l + L_bp_r - shift, 0]
         # lineTo(pt, [2 * n_cell * L_er + L_bp_l - shift, 0], step)
         # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
         fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
@@ -2703,7 +2719,8 @@ def drawCavity_flat_top(shape_space, n_cell, project_folder):
         lineTo(pt, start_point, step)
         fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
 
-    # plt.show()
+    if plot:
+        plt.show()
 
 
 def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_cell_right=None, beampipe='none',
@@ -2744,9 +2761,9 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
             end_cell_right = end_cell_left
 
     # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = np.array(mid_cell[:7])*1e-3
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array(end_cell_left[:7])*1e-3
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array(end_cell_right[:7])*1e-3
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(mid_cell[:7])*1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req = np.array(end_cell_left[:7])*1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req = np.array(end_cell_right[:7])*1e-3
 
     step = 0.0005
 
@@ -2771,15 +2788,15 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
     # shift = 0
     # shift = L_m  # for end cell
 
-    df = tangent_coords(A_el, B_el, a_el, b_el, Ri_el, L_el, Req_m, L_bp_l)
+    df = tangent_coords(A_el, B_el, a_el, b_el, Ri_el, L_el, Req, L_bp_l)
     x1el, y1el, x2el, y2el = df[0]
 
     # CALCULATE x1, y1, x2, y2
-    df = tangent_coords(A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, L_bp_l)
+    df = tangent_coords(A_m, B_m, a_m, b_m, Ri_m, L_m, Req, L_bp_l)
     x1, y1, x2, y2 = df[0]
 
     # CALCULATE x1_er, y1_er, x2_er, y2_er
-    df = tangent_coords(A_er, B_er, a_er, b_er, Ri_er, L_er, Req_m, L_bp_r)
+    df = tangent_coords(A_er, B_er, a_er, b_er, Ri_er, L_er, Req, L_bp_r)
     x1er, y1er, x2er, y2er = df[0]
     default_folder = "D:\Dropbox\multipacting\MPGUI21"
 
@@ -2821,8 +2838,8 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req_el])
-                pt = [L_bp_l + L_el - shift, Req_el]
+                pts = arcTo(L_el + L_bp_l - shift, Req - B_el, A_el, B_el, step, pt, [L_bp_l + L_el - shift, Req])
+                pt = [L_bp_l + L_el - shift, Req]
                 for pp in pts:
                     fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -2831,8 +2848,8 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
                     # EQUATOR ARC TO NEXT POINT
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
-                    pts = arcTo(L_el + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                                [L_el + L_er - x2er + 2 * L_bp_l - shift, Req_er])
+                    pts = arcTo(L_el + L_bp_l - shift, Req - B_er, A_er, B_er, step, [pt[0], Req - B_er],
+                                [L_el + L_er - x2er + 2 * L_bp_l - shift, Req])
                     pt = [L_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -2869,8 +2886,8 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
                     # EQUATOR ARC TO NEXT POINT
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
-                    pts = arcTo(L_el + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                                [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                    pts = arcTo(L_el + L_bp_l - shift, Req - B_m, A_m, B_m, step, [pt[0], Req - B_m],
+                                [L_el + L_m - x2 + 2 * L_bp_l - shift, Req])
                     pt = [L_el + L_m - x2 + 2 * L_bp_l - shift, y2]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -2919,8 +2936,8 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
-                pt = [L_bp_l + L_m - shift, Req_m]
+                pts = arcTo(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req])
+                pt = [L_bp_l + L_m - shift, Req]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
                         fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -2931,8 +2948,8 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
                 # EQUATOR ARC TO NEXT POINT
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
-                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                            [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m])
+                pts = arcTo(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, [pt[0], Req - B_m],
+                            [L_m + L_m - x2 + 2 * L_bp_l - shift, Req])
                 pt = [L_m + L_m - x2 + 2 * L_bp_l - shift, y2]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
@@ -2980,8 +2997,8 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
-                pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
-                pt = [L_bp_l + L_m - shift, Req_m]
+                pts = arcTo(L_m + L_bp_l - shift, Req - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req])
+                pt = [L_bp_l + L_m - shift, Req]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
                         fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -2992,8 +3009,8 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
                 # EQUATOR ARC TO NEXT POINT
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
-                pts = arcTo(L_m + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                            [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er])
+                pts = arcTo(L_m + L_bp_l - shift, Req - B_er, A_er, B_er, step, [pt[0], Req - B_er],
+                            [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, Req])
                 pt = [L_m + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():

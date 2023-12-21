@@ -11,7 +11,7 @@ import matplotlib as mpl
 from scipy.optimize import fsolve
 from utils.file_reader import FileReader
 from analysis_modules.plot_module.matplotlib_annotation_objects import DraggableText
-from utils.shared_functions import ellipse_tangent
+from utils.shared_functions import ellipse_tangent, writeCavityForMultipac_flat_top, writeCavityForMultipac
 
 fr = FileReader()
 
@@ -42,16 +42,16 @@ PARTICLE = {
 }
 
 WP = {
-    'Z': {'E [GeV]': 45.6,
+    'Z_2023': {'E [GeV]': 45.6,
           'I0 [mA]': 1400
           },
-    'W': {'E [GeV]': 80,
-          'I0 [mA]': 147
+    'W_2023': {'E [GeV]': 80,
+          'I0 [mA]': 135
           },
-    'H': {'E [GeV]': 120,
+    'H_2023': {'E [GeV]': 120,
           'I0 [mA]': 54.3
           },
-    'ttbar_2022': {'E [GeV]': 182.5,
+    'ttbar_2023': {'E [GeV]': 182.5,
                    'I0 [mA]': 10
                    },
     'MuCol RCS Stage 1': {"E [GeV]": 250.835,
@@ -145,7 +145,7 @@ class Cavities:
         """
         for i, dirc in enumerate(dir_list):
             print(dirc)
-            self.cavities_list[i].set_slans_qois(dirc)
+            self.cavities_list[i].set_eigenmode_qois(dirc)
 
     def set_cavities_abci(self, dir_list):
         """
@@ -686,7 +686,26 @@ class Cavities:
 
         for cav in self.cavities_list:
             # write contour
-            self.write_contour(cav, opt)
+            # self.write_contour(cav, opt)
+
+            if opt.lower() == 'mid':
+                mid_cell = np.array(cav.d_geom_params['IC']) * 1e-3
+                end_cell_left = np.array(cav.d_geom_params['IC']) * 1e-3
+                end_cell_right = np.array(cav.d_geom_params['IC']) * 1e-3
+            elif opt.lower() == 'end':
+                mid_cell = np.array(cav.d_geom_params['IC']) * 1e-3
+                end_cell_left = np.array(cav.d_geom_params['IC']) * 1e-3
+                end_cell_right = np.array(cav.d_geom_params['OC']) * 1e-3
+            else:
+                mid_cell = np.array(cav.d_geom_params['IC']) * 1e-3
+                end_cell_left = np.array(cav.d_geom_params['OC']) * 1e-3
+                end_cell_right = np.array(cav.d_geom_params['OC']) * 1e-3
+
+            if cav.cell_type == 'flat top':
+                writeCavityForMultipac_flat_top(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none')
+            else:
+                writeCavityForMultipac(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none')
+
 
             data = pd.read_csv(fr"{cav.slans_dir}\contour.txt", sep=r'\s+', header=None)
 
@@ -1028,7 +1047,7 @@ class Cavities:
             # calculate shift
             shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
 
-        step = 2  # step in boundary points in mm
+        step = 0.02  # step in boundary points in mm
         # shift = 0
         # shift = L_m  # for end cell
 
@@ -1319,7 +1338,347 @@ class Cavities:
 
         # plt.show()
 
-    def plot_ql_vs_pin(self):
+    def write_contour_flat_top(self, cav, opt='mid', n_cells=1):
+        plt.rcParams["figure.figsize"] = (12, 3)
+        midJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90,
+                            20]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
+        endJlab = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
+        endJlab_r = np.array([64.453596, 54.579114, 19.1, 25.922107, 65, 83.553596, 163.975, 90, 11.187596]) * 1e-3
+
+        # cepc
+        midCEPC = np.array(
+            [94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3  # [A, B, a, b, Ri, L, Req, alpha, l]
+        endCEPC = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
+        endCEPC_r = np.array([94.4, 94.4, 20.1, 22.1, 78, 114.8873, 204.95, 90, 0.8254]) * 1e-3
+
+        # # TESLA end cell 2
+        A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, alpha, lft = midCEPC
+        A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, alpha_el, lft_el = endCEPC
+        A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, alpha_er, lft_er = midCEPC
+
+        n_cell = 2
+        step = 0.02  # step in boundary points in mm
+        L_bp_l = 4 * L_m  # 0.0000  #
+        L_bp_r = 4 * L_m  # 0.0000  #
+
+        # calculate shift
+        shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2) * lft + L_er + lft_er) / 2
+        # shift = 0
+        # shift = L_m  # for end cell
+
+        # calculate angles outside loop
+        # CALCULATE x1_el, y1_el, x2_el, y2_el
+        data = ([0 + L_bp_l, Ri_el + b_el, L_el + L_bp_l, Req_el - B_el],
+                [a_el, b_el, A_el, B_el])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+
+        x1el, y1el, x2el, y2el = fsolve(f, np.array(
+            [a_el + L_bp_l, Ri_el + 0.85 * b_el, L_el - A_el + L_bp_l, Req_el - 0.85 * B_el]),
+                                        args=data, fprime=jac,
+                                        xtol=1.49012e-12)  # [a_m, b_m-0.3*b_m, L_m-A_m, Req_m-0.7*B_m] initial guess
+
+        # CALCULATE x1, y1, x2, y2
+        data = ([0 + L_bp_l, Ri_m + b_m, L_m + L_bp_l, Req_m - B_m],
+                [a_m, b_m, A_m, B_m])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        x1, y1, x2, y2 = fsolve(f, np.array([a_m + L_bp_l, Ri_m + 0.85 * b_m, L_m - A_m + L_bp_l, Req_m - 0.85 * B_m]),
+                                args=data, fprime=jac, xtol=1.49012e-12)
+
+        # CALCULATE x1_er, y1_er, x2_er, y2_er
+        data = ([0 + L_bp_r, Ri_er + b_er, L_er + L_bp_r, Req_er - B_er],
+                [a_er, b_er, A_er, B_er])  # data = ([h, k, p, q], [a_m, b_m, A_m, B_m])
+        x1er, y1er, x2er, y2er = fsolve(f, np.array(
+            [a_er + L_bp_r, Ri_er + 0.85 * b_er, L_er - A_er + L_bp_r, Req_er - 0.85 * B_er]),
+                                        args=data, fprime=jac,
+                                        xtol=1.49012e-12)
+
+        with open(r'D:\Dropbox\multipacting\MPGUI21\geodata.n', 'w') as fil:
+            fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
+            fil.write(
+                "   1.25000000e-02   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")  # a point inside the structure
+            fil.write(
+                "  -3.1415927e+00  -2.7182818e+00   0.0000000e+00   0.0000000e+00\n")  # a point outside the structure
+
+            # SHIFT POINT TO START POINT
+            start_point = [-shift, 0]
+            fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
+
+            lineTo(start_point, [-shift, Ri_el], step)
+            pt = [-shift, Ri_el]
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+            # ADD BEAM PIPE LENGTH
+            if L_bp_l != 0:
+                lineTo(pt, [L_bp_l - shift, Ri_el], step)
+                pt = [L_bp_l - shift, Ri_el]
+                print(pt)
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+            for n in range(1, n_cell + 1):
+                if n == 1:
+                    # DRAW ARC:
+                    pts = arcTo(L_bp_l - shift, Ri_el + b_el, a_el, b_el, step, pt, [-shift + x1el, y1el])
+                    pt = [-shift + x1el, y1el]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # DRAW LINE CONNECTING ARCS
+                    lineTo(pt, [-shift + x2el, y2el], step)
+                    pt = [-shift + x2el, y2el]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+                    pts = arcTo(L_el + L_bp_l - shift, Req_el - B_el, A_el, B_el, step, pt,
+                                [L_bp_l + L_el - shift, Req_el])
+                    pt = [L_bp_l + L_el - shift, Req_el]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # flat top
+                    lineTo(pt, [L_bp_l + L_el + lft_el - shift, Req_el], step)
+                    pt = [L_bp_l + L_el + lft_el - shift, Req_el]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    if n_cell == 1:
+                        # EQUATOR ARC TO NEXT POINT
+                        # half of bounding box is required,
+                        # start is the lower coordinate of the bounding box and end is the upper
+                        pts = arcTo(L_el + L_bp_l + lft_el - shift, Req_er - B_er, A_er, B_er, step,
+                                    [pt[0], Req_er - B_er],
+                                    [L_el + lft_el + L_er - x2er + 2 * L_bp_l - shift, Req_er])
+                        pt = [L_el + lft_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
+                        for pp in pts:
+                            if (np.around(pp, 12) != np.around(pt, 12)).all():
+                                fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                            else:
+                                print("Found one")
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                        # STRAIGHT LINE TO NEXT POINT
+                        lineTo(pt, [L_el + lft_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
+                        pt = [L_el + lft_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                        # ARC
+                        # half of bounding box is required,
+                        # start is the lower coordinate of the bounding box and end is the upper
+                        pts = arcTo(L_el + lft_el + L_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step,
+                                    [pt[0], Ri_er],
+                                    [L_bp_l + L_el + lft_el + L_er - shift, y1er])
+
+                        pt = [L_bp_l + lft_el + L_el + L_er - shift, Ri_er]
+                        for pp in pts:
+                            if (np.around(pp, 12) != np.around(pt, 12)).all():
+                                fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                            else:
+                                print("Found one")
+
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                        # calculate new shift
+                        shift = shift - (L_el + L_er + lft_el)
+                    else:
+                        # EQUATOR ARC TO NEXT POINT
+                        # half of bounding box is required,
+                        # start is the lower coordinate of the bounding box and end is the upper
+                        pts = arcTo(L_el + L_bp_l + lft_el - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
+                                    [L_el + L_m + lft_el - x2 + 2 * L_bp_l - shift, Req_m])
+                        pt = [L_el + lft_el + L_m - x2 + 2 * L_bp_l - shift, y2]
+                        for pp in pts:
+                            if (np.around(pp, 12) != np.around(pt, 12)).all():
+                                fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                            else:
+                                print("Found one")
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                        # STRAIGHT LINE TO NEXT POINT
+                        lineTo(pt, [L_el + lft_el + L_m - x1 + 2 * L_bp_l - shift, y1], step)
+                        pt = [L_el + lft_el + L_m - x1 + 2 * L_bp_l - shift, y1]
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                        # ARC
+                        # half of bounding box is required,
+                        # start is the lower coordinate of the bounding box and end is the upper
+                        pts = arcTo(L_el + lft_el + L_m + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
+                                    [L_bp_l + L_el + lft_el + L_m - shift, y1])
+                        pt = [L_bp_l + L_el + lft_el + L_m - shift, Ri_m]
+                        for pp in pts:
+                            if (np.around(pp, 12) != np.around(pt, 12)).all():
+                                fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                            else:
+                                print("Found one")
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                        # calculate new shift
+                        shift = shift - (L_el + L_m + lft_el)
+                        # ic(shift)
+
+                elif n > 1 and n != n_cell:
+                    print("elif")
+                    # DRAW ARC:
+                    pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+                    pt = [-shift + x1, y1]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # DRAW LINE CONNECTING ARCS
+                    lineTo(pt, [-shift + x2, y2], step)
+                    pt = [-shift + x2, y2]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+                    pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                    pt = [L_bp_l + L_m - shift, Req_m]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # flat top
+                    lineTo(pt, [L_bp_l + L_m + lft - shift, Req_m], step)
+                    pt = [L_bp_l + L_el + lft - shift, Req_el]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # EQUATOR ARC TO NEXT POINT
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_m + L_bp_l + lft - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
+                                [L_m + L_m + lft - x2 + 2 * L_bp_l - shift, Req_m])
+                    pt = [L_m + L_m + lft - x2 + 2 * L_bp_l - shift, y2]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # STRAIGHT LINE TO NEXT POINT
+                    lineTo(pt, [L_m + L_m + lft - x1 + 2 * L_bp_l - shift, y1], step)
+                    pt = [L_m + L_m + lft - x1 + 2 * L_bp_l - shift, y1]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # ARC
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_m + L_m + lft + L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, [pt[0], Ri_m],
+                                [L_bp_l + L_m + L_m + lft - shift, y1])
+                    pt = [L_bp_l + L_m + L_m + lft - shift, Ri_m]
+                    ic(pt)
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # calculate new shift
+                    shift = shift - 2 * L_m - lft
+                else:
+                    print("else")
+                    # DRAW ARC:
+                    pts = arcTo(L_bp_l - shift, Ri_m + b_m, a_m, b_m, step, pt, [-shift + x1, y1])
+                    pt = [-shift + x1, y1]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # DRAW LINE CONNECTING ARCS
+                    lineTo(pt, [-shift + x2, y2], step)
+                    pt = [-shift + x2, y2]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # DRAW ARC, FIRST EQUATOR ARC TO NEXT POINT
+                    pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, pt, [L_bp_l + L_m - shift, Req_m])
+                    pt = [L_bp_l + L_m - shift, Req_m]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # flat top
+                    lineTo(pt, [L_bp_l + L_m + lft_er - shift, Req_m], step)
+                    pt = [L_bp_l + L_el + lft_er - shift, Req_el]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # EQUATOR ARC TO NEXT POINT
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_m + lft_er + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
+                                [L_m + L_er + lft_er - x2er + L_bp_l + L_bp_r - shift, Req_er])
+                    pt = [L_m + L_er + lft_er - x2er + L_bp_l + L_bp_r - shift, y2er]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # STRAIGHT LINE TO NEXT POINT
+                    lineTo(pt, [L_m + L_er + lft_er - x1er + L_bp_l + L_bp_r - shift, y1er], step)
+                    pt = [L_m + L_er + lft_er - x1er + L_bp_l + L_bp_r - shift, y1er]
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    # ARC
+                    # half of bounding box is required,
+                    # start is the lower coordinate of the bounding box and end is the upper
+                    pts = arcTo(L_m + L_er + lft_er + L_bp_l - shift, Ri_er + b_er, a_er, b_er, step, [pt[0], Ri_er],
+                                [L_bp_l + L_m + L_er + lft_er - shift, y1er])
+                    pt = [L_bp_l + L_m + L_er + lft_er - shift, Ri_er]
+                    for pp in pts:
+                        if (np.around(pp, 12) != np.around(pt, 12)).all():
+                            fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                        else:
+                            print("Found one")
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+            # BEAM PIPE
+            # reset shift
+            print("pt before", pt)
+            shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2) * lft + L_er + lft_er) / 2
+            lineTo(pt, [
+                L_bp_r + L_bp_l + 2 * (n_cell - 1) * L_m + (n_cell - 2) * lft + lft_el + lft_er + L_el + L_er - shift,
+                Ri_er], step)
+
+            if L_bp_r != 0:
+                pt = [2 * (n_cell - 1) * L_m + L_el + L_er + L_bp_l + L_bp_r + (
+                            n_cell - 2) * lft + lft_el + lft_er - shift, Ri_er]
+                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
+                print("pt after", pt)
+
+            # END PATH
+            lineTo(pt, [
+                2 * (n_cell - 1) * L_m + L_el + L_er + (n_cell - 2) * lft + lft_el + lft_er + L_bp_l + L_bp_r - shift,
+                0], step)  # to add beam pipe to right
+            pt = [2 * (n_cell - 1) * L_m + L_el + L_er + (n_cell - 2) * lft + lft_el + lft_er + L_bp_l + L_bp_r - shift,
+                  0]
+            # lineTo(pt, [2 * n_cell * L_er + L_bp_l - shift, 0], step)
+            # pt = [2 * n_cell * L_er + L_bp_l - shift, 0]
+            fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
+
+            # CLOSE PATH
+            lineTo(pt, start_point, step)
+            fil.write(f"  {start_point[1]:.7E}  {start_point[0]:.7E}   0.0000000e+00   0.0000000e+00\n")
+
+        plt.show()
+
+    def plot_ql_vs_pin(self, Eacc_list=None):
         """
         Plot loaded quality factor versus input power for fundamental power coupler (FPC)
 
@@ -1346,7 +1705,10 @@ class Cavities:
         # Vrf = [2*0.12e9, 2*0.12e9, 2*1e9, 2*0.44e9]  #   #2*0.75e9 update
         Vrf = [cav.v_rf for cav in self.cavities_list]  # #ttbar
         # Eacc = [20e6, 20e6, 20e6]
-        Eacc = [cav.op_field for cav in self.cavities_list]  # update
+        if Eacc_list is None:
+            Eacc = [cav.op_field for cav in self.cavities_list]  # update
+        else:
+            Eacc = Eacc_list
         RF = [Eacc, Vrf]
 
         # MACHINE
@@ -1391,8 +1753,8 @@ class Cavities:
 
         it = iter(RF)
         the_len = len(next(it))
-        if not all(len(l) == the_len for l in it):
-            raise ValueError('not all lists have same length!')
+        # if not all(len(l) == the_len for l in it):
+        #     raise ValueError('not all lists have same length!')
 
         it = iter(QOI)
         the_len = len(next(it))
@@ -1438,32 +1800,61 @@ class Cavities:
         QL_0 = np.linspace(1e4, 1e10, 1000000)
 
         xy_list = [(0.15, 0.13), (0.1, 0.16), (0.1, 0.19), (0.1, 0.21)]
-        for i in range(len(E_acc)):
-            f1_2 = f0[i] / (2 * QL_0)  # 380.6
-            ic(R_Q[i], v_cav[i], Vrf[i])
-            pin = v_cav[i] ** 2 / (4 * R_Q[i] * QL_0) \
-                  * ((1 + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.cos(phi[i])) ** 2
-                     + ((delta_f[i] / f1_2) + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.sin(phi[i])) ** 2)
 
-            # material/ wall power
-            e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
+        if len(E_acc) == len(f0):
+            for i in range(len(E_acc)):
+                f1_2 = f0[i] / (2 * QL_0)  # 380.6
+                ic(R_Q[i], v_cav[i], Vrf[i])
+                pin = v_cav[i] ** 2 / (4 * R_Q[i] * QL_0) \
+                      * ((1 + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.cos(phi[i])) ** 2
+                         + ((delta_f[i] / f1_2) + ((R_Q[i] * QL_0 * I0[i]) / v_cav[i]) * np.sin(phi[i])) ** 2)
 
-            txt = labels[i]
+                # material/ wall power
+                e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
 
-            if "*" in labels[i]:
-                l = ax.plot(QL_0, pin * 1e-3,
-                            label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW",
-                            lw=4,
-                            ls='--')
-            else:
-                l = ax.plot(QL_0, pin * 1e-3,
-                            label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW")
+                txt = labels[i]
 
-            # add annotations
-            ic(l_active)
+                if "*" in labels[i]:
+                    l = ax.plot(QL_0, pin * 1e-3,
+                                label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW",
+                                lw=4,
+                                ls='--')
+                else:
+                    l = ax.plot(QL_0, pin * 1e-3,
+                                label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW")
 
-            # annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=8, rotation=0,
-            #                        c=l[0].get_color())
+                # add annotations
+                ic(l_active)
+
+                # annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=8, rotation=0,
+                #                        c=l[0].get_color())
+        else:
+            for i in range(len(E_acc)):
+                f1_2 = f0[0] / (2 * QL_0)  # 380.6
+                ic(R_Q[0], v_cav[i], Vrf[0])
+                pin = v_cav[i] ** 2 / (4 * R_Q[0] * QL_0) \
+                      * ((1 + ((R_Q[0] * QL_0 * I0[0]) / v_cav[i]) * np.cos(phi[0])) ** 2
+                         + ((delta_f[0] / f1_2) + ((R_Q[0] * QL_0 * I0[0]) / v_cav[i]) * np.sin(phi[0])) ** 2)
+
+                # material/ wall power
+                e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
+
+                txt = labels[0]
+
+                if "*" in labels[0]:
+                    l = ax.plot(QL_0, pin * 1e-3,
+                                label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW",
+                                lw=4,
+                                ls='--')
+                else:
+                    l = ax.plot(QL_0, pin * 1e-3,
+                                label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW")
+
+                # add annotations
+                ic(l_active)
+
+                # annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=8, rotation=0,
+                #                        c=l[0].get_color())
 
         if p_data:
             # plot QL with penetration
@@ -1476,11 +1867,12 @@ class Cavities:
         ax.set_xlabel(r"$Q_\mathrm{L}$")
         ax.set_ylabel(r"$P_\mathrm{in} ~[\mathrm{kW}]$")
         ax.set_xscale('log')
-        ax.set_xlim(5e3, 1e10)
+        # ax.set_xlim(5e3, 1e10)
         ax.set_ylim(0, 3000)
         # ax.legend(loc='upper left')  #
         ax.minorticks_on()
         # ax.grid(which='both')
+        fig.tight_layout()
         fig.show()
 
     def run_slans(self):
@@ -1698,7 +2090,7 @@ class Cavities:
                 for ll in all_lines:
                     f.write(ll + '\n')
         except KeyError as e:
-            print("Either SLANS or ABCI results not available. Please use '<cav>.set_slans_qois(<folder>)' "
+            print("Either SLANS or ABCI results not available. Please use '<cav>.set_eigenmode_qois(<folder>)' "
                   "or '<cav>.set_abci_qois(<folder>)' to fix this. Error: ", e)
 
     def make_excel_summary(self):
@@ -1758,7 +2150,7 @@ class Cavities:
                 fr"D:\Dropbox\CavityDesignHub\MuCol_Study\SimulationData\Summaries\{self.save_folder}_excel_summary.xlsx",
                 sheet_name='Cavities')
         except Exception as e:
-            print("Either SLANS or ABCI results not available. Please use '<cav>.set_slans_qois(<folder>)' "
+            print("Either SLANS or ABCI results not available. Please use '<cav>.set_eigenmode_qois(<folder>)' "
                   "or '<cav>.set_abci_qois(<folder>)' to fix this.")
             print(e)
 
@@ -1822,7 +2214,7 @@ class Cavity:
     """
 
     def __init__(self, slans_dir, abci_dir, vrf, inv_eta=219, name="Unnamed", plot_label=None,
-                 op_field=1e6, wp='Z', sigma='', op_temp='2K', material='bulkNb', project='', Q0=None):
+                 op_field=1e6, wp='Z', sigma='', op_temp='2K', material='bulkNb', project='', Q0=None, cell_type='normal'):
         """Constructs all the necessary attributes of the Cavity object
 
         Parameters
@@ -1864,7 +2256,7 @@ class Cavity:
             self.plot_label = plot_label
 
         self.bunch_length = None
-        self.d_slans_all_results = None
+        # self.d_fm_all_results = None
         self.abci_dir = None
         self.ff = ''
         self.k_cc = ''
@@ -1882,7 +2274,7 @@ class Cavity:
         self.surface_field = None
         self.Rs = None
         self.d_geom_params = {}
-        self.d_qois_slans = {}
+        self.d_qois_fm = {}
         self.k_loss = None
         self.k_kick = None
         self.phom = None
@@ -1910,8 +2302,9 @@ class Cavity:
         self.b = None
         self.G = None
         self.wp = wp  # working point
+        self.cell_type = cell_type
 
-        self.set_slans_qois(slans_dir)
+        self.set_eigenmode_qois(slans_dir, solver='slans')
         self.set_abci_qois(abci_dir, wp, sigma)
 
         # calculated
@@ -2040,33 +2433,37 @@ class Cavity:
 
         return self.p_in, self.p_wp
 
-    def set_slans_qois(self, folder_name):
+    def set_eigenmode_qois(self, folder_name, solver='slans'):
         self.slans_dir = folder_name
-        slans_svl = 'cavity_33.svl'
         qois = 'qois.json'
         geom_params = 'geometric_parameters.json'
 
         with open(fr"{folder_name}\{qois}") as json_file:
-            self.d_qois_slans.update(json.load(json_file))
+            self.d_qois_fm.update(json.load(json_file))
 
         with open(fr"{folder_name}\{geom_params}") as json_file:
             self.d_geom_params.update(json.load(json_file))
-
-        self.d_slans_all_results = fr.svl_reader(fr"{folder_name}\{slans_svl}")
+        
+        # if solver.lower() == 'slans':
+        #     slans_svl = 'cavity_33.svl'
+        #     self.d_fm_all_results = fr.svl_reader(fr"{folder_name}\{slans_svl}")
+        # else:
+        #     with open(fr"{folder_name}\{qois}") as json_file:
+        #         self.d_fm_all_results.update(json.load(json_file))
 
         # ic(d_qois)
         self.l_cell_mid = self.d_geom_params['IC'][5] * 1e-3
-        self.n_cells = self.d_qois_slans['N Cells']
-        self.op_freq = self.d_qois_slans['freq [MHz]'] * 1e6
-        self.k_cc = self.d_qois_slans['kcc [%]']
-        self.ff = self.d_qois_slans['ff [%]']
-        self.R_Q = self.d_qois_slans['R/Q [Ohm]']
-        self.GR_Q = self.d_qois_slans['GR/Q [Ohm^2]']
+        self.n_cells = self.d_qois_fm['N Cells']
+        self.op_freq = self.d_qois_fm['freq [MHz]'] * 1e6
+        self.k_cc = self.d_qois_fm['kcc [%]']
+        self.ff = self.d_qois_fm['ff [%]']
+        self.R_Q = self.d_qois_fm['R/Q [Ohm]']
+        self.GR_Q = self.d_qois_fm['GR/Q [Ohm^2]']
         self.G = self.GR_Q / self.R_Q
         # print(G)
         # self.Q = d_qois['Q []']
-        self.e = self.d_qois_slans['Epk/Eacc []']
-        self.b = self.d_qois_slans['Bpk/Eacc [mT/MV/m]']
+        self.e = self.d_qois_fm['Epk/Eacc []']
+        self.b = self.d_qois_fm['Bpk/Eacc [mT/MV/m]']
 
         # get axis field
         try:
@@ -2495,7 +2892,7 @@ class Cavity:
                 for ll in all_lines:
                     f.write(ll + '\n')
         except KeyError:
-            print("Either SLANS or ABCI results not available. Please use '<cav>.set_slans_qois(<folder>)' "
+            print("Either SLANS or ABCI results not available. Please use '<cav>.set_eigenmode_qois(<folder>)' "
                   "or '<cav>.set_abci_qois(<folder>)' to fix this.")
 
     def __repr__(self):
@@ -3053,14 +3450,14 @@ def ttbar_study():
                        slans_dir=fr"{parent_dir_slans}\FCC_UROS5",
                        abci_dir=fr"{parent_dir_abci}\FCC_UROS5", Q0=3e10)
 
-    cTESLA = Cavity(vrf=9.2e9, inv_eta=745, name="TESLA", op_field=20.12e6,
-                    op_temp='2K', material='bulkNb',
-                    wp=wp, sigma=sigma, plot_label="TESLA",
-                    slans_dir=fr"{parent_dir_slans}\TESLA_800MHz",
-                    abci_dir=fr"{parent_dir_abci}\TESLA_800MHz", Q0=3e10)
+    # cTESLA = Cavity(vrf=9.2e9, inv_eta=745, name="TESLA", op_field=20.12e6,
+    #                 op_temp='2K', material='bulkNb',
+    #                 wp=wp, sigma=sigma, plot_label="TESLA",
+    #                 slans_dir=fr"{parent_dir_slans}\TESLA_800MHz",
+    #                 abci_dir=fr"{parent_dir_abci}\TESLA_800MHz", Q0=3e10)
 
-    cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], 'Cavities_C3795_FCCUROS5_TESLA')
-    cavities = Cavities([cFCCUROS5, c3795_tt], 'Cavities_FCCUROS5_C3795')
+    # cavities = Cavities([c3795_tt, cFCCUROS5, cTESLA], 'Cavities_C3795_FCCUROS5_TESLA')
+    cavities = Cavities([c3795_tt, cFCCUROS5], 'Cavities_C3795_FCCUROS5')
 
     # cavities.set_cavities_slans(slans_dirs)
     # cavities.set_cavities_abci(abci_dirs)
@@ -3080,7 +3477,7 @@ def ttbar_study():
     cavities.plot_cavities_contour('mid')
     cavities.plot_cavities_contour('end')
     #
-    cavities.plot_ql_vs_pin()
+    # cavities.plot_ql_vs_pin()
     # cavities.plot_cryomodule_comparison()
     # cavities.plot_axis_fields()
     # cavities.plot_surface_fields()
@@ -3095,7 +3492,7 @@ def ttbar_study():
     # for tp in to_plot:
     cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
 
-    # cavities.plot_dispersion()
+    cavities.plot_dispersion()
     # plt.show()
     # c3795_tt.plot_ql_vs_pin()
 
@@ -3169,6 +3566,63 @@ def h_study():
     cavities.plot_dispersion()
     # plt.show()
 
+def w_study():
+    V = 1 * 1e9  # <- V
+    wp = 'W_2023'  # working point
+    sigma = 'SR_3.55mm'
+    machine = "FCC-ee"
+
+
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS"
+    parent_dir_ngsolve = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
+
+    C3794 = Cavity(vrf=V, inv_eta=745, name="C3794", op_field=10.61e6, op_temp='4.5K', material='NbCu',
+                          wp=wp, sigma=sigma, plot_label="C3794",
+                          slans_dir=fr"{parent_dir_slans}\C3794_n2\monopole",
+                          abci_dir=fr"{parent_dir_abci}\C3794", Q0=1e10)
+
+    CEPCv2 = Cavity(vrf=V, inv_eta=745, name="CEPCv2", op_field=9.3e6, op_temp='2K', material='bulkNb',
+                          wp='CEPC_W', sigma='SR_3.4mm', plot_label="CEPCv2",
+                          slans_dir=fr"{parent_dir_ngsolve}\CEPCv2_n2\monopole",
+                          abci_dir=fr"{parent_dir_abci}\CEPCv2", Q0=1e10, cell_type='flat top')
+
+    slans_dirs = [fr"{parent_dir_slans}\C3794_n2", fr"{parent_dir_ngsolve}\CEPCv2_n2"]
+    abci_dirs = [fr"{parent_dir_abci}\3794", fr"{parent_dir_abci}\CEPCv2"]
+
+    cavities = Cavities([C3794, CEPCv2], 'Cavities_C3794_400_800_C3795_800')
+
+    # cavities.set_cavities_slans(slans_dirs)
+    # cavities.set_cavities_abci(abci_dirs)
+
+    E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
+    cavities.compare_power(E_acc=E_acc)
+    cavities.plot_power_comparison()
+    cavities.plot_compare_bar()
+    cavities.plot_compare_fm_bar()
+    cavities.plot_compare_hom_bar()
+    #
+    # # print(cavities)
+    # # print(c3795_tt)
+    # cavities.make_latex_summary_tables()
+    cavities.plot_cavities_contour('end')
+
+    # cavities.plot_ql_vs_pin()
+    cavities.plot_cryomodule_comparison()
+    cavities.plot_axis_fields()
+    cavities.plot_surface_fields()
+    cavities.make_excel_summary()
+    #
+    # # multipacting
+    # multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+    #
+    # to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
+    # # for tp in to_plot:
+    # # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    # cavities.plot_dispersion()
+    # plt.show()
+
 
 def c3794_study():
     # MUCOL STUDY
@@ -3176,41 +3630,41 @@ def c3794_study():
     parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
 
     abci_dirs = [
-        fr"{parent_dir_abci}\C3794_n2\monopole"
+        fr"{parent_dir_abci}\C3794"
     ]
 
     # RCS
     V = 1 * 1e9  # <- V
-    wp = 'W'  # working point
+    wp = 'W_2023'  # working point
     sigma = 'SR_3.55mm'
     machine = "FCC-ee"
 
-    C3794 = Cavity(vrf=V, inv_eta=745, name="C3794", op_field=10.61e6, op_temp='2K', material='bulkNb',
+    C3794 = Cavity(vrf=V, inv_eta=745, name="C3794", op_field=10.61e6, op_temp='4.5K', material='NbCu',
                           wp=wp, sigma=sigma, plot_label="C3794",
-                          slans_dir=fr"{parent_dir_slans}\C3794",
+                          slans_dir=fr"{parent_dir_slans}\C3794_n2\monopole",
                           abci_dir=fr"{parent_dir_abci}\C3794", Q0=1e10)
 
     cavities = Cavities([C3794], save_folder='C3794', machine=machine, particle='electron')
 
-    E_acc = np.linspace(0.5, 50, 100) * 1e6  # V/m
-    cavities.compare_power(E_acc=E_acc)
-    cavities.plot_power_comparison()
-    cavities.plot_compare_bar()
-    cavities.plot_compare_fm_bar()
-    cavities.plot_compare_hom_bar()
+    E_acc = np.linspace(5, 50, 1000) * 1e6  # V/m
+    # cavities.compare_power(E_acc=E_acc)
+    # cavities.plot_power_comparison()
+    # cavities.plot_compare_bar()
+    # cavities.plot_compare_fm_bar()
+    # cavities.plot_compare_hom_bar()
 
     # print(cavities)
     # print(c3795_tt)
-    cavities.plot_cavities_contour('mid')
+    # cavities.plot_cavities_contour('mid')
 
-    cavities.plot_ql_vs_pin()
+    cavities.plot_ql_vs_pin(np.arange(1, 15, 1)*1e6)
     cavities.plot_cryomodule_comparison()
     # cavities.plot_axis_fields()
     # cavities.plot_surface_fields()
 
-    # makr summaries
-    cavities.make_latex_summary_tables()
-    cavities.make_excel_summary()
+    # # makr summaries
+    # cavities.make_latex_summary_tables()
+    # cavities.make_excel_summary()
 
     # multipacting
     multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3794"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
@@ -3223,22 +3677,10 @@ def c3794_study():
 
 if __name__ == '__main__':
 
-    wp = 'MuCol RCS Stage 1'  # working point
-    # sigma = 'SR_5.775mm'
-    sigma = 'SR_13.0mm'
-    # mucol_study()
-
     # mucol_study_2()
     # mucol_study_3()
-    c3794_study()
-    # print(PARTICLE['electron']['rc [m]'])
-    # print(PARTICLE['muon']['rc [m]'])
-    # print(PARTICLE['proton']['rc [m]'])
+    # c3794_study()
 
-    # wp = 'ttbar_2022'  # working point
-    # sigma = 'SR_1.67mm'
-    # ttbar_study()
-
-    # wp = 'H'  # working point
-    # sigma = 'SR_2.5mm'
+    w_study()
     # h_study()
+    # ttbar_study()

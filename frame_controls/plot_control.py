@@ -2325,7 +2325,7 @@ class PlotControl:
         # set YLabel completer
         names = [r"$Z_{\parallel, \perp} ~[\mathrm{k\Omega}, \mathrm{k\Omega/m}]$",
                  r"$Z_{\parallel} ~[\mathrm{k\Omega}]$",
-                 r"$Z_{\perp} ~[\mathrm{\mathrm{k\Omega/m}]$", r"$S~\mathrm{[dB]}$", r"$Q_\mathrm{ext}$"]
+                 r"$Z_{\perp} ~[\mathrm{k\Omega/m}]$", r"$S~\mathrm{[dB]}$", r"$Q_\mathrm{ext}$"]
 
         completer = QCompleter(names)
         self.plot_elements_table['le_Ylabel'].setCompleter(completer)
@@ -2338,7 +2338,7 @@ class PlotControl:
                  r"Monopole%%Dipole%%Quadrupole%%Sextupole%%Octupole",
                  r"Monopole%%Dipole%%Quadrupole%%Sextupole%%Octupole%%Decapole",
                  r"$Z_{\parallel} ~[\mathrm{k\Omega}]$",
-                 r"$Z_{\perp} ~[\mathrm{\mathrm{k\Omega/m}]$",
+                 r"$Z_{\perp} ~[\mathrm{k\Omega/m}]$",
                  r"$S~\mathrm{[dB]}$",
                  r"$S_\mathrm{21}-\alpha$%%$S_\mathrm{21}-\beta$",
                  r"C3794-2HC-1FPC%%C3794-3HC(1)-1FPC%%C3794-3HC(2)-1FPC%%C3794-4HC(1)-1FPC%%C3794-4HC(2)-1FPC"]

@@ -391,13 +391,13 @@ class SLANS_Flattop:
         self.Jxy_all_bp = jxy_all_bp
 
         # Mid
-        self.A_M, self.B_M, self.a_M, self.b_M, self.ri_M, self.L_M, self.Req_M = self.mid_cell
+        self.A_M, self.B_M, self.a_M, self.b_M, self.ri_M, self.L_M, self.Req_M, self.l_M = self.mid_cell
 
         # Left
-        self.A_L, self.B_L, self.a_L, self.b_L, self.ri_L, self.L_L, self.Req_L = self.left_end_cell
+        self.A_L, self.B_L, self.a_L, self.b_L, self.ri_L, self.L_L, self.Req_L, self.l_L = self.left_end_cell
 
         # Right
-        self.A_R, self.B_R, self.a_R, self.b_R, self.ri_R, self.L_R, self.Req_R = self.right_end_cell
+        self.A_R, self.B_R, self.a_R, self.b_R, self.ri_R, self.L_R, self.Req_R, self.l_R = self.right_end_cell
 
         # beam pipe
         self.Rbp_L, self.at_L, self.bt_L, self.c_L, self.x_L = self.left_beam_pipe
@@ -505,27 +505,27 @@ class SLANS_Flattop:
         # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
         # print("\t\tSLANS_N1_R::It got here")
         if n == 1:
-            f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + zr12_R[0][0], zr12_R[0][1],
+            f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.l_L + zr12_R[0][0], zr12_R[0][1],
                                                                self.Jxy_all[2]))
-            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L, self.Req_L - self.B_R, self.B_R,
+            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L, self.Req_L - self.B_R, self.B_R,
                                                                  - self.Jxy_all[5]))
-            f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + zr12_R[1][0], zr12_R[1][1],
+            f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + zr12_R[1][0], zr12_R[1][1],
                                                              - self.Jxy_all[6]))
-            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R, -self.Jxy_all[7]))
+            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + self.L_R, self.ri_R, -self.Jxy_all[7]))
             f.write(
-                '7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.b_R, self.b_R,
+                '7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.l_L + self.L_R, self.ri_R + self.b_R, self.b_R,
                                                              self.Jxy_all[3]))
 
         if n > 1:
-            f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + zr12_R[0][0],
+            f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.l_L + 2 * (n - 1) * self.L_M + zr12_R[0][0],
                                                                zr12_R[0][1], self.Jxy_all[2]))
-            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M,
+            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + 2 * (n - 1) * self.L_M,
                                                                  self.Req_R - self.B_R, self.B_R, - self.Jxy_all[5]))
-            f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + zr12_R[1][0],
+            f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + 2 * (n - 1) * self.L_M + zr12_R[1][0],
                                                              zr12_R[1][1], - self.Jxy_all[6]))
-            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + self.L_R,
+            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + 2 * (n - 1) * self.L_M + self.L_R,
                                                                self.ri_R, -self.Jxy_all[7]))
-            f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + 2 * (n - 1) * self.L_M + self.L_R,
+            f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.l_L + 2 * (n - 1) * self.L_M + self.L_R,
                                                                  self.ri_R + self.b_R, self.b_R, self.Jxy_all[3]))
 
     def slans_bp_R(self, n, zr12_BPR, WG_L, f):
@@ -554,15 +554,15 @@ class SLANS_Flattop:
         # N1 Z R Alfa Mesh_thick Jx Jy BC_sign Vol_sign
         # print("\t\tSLANS_BPR::It got here")
         if n == 1:
-            f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[1][0],
+            f.write('6 {:g} {:g} 0.5 1 {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.l_L + self.L_R + self.x_R - zr12_BPR[1][0],
                                                                zr12_BPR[2, 2], self.Jxy_all[3]))
-            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R, self.ri_R + self.bt_R,
+            f.write('7 {:g} {:g} 90 {:g} 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + self.L_R, self.ri_R + self.bt_R,
                                                                  self.bt_R, self.Jxy_all[7]))
-            f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R - zr12_BPR[0][0],
+            f.write('1 {:g} {:g} 0 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + self.L_R + self.x_R - zr12_BPR[0][0],
                                                              zr12_BPR[0][1], self.Jxy_all[6]))
-            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R, self.Rbp_R,
+            f.write('6 {:g} {:g} 0.5 1 0 {:.0f} 5 0 \n'.format(WG_L + self.L_L + self.l_L + self.L_R + self.x_R, self.Rbp_R,
                                                                self.Jxy_all[5]))
-            f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.L_R + self.x_R,
+            f.write('7 {:g} {:g} 90 {:g} {:.0f} 0 5 0 \n'.format(WG_L + self.L_L + self.l_L + self.L_R + self.x_R,
                                                                  self.Rbp_R - self.c_R, self.c_R, self.Jxy_all[2]))
 
         if n > 1:
