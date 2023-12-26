@@ -54,6 +54,17 @@ def segment_intersection(line1, line2):
 
 
 def get_neighbours(surf_pts, idx):
+    """
+
+    Parameters
+    ----------
+    surf_pts
+    idx
+
+    Returns
+    -------
+
+    """
     surf_pts_neigs = np.array(surf_pts[idx])
     #     print("indx", surf_pts_in_box_and_neigs)
     return surf_pts_neigs[surf_pts_neigs[:, 0].argsort()]

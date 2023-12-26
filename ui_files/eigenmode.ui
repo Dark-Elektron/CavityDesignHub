@@ -194,8 +194,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>490</width>
-           <height>1180</height>
+           <width>469</width>
+           <height>1182</height>
           </rect>
          </property>
          <property name="styleSheet">
@@ -849,7 +849,7 @@
  <connections>
   <connection>
    <sender>pb_Analysis_Settings</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>w_Analysis_Settings</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
@@ -865,7 +865,7 @@
   </connection>
   <connection>
    <sender>pb_Uncertainty_Quantification</sender>
-   <signal>clicked(bool)</signal>
+   <signal>toggled(bool)</signal>
    <receiver>w_UQ</receiver>
    <slot>setVisible(bool)</slot>
    <hints>

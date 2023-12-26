@@ -249,7 +249,7 @@ class Cavities:
                 r"$k_\mathrm{cc}$": cav.k_cc,
                 r"$R/Q \mathrm{[10^2\Omega]}$": cav.R_Q * 1e-2,
                 r"$G \mathrm{[10^{2}\Omega]}$": cav.G * 1e-2,
-                r"$G\cdot R/Q \mathrm{[10^{5}\Omega^2]}$": cav.GR_Q * 1e-5
+                # r"$G\cdot R/Q \mathrm{[10^{5}\Omega^2]}$": cav.GR_Q * 1e-5
             })
 
         results_norm_units = []
@@ -260,7 +260,7 @@ class Cavities:
                 r"$k_\mathrm{cc}$": cav.k_cc,
                 r"$r/q$": cav.R_Q,
                 r"$g$": cav.G,
-                r"$g\cdot r/q $": cav.GR_Q
+                # r"$g\cdot r/q $": cav.GR_Q
             })
         ic(results)
         return results_norm_units
@@ -473,7 +473,6 @@ class Cavities:
         fig, ax = plt.subplots()
         width = min(0.15, 1 / (len(x) + 10))
         for i, cav in enumerate(self.cavities_list):
-            print(cav.name)
             ax.bar(X + i * width, data[i] / data_col_max, width=width, label=cav.plot_label, edgecolor='k')
 
         ax.set_xticks([r + width for r in range(len(x))], x)
@@ -661,7 +660,7 @@ class Cavities:
 
         plt.show()
 
-    def plot_cavities_contour(self, opt='mid', n_cells=1):
+    def plot_cavities_contour(self, opt='mid'):
         """Plot geometric contour of Cavity objects
 
         Parameters
@@ -684,7 +683,7 @@ class Cavities:
 
         fig, ax = plt.subplots()
 
-        for cav in self.cavities_list:
+        for i, cav in enumerate(self.cavities_list):
             # write contour
             # self.write_contour(cav, opt)
 
@@ -694,26 +693,27 @@ class Cavities:
                 end_cell_right = np.array(cav.d_geom_params['IC']) * 1e-3
             elif opt.lower() == 'end':
                 mid_cell = np.array(cav.d_geom_params['IC']) * 1e-3
-                end_cell_left = np.array(cav.d_geom_params['IC']) * 1e-3
+                end_cell_left = np.array(cav.d_geom_params['OC']) * 1e-3
                 end_cell_right = np.array(cav.d_geom_params['OC']) * 1e-3
             else:
                 mid_cell = np.array(cav.d_geom_params['IC']) * 1e-3
                 end_cell_left = np.array(cav.d_geom_params['OC']) * 1e-3
                 end_cell_right = np.array(cav.d_geom_params['OC']) * 1e-3
 
+            scale = cav.op_freq/c0
             if cav.cell_type == 'flat top':
-                writeCavityForMultipac_flat_top(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none')
+                writeCavityForMultipac_flat_top(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none', unit=1, scale=scale, plot=True)
             else:
-                writeCavityForMultipac(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none')
+                writeCavityForMultipac(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none', unit=1, scale=scale)
 
+            data = pd.read_csv(fr"{cav.slans_dir}\contour.txt", sep=r'\s+', header=None, skiprows=3)
 
-            data = pd.read_csv(fr"{cav.slans_dir}\contour.txt", sep=r'\s+', header=None)
-
-            ax.plot(data[1] * 1000, data[0] * 1000, lw=3., label=cav.plot_label)
+            # ax.plot(data[1] * 1000, data[0] * 1000, lw=3., label=cav.plot_label)
+            ax.plot(data[1], data[0], lw=3., label=cav.plot_label, marker='x')
             ax.legend(loc='lower left')
 
-            x_label = "z [mm]"
-            y_label = "r [mm]"
+            x_label = r"$z/\lambda$"
+            y_label = r"$r/\lambda$"
             ax.set_xlabel(x_label)
             ax.set_ylabel(y_label)
             min_x.append(min(data[1]))
@@ -722,11 +722,11 @@ class Cavities:
             max_y.append(max(data[0]))
 
         if opt.lower() == 'mid' or opt.lower() == 'end':
-            ax.set_xlim(-0.1, max(max_x) * 1e3 + 1)
-            ax.set_ylim(-0.1, max(max_y) * 1e3 + 1)
+            ax.set_xlim(0, max(max_x))
+            ax.set_ylim(0, max(max_y))
         else:
-            ax.set_xlim(min(min_x) * 1e3 - 1, max(max_x) * 1e3 + 1)
-            ax.set_ylim(min(min_y) * 1e3 - 1, max(max_y) * 1e3 + 1)
+            ax.set_xlim(min(min_x), max(max_x))
+            ax.set_ylim(min(min_y), max(max_y))
 
         plt.tight_layout()
 
@@ -2121,7 +2121,7 @@ class Cavities:
                     'R_el [mm]': [round(cav.d_geom_params['OC'][4], 2) for cav in self.cavities_list],
                     'L_el [mm]': [round(cav.d_geom_params['OC'][5], 2) for cav in self.cavities_list],
                     # 'Req [mm]': [round(cav.d_geom_params['OC'][6], 2) for cav in self.cavities_list],
-                    'alpha__el [deg]': [round(cav.d_geom_params['OC'][7], 2) for cav in self.cavities_list],
+                    'alpha_el [deg]': [round(cav.d_geom_params['OC'][7], 2) for cav in self.cavities_list],
                     'A_er [mm]': [round(cav.d_geom_params['OC'][0], 2) for cav in self.cavities_list],
                     'B_er [mm]': [round(cav.d_geom_params['OC'][1], 2) for cav in self.cavities_list],
                     'a_er [mm]': [round(cav.d_geom_params['OC'][2], 2) for cav in self.cavities_list],
@@ -2438,10 +2438,10 @@ class Cavity:
         qois = 'qois.json'
         geom_params = 'geometric_parameters.json'
 
-        with open(fr"{folder_name}\{qois}") as json_file:
+        with open(fr"{folder_name}\monopole\{qois}") as json_file:
             self.d_qois_fm.update(json.load(json_file))
 
-        with open(fr"{folder_name}\{geom_params}") as json_file:
+        with open(fr"{folder_name}\monopole\{geom_params}") as json_file:
             self.d_geom_params.update(json.load(json_file))
         
         # if solver.lower() == 'slans':
@@ -3566,31 +3566,26 @@ def h_study():
     cavities.plot_dispersion()
     # plt.show()
 
-def w_study():
-    V = 1 * 1e9  # <- V
-    wp = 'W_2023'  # working point
-    sigma = 'SR_3.55mm'
-    machine = "FCC-ee"
-
+def w_c3794_cepcv2_study():
 
     parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS"
     parent_dir_ngsolve = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP"
     parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
 
-    C3794 = Cavity(vrf=V, inv_eta=745, name="C3794", op_field=10.61e6, op_temp='4.5K', material='NbCu',
-                          wp=wp, sigma=sigma, plot_label="C3794",
-                          slans_dir=fr"{parent_dir_slans}\C3794_n2\monopole",
+    C3794 = Cavity(vrf=1 * 1e9, inv_eta=745, name="C3794", op_field=10.61e6, op_temp='4.5K', material='NbCu',
+                          wp='W_2023', sigma='SR_3.55mm', plot_label="C3794",
+                          slans_dir=fr"{parent_dir_slans}\C3794_n2",
                           abci_dir=fr"{parent_dir_abci}\C3794", Q0=1e10)
 
-    CEPCv2 = Cavity(vrf=V, inv_eta=745, name="CEPCv2", op_field=9.3e6, op_temp='2K', material='bulkNb',
+    CEPCv2 = Cavity(vrf=4.3e6, inv_eta=745, name="CEPCv2", op_field=9.3e6, op_temp='2K', material='bulkNb',
                           wp='CEPC_W', sigma='SR_3.4mm', plot_label="CEPCv2",
-                          slans_dir=fr"{parent_dir_ngsolve}\CEPCv2_n2\monopole",
+                          slans_dir=fr"{parent_dir_ngsolve}\CEPCv2_n2",
                           abci_dir=fr"{parent_dir_abci}\CEPCv2", Q0=1e10, cell_type='flat top')
 
     slans_dirs = [fr"{parent_dir_slans}\C3794_n2", fr"{parent_dir_ngsolve}\CEPCv2_n2"]
     abci_dirs = [fr"{parent_dir_abci}\3794", fr"{parent_dir_abci}\CEPCv2"]
 
-    cavities = Cavities([C3794, CEPCv2], 'Cavities_C3794_400_800_C3795_800')
+    cavities = Cavities([C3794, CEPCv2], 'Cavities_C3794_CEPCv2')
 
     # cavities.set_cavities_slans(slans_dirs)
     # cavities.set_cavities_abci(abci_dirs)
@@ -3605,6 +3600,62 @@ def w_study():
     # # print(cavities)
     # # print(c3795_tt)
     # cavities.make_latex_summary_tables()
+    cavities.plot_cavities_contour('mid')
+    cavities.plot_cavities_contour('end')
+
+    # cavities.plot_ql_vs_pin()
+    cavities.plot_cryomodule_comparison()
+    cavities.plot_axis_fields()
+    cavities.plot_surface_fields()
+    cavities.make_excel_summary()
+    #
+    # # multipacting
+    # multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3795"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+    #
+    # to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
+    # # for tp in to_plot:
+    # # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    # cavities.plot_dispersion()
+    # plt.show()
+
+def h_c3794_C3795_cepcv2_study():
+
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
+
+    parent_dir_ngsolve = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP"
+
+    c3795_tt = Cavity(vrf=9.2e9, inv_eta=745, name="C3795", op_field=20.12e6,
+                      op_temp='2K', material='bulkNb',
+                      wp='ttbar_2023', sigma='SR_1.67mm', plot_label="C3795",
+                      slans_dir=fr"{parent_dir_slans}\C3795_n5",
+                      abci_dir=fr"{parent_dir_abci}\C3795", Q0=3e10)
+
+    CEPCv2 = Cavity(vrf=4.3e6, inv_eta=745, name="CEPCv2", op_field=9.3e6, op_temp='2K', material='bulkNb',
+                          wp='CEPC_W', sigma='SR_3.4mm', plot_label="CEPCv2",
+                          slans_dir=fr"{parent_dir_ngsolve}\CEPCv2_n2",
+                          abci_dir=fr"{parent_dir_abci}\CEPCv2", Q0=1e10, cell_type='flat top')
+
+    slans_dirs = [fr"{parent_dir_slans}\C3794_n2", fr"{parent_dir_ngsolve}\CEPCv2_n2"]
+    abci_dirs = [fr"{parent_dir_abci}\3794", fr"{parent_dir_abci}\CEPCv2"]
+
+    cavities = Cavities([c3795_tt, CEPCv2], 'Cavities_C3794_400_800_C3795_800')
+
+    # cavities.set_cavities_slans(slans_dirs)
+    # cavities.set_cavities_abci(abci_dirs)
+
+    E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
+    cavities.compare_power(E_acc=E_acc)
+    cavities.plot_power_comparison()
+    cavities.plot_compare_bar()
+    cavities.plot_compare_fm_bar()
+    cavities.plot_compare_hom_bar()
+    #
+    # # print(cavities)
+    # # print(c3795_tt)
+    # cavities.make_latex_summary_tables()
+    cavities.plot_cavities_contour('mid')
     cavities.plot_cavities_contour('end')
 
     # cavities.plot_ql_vs_pin()
@@ -3681,6 +3732,7 @@ if __name__ == '__main__':
     # mucol_study_3()
     # c3794_study()
 
-    w_study()
+    w_c3794_cepcv2_study()
+    # h_c3794_C3795_cepcv2_study()
     # h_study()
     # ttbar_study()

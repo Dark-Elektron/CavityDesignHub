@@ -48,11 +48,11 @@ class SLANSGeometry(Geometry):
             Number of cells
         no_of_modules: int
             Number of modules
-        mid_cells_par: list, array like
+        mid_cells_par: list, ndarray
             Mid cell geometric parameters -> [A, B, a, b, Ri, L, Req, alpha]
-        l_end_cell_par: list, array like
+        l_end_cell_par: list, ndarray
             Left end cell geometric parameters -> [A_el, B_el, a_el, b_el, Ri_el, L_el, Req, alpha_el]
-        r_end_cell_par: list, array like
+        r_end_cell_par: list, ndarray
             Right end cell geometric parameters -> [A_er, B_er, a_er, b_er, Ri_er, L_er, Req, alpha_er]
         fid: int, str
             File id
@@ -112,9 +112,9 @@ class SLANSGeometry(Geometry):
         p = ''
         if pol != 'Monopole':
             p = '_2'
-            subdir = 'dipole'
+            pol_subdir = 'dipole'
         else:
-            subdir = 'monopole'
+            pol_subdir = 'monopole'
 
         # # Beam pipe length
         # if end_L == 1:
@@ -147,9 +147,9 @@ class SLANSGeometry(Geometry):
         else:
             # change save directory
             if subdir == '':
-                run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}'
+                run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}/{pol_subdir}'
             else:
-                run_save_directory = projectDir / fr'SimulationData/SLANS/{fid}/{subdir}'
+                run_save_directory = projectDir / fr'SimulationData/SLANS/{subdir}/{fid}/{pol_subdir}'
 
         # Write SLANS Geometry
         # print(self.Jxy, n, self.Jxy_bp * ((1 if end_R == 2 else 0) / 2 + (1 if end_L == 2 else 0) / 2))

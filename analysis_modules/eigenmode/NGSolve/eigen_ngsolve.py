@@ -4,7 +4,6 @@ import shutil
 
 from utils.shared_functions import *
 from pathlib import Path
-
 from ngsolve import *
 from ngsolve.webgui import Draw
 from netgen.occ import *
@@ -148,9 +147,9 @@ class NGSolveMEVP:
 
         file_path = fr"{folder}\geodata.n"
         if cell_type == 'normal':
-            write_cavity_for_custom_eig_solver(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+            writeCavityForMultipac(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot=plot)
         else:
-            writeCavityForMultipac_flat_top(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot)
+            writeCavityForMultipac_flat_top(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot=plot)
 
     def cavgeom_ngsolve(self, n_cell, mid_cell, end_cell_left, end_cell_right, beampipe='both', draw=False):
         """
@@ -373,7 +372,8 @@ class NGSolveMEVP:
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False):
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False,
+                       deformation_params=None):
         """
         Write geometry file and run eigenmode analysis with NGSolveMEVP
 
@@ -420,21 +420,35 @@ class NGSolveMEVP:
 
         """
 
+        if pol != 'Monopole':
+            pol_subdir = 'dipole'
+        else:
+            pol_subdir = 'monopole'
+
         # change save directory
+        if mesh_args is None:
+            mesh_args = [20, 20]
         if opt:  # consider making better. This was just an adhoc fix
             run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP_opt/{fid}'
         else:
             # change save directory
             if subdir == '':
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}'
+                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{pol_subdir}'
             else:
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{subdir}'
+                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{subdir}/{fid}/{pol_subdir}'
         # write
-        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
+        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes, plot=False)
 
         # read geometry
         cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
-                               header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0]]
+                               header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0, 2]]
+
+        if deformation_params is not None:
+            cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(), deformation_params)
+
+        cav_geom = cav_geom[[1, 0]]
+        # plt.plot(cav_geom[0], cav_geom[1])
+        # plt.show()
 
         pnts = list(cav_geom.itertuples(index=False, name=None))
         wp = WorkPlane()
@@ -498,6 +512,7 @@ class NGSolveMEVP:
         # print out eigenvalues
         # print("Eigenvalues")
         freq_fes = []
+        evals[0] = 1  # <- replace nan with zero
         for i, lam in enumerate(evals):
             freq_fes.append(c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6)
             # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
@@ -523,7 +538,7 @@ class NGSolveMEVP:
         shape = {'IC': update_alpha(mid_cells_par),
                  'OC': update_alpha(l_end_cell_par),
                  'OC_R': update_alpha(r_end_cell_par)}
-
+        # print(run_save_directory)
         with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
 
@@ -536,7 +551,8 @@ class NGSolveMEVP:
 
     def cavity_flattop(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False):
+               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False,
+                       deformation_params=None):
         """
         Write geometry file and run eigenmode analysis with NGSolveMEVP
 
@@ -583,24 +599,37 @@ class NGSolveMEVP:
 
         """
 
+        if pol != 'Monopole':
+            pol_subdir = 'dipole'
+        else:
+            pol_subdir = 'monopole'
+
         # change save directory
+        if mesh_args is None:
+            mesh_args = [20, 20]
         if opt:  # consider making better. This was just an adhoc fix
             run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP_opt/{fid}'
         else:
             # change save directory
             if subdir == '':
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}'
+                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{pol_subdir}'
             else:
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{subdir}'
+                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{subdir}/{fid}/{pol_subdir}'
         # write
-        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes, cell_type='flattop', plot=True)
-        print('done writing geometry')
+        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes, cell_type='flattop', plot=False)
+        # print('done writing geometry')
 
         # read geometry
         cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
-                               header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0]]
+                               header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0, 2]]
 
-        print('heee')
+        if deformation_params is not None:
+            cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(), deformation_params)
+
+        cav_geom = cav_geom[[1, 0]]
+        # plt.plot(cav_geom[0], cav_geom[1])
+        # plt.show()
+
         pnts = list(cav_geom.itertuples(index=False, name=None))
         wp = WorkPlane()
         wp.MoveTo(*pnts[0])
@@ -608,7 +637,6 @@ class NGSolveMEVP:
             wp.LineTo(*p)
         wp.Close().Reverse()
         face = wp.Face()
-        print('heee2')
 
         # # get face from ngsolve geom <- coming later
         # face = self.cavgeom_ngsolve(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
@@ -620,15 +648,12 @@ class NGSolveMEVP:
         face.edges.Min(X).col = (1, 0, 0)
         face.edges.Min(Y).name = "b"
         face.edges.Min(Y).col = (1, 0, 0)
-        print('heee4')
 
         geo = OCCGeometry(face, dim=2)
-        print('heee5')
 
         # mesh
         A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
         maxh = L / mesh_args[0] *1e-3
-        print('maxh', maxh)
         ngmesh = geo.GenerateMesh(maxh=maxh)
         mesh = Mesh(ngmesh)
 
@@ -667,6 +692,7 @@ class NGSolveMEVP:
         # print out eigenvalues
         # print("Eigenvalues")
         freq_fes = []
+        evals[0] = 1  # <- replace nan with zero
         for i, lam in enumerate(evals):
             freq_fes.append(c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6)
             # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
@@ -689,9 +715,9 @@ class NGSolveMEVP:
         # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
 
         # save json file
-        shape = {'IC': update_alpha(mid_cells_par),
-                 'OC': update_alpha(l_end_cell_par),
-                 'OC_R': update_alpha(r_end_cell_par)}
+        shape = {'IC': update_alpha(mid_cells_par, cell_type='flattop'),
+                 'OC': update_alpha(l_end_cell_par, cell_type='flattop'),
+                 'OC_R': update_alpha(r_end_cell_par, cell_type='flattop')}
 
         with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
             json.dump(shape, f, indent=4, separators=(',', ': '))
@@ -897,14 +923,12 @@ class NGSolveMEVP:
         # change save directory
         path = projectDir / fr'SimulationData/{ngsolvemevp_folder}/{fid}'
         if pol.lower() == 'monopole':
-            subdir = 'monopole'
+            pol_subdir = 'monopole'
         else:
-            subdir = 'dipole'
+            pol_subdir = 'dipole'
 
         if subdir == '':
-            pass
-        else:
-            new_path = projectDir / fr'SimulationData/{ngsolvemevp_folder}/{fid}/{subdir}'
+            new_path = projectDir / fr'SimulationData/{ngsolvemevp_folder}/{fid}/{pol_subdir}'
             if os.path.exists(new_path):
                 path = new_path
             else:
@@ -912,7 +936,21 @@ class NGSolveMEVP:
                     os.mkdir(projectDir / fr'SimulationData/{ngsolvemevp_folder}/{fid}')
 
                 os.mkdir(new_path)
-                path = projectDir / fr'SimulationData/{ngsolvemevp_folder}/{fid}/{subdir}'
+                path = projectDir / fr'SimulationData/{ngsolvemevp_folder}/{fid}/{pol_subdir}'
+        else:
+            new_path = projectDir / fr'SimulationData/{ngsolvemevp_folder}/{subdir}/{fid}/{pol_subdir}'
+            if os.path.exists(new_path):
+                path = new_path
+            else:
+                if not os.path.exists(projectDir / fr'SimulationData/{ngsolvemevp_folder}/{subdir}'):
+                    os.mkdir(projectDir / fr'SimulationData/{ngsolvemevp_folder}/{subdir}')
+                    os.mkdir(projectDir / fr'SimulationData/{ngsolvemevp_folder}/{subdir}/{fid}')
+
+                if not os.path.exists(projectDir / fr'SimulationData/{ngsolvemevp_folder}/{subdir}/{fid}'):
+                    os.mkdir(projectDir / fr'SimulationData/{ngsolvemevp_folder}/{subdir}/{fid}')
+
+                os.mkdir(new_path)
+                path = projectDir / fr'SimulationData/{ngsolvemevp_folder}/{subdir}/{fid}/{pol_subdir}'
 
         if os.path.exists(path):
             try:
@@ -922,6 +960,47 @@ class NGSolveMEVP:
                 pass
         else:
             os.mkdir(path)
+
+    def gauss(self, n=11, sigma=1.0, shift=0.0):
+        r = np.linspace(-int(n / 2) + 0.5, int(n / 2) - 0.5, n)
+        g = 1 / (sigma * np.sqrt(2 * np.pi)) * np.exp(-(r - shift) ** 2 / (2 * sigma ** 2))
+        return g / max(g)
+
+    def gaussian_deform(self, n_cells, surface, deformation_params):
+
+        # plt.plot(surface[:, 0], surface[:, 1], label='undeformed')#, marker='o', mfc='none'
+
+        deform_matrix = np.identity(len(surface))
+        for n_cell in range(n_cells):
+            # get index of ncell surface nodes
+            n_cell_surf_indx = np.where(surface[:, 2] == n_cell+1)[0]
+
+            mn, mx = np.min(n_cell_surf_indx), np.max(n_cell_surf_indx)
+
+            disp = deformation_params[n_cell*3] * 0.02
+            # scale siigma to between 10 and 20% of length of cavity cell
+            sigma = (0.1 + (0.2 - 0.1)*(1 + deformation_params[n_cell*3 + 1])/2) * len(n_cell_surf_indx)
+
+            shift = deformation_params[n_cell*3 + 2]*(mn + mx)/2
+            # n_cell_deform_matrix = np.identity(len(surface)) + disp * np.diag(self.gauss(len(surface), sigma, shift=shift))
+            # n_cell_deform_surface = n_cell_deform_matrix @ surface
+
+            # plt.plot(n_cell_deform_surface[:, 0], n_cell_deform_surface[:, 1], label=n_cell)#, marker='o', mfc='none'
+
+            deform_matrix += disp * np.diag(self.gauss(len(surface), sigma, shift=shift))
+        # deform surface
+        surface_def = deform_matrix @ surface
+
+        # enforce end plane to be equal by checking that the first two and last two points are on same plane
+        surface_def[1, 0] = surface_def[0, 0]
+        surface_def[-1, 0] = surface_def[-2, 0]
+
+        # plt.plot(surface_def[:, 0], surface_def[:, 1], label=f'gaussian: {disp:.4f}, {sigma:.4f}, {shift:.4f}')  # , marker='o', mfc='none'
+
+        # plt.legend()
+        # # plt.gca().set_aspect('equal')
+        # plt.show()
+        return pd.DataFrame(surface_def, columns=[1, 0, 2])
 
 
 if __name__ == '__main__':
