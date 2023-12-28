@@ -7,6 +7,8 @@ from pathlib import Path
 
 import pandas as pd
 from psutil import NoSuchProcess
+from scipy.stats import qmc
+
 from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
 from ui_files.eigenmode import Ui_Eigenmode
 from utils.shared_classes import *
@@ -589,6 +591,11 @@ class EigenmodeControl:
                     #    f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir,
                     #    mesh_args=mesh_args, select_solver=select_solver.lower())
 
+                    # uq_ngsolve_parallel(f"{key}_n{n_cell}", shape, ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]"],
+                    #    n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
+                    #    f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir,
+                    #    mesh_args=mesh_args, select_solver=select_solver.lower())
+
             print_(f'Done with Cavity {key}. Time: {time.time() - start_time}')
 
             # update progress
@@ -659,7 +666,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
     p_init = np.zeros(np.shape(p_true))
 
     no_parm, no_sims = np.shape(nodes_)
-    delta = 0.05  # or 0.1
+    delta = 0.01  # or 0.1
 
     Ttab_val_f = []
 
@@ -668,11 +675,16 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
 
     for i in range(no_sims):
         skip = False
-        p_init[0] = p_true[0] * (1 + delta * nodes_[0, i])
-        p_init[1] = p_true[1] * (1 + delta * nodes_[1, i])
-        p_init[2] = p_true[2] * (1 + delta * nodes_[2, i])
-        p_init[3] = p_true[3] * (1 + delta * nodes_[3, i])
-        p_init[4] = p_true[4] * (1 + delta * nodes_[4, i])
+        # p_init[0] = p_true[0] * (1 + delta * nodes_[0, i])
+        # p_init[1] = p_true[1] * (1 + delta * nodes_[1, i])
+        # p_init[2] = p_true[2] * (1 + delta * nodes_[2, i])
+        # p_init[3] = p_true[3] * (1 + delta * nodes_[3, i])
+        # p_init[4] = p_true[4] * (1 + delta * nodes_[4, i])
+        p_init[0] = p_true[0] + nodes_[0, i]
+        p_init[1] = p_true[1] + nodes_[1, i]
+        p_init[2] = p_true[2] + nodes_[2, i]
+        p_init[3] = p_true[3] + nodes_[3, i]
+        p_init[4] = p_true[4] + nodes_[4, i]
 
         par_mid = list(np.append(p_init, shape['IC'][5:]))
 
@@ -786,7 +798,8 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
         print_(fr"There was a problem running UQ analysis for {key}")
 
 
-def uq_ngsolve(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDir, projectDir, mesh_args, select_solver='slans'):
+def uq_ngsolve(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDir, projectDir, mesh_args,
+               select_solver='slans'):
     """
 
     Parameters
@@ -831,7 +844,7 @@ def uq_ngsolve(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, 
     for o in qois:
         result_dict_eigen[o] = {'expe': [], 'stdDev': []}
 
-    rdim = n_cells*3  # How many variables will be considered as random in our case 5
+    rdim = n_cells * 3  # How many variables will be considered as random in our case 5
     degree = 1
 
     #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
@@ -883,25 +896,29 @@ def uq_ngsolve(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, 
                         try:
                             print(' in flattop')
                             solver.cavity_flattop(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                          n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
-                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args,
+                                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol,
+                                                  beampipes=shape['BP'],
+                                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                                  mesh_args=mesh_args,
                                                   deformation_params=nodes_[:, i])
                         except KeyError:
                             solver.cavity_flattop(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
-                                          n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
-                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args,
+                                                  n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol,
+                                                  beampipes=shape['BP'],
+                                                  parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                                  mesh_args=mesh_args,
                                                   deformation_params=nodes_[:, i])
                 else:
                     try:
                         solver.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
                                       n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
                                       parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args,
-                                                  deformation_params=nodes_[:, i])
+                                      deformation_params=nodes_[:, i])
                     except KeyError:
                         solver.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
                                       n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
                                       parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args,
-                                                  deformation_params=nodes_[:, i])
+                                      deformation_params=nodes_[:, i])
 
             filename = uq_path / f'{fid}/monopole/qois.json'
             print(filename)
@@ -938,7 +955,7 @@ def uq_ngsolve(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, 
         # Ttab_val_f.append(tab_val_f)
         # save table
         data_table = pd.DataFrame(Ttab_val_f, columns=list(eigen_obj_list))
-        data_table.to_csv(uq_path / 'table.csv', index=False, sep ='\t')
+        data_table.to_csv(uq_path / 'table.csv', index=False, sep='\t')
 
     print(np.atleast_2d(Ttab_val_f), weights_)
     if not err:
@@ -958,6 +975,377 @@ def uq_ngsolve(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, 
             file.write(json.dumps(result_dict_eigen, indent=4, separators=(',', ': ')))
     else:
         print_(fr"There was a problem running UQ analysis for {key}")
+
+def uq_ngsolve_parallel(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDir, projectDir, mesh_args, select_solver='slans'):
+    """
+
+    Parameters
+    ----------
+    key: str | int
+        Cavity geomery identifier
+    shape: dict
+        Dictionary containing geometric dimensions of cavity geometry
+    qois: list
+        Quantities of interest considered in uncertainty quantification
+    n_cells: int
+        Number of cavity cells
+    n_modules: int
+        Number of modules
+    n_modes: int
+        Number of eigenmodes to be calculated
+    f_shift: float
+        Since the eigenmode solver uses the power method, a shift can be provided
+    bc: int
+        Boundary conditions {1:inner contour, 2:Electric wall Et = 0, 3:Magnetic Wall En = 0, 4:Axis, 5:metal}
+        bc=33 means `Magnetic Wall En = 0` boundary condition at both ends
+    pol: int {Monopole, Dipole}
+        Defines whether to calculate for monopole or dipole modes
+    parentDir: str | path
+        Parent directory
+    projectDir: str|path
+        Project directory
+
+    Returns
+    -------
+
+    """
+
+    print("Starting parrallel")
+    if select_solver.lower() == 'slans':
+        uq_path = projectDir / fr'SimulationData\SLANS\{key}'
+    else:
+        uq_path = projectDir / fr'SimulationData\NGSolveMEVP\{key}'
+
+    err = False
+    result_dict_eigen = {}
+    eigen_obj_list = qois
+    for o in qois:
+        result_dict_eigen[o] = {'expe': [], 'stdDev': []}
+
+    rdim = n_cells*3  # How many variables will be considered as random in our case 5
+    degree = 1
+
+    #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
+    flag_stroud = 'lhc'
+
+    if flag_stroud == 'stroud3':
+        nodes_, weights_, bpoly_ = quad_stroud3(rdim, degree)
+        nodes_ = 2. * nodes_ - 1.
+    elif flag_stroud == 'stroud5':
+        nodes_, weights_ = cn_leg_05_2(rdim)
+    elif flag_stroud == 'cn_gauss':
+        nodes_, weights_ = cn_gauss(rdim, 2)
+    elif flag_stroud == 'lhc':
+        sampler = qmc.LatinHypercube(d=rdim)
+        _ = sampler.reset()
+        nsamp = 2500
+        sample = sampler.random(n=nsamp)
+        # ic(qmc.discrepancy(sample))
+        l_bounds = [-1, -1, -1, -1, -1, -1]
+        u_bounds = [1, 1, 1, 1, 1, 1]
+        sample_scaled = qmc.scale(sample, l_bounds, u_bounds)
+
+        nodes_, weights_ = sample_scaled.T, np.ones((nsamp, 1))
+    else:
+        ic('flag_stroud==1 or flag_stroud==2')
+        return 0
+
+    ic(nodes_)
+
+    #  mean value of geometrical parameters
+    no_parm, no_sims = np.shape(nodes_)
+
+    Ttab_val_f = []
+
+    sub_dir = fr'{key}'  # the simulation runs at the quadrature points are saved to the key of mean value run
+    processes = []
+    manager = mp.Manager()
+
+    progress_list = manager.list()
+    progress_list.append(0)
+    proc_count = 25
+    share = round(no_sims / proc_count)
+
+    for p in range(proc_count):
+        # try:
+        if (p+1)*share < no_sims:
+            proc_keys_list = np.arange(p * share, p * share + share)
+        else:
+            proc_keys_list = np.arange(p * share, no_sims)
+
+        # ic(proc_keys_list)
+        processor_nodes = nodes_[:, proc_keys_list]
+        processor_weights = weights_[proc_keys_list]
+        # ic(processor_nodes)
+        # ic(processor_weights)
+
+        skip = False
+        # perform checks on geometry
+        ok = perform_geometry_checks(shape['IC'], shape['OC'])
+        if not ok:
+            err = True
+            break
+
+        service = mp.Process(target=uq_piotr_sequential, args=(
+            n_cells, n_modules, shape, qois, n_modes, f_shift, bc, pol, parentDir,
+            projectDir, sub_dir, select_solver, mesh_args, key, uq_path,
+            proc_keys_list, processor_nodes, processor_weights, p))
+
+        service.start()
+
+        processes.append(psutil.Process(service.pid))
+
+
+def uq_piotr_sequential(n_cells, n_modules, shape, qois, n_modes, f_shift, bc, pol, parentDir, projectDir, sub_dir,
+                  select_solver, mesh_args, key, uq_path, proc_keys_list, processor_nodes, processor_weights, proc_num):
+
+    err = False
+    result_dict_eigen = {}
+    Ttab_val_f = []
+    eigen_obj_list = qois
+    delta = 0.01
+
+    # EXAMPLE: p_true = np.array([1, 2, 3, 4, 5]).T
+    p_true = shape['IC'][0:5]
+
+    #  mean value of geometrical parameters
+    p_init = np.zeros(np.shape(p_true))
+    par_end = shape['OC']
+
+    for o in qois:
+        result_dict_eigen[o] = {'expe': [], 'stdDev': []}
+
+    if os.path.exists(uq_path / 'table.csv'):
+        Ttab_val_f = pd.read_csv(uq_path / 'table.csv', sep='\t').to_numpy()
+    else:
+        for i1 in proc_keys_list:
+            if os.path.exists(uq_path / fr'table_{i1}.csv'):
+                Ttab_val_f = pd.read_csv(uq_path / fr'table_{i1}.csv', sep='\t').to_numpy()
+            else:
+                skip = False
+                p_init[0] = p_true[0] * (1 + delta * processor_nodes[0, i1-min(proc_keys_list)])
+                p_init[1] = p_true[1] * (1 + delta * processor_nodes[1, i1-min(proc_keys_list)])
+                p_init[2] = p_true[2] * (1 + delta * processor_nodes[2, i1-min(proc_keys_list)])
+                p_init[3] = p_true[3] * (1 + delta * processor_nodes[3, i1-min(proc_keys_list)])
+                p_init[4] = p_true[4] * (1 + delta * processor_nodes[4, i1-min(proc_keys_list)])
+
+                par_mid = list(np.append(p_init, shape['IC'][5:]))
+
+                # perform checks on geometry
+                ok = perform_geometry_checks(par_mid, par_end)
+                if not ok:
+                    err = True
+                    break
+                fid = fr'{key}_Q{i1}'
+
+                # skip analysis if folder already exists.
+                if not skip:
+                    if select_solver.lower() == 'slans':
+                        solver = slans_geom
+                    else:
+                        print(' ngsolve selected')
+                        solver = ngsolve_mevp
+                    #  run model using SLANS or CST
+                    # # create folders for all keys
+                    solver.createFolder(fid, projectDir, subdir=sub_dir)
+
+                    if "CELL TYPE" in shape.keys():
+                        if shape['CELL TYPE'] == 'flattop':
+                            # write_cst_paramters(fid, shape['IC'], shape['OC'], shape['OC_R'],
+                            #                     projectDir=projectDir, cell_type="None", solver=select_solver.lower())
+                            try:
+                                print(' in flattop')
+                                solver.cavity_flattop(n_cells, n_modules, par_mid, par_end, par_end,
+                                                      n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol,
+                                                      beampipes=shape['BP'],
+                                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                                      mesh_args=mesh_args)
+                            except KeyError:
+                                solver.cavity_flattop(n_cells, n_modules, par_mid, par_end, par_end,
+                                                      n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol,
+                                                      beampipes=shape['BP'],
+                                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                                      mesh_args=mesh_args)
+                    else:
+                        try:
+                            solver.cavity(n_cells, n_modules, par_mid, par_end, par_end,
+                                          n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args)
+                        except KeyError:
+                            solver.cavity(n_cells, n_modules, par_mid, par_end, par_end,
+                                          n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args)
+
+                filename = uq_path / f'{fid}/monopole/qois.json'
+                # print(filename)
+                if os.path.exists(filename):
+                    # params = fr.svl_reader(filename)
+                    # norm_length = 2 * n_cells * shape['IC'][5]
+
+                    qois_result_dict = dict()
+
+                    with open(filename) as json_file:
+                        qois_result_dict.update(json.load(json_file))
+
+                    qois_result = get_qoi_value(qois_result_dict, eigen_obj_list)
+                    # print_(qois_result)
+                    # sometimes some degenerate shapes are still generated and the solver returns zero
+                    # for the objective functions, such shapes are considered invalid
+                    for objr in qois_result:
+                        if objr == 0:
+                            # skip key
+                            err = True
+                            break
+
+                    tab_val_f = qois_result
+
+                    Ttab_val_f.append(tab_val_f)
+                else:
+                    err = True
+
+        # # add original point
+        # filename = fr'{projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
+        # params = fr.svl_reader(filename)
+        # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
+        # tab_val_f = obj_result
+        # Ttab_val_f.append(tab_val_f)
+        # save table
+        data_table = pd.DataFrame(Ttab_val_f, columns=list(eigen_obj_list))
+        data_table.to_csv(uq_path / fr'table_{proc_num}.csv', index=False, sep='\t')
+
+
+def uq_sequential(n_cells, n_modules, shape, qois, n_modes, f_shift, bc, pol, parentDir, projectDir, sub_dir,
+                  select_solver, mesh_args, key, uq_path, proc_keys_list, processor_nodes, processor_weights, proc_num):
+
+    err = False
+    result_dict_eigen = {}
+    Ttab_val_f = []
+    eigen_obj_list = qois
+
+    for o in qois:
+        result_dict_eigen[o] = {'expe': [], 'stdDev': []}
+
+    if os.path.exists(uq_path / 'table.csv'):
+        Ttab_val_f = pd.read_csv(uq_path / 'table.csv', sep='\t').to_numpy()
+    else:
+        for i1 in proc_keys_list:
+            if os.path.exists(uq_path / fr'table_{i1}.csv'):
+                Ttab_val_f = pd.read_csv(uq_path / fr'table_{i1}.csv', sep='\t').to_numpy()
+            else:
+
+                skip = False
+                # perform checks on geometry
+                ok = perform_geometry_checks(shape['IC'], shape['OC'])
+                if not ok:
+                    err = True
+                    break
+                fid = fr'{key}_Q{i1}'
+
+                # skip analysis if folder already exists.
+                if not skip:
+                    solver = ngsolve_mevp
+                    #  run model using SLANS or CST
+                    # # create folders for all keys
+                    solver.createFolder(fid, projectDir, subdir=sub_dir)
+
+                    if "CELL TYPE" in shape.keys():
+                        if shape['CELL TYPE'] == 'flattop':
+                            # write_cst_paramters(fid, shape['IC'], shape['OC'], shape['OC_R'],
+                            #                     projectDir=projectDir, cell_type="None", solver=select_solver.lower())
+                            try:
+                                print(' in flattop')
+                                solver.cavity_flattop(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                                      n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol,
+                                                      beampipes=shape['BP'],
+                                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                                      mesh_args=mesh_args,
+                                                      deformation_params=processor_nodes[:, i1-min(proc_keys_list)])
+                            except KeyError:
+                                solver.cavity_flattop(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                                      n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol,
+                                                      beampipes=shape['BP'],
+                                                      parentDir=parentDir, projectDir=projectDir, subdir=sub_dir,
+                                                      mesh_args=mesh_args,
+                                                      deformation_params=processor_nodes[:, i1-min(proc_keys_list)])
+                    else:
+                        try:
+                            solver.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                          n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args,
+                                          deformation_params=processor_nodes[:, i1-min(proc_keys_list)])
+                        except KeyError:
+                            solver.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                                          n_modes=n_modes, fid=fid, f_shift=f_shift, bc=bc, pol=pol, beampipes=shape['BP'],
+                                          parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args,
+                                          deformation_params=processor_nodes[:, i1-min(proc_keys_list)])
+
+                filename = uq_path / f'{fid}/monopole/qois.json'
+                # print(filename)
+                if os.path.exists(filename):
+                    # params = fr.svl_reader(filename)
+                    # norm_length = 2 * n_cells * shape['IC'][5]
+
+                    qois_result_dict = dict()
+
+                    with open(filename) as json_file:
+                        qois_result_dict.update(json.load(json_file))
+
+                    qois_result = get_qoi_value(qois_result_dict, eigen_obj_list)
+                    # print_(qois_result)
+                    # sometimes some degenerate shapes are still generated and the solver returns zero
+                    # for the objective functions, such shapes are considered invalid
+                    for objr in qois_result:
+                        if objr == 0:
+                            # skip key
+                            err = True
+                            break
+
+                    tab_val_f = qois_result
+
+                    Ttab_val_f.append(tab_val_f)
+                else:
+                    err = True
+
+        # # add original point
+        # filename = fr'{projectDir}\SimulationData\SLANS\{key}\cavity_33.svl'
+        # params = fr.svl_reader(filename)
+        # obj_result, tune_result = get_objectives_value(params, slans_obj_list)
+        # tab_val_f = obj_result
+        # Ttab_val_f.append(tab_val_f)
+        # save table
+        data_table = pd.DataFrame(Ttab_val_f, columns=list(eigen_obj_list))
+        data_table.to_csv(uq_path / fr'table_{proc_num}.csv', index=False, sep='\t')
+
+    # print(np.atleast_2d(Ttab_val_f), processor_weights)
+
+
+def gather_uq(uq_path, no_of_processes):
+    Ttab_val_f_list = []
+    weights = []
+    for i1 in range(no_of_processes):
+        if os.path.exists(uq_path / fr'table_{i1}.csv'):
+            Ttab_val_f_list.append(pd.read_csv(uq_path / fr'table_{i1}.csv', sep='\t').to_numpy())
+            weights = np.vstack(pd.read_csv(uq_path / fr'weight_{i1}.csv', sep='\t').to_numpy())
+        else:
+            print(fr'Inspect result:: table_{i1}.csv')
+
+    Ttab_val_f = pd.concat(Ttab_val_f_list, ignore_index=True)
+    print(np.atleast_2d(Ttab_val_f), weights_)
+
+    v_expe_fobj, v_stdDev_fobj = weighted_mean_obj(np.atleast_2d(Ttab_val_f), weights_)
+
+    # append results to dict
+    for i, o in enumerate(eigen_obj_list):
+        result_dict_eigen[o]['expe'].append(v_expe_fobj[i])
+        result_dict_eigen[o]['stdDev'].append(v_stdDev_fobj[i])
+
+        # pdf = normal_dist(np.sort(np.array(Ttab_val_f).T[i]), v_expe_fobj[i], v_stdDev_fobj[i])
+        # plt.plot(np.sort(np.array(Ttab_val_f).T[i]), pdf)
+
+    # plt.show()
+    print(result_dict_eigen)
+    with open(uq_path / fr"uq.json", 'w') as file:
+        file.write(json.dumps(result_dict_eigen, indent=4, separators=(',', ': ')))
 
 
 def get_qoi_value(d, obj):

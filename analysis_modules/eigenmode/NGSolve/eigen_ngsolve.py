@@ -445,6 +445,8 @@ class NGSolveMEVP:
 
         if deformation_params is not None:
             cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(), deformation_params)
+            # save deformed cavity profile
+            cav_geom.to_csv(f'{run_save_directory}\geodata_deformed.n', sep='\t')
 
         cav_geom = cav_geom[[1, 0]]
         # plt.plot(cav_geom[0], cav_geom[1])
@@ -544,7 +546,7 @@ class NGSolveMEVP:
 
         # qois = self.evaluate_qois(face, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
         qois = self.evaluate_qois(cav_geom, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
-        ic(qois)
+        # ic(qois)
 
         with open(fr'{run_save_directory}\qois.json', "w") as f:
             json.dump(qois, f, indent=4, separators=(',', ': '))
@@ -625,6 +627,8 @@ class NGSolveMEVP:
 
         if deformation_params is not None:
             cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(), deformation_params)
+            # save deformed cavity profile
+            cav_geom.to_csv(f'{run_save_directory}\geodata_deformed.n', sep='\t')
 
         cav_geom = cav_geom[[1, 0]]
         # plt.plot(cav_geom[0], cav_geom[1])

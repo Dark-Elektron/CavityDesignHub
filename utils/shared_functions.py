@@ -4,6 +4,7 @@ import json
 import math
 import os
 # from datetime import time
+import pandas as pd
 from PyQt5.QtGui import QDoubleValidator, QValidator
 from PyQt5.QtWidgets import *
 from icecream import ic
@@ -3957,6 +3958,19 @@ def write_geometry_ngsolve(file_path, n_cell, mid_cell, end_cell_left=None, end_
     plt.show()
 
 
+def combine_params_output(folder, N):
+    for i in range(N):
+        if i == 0:
+            df = pd.read_csv(f'{folder}/table_{i}.csv', sep='\t', engine='python')
+        else:
+            try:
+                df = pd.concat([df, pd.read_csv(f'{folder}/table_{i}.csv', sep='\t', engine='python')])
+            except:
+                pass
+
+    df.to_excel(fr"{folder}\table.xlsx", index=False)
+
+
 def serialise(state_dict, widget=None, visited_widgets=None, marker=''):
     """
     Serialise PyQt5 GUI widgets
@@ -4074,29 +4088,32 @@ def deserialise(state_dict, widget, visited_widgets=None, marker=''):
 
 
 if __name__ == '__main__':
-    nodes, weights, bpoly = quad_stroud3(6, 1)
-    ic(weights)
-    ic(2. * nodes.T - 1)
-    ic(nodes.shape)
-
-    ic()
-    nodes, weights  = cn_leg_03_1(6)
-    ic(weights)
-    ic(nodes.T)
-    ic(np.shape(nodes))
-
-    ic()
-    nodes, weights  = cn_leg_03_xiu(6)
-    ic(weights)
-    ic(nodes.T)
-    ic(nodes.shape)
-
-    ic()
-    nodes, weights = cn_gauss(6, 2)
-    ic(weights)
-    ic(nodes.T)
-    ic(nodes.shape)
+    # nodes, weights, bpoly = quad_stroud3(6, 1)
+    # ic(weights)
+    # ic(2. * nodes.T - 1)
+    # ic(nodes.shape)
+    #
+    # ic()
+    # nodes, weights  = cn_leg_03_1(6)
+    # ic(weights)
+    # ic(nodes.T)
+    # ic(np.shape(nodes))
+    #
+    # ic()
+    # nodes, weights  = cn_leg_03_xiu(6)
+    # ic(weights)
+    # ic(nodes.T)
+    # ic(nodes.shape)
+    #
+    # ic()
+    # nodes, weights = cn_gauss(6, 2)
+    # ic(weights)
+    # ic(nodes.T)
+    # ic(nodes.shape)
     # nodes, weights  = cn_leg_05_2(6)
     # ic(weights)
     # ic(nodes)
+    combine_params_output(fr'D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP\C3794_n2_lhs_piotr_0.1', 25)
+
+
 

@@ -195,7 +195,7 @@
            <x>0</x>
            <y>0</y>
            <width>469</width>
-           <height>1182</height>
+           <height>1285</height>
           </rect>
          </property>
          <property name="styleSheet">
@@ -275,81 +275,6 @@
             <property name="checked">
              <bool>true</bool>
             </property>
-           </widget>
-          </item>
-          <item row="11" column="0" alignment="Qt::AlignTop">
-           <widget class="QWidget" name="w_UQ" native="true">
-            <layout class="QGridLayout" name="gridLayout_7">
-             <item row="1" column="1">
-              <widget class="QCheckableComboBox" name="ccb_Populate_Objectives">
-               <item>
-                <property name="text">
-                 <string>All</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>freq</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Epk/Eacc</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Bpk/Eacc</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>R/Q</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>G</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>kcc</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Q0</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>QoI(s)</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="SwitchControl" name="cb_UQ"/>
-             </item>
-             <item row="2" column="0" colspan="2">
-              <widget class="QTableWidget" name="tw_Objectives">
-               <property name="minimumSize">
-                <size>
-                 <width>0</width>
-                 <height>150</height>
-                </size>
-               </property>
-               <column>
-                <property name="text">
-                 <string>Objective</string>
-                </property>
-               </column>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
           <item row="6" column="0" alignment="Qt::AlignTop">
@@ -816,6 +741,147 @@
                </property>
                <property name="value">
                 <number>20</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="11" column="0">
+           <widget class="QWidget" name="w_UQ" native="true">
+            <layout class="QGridLayout" name="gridLayout_7">
+             <item row="3" column="0">
+              <widget class="QLabel" name="label_11">
+               <property name="text">
+                <string>Integration</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_10">
+               <property name="text">
+                <string>QoI(s)</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="2">
+              <widget class="QCheckableComboBox" name="ccb_Populate_Objectives">
+               <item>
+                <property name="text">
+                 <string>All</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>freq</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Epk/Eacc</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Bpk/Eacc</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>R/Q</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>G</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>kcc</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Q0</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="SwitchControl" name="cb_UQ"/>
+             </item>
+             <item row="2" column="0" colspan="3">
+              <widget class="QTableWidget" name="tw_Objectives">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>150</height>
+                </size>
+               </property>
+               <column>
+                <property name="text">
+                 <string>Objective</string>
+                </property>
+               </column>
+              </widget>
+             </item>
+             <item row="5" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Processes</string>
+               </property>
+              </widget>
+             </item>
+             <item row="4" column="0" colspan="3">
+              <widget class="QWidget" name="w_Integration_Settings" native="true">
+               <layout class="QGridLayout" name="gridLayout_10">
+                <item row="0" column="0">
+                 <widget class="QLabel" name="label_14">
+                  <property name="text">
+                   <string>Degree</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QSpinBox" name="spinBox"/>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item row="3" column="1" colspan="2">
+              <widget class="QComboBox" name="cb_Integration">
+               <item>
+                <property name="text">
+                 <string>Stroud3</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Stroud5</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>cn_Gauss</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>LHS</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>MC</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="5" column="1" colspan="2">
+              <widget class="QSpinBox" name="sb_UQ_Processes">
+               <property name="minimum">
+                <number>1</number>
                </property>
               </widget>
              </item>
