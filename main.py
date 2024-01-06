@@ -421,6 +421,7 @@ class MainWindow:
                             'SimulationData': {
                                 'SLANS': None,
                                 'NativeEig': None,
+                                'NGSolveMEVP': None,
                                 'ABCI': None,
                                 'CavitiesAnalysis': None
                             },
