@@ -276,7 +276,7 @@ class SLANSGeometry(Geometry):
                 f.write('0 0 0 0 0 0 0 0 0')
 
         # Slans run
-        genmesh_path = parentDir / fr'exe/SLANS{p}_exe/genmesh2.exe'
+        genmesh_path = parentDir / Path(fr'exe/SLANS{p}_exe/genmesh2.exe')
         filepath = Path(fr'{run_save_directory}/{filename}')
 
         # folder for exe to write to
@@ -305,14 +305,20 @@ class SLANSGeometry(Geometry):
         beta, f_shift, n_modes = 1, f_shift, n_modes + 1
 
         if pol.lower() == 'monopole':
-            self.write_dtr(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
+            if mesh_args:
+                self.write_dtr(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
+            else:
+                self.write_dtr(path, filename, beta, f_shift, n_modes)
         else:
-            self.write_dtr_2(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
+            if mesh_args:
+                self.write_dtr_2(path, filename, beta, f_shift, n_modes, maxiter=mesh_args[3])
+            else:
+                self.write_dtr_2(path, filename, beta, f_shift, n_modes)
 
-        slansc_path = parentDir / fr'exe/SLANS{p}_exe/slansc{p}'
-        slansm_path = parentDir / fr'exe/SLANS{p}_exe/slansm{p}'
-        slanss_path = parentDir / fr'exe/SLANS{p}_exe/slanss{p}'
-        slansre_path = parentDir / fr'exe/SLANS{p}_exe/slansre{p}'
+        slansc_path = parentDir / Path(fr'exe/SLANS{p}_exe/slansc{p}')
+        slansm_path = parentDir / Path(fr'exe/SLANS{p}_exe/slansm{p}')
+        slanss_path = parentDir / Path(fr'exe/SLANS{p}_exe/slanss{p}')
+        slansre_path = parentDir / Path(fr'exe/SLANS{p}_exe/slansre{p}')
 
         # print(cwd)
         # check if corresponding file exists at before the executable is called
@@ -330,9 +336,9 @@ class SLANSGeometry(Geometry):
                     ic("Done with slanss")
 
                     if pol != 'Monopole':
-                        slanssh_path = parentDir / fr'exe/SLANS{p}_exe/slanssh{p}'
-                        slanse_path = parentDir / fr'exe/SLANS{p}_exe/slanse{p}'
-                        slansr2b_path = parentDir / fr'exe/SLANS{p}_exe/slansr2b{p}'
+                        slanssh_path = parentDir / Path(fr'exe/SLANS{p}_exe/slanssh{p}')
+                        slanse_path = parentDir / Path(fr'exe/SLANS{p}_exe/slanse{p}')
+                        slansr2b_path = parentDir / Path(fr'exe/SLANS{p}_exe/slansr2b{p}')
                         if os.path.exists(fr'{run_save_directory}/{filename}.res'):
                             subprocess.call([slanssh_path, str(filepath)], cwd=cwd, **kwargs)
                             subprocess.call([slanse_path, str(filepath)], cwd=cwd, **kwargs)

@@ -766,7 +766,7 @@ class MainWindow:
         else:
             self.model = CustomFileSystemModel()
             self.model.setRootPath(str(dir_path))
-            self.model.setHeader(f2b_slashes(str(self.projectDir)).split('\\')[-1])
+            self.model.setHeader(str(f2b_slashes(str(self.projectDir))).split('\\')[-1])
             self.tree = QTreeView()
             self.tree.setModel(self.model)
 

@@ -4,6 +4,9 @@ import json
 import math
 import os
 # from datetime import time
+from pathlib import Path
+
+import matplotlib.axes
 import pandas as pd
 from PyQt5.QtGui import QDoubleValidator, QValidator
 from PyQt5.QtWidgets import *
@@ -593,7 +596,7 @@ def r8_mop(i):
     return value
 
 
-def cn_leg_05_1(n, option):
+def cn_leg_05_1(n, option=1):
     # Check if the value of n is 4, 5, or 6
     if n not in [4, 5, 6]:
         print("\n")
@@ -957,7 +960,7 @@ def f2b_slashes(path):
         path = path.replace("/", "\\")
     else:
         path = path.replace('\\', '/')
-    return path
+    return Path(path)
 
 
 def button_clicked(button):
@@ -1933,7 +1936,7 @@ def arcTo(x_center, y_center, a, b, step, start, end, plot=False):
     return inbox
 
 
-def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
+def plot_cavity_geometry(IC, OC, OC_R, BP, n_cell, bc, scale=1, plot=None):
     """
     Plot cavity geometry for display in w_GeometryView
     Parameters
@@ -1959,8 +1962,12 @@ def plot_cavity_geometry(plot, IC, OC, OC_R, BP, n_cell, bc, scale=1):
     -------
 
     """
-    fig = plot.fig
-    ax = plot.ax
+    if plot:
+        fig = plot.fig
+        ax = plot.ax
+    else:
+        fig, ax = plt.subplots(figsize=(12,4))
+        ax.set_aspect('equal')
 
     # 21578127116
     A_m, B_m, a_m, b_m, Ri_m, L_m, Req = np.array(IC)[:7] * scale * 1e-3
@@ -4417,8 +4424,8 @@ def create_multicell_random_variables(n_cell, mid_cell, end_cell_l, end_cell_r):
 
 def uq_from_excel(filepath):
     Ttab_val_f = pd.read_excel(fr'{filepath}\table.xlsx').to_numpy()
-    # nodes, weights_  = cn_leg_05_2(28)
-    nodes, weights_ = cn_leg_03_1(28)
+    nodes, weights_  = cn_leg_05_1(5)
+    # nodes, weights_ = cn_leg_03_1(28)
     # nodes, weights_, _ = quad_stroud3(5, 2)
     ic(np.sum(weights_), nodes.shape)
     ic(np.max(Ttab_val_f, axis=0))
@@ -4681,38 +4688,38 @@ if __name__ == '__main__':
     # ic(weights)
     # ic(nodes)
 
-    # folder = r'D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP\C3794_n2'
-    # # results_from_qois(fr'{folder}',
-    # #                   ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"])
+    folder = r'D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP\C3794_n2'
+    results_from_qois(fr'{folder}',
+                      ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"])
     # combine_params_output(folder, 30)
-    # uq_from_excel(fr'{folder}')
+    uq_from_excel(fr'{folder}')
 
-    file_path = fr'D:\Dropbox\CavityDesignHub\utils\geodata.n'
-    l_end_cell = np.array([73.52, 131.75, 106.25, 118.7, 150, 187, 350])
-    # #
-    midcell = np.array([[[60, 60], [56, 54], [76, 56], [76, 56]],  # <- A
-                         [[60, 43], [73, 65], [65, 45], [65, 45]],  # <- B
-                         [[34, 50], [54, 50], [37, 40], [37, 40]],  # <- a
-                         [[40, 36], [56, 57], [54, 56], [54, 56]],   # <- b
-                         [[150, 151], [170, 165], [150, 155], [150, 155]],   # <- Ri
-                         [[187, 187], [184, 176], [178, 170], [178, 170]],  # <- L
-                         [[369.6321578127116, 345], [340, 350], [350, 360], [350, 360]]])
-
-    r_end_cell = np.array([70, 120, 100, 110, 130, 176, 340])
-    # l_end_cell = np.array([73.58423524, 132.0824365, 106.4198031, 118.3902662, 149.584055, 186.7246878, 369.6661589])
+    # file_path = fr'D:\Dropbox\CavityDesignHub\utils\geodata.n'
+    # l_end_cell = np.array([73.52, 131.75, 106.25, 118.7, 150, 187, 350])
     # # #
-    # midcell = np.array([[[73.14364045, 73.05957235]],  # <- A
-    #                      [[132.0125027, 131.8810112]],  # <- B
-    #                      [[106.1869176, 106.4751203]],  # <- a
-    #                      [[118.3555127, 118.8357715]],   # <- b
-    #                      [[149.7665359, 149.9423194]],   # <- Ri
-    #                      [[186.7982958, 186.5009973]],  # <- L
-    #                      [[369.9589997, 369.7163648]]])
-    # #
-    # r_end_cell = np.array([73.52142396, 131.329964, 106.1202883, 119.1231179, 150.6952404, 186.9420167, 370.0226815])
-
-    writeCavityForMultipac_multicell(file_path, 5, midcell, l_end_cell, r_end_cell, beampipe='both',
-                                     plot=True, unit=1e-3, scale=1)
+    # midcell = np.array([[[60, 60], [56, 54], [76, 56], [76, 56]],  # <- A
+    #                      [[60, 43], [73, 65], [65, 45], [65, 45]],  # <- B
+    #                      [[34, 50], [54, 50], [37, 40], [37, 40]],  # <- a
+    #                      [[40, 36], [56, 57], [54, 56], [54, 56]],   # <- b
+    #                      [[150, 151], [170, 165], [150, 155], [150, 155]],   # <- Ri
+    #                      [[187, 187], [184, 176], [178, 170], [178, 170]],  # <- L
+    #                      [[369.6321578127116, 345], [340, 350], [350, 360], [350, 360]]])
+    #
+    # r_end_cell = np.array([70, 120, 100, 110, 130, 176, 340])
+    # # l_end_cell = np.array([73.58423524, 132.0824365, 106.4198031, 118.3902662, 149.584055, 186.7246878, 369.6661589])
+    # # # #
+    # # midcell = np.array([[[73.14364045, 73.05957235]],  # <- A
+    # #                      [[132.0125027, 131.8810112]],  # <- B
+    # #                      [[106.1869176, 106.4751203]],  # <- a
+    # #                      [[118.3555127, 118.8357715]],   # <- b
+    # #                      [[149.7665359, 149.9423194]],   # <- Ri
+    # #                      [[186.7982958, 186.5009973]],  # <- L
+    # #                      [[369.9589997, 369.7163648]]])
+    # # #
+    # # r_end_cell = np.array([73.52142396, 131.329964, 106.1202883, 119.1231179, 150.6952404, 186.9420167, 370.0226815])
+    #
+    # writeCavityForMultipac_multicell(file_path, 5, midcell, l_end_cell, r_end_cell, beampipe='both',
+    #                                  plot=True, unit=1e-3, scale=1)
     #
     # nodes_ = pd.read_csv(fr'C:\Users\sosoho\DakotaProjects\Cavity\C3794_lhs\sim_result_table.dat', sep='\s+').iloc[:,
     #          2:-2]

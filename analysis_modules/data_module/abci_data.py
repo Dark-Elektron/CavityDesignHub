@@ -183,6 +183,24 @@ class ABCIData:
                     # y = np.insert(y, -1, 0).tolist()
 
                 self.data_dict[key] = [x, y]
+        print("At least it got here")
+        # include impedance magnitude
+        if {'Real Part of Longitudinal Impedance', 'Imaginary Part of Longitudinal Impedance'}.issubset(self.data_dict.keys()):
+            # longitudinal
+            xr, yr = self.data_dict['Real Part of Longitudinal Impedance']
+            xi, yi = self.data_dict['Imaginary Part of Longitudinal Impedance']
+            y = (np.array(yr) ** 2 + np.array(yi) ** 2) ** 0.5
+            xr = np.array(xr)
+            self.data_dict['Longitudinal Impedance Magnitude'] = [xr, y]
+
+        if {'Real Part of Transverse Impedance', 'Imaginary Part of Transverse Impedance'}.issubset(self.data_dict.keys()):
+            # transverse
+            xr, yr = self.data_dict['Real Part of Transverse Impedance']
+            xi, yi = self.data_dict['Imaginary Part of Transverse Impedance']
+            y = (np.array(yr) ** 2 + np.array(yi) ** 2) ** 0.5
+            xr = np.array(xr)
+            self.data_dict['Transversal Impedance Magnitude'] = [xr, y]
+
 
     def get_data(self, key):
         plot_decorations = [r'Cavity Shape Input', r'Cavity Shape Used', r'Wake Potentials',
@@ -213,33 +231,33 @@ class ABCIData:
 
         return self.x, self.y, self.fid
 
-    def _get_title(self, MROT):
-
-        if MROT == 0:
-            self.plot_decorations = {0: [r'Cavity Shape Input', r'Z-axis (m)', 'R-axis (m)'],
-                                     1: [r'Cavity Shape Used', r'Z-axis (m)', 'R-axis (m)'],
-                                     2: [r'Wake Potentials', r'Distance from Bunch Head S (m)', r'Scaled Wake Potential W (S)'],
-                                     3: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Real $Z_L$ ($k\Omega$) '],
-                                     4: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Imag $Z_L$ ($k\Omega$) '],
-                                     5: [r'Frequency Spectrum of Loss Factor', 'Frequency f (GHz)', r'$dk_L/df$ (V/pC/GHz) '],
-                                     6: [r'Loss Factor Spectrum Integrated up to F', 'Frequency f (GHz)', r'$k_L$(F) (V/pC)'],
-                                     7: [r'Real Part of Long. + Log Impedance', 'Frequency f (GHz)', r'Real $Z_{L+LOG}$ ($k\Omega$)'],
-                                     8: [r'Imaginary Part of Long. + Log Impedance', 'Frequency f (GHz)', r'Imag $Z_{L+LOG}$ ($k\Omega$)'],
-                                     9: [r'Spectrum of Long. + Log Loss Factor', 'Frequency f (GHz)', r'$dk_L/df$ ($V/pC/GHz$)'],
-                                     10: [r'Long. + Log Factor Integrated up to F', 'Frequency f (GHz)', r'$k_L$(F) (V/pC)']
-                                     }
-        else:
-            self.plot_decorations = {0: [r'Cavity Shape Input', r'Z-axis (m)', r'R-axis (m)'],
-                                     1: [r'Cavity Shape Used', r'Z-axis (m)', r'R-axis (m)'],
-                                     2: [r'Wake Potentials', r'Distance from Bunch Head S (m)', r'Scaled Wake Potential W (S)'],
-                                     3: [r'Real Part of Azimuthal Impedance', r'Frequency f (GHz)', r'Real $Z_A$ ($k\Omega/m$) '],
-                                     4: [r'Imaginary Part of Azimuthal Impedance', r'Frequency f (GHz)', r'Imag $Z_A$ ($k\Omega/m$) '],
-                                     5: [r'Real Part of Transverse Impedance', r'Frequency f (GHz)', r'Real $Z_T$ ($k\Omega/m$) '],
-                                     6: [r'Imaginary Part of Transverse Impedance', r'Frequency f (GHz)', r'Imag $Z_T$ ($k\Omega/m$) '],
-                                     7: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Real $Z_L$ ($k\Omega/m^2$) '],
-                                     8: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Imag $Z_L$ ($k\Omega/m^2$) ']}
-
-        return self.plot_decorations
+    # def _get_title(self, MROT):
+    #
+    #     if MROT == 0:
+    #         self.plot_decorations = {0: [r'Cavity Shape Input', r'Z-axis (m)', 'R-axis (m)'],
+    #                                  1: [r'Cavity Shape Used', r'Z-axis (m)', 'R-axis (m)'],
+    #                                  2: [r'Wake Potentials', r'Distance from Bunch Head S (m)', r'Scaled Wake Potential W (S)'],
+    #                                  3: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Real $Z_L$ ($k\Omega$) '],
+    #                                  4: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Imag $Z_L$ ($k\Omega$) '],
+    #                                  5: [r'Frequency Spectrum of Loss Factor', 'Frequency f (GHz)', r'$dk_L/df$ (V/pC/GHz) '],
+    #                                  6: [r'Loss Factor Spectrum Integrated up to F', 'Frequency f (GHz)', r'$k_L$(F) (V/pC)'],
+    #                                  7: [r'Real Part of Long. + Log Impedance', 'Frequency f (GHz)', r'Real $Z_{L+LOG}$ ($k\Omega$)'],
+    #                                  8: [r'Imaginary Part of Long. + Log Impedance', 'Frequency f (GHz)', r'Imag $Z_{L+LOG}$ ($k\Omega$)'],
+    #                                  9: [r'Spectrum of Long. + Log Loss Factor', 'Frequency f (GHz)', r'$dk_L/df$ ($V/pC/GHz$)'],
+    #                                  10: [r'Long. + Log Factor Integrated up to F', 'Frequency f (GHz)', r'$k_L$(F) (V/pC)']
+    #                                  }
+    #     else:
+    #         self.plot_decorations = {0: [r'Cavity Shape Input', r'Z-axis (m)', r'R-axis (m)'],
+    #                                  1: [r'Cavity Shape Used', r'Z-axis (m)', r'R-axis (m)'],
+    #                                  2: [r'Wake Potentials', r'Distance from Bunch Head S (m)', r'Scaled Wake Potential W (S)'],
+    #                                  3: [r'Real Part of Azimuthal Impedance', r'Frequency f (GHz)', r'Real $Z_A$ ($k\Omega/m$) '],
+    #                                  4: [r'Imaginary Part of Azimuthal Impedance', r'Frequency f (GHz)', r'Imag $Z_A$ ($k\Omega/m$) '],
+    #                                  5: [r'Real Part of Transverse Impedance', r'Frequency f (GHz)', r'Real $Z_T$ ($k\Omega/m$) '],
+    #                                  6: [r'Imaginary Part of Transverse Impedance', r'Frequency f (GHz)', r'Imag $Z_T$ ($k\Omega/m$) '],
+    #                                  7: [r'Real Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Real $Z_L$ ($k\Omega/m^2$) '],
+    #                                  8: [r'Imaginary Part of Longitudinal Impedance', r'Frequency f (GHz)', r'Imag $Z_L$ ($k\Omega/m^2$) ']}
+    #
+    #     return self.plot_decorations
 
     def _nparray_to_list(self, x):
         result = []

@@ -581,10 +581,10 @@ class EigenmodeControl:
 
                 # run UQ
                 if UQ:
-                    # uq(f"{key}_n{n_cell}", shape, ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"],
-                    #    n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
-                    #    f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir,
-                    #    mesh_args=mesh_args, select_solver=select_solver.lower())
+                    uq(f"{key}_n{n_cell}", shape, ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"],
+                       n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
+                       f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir,
+                       mesh_args=mesh_args, select_solver=select_solver.lower())
 
                     # uq_ngsolve(f"{key}_n{n_cell}", shape, ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"],
                     #    n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
@@ -596,10 +596,10 @@ class EigenmodeControl:
                     #    f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir,
                     #    mesh_args=mesh_args, select_solver=select_solver.lower())
 
-                    uq_ngsolve_parallel_multicell(f"{key}_n{n_cell}", shape, ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"],
-                       n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
-                       f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir,
-                       mesh_args=mesh_args, select_solver=select_solver.lower())
+                    # uq_ngsolve_parallel_multicell(f"{key}_n{n_cell}", shape, ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"],
+                    #    n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
+                    #    f_shift=f_shift, bc=bc, pol='Monopole', parentDir=parentDir, projectDir=projectDir,
+                    #    mesh_args=mesh_args, select_solver=select_solver.lower())
 
                     # uq_multicell(f"{key}_n{n_cell}", shape, ["freq [MHz]", "R/Q [Ohm]", "Epk/Eacc []", "Bpk/Eacc [mT/MV/m]", "G [Ohm]", "kcc [%]", "ff [%]"],
                     #    n_cells=n_cell, n_modules=n_modules, n_modes=n_modes,
@@ -667,7 +667,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
     degree = 1
 
     #  for 1D opti you can use stroud5 (please test your code for stroud3 less quadrature nodes 2rdim)
-    flag_stroud = 'stroud5'
+    flag_stroud = 'load_from_file'
     if flag_stroud == 'stroud3':
         nodes_, weights_, bpoly_ = quad_stroud3(rdim, degree)
         nodes_ = 2. * nodes_ - 1.
@@ -677,7 +677,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
     elif flag_stroud == 'cn_gauss':
         nodes_, weights_ = cn_gauss(rdim, 2)
     elif flag_stroud == 'load_from_file':
-        nodes_ = pd.read_csv(fr'C:\Users\sosoho\DakotaProjects\Cavity\C3794_cubature3\sim_result_table.dat', sep='\s+').iloc[:, 2:7]
+        nodes_ = pd.read_csv(fr'C:\Users\sosoho\DakotaProjects\Cavity\C3794_cubature5_5\sim_result_table.dat', sep='\s+').iloc[:, 2:7]
         nodes_ = nodes_.to_numpy().T
         weights_ = np.ones((nodes_.shape[1], 1))
     else:
@@ -1385,46 +1385,46 @@ def uq_piotr_sequential(n_cells, n_modules, shape, qois, n_modes, f_shift, bc, p
 
     for i1 in proc_keys_list:
         skip = False
-        # p_init[0] = p_true[0] * (1 + delta * processor_nodes[0, i1-min(proc_keys_list)])
-        # p_init[1] = p_true[1] * (1 + delta * processor_nodes[1, i1-min(proc_keys_list)])
-        # p_init[2] = p_true[2] * (1 + delta * processor_nodes[2, i1-min(proc_keys_list)])
-        # p_init[3] = p_true[3] * (1 + delta * processor_nodes[3, i1-min(proc_keys_list)])
-        # p_init[4] = p_true[4] * (1 + delta * processor_nodes[4, i1-min(proc_keys_list)])
+        p_init[0] = p_true[0] * (1 + delta * processor_nodes[0, i1-min(proc_keys_list)])
+        p_init[1] = p_true[1] * (1 + delta * processor_nodes[1, i1-min(proc_keys_list)])
+        p_init[2] = p_true[2] * (1 + delta * processor_nodes[2, i1-min(proc_keys_list)])
+        p_init[3] = p_true[3] * (1 + delta * processor_nodes[3, i1-min(proc_keys_list)])
+        p_init[4] = p_true[4] * (1 + delta * processor_nodes[4, i1-min(proc_keys_list)])
+
+        p_init_el[0] = p_true_el[0] * (1 + delta * processor_nodes[5, i1-min(proc_keys_list)])
+        p_init_el[1] = p_true_el[1] * (1 + delta * processor_nodes[6, i1-min(proc_keys_list)])
+        p_init_el[2] = p_true_el[2] * (1 + delta * processor_nodes[7, i1-min(proc_keys_list)])
+        p_init_el[3] = p_true_el[3] * (1 + delta * processor_nodes[8, i1-min(proc_keys_list)])
+        p_init_el[4] = p_true_el[4] * (1 + delta * processor_nodes[9, i1-min(proc_keys_list)])
+
+        # p_init[0] = p_true[0] + processor_nodes[0, i1-min(proc_keys_list)]  # <- A
+        # p_init[1] = p_true[1] + processor_nodes[1, i1-min(proc_keys_list)]  # <- B
+        # p_init[2] = p_true[2] + processor_nodes[2, i1-min(proc_keys_list)]  # <- a
+        # p_init[3] = p_true[3] + processor_nodes[3, i1-min(proc_keys_list)]  # <- b
+        # p_init[4] = p_true[4] + processor_nodes[4, i1-min(proc_keys_list)]  # <- Ri
+        # p_init[5] = p_true[5] + processor_nodes[5, i1-min(proc_keys_list)]  # <- L
+        # p_init[6] = p_true[6] + processor_nodes[6, i1-min(proc_keys_list)]  # <- Req
         #
-        # p_init_el[0] = p_true_el[0] * (1 + delta * processor_nodes[5, i1-min(proc_keys_list)])
-        # p_init_el[1] = p_true_el[1] * (1 + delta * processor_nodes[6, i1-min(proc_keys_list)])
-        # p_init_el[2] = p_true_el[2] * (1 + delta * processor_nodes[7, i1-min(proc_keys_list)])
-        # p_init_el[3] = p_true_el[3] * (1 + delta * processor_nodes[8, i1-min(proc_keys_list)])
-        # p_init_el[4] = p_true_el[4] * (1 + delta * processor_nodes[9, i1-min(proc_keys_list)])
-
-        p_init[0] = p_true[0] + processor_nodes[0, i1-min(proc_keys_list)]  # <- A
-        p_init[1] = p_true[1] + processor_nodes[1, i1-min(proc_keys_list)]  # <- B
-        p_init[2] = p_true[2] + processor_nodes[2, i1-min(proc_keys_list)]  # <- a
-        p_init[3] = p_true[3] + processor_nodes[3, i1-min(proc_keys_list)]  # <- b
-        p_init[4] = p_true[4] + processor_nodes[4, i1-min(proc_keys_list)]  # <- Ri
-        p_init[5] = p_true[5] + processor_nodes[5, i1-min(proc_keys_list)]  # <- L
-        p_init[6] = p_true[6] + processor_nodes[6, i1-min(proc_keys_list)]  # <- Req
-
-        p_init_el[0] = p_true_el[0] + processor_nodes[6, i1-min(proc_keys_list)]  # <- A
-        p_init_el[1] = p_true_el[1] + processor_nodes[7, i1-min(proc_keys_list)]  # <- B
-        p_init_el[2] = p_true_el[2] + processor_nodes[8, i1-min(proc_keys_list)]  # <- a
-        p_init_el[3] = p_true_el[3] + processor_nodes[9, i1-min(proc_keys_list)]  # <- b
-        p_init_el[4] = p_true_el[4] + processor_nodes[10, i1-min(proc_keys_list)]  # <- Ri
-        p_init_el[5] = p_true_el[5] + processor_nodes[11, i1-min(proc_keys_list)]  # <- L
-        p_init_el[6] = p_true_el[6] + processor_nodes[11, i1-min(proc_keys_list)]  # <- Req
-
-        p_init_er[0] = p_true_er[0] + processor_nodes[12, i1-min(proc_keys_list)]  # <- A
-        p_init_er[1] = p_true_er[1] + processor_nodes[13, i1-min(proc_keys_list)]  # <- B
-        p_init_er[2] = p_true_er[2] + processor_nodes[14, i1-min(proc_keys_list)]  # <- a
-        p_init_er[3] = p_true_er[3] + processor_nodes[15, i1-min(proc_keys_list)]  # <- b
-        p_init_er[4] = p_true_er[4] + processor_nodes[16, i1-min(proc_keys_list)]  # <- Ri
-        p_init_er[5] = p_true_er[5] + processor_nodes[17, i1-min(proc_keys_list)]  # <- L
-        p_init_er[6] = p_true_er[6] + processor_nodes[18, i1-min(proc_keys_list)]  # <- Req
+        # p_init_el[0] = p_true_el[0] + processor_nodes[6, i1-min(proc_keys_list)]  # <- A
+        # p_init_el[1] = p_true_el[1] + processor_nodes[7, i1-min(proc_keys_list)]  # <- B
+        # p_init_el[2] = p_true_el[2] + processor_nodes[8, i1-min(proc_keys_list)]  # <- a
+        # p_init_el[3] = p_true_el[3] + processor_nodes[9, i1-min(proc_keys_list)]  # <- b
+        # p_init_el[4] = p_true_el[4] + processor_nodes[10, i1-min(proc_keys_list)]  # <- Ri
+        # p_init_el[5] = p_true_el[5] + processor_nodes[11, i1-min(proc_keys_list)]  # <- L
+        # p_init_el[6] = p_true_el[6] + processor_nodes[11, i1-min(proc_keys_list)]  # <- Req
+        #
+        # p_init_er[0] = p_true_er[0] + processor_nodes[12, i1-min(proc_keys_list)]  # <- A
+        # p_init_er[1] = p_true_er[1] + processor_nodes[13, i1-min(proc_keys_list)]  # <- B
+        # p_init_er[2] = p_true_er[2] + processor_nodes[14, i1-min(proc_keys_list)]  # <- a
+        # p_init_er[3] = p_true_er[3] + processor_nodes[15, i1-min(proc_keys_list)]  # <- b
+        # p_init_er[4] = p_true_er[4] + processor_nodes[16, i1-min(proc_keys_list)]  # <- Ri
+        # p_init_er[5] = p_true_er[5] + processor_nodes[17, i1-min(proc_keys_list)]  # <- L
+        # p_init_er[6] = p_true_er[6] + processor_nodes[18, i1-min(proc_keys_list)]  # <- Req
 
         par_mid = list(np.append(p_init, shape['IC'][6:]))
         par_end_l = list(np.append(p_init_el, shape['OC'][6:]))
-        par_end_r = list(np.append(p_init_er, shape['OC_R'][6:]))
-        # par_end_r = shape['OC_R']
+        # par_end_r = list(np.append(p_init_er, shape['OC_R'][6:]))
+        par_end_r = shape['OC_R']
 
         # # perform checks on geometry
         # ok = perform_geometry_checks(par_mid, par_end_l)

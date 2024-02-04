@@ -846,15 +846,19 @@ class PlotControl:
                 abci_data_long = ABCIData(abci_data_dir, id_, 0)
 
                 if request == 'Longitudinal Impedance Magnitude':
-                    xr, yr, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
-                    xi, yi, _ = abci_data_long.get_data('Imaginary Part of Longitudinal Impedance')
-
-                    y = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr, yi)]
+                    # xr, yr, _ = abci_data_long.get_data('Real Part of Longitudinal Impedance')
+                    # xi, yi, _ = abci_data_long.get_data('Imaginary Part of Longitudinal Impedance')
+                    #
+                    # # y = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr, yi)]
+                    # y = (np.array(yr) ** 2 + np.array(yi) ** 2) ** 0.5
+                    xr, y, _ = abci_data_long.get_data('Longitudinal Impedance Magnitude')
 
                     # scale x axis]
-                    xr = [a * scaleX for a in xr]
+                    # xr = [a * scaleX for a in xr]
+                    xr = np.array(xr)*scaleX
                     # scale y axis]
-                    y = [a * scaleY for a in y]
+                    # y = [a * scaleY for a in y]
+                    y = np.array(y)*scaleX
 
                     # set global frequency only if the impedance magnitude is requested
                     self.freq_glob = xr
@@ -950,18 +954,22 @@ class PlotControl:
                 abci_data_trans = ABCIData(abci_data_dir, id_, 1)
                 if request == 'Transverse Impedance Magnitude':
                     # try:
-                    xr, yr, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
-                    xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
-                    # except:
-                    #     xr, yr, _ = abci_data_trans.get_data('Real Part of Azimuthal Impedance')
-                    #     xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Azimuthal Impedance')
+                    # xr, yr, _ = abci_data_trans.get_data('Real Part of Transverse Impedance')
+                    #                     # xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Transverse Impedance')
+                    # # except:
+                    # #     xr, yr, _ = abci_data_trans.get_data('Real Part of Azimuthal Impedance')
+                    # #     xi, yi, _ = abci_data_trans.get_data('Imaginary Part of Azimuthal Impedance')
+                    #
+                    # # y = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr, yi)]
+                    # y = (np.array(yr) ** 2 + np.array(yi) ** 2) ** 0.5
 
-                    y = [(a ** 2 + b ** 2) ** 0.5 for a, b in zip(yr, yi)]
-
+                    xr, y, _ = abci_data_trans.get_data('Transversal Impedance Magnitude')
                     # scale x axis]
-                    xr = [a * scaleX for a in xr]
+                    # xr = [a * scaleX for a in xr]
+                    xr = np.array(xr)*scaleX
                     # scale y axis]
-                    y = [a * scaleY for a in y]
+                    # y = [a * scaleY for a in y]
+                    y = np.array(y)*scaleX
 
                     # set global frequency only if the impedance magnitude is requested
                     self.freq_glob = xr

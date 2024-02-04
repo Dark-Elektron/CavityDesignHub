@@ -35,7 +35,7 @@ class ABCIGeometry(Geometry):
         RDRIVE, ISIG = 5e-3, 5
         LCRBW = 'F'
         BETA = 1
-        LMATPR = 'F',
+        LMATPR = 'F'
         LPRW, LPPW, LSVW, LSVWA, LSVWT, LSVWL, LSVF = 'T', 'T', 'T', 'F', 'T', 'T', 'F'
         LSAV, LCPUTM = 'F', 'F'
 
@@ -151,11 +151,11 @@ class ABCIGeometry(Geometry):
 
             # change save directory
             if sub_dir == '':
-                run_save_directory = projectDir / fr'SimulationData\ABCI\{fid}'
+                run_save_directory = projectDir / Path(fr'SimulationData/ABCI/{fid}')
             else:
-                run_save_directory = projectDir / fr'SimulationData\ABCI\{sub_dir}\{fid}'
+                run_save_directory = projectDir / Path(fr'SimulationData/ABCI/{sub_dir}\{fid}')
 
-            fname = fr'{run_save_directory}\Cavity_MROT_{MROT}.abc'
+            fname = Path(fr'{run_save_directory}/Cavity_MROT_{MROT}.abc')
             # print('filename:: ', fname)
 
             L_all_increment = 0
@@ -309,12 +309,11 @@ class ABCIGeometry(Geometry):
 
             abci_path = os.getcwd()
 
-            exe_path = os.path.join(abci_path, parentDir / fr'exe\ABCI_exe\ABCI_MP64+.exe')
-
+            exe_path = os.path.join(abci_path, parentDir / Path(fr'exe/ABCI_exe/ABCI_MP64+.exe'))
             if LCPUTM == 'T':
-                subprocess.call([exe_path, Path(fr'{run_save_directory}\Cavity_MROT_{MROT}.abc')])
+                subprocess.call([exe_path, Path(fr'{run_save_directory}/Cavity_MROT_{MROT}.abc')])
             else:
-                subprocess.call([exe_path, Path(fr'{run_save_directory}\Cavity_MROT_{MROT}.abc')],
+                subprocess.call([exe_path, Path(fr'{run_save_directory}/Cavity_MROT_{MROT}.abc')],
                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
             # save json file
@@ -322,7 +321,7 @@ class ABCIGeometry(Geometry):
                      'OC': list(l_end_cell_par),
                      'OC_R': list(r_end_cell_par)}
 
-            with open(Path(fr"{run_save_directory}\geometric_parameters.json"), 'w') as f:
+            with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
                 json.dump(shape, f, indent=4, separators=(',', ': '))
 
     def cavity_flattop(self, no_of_cells, no_of_modules,

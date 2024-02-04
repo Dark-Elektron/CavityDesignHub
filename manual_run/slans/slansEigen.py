@@ -5,8 +5,8 @@ import subprocess
 from math import floor
 import numpy as np
 from utils.file_reader import FileReader
-from geometry_manual import Geometry
-from slans_code import SLANS
+from analysis_modules.eigenmode.SLANS.geometry_manual import Geometry
+from analysis_modules.eigenmode.SLANS.slans_code import SLANS
 from utils.shared_functions import update_alpha
 
 fr = FileReader()

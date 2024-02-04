@@ -212,7 +212,7 @@
          <property name="geometry">
           <rect>
            <x>0</x>
-           <y>-826</y>
+           <y>0</y>
            <width>447</width>
            <height>1819</height>
           </rect>
@@ -852,7 +852,7 @@
              <item row="5" column="1">
               <widget class="QLineEdit" name="le_MT">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Stability condition:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/imgs/images/stability_condition_wakefield.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Number of time steps for a beam to move from one cell to another. (It will be automatically changed to MT=4 when LCHIN=.T. and MROT=1).&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;If the user’s chosen value is not large enough to satisfy the stability criterion (1), a warning message will be issued with a suggested value. Calculation continues despite of the warning.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;Stability condition:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;img src=&quot;:/imgs/images/stability_condition_wakefield.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>4</string>

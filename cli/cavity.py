@@ -1,26 +1,32 @@
+import os.path
 import shutil
+import sys
 from distutils import dir_util
+from pathlib import Path
+
 import matplotlib as mpl
 import scipy.io as spio
 import scipy.interpolate as sci
 import mplcursors
 import pandas as pd
 from termcolor import colored
-from tqdm import tqdm
+from tqdm.auto import tqdm
 import time
 from analysis_modules.tune.tuners.tuner import Tuner
 from analysis_modules.data_module.abci_data import ABCIData
-from manual_run.slans.slansEigen import SLANSEigen
+from analysis_modules.eigenmode.SLANS.slans_geometry import SLANSGeometry
+from analysis_modules.eigenmode.NGSolve.eigen_ngsolve import NGSolveMEVP
 from analysis_modules.eigenmode.customEig.run_field_solver import Model
 from analysis_modules.wakefield.ABCI.abci_geometry import ABCIGeometry
 from utils.shared_functions import *
 
-slans_geom = SLANSEigen()
+slans_geom = SLANSGeometry()
+ngsolve_mevp = NGSolveMEVP()
 abci_geom = ABCIGeometry()
 custom_eig = Model()
 tuner = Tuner()
 
-SOFTWARE_DIRECTORY = os.getcwd()  # str(Path().parents[0])
+SOFTWARE_DIRECTORY = Path(os.getcwd())  # str(Path().parents[0])
 
 m0 = 9.1093879e-31
 q0 = 1.6021773e-19
@@ -30,19 +36,19 @@ eps0 = 8.85418782e-12
 
 
 def error(*arg):
-    print(colored(f'\t{arg}', 'red'))
+    print(colored(f'{arg}', 'red'))
 
 
 def running(*arg):
-    print(colored(f'\t{arg}', 'yellow'))
+    print(colored(f'{arg}', 'yellow'))
 
 
 def info(*arg):
-    print(colored(f'\t{arg}', 'blue'))
+    print(colored(f'{arg}', 'blue'))
 
 
 def done(*arg):
-    print(colored(f'\t{arg}', 'green'))
+    print(colored(f'{arg}', 'green'))
 
 
 class Cavity:
@@ -80,12 +86,12 @@ class Cavity:
         self.bc = 33
         self.name = name
         self.n_cells = n_cells
-        self.mid_cell = mid_cell
-        self.end_cell_left = end_cell_left
-        self.end_cell_right = end_cell_right
+        self.mid_cell = mid_cell[:7]
+        self.end_cell_left = end_cell_left[:7]
+        self.end_cell_right = end_cell_right[:7]
         self.beampipe = beampipe
         self.no_of_modules = 1
-        self.slans_qois = {}
+        self.eigenmode_qois = {}
         self.custom_eig_qois = {}
         self.abci_qois = {}
         self.slans_tune_res = {}
@@ -114,15 +120,15 @@ class Cavity:
         self.end_cell_left = end_cell_left
         self.end_cell_right = end_cell_right
 
-        self.A, self.B, self.a, self.b, self.Ri, self.L, self.Req = self.mid_cell
-        self.A_el, self.B_el, self.a_el, self.b_el, self.Ri_el, self.L_el, self.Req_el = self.end_cell_left
-        self.A_er, self.B_er, self.a_er, self.b_er, self.Ri_er, self.L_er, self.Req_er = self.end_cell_right
+        self.A, self.B, self.a, self.b, self.Ri, self.L, self.Req = self.mid_cell[:7]
+        self.A_el, self.B_el, self.a_el, self.b_el, self.Ri_el, self.L_el, self.Req_el = self.end_cell_left[:7]
+        self.A_er, self.B_er, self.a_er, self.b_er, self.Ri_er, self.L_er, self.Req_er = self.end_cell_right[:7]
 
         # get geometric parameters
         self.shape_space = {
-            "IC": self.mid_cell,
-            "OC": self.end_cell_left,
-            "OC_R": self.end_cell_right,
+            "IC": self.mid_cell[:7],
+            "OC": self.end_cell_left[:7],
+            "OC_R": self.end_cell_right[:7],
             "BP": beampipe
         }
 
@@ -244,38 +250,38 @@ class Cavity:
         """
         pass
 
-    def save(self, files_path):
-        """
-        Set folder to save cavity analysis results
-
-        Parameters
-        ----------
-        files_path: str
-            Save project directory
-
-        Returns
-        -------
-
-        """
-
-        if files_path is None:
-            error('Please specify a folder to write the simulation results to.')
-            return
-        else:
-            try:
-                self.folder = files_path
-                success = self._create_project()
-                if not success:
-                    error("Project could not be created. Please check the folder and try again.")
-                    return
-                else:
-                    done("Project created successfully/already exists. You can proceed with analysis.")
-            except Exception as e:
-                error("Exception occurred: ", e)
-                return
-
-        if files_path is None:
-            self.folder = os.getcwd()
+    # def save(self, files_path, overwrite=False):
+    #     """
+    #     Set folder to save cavity analysis results
+    #
+    #     Parameters
+    #     ----------
+    #     files_path: str
+    #         Save project directory
+    #
+    #     Returns
+    #     -------
+    #
+    #     """
+    #
+    #     if files_path is None:
+    #         error('Please specify a folder to write the simulation results to.')
+    #         return
+    #     else:
+    #         try:
+    #             self.folder = files_path
+    #             success = self._create_project(overwrite)
+    #             if not success:
+    #                 error("Project could not be created. Please check the folder and try again.")
+    #                 return
+    #             else:
+    #                 done("Project created successfully/already exists. You can proceed with analysis.")
+    #         except Exception as e:
+    #             error("Exception occurred: ", e)
+    #             return
+    #
+    #     if files_path is None:
+    #         self.folder = Path(os.getcwd())
 
     def load_shape_space(self, filepath):
         """
@@ -415,7 +421,7 @@ class Cavity:
                     # read tune results and update geometry
                     try:
                         self.get_slans_tune_res(tune_variable, cell_type)
-                        self.get_slans_qois()
+                        # self.get_eigenmode_qois('SLANS')
                     except FileNotFoundError:
                         error("Could not find the tune results. Please run tune again.")
             else:
@@ -425,14 +431,14 @@ class Cavity:
                     self._copyFiles(proc, SOFTWARE_DIRECTORY, self.folder, self.name)
 
                     self.run_tune_slans(shape_space, resume, proc, self.bc,
-                                        SOFTWARE_DIRECTORY, fr'{self.folder}', self.name, tuner,
+                                        SOFTWARE_DIRECTORY, self.folder, self.name, tuner,
                                         tune_variable, iter_set, cell_type,
                                         progress_list=[], convergence_list=[], n_cells=n_cells)
                     try:
+                        # self.get_eigenmode_qois('SLANS_Opt')
                         self.get_slans_tune_res(tune_variable, cell_type)
-                        self.get_slans_qois()
                     except FileNotFoundError:
-                        error("OOps! Something went wrong. Could not find the tune results. Please run tune again.")
+                        error("Oops! Something went wrong. Could not find the tune results. Please run tune again.")
 
     @staticmethod
     def run_tune_slans(shape, resume, p, bc, parentDir, projectDir, filename, tuner_option,
@@ -451,7 +457,7 @@ class Cavity:
 
         Parameters
         ----------
-        solver: {'SLANS', 'Native'}
+        solver: {'SLANS', 'NGSolve'}
             Solver to be used. Native solver is still under development. Results are not as accurate as that of SLANS.
         freq_shift:
             Frequency shift. Eigenmode solver searches for eigenfrequencies around this value
@@ -467,25 +473,27 @@ class Cavity:
 
         """
 
-        for _ in tqdm([1]):
+
+        for _ in tqdm([1], file=sys.stdout):
             if boundary_cond:
                 self.bc = boundary_cond
 
             if solver.lower() == 'slans':
                 self._run_slans(self.name, self.n_cells, self.n_modules, self.shape_space, self.n_modes, freq_shift,
                                 self.bc, SOFTWARE_DIRECTORY, self.folder, sub_dir='', UQ=UQ)
-
                 # load quantities of interest
                 try:
-                    self.get_slans_qois()
+                    self.get_eigenmode_qois('SLANS')
                 except FileNotFoundError:
-                    error("Could not find the tune results. Please rerun eigenmode analysis.")
+                    error("Could not find the eigenmode results. Please rerun eigenmode analysis.")
             else:
-                self._run_custom_eig(self.name, self.folder, self.n_cells,
-                                     self.mid_cell, self.end_cell_left, self.end_cell_right,
-                                     beampipe=self.beampipe, plot=False)
+                self._run_ngsolve(self.name, self.n_cells, self.n_modules, self.shape_space, self.n_modes, freq_shift,
+                                  self.bc, SOFTWARE_DIRECTORY, self.folder, sub_dir='', UQ=UQ)
                 # load quantities of interest
-                self.get_custom_eig_qois()
+                try:
+                    self.get_eigenmode_qois('NGSolveMEVP')
+                except FileNotFoundError:
+                    error("Could not find eigenmode results. Please rerun eigenmode analysis.")
 
     def run_wakefield(self, MROT=2, MT=10, NFS=10000, wakelength=50, bunch_length=25,
                       DDR_SIG=0.1, DDZ_SIG=0.1, WG_M=None, marker='', wp_dict=None, solver='ABCI'):
@@ -524,54 +532,25 @@ class Cavity:
 
         if wp_dict is None:
             wp_dict = {}
-
-        if len(wp_dict.keys()) != 0:
-            self.wake_op_points = wp_dict
-
         exist = False
-        # check if folders already exists
-        if os.path.exists(fr'{self.folder}'):
-            exist = True
-            if len(wp_dict.keys()) != 0:
-
-                for wp, vals in wp_dict.items():
-                    self.sigma = vals['sigma_z (SR/BS) [mm]']
-
-                    wp_SR = f"{wp}_SR_{self.sigma.split(r'/')[0]}mm"
-                    wp_BS = f"{wp}_SR_{self.sigma.split(r'/')[1]}mm"
-                    if os.path.exists(fr"{self.folder}/SimulationData/ABCI/{self.name}/{wp_SR}") and \
-                            os.path.exists(fr"{self.folder}/SimulationData/ABCI/{self.name}/{wp_BS}"):
-                        pass
-                    else:
-                        exist = False
-            else:
-                exist = False
-        else:
-            exist = False
-
-        if exist:
-            run_wake = input("Wakefield results already exist for these settings. Run wakefield again? (y/N)")
-            if run_wake.lower() == 'y':
-                msg = True
-            else:
-                msg = False
 
         if not exist:
-            for _ in tqdm([1]):
-                if solver == 'ABCI':
-                    info(">> Running wakefield simulation")
-                    self._run_abci(self.name, self.n_cells, self.n_modules, self.shape_space,
-                                   MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
-                                   DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
-                                   parentDir=SOFTWARE_DIRECTORY, projectDir=fr'{self.folder}', WG_M=WG_M, marker=marker,
-                                   wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
+            if solver == 'ABCI':
+                self._run_abci(self.name, self.n_cells, self.n_modules, self.shape_space,
+                               MROT=MROT, MT=MT, NFS=NFS, UBT=wakelength, bunch_length=bunch_length,
+                               DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG,
+                               parentDir=SOFTWARE_DIRECTORY, projectDir=self.folder, WG_M=WG_M, marker=marker,
+                               wp_dict=wp_dict, freq=self.freq, R_Q=self.R_Q)
 
-                    try:
-                        self.get_abci_qois()
-                    except FileNotFoundError:
-                        error("Could not find the abci wakefield results. Please rerun wakefield analysis.")
+                try:
+                    self.get_abci_data()
+                    self.get_abci_qois()
+                except FileNotFoundError:
+                    error("Could not find the abci wakefield results. Please rerun wakefield analysis.")
+
         else:
             try:
+                self.get_abci_data()
                 self.get_abci_qois()
             except FileNotFoundError:
                 error("Could not find the abci wakefield results. Please rerun wakefield analysis.")
@@ -620,7 +599,30 @@ class Cavity:
         done(f'Done with Cavity {name}. Time: {time.time() - start_time}')
 
     @staticmethod
-    def _run_abci(name, n_cells, n_modules, shape, MROT=0, MT=4, NFS=10000, UBT=50, bunch_length=20,
+    def _run_ngsolve(name, n_cells, n_modules, shape, n_modes, f_shift, bc, parentDir, projectDir, sub_dir='', UQ=False):
+        start_time = time.time()
+        # create folders for all keys
+        ngsolve_mevp.createFolder(name, projectDir, subdir=sub_dir)
+
+        try:
+            ngsolve_mevp.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
+                              n_modes=n_modes, fid=f"{name}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                              parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+        except KeyError:
+            ngsolve_mevp.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC'],
+                              n_modes=n_modes, fid=f"{name}", f_shift=f_shift, bc=bc, beampipes=shape['BP'],
+                              parentDir=parentDir, projectDir=projectDir, subdir=sub_dir)
+
+        # run UQ
+        if UQ:
+            uq(name, shape, ["freq", "R/Q", "Epk/Eacc", "Bpk/Eacc"],
+               n_cells=n_cells, n_modules=n_modules, n_modes=n_modes,
+               f_shift=f_shift, bc=bc, parentDir=parentDir, projectDir=projectDir)
+
+        done(f'Done with Cavity {name}. Time: {time.time() - start_time}')
+
+    @staticmethod
+    def _run_abci(name, n_cells, n_modules, shape, MROT=0, MT=4.0, NFS=10000, UBT=50.0, bunch_length=20.0,
                   DDR_SIG=0.1, DDZ_SIG=0.1,
                   parentDir=None, projectDir=None,
                   WG_M=None, marker='', wp_dict=None, freq=0, R_Q=0):
@@ -640,7 +642,6 @@ class Cavity:
                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,
                                          projectDir=projectDir,
                                          WG_M=ii, marker=ii)
-
                 else:
                     abci_geom.cavity(n_cells, n_modules, shape['IC'], shape['OC'], shape['OC_R'],
                                      fid=name, MROT=MROT, MT=MT, NFS=NFS, UBT=UBT, bunch_length=bunch_length,
@@ -670,7 +671,7 @@ class Cavity:
                         WP = key
                         I0 = float(vals['I0 [mA]'])
                         Nb = float(vals['Nb [1e11]'])
-                        sigma_z = [float(x) for x in vals['sigma_z (SR/BS) [mm]'].split('/')]
+                        sigma_z = [float(vals["sigma_SR [mm]"]), float(vals["sigma_BS [mm]"])]
                         bl_diff = ['SR', 'BS']
 
                         info("Running wakefield analysis for given operating points.")
@@ -866,38 +867,38 @@ class Cavity:
 
         """
         tune_res = 'tune_res.json'
-        if os.path.exists(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}"):
-            with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{tune_res}", 'r') as json_file:
-                self.slans_tune_res = json.load(json_file)
+        if os.path.exists(fr"{self.folder}\SimulationData\SLANS_Opt\{self.name}\{tune_res}"):
+            with open(fr"{self.folder}\SimulationData\SLANS_Opt\{self.name}\{tune_res}", 'r') as json_file:
+                self.eigenmode_tune_res = json.load(json_file)
 
-            self.freq = self.slans_tune_res['freq']
+            self.freq = self.eigenmode_tune_res['freq']
 
             if tune_variable.lower() == 'req':
-                self.shape_space['IC'][6] = self.slans_tune_res['Req']
-                self.shape_space['OC'][6] = self.slans_tune_res['Req']
-                self.shape_space['OC_R'][6] = self.slans_tune_res['Req']
-                self.mid_cell[6] = self.slans_tune_res['Req']
-                self.end_cell_left[6] = self.slans_tune_res['Req']
-                self.end_cell_right[6] = self.slans_tune_res['Req']
+                self.shape_space['IC'][6] = self.eigenmode_tune_res['Req']
+                self.shape_space['OC'][6] = self.eigenmode_tune_res['Req']
+                self.shape_space['OC_R'][6] = self.eigenmode_tune_res['Req']
+                self.mid_cell[6] = self.eigenmode_tune_res['Req']
+                self.end_cell_left[6] = self.eigenmode_tune_res['Req']
+                self.end_cell_right[6] = self.eigenmode_tune_res['Req']
             else:
-                self.shape_space['IC'][5] = self.slans_tune_res['Req']
-                self.shape_space['OC'][5] = self.slans_tune_res['Req']
-                self.shape_space['OC_R'][5] = self.slans_tune_res['Req']
-                self.mid_cell[5] = self.slans_tune_res['Req']
-                self.end_cell_left[5] = self.slans_tune_res['Req']
-                self.end_cell_right[5] = self.slans_tune_res['Req']
+                self.shape_space['IC'][5] = self.eigenmode_tune_res['L']
+                self.shape_space['OC'][5] = self.eigenmode_tune_res['L']
+                self.shape_space['OC_R'][5] = self.eigenmode_tune_res['L']
+                self.mid_cell[5] = self.eigenmode_tune_res['L']
+                self.end_cell_left[5] = self.eigenmode_tune_res['L']
+                self.end_cell_right[5] = self.eigenmode_tune_res['L']
 
             # set alpha
             if len(self.mid_cell) == 7:
                 if isinstance(self.shape_space['IC'], np.ndarray):
-                    self.shape_space['IC'] = np.append(self.shape_space['IC'], self.slans_tune_res['alpha_i'])
-                    self.mid_cell = np.append(self.mid_cell, self.slans_tune_res['alpha_i'])
+                    self.shape_space['IC'] = np.append(self.shape_space['IC'], self.eigenmode_tune_res['alpha_i'])
+                    self.mid_cell = np.append(self.mid_cell, self.eigenmode_tune_res['alpha_i'])
                 elif isinstance(self.shape_space['IC'], list):
-                    self.shape_space['IC'].append(self.slans_tune_res['alpha_i'])
-                    self.mid_cell.append(self.slans_tune_res['alpha_i'])
-            elif len(self.mid_cell['IC']) == 8:
-                self.shape_space['IC'][7] = self.slans_tune_res['alpha_i']
-                self.mid_cell[7] = self.slans_tune_res['alpha_i']
+                    self.shape_space['IC'].append(self.eigenmode_tune_res['alpha_i'])
+                    self.mid_cell.append(self.eigenmode_tune_res['alpha_i'])
+            elif len(self.mid_cell) == 8:
+                self.shape_space['IC'][7] = self.eigenmode_tune_res['alpha_i']
+                self.mid_cell[7] = self.eigenmode_tune_res['alpha_i']
 
             if cell_type.lower() == 'end-mid cell' \
                     or cell_type.lower() == 'mid-end cell' \
@@ -905,21 +906,21 @@ class Cavity:
 
                 if len(self.end_cell_left) == 7:
                     if isinstance(self.shape_space['OC'], np.ndarray):
-                        self.shape_space['OC'].append(self.slans_tune_res['alpha_o'])
-                        self.end_cell_left.append(self.slans_tune_res['alpha_o'])
+                        self.shape_space['OC'].append(self.eigenmode_tune_res['alpha_o'])
+                        self.end_cell_left.append(self.eigenmode_tune_res['alpha_o'])
                     elif isinstance(self.shape_space['OC'], list):
-                        self.shape_space['OC'].append(self.slans_tune_res['alpha_o'])
-                        self.end_cell_left.append(self.slans_tune_res['alpha_o'])
+                        self.shape_space['OC'].append(self.eigenmode_tune_res['alpha_o'])
+                        self.end_cell_left.append(self.eigenmode_tune_res['alpha_o'])
 
                 elif len(self.end_cell_left) == 8:
-                    self.shape_space['OC'][7] = self.slans_tune_res['alpha_o']
-                    self.end_cell_left[7] = self.slans_tune_res['alpha_o']
+                    self.shape_space['OC'][7] = self.eigenmode_tune_res['alpha_o']
+                    self.end_cell_left[7] = self.eigenmode_tune_res['alpha_o']
 
             # expand tune to be able to tune right cavity geometry also
         else:
             error("Tune results not found. Please tune the cavity")
 
-    def get_slans_qois(self):
+    def get_eigenmode_qois(self, solver_folder):
         """
         Get quantities of interest written by the SLANS code
         Returns
@@ -928,26 +929,26 @@ class Cavity:
         """
         qois = 'qois.json'
 
-        with open(fr"{self.folder}\SimulationData\SLANS\{self.name}\{qois}") as json_file:
-            self.slans_qois = json.load(json_file)
+        with open(fr"{self.folder}/SimulationData/{solver_folder}/{self.name}/monopole/{qois}") as json_file:
+            self.eigenmode_qois = json.load(json_file)
 
-        self.freq = self.slans_qois['freq [MHz]']
-        self.k_cc = self.slans_qois['kcc [%]']
-        self.ff = self.slans_qois['ff [%]']
-        self.R_Q = self.slans_qois['R/Q [Ohm]']
-        self.GR_Q = self.slans_qois['GR/Q [Ohm^2]']
+        self.freq = self.eigenmode_qois['freq [MHz]']
+        self.k_cc = self.eigenmode_qois['kcc [%]']
+        self.ff = self.eigenmode_qois['ff [%]']
+        self.R_Q = self.eigenmode_qois['R/Q [Ohm]']
+        self.GR_Q = self.eigenmode_qois['GR/Q [Ohm^2]']
         self.G = self.GR_Q / self.R_Q
         # self.Q = d_qois['Q []']
-        self.e = self.slans_qois['Epk/Eacc []']
-        self.b = self.slans_qois['Bpk/Eacc [mT/MV/m]']
+        self.e = self.eigenmode_qois['Epk/Eacc []']
+        self.b = self.eigenmode_qois['Bpk/Eacc [mT/MV/m]']
 
-        # get axis field
-        self.axis_field = fr.txt_reader(fr"{self.folder}\SimulationData\SLANS\{self.name}\cavity_33_{self.n_cells}.af",
-                                        ' ')
-        # get surface field
-        self.surface_field = fr.txt_reader(
-            fr"{self.folder}\SimulationData\SLANS\{self.name}\cavity_33_{self.n_cells}.sf", ' ')
-        # print(self.surface_field)
+        # # get axis field
+        # self.axis_field = fr.txt_reader(fr"{self.folder}\SimulationData\SLANS\{self.name}\cavity_33_{self.n_cells}.af",
+        #                                 ' ')
+        # # get surface field
+        # self.surface_field = fr.txt_reader(
+        #     fr"{self.folder}\SimulationData\SLANS\{self.name}\cavity_33_{self.n_cells}.sf", ' ')
+        # # print(self.surface_field)
 
     def get_custom_eig_qois(self):
         """
@@ -961,7 +962,7 @@ class Cavity:
         with open(fr"{self.folder}\SimulationData\NativeEig\{self.name}\{qois}") as json_file:
             self.custom_eig_qois = json.load(json_file)
 
-    def get_abci_qois(self, opt='SR'):
+    def get_abci_qois(self, opt=None):
         """
         Get the quantities of interest written by the ABCI code
 
@@ -977,38 +978,54 @@ class Cavity:
         """
         qois = 'qois.json'
 
-        with open(fr"{self.folder}\SimulationData\ABCI\{self.name}\{qois}") as json_file:
-            self.abci_qois = json.load(json_file)
+        if os.path.exists(fr"{self.folder}\SimulationData\ABCI\{self.name}\{qois}"):
+            with open(fr"{self.folder}\SimulationData\ABCI\{self.name}\{qois}") as json_file:
+                self.abci_qois = json.load(json_file)
+        if opt is not None:
+            d_qois = self.abci_qois[opt]
+            self.k_fm = d_qois['k_FM [V/pC]']
+            self.k_loss = d_qois['|k_loss| [V/pC]']
+            self.k_kick = d_qois['|k_kick| [V/pC/m]']
+            self.phom = d_qois['P_HOM [kW]']
+            self.I0 = d_qois['I0 [mA]']
 
-        if len(self.wake_op_points.keys()) != 0 and self.freq != 0 and self.R_Q != 0:
-            for wp, vals in self.wake_op_points.items():
-                self.sigma = vals['sigma_z (SR/BS) [mm]']
+    def get_abci_data(self):
+        ic(self.folder)
+        abci_data_dir = os.path.join(self.folder, "SimulationData", "ABCI")
+        self.abci_data = {'Long': ABCIData(abci_data_dir, self.name, 0),
+                          'Trans': ABCIData(abci_data_dir, self.name, 1)}
 
-                if opt == 'SR':
-                    d_qois = self.abci_qois[f"{wp}_{opt}_{self.sigma.split(r'/')[0]}mm"]
+    def plot(self, what, ax=None):
+        if what.lower() == 'geometry':
+            ax = plot_cavity_geometry(self.mid_cell, self.end_cell_left, self.end_cell_right, self.beampipe, self.n_cells, ['b', 'b'], scale=1, plot=None)
+            return ax
+        if what.lower() == 'zl':
+            if ax:
+                x, y, _ = self.abci_data['Long'].get_data('Longitudinal Impedance Magnitude')
+                ax.plot(x, y)
+            else:
+                fig, ax = plt.subplots(figsize=(12, 4))
+                x, y, _ = self.abci_data['Long'].get_data('Longitudinal Impedance Magnitude')
+                ax.plot(x, y)
+            return ax
+        if what.lower() == 'zt':
+            if ax:
+                x, y, _ = self.abci_data['Trans'].get_data('Transversal Impedance Magnitude')
+                ax.plot(x, y)
+            else:
+                fig, ax = plt.subplots(figsize=(12, 4))
+                x, y, _ = self.abci_data['Trans'].get_data('Transversal Impedance Magnitude')
+                ax.plot(x, y)
+            return ax
 
-                    self.k_fm = d_qois['k_FM [V/pC]']
-                    self.k_loss = d_qois['|k_loss| [V/pC]']
-                    self.k_kick = d_qois['|k_kick| [V/pC/m]']
-                    self.phom = d_qois['P_HOM [kW]']
-                    self.I0 = d_qois['I0 [mA]']
-                else:
-                    d_qois = self.abci_qois[f"{wp}_{opt}_{self.sigma.split(r'/')[1]}mm"]
-
-                    self.k_fm = d_qois['k_FM [V/pC]']
-                    self.k_loss = d_qois['|k_loss| [V/pC]']
-                    self.k_kick = d_qois['|k_kick| [V/pC/m]']
-                    self.phom = d_qois['P_HOM [kW]']
-                    self.I0 = d_qois['I0 [mA]']
-
-    def _create_project(self):
+    def _create_project(self, overwrite):
         project_name = self.name
         project_dir = self.folder
 
         if project_name != '':
 
             # check if folder already exist
-            e = self._check_if_path_exists(project_dir, project_name)
+            e = self._check_if_path_exists(project_dir, project_name, overwrite)
 
             if e:
                 def make_dirs_from_dict(d, current_dir=fr"{project_dir}"):
@@ -1025,6 +1042,8 @@ class Cavity:
                             'OperatingPoints': None,
                             'SimulationData': {
                                 'SLANS': None,
+                                'SLANS_Opt': None,
+                                'NGSolveMEVP': None,
                                 'NativeEig': None,
                                 'ABCI': None,
                                 'CavitiesAnalysis': None
@@ -1054,12 +1073,15 @@ class Cavity:
             return False
 
     @staticmethod
-    def _check_if_path_exists(directory, folder):
+    def _check_if_path_exists(directory, folder, overwrite=False):
         path = f"{directory}/{folder}"
         if os.path.exists(path):
-            x = input("Project already exists. Do you want to overwrite? y/N")
+            if overwrite:
+                x = 'y'
+            else:
+                x = 'n'
 
-            if x.lower() == 'yes' or x.lower() == 'y':
+            if x == 'y':
                 try:
                     directory_list = os.listdir(path)
 
@@ -1103,7 +1125,7 @@ class Cavities:
     Cavities object is an object containing several Cavity objects.
     """
 
-    def __init__(self, cavities_list=None, save_folder='None'):
+    def __init__(self, cavities_list=None, names_list=None, save_folder='None'):
         """Constructs all the necessary attributes of the Cavity object
 
         Parameters
@@ -1115,15 +1137,21 @@ class Cavities:
             Folder to save generated images, latex, excel, and text files.
         """
 
-        if cavities_list is None:
+        self.cavities_list = cavities_list
+        if cavities_list is None or cavities_list == []:
             self.cavities_list = []
+        else:
+            self.add_cavity(cavities_list, names_list)
+
+        self.name = 'cavities'
+        self.eigenmode_qois = {}
+        self.eigenmode_tune_res = {}
+        self.abci_qois = {}
 
         self.p_qois = None
         self.fm_results = None
         self.hom_results = None
         self.save_folder = save_folder
-
-        self.cavities_list = cavities_list
 
         self.returned_results = None
         self.ls = ['solid', 'dashed', 'dashdot', 'dotted',
@@ -1133,19 +1161,358 @@ class Cavities:
         self.E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
         self.set_cavities_field()
 
-    def add_cavity(self, cav):
+    def add_cavity(self, cavs, names=None):
         """
         Adds cavity to cavities
         Parameters
         ----------
-        cav: object
-            Cavity object
+        cav: Cavity, list
+            Cavity object or list of cavity objects
+        names: list, str
+            Cavity name or list of cavity names
 
         Returns
         -------
 
         """
-        self.cavities_list.append(cav)
+
+        if isinstance(cavs, Cavity):
+            cavs.folder = self.folder
+            if names:
+                cavs.set_name(names)
+            else:
+                cavs.set_name(f'cav_{len(self.cavities_list)}')
+
+            self.cavities_list.append(cavs)
+        else:
+            for i1, cav in enumerate(cavs):
+                cav.folder = self.folder
+                if names is not None:
+                    assert len(cavs) == len(names), "Number of cavities does not correspond to number of names."
+                    cav.set_name(names[i1])
+                else:
+                    cav.set_name(f'cav_{len(self.cavities_list)}')
+
+                self.cavities_list.append(cav)
+
+    def set_name(self, name):
+        """
+        Set cavity name
+
+        Parameters
+        ----------
+        name: str
+            Name of cavity
+
+        Returns
+        -------
+
+        """
+        self.name = name
+
+    def save(self, files_path, overwrite=False):
+        """
+        Set folder to save cavity analysis results
+
+        Parameters
+        ----------
+        files_path: str
+            Save project directory
+
+        Returns
+        -------
+
+        """
+
+        if files_path is None:
+            error('Please specify a folder to write the simulation results to.')
+            return
+        else:
+            try:
+                self.folder = files_path
+                success = self._create_project(overwrite)
+                if not success:
+                    error("Project could not be created. Please check the folder and try again.")
+                    return
+                else:
+                    done("Project created successfully/already exists. You can proceed with analysis.")
+            except Exception as e:
+                error("Exception occurred: ", e)
+                return
+
+        if files_path is None:
+            self.folder = Path(os.getcwd())
+
+    def _create_project(self, overwrite):
+        project_name = self.name
+        project_dir = self.folder
+
+        if project_name != '':
+
+            # check if folder already exist
+            e = self._check_if_path_exists(project_dir, project_name, overwrite)
+
+            if e:
+                def make_dirs_from_dict(d, current_dir=fr"{project_dir}"):
+                    for key, val in d.items():
+                        os.mkdir(os.path.join(current_dir, key))
+                        if type(val) == dict:
+                            make_dirs_from_dict(val, os.path.join(current_dir, key))
+
+                # create project structure in folders
+                project_dir_structure = {
+                    f'{project_name}':
+                        {
+                            'Cavities': None,
+                            'OperatingPoints': None,
+                            'SimulationData': {
+                                'SLANS': None,
+                                'SLANS_Opt': None,
+                                'NGSolveMEVP': None,
+                                'NativeEig': None,
+                                'ABCI': None,
+                                'CavitiesAnalysis': None
+                            },
+                            'PostprocessingData': {
+                                'Plots': None,
+                                'Data': None,
+                                'CSTData': None
+                            },
+                            'Reference': None
+                        }
+                }
+                try:
+                    make_dirs_from_dict(project_dir_structure)
+                    self.folder = f2b_slashes(fr"{project_dir}\{project_name}")
+                    return True
+                except Exception as e:
+                    self.folder = f2b_slashes(fr"{project_dir}\{project_name}")
+                    print("An exception occurred in created project: ", e)
+                    return False
+            else:
+                # self.folder = os.path.join(project_dir, project_name)
+                self.folder = f2b_slashes(fr"{project_dir}\{project_name}")
+                return True
+        else:
+            print('\tPlease enter a valid project name')
+            self.folder = f2b_slashes(fr"{project_dir}\{project_name}")
+            return False
+
+    @staticmethod
+    def _check_if_path_exists(directory, folder, overwrite):
+        path = f"{directory}/{folder}"
+        if os.path.exists(path):
+            x = 'n'
+            if overwrite:
+                x = 'y'
+
+            if x == 'y':
+                try:
+                    directory_list = os.listdir(path)
+
+                    if 'Cavities' in directory_list \
+                            and 'PostprocessingData' in directory_list \
+                            and 'SimulationData' in directory_list and len(directory_list) < 6:
+                        shutil.rmtree(path)
+                        return True
+                    else:
+                        print('\tIt seems that the folder specified is not a cavity project folder. Please check folder'
+                              'again to avoid deleting important files.')
+                        return False
+
+                except Exception as e:
+                    print("Exception occurred: ", e)
+                    return False
+            else:
+                return False
+        else:
+            return True
+
+
+    def run_tune(self, tune_variables, cell_types='Mid Cell', freqs=None, solvers='SLANS', proc=0, resume=False, n_cells=1, rerun=True):
+        """
+        Tune current cavity geometries
+
+        Parameters
+        ----------
+        n_cells: int
+            Number of cells used for tuning.
+        resume: bool
+            Option to resume tuning or not. Only for shape space with multiple entries.
+        proc: int
+            Processor number
+        solver: {'SLANS', 'Native'}
+            Solver to be used. Native solver is still under development. Results are not as accurate as that of SLANS.
+        freqs: float, list, ndarray
+            Reference frequency or list of reference frequencies if different for each cavity in MHz
+        cell_types: {'mid cell', 'end-mid cell', 'mid-end cell', 'single cell'}
+            Type of cell to tune or list of type of cell to tune for the different cavities
+        tune_variables: {'Req', 'L'}
+            Tune variable or list of tune variables. Currently supports only the tuning of the equator radius ``Req`` and half-cell length ``L``
+
+        Returns
+        -------
+
+        """
+
+        for i, cav in enumerate(tqdm(self.cavities_list)):
+            if isinstance(freqs, float) or isinstance(freqs, int):
+                freq = freqs
+            else:
+                freq = freqs[i]
+
+            if isinstance(tune_variables, str):
+                tune_var = tune_variables
+                cell_type = cell_types
+            else:
+                tune_var = tune_variables[i]
+                cell_type = cell_types[i]
+
+            if os.path.exists(os.path.join(self.folder, "SimulationData", "SLANS_Opt", cav.name)):
+                if rerun:
+                    cav.run_tune(tune_var, freq=freq)
+                else:
+                    # check if tune resuls exist
+                    if os.path.exists(os.path.join(self.folder, "SimulationData", "SLANS_Opt", cav.name, "tune_res.json")):
+                        cav.get_slans_tune_res(tune_var, cell_type)
+                    else:
+                        cav.run_tune(tune_var, freq=freq)
+            else:
+                cav.run_tune(tune_var, freq=freq)
+
+            self.eigenmode_tune_res[cav.name] = cav.eigenmode_tune_res
+
+    def run_eigenmode(self, solver='SLANS', freq_shifts=0, boundary_conds=None, subdir='',
+                      UQ=False, rerun=True):
+        """
+        Run eigenmode analysis on cavity
+
+        Parameters
+        ----------
+        solver: {'SLANS', 'NGSolve'}
+            Solver to be used. Native solver is still under development. Results are not as accurate as that of SLANS.
+        freq_shifts:
+            (List of) frequency shift. Eigenmode solver searches for eigenfrequencies around this value
+        boundary_conds: int, list
+            (List of) boundary condition of left and right cell/beampipe ends
+        subdir: str
+            Sub directory to save results to
+        UQ: bool
+            Used to turn on or off uncertainty quantification
+
+        Returns
+        -------
+
+        """
+
+        for i, cav in enumerate(tqdm(self.cavities_list)):
+            if isinstance(freq_shifts, int) or isinstance(freq_shifts, float):
+                freq_shift = freq_shifts
+            else:
+                freq_shift = freq_shifts[i]
+
+            if isinstance(boundary_conds, str) or boundary_conds is None:
+                boundary_cond = boundary_conds
+            else:
+                boundary_cond = boundary_conds[i]
+
+            if solver.lower() == 'slans':
+                solver_save_dir = 'SLANS'
+            else:
+                solver_save_dir = 'NGSolveMEVP'
+
+            if os.path.exists(os.path.join(self.folder, "SimulationData", solver_save_dir, cav.name)):
+                if rerun:
+                    cav.run_eigenmode(solver, freq_shift=freq_shift, boundary_cond=boundary_cond)
+                else:
+                    # check if eigenmode analysis results exist
+                    if os.path.exists(os.path.join(self.folder, "SimulationData", solver_save_dir, cav.name, "monopole", "qois.json")):
+                        cav.get_eigenmode_qois(solver_save_dir)
+                    else:
+                        cav.run_eigenmode(solver, freq_shift=freq_shift, boundary_cond=boundary_cond)
+            else:
+                cav.run_eigenmode(solver, freq_shift=freq_shift, boundary_cond=boundary_cond)
+
+            self.eigenmode_qois[cav.name] = cav.eigenmode_qois
+
+    def run_wakefield(self, MROT=2, MT=10, NFS=10000, wakelength=50, bunch_length=25,
+                      DDR_SIG=0.1, DDZ_SIG=0.1, WG_M=None, marker='', wp_dict=None, solver='ABCI', rerun=True):
+        """
+        Run wakefield analysis on cavity
+
+        Parameters
+        ----------
+        MROT: {0, 1}
+            Polarisation 0 for longitudinal polarization and 1 for transversal polarization
+        MT: int
+            Number of time steps it takes for a beam to move from one mesh cell to the other
+        NFS: int
+            Number of frequency samples
+        wakelength:
+            Wakelength to be analysed
+        bunch_length: float
+            Length of the bunch
+        DDR_SIG: float
+            Mesh to bunch length ration in the r axis
+        DDZ_SIG: float
+            Mesh to bunch length ration in the z axis
+        WG_M:
+            For module simulation. Specifies the length of the beampipe between two cavities.
+        marker: str
+            Marker for the cavities. Adds this to the cavity name specified in a shape space json file
+        wp_dict: dict
+            Python dictionary containing relevant parameters for the wakefield analysis for a specific operating point
+        solver: {'ABCI'}
+            Only one solver is currently available
+
+        Returns
+        -------
+
+        """
+
+        for i, cav in enumerate(tqdm(self.cavities_list)):
+            if os.path.exists(os.path.join(self.folder, "SimulationData", "ABCI", cav.name)):
+                if rerun:
+                    cav.run_wakefield(MROT, MT, NFS, wakelength, bunch_length,
+                                      DDR_SIG, DDZ_SIG, WG_M, marker, wp_dict, solver)
+                else:
+                    # check if eigenmode analysis results exist
+                    cav.get_abci_data()
+                    if os.path.exists(os.path.join(self.folder, "SimulationData", "ABCI", cav.name, "qois.json")):
+                        cav.get_abci_qois()
+                    else:
+                        cav.run_wakefield(MROT, MT, NFS, wakelength, bunch_length,
+                                          DDR_SIG, DDZ_SIG, WG_M, marker, wp_dict, solver)
+            else:
+                cav.run_wakefield(MROT, MT, NFS, wakelength, bunch_length,
+                                  DDR_SIG, DDZ_SIG, WG_M, marker, wp_dict, solver)
+
+            self.abci_qois[cav.name] = cav.abci_qois
+
+    def plot(self, what, ax=None):
+        for cav in self.cavities_list:
+            if what.lower() == 'geometry':
+                plot_cavity_geometry(cav.mid_cell, cav.end_cell_left, cav.end_cell_right,
+                                     cav.beampipe, cav.n_cells, ['b', 'b'], scale=1, plot=None)
+
+            if what.lower() == 'zl':
+                if ax:
+                    x, y, _ = cav.abci_data['Long'].get_data('Longitudinal Impedance Magnitude')
+                    ax.plot(x, y)
+                else:
+                    fig, ax = plt.subplots(figsize=(12, 4))
+                    x, y, _ = cav.abci_data['Long'].get_data('Longitudinal Impedance Magnitude')
+                    ax.plot(x, y)
+
+            if what.lower() == 'zt':
+                if ax:
+                    x, y, _ = cav.abci_data['Trans'].get_data('Transversal Impedance Magnitude')
+                    ax.plot(x, y)
+                else:
+                    fig, ax = plt.subplots(figsize=(12, 4))
+                    x, y, _ = cav.abci_data['Trans'].get_data('Transversal Impedance Magnitude')
+                    ax.plot(x, y)
+        return ax
 
     def set_cavities_field(self):
         """
@@ -1244,10 +1611,10 @@ class Cavities:
                 r"$g$": cav.G,
                 r"$g\cdot r/q $": cav.GR_Q
             })
-        ic(results)
+
         return results_norm_units
 
-    def qois_hom(self):
+    def qois_hom(self, opt):
         """
         Retrieves the higher-order modes quantities of interest
 
@@ -1258,6 +1625,7 @@ class Cavities:
 
         results = []
         for cavity in self.cavities_list:
+            cavity.get_abci_qois(opt)
             results.append({
                 r"$|k_\parallel| \mathrm{[V/pC]}$": cavity.k_loss,
                 r"$|k_\perp| \mathrm{[V/pC/m]}$": cavity.k_kick,
@@ -1266,6 +1634,7 @@ class Cavities:
 
         results_norm_units = []
         for cavity in self.cavities_list:
+            cavity.get_abci_qois(opt)
             results_norm_units.append({
                 r"$k_\parallel$": cavity.k_loss,
                 r"$k_\perp$": cavity.k_kick,
@@ -1442,7 +1811,7 @@ class Cavities:
 
         plt.show()
 
-    def plot_compare_hom_bar(self):
+    def plot_compare_hom_bar(self, opt):
         """
         Plot bar chart of higher-order mode's quantities of interest
 
@@ -1452,7 +1821,7 @@ class Cavities:
         """
         plt.rcParams["figure.figsize"] = (12, 3)
         # plot barchart
-        self.hom_results = self.qois_hom()
+        self.hom_results = self.qois_hom(opt)
         data = np.array([list(d.values()) for d in self.hom_results])
         data_col_max = data.max(axis=0)
         x = list(self.hom_results[0].keys())
@@ -1500,7 +1869,6 @@ class Cavities:
         fig, ax = plt.subplots()
         width = 0.15  # 1 / (len(x)+10)
         for i, cav in enumerate(self.cavities_list):
-            print(type(X), type(i), type(width), type(data[i]), data)
             ax.bar(X + i * width, data[i] / data_col_max, width=width, label=self.cavities_list[i].name)
 
         ax.set_xticks([r + width for r in range(len(x))], x)
@@ -2687,11 +3055,12 @@ class Cavities:
 
 
 class OperationPoints:
-    def __init__(self, filepath):
+    def __init__(self, filepath=None):
         self.op_points = {}
 
-        if os.path.exists(filepath):
-            self.op_points = self.load_operation_point(filepath)
+        if filepath:
+            if os.path.exists(filepath):
+                self.op_points = self.load_operation_point(filepath)
 
     def load_operation_point(self, filepath):
         with open(filepath, 'r') as f:
@@ -2702,160 +3071,241 @@ class OperationPoints:
 
     def get_default_operation_points(self):
         self.op_points = {
-            "Z": {
-                "freq [MHz]": 400.79,
-                "E [GeV]": 45.6,
-                "I0 [mA]": 1400,
-                "V [GV]": 0.12,
-                "Eacc [MV/m]": 5.72,
-                "nu_s []": 0.0025,
-                "alpha_p [1e-5]": 1.48,
-                "tau_z [ms]": 424.6,
-                "tau_xy [ms]": 849.2,
-                "f_rev [kHz]": 3.07,
-                "beta_xy [m]": 50,
-                "N_c []": 56,
-                "T [K]": 4.5,
-                "sigma_SR [mm]": 4.32,
-                "sigma_BS [mm]": 15.2
-            },
-            "W": {
-                "freq [MHz]": 400.79,
-                "E [GeV]": 80,
-                "I0 [mA]": 135,
-                "V [GV]": 1.0,
-                "Eacc [MV/m]": 11.91,
-                "nu_s []": 0.0506,
-                "alpha_p [1e-5]": 1.48,
-                "tau_z [ms]": 78.7,
-                "tau_xy [ms]": 157.4,
-                "f_rev [kHz]": 3.07,
-                "beta_xy [m]": 50,
-                "N_c []": 112,
-                "T [K]": 4.5,
-                "sigma_SR [mm]": 3.55,
-                "sigma_BS [mm]": 7.02
-            },
-            "H": {
-                "freq [MHz]": 400.79,
-                "E [GeV]": 120,
-                "I0 [mA]": 53.4,
-                "V [GV]": 2.1,
-                "Eacc [MV/m]": 11.87,
-                "nu_s []": 0.036,
-                "alpha_p [1e-5]": 0.73,
-                "tau_z [ms]": 23.4,
-                "tau_xy [ms]": 46.8,
-                "f_rev [kHz]": 3.07,
-                "beta_xy [m]": 50,
-                "N_c []": 118,
-                "T [K]": 4.5,
-                "sigma_SR [mm]": 2.5,
-                "sigma_BS [mm]": 4.45
-            },
-            "ttbar": {
-                "freq [MHz]": 801.58,
-                "E [GeV]": 182.5,
-                "I0 [mA]": 10,
-                "V [GV]": 8.8,
-                "Eacc [MV/m]": 24.72,
-                "nu_s []": 0.087,
-                "alpha_p [1e-5]": 0.73,
-                "tau_z [ms]": 6.8,
-                "tau_xy [ms]": 13.6,
-                "f_rev [kHz]": 3.07,
-                "beta_xy [m]": 50,
-                "N_c []": 140,
-                "T [K]": 2,
-                "sigma_SR [mm]": 1.67,
-                "sigma_BS [mm]": 2.54
-            },
-            "MuCol RCS Stage 1": {
-                "freq [MHz]": 1300,
-                "E [GeV]": 250.835,
-                "I0 [mA]": 20.38,
-                "V [GV]": 20.87,
-                "Eacc [MV/m]": 30,
-                "nu_s []": 0.68,
-                "alpha_p [1e-5]": 240,
-                "tau_z [ms]": 78.7,
-                "tau_xy [ms]": 157.4,
-                "f_rev [kHz]": 50.08,
-                "beta_xy [m]": 0.005,
-                "N_c []": 696,
-                "T [K]": 2,
-                "sigma_SR [mm]": 23.1,
-                "sigma_BS [mm]": 23.1
-            },
-            "MuCol hybrid RCS Stage 2": {
-                "freq [MHz]": 1300,
-                "E [GeV]": 436.15,
-                "I0 [mA]": 18.78,
-                "V [GV]": 11.22,
-                "Eacc [MV/m]": 30,
-                "nu_s []": 0.32,
-                "alpha_p [1e-5]": 240,
-                "tau_z [ms]": 0,
-                "tau_xy [ms]": 0,
-                "f_rev [kHz]": 50.08,
-                "beta_xy [m]": 0.005,
-                "N_c []": 374,
-                "T [K]": 2,
-                "sigma_SR [mm]": 23.1,
-                "sigma_BS [mm]": 23.1
-            },
-            "MuCol hybrid RCS Stage 3": {
-                "freq [MHz]": 1300,
-                "E [GeV]": 750.024,
-                "I0 [mA]": 9.97,
-                "V [GV]": 16.07,
-                "Eacc [MV/m]": 30,
-                "nu_s []": 0.24,
-                "alpha_p [1e-5]": 240,
-                "tau_z [ms]": 0,
-                "tau_xy [ms]": 0,
-                "f_rev [kHz]": 28.04,
-                "beta_xy [m]": 0.005,
-                "N_c []": 536,
-                "T [K]": 2,
-                "sigma_SR [mm]": 23.1,
-                "sigma_BS [mm]": 23.1
-            },
-            "MuCol hybrid RCS Stage 5TeV": {
-                "freq [MHz]": 1300,
-                "E [GeV]": 3500,
-                "I0 [mA]": 3.05,
-                "V [GV]": 90,
-                "Eacc [MV/m]": 30,
-                "nu_s []": 0.57,
-                "alpha_p [1e-5]": 240,
-                "tau_z [ms]": 0,
-                "tau_xy [ms]": 0,
-                "f_rev [kHz]": 8.57,
-                "beta_xy [m]": 0.005,
-                "N_c []": 3000,
-                "T [K]": 2,
-                "sigma_SR [mm]": 23.1,
-                "sigma_BS [mm]": 23.1
-            },
-            "MuCol hybrid RCS Stage 5TeV LHC": {
-                "freq [MHz]": 1300,
-                "E [GeV]": 3500,
-                "I0 [mA]": 4,
-                "V [GV]": 68.75,
-                "Eacc [MV/m]": 30,
-                "nu_s []": 0.43,
-                "alpha_p [1e-5]": 240,
-                "tau_z [ms]": 0,
-                "tau_xy [ms]": 0,
-                "f_rev [kHz]": 11.25,
-                "beta_xy [m]": 0.005,
-                "N_c []": 2292,
-                "T [K]": 2,
-                "sigma_SR [mm]": 23.1,
-                "sigma_BS [mm]": 23.1
+                "Z_2023": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 45.6,
+                    "I0 [mA]": 1280,
+                    "V [GV]": 0.12,
+                    "Eacc [MV/m]": 5.72,
+                    "nu_s []": 0.0370,
+                    "alpha_p [1e-5]": 2.85,
+                    "tau_z [ms]": 354.91,
+                    "tau_xy [ms]": 709.82,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 56,
+                    "N_c []": 56,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 4.32,
+                    "sigma_BS [mm]": 15.2,
+                    "Nb [1e11]": 2.76
+                },
+                "W_2023": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 80,
+                    "I0 [mA]": 135,
+                    "V [GV]": 1.0,
+                    "Eacc [MV/m]": 10.61,
+                    "nu_s []": 0.0801,
+                    "alpha_p [1e-5]": 2.85,
+                    "tau_z [ms]": 65.99,
+                    "tau_xy [ms]": 131.98,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 132,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 3.55,
+                    "sigma_BS [mm]": 7.02,
+                    "Nb [1e11]": 2.29
+                },
+                "H_2023": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 120,
+                    "I0 [mA]": 53.4,
+                    "V [GV]": 2.1,
+                    "Eacc [MV/m]": 10.61,
+                    "nu_s []": 0.0328,
+                    "alpha_p [1e-5]": 0.733,
+                    "tau_z [ms]": 19.6,
+                    "tau_xy [ms]": 39.2,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 528,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 2.5,
+                    "sigma_BS [mm]": 4.45,
+                    "Nb [1e11]": 1.51
+                },
+                "ttbar_2023": {
+                    "freq [MHz]": 801.58,
+                    "E [GeV]": 182.5,
+                    "I0 [mA]": 10,
+                    "V [GV]": 9.2,
+                    "Eacc [MV/m]": 20.12,
+                    "nu_s []": 0.0826,
+                    "alpha_p [1e-5]": 0.733,
+                    "tau_z [ms]": 5.63,
+                    "tau_xy [ms]": 11.26,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 488,
+                    "T [K]": 2,
+                    "sigma_SR [mm]": 1.67,
+                    "sigma_BS [mm]": 2.54,
+                    "Nb [1e11]": 2.26
+                },
+                "Z_2022": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 45.6,
+                    "I0 [mA]": 1400,
+                    "V [GV]": 0.12,
+                    "Eacc [MV/m]": 5.72,
+                    "nu_s []": 0.0370,
+                    "alpha_p [1e-5]": 2.85,
+                    "tau_z [ms]": 354.91,
+                    "tau_xy [ms]": 709.82,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 56,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 4.32,
+                    "sigma_BS [mm]": 15.2,
+                    "Nb [1e11]": 2.76
+                },
+                "W_2022": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 80,
+                    "I0 [mA]": 135,
+                    "V [GV]": 1.0,
+                    "Eacc [MV/m]": 11.91,
+                    "nu_s []": 0.0801,
+                    "alpha_p [1e-5]": 2.85,
+                    "tau_z [ms]": 65.99,
+                    "tau_xy [ms]": 131.98,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 112,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 3.55,
+                    "sigma_BS [mm]": 7.02,
+                    "Nb [1e11]": 2.29
+                },
+                "H_2022": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 120,
+                    "I0 [mA]": 53.4,
+                    "V [GV]": 2.1,
+                    "Eacc [MV/m]": 10.61,
+                    "nu_s []": 0.0328,
+                    "alpha_p [1e-5]": 0.733,
+                    "tau_z [ms]": 19.6,
+                    "tau_xy [ms]": 39.2,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 528,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 2.5,
+                    "sigma_BS [mm]": 4.45,
+                    "Nb [1e11]": 1.51
+                },
+                "ttbar_2022": {
+                    "freq [MHz]": 801.58,
+                    "E [GeV]": 182.5,
+                    "I0 [mA]": 10,
+                    "V [GV]": 9.2,
+                    "Eacc [MV/m]": 20.12,
+                    "nu_s []": 0.0826,
+                    "alpha_p [1e-5]": 0.733,
+                    "tau_z [ms]": 5.63,
+                    "tau_xy [ms]": 11.26,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 488,
+                    "T [K]": 2,
+                    "sigma_SR [mm]": 1.67,
+                    "sigma_BS [mm]": 2.54,
+                    "Nb [1e11]": 2.26
+                },
+                "Z_booster_2022": {
+                    "freq [MHz]": 801.58,
+                    "E [GeV]": 45.6,
+                    "I0 [mA]": 128,
+                    "V [GV]": 0.14,
+                    "Eacc [MV/m]": 6.23,
+                    "nu_s []": 0.0370,
+                    "alpha_p [1e-5]": 2.85,
+                    "tau_z [ms]": 354.91,
+                    "tau_xy [ms]": 709.82,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 120,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 4.32,
+                    "sigma_BS [mm]": 15.2,
+                    "Nb [1e11]": 0.276
+                },
+                "Z_2018": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 45.6,
+                    "I0 [mA]": 1390,
+                    "V [GV]": 0.10,
+                    "Eacc [MV/m]": 5.72,
+                    "nu_s []": 0.025,
+                    "alpha_p [1e-5]": 1.48,
+                    "tau_z [ms]": 424.6,
+                    "tau_xy [ms]": 849.2,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 52,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 3.5,
+                    "sigma_BS [mm]": 12.1,
+                    "Nb [1e11]": 1.7
+                },
+                "W_2018": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 80,
+                    "I0 [mA]": 147,
+                    "V [GV]": 0.75,
+                    "Eacc [MV/m]": 11.91,
+                    "nu_s []": 0.0506,
+                    "alpha_p [1e-5]": 1.48,
+                    "tau_z [ms]": 78.7,
+                    "tau_xy [ms]": 157.4,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 52,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 3.0,
+                    "sigma_BS [mm]": 6.0,
+                    "Nb [1e11]": 1.5
+                },
+                "H_2018": {
+                    "freq [MHz]": 400.79,
+                    "E [GeV]": 120,
+                    "I0 [mA]": 29,
+                    "V [GV]": 2.0,
+                    "Eacc [MV/m]": 11.87,
+                    "nu_s []": 0.036,
+                    "alpha_p [1e-5]": 0.73,
+                    "tau_z [ms]": 23.4,
+                    "tau_xy [ms]": 46.8,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 136,
+                    "T [K]": 4.5,
+                    "sigma_SR [mm]": 3.15,
+                    "sigma_BS [mm]": 5.3,
+                    "Nb [1e11]": 1.8
+                },
+                "ttbar_2018": {
+                    "freq [MHz]": 801.58,
+                    "E [GeV]": 182.5,
+                    "I0 [mA]": 10.8,
+                    "V [GV]": 10.93,
+                    "Eacc [MV/m]": 24.72,
+                    "nu_s []": 0.087,
+                    "alpha_p [1e-5]": 0.73,
+                    "tau_z [ms]": 6.8,
+                    "tau_xy [ms]": 13.6,
+                    "f_rev [kHz]": 3.07,
+                    "beta_xy [m]": 50,
+                    "N_c []": 584,
+                    "T [K]": 2,
+                    "sigma_SR [mm]": 1.97,
+                    "sigma_BS [mm]": 2.54,
+                    "Nb [1e11]": 2.3
+                }
             }
-        }
 
 
 def get_qois_value(f_fm, R_Q, k_loss, k_kick, sigma_z, I0, Nb, n_cell):

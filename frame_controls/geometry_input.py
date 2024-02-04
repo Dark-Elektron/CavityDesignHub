@@ -150,7 +150,7 @@ class GeometryInputControl:
 
                 scale = float(self.ui.le_Scale.text())
 
-                plot_cavity_geometry(self.plot, IC, OC, OC_R, BP, n_cell, bc, scale)
+                plot_cavity_geometry(IC, OC, OC_R, BP, n_cell, bc, scale, plot=self.plot)
                 ci += 1
             if ci > 4:  # maximum of only 10 plots
                 break

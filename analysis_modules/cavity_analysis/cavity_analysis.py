@@ -43,7 +43,7 @@ PARTICLE = {
 
 WP = {
     'Z_2023': {'E [GeV]': 45.6,
-          'I0 [mA]': 1400
+          'I0 [mA]': 1280
           },
     'W_2023': {'E [GeV]': 80,
           'I0 [mA]': 135
@@ -69,7 +69,7 @@ def plot_settings():
 
     mpl.rcParams['axes.labelsize'] = 16
     mpl.rcParams['axes.titlesize'] = 16
-    mpl.rcParams['legend.fontsize'] = 14
+    mpl.rcParams['legend.fontsize'] = 16
     mpl.rcParams['legend.title_fontsize'] = 14
 
     mpl.rcParams['figure.figsize'] = [12, 6]
@@ -117,9 +117,9 @@ class Cavities:
                    'solid', 'dashed', 'dashdot', 'dotted']
 
         self.E_acc = np.linspace(0.5, 30, 100) * 1e6  # V/m
-        self.set_cavities_field()
+        self.set_cavities_field(self.E_acc)
 
-    def set_cavities_field(self):
+    def set_cavities_field(self, E_acc):
         """
         Sets cavities analysis field range.
 
@@ -128,7 +128,8 @@ class Cavities:
 
         """
         for cav in self.cavities_list:
-            cav.set_Eacc(Eacc=self.E_acc)
+            self.E_acc = E_acc
+            cav.set_Eacc(Eacc=E_acc)
 
     def set_cavities_slans(self, dir_list):
         """
@@ -1678,7 +1679,7 @@ class Cavities:
 
         plt.show()
 
-    def plot_ql_vs_pin(self, Eacc_list=None):
+    def plot_ql_vs_pin(self, Eacc_list=None, mesh=False, Vrfin=None, hist=None):
         """
         Plot loaded quality factor versus input power for fundamental power coupler (FPC)
 
@@ -1719,7 +1720,12 @@ class Cavities:
         E0 = [WP[cav.wp]['E [GeV]'] for cav in self.cavities_list]  # Beam energy GeV
         machine = [I0, rho, E0]
 
-        self.ql_pin(label, geometry, RF, QOI, machine)
+        if mesh:
+            self.ql_pin_mesh(label, geometry, RF, QOI, machine, Eacc=Eacc_list, Vrf=Vrfin, hist=hist)
+            # self.ql_pwp_mesh(label, geometry, RF, QOI, machine, Eacc=Eacc_list, Vrf=Vrfin, hist=hist)
+            # self.ql_pin_pwp_ql_mesh(label, geometry, RF, QOI, machine, Eacc=Eacc_list, Vrf=Vrfin, hist=hist)
+        else:
+            self.ql_pin(label, geometry, RF, QOI, machine)
 
     def ql_pin(self, labels, geometry, RF, QOI, Machine, p_data=None):
         """
@@ -1790,14 +1796,17 @@ class Cavities:
         C_y = (4 * np.pi / 3) * rc / m_GeV ** 3
         ic(C_y)
         U_loss = C_y * E0 ** 4 / rho  # GeV # energy lost per turn per beam
-        v_loss = U_loss * 1e9  # V # v loss per beam
+        v_loss = U_loss/1 * 1e9  # V # v loss per beam
+        ic(U_loss, v_loss, Vrf)
 
         phi = np.arccos(v_loss / Vrf)
         delta_f = -R_Q * f0 * I0 * np.sin(phi) / (2 * v_cav)  # optimal df
         QL_0_x = v_cav / (R_Q * I0 * np.cos(phi))  # optimal Q loaded
-        ic(E0, rho, v_loss, Vrf, v_loss / Vrf, f0, delta_f, I0, np.sin(phi), v_cav)
+        Pin_x = 50/np.array([cav.n_cav[np.in1d(self.E_acc, E_acc).nonzero()[0]] for cav in self.cavities_list]) * 1e6
+        # ax.plot(QL_0_x, Pin_x[0] * 1e-3, marker='o')
+        ic(E0, rho, v_loss, Vrf, v_loss / Vrf, f0, delta_f, I0, np.sin(phi), v_cav, QL_0_x, Pin_x * 1e-3)
 
-        QL_0 = np.linspace(1e4, 1e10, 1000000)
+        QL_0 = np.linspace(1e4, 1e8, 1000000)
 
         xy_list = [(0.15, 0.13), (0.1, 0.16), (0.1, 0.19), (0.1, 0.21)]
 
@@ -1831,10 +1840,10 @@ class Cavities:
         else:
             for i in range(len(E_acc)):
                 f1_2 = f0[0] / (2 * QL_0)  # 380.6
-                ic(R_Q[0], v_cav[i], Vrf[0])
+                # ic(R_Q[0], v_cav[i], Vrf[0])
                 pin = v_cav[i] ** 2 / (4 * R_Q[0] * QL_0) \
                       * ((1 + ((R_Q[0] * QL_0 * I0[0]) / v_cav[i]) * np.cos(phi[0])) ** 2
-                         + ((delta_f[0] / f1_2) + ((R_Q[0] * QL_0 * I0[0]) / v_cav[i]) * np.sin(phi[0])) ** 2)
+                         + ((delta_f[i] / f1_2) + ((R_Q[0] * QL_0 * I0[0]) / v_cav[i]) * np.sin(phi[0])) ** 2)
 
                 # material/ wall power
                 e_acc = np.linspace(0.5, 25, 1000) * 1e6  # MV/m
@@ -1846,16 +1855,38 @@ class Cavities:
                                 label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW",
                                 lw=4,
                                 ls='--')
+                    # plot min q
+                    pmin = min(pin)
+                    qmin = QL_0[np.argmin(pin)]
+                    ax.scatter(qmin, pmin)
                 else:
-                    l = ax.plot(QL_0, pin * 1e-3,
-                                label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW")
+                    # l = ax.plot(QL_0, pin * 1e-3,
+                    #             label=f"{txt}" + "($Q_\mathrm{L}^* = $" + f"{QL_0[np.argmin(pin)]:.2e})" + f"{round(min(pin) * 1e-3, 1)} kW")
+                    # plot min q
+                    pmin = min(pin)
+                    qmin = QL_0[np.argmin(pin)]
+                    # print(E_acc[i] * 1e-6, v_cav[i] * 1e-6, qmin * 1e-5, pmin * 1e-3)
+                    # print([cav.n_cav[np.where(self.E_acc == E_acc[i])] for cav in self.cavities_list])
+                    # print(self.E_acc, E_acc[i])
+                    ax.scatter(qmin, pmin * 1e-3, ec='k')
 
                 # add annotations
-                ic(l_active)
+                # ic(l_active)
 
                 # annotext = ax.annotate(txt, xy=xy_list[i], xycoords='figure fraction', size=8, rotation=0,
                 #                        c=l[0].get_color())
 
+            # fill between
+            pin_low = v_cav[0] ** 2 / (4 * R_Q[0] * QL_0) \
+                  * ((1 + ((R_Q[0] * QL_0 * I0[0]) / v_cav[0]) * np.cos(phi[0])) ** 2
+                     + ((delta_f[0] / f1_2) + ((R_Q[0] * QL_0 * I0[0]) / v_cav[0]) * np.sin(phi[0])) ** 2)
+            pin_high = v_cav[-1] ** 2 / (4 * R_Q[0] * QL_0) \
+                  * ((1 + ((R_Q[0] * QL_0 * I0[0]) / v_cav[-1]) * np.cos(phi[0])) ** 2
+                     + ((delta_f[-1] / f1_2) + ((R_Q[0] * QL_0 * I0[0]) / v_cav[-1]) * np.sin(phi[0])) ** 2)
+            ax.fill_between(QL_0, pin_low*1e-3, pin_high*1e-3, zorder=0)
+
+            # input power technological limit
+            ax.axhline(1e3, lw=3)
         if p_data:
             # plot QL with penetration
             ax_2 = ax.twinx()
@@ -1868,10 +1899,419 @@ class Cavities:
         ax.set_ylabel(r"$P_\mathrm{in} ~[\mathrm{kW}]$")
         ax.set_xscale('log')
         # ax.set_xlim(5e3, 1e10)
-        ax.set_ylim(0, 3000)
+        ax.set_ylim(0, 1200)
         # ax.legend(loc='upper left')  #
         ax.minorticks_on()
         # ax.grid(which='both')
+        fig.tight_layout()
+        fig.show()
+
+    def ql_pin_mesh(self, labels, geometry, RF, QOI, Machine, p_data=None, Vrf=None, Eacc=None, hist=None):
+        """
+        Calculate the value of input power as a function of loaded quality factor
+
+        Parameters
+        ----------
+        labels: list, array like
+            Descriptive labels on matplotlib plot
+        geometry: list, array like
+            List of grouped geometric input parameters
+        RF: list, array like
+            List of grouped radio-frequency (RF) properties
+        QOI:
+            List of quantities of interest for cavities
+        Machine:
+            List of grouped machine related materials
+        p_data:
+
+
+        Returns
+        -------
+
+        """
+        # check if entries are of same length
+
+        it = iter(geometry)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(RF)
+        the_len = len(next(it))
+        # if not all(len(l) == the_len for l in it):
+        #     raise ValueError('not all lists have same length!')
+
+        it = iter(QOI)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(Machine)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        n_cells, l_cells, G, b = [np.array(x) for x in geometry]
+        E_acc, Vrf_ = [np.array(x) for x in RF]
+
+        fig, ax = plt.subplots()
+
+        # QOI
+        f0, R_Q = [np.array(x) for x in QOI]
+
+        # Machine
+        I0, rho, E0 = [np.array(x) for x in Machine]
+
+        l_active = 2 * n_cells * l_cells
+        l_cavity = l_active + 8 * l_cells
+
+        rc = PARTICLE[self.particle]['rc [m]']
+        m = PARTICLE[self.particle]['m [kg]']
+        m_GeV = m * c0 ** 2 * 6241506479.9632  # [GeV]
+
+        C_y = (4 * np.pi / 3) * rc / m_GeV ** 3
+        U_loss = C_y * E0 ** 4 / rho  # GeV # energy lost per turn per beam
+        v_loss = U_loss/1 * 1e9  # V # v loss per beam
+
+        ic(Eacc)
+        # filter Vrf, for values less than vloss, the computation does not make sense
+        Vrf = Vrf[np.where(Vrf >= v_loss[0])]
+        # add vloss to Vrf
+        if v_loss[0] not in Vrf:
+            Vrf = np.insert(Vrf, 0, v_loss[0])
+        EACC, VRF = np.meshgrid(Eacc, Vrf)
+        ic(EACC)
+
+        # CALCULATED
+        v_cav = EACC * l_active
+        n_cav = VRF / v_cav
+
+        phi = np.arccos(v_loss / VRF)
+        delta_f = -R_Q * f0 * I0 * np.sin(phi) / (2 * v_cav)  # optimal df
+        ic(I0, I0 * np.cos(phi), R_Q)
+        QL_0_x = v_cav / (R_Q * I0 * np.cos(phi))  # optimal Q loaded
+        Pin_x = 50/n_cav * 1e6
+        # ax.plot(QL_0_x, Pin_x[0] * 1e-3, marker='o')
+        # ic(EACC, VRF, QL_0_x, Pin_x)
+
+        # cvrf = ax.contour(QL_0_x, Pin_x * 1e-3, VRF*1e-9, levels=Vrf*1e-9, colors='r')
+        # ceacc = ax.contour(QL_0_x, Pin_x * 1e-3, EACC*1e-6, levels=Eacc*1e-6, colors='k')
+
+        cvrf = ax.contour(EACC*1e-6, VRF*1e-9, Pin_x * 1e-3, levels=100, colors='r')
+        ceacc = ax.contour(EACC*1e-6, VRF*1e-9, QL_0_x*1e-6, levels=100, colors='k')
+        ax.clabel(cvrf, inline=True, fontsize=10, colors='r', zorder=50, fmt='%.0f', use_clabeltext=True, manual=True)
+        ax.clabel(ceacc, inline=True, fontsize=10, colors='k', zorder=50, use_clabeltext=True, manual=True)
+
+        h1, _ = cvrf.legend_elements()
+        h2, _ = ceacc.legend_elements()
+
+        # plot vloss line
+        # ax.plot(QL_0_x[0, :], Pin_x[0, :]*1e-3, lw=3, zorder=46, label='$V_\mathrm{RF} = V_\mathrm{loss}$')
+        #
+        if hist:
+            E_acc_hist, Vrf_hist = hist
+            # selected points history
+            v_cav_hist = E_acc_hist * l_active
+            # n_cav_hist = Vrf_hist / v_cav_hist
+            #
+            # phi_hist = np.arccos(v_loss / Vrf_hist)
+            # delta_f = -R_Q * f0 * I0 * np.sin(phi_hist) / (2 * v_cav_hist)  # optimal df
+            # QL_0_x = v_cav_hist / (R_Q * I0 * np.cos(phi_hist))  # optimal Q loaded
+            # Pin_x = 50/n_cav_hist * 1e6
+
+            hist_labels = ['2018', '2020', '2022']
+            handles = []
+            for i, (ee, vv) in enumerate(zip(E_acc_hist, Vrf_hist)):
+                ax.scatter(ee*1e-6, vv*1e-9, s=80, marker='o', ec='k', lw=2, label=hist_labels[i], zorder=100)
+
+        handles, hlabels = plt.gca().get_legend_handles_labels()
+        leg = ax.legend([h1[0], h2[0], *handles], [r"$P^*_\mathrm{in} ~[\mathrm{kW}]$", r"$Q^*_\mathrm{L, FM}$ [1E6]", *hlabels],
+                        bbox_to_anchor=(1.0, 1), loc='upper left')
+        # leg = ax.legend([h1[0], h2[0], *handles], ['$V_\mathrm{RF}$ [GV]', '$E_\mathrm{acc}$ [MV/m]', *hlabels])
+        leg.get_frame().set_edgecolor('k')
+        # plot decorations
+        ax.set_xlabel('$E_\mathrm{acc}$ [MV/m]')
+        ax.set_ylabel('$V_\mathrm{RF}$ [GV]')
+        # ax.set_xscale('log')
+        # ax.set_yscale('log')
+        # ax.set_xlim(5e3, 5e6)
+        # ax.set_ylim(0, 1200)
+        # ax.legend(loc='upper left')  #
+        ax.minorticks_on()
+        # ax.tick_params(which='minor', length=5, grid_color='k', grid_alpha=0.3)
+        # ax.tick_params(which='major', length=10, grid_color='k', grid_alpha=0.3)
+        ax.grid(which='both', alpha=0.2)
+
+        fig.tight_layout()
+        fig.show()
+
+    def ql_pin_pwp_ql_mesh(self, labels, geometry, RF, QOI, Machine, p_data=None, Vrf=None, Eacc=None, hist=None):
+        """
+        Calculate the value of input power as a function of loaded quality factor
+
+        Parameters
+        ----------
+        labels: list, array like
+            Descriptive labels on matplotlib plot
+        geometry: list, array like
+            List of grouped geometric input parameters
+        RF: list, array like
+            List of grouped radio-frequency (RF) properties
+        QOI:
+            List of quantities of interest for cavities
+        Machine:
+            List of grouped machine related materials
+        p_data:
+
+
+        Returns
+        -------
+
+        """
+        # check if entries are of same length
+
+        it = iter(geometry)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(RF)
+        the_len = len(next(it))
+        # if not all(len(l) == the_len for l in it):
+        #     raise ValueError('not all lists have same length!')
+
+        it = iter(QOI)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(Machine)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        n_cells, l_cells, G, b = [np.array(x) for x in geometry]
+        E_acc, Vrf_ = [np.array(x) for x in RF]
+
+        fig, ax = plt.subplots()
+
+        # QOI
+        f0, R_Q = [np.array(x) for x in QOI]
+
+        # Machine
+        I0, rho, E0 = [np.array(x) for x in Machine]
+
+        l_active = 2 * n_cells * l_cells
+        l_cavity = l_active + 8 * l_cells
+
+        rc = PARTICLE[self.particle]['rc [m]']
+        m = PARTICLE[self.particle]['m [kg]']
+        m_GeV = m * c0 ** 2 * 6241506479.9632  # [GeV]
+
+        C_y = (4 * np.pi / 3) * rc / m_GeV ** 3
+        U_loss = C_y * E0 ** 4 / rho  # GeV # energy lost per turn per beam
+        v_loss = U_loss/1 * 1e9  # V # v loss per beam
+
+        ic(Eacc)
+        # filter Vrf, for values less than vloss, the computation does not make sense
+        Vrf = Vrf[np.where(Vrf >= v_loss[0])]
+        # add vloss to Vrf
+        if v_loss[0] not in Vrf:
+            Vrf = np.insert(Vrf, 0, v_loss[0])
+        EACC, VRF = np.meshgrid(Eacc, Vrf)
+        ic(EACC)
+
+        # CALCULATED
+        v_cav = EACC * l_active
+        n_cav = VRF / v_cav
+
+        phi = np.arccos(v_loss / VRF)
+        delta_f = -R_Q * f0 * I0 * np.sin(phi) / (2 * v_cav)  # optimal df
+        QL_0_x = v_cav / (R_Q * I0 * np.cos(phi))  # optimal Q loaded
+        Pin_x = 50/n_cav * 1e6
+        QL_0 = np.linspace(1e4, 1e8, 1000000)
+
+        xy_list = [(0.15, 0.13), (0.1, 0.16), (0.1, 0.19), (0.1, 0.21)]
+
+        f1_2 = f0[0] / (2 * QL_0)  # 380.6
+
+        # cvrf = ax.contour(QL_0_x, Pin_x * 1e-3, VRF*1e-9, levels=Vrf*1e-9, colors='r')
+        # ceacc = ax.contour(QL_0_x, Pin_x * 1e-3, EACC*1e-6, levels=Eacc*1e-6, colors='k')
+        NCAV = VRF / v_cav
+        Q0 = 2.7e9
+        RQ = 152.8
+        PWP = 745*NCAV*v_cav**2/(RQ*Q0) + NCAV*l_active*8/(400/500)**2
+
+        cvrf = ax.contour(EACC*1e-6, VRF*1e-9, Pin_x * 1e-3, levels=50, colors='r')
+        ceacc = ax.contour(EACC*1e-6, VRF*1e-9, QL_0_x*1e-6, levels=50, colors='k')
+        cpwp = ax.contour(EACC*1e-6, VRF*1e-9, PWP*1e-6, levels=60, colors='b', linestyles='-.')
+        ax.clabel(cvrf, inline=True, fontsize=10, colors='r', zorder=50, fmt='%.0f', use_clabeltext=True)
+        ax.clabel(ceacc, inline=True, fontsize=10, colors='k', zorder=50, use_clabeltext=True)
+        ax.clabel(cpwp, inline=True, fontsize=10, colors='b', zorder=50, use_clabeltext=True)
+
+        h1, _ = cvrf.legend_elements()
+        h2, _ = ceacc.legend_elements()
+        h3, _ = cpwp.legend_elements()
+
+        # plot vloss line
+        # ax.plot(QL_0_x[0, :], Pin_x[0, :]*1e-3, lw=3, zorder=46, label='$V_\mathrm{RF} = V_\mathrm{loss}$')
+        #
+        if hist:
+            E_acc_hist, Vrf_hist = hist
+            # selected points history
+            v_cav_hist = E_acc_hist * l_active
+            # n_cav_hist = Vrf_hist / v_cav_hist
+            #
+            # phi_hist = np.arccos(v_loss / Vrf_hist)
+            # delta_f = -R_Q * f0 * I0 * np.sin(phi_hist) / (2 * v_cav_hist)  # optimal df
+            # QL_0_x = v_cav_hist / (R_Q * I0 * np.cos(phi_hist))  # optimal Q loaded
+            # Pin_x = 50/n_cav_hist * 1e6
+
+            hist_labels = ['2018', '2020', '2022']
+            handles = []
+            for i, (ee, vv) in enumerate(zip(E_acc_hist, Vrf_hist)):
+                ax.scatter(ee*1e-6, vv*1e-9, s=80, marker='o', ec='k', lw=2, label=hist_labels[i], zorder=100)
+
+        handles, hlabels = plt.gca().get_legend_handles_labels()
+        leg = ax.legend([h1[0], h2[0], h3[0], *handles], [r"$P^*_\mathrm{in} ~[\mathrm{kW}]$", r"$Q^*_\mathrm{L, FM}$ [1E6]", r"$P_\mathrm{wp}$ [MW]", *hlabels],
+                        bbox_to_anchor=(1.0, 1), loc='upper left')
+        # leg = ax.legend([h1[0], h2[0], *handles], ['$V_\mathrm{RF}$ [GV]', '$E_\mathrm{acc}$ [MV/m]', *hlabels])
+        leg.get_frame().set_edgecolor('k')
+        # plot decorations
+        ax.set_xlabel('$E_\mathrm{acc}$ [MV/m]')
+        ax.set_ylabel('$V_\mathrm{RF}$ [GV]')
+        # ax.set_xscale('log')
+        # ax.set_yscale('log')
+        # ax.set_xlim(5e3, 5e6)
+        # ax.set_ylim(0, 1200)
+        # ax.legend(loc='upper left')  #
+        ax.minorticks_on()
+        # ax.tick_params(which='minor', length=5, grid_color='k', grid_alpha=0.3)
+        # ax.tick_params(which='major', length=10, grid_color='k', grid_alpha=0.3)
+        ax.grid(which='both', alpha=0.2)
+
+        fig.tight_layout()
+        fig.show()
+
+    def ql_pwp_mesh(self, labels, geometry, RF, QOI, Machine, p_data=None, Vrf=None, Eacc=None, hist=None):
+        """
+        Calculate the value of input power as a function of loaded quality factor
+
+        Parameters
+        ----------
+        labels: list, array like
+            Descriptive labels on matplotlib plot
+        geometry: list, array like
+            List of grouped geometric input parameters
+        RF: list, array like
+            List of grouped radio-frequency (RF) properties
+        QOI:
+            List of quantities of interest for cavities
+        Machine:
+            List of grouped machine related materials
+        p_data:
+
+
+        Returns
+        -------
+
+        """
+        # check if entries are of same length
+
+        it = iter(geometry)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(RF)
+        the_len = len(next(it))
+        # if not all(len(l) == the_len for l in it):
+        #     raise ValueError('not all lists have same length!')
+
+        it = iter(QOI)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        it = iter(Machine)
+        the_len = len(next(it))
+        if not all(len(l) == the_len for l in it):
+            raise ValueError('not all lists have same length!')
+
+        n_cells, l_cells, G, b = [np.array(x) for x in geometry]
+        E_acc, Vrf_ = [np.array(x) for x in RF]
+
+        fig, ax = plt.subplots()
+
+        # QOI
+        f0, R_Q = [np.array(x) for x in QOI]
+
+        # Machine
+        I0, rho, E0 = [np.array(x) for x in Machine]
+
+        l_active = 2 * n_cells * l_cells
+        l_cavity = l_active + 8 * l_cells
+
+
+        rc = PARTICLE[self.particle]['rc [m]']
+        m = PARTICLE[self.particle]['m [kg]']
+        m_GeV = m * c0 ** 2 * 6241506479.9632  # [GeV]
+
+        C_y = (4 * np.pi / 3) * rc / m_GeV ** 3
+        U_loss = C_y * E0 ** 4 / rho  # GeV # energy lost per turn per beam
+        v_loss = U_loss/1 * 1e9  # V # v loss per beam
+
+        ic(Eacc)
+        # filter Vrf, for values less than vloss, the computation does not make sense
+        Vrf = Vrf[np.where(Vrf >= v_loss[0])]
+        # add vloss to Vrf
+        if v_loss[0] not in Vrf:
+            Vrf = np.insert(Vrf, 0, v_loss[0])
+        EACC, VRF = np.meshgrid(Eacc, Vrf)
+
+        # CALCULATED
+        v_cav = EACC * l_active
+        NCAV = VRF / v_cav
+        Q0 = 2.7e9
+        RQ = 152.8
+        PWP = 745*NCAV*v_cav**2/(RQ*Q0) + NCAV*l_active*8/(400/500)**2
+        cvrf = ax.contour(EACC*1e-6, VRF*1e-9, PWP*1e-6, levels=120, colors='r')
+        ceacc = ax.contour(EACC*1e-6, VRF*1e-9, NCAV, levels=80, colors='k')
+        ax.clabel(cvrf, inline=True, fontsize=10, colors='r', zorder=50, fmt='%.2f', use_clabeltext=True, manual=True)
+        ax.clabel(ceacc, inline=True, fontsize=10, colors='k', zorder=50, use_clabeltext=True, manual=True)
+
+        h1, _ = cvrf.legend_elements()
+        h2, _ = ceacc.legend_elements()
+
+        if hist:
+            E_acc_hist, Vrf_hist = hist
+            # selected points history
+            v_cav_hist = E_acc_hist * l_active
+            n_cav_hist = Vrf_hist / v_cav_hist
+            print(n_cav_hist)
+
+            hist_labels = ['2018', '2020', '2022']
+            handles = []
+            for i, (q, p) in enumerate(zip(E_acc_hist*1e-6, Vrf_hist * 1e-9)):
+                ax.scatter(q, p, s=80, marker='o', ec='k', lw=2, label=hist_labels[i], zorder=100)
+
+        handles, hlabels = plt.gca().get_legend_handles_labels()
+        leg = ax.legend([h1[0], h2[0], *handles], ['$P_\mathrm{wp}$ [MW]', '$N_\mathrm{cav}$ []', *hlabels],
+                        bbox_to_anchor=(1.0, 1), loc='upper left')
+        # leg.get_frame().set_edgecolor('k')
+        # plot decorations
+        ax.set_xlabel('$E_\mathrm{acc}$ [MV/m]')
+        ax.set_ylabel('$V_\mathrm{RF}$ [GV]')
+        # ax.set_xscale('log')
+        # ax.set_yscale('log')
+        # ax.set_xlim(5e3, 5e6)
+        # ax.set_ylim(0, 1200)
+        # ax.legend(loc='upper left')  #
+        ax.minorticks_on()
+        # ax.tick_params(which='minor', length=5, grid_color='k', grid_alpha=0.3)
+        # ax.tick_params(which='major', length=10, grid_color='k', grid_alpha=0.3)
+        # ax.grid(which='both', alpha=0.2)
+
         fig.tight_layout()
         fig.show()
 
@@ -2350,17 +2790,17 @@ class Cavity:
             "Rs_bulkNb_4.5K_801.58Mhz": 4 * (62.7 + (Eacc * 1e-6 * self.b) ** 2 * 0.012)  # nOhm
         }
 
-        if self.Q0 is None:
-            # if np.isclose(self.op_freq, 801.58e6):
-            print(f"Rs_{self.material}_{self.op_temp}_{round(self.op_freq * 1e-6, 2)}Mhz")
-            try:
-                self.Rs = Rs_dict[f"Rs_{self.material}_{self.op_temp}_{round(self.op_freq * 1e-6, 2)}Mhz"]
-            except KeyError:
-                self.Rs = Rs_dict[f"Rs_bulkNb_2K_801.58Mhz"]
+        # if self.Q0 is None:
+        # if np.isclose(self.op_freq, 801.58e6):
+        print(f"Rs_{self.material}_{self.op_temp}_{round(self.op_freq * 1e-6, 2)}Mhz")
+        try:
+            self.Rs = Rs_dict[f"Rs_{self.material}_{self.op_temp}_{round(self.op_freq * 1e-6, 2)}Mhz"]
+        except KeyError:
+            self.Rs = Rs_dict[f"Rs_bulkNb_2K_801.58Mhz"]
 
-            self.Q0 = self.G * 1e9 / self.Rs  # c
-        else:
-            self.Q0 = np.ones(np.shape(Eacc))*self.Q0
+        self.Q0 = self.G * 1e9 / self.Rs  # c
+        # else:
+        #     self.Q0 = np.ones(np.shape(Eacc))*self.Q0
         # ic("800 MHz")
         # elif np.isclose(self.op_freq, 400.79e6):
         #     self.Rs = Rs_bulkNb_2k_800Mhz
@@ -3677,7 +4117,7 @@ def h_c3794_C3795_cepcv2_study():
 
 def c3794_study():
     # MUCOL STUDY
-    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS"
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP"
     parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
 
     abci_dirs = [
@@ -3692,12 +4132,13 @@ def c3794_study():
 
     C3794 = Cavity(vrf=V, inv_eta=745, name="C3794", op_field=10.61e6, op_temp='4.5K', material='NbCu',
                           wp=wp, sigma=sigma, plot_label="C3794",
-                          slans_dir=fr"{parent_dir_slans}\C3794_n2\monopole",
+                          slans_dir=fr"{parent_dir_slans}\C3794_n2",
                           abci_dir=fr"{parent_dir_abci}\C3794", Q0=1e10)
 
     cavities = Cavities([C3794], save_folder='C3794', machine=machine, particle='electron')
 
-    E_acc = np.linspace(5, 50, 1000) * 1e6  # V/m
+    E_acc = np.arange(5, 51, 1) * 1e6  # V/m
+    cavities.set_cavities_field(E_acc)
     # cavities.compare_power(E_acc=E_acc)
     # cavities.plot_power_comparison()
     # cavities.plot_compare_bar()
@@ -3708,8 +4149,136 @@ def c3794_study():
     # print(c3795_tt)
     # cavities.plot_cavities_contour('mid')
 
-    cavities.plot_ql_vs_pin(np.arange(1, 15, 1)*1e6)
-    cavities.plot_cryomodule_comparison()
+    # cavities.plot_ql_vs_pin(np.arange(5, 16, 0.5)*1e6)
+
+    Eacc_ = np.arange(4, 20+2, 1)*1e6
+    Vrf = np.arange(0.2, 2+0.2, 0.1)*1e9
+    history = [np.array([9.6, 11.91, 10.61])*1e6, np.array([0.75, 0.44, 1.05])*1e9]
+    cavities.plot_ql_vs_pin(Eacc_, Vrfin=Vrf, mesh=True, hist=history)
+    plt.tight_layout()
+    plt.show()
+    # cavities.plot_ql_vs_pin(np.arange(5, 16, 5)*1e6)
+    # cavities.plot_cryomodule_comparison()
+    # cavities.plot_axis_fields()
+    # cavities.plot_surface_fields()
+
+    # # makr summaries
+    # cavities.make_latex_summary_tables()
+    # cavities.make_excel_summary()
+
+    # multipacting
+    multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3794"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+
+    to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
+    # for tp in to_plot:
+    # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    # cavities.plot_dispersion()
+
+def c3794_study_Z():
+    # MUCOL STUDY
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
+
+    abci_dirs = [
+        fr"{parent_dir_abci}\C3794"
+    ]
+
+    # RCS
+    V = 1 * 1e9  # <- V
+    wp = 'Z_2023'  # working point
+    sigma = 'SR_4.32mm'
+    machine = "FCC-ee"
+
+    C3794 = Cavity(vrf=V, inv_eta=745, name="C3794", op_field=3.81e6, op_temp='4.5K', material='NbCu',
+                          wp=wp, sigma=sigma, plot_label="C3794",
+                          slans_dir=fr"{parent_dir_slans}\C3794_n2",
+                          abci_dir=fr"{parent_dir_abci}\C3794", Q0=1e10)
+
+    cavities = Cavities([C3794], save_folder='C3794', machine=machine, particle='electron')
+
+    E_acc = np.arange(1, 51, 1) * 1e6  # V/m
+    cavities.set_cavities_field(E_acc)
+    # cavities.compare_power(E_acc=E_acc)
+    # cavities.plot_power_comparison()
+    # cavities.plot_compare_bar()
+    # cavities.plot_compare_fm_bar()
+    # cavities.plot_compare_hom_bar()
+
+    # print(cavities)
+    # print(c3795_tt)
+    # cavities.plot_cavities_contour('mid')
+
+    # cavities.plot_ql_vs_pin(np.arange(5, 16, 0.5)*1e6)
+
+    Eacc_ = np.arange(1, 10+2, 1)*1e6
+    Vrf = np.arange(0.01, 2+0.01, 0.01)*1e9
+    # history = [np.array([9.6, 11.91, 10.61])*1e6, np.array([0.75, 0.44, 1.05])*1e9]
+    cavities.plot_ql_vs_pin(Eacc_, Vrfin=Vrf, mesh=True)
+    plt.tight_layout()
+    plt.show()
+    # cavities.plot_ql_vs_pin(np.arange(5, 16, 5)*1e6)
+    # cavities.plot_cryomodule_comparison()
+    # cavities.plot_axis_fields()
+    # cavities.plot_surface_fields()
+
+    # # makr summaries
+    # cavities.make_latex_summary_tables()
+    # cavities.make_excel_summary()
+
+    # multipacting
+    multipact_folders = [r"D:\Dropbox\multipacting\MPGUI21\C3794"]  # , r"D:\Dropbox\multipacting\MPGUI21\FCCUROS5",
+    # r"D:\Dropbox\multipacting\MPGUI21\TESLA"]
+
+    to_plot = ['counter function', 'final impact energy', 'enhanced counter function']
+    # for tp in to_plot:
+    # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
+    # cavities.plot_dispersion()
+
+def fcc_uros_1_1_study_Z():
+    # MUCOL STUDY
+    parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS"
+    parent_dir_abci = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\ABCI"
+
+    abci_dirs = [
+        fr"{parent_dir_abci}\FCC_UROS1_1"
+    ]
+
+    # RCS
+    V = 1 * 1e9  # <- V
+    wp = 'Z_2023'  # working point
+    sigma = 'SR_4.32mm'
+    machine = "FCC-ee"
+
+    C3794 = Cavity(vrf=V, inv_eta=745, name="FCC_UROS1_1", op_field=3.81e6, op_temp='4.5K', material='NbCu',
+                          wp=wp, sigma=sigma, plot_label="FCC_UROS1_1",
+                          slans_dir=fr"{parent_dir_slans}\FCC_UROS1_1_n1",
+                          abci_dir=fr"{parent_dir_abci}\FCC_UROS1_1", Q0=2.7e9)
+
+    cavities = Cavities([C3794], save_folder='FCC_UROS1_1', machine=machine, particle='electron')
+
+    E_acc = np.arange(1, 51, 1) * 1e6  # V/m
+    cavities.set_cavities_field(E_acc)
+    # cavities.compare_power(E_acc=E_acc)
+    # cavities.plot_power_comparison()
+    # cavities.plot_compare_bar()
+    # cavities.plot_compare_fm_bar()
+    # cavities.plot_compare_hom_bar()
+
+    # print(cavities)
+    # print(c3795_tt)
+    # cavities.plot_cavities_contour('mid')
+
+    # cavities.plot_ql_vs_pin(np.arange(5, 16, 0.5)*1e6)
+
+    Eacc_ = np.arange(1, 10+2, 1)*1e6
+    Vrf = np.arange(0.01, 0.1+0.01, 0.01)*1e9
+    # history = [np.array([9.6, 11.91, 10.61])*1e6, np.array([0.75, 0.44, 1.05])*1e9]
+    cavities.plot_ql_vs_pin(Eacc_, Vrfin=Vrf, mesh=True)
+    plt.tight_layout()
+    plt.show()
+    # cavities.plot_ql_vs_pin(np.arange(5, 16, 5)*1e6)
+    # cavities.plot_cryomodule_comparison()
     # cavities.plot_axis_fields()
     # cavities.plot_surface_fields()
 
@@ -3730,9 +4299,12 @@ if __name__ == '__main__':
 
     # mucol_study_2()
     # mucol_study_3()
-    # c3794_study()
 
-    w_c3794_cepcv2_study()
+    c3794_study()
+    c3794_study_Z()
+    # fcc_uros_1_1_study_Z()
+
+    # w_c3794_cepcv2_study()
     # h_c3794_C3795_cepcv2_study()
     # h_study()
     # ttbar_study()
