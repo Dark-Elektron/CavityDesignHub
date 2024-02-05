@@ -997,7 +997,7 @@ class Cavity:
 
     def plot(self, what, ax=None):
         if what.lower() == 'geometry':
-            ax = plot_cavity_geometry(self.mid_cell, self.end_cell_left, self.end_cell_right, self.beampipe, self.n_cells, ['b', 'b'], scale=1, plot=None)
+            ax = plot_cavity_geometry_cli(self.mid_cell, self.end_cell_left, self.end_cell_right, self.beampipe, self.n_cells, scale=1, ax=ax)
             return ax
         if what.lower() == 'zl':
             if ax:
@@ -1489,11 +1489,21 @@ class Cavities:
 
             self.abci_qois[cav.name] = cav.abci_qois
 
-    def plot(self, what, ax=None):
+    def plot(self, what, ax=None, **kwargs):
         for cav in self.cavities_list:
             if what.lower() == 'geometry':
-                plot_cavity_geometry(cav.mid_cell, cav.end_cell_left, cav.end_cell_right,
-                                     cav.beampipe, cav.n_cells, ['b', 'b'], scale=1, plot=None)
+                if 'mid_cell' in kwargs.keys():
+                    ax = plot_cavity_geometry_cli(cav.mid_cell, cav.mid_cell, cav.mid_cell,
+                                         'none', 1, scale=1, ax=ax)
+                elif 'end_cell_left' in kwargs.keys():
+                    ax = plot_cavity_geometry_cli(cav.end_cell_left, cav.end_cell_left, cav.end_cell_left,
+                                         'none', 1, scale=1, ax=ax)
+                elif 'end_cell_right' in kwargs.keys():
+                    ax = plot_cavity_geometry_cli(cav.end_cell_right, cav.end_cell_right, cav.end_cell_right,
+                                         cav.beampipe, 1, scale=1, ax=ax)
+                else:
+                    ax = plot_cavity_geometry_cli(cav.mid_cell, cav.end_cell_left, cav.end_cell_right,
+                                         cav.beampipe, cav.n_cells, scale=1, ax=ax)
 
             if what.lower() == 'zl':
                 if ax:
@@ -1974,7 +1984,7 @@ class Cavities:
 
         plt.show()
 
-    def plot_cavities_contour(self, opt='mid', n_cells=1):
+    def plot_cavities_contour(self, opt='mid'):
         """Plot geometric contour of Cavity objects
 
         Parameters
@@ -1995,30 +2005,52 @@ class Cavities:
         else:
             plt.rcParams["figure.figsize"] = (10, 4)
 
-        for cav in self.cavities_list:
+        fig, ax = plt.subplots()
+
+        for i, cav in enumerate(self.cavities_list):
             # write contour
-            self.write_contour(cav, opt)
+            # self.write_contour(cav, opt)
 
-            data = pd.read_csv(fr"{cav.slans_dir}\contour.txt", sep=r'\s+', header=None)
+            if opt.lower() == 'mid':
+                mid_cell = np.array(cav.shape_space['IC']) * 1e-3
+                end_cell_left = np.array(cav.shape_space['IC']) * 1e-3
+                end_cell_right = np.array(cav.shape_space['IC']) * 1e-3
+            elif opt.lower() == 'end':
+                mid_cell = np.array(cav.shape_space['IC']) * 1e-3
+                end_cell_left = np.array(cav.shape_space['OC']) * 1e-3
+                end_cell_right = np.array(cav.shape_space['OC']) * 1e-3
+            else:
+                mid_cell = np.array(cav.shape_space['IC']) * 1e-3
+                end_cell_left = np.array(cav.shape_space['OC']) * 1e-3
+                end_cell_right = np.array(cav.shape_space['OC']) * 1e-3
 
-            plt.plot(data[1] * 1000, data[0] * 1000, lw=3., label=cav.name)
-            plt.legend(loc='lower left')
+            scale = cav.op_freq/c0
+            if cav.cell_type == 'flat top':
+                writeCavityForMultipac_flat_top(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none', unit=1, scale=scale, plot=True)
+            else:
+                writeCavityForMultipac(fr'{cav.slans_dir}\contour.txt', 1, mid_cell, end_cell_left, end_cell_right, beampipe='none', unit=1, scale=scale)
 
-            x_label = "z [mm]"
-            y_label = "r [mm]"
-            plt.xlabel(x_label)
-            plt.ylabel(y_label)
+            data = pd.read_csv(fr"{cav.slans_dir}\contour.txt", sep=r'\s+', header=None, skiprows=3)
+
+            # ax.plot(data[1] * 1000, data[0] * 1000, lw=3., label=cav.plot_label)
+            ax.plot(data[1], data[0], lw=3., label=cav.plot_label, marker='x')
+            ax.legend(loc='lower left')
+
+            x_label = r"$z/\lambda$"
+            y_label = r"$r/\lambda$"
+            ax.set_xlabel(x_label)
+            ax.set_ylabel(y_label)
             min_x.append(min(data[1]))
             min_y.append(min(data[0]))
             max_x.append(max(data[1]))
             max_y.append(max(data[0]))
 
         if opt.lower() == 'mid' or opt.lower() == 'end':
-            plt.xlim(-0.1, max(max_x) * 1e3 + 1)
-            plt.ylim(-0.1, max(max_y) * 1e3 + 1)
+            ax.set_xlim(0, max(max_x))
+            ax.set_ylim(0, max(max_y))
         else:
-            plt.xlim(min(min_x) * 1e3 - 1, max(max_x) * 1e3 + 1)
-            plt.ylim(min(min_y) * 1e3 - 1, max(max_y) * 1e3 + 1)
+            ax.set_xlim(min(min_x), max(max_x))
+            ax.set_ylim(min(min_y), max(max_y))
 
         plt.tight_layout()
 
@@ -2026,9 +2058,9 @@ class Cavities:
         fname = [cav.name for cav in self.cavities_list]
         fname = '_'.join(fname)
 
-        self.save_all_plots(f"{fname}_contour.png")
+        self.save_all_plots(f"{fname}_contour_{opt}.png")
 
-        plt.show()
+        fig.show()
 
     def plot_axis_fields(self):
         """
@@ -2299,9 +2331,9 @@ class Cavities:
         """
 
         if opt.lower() == 'mid':
-            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC']) * 1e-3
-            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['IC']) * 1e-3
-            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['IC']) * 1e-3
+            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.shape_space['IC']) * 1e-3
+            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.shape_space['IC']) * 1e-3
+            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.shape_space['IC']) * 1e-3
             n_cell = 1
             L_bp_l = 0.001
             L_bp_r = 0.001
@@ -2310,9 +2342,9 @@ class Cavities:
             shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
 
         elif opt.lower() == 'end':
-            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC']) * 1e-3
-            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['IC']) * 1e-3
-            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC']) * 1e-3
+            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.shape_space['IC']) * 1e-3
+            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.shape_space['IC']) * 1e-3
+            A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.shape_space['OC']) * 1e-3
             L_bp_l = 0.001
             L_bp_r = 1 * L_m
 
@@ -2321,12 +2353,12 @@ class Cavities:
             # calculate shift
             shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m) / 2
         else:
-            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.d_geom_params['IC']) * 1e-3
-            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.d_geom_params['OC']) * 1e-3
+            A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m, _ = np.array(cav.shape_space['IC']) * 1e-3
+            A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el, _ = np.array(cav.shape_space['OC']) * 1e-3
             try:
-                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC_R']) * 1e-3
+                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.shape_space['OC_R']) * 1e-3
             except KeyError:
-                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.d_geom_params['OC']) * 1e-3
+                A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er, _ = np.array(cav.shape_space['OC']) * 1e-3
 
             L_bp_l = 4 * L_m
             L_bp_r = 4 * L_m
@@ -2882,28 +2914,28 @@ class Cavities:
             l7 = r"\midrule"
             l8 = r"\midrule"
             l9 = r"$A$ [mm] " + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][0], 2)}/{round(cav.d_geom_params['OC'][0], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][0], 2)}/{round(cav.shape_space['OC'][0], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l10 = r"$B$ [mm] " + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][1], 2)}/{round(cav.d_geom_params['OC'][1], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][1], 2)}/{round(cav.shape_space['OC'][1], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l11 = r"$a$ [mm] " + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][2], 2)}/{round(cav.d_geom_params['OC'][2], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][2], 2)}/{round(cav.shape_space['OC'][2], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l12 = r"$b$ [mm] " + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][3], 2)}/{round(cav.d_geom_params['OC'][3], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][3], 2)}/{round(cav.shape_space['OC'][3], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l13 = r"$R_\mathrm{i}$ " + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][4], 2)}/{round(cav.d_geom_params['OC'][4], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][4], 2)}/{round(cav.shape_space['OC'][4], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l14 = r"$L$ [mm] " + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][5], 2)}/{round(cav.d_geom_params['OC'][5], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][5], 2)}/{round(cav.shape_space['OC'][5], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l15 = r"$R_\mathrm{eq}$ [mm] " + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][6], 2)}/{round(cav.d_geom_params['OC'][6], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][6], 2)}/{round(cav.shape_space['OC'][6], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l16 = r"$ \alpha [^\circ]$" + "".join(
-                [fr"& {round(cav.d_geom_params['IC'][7], 2)}/{round(cav.d_geom_params['OC'][7], 2)} " for cav in
+                [fr"& {round(cav.shape_space['IC'][7], 2)}/{round(cav.shape_space['OC'][7], 2)} " for cav in
                  self.cavities_list]) + r" \\"
             l17 = r"\midrule"
             l18 = r"\midrule"
@@ -2966,30 +2998,30 @@ class Cavities:
                     'T_oper [K]': [cav.op_temp for cav in self.cavities_list],
                     'I0 [mA]': [cav.I0 for cav in self.cavities_list],
                     'sigma [mm]': [cav.sigma for cav in self.cavities_list],
-                    'A_i [mm]': [round(cav.d_geom_params['IC'][0], 2) for cav in self.cavities_list],
-                    'B_i [mm]': [round(cav.d_geom_params['IC'][1], 2) for cav in self.cavities_list],
-                    'a_i [mm]': [round(cav.d_geom_params['IC'][2], 2) for cav in self.cavities_list],
-                    'b_i [mm]': [round(cav.d_geom_params['IC'][3], 2) for cav in self.cavities_list],
-                    'R_i [mm]': [round(cav.d_geom_params['IC'][4], 2) for cav in self.cavities_list],
-                    'L_i [mm]': [round(cav.d_geom_params['IC'][5], 2) for cav in self.cavities_list],
-                    'Req [mm]': [round(cav.d_geom_params['IC'][6], 2) for cav in self.cavities_list],
-                    'alpha_i [deg]': [round(cav.d_geom_params['IC'][7], 2) for cav in self.cavities_list],
-                    'A_el [mm]': [round(cav.d_geom_params['OC'][0], 2) for cav in self.cavities_list],
-                    'B_el [mm]': [round(cav.d_geom_params['OC'][1], 2) for cav in self.cavities_list],
-                    'a_el [mm]': [round(cav.d_geom_params['OC'][2], 2) for cav in self.cavities_list],
-                    'b_el [mm]': [round(cav.d_geom_params['OC'][3], 2) for cav in self.cavities_list],
-                    'R_el [mm]': [round(cav.d_geom_params['OC'][4], 2) for cav in self.cavities_list],
-                    'L_el [mm]': [round(cav.d_geom_params['OC'][5], 2) for cav in self.cavities_list],
-                    # 'Req [mm]': [round(cav.d_geom_params['OC'][6], 2) for cav in self.cavities_list],
-                    'alpha__el [deg]': [round(cav.d_geom_params['OC'][7], 2) for cav in self.cavities_list],
-                    'A_er [mm]': [round(cav.d_geom_params['OC'][0], 2) for cav in self.cavities_list],
-                    'B_er [mm]': [round(cav.d_geom_params['OC'][1], 2) for cav in self.cavities_list],
-                    'a_er [mm]': [round(cav.d_geom_params['OC'][2], 2) for cav in self.cavities_list],
-                    'b_er [mm]': [round(cav.d_geom_params['OC'][3], 2) for cav in self.cavities_list],
-                    'R_er [mm]': [round(cav.d_geom_params['OC'][4], 2) for cav in self.cavities_list],
-                    'L_er [mm]': [round(cav.d_geom_params['OC'][5], 2) for cav in self.cavities_list],
-                    # 'Req [mm]': [round(cav.d_geom_params['OC'][6], 2) for cav in self.cavities_list],
-                    'alpha_er [deg]': [round(cav.d_geom_params['OC'][7], 2) for cav in self.cavities_list],
+                    'A_i [mm]': [round(cav.shape_space['IC'][0], 2) for cav in self.cavities_list],
+                    'B_i [mm]': [round(cav.shape_space['IC'][1], 2) for cav in self.cavities_list],
+                    'a_i [mm]': [round(cav.shape_space['IC'][2], 2) for cav in self.cavities_list],
+                    'b_i [mm]': [round(cav.shape_space['IC'][3], 2) for cav in self.cavities_list],
+                    'R_i [mm]': [round(cav.shape_space['IC'][4], 2) for cav in self.cavities_list],
+                    'L_i [mm]': [round(cav.shape_space['IC'][5], 2) for cav in self.cavities_list],
+                    'Req [mm]': [round(cav.shape_space['IC'][6], 2) for cav in self.cavities_list],
+                    'alpha_i [deg]': [round(cav.shape_space['IC'][7], 2) for cav in self.cavities_list],
+                    'A_el [mm]': [round(cav.shape_space['OC'][0], 2) for cav in self.cavities_list],
+                    'B_el [mm]': [round(cav.shape_space['OC'][1], 2) for cav in self.cavities_list],
+                    'a_el [mm]': [round(cav.shape_space['OC'][2], 2) for cav in self.cavities_list],
+                    'b_el [mm]': [round(cav.shape_space['OC'][3], 2) for cav in self.cavities_list],
+                    'R_el [mm]': [round(cav.shape_space['OC'][4], 2) for cav in self.cavities_list],
+                    'L_el [mm]': [round(cav.shape_space['OC'][5], 2) for cav in self.cavities_list],
+                    # 'Req [mm]': [round(cav.shape_space['OC'][6], 2) for cav in self.cavities_list],
+                    'alpha__el [deg]': [round(cav.shape_space['OC'][7], 2) for cav in self.cavities_list],
+                    'A_er [mm]': [round(cav.shape_space['OC'][0], 2) for cav in self.cavities_list],
+                    'B_er [mm]': [round(cav.shape_space['OC'][1], 2) for cav in self.cavities_list],
+                    'a_er [mm]': [round(cav.shape_space['OC'][2], 2) for cav in self.cavities_list],
+                    'b_er [mm]': [round(cav.shape_space['OC'][3], 2) for cav in self.cavities_list],
+                    'R_er [mm]': [round(cav.shape_space['OC'][4], 2) for cav in self.cavities_list],
+                    'L_er [mm]': [round(cav.shape_space['OC'][5], 2) for cav in self.cavities_list],
+                    # 'Req [mm]': [round(cav.shape_space['OC'][6], 2) for cav in self.cavities_list],
+                    'alpha_er [deg]': [round(cav.shape_space['OC'][7], 2) for cav in self.cavities_list],
                     'R_shunt [Ohm]': ['' for cav in self.cavities_list],
                     'R/Q [Ohm]': [cav.R_Q for cav in self.cavities_list],
                     'k_cc [%]': [cav.k_cc for cav in self.cavities_list],

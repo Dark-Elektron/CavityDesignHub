@@ -4175,6 +4175,7 @@ def c3794_study():
     # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
     # cavities.plot_dispersion()
 
+
 def c3794_study_Z():
     # MUCOL STUDY
     parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\NGSolveMEVP"
@@ -4235,6 +4236,7 @@ def c3794_study_Z():
     # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
     # cavities.plot_dispersion()
 
+
 def fcc_uros_1_1_study_Z():
     # MUCOL STUDY
     parent_dir_slans = r"D:\Dropbox\CavityDesignHub\PhD_Thesis\SimulationData\SLANS"
@@ -4294,6 +4296,7 @@ def fcc_uros_1_1_study_Z():
     # for tp in to_plot:
     # cavities.plot_multipac_triplot(multipact_folders, 'enhanced counter function')
     # cavities.plot_dispersion()
+
 
 if __name__ == '__main__':
 
