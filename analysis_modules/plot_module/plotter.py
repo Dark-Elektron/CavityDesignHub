@@ -13,7 +13,8 @@ from matplotlib.figure import Figure
 import warnings
 import matplotlib.gridspec as gridspec
 import matplotlib as mpl
-from analysis_modules.plot_module.matplotlib_annotation_objects import DraggableText, DraggableAxvline, DraggableRectangle
+from analysis_modules.plot_module.matplotlib_annotation_objects import DraggableText, DraggableAxvline, \
+    DraggableRectangle
 from frame_controls.edit_matplotlibobjects_dialog import EditATextDialog
 import matplotlib.lines as mlines
 import matplotlib.patches as mpatches
@@ -26,7 +27,6 @@ with warnings.catch_warnings():
     plt.rcParams['toolbar'] = 'toolmanager'
 
 fr = FileReader()
-
 
 file_color = 'yellow'
 DEBUG = True
@@ -49,7 +49,7 @@ class Plot(FigureCanvasQTAgg):
         self.eat = None
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         self.fig.set_tight_layout("True")
-        self.fig_size = self.fig.get_size_inches()*self.fig.dpi
+        self.fig_size = self.fig.get_size_inches() * self.fig.dpi
 
         self.parent_ = parent
         self.parentUI = parent.ui
@@ -63,14 +63,14 @@ class Plot(FigureCanvasQTAgg):
         self.gs2 = gridspec.GridSpec(n, n, height_ratios=np.ones(n), width_ratios=np.ones(n), figure=self.fig)
 
         for i in range(n):
-            if i < n-1:
+            if i < n - 1:
                 ax = self.fig.add_subplot(self.gs2[i, 0])
-                ax2 = self.fig.add_subplot(self.gs2[n-1, n-1-i])
+                ax2 = self.fig.add_subplot(self.gs2[n - 1, n - 1 - i])
                 # turn off axis
                 self.plot_list.append(ax)
                 self.plot_list.append(ax2)
             else:
-                ax = self.fig.add_subplot(self.gs2[n-1, 0])
+                ax = self.fig.add_subplot(self.gs2[n - 1, 0])
                 self.plot_list.append(ax)
 
         self.ax = self.fig.add_subplot(self.gs[0])
@@ -155,7 +155,7 @@ class Plot(FigureCanvasQTAgg):
         :param visible:
         :return:
         """
-        n = int((len(self.plot_list)+1)/2)
+        n = int((len(self.plot_list) + 1) / 2)
         if visible:
             self.ax.set_position(self.gs2[0:-2, 2:].get_position(self.fig))
             for i, ax in enumerate(self.plot_list):
@@ -164,7 +164,7 @@ class Plot(FigureCanvasQTAgg):
                 if i < n:
                     ax.set_position(self.gs2[i, 0].get_position(self.fig))
                 else:
-                    ax.set_position(self.gs2[n-1, i-(n-1)].get_position(self.fig))
+                    ax.set_position(self.gs2[n - 1, i - (n - 1)].get_position(self.fig))
         else:
             for ax in self.plot_list:
                 ax.set_visible(False)
@@ -259,6 +259,8 @@ class Plot(FigureCanvasQTAgg):
         self.ax_right.axes.xaxis.set_visible(False)
         self.ax_right.axes.yaxis.set_visible(False)
         self.ax_right.set_label("Right axis Default")
+        self.ax_right.tick_params(right=False)
+        self.ax_right.yaxis.set_tick_params(labelright=False)
 
     def event_handler(self):
         self.cid_button_press = self.fig.canvas.mpl_connect('button_press_event', self.on_press)
@@ -355,7 +357,7 @@ class Plot(FigureCanvasQTAgg):
                         else:
                             text_size = 30 * len(f"{xlbl}: {round(x_picked, 4)}") / self.fig_size[1]
                             text_x = pos_x - np.log((xlim[1] - xlim[0]) / 20) - (text_size - xlim[0]) / (
-                                        xlim[1] - xlim[0])
+                                    xlim[1] - xlim[0])
 
                     if ylim[0] <= pos_y <= ylim[1] / 2:
                         if y_scale == 'linear':
@@ -421,18 +423,18 @@ class Plot(FigureCanvasQTAgg):
             pass
 
         if event.button == 3:  # RIGHT
-                # selecting objects right click
-                if isinstance(self.selected_object, matplotlib.text.Annotation):
-                    self.draggableTextContextMenuEvent(event)
+            # selecting objects right click
+            if isinstance(self.selected_object, matplotlib.text.Annotation):
+                self.draggableTextContextMenuEvent(event)
 
-                elif isinstance(self.selected_object, matplotlib.lines.Line2D):
-                    self.draggableAxvlineContextMenuEvent(event)
-                elif event.inaxes is not None:
-                    for patch in self.ax.patches:
-                        if patch.contains(event)[0]:
-                            self.patchContextMenuEvent(event, patch)
-                else:
-                    self.contextMenuEvent(event)
+            elif isinstance(self.selected_object, matplotlib.lines.Line2D):
+                self.draggableAxvlineContextMenuEvent(event)
+            elif event.inaxes is not None:
+                for patch in self.ax.patches:
+                    if patch.contains(event)[0]:
+                        self.patchContextMenuEvent(event, patch)
+            else:
+                self.contextMenuEvent(event)
 
     def on_release(self, event):
         # check if zoom or pan mode is active to avoid selection of matplotlib objects
@@ -477,18 +479,6 @@ class Plot(FigureCanvasQTAgg):
         if self.toolbar.mode.name == 'PAN' or self.toolbar.mode.name == 'ZOOM':
             return 0
 
-        # vis = self.annot.get_visible()
-        # if isinstance(self.ax, event.inaxes):  # not so good fix
-        #     cont, ind = self.plot_object.contains(event)
-        #     if cont:
-        #         self.update_annot(
-        #             ind["ind"][0])  # ind returns an array of close points. ind['ind'][0] returns just the first point
-        #         self.annot.set_visible(True)
-        #         self.fig.canvas.draw_idle()
-        #     else:
-        #         if vis:
-        #             self.annot.set_visible(False)
-        #             self.fig.canvas.draw_idle()
         self.MOTION = True
 
         if self.DRAW and self.PRESS and self.LEFT_PRESS:
@@ -519,7 +509,7 @@ class Plot(FigureCanvasQTAgg):
         fig.patch.set_facecolor('white')
 
         # get canvas size
-        self.fig_size = fig.get_size_inches()*fig.dpi
+        self.fig_size = fig.get_size_inches() * fig.dpi
 
         event.canvas.draw()
 
@@ -544,28 +534,28 @@ class Plot(FigureCanvasQTAgg):
             #     pass
             # elif isinstance(self.selected_object, matplotlib.lines.Line2D) or isinstance(self.selected_object, matplotlib.collections.PathCollection):
 
-                # if 'color' in props.keys():
-                #     color = props['color']
-                #
-                #     self.selected_object.set_color(color)
-                #     self.selected_object.set_markerfacecolor(color)
-                #     self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
-                #     self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
-                #     self.parent_.le_Color.setText(color)
-                #     self.parent_.pb_Color.setText(color)
-                #     # copy the image to the GUI state, but screen might not be changed yet
-                # if 'alpha' in props.keys():
-                #     alpha = props['alpha']
-                #     self.selected_object.set_alpha(alpha)
-                # if 'lw' in props.keys():
-                #     lw = props['lw']
-                #     self.selected_object.set_linewidth(lw)
-                # if 'ls' in props.keys():
-                #     ls = props['ls']
-                #     self.selected_object.set_linestyle(ls)
-                # if 'zorder' in props.keys():
-                #     zorde./;r = props['zorder']
-                #     self.selected_object.set_zorder(zorder)
+            # if 'color' in props.keys():
+            #     color = props['color']
+            #
+            #     self.selected_object.set_color(color)
+            #     self.selected_object.set_markerfacecolor(color)
+            #     self.parent_.le_Color.setStyleSheet(f'background-color: {color};')
+            #     self.parent_.pb_Color.setStyleSheet(f"background-color: {color};")
+            #     self.parent_.le_Color.setText(color)
+            #     self.parent_.pb_Color.setText(color)
+            #     # copy the image to the GUI state, but screen might not be changed yet
+            # if 'alpha' in props.keys():
+            #     alpha = props['alpha']
+            #     self.selected_object.set_alpha(alpha)
+            # if 'lw' in props.keys():
+            #     lw = props['lw']
+            #     self.selected_object.set_linewidth(lw)
+            # if 'ls' in props.keys():
+            #     ls = props['ls']
+            #     self.selected_object.set_linestyle(ls)
+            # if 'zorder' in props.keys():
+            #     zorde./;r = props['zorder']
+            #     self.selected_object.set_zorder(zorder)
             self.selected_object.set(**props)
 
             # elif isinstance(self.selected_object, matplotlib.patches.Rectangle) or isinstance(self.selected_object, matplotlib.patches.Circle):

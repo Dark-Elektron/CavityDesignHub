@@ -217,7 +217,11 @@ def plot_sey():
     plt.show()
 
 
-def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='triplot', layout=None, min_max=None):
+def plot_multipac_triplot(folders, labels, Eacc_list=None, Epk_Eacc_list=None, kind='triplot', layout=None, min_max=None, hist=None, plot_type='line'):
+    if Epk_Eacc_list is None:
+        Epk_Eacc_list = [1]
+    if Eacc_list is None:
+        Eacc_list = [0]
     use_input_min_max = False
     if layout is None:
         layout = [[0], [1], [2]]
@@ -267,11 +271,19 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
                 ax = axs[0]
             else:
                 ax = axs[0]
-            # ax.semilogy(Efl / (Epk_Eacc * 1e6), C / n, lw=1.5, label=label, marker='o', mec='k')
-            ax.bar(Efl / (Epk_Eacc * 1e6), C / n, label=label, **kwargs)
+
+            if plot_type == 'line':
+                ax.semilogy(Efl / (Epk_Eacc * 1e6), C / n, lw=1.5, label=label)
+            else:
+                ax.bar(Efl / (Epk_Eacc * 1e6), C / n, label=label, **kwargs)
+
             # ax.set_yscale('log')
             ax.set_ylabel("$c_" + "{" + f"{N}" + "}/ c_0 $")
-            ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
+
+            if Epk_Eacc == 1:
+                ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            else:
+                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
             # ax.set_title(r'$\mathbf{MultiPac 2.1~~~~~Counter function~~~~}$')
 
             if min_max:
@@ -286,10 +298,13 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
             ax.set_ylim(0, np.max([0.1, axs[0].get_ylim()[1]]))
 
             # plot peak operating field
-            ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-            ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                    size=12, rotation=90,
-                    transform=ax.get_xaxis_transform(), ha='right', va='center')
+            if hist:
+                ax.axvspan(hist[0], hist[1], facecolor='r', alpha=0.25)
+            if Eacc != 0:
+                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=ax.get_xaxis_transform(), ha='right', va='center')
 
             ax.minorticks_on()
 
@@ -298,8 +313,11 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
                 ax = axs[0]
             else:
                 ax = axs[1]
-            # ax.plot(Efl / (Epk_Eacc * 1e6), Efq, lw=1.5, label=label, marker='o', mec='k')
-            ax.bar(Efl / (Epk_Eacc * 1e6), Efq, label=label, **kwargs)
+
+            if plot_type == 'line':
+                ax.plot(Efl / (Epk_Eacc * 1e6), Efq, lw=1.5, label=label)
+            else:
+                ax.bar(Efl / (Epk_Eacc * 1e6), Efq, label=label, **kwargs)
             ax.set_yscale('log')
 
             # axs[1].plot([np.min(Efl) / 1e6, np.max(Efl) / 1e6], [secy1[e1, 0], secy1[e1, 0]], '-r')
@@ -311,7 +329,11 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
                     [secy1[e3, 0], secy1[e3, 0]], '--r')
 
             ax.set_ylabel("$Ef_" + "{" + f"{N}" + "} [eV]$")
-            ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
+
+            if Epk_Eacc == 1:
+                ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            else:
+                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
             # ax.set_title('$\mathbf{Final~Impact~Energy~in~eV}$')
 
             if min_max:
@@ -324,10 +346,13 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
                 ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
             ax.set_ylim(0, axs[0].get_ylim()[1])
 
-            ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-            ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                    size=12, rotation=90,
-                    transform=ax.get_xaxis_transform(), ha='right', va='center')
+            if hist:
+                ax.axvspan(hist[0], hist[1], facecolor='r', alpha=0.25)
+            if Eacc != 0:
+                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=ax.get_xaxis_transform(), ha='right', va='center')
 
             ax.minorticks_on()
 
@@ -336,9 +361,10 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
                 ax = axs[0]
             else:
                 ax = axs[2]
-
-            # ax.plot(Efl / (Epk_Eacc * 1e6), (A + 1) / n, lw=1.5, label=label, marker='o', mec='k')
-            ax.bar(Efl / (Epk_Eacc * 1e6), (A + 1) / n, label=label, **kwargs)
+            if plot_type == 'line':
+                ax.plot(Efl / (Epk_Eacc * 1e6), (A + 1) / n, lw=1.5, label=label,)
+            else:
+                ax.bar(Efl / (Epk_Eacc * 1e6), (A + 1) / n, label=label, **kwargs)
             ax.set_yscale('log')
             ax.set_xlabel('$V$ [MV]')
             ax.plot([np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6)], [1, 1], '-r')
@@ -353,13 +379,20 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
                 ax.set_xlim(np.min(Efl) / (Epk_Eacc * 1e6), np.max(Efl) / (Epk_Eacc * 1e6))
             ax.set_ylim(np.min((A + 1) / n), ax.get_ylim()[1])
             ax.set_ylabel("$e_" + "{" + f"{N}" + "}" + "/ c_0$")
-            ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
+
+            if Epk_Eacc == 1:
+                ax.set_xlabel(r'$E_\mathrm{pk}$ [MV/m]')
+            else:
+                ax.set_xlabel(r'$E_\mathrm{acc}$ [MV/m]')
             # ax.set_title('$\mathbf{Enhanced~counter~function}$')
 
-            ax.axvline(Eacc, c='k', ls='--', lw=1.5)
-            ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
-                    size=12, rotation=90,
-                    transform=ax.get_xaxis_transform(), ha='right', va='center')
+            if hist:
+                ax.axvspan(hist[0], hist[1], facecolor='r', alpha=0.25)
+            if Eacc != 0:
+                ax.axvline(Eacc, c='k', ls='--', lw=1.5)
+                ax.text(Eacc, 0.5, f"{np.round(Eacc, 2)} MV/m",
+                        size=12, rotation=90,
+                        transform=ax.get_xaxis_transform(), ha='right', va='center')
 
             ax.minorticks_on()
 
@@ -367,8 +400,8 @@ def plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind='tripl
 
     fig.tight_layout()
     fig.savefig(fr'D:\Dropbox\Quick presentation files\Multipacting_{label}_multipac_{kind}.png')
-    plt.show()
-    plt.close(fig)
+    # plt.show()
+    return fig, ax
 
 
 def plot_trajectory(files_folder, loc='center'):
@@ -468,6 +501,55 @@ def plot_trajectory(files_folder, loc='center'):
         fig.tight_layout(pad=2.5)
         axs[0].axes.set_aspect('equal')
         axs[2].axes.set_aspect('equal')
+        plt.show()
+
+
+def plot_path(files_folder, loc='center', ax=None, label='MultiPac'):
+    fieldparams = pd.read_csv(fr"{files_folder}\\fieldparam", sep='\s+', header=None).to_numpy()
+    geodata = pd.read_csv(fr"{files_folder}\\geodata.n", sep='\s+', header=None).to_numpy()
+    param = pd.read_csv(fr"{files_folder}\\param", sep='\s+', header=None).to_numpy()
+    elecpath = pd.read_csv(fr"{files_folder}\\elecpath", sep='\s+', header=None).to_numpy()
+
+    gtype = fieldparams[0]
+
+    ng = len(geodata[:, 0])
+    bo = geodata[3:ng, 0:2].T
+    wr = []
+    wz = []
+
+    # convert boundary and electron path to mm
+    bo = bo*1e3
+
+    eps = np.spacing(1.0)
+    par = param
+
+    n = np.shape(elecpath)[0]
+    if n == 1:
+        pat = []
+        ic(['No electron emission. Please, define a new initial point.'])
+    else:
+        pat = elecpath[1:n, [0, 2, 3, 5, 6, 7]]
+
+        N = par[4]
+        hit = np.array(np.where(pat[:, 5] != 0))
+        hit = hit[:, np.arange(1, len(hit[0]), 2)]
+        speed = np.sqrt(pat[hit, 2] ** 2 + pat[hit, 3] ** 2)
+        c = 2.9979e8
+        M = 9.1093879e-31
+        q = 1.6021773e-19
+        energy = (1 / np.sqrt(1.0 - (speed ** 2 / c ** 2)) - 1) * M * c ** 2. / q
+        avegene = np.mean(energy)
+        finaene = energy[:, len(energy)]
+        maxiene = np.max(energy)
+        dt = abs(np.min(pat[:, 4]) - np.max(pat[:, 4])) * par[0]
+
+        if ax is None:
+            fig, axs = plt.subplot_mosaic([[0]], figsize=(10, 4))
+            ax = axs[0]
+        pat = pat * 1e3  # convert to mm for plotting
+
+        ax.plot(pat[:, 1], pat[:, 0], '-r', pat[hit, 1], pat[hit, 0], 'ro', lw=1, label=label)
+        ax.axes.set_aspect('equal')
         plt.show()
 
 
@@ -723,28 +805,51 @@ if __name__ == '__main__':
     # plt.style.use('fivethirtyeight')
     plot_settings()
 
-    # ########################### Multipac ####################################
+    # # ########################### Multipac ####################################
     # # C3794
     # folders = [r"D:\Dropbox\multipacting\MPGUI21\C3794"]
     # labels = ['C3794']
     # Epk_Eacc_list = [2.05]
     # Eacc_list = [10.61]
     # min_max = [1, 15]
+    # hist = [9.6, 11.91]
     #
     # for k in ['counter_function', 'final_impact_energy', 'enhanced_counter_function']:
-    #     plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind=k, layout=[[0]], min_max=min_max)
-    #
-    # # C3795
-    # folders = [r"D:\Dropbox\multipacting\MPGUI21\Mid_cell_C3795", r"D:\Dropbox\multipacting\MPGUI21\End_cell_C3795"]
-    #
-    # labels = ['C3795 (mid cell)', 'C3795 (end cell)']
-    # Epk_Eacc_list = [2.31, 2.56]
-    # Eacc_list = [20.12, 20.12]
-    # min_max = [1, 26]
-    # # fig, axs = plt.subplots(3)
-    #
-    # for k in ['counter_function', 'final_impact_energy', 'enhanced_counter_function']:
-    #     plot_multipac_triplot(Eacc_list, Epk_Eacc_list, folders, labels, kind=k, layout=[[0]], min_max=min_max)
+    #     plot_multipac_triplot(folders, labels,Eacc_list, Epk_Eacc_list, kind=k, layout=[[0]], min_max=min_max, hist=hist)
+
+    # C3794v2
+    folders = [r"D:\Dropbox\multipacting\MPGUI21\C3794v2"]
+    labels = ['C3794v2']
+    Epk_Eacc_list = [2.05]
+    Eacc_list = [10.61]
+    min_max = [1, 15]
+    hist = [9.6, 11.91]
+
+    for k in ['counter_function', 'final_impact_energy', 'enhanced_counter_function']:
+        plot_multipac_triplot(folders, labels,Eacc_list, Epk_Eacc_list, kind=k, layout=[[0]], min_max=min_max, hist=hist)
+
+    # C3795
+    folders = [r"D:\Dropbox\multipacting\MPGUI21\Mid_cell_C3795", r"D:\Dropbox\multipacting\MPGUI21\End_cell_C3795"]
+
+    labels = ['C3795 (mid cell)', 'C3795 (end cell)']
+    Epk_Eacc_list = [2.31, 2.56]
+    Eacc_list = [20.12, 20.12]
+    min_max = [1, 26]
+    hist = [19.9, 24.52]
+    # fig, axs = plt.subplots(3)
+
+    # C3795
+    folders = [r"D:\Dropbox\multipacting\MPGUI21\mid_FCCUROS5", r"D:\Dropbox\multipacting\MPGUI21\end_FCCUROS5"]
+
+    labels = ['FCCUROS5 (mid cell)', 'FCCUROS5 (end cell)']
+    Epk_Eacc_list = [2.0, 2.0]
+    Eacc_list = [20.12, 20.12]
+    min_max = [1, 26]
+    hist = [19.9, 24.52]
+    # fig, axs = plt.subplots(3)
+
+    for k in ['counter_function', 'final_impact_energy', 'enhanced_counter_function']:
+        plot_multipac_triplot(folders, labels, Eacc_list, Epk_Eacc_list,  kind=k, layout=[[0]], min_max=min_max, hist=hist, plot_type='bar')
 
     files_folder = r"D:\Dropbox\multipacting\MPGUI21\C3794"
     plot_trajectory(files_folder, loc='left')

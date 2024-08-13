@@ -15,7 +15,7 @@ from ui_files.run_tune import Ui_w_Tune
 import time
 import multiprocessing as mp
 import random as r
-import pyqtgraph as pg
+# import pyqtgraph as pg
 from distutils import dir_util
 from analysis_modules.tune.tuners.tuner import Tuner
 from utils.shared_classes import *
@@ -3705,7 +3705,6 @@ def run_sequential_wakefield(n_cells, n_modules, processor_shape_space,
 
         # update progress
         progress_list.append((progress + 1) / total_no_of_shapes)
-
 
 # def stroud(p):
 #     # Stroud-3 method

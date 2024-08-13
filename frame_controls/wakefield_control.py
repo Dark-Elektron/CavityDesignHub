@@ -89,7 +89,7 @@ class WakefieldControl:
             lambda: self.pause() if self.process_state == 'running' else self.resume())
 
         self.geo_ui.cb_Shape_Space_Keys.currentTextChanged.connect(
-            lambda: self.add_row(self.geo_ui.cb_Shape_Space_Keys.currentText().split(', ')))
+            lambda: self.modify_row(self.geo_ui.cb_Shape_Space_Keys.currentText().split(', ')))
 
     def initUI(self):
         self.ui.w_Save_Folder.setVisible(False)
@@ -246,32 +246,30 @@ class WakefieldControl:
         self.end_routine_thread = EndRoutine(self, self.main_control.projectDir)
         self.end_routine_thread.start()
 
-    def add_row(self, cavities):
+    def modify_row(self, cavities):
         if 'All' in cavities or '' in cavities:
             pass
         else:
             # get current number of rows
             n = self.ui.tw_Operating_Points_Input.rowCount()
-
-            # add new row
-            self.ui.tw_Operating_Points_Input.setRowCount(n + 1)  # and one row in the table
-
             keys = list(self.cav_operating_points.keys())
-
-            # add if len of current list greater than prevous list
+            # add if len of current list greater than previous list
             if len(cavities) < len(keys):
+                print('remove--------------', keys, cavities)
                 for key in keys:
                     if key not in cavities:
                         # get row index
                         row = self.cav_operating_points[key]['row index']
                         self.remove_row(key, row)
-            else:
-                # remove otherwise
+
+            elif len(cavities) > len(keys):
                 for cav in cavities:
                     if cav not in self.cav_operating_points.keys():
+                        # add row
                         self.create_new_row(n, self.ui.tw_Operating_Points_Input, cav)
 
-    def create_new_row(self, row_ind, table, cavity):
+        print(cavities, list(self.cav_operating_points.keys()))
+    def create_new_row(self, n, table, cavity):
         """
 
         Parameters
@@ -286,9 +284,10 @@ class WakefieldControl:
         """
         # ic(row_ind, cavity, self.ui.tw_Operating_Points_Input.rowCount())
         # Cavity
+        self.ui.tw_Operating_Points_Input.setRowCount(n + 1)  # and one row in the table
         l_cavity = QLabel()
         l_cavity.setText(f"{cavity}")
-        table.setCellWidget(row_ind, 0, l_cavity)
+        table.setCellWidget(n, 0, l_cavity)
 
         # Operating point
         ccb_OperatingPoint = QCheckableComboBox()
@@ -296,7 +295,7 @@ class WakefieldControl:
         for key, val in self.operating_points:
             ccb_OperatingPoint.addItem(f'{key}')
 
-        table.setCellWidget(row_ind, 1, ccb_OperatingPoint)
+        table.setCellWidget(n, 1, ccb_OperatingPoint)
         # signal to disable polarisation when cb_code item is 'Other'
         self.ui.ccb_Operation_Points.currentTextChanged.connect(
             lambda: self.update_cav_operating_points(ccb_OperatingPoint))
@@ -316,27 +315,27 @@ class WakefieldControl:
         # sigma (SR)
         le_sigma_sr = QLineEdit()
         le_sigma_sr.setReadOnly(True)
-        table.setCellWidget(row_ind, 2, le_sigma_sr)
+        table.setCellWidget(n, 2, le_sigma_sr)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_sigma_sr, ccb_OperatingPoint, 'sigma_SR [mm]'))
 
         # sigma (BS)
         le_sigma_bs = QLineEdit()
         le_sigma_bs.setReadOnly(True)
-        table.setCellWidget(row_ind, 3, le_sigma_bs)
+        table.setCellWidget(n, 3, le_sigma_bs)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_sigma_bs, ccb_OperatingPoint, 'sigma_BS [mm]'))
 
         # I0
         le_I0 = QLineEdit()
         le_I0.setReadOnly(True)
-        table.setCellWidget(row_ind, 4, le_I0)
+        table.setCellWidget(n, 4, le_I0)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_I0, ccb_OperatingPoint, 'I0 [mA]'))
 
         # Number of bunches Nb
         le_Nb = QLineEdit()
-        table.setCellWidget(row_ind, 5, le_Nb)
+        table.setCellWidget(n, 5, le_Nb)
         ccb_OperatingPoint.currentTextChanged.connect(
             lambda: self.update_operating_points_widgets(le_Nb, ccb_OperatingPoint, 'Nb [1e11]'))
 
@@ -346,43 +345,40 @@ class WakefieldControl:
         # dsb_freq.setMinimum(0.0001)
         # table.setCellWidget(row_ind, 8, dsb_freq)
 
-        args_dict = {'row index': row_ind, 'Cavity': l_cavity, 'Operating Point': ccb_OperatingPoint,
+        args_dict = {'row index': n, 'Cavity': l_cavity, 'Operating Point': ccb_OperatingPoint,
                      'sigma (SR) [mm]': le_sigma_sr, 'sigma (BS) [mm]': le_sigma_bs,
                      'I0 [mA]': le_I0, 'Nb [1e11]': le_Nb}
 
         self.cav_operating_points[l_cavity.text()] = args_dict
 
-    def remove_row(self, key, row):
+    def remove_row(self, key, row_ind):
         # current number of rows
         n = self.ui.tw_Operating_Points_Input.rowCount()
 
         # remove row from table
-        self.ui.tw_Operating_Points_Input.removeRow(row)
+        self.ui.tw_Operating_Points_Input.removeRow(row_ind)
 
         # remove key from dictionary
         del self.cav_operating_points[key]
 
         # reset number of rows
-        self.ui.tw_Operating_Points_Input.setRowCount(n - 2)
+        self.ui.tw_Operating_Points_Input.setRowCount(n - 1)
 
-        # adjust other row elements
-        d = self.cav_operating_points
-        tab_col = ['Cavity', 'Operating Point', 'N Cells', 'R/Q [Ohm]',
-                   'sigma (SR) [mm]', 'sigma (BS) [mm]',
-                   'I0 [mA]', 'Nb [1e11]', 'freq [MHz]']
+        # # adjust other row elements
+        # d = copy.deepcopy(self.cav_operating_points)
+        # tab_col = ['Cavity', 'Operating Point', 'N Cells', 'R/Q [Ohm]',
+        #            'sigma (SR) [mm]', 'sigma (BS) [mm]',
+        #            'I0 [mA]', 'Nb [1e11]', 'freq [MHz]']
 
-        for i, (key, val) in enumerate(d.items()):
-            for j, tc in enumerate(tab_col):
-                self.ui.tw_Operating_Points_Input.setCellWidget(i, j, val[tc])
+        keys = self.cav_operating_points.keys()
+        for key in keys:
+            if self.cav_operating_points[key]['row index'] > row_ind:
+                self.cav_operating_points[key]['row index'] -= 1
 
-            # update row index
-            val['row index'] = i
-
-        self.cav_operating_points = d
 
     def load_operating_points(self, ccb):
         filename, _ = QFileDialog.getOpenFileName(
-            None, "Open File", fr"{self.main_control.projectDir}/Cavities", "Json Files (*.json)")
+            None, "Open File", fr"{self.main_control.projectDir}/OperatingPoints", "Json Files (*.json)")
         try:
             self.ui.le_Machine_Parameters_Filename.setText(filename)
             with open(filename, 'r') as file:
@@ -453,7 +449,7 @@ class WakefieldControl:
                         # if len(text_to_list(self.geo_ui.le_N_Cells.text())) == 1:
                         #     folder_name = f"{key}_scale_{scale}"
                         # else:
-                        folder_name = f"{key}_scale_{scale}_n{n_cell}"
+                        folder_name = f"{key}_s{scale}_n{n_cell}"
 
                     # check if SLANS or NGSolve simulation exist
                     if os.path.exists(self.main_control.projectDir / fr'SimulationData\SLANS\{folder_name}\monopole\qois.json'):
@@ -473,7 +469,10 @@ class WakefieldControl:
                     Nb = ast.literal_eval(val['Nb [1e11]'].text())
                     # freq = val['freq [MHz]'].value()
                     freq = qois_slans['freq [MHz]']
-                    dd.update({key: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
+                    if scale == 1:
+                        dd.update({key: [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
+                    else:
+                        dd.update({f'{key}_s{scale}': [op_points, n_cells, R_Q, sigma_SR, sigma_BS, I0, Nb, freq]})
         ic(dd)
         return dd
 
@@ -735,7 +734,7 @@ class WakefieldControl:
                                         OC_R = "OC"
                                     for m in range(2):
                                         abci_geom.cavity(no_of_cells, n_modules, shape['IC'], shape['OC'],
-                                                         shape['OC_R'],
+                                                         shape[OC_R],
                                                          fid=fid_op, MROT=m, MT=MT, NFS=NFS, UBT=10 * s * 1e-3,
                                                          bunch_length=s,
                                                          DDR_SIG=DDR_SIG, DDZ_SIG=DDZ_SIG, parentDir=parentDir,

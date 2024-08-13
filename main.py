@@ -101,7 +101,7 @@ class MainWindow:
 
         # self.initUI()
         self.parentDir = Path(os.getcwd())
-        self.projectDir = Path(r'D:/Dropbox/CavityDesignHub/SampleProject')
+        self.projectDir = Path(r'./CavityDesignHub/SampleProject')
 
         # add node editor
         # new = NodeEditorWidget()
@@ -634,16 +634,35 @@ class MainWindow:
             # open project
             self.open_project(self.projectDir)
 
-            self.geometryinput_widget.deserialise(state_dict)
-            self.tune_widget.deserialise(state_dict)
-            self.eigenmode_widget.deserialise(state_dict)
-            self.wakefield_widget.deserialise(state_dict)
+            try:
+                self.geometryinput_widget.deserialise(state_dict)
+            except Exception as e:
+                print('Exception occurred deserialising geometryinput: ', e)
+
+            try:
+                self.tune_widget.deserialise(state_dict)
+            except Exception as e:
+                print('Exception occurred deserialising tune_widget: ', e)
+            try:
+                self.eigenmode_widget.deserialise(state_dict)
+            except Exception as e:
+                print('Exception occurred deserialising eigenmode_widget: ', e)
+            try:
+                self.wakefield_widget.deserialise(state_dict)
+            except Exception as e:
+                print('Exception occurred deserialising wakefield widget: ', e)
             try:
                 self.plot_widget.deserialise(state_dict)
-            except:
-                pass
-            self.multipacting_widget.deserialise(state_dict)
-            self.misc_widget.deserialise(state_dict)
+            except Exception as e:
+                print('Exception occurred deserialising: ', e)
+            try:
+                self.multipacting_widget.deserialise(state_dict)
+            except Exception as e:
+                print('Exception occurred deserialising: ', e)
+            try:
+                self.misc_widget.deserialise(state_dict)
+            except Exception as e:
+                print('Exception occurred deserialising: ', e)
 
     def load_last_state(self):
         """
@@ -656,6 +675,7 @@ class MainWindow:
 
         try:
             self.deserialise(Path('ui_state_files/state_file.json'))
+            pass
         except AttributeError as e:
             try:
                 print("Could not deserialise state file: state_file.json", e)

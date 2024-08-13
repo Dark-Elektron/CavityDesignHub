@@ -772,11 +772,7 @@ def uq(key, shape, qois, n_cells, n_modules, n_modes, f_shift, bc, pol, parentDi
                                   parentDir=parentDir, projectDir=projectDir, subdir=sub_dir, mesh_args=mesh_args)
 
         filename = uq_path / f'{fid}/monopole/qois.json'
-        print(filename)
         if os.path.exists(filename):
-            # params = fr.svl_reader(filename)
-            # norm_length = 2 * n_cells * shape['IC'][5]
-
             qois_result_dict = dict()
 
             with open(filename) as json_file:

@@ -1,7 +1,13 @@
 import itertools
 import json
+import os.path
+import pickle
 import shutil
 import time
+from sys import exit
+
+from matplotlib import tri
+from scipy.interpolate import CloughTocher2DInterpolator
 
 from utils.shared_functions import *
 from pathlib import Path
@@ -21,6 +27,14 @@ c0 = 299792458
 
 class NGSolveMEVP:
     def __init__(self):
+        """
+        MEVP for accelerating cavities with NGSolve
+
+        ..math:
+
+
+
+        """
         pass
 
     @staticmethod
@@ -136,8 +150,6 @@ class NGSolveMEVP:
         else:
             end_cell_right = end_cell_right
 
-        beampipe = beampipe
-
         # check if folder exists
         if not os.path.exists(folder):
             try:
@@ -150,10 +162,11 @@ class NGSolveMEVP:
         if cell_type == 'normal':
             writeCavityForMultipac(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot=plot)
         else:
-            writeCavityForMultipac_flat_top(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot=plot)
+            writeCavityForMultipac_flat_top(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe,
+                                            plot=plot)
 
     def write_geometry_multicell(self, folder, n_cells, mid_cell, end_cell_left=None, end_cell_right=None,
-                       beampipe='none', plot=False, cell_type='normal'):
+                                 beampipe='none', plot=False, cell_type='normal'):
         """
         Define geometry
 
@@ -209,9 +222,11 @@ class NGSolveMEVP:
 
         file_path = fr"{folder}\geodata.n"
         if cell_type == 'normal':
-            writeCavityForMultipac_multicell(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot=plot)
+            writeCavityForMultipac_multicell(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe,
+                                             plot=plot)
         else:
-            writeCavityForMultipac_flat_top(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe, plot=plot)
+            writeCavityForMultipac_flat_top(file_path, n_cells, mid_cell, end_cell_left, end_cell_right, beampipe,
+                                            plot=plot)
 
     def cavgeom_ngsolve(self, n_cell, mid_cell, end_cell_left, end_cell_right, beampipe='both', draw=False):
         """
@@ -434,8 +449,8 @@ class NGSolveMEVP:
 
     def cavity(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
                fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False,
-                       deformation_params=None):
+               sim_folder='NGSolveMEVP', parentDir=None, projectDir=None, subdir='',
+               expansion=None, expansion_r=None, mesh_args=None, opt=False, deformation_params=None):
         """
         Write geometry file and run eigenmode analysis with NGSolveMEVP
 
@@ -490,133 +505,159 @@ class NGSolveMEVP:
         # change save directory
         if mesh_args is None:
             mesh_args = [20, 20]
-        if opt:  # consider making better. This was just an adhoc fix
-            run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP_opt/{fid}'
+        if opt:
+            # consider making better. This was just an adhoc fix
+            run_save_directory = os.path.join(projectDir, fr'SimulationData/Optimisation/{fid}')
         else:
             # change save directory
             if subdir == '':
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{pol_subdir}'
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{fid}/{pol_subdir}'
             else:
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{subdir}/{fid}/{pol_subdir}'
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{subdir}/{fid}/{pol_subdir}'
+
         # write
-        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes, plot=False)
+        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes,
+                            plot=False)
 
-        # read geometry
-        cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
-                               header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0, 2]]
+        if os.path.exists(f'{run_save_directory}\geodata.n'):
+            # read geometry
+            cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
+                                   header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0, 2]]
 
-        if deformation_params is not None:
-            cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(), deformation_params)
-            # save deformed cavity profile
-            cav_geom.to_csv(f'{run_save_directory}\geodata_deformed.n', sep='\t')
+            if deformation_params is not None:
+                cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(),
+                                                deformation_params)
+                # save deformed cavity profile
+                cav_geom.to_csv(f'{run_save_directory}\geodata_deformed.n', sep='\t')
 
-        cav_geom = cav_geom[[1, 0]]
-        # plt.plot(cav_geom[0], cav_geom[1])
-        # plt.show()
+            cav_geom = cav_geom[[1, 0]]
+            # plt.plot(cav_geom[1], cav_geom[0], ls='--', lw=4)
+            # plt.show()
 
-        pnts = list(cav_geom.itertuples(index=False, name=None))
-        wp = WorkPlane()
-        wp.MoveTo(*pnts[0])
-        for p in pnts[1:]:
-            wp.LineTo(*p)
-        wp.Close().Reverse()
-        face = wp.Face()
+            pnts = list(cav_geom.itertuples(index=False, name=None))
+            wp = WorkPlane()
+            wp.MoveTo(*pnts[0])
+            for p in pnts[1:]:
+                wp.LineTo(*p)
+            wp.Close().Reverse()
+            face = wp.Face()
 
-        # # get face from ngsolve geom <- coming later
-        # face = self.cavgeom_ngsolve(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
+            # # get face from ngsolve geom <- coming later
+            # face = self.cavgeom_ngsolve(no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes)
 
-        # name the boundaries
-        face.edges.Max(X).name = "r"
-        face.edges.Max(X).col = (1, 0, 0)
-        face.edges.Min(X).name = "l"
-        face.edges.Min(X).col = (1, 0, 0)
-        face.edges.Min(Y).name = "b"
-        face.edges.Min(Y).col = (1, 0, 0)
+            # name the boundaries
+            face.edges.Max(X).name = "r"
+            face.edges.Max(X).col = (1, 0, 0)
+            face.edges.Min(X).name = "l"
+            face.edges.Min(X).col = (1, 0, 0)
+            face.edges.Min(Y).name = "b"
+            face.edges.Min(Y).col = (1, 0, 0)
 
-        geo = OCCGeometry(face, dim=2)
+            geo = OCCGeometry(face, dim=2)
 
-        # mesh
-        A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
-        maxh = L / mesh_args[0] * 1e-3
-        ngmesh = geo.GenerateMesh(maxh=maxh)
-        mesh = Mesh(ngmesh)
+            # mesh
+            A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
+            maxh = L / mesh_args[0] * 1e-3
 
-        # define finite element space
-        fes = HCurl(mesh, order=1, dirichlet='default')
+            # try to generate mesh
+            try:
+                ngmesh = geo.GenerateMesh(maxh=maxh)
+            except Exception as e:
+                error('Unable to generate mesh:: ', e)
+                plt.plot(cav_geom[1], cav_geom[0])
+                plt.show()
+                exit()
+            mesh = Mesh(ngmesh)
+            mesh.Curve(3)
 
-        u, v = fes.TnT()
+            # save mesh
+            self.save_mesh(run_save_directory, mesh)
 
-        a = BilinearForm(y * curl(u) * curl(v) * dx)
-        m = BilinearForm(y * u * v * dx)
+            # define finite element space
+            fes = HCurl(mesh, order=1, dirichlet='default')
 
-        apre = BilinearForm(y * curl(u) * curl(v) * dx + y * u * v * dx)
-        pre = Preconditioner(apre, "direct", inverse="sparsecholesky")
+            u, v = fes.TnT()
 
-        with TaskManager():
-            a.Assemble()
-            m.Assemble()
-            apre.Assemble()
-            # freedof_matrix = a.mat.CreateSmoother(fes.FreeDofs())
+            a = BilinearForm(y * curl(u) * curl(v) * dx)
+            m = BilinearForm(y * u * v * dx)
 
-            # build gradient matrix as sparse matrix (and corresponding scalar FESpace)
-            gradmat, fesh1 = fes.CreateGradient()
+            apre = BilinearForm(y * curl(u) * curl(v) * dx + y * u * v * dx)
+            pre = Preconditioner(apre, "direct", inverse="sparsecholesky")
 
-            gradmattrans = gradmat.CreateTranspose()  # transpose sparse matrix
-            math1 = gradmattrans @ m.mat @ gradmat  # multiply matrices
-            math1[0, 0] += 1  # fix the 1-dim kernel
-            invh1 = math1.Inverse(inverse="sparsecholesky", freedofs=fesh1.FreeDofs())
+            with TaskManager():
+                a.Assemble()
+                m.Assemble()
+                apre.Assemble()
+                # freedof_matrix = a.mat.CreateSmoother(fes.FreeDofs())
 
-            # build the Poisson projector with operator Algebra:
-            proj = IdentityMatrix() - gradmat @ invh1 @ gradmattrans @ m.mat
+                # build gradient matrix as sparse matrix (and corresponding scalar FESpace)
+                gradmat, fesh1 = fes.CreateGradient()
 
-            projpre = proj @ pre.mat
-            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 3, maxit=mesh_args[1],
-                                          printrates=False)
+                gradmattrans = gradmat.CreateTranspose()  # transpose sparse matrix
+                math1 = gradmattrans @ m.mat @ gradmat  # multiply matrices
+                math1[0, 0] += 1  # fix the 1-dim kernel
+                invh1 = math1.Inverse(inverse="sparsecholesky", freedofs=fesh1.FreeDofs())
 
-        # print out eigenvalues
-        # print("Eigenvalues")
-        freq_fes = []
-        evals[0] = 1  # <- replace nan with zero
-        for i, lam in enumerate(evals):
-            freq_fes.append(c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6)
-            # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
+                # build the Poisson projector with operator Algebra:
+                proj = IdentityMatrix() - gradmat @ invh1 @ gradmattrans @ m.mat
 
-        # plot results
-        gfu_E = []
-        gfu_H = []
-        for i in range(len(evecs)):
-            w = 2 * pi * freq_fes[i] * 1e6
-            gfu = GridFunction(fes)
-            gfu.vec.data = evecs[i]
+                projpre = proj @ pre.mat
+                evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 1, maxit=mesh_args[1],
+                                              printrates=False)
 
-            gfu_E.append(gfu)
-            gfu_H.append(1j / (mu0 * w) * curl(gfu))
+            # print out eigenvalues
+            # print("Eigenvalues")
+            freq_fes = []
+            evals[0] = 1  # <- replace nan with zero
+            for i, lam in enumerate(evals):
+                freq_fes.append(c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6)
+                # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
 
-        # # alternative eigenvalue solver
-        # u = GridFunction(fes, multidim=30, name='resonances')
-        # lamarnoldi = ArnoldiSolver(a.mat, m.mat, fes.FreeDofs(),
-        #                         list(u.vecs), shift=300)
-        # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
+            # plot results
+            gfu_E = []
+            gfu_H = []
+            for i in range(len(evecs)):
+                w = 2 * pi * freq_fes[i] * 1e6
+                gfu = GridFunction(fes)
+                gfu.vec.data = evecs[i]
 
-        # save json file
-        shape = {'IC': update_alpha(mid_cells_par),
-                 'OC': update_alpha(l_end_cell_par),
-                 'OC_R': update_alpha(r_end_cell_par)}
-        # print(run_save_directory)
-        with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
-            json.dump(shape, f, indent=4, separators=(',', ': '))
+                gfu_E.append(gfu)
+                gfu_H.append(1j / (mu0 * w) * curl(gfu))
 
-        # qois = self.evaluate_qois(face, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
-        qois = self.evaluate_qois(cav_geom, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
-        # ic(qois)
+            # save fields
+            self.save_fields(run_save_directory, gfu_E, gfu_H)
 
-        with open(fr'{run_save_directory}\qois.json', "w") as f:
-            json.dump(qois, f, indent=4, separators=(',', ': '))
+            # # alternative eigenvalue solver, but careful, mode numbering may change
+            # u = GridFunction(fes, multidim=30, name='resonances')
+            # lamarnoldi = ArnoldiSolver(a.mat, m.mat, fes.FreeDofs(),
+            #                         list(u.vecs), shift=300)
+            # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
 
-    def cavity_multicell(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
-               fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False,
-                       deformation_params=None):
+            # save json file
+            shape = {'IC': update_alpha(mid_cells_par),
+                     'OC': update_alpha(l_end_cell_par),
+                     'OC_R': update_alpha(r_end_cell_par)}
+            # print(run_save_directory)
+            with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
+                json.dump(shape, f, indent=4, separators=(',', ': '))
+
+            # qois = self.evaluate_qois(face, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+            qois = self.evaluate_qois(cav_geom, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+            # ic(qois)
+
+            with open(fr'{run_save_directory}\qois.json', "w") as f:
+                json.dump(qois, f, indent=4, separators=(',', ': '))
+            return True
+        else:
+            error('Could not run eigenmode analysis due to error in geometry.')
+            return False
+
+    def cavity_multicell(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None,
+                         r_end_cell_par=None,
+                         fid=None, bc=33, pol='monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
+                         sim_folder='NGSolveMEVP', parentDir=None, projectDir=None, subdir='',
+                         expansion=None, expansion_r=None, mesh_args=None, opt=False,
+                         deformation_params=None):
         """
         Write geometry file and run eigenmode analysis with NGSolveMEVP
 
@@ -662,8 +703,9 @@ class NGSolveMEVP:
         -------
 
         """
+
         start = time.time()
-        if pol != 'Monopole':
+        if pol.lower() != 'monopole':
             pol_subdir = 'dipole'
         else:
             pol_subdir = 'monopole'
@@ -672,17 +714,18 @@ class NGSolveMEVP:
         if mesh_args is None:
             mesh_args = [20, 20]
         if opt:  # consider making better. This was just an adhoc fix
-            run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP_opt/{fid}'
+            run_save_directory = projectDir / fr'SimulationData/Optimisation/{fid}'
         else:
             # change save directory
             if subdir == '':
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{pol_subdir}'
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{fid}/{pol_subdir}'
             else:
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{subdir}/{fid}/{pol_subdir}'
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{subdir}/{fid}/{pol_subdir}'
 
         # write
         # st1 = time.time()
-        self.write_geometry_multicell(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes, plot=False)
+        self.write_geometry_multicell(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par,
+                                      beampipes, plot=False)
         # ic('Time to write geom: ', time.time()-st1)
 
         # read geometry
@@ -691,7 +734,8 @@ class NGSolveMEVP:
                                header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0, 2]]
 
         if deformation_params is not None:
-            cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(), deformation_params)
+            cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(),
+                                            deformation_params)
             # save deformed cavity profile
             cav_geom.to_csv(f'{run_save_directory}\geodata_deformed.n', sep='\t')
 
@@ -730,6 +774,10 @@ class NGSolveMEVP:
         # st1 = time.time()
         ngmesh = geo.GenerateMesh(maxh=maxh)
         mesh = Mesh(ngmesh)
+        mesh.Curve(3)
+
+        # save mesh
+        self.save_mesh(run_save_directory, mesh)
         # ic('Time to write geom: ', time.time()-st1)
 
         # define finite element space
@@ -737,8 +785,8 @@ class NGSolveMEVP:
 
         u, v = fes.TnT()
 
-        a = BilinearForm(y * curl(u) * curl(v) * dx)#.Assemble()
-        m = BilinearForm(y * u * v * dx)#.Assemble()
+        a = BilinearForm(y * curl(u) * curl(v) * dx)  #.Assemble()
+        m = BilinearForm(y * u * v * dx)  #.Assemble()
 
         apre = BilinearForm(y * curl(u) * curl(v) * dx + y * u * v * dx)
         pre = Preconditioner(apre, "direct", inverse="sparsecholesky")
@@ -771,7 +819,7 @@ class NGSolveMEVP:
         evals[0] = 1  # <- replace nan with zero
         # for i, lam in enumerate(evals):
         freq_fes = c0 * np.sqrt(evals) / (2 * np.pi) * 1e-6
-            # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
+        # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
 
         # plot results
         gfu_E = []
@@ -784,7 +832,10 @@ class NGSolveMEVP:
             gfu_E.append(gfu)
             gfu_H.append(1j / (mu0 * w) * curl(gfu))
 
-        # # alternative eigenvalue solver
+        # save fields
+        self.save_fields(run_save_directory, gfu_E, gfu_H)
+
+        # # alternative eigenvalue solver, but careful, mode numbering may change
         # u = GridFunction(fes, multidim=30, name='resonances')
         # lamarnoldi = ArnoldiSolver(a.mat, m.mat, fes.FreeDofs(),
         #                         list(u.vecs), shift=300)
@@ -805,9 +856,11 @@ class NGSolveMEVP:
         with open(fr'{run_save_directory}\qois.json', "w") as f:
             json.dump(qois, f, indent=4, separators=(',', ': '))
 
-    def cavity_flattop(self, no_of_cells=1, no_of_modules=1, mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
-               fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
-               parentDir=None, projectDir=None, subdir='', expansion=None, expansion_r=None, mesh_args=None, opt=False,
+    def cavity_flattop(self, no_of_cells=1, no_of_modules=1,
+                       mid_cells_par=None, l_end_cell_par=None, r_end_cell_par=None,
+                       fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
+                       sim_folder='NGSolveMEVP', parentDir=None, projectDir=None, subdir='',
+                       expansion=None, expansion_r=None, mesh_args=None, opt=False,
                        deformation_params=None):
         """
         Write geometry file and run eigenmode analysis with NGSolveMEVP
@@ -864,15 +917,16 @@ class NGSolveMEVP:
         if mesh_args is None:
             mesh_args = [20, 20]
         if opt:  # consider making better. This was just an adhoc fix
-            run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP_opt/{fid}'
+            run_save_directory = projectDir / fr'SimulationData/Optimisation/{fid}'
         else:
             # change save directory
             if subdir == '':
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{fid}/{pol_subdir}'
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{fid}/{pol_subdir}'
             else:
-                run_save_directory = projectDir / fr'SimulationData/NGSolveMEVP/{subdir}/{fid}/{pol_subdir}'
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{subdir}/{fid}/{pol_subdir}'
         # write
-        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes, cell_type='flattop', plot=False)
+        self.write_geometry(run_save_directory, no_of_cells, mid_cells_par, l_end_cell_par, r_end_cell_par, beampipes,
+                            cell_type='flattop', plot=False)
         # print('done writing geometry')
 
         # read geometry
@@ -880,7 +934,8 @@ class NGSolveMEVP:
                                header=None, skiprows=3, skipfooter=1, sep='\s+', engine='python')[[1, 0, 2]]
 
         if deformation_params is not None:
-            cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(), deformation_params)
+            cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(),
+                                            deformation_params)
             # save deformed cavity profile
             cav_geom.to_csv(f'{run_save_directory}\geodata_deformed.n', sep='\t')
 
@@ -911,9 +966,13 @@ class NGSolveMEVP:
 
         # mesh
         A_m, B_m, a_m, b_m, Ri_m, L, Req = np.array(mid_cells_par[:7])
-        maxh = L / mesh_args[0] *1e-3
+        maxh = L / mesh_args[0] * 1e-3
         ngmesh = geo.GenerateMesh(maxh=maxh)
         mesh = Mesh(ngmesh)
+        mesh.Curve(3)
+
+        # save mesh
+        self.save_mesh(run_save_directory, mesh)
 
         # define finite element space
         fes = HCurl(mesh, order=1, dirichlet='default')
@@ -944,11 +1003,10 @@ class NGSolveMEVP:
             proj = IdentityMatrix() - gradmat @ invh1 @ gradmattrans @ m.mat
 
             projpre = proj @ pre.mat
-            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 3, maxit=mesh_args[1],
+            evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 1, maxit=mesh_args[1],
                                           printrates=False)
 
         # print out eigenvalues
-        # print("Eigenvalues")
         freq_fes = []
         evals[0] = 1  # <- replace nan with zero
         for i, lam in enumerate(evals):
@@ -966,7 +1024,10 @@ class NGSolveMEVP:
             gfu_E.append(gfu)
             gfu_H.append(1j / (mu0 * w) * curl(gfu))
 
-        # # alternative eigenvalue solver
+        # save fields
+        self.save_fields(run_save_directory, gfu_E, gfu_H)
+
+        # # alternative eigenvalue solver, but careful, mode numbering may change
         # u = GridFunction(fes, multidim=30, name='resonances')
         # lamarnoldi = ArnoldiSolver(a.mat, m.mat, fes.FreeDofs(),
         #                         list(u.vecs), shift=300)
@@ -987,6 +1048,167 @@ class NGSolveMEVP:
         with open(fr'{run_save_directory}\qois.json', "w") as f:
             json.dump(qois, f, indent=4, separators=(',', ': '))
 
+    def geometry_from_file(self, filepath):
+        pass
+
+    def geometry_from_array(self, ):
+        pass
+
+    def pillbox(self, no_of_cells=1, no_of_modules=1, cell_par=None,
+                fid=None, bc=33, pol='Monopole', f_shift='default', beta=1, n_modes=None, beampipes='None',
+                sim_folder='NGSolveMEVP', parentDir=None, projectDir=None, subdir='',
+                expansion=None, expansion_r=None, mesh_args=None, opt=False, deformation_params=None):
+
+        if pol != 'Monopole':
+            pol_subdir = 'dipole'
+        else:
+            pol_subdir = 'monopole'
+
+        # change save directory
+        if mesh_args is None:
+            mesh_args = [20, 20]
+        if opt:
+            # consider making better. This was just an adhoc fix
+            run_save_directory = os.path.join(projectDir, fr'SimulationData/Optimisation/{fid}')
+        else:
+            # change save directory
+            if subdir == '':
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{fid}/{pol_subdir}'
+            else:
+                run_save_directory = projectDir / fr'SimulationData/{sim_folder}/{subdir}/{fid}/{pol_subdir}'
+
+        # write geometry
+        file_path = f'{run_save_directory}\geodata.n'
+        write_pillbox_geometry(file_path, no_of_cells, cell_par, beampipes)
+
+        if os.path.exists(file_path):
+            # read geometry
+            cav_geom = pd.read_csv(f'{run_save_directory}\geodata.n',
+                                   header=None, sep='\s+', engine='python')[[1, 0, 2]]
+
+            if deformation_params is not None:
+                cav_geom = self.gaussian_deform(no_of_cells, cav_geom.drop_duplicates(subset=[0, 1]).to_numpy(),
+                                                deformation_params)
+                # save deformed cavity profile
+                cav_geom.to_csv(f'{run_save_directory}\geodata_deformed.n', sep='\t')
+
+            cav_geom = cav_geom[[1, 0]]
+            # plt.plot(cav_geom[1], cav_geom[0], ls='--', lw=4)
+            # plt.show()
+
+            pnts = list(cav_geom.itertuples(index=False, name=None))
+            wp = WorkPlane()
+            wp.MoveTo(*pnts[0])
+            for p in pnts[1:]:
+                wp.LineTo(*p)
+            wp.Close().Reverse()
+            face = wp.Face()
+
+            # name the boundaries
+            face.edges.Max(X).name = "r"
+            face.edges.Max(X).col = (1, 0, 0)
+            face.edges.Min(X).name = "l"
+            face.edges.Min(X).col = (1, 0, 0)
+            face.edges.Min(Y).name = "b"
+            face.edges.Min(Y).col = (1, 0, 0)
+
+            geo = OCCGeometry(face, dim=2)
+
+            # mesh
+            L, Req = cell_par[0], cell_par[1]
+            maxh = L / mesh_args[0] * 1e-3
+            print(maxh)
+
+            # try to generate mesh
+            try:
+                ngmesh = geo.GenerateMesh(maxh=maxh)
+            except Exception as e:
+                error('Unable to generate mesh:: ', e)
+                plt.plot(cav_geom[1], cav_geom[0])
+                plt.show()
+                exit()
+            mesh = Mesh(ngmesh)
+            mesh.Curve(3)
+
+            # save mesh
+            self.save_mesh(run_save_directory, mesh)
+
+            # define finite element space
+            fes = HCurl(mesh, order=1, dirichlet='default')
+
+            u, v = fes.TnT()
+
+            a = BilinearForm(y * curl(u) * curl(v) * dx)
+            m = BilinearForm(y * u * v * dx)
+
+            apre = BilinearForm(y * curl(u) * curl(v) * dx + y * u * v * dx)
+            pre = Preconditioner(apre, "direct", inverse="sparsecholesky")
+
+            with TaskManager():
+                a.Assemble()
+                m.Assemble()
+                apre.Assemble()
+
+                # build gradient matrix as sparse matrix (and corresponding scalar FESpace)
+                gradmat, fesh1 = fes.CreateGradient()
+
+                gradmattrans = gradmat.CreateTranspose()  # transpose sparse matrix
+                math1 = gradmattrans @ m.mat @ gradmat  # multiply matrices
+                math1[0, 0] += 1  # fix the 1-dim kernel
+                invh1 = math1.Inverse(inverse="sparsecholesky", freedofs=fesh1.FreeDofs())
+
+                # build the Poisson projector with operator Algebra:
+                proj = IdentityMatrix() - gradmat @ invh1 @ gradmattrans @ m.mat
+
+                projpre = proj @ pre.mat
+                evals, evecs = solvers.PINVIT(a.mat, m.mat, pre=projpre, num=no_of_cells + 1, maxit=mesh_args[1],
+                                              printrates=False)
+
+            freq_fes = []
+            evals[0] = 1  # <- replace nan with zero
+            for i, lam in enumerate(evals):
+                freq_fes.append(c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6)
+                # print(i, lam, 'freq: ', c0 * np.sqrt(lam) / (2 * np.pi) * 1e-6, "MHz")
+
+            # plot results
+            gfu_E = []
+            gfu_H = []
+            for i in range(len(evecs)):
+                w = 2 * pi * freq_fes[i] * 1e6
+                gfu = GridFunction(fes)
+                gfu.vec.data = evecs[i]
+
+                gfu_E.append(gfu)
+                gfu_H.append(1j / (mu0 * w) * curl(gfu))
+
+            # save fields
+            self.save_fields(run_save_directory, gfu_E, gfu_H)
+
+            # # alternative eigenvalue solver, but careful, mode numbering may change
+            # u = GridFunction(fes, multidim=30, name='resonances')
+            # lamarnoldi = ArnoldiSolver(a.mat, m.mat, fes.FreeDofs(),
+            #                         list(u.vecs), shift=300)
+            # print(np.sort(c0*np.sqrt(lamarnoldi)/(2*np.pi) * 1e-6))
+
+            # save json file
+            shape = {'IC': cell_par}
+            # print(run_save_directory)
+            with open(Path(fr"{run_save_directory}/geometric_parameters.json"), 'w') as f:
+                json.dump(shape, f, indent=4, separators=(',', ': '))
+
+            qois = self.evaluate_qois(cav_geom, no_of_cells, Req, L, gfu_E, gfu_H, mesh, freq_fes)
+
+            with open(fr'{run_save_directory}\qois.json', "w") as f:
+                json.dump(qois, f, indent=4, separators=(',', ': '))
+            return True
+        else:
+            error('Could not run eigenmode analysis due to error in geometry.')
+            return False
+
+    def vhf_gun(self):
+        # variables
+        # y1, T2, R2, L3, R4, L5, R6, R8, T9, R9, T10, R10, L11, R12, L13, R14, G, L_bp
+        pass
 
     @staticmethod
     def eigen3d(geometry_dir):
@@ -1174,9 +1396,99 @@ class NGSolveMEVP:
         return qois
 
     @staticmethod
+    def save_fields(project_folder, gfu_E, gfu_H):
+        # save mode fields
+        with open(f"{project_folder}/gfu_EH.pkl", "wb") as f:
+            pickle.dump([gfu_E, gfu_H], f)
+
+    @staticmethod
+    def save_mesh(project_folder, mesh):
+        # save mesh
+        folder = os.path.dirname(project_folder)
+        with open(f"{folder}/mesh.pkl", "wb") as f:
+            pickle.dump(mesh, f)
+
+    @staticmethod
+    def load_fields(folder, mode):
+        with open(f'{folder}/gfu_EH.pkl', "rb") as f:
+            [gfu_E, gfu_H] = pickle.load(f)
+        return gfu_E, gfu_H
+
+    @staticmethod
+    def load_mesh(folder):
+        folder = os.path.dirname(folder)
+        # pickle mesh and fields
+        with open(f'{folder}/mesh.pkl', 'rb') as f:
+            mesh = pickle.load(f)
+
+        return mesh
+
+    def plot_fields(self, folder, mode=1, plotter='matplotlib'):
+        gfu_E, gfu_H = self.load_fields(folder, mode)
+
+        if plotter == 'matplotlib':
+            mesh = self.load_mesh(folder)
+            mesh_points = mesh.vertices
+            E_values_mesh = []
+            mesh_points_grid = []
+            for pp in mesh_points:
+                mesh_points_grid.append(pp.point)
+                E_values_mesh.append(Norm(gfu_E[mode])(mesh(*pp.point)))
+
+            mesh_points_grid = np.array(mesh_points_grid)
+            xxt, yyt = mesh_points_grid[:, 0], mesh_points_grid[:, 1]
+            triang = tri.Triangulation(xxt, yyt)
+
+            # plot only triangles with sidelength smaller some max_radius
+            max_radius = 0.02
+            triangles = triang.triangles
+            # Mask unwanted triangles.
+            xtri = xxt[triangles] - np.roll(xxt[triangles], 1, axis=1)
+            ytri = yyt[triangles] - np.roll(yyt[triangles], 1, axis=1)
+            maxi = np.max(np.sqrt(xtri ** 2 + ytri ** 2), axis=1)
+            triang.set_mask(np.max(xtri, axis=1) > max_radius)
+
+            plt.tricontourf(triang, E_values_mesh, cmap='jet')
+            plt.gca().set_aspect('equal', 'box')
+            plt.show()
+        else:
+            Draw(gfu_H)
+
+    def plot_mesh(self, folder, plotter='matplotlib'):
+        mesh = self.load_mesh(folder)
+
+        if plotter == 'matplotlib':
+
+            mesh_points = mesh.vertices
+            mesh_points_grid = []
+            for pp in mesh_points:
+                mesh_points_grid.append(pp.point)
+
+            mesh_points_grid = np.array(mesh_points_grid)
+            xxt, yyt = mesh_points_grid[:, 0], mesh_points_grid[:, 1]
+
+            triang = tri.Triangulation(xxt, yyt)
+
+            # plot only triangles with sidelength smaller some max_radius
+            max_radius = 0.02
+            triangles = triang.triangles
+            # Mask unwanted triangles.
+            xtri = xxt[triangles] - np.roll(xxt[triangles], 1, axis=1)
+            ytri = yyt[triangles] - np.roll(yyt[triangles], 1, axis=1)
+            maxi = np.max(np.sqrt(xtri ** 2 + ytri ** 2), axis=1)
+            triang.set_mask(maxi > max_radius)
+
+            plt.triplot(triang, lw=1, c='k', zorder=4)
+            plt.scatter(mesh_points_grid[:, 0], mesh_points_grid[:, 1])
+            plt.gca().set_aspect('equal', 'box')
+            plt.show()
+        else:
+            Draw(mesh)
+
+    @staticmethod
     def createFolder(fid, projectDir, subdir='', filename=None, opt=False, pol='monopole'):
         if opt:
-            ngsolvemevp_folder = 'NGSolveMEVP_opt'
+            ngsolvemevp_folder = 'Optimisation'
         else:
             ngsolvemevp_folder = 'NGSolveMEVP'
         # change save directory
@@ -1233,15 +1545,15 @@ class NGSolveMEVP:
         deform_vector = np.zeros((len(surface), 1))
         for n_cell in range(n_cells):
             # get index of ncell surface nodes
-            n_cell_surf_indx = np.where(surface[:, 2] == n_cell+1)[0]
+            n_cell_surf_indx = np.where(surface[:, 2] == n_cell + 1)[0]
 
             mn, mx = np.min(n_cell_surf_indx), np.max(n_cell_surf_indx)
 
             # disp = deformation_params[n_cell*3] * 0.02
-            disp = deformation_params[n_cell*3]
+            disp = deformation_params[n_cell * 3]
             # scale sigma to between 10 and 20% of length of cavity cell
-            sigma = (0.1 + (0.2 - 0.1)*(1 + deformation_params[n_cell*3 + 1])/2) * len(n_cell_surf_indx)
-            shift = deformation_params[n_cell*3 + 2]*(mn + mx)/2
+            sigma = (0.1 + (0.2 - 0.1) * (1 + deformation_params[n_cell * 3 + 1]) / 2) * len(n_cell_surf_indx)
+            shift = deformation_params[n_cell * 3 + 2] * (mn + mx) / 2
             # n_cell_deform_matrix = np.identity(len(surface)) + disp * np.diag(self.gauss(len(surface), sigma, shift=shift))
             # n_cell_deform_surface = n_cell_deform_matrix @ surface
             # plt.plot(n_cell_deform_surface[:, 0], n_cell_deform_surface[:, 1], label=n_cell)#, marker='o', mfc='none'
@@ -1250,7 +1562,7 @@ class NGSolveMEVP:
             # plt.plot(n_cell_deform_surface[:, 0], n_cell_deform_surface[:, 1], label=n_cell)#, marker='o', mfc='none'
 
             # deform_matrix += disp * np.diag(self.gauss(len(surface), sigma, shift=shift))
-            deform_vector += np.atleast_2d(disp*2e-3*self.gauss(len(surface), sigma, shift=shift)).T
+            deform_vector += np.atleast_2d(disp * 2e-3 * self.gauss(len(surface), sigma, shift=shift)).T
 
         # deform surface
         # surface_def = deform_matrix @ surface

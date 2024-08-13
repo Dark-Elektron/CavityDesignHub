@@ -29,7 +29,7 @@ class PCE:
 
         random_var_order = [p_order for v in self.rand_vars]
         # random_var_order = [1, 1, 1, 1]
-        rvo = [[i for i in range(x+1)] for x in random_var_order]
+        rvo = [[i for i in range(x + 1)] for x in random_var_order]
 
         alpha = list(itertools.product(*rvo))
         x = {}
@@ -49,7 +49,8 @@ class PCE:
                         poly_list[f'{a}'] = [self.Le(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
                         pc, sy = self.Le(i, x[list(x.keys())[j]], self.rand_vars[j])
                     elif self.poly_type.lower() == 'he':
-                        poly_list[f'{a}'], poly_list[f'w{a}'] = [self.He(i, x[list(x.keys())[j]]) for j, i in enumerate(a)]
+                        poly_list[f'{a}'], poly_list[f'w{a}'] = [self.He(i, x[list(x.keys())[j]]) for j, i in
+                                                                 enumerate(a)]
                         pc, sy = self.He(i, x[list(x.keys())[j]], self.rand_vars[j])
 
                     elif self.poly_type.lower() == 'la':
@@ -86,8 +87,8 @@ class PCE:
             for k, v in poly_list.items():
                 p = np.prod(np.vstack(v), axis=0)
 
-                c[ob][k] = np.dot(self.df[ob], p)/np.dot(p, p)
-                poly_sym += c[ob][k]*poly_list_sym[k]
+                c[ob][k] = np.dot(self.df[ob], p) / np.dot(p, p)
+                poly_sym += c[ob][k] * poly_list_sym[k]
 
                 ci += 1
 
@@ -127,7 +128,7 @@ class PCE:
             ic(reg.score(A, b))
             # ic(x)
 
-            poly[ob] = np.sum(np.array(list(poly_list_sym.values()))*coef_dict[ob])
+            poly[ob] = np.sum(np.array(list(poly_list_sym.values())) * coef_dict[ob])
 
             symbols_dict = self.update_symbols_dict(symbols_dict, self.df.loc[1, self.rand_vars])
             # ic(poly[ob].subs(symbols_dict))
@@ -204,27 +205,27 @@ class PCE:
 
             if n == 0:
                 # isoprobabilistic transformation
-                p = mu + s*1
+                p = mu + s * 1
                 return p, sym
 
             if n == 1:
                 # isoprobabilistic transformation
-                p = mu + s*(2 * sym)
+                p = mu + s * (2 * sym)
                 return p, sym
 
             if n == 2:
                 # isoprobabilistic transformation
-                p = mu + s*(4 * sym ** 2 - 2)
+                p = mu + s * (4 * sym ** 2 - 2)
                 return p, sym
 
             if n == 3:
                 # isoprobabilistic transformation
-                p = mu + s*(8 * sym ** 3 - 12 * sym)
+                p = mu + s * (8 * sym ** 3 - 12 * sym)
                 return p, sym
 
             if n == 4:
                 # isoprobabilistic transformation
-                p = mu + s*(16 * sym ** 4 - 48 * sym ** 2 + 12)
+                p = mu + s * (16 * sym ** 4 - 48 * sym ** 2 + 12)
 
                 return p, sym
         else:
@@ -387,8 +388,8 @@ class UQModel:
         # scale
         for i in range(D):
             lb, ub = bounds[i]
-            A[:, i] = lb + A[:, i]*(ub - lb)
-            B[:, i] = lb + B[:, i]*(ub - lb)
+            A[:, i] = lb + A[:, i] * (ub - lb)
+            B[:, i] = lb + B[:, i] * (ub - lb)
 
         df = pd.DataFrame(A, columns=rand_vars)
         df = pd.concat([df, pd.DataFrame(B, columns=rand_vars)], ignore_index=True)
@@ -404,7 +405,7 @@ class UQModel:
     def generate_input_qmc(N, rand_vars, bounds):
         D = len(rand_vars)
         l_bounds, u_bounds = np.array(bounds).T
-        sampler = qmc.LatinHypercube(d=D)
+        sampler = qmc.LatinHypercube(d=D, seed=98765)
         _ = sampler.reset()
         # generate matrix A
         A = sampler.random(n=N)
@@ -421,7 +422,7 @@ class UQModel:
             A_copy[:, i] = B[:, i]
 
             df = pd.concat([df, pd.DataFrame(A_copy, columns=rand_vars)], ignore_index=True)
-
+        ic("generagted seq", df)
         return df
 
     def set_sample_size(self, n):
@@ -547,21 +548,21 @@ class UQModel:
             Sj[ob] = {}
             STj[ob] = {}
             for j, rv in enumerate(rand_vars):
-                E2Y = (1/N)*(np.sum([df[ob][i] * df[ob][N + i] for i in range(N)]))
-                VEx = (1/N)*np.sum([df[ob][N + i] * df[ob][(j+2)*N + i] for i in range(N)]) - E2Y
+                E2Y = (1 / N) * (np.sum([df[ob][i] * df[ob][N + i] for i in range(N)]))
+                VEx = (1 / N) * np.sum([df[ob][N + i] * df[ob][(j + 2) * N + i] for i in range(N)]) - E2Y
 
-                EY = (1/N)*np.sum([(df[ob][i]) for i in range(N)])
-                ic(EY)
-                VY = (1/N)*np.sum([(df[ob][i])**2 for i in range(N)]) - EY**2
+                EY = (1 / N) * np.sum([(df[ob][i]) for i in range(N)])
+                # ic(EY)
+                VY = (1 / N) * np.sum([(df[ob][i]) ** 2 for i in range(N)]) - EY ** 2
 
-                EVYx = (1/N)*np.sum([(df[ob][i])**2 - df[ob][i]*df[ob][(j+2)*N + i] for i in range(N)])
+                EVYx = (1 / N) * np.sum([(df[ob][i]) ** 2 - df[ob][i] * df[ob][(j + 2) * N + i] for i in range(N)])
                 # EVYx = (1/(2*N))*np.sum([(df[ob][i] - df[ob][(j+2)*N + i])**2 for i in range(N)])
-                ic(VEx, EVYx, VY)
+                # ic(VEx, EVYx, VY)
 
-                Sj[ob][f"V[E[{ob}|{rv}]]"] = VEx/VY
-                STj[ob][f"V[E[{ob}|{rv}]]"] = EVYx/VY
+                Sj[ob][f"V[E[{ob}|{rv}]]"] = VEx / VY
+                STj[ob][f"V[E[{ob}|{rv}]]"] = EVYx / VY
 
-        ic(Sj)
+        # ic(Sj)
         return Sj, STj
 
     def sobol_janon(self):
@@ -580,17 +581,18 @@ class UQModel:
         for ob in obj_vars:
             Sj[ob], STj[ob] = {}, {}
             for j, rv in enumerate(rand_vars):
-                E2Y = ((1/N)*(np.sum([(df[ob][N+i] + df[ob][(j+2)*N + i])/2 for i in range(N)])))**2
-                VEx = (1/N)*np.sum([df[ob][N + i] * df[ob][(j+2)*N + i] for i in range(N)]) - E2Y
+                E2Y = ((1 / N) * (np.sum([(df[ob][N + i] + df[ob][(j + 2) * N + i]) / 2 for i in range(N)]))) ** 2
+                VEx = (1 / N) * np.sum([df[ob][N + i] * df[ob][(j + 2) * N + i] for i in range(N)]) - E2Y
 
-                EY = ((1/N)*(np.sum([(df[ob][N+i] + df[ob][(j+2)*N + i])/2 for i in range(N)])))
-                VY = (1/N)*np.sum([(df[ob][N+i]**2 + df[ob][(j+2)*N + i]**2)/2 for i in range(N)]) - EY**2
+                EY = ((1 / N) * (np.sum([(df[ob][N + i] + df[ob][(j + 2) * N + i]) / 2 for i in range(N)])))
+                VY = (1 / N) * np.sum(
+                    [(df[ob][N + i] ** 2 + df[ob][(j + 2) * N + i] ** 2) / 2 for i in range(N)]) - EY ** 2
 
-                EVYx = (1/N)*np.sum([(df[ob][i])**2 - df[ob][i]*df[ob][(j+2)*N + i] for i in range(N)])
+                EVYx = (1 / N) * np.sum([(df[ob][i]) ** 2 - df[ob][i] * df[ob][(j + 2) * N + i] for i in range(N)])
                 # EVYx = (1/(2*N))*np.sum([(df[ob][i] - df[ob][(j+2)*N + i])**2 for i in range(N)])
 
-                Sj[ob][f"V[E[{ob}|{rv}]]"] = VEx/VY
-                STj[ob][f"V[E[{ob}|{rv}]]"] = EVYx/VY
+                Sj[ob][f"V[E[{ob}|{rv}]]"] = VEx / VY
+                STj[ob][f"V[E[{ob}|{rv}]]"] = EVYx / VY
 
         ic(Sj)
         return Sj, STj
@@ -617,10 +619,10 @@ class UQModel:
             for key in x:
                 # for key in x.keys():
                 if key == 0:
-                    S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$')
+                    S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width=width, label=r"$\mathbf{" + key + '}$')
                 else:
-                    S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width, label=r"$\mathbf{" + key + '}$',
-                           bottom=bottom)
+                    S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width=width, label=r"$\mathbf{" + key + '}$',
+                                bottom=bottom)
 
                 bottom += np.array([S[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
                 # bottom1 += np.array([STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
@@ -649,10 +651,10 @@ class UQModel:
         else:
             data = []
             X = np.arange(len(x))
-            width = 1/(len(x) + 2)
+            width = 1 / (len(x) + 2)
             for i, ob in enumerate(obj):
                 data = list(S[ob].values())
-                ax.bar(X + i*width, data, width=width, label=ob)
+                ax.bar(X + i * width, data, width=width, label=ob)
 
             plt.xticks([r + width for r in range(len(x))], x)
 
@@ -756,7 +758,7 @@ def func(model_input, df):
     Y = np.zeros((df.shape[0], len(obj)))
 
     for jj, ob in enumerate(obj):
-        Y[:, jj-1] = (1 - df[x[0]]) ** 2 + 100 * (df[x[1]] - df[x[0]] ** 2) ** 2
+        Y[:, jj - 1] = (1 - df[x[0]]) ** 2 + 100 * (df[x[1]] - df[x[0]] ** 2) ** 2
 
     Y = pd.concat([df, pd.DataFrame(Y, columns=obj)], axis=1)
 
@@ -771,7 +773,7 @@ def ishigami(model_input, df):
 
     for jj, ob in enumerate(obj):
         a, b = 7, 0.1
-        Y[:, jj - 1] = np.sin(df[x[0]]) + a*(np.sin(df[x[1]]))**2 + b*df[x[2]]**4*np.sin(df[x[0]])
+        Y[:, jj - 1] = np.sin(df[x[0]]) + a * (np.sin(df[x[1]])) ** 2 + b * df[x[2]] ** 4 * np.sin(df[x[0]])
 
     Y = pd.concat([df, pd.DataFrame(Y, columns=obj)], axis=1)
 
@@ -779,7 +781,6 @@ def ishigami(model_input, df):
 
 
 def example_simplySupportedBeam(model_input, df):
-
     x = model_input['random variables']
     obj = model_input['objective variables']
 
@@ -808,7 +809,7 @@ def toy_problem(model_input, df):
     x, y = df[x[0]], df[x[1]]
 
     f1 = 4 * x ** 2 + y ** 2 + x * y
-    f2 = (x-1)**2 + 3*(y-1)**2
+    f2 = (x - 1) ** 2 + 3 * (y - 1) ** 2
     F = np.array([f1, f2]).T
 
     F = pd.concat([df, pd.DataFrame(F, columns=obj)], axis=1)
@@ -871,18 +872,17 @@ def pce_from_file(model_input, df):
 
 
 def input_from_df(model_input, df):
-
     # create function from data input
     # filename = fr'C:\Users\sosoho\DakotaProjects\HookCoupler_test\dakota_HC_tabular_dataF3A.xlsx'
     # df_data = pd.read_excel(filename, 'Sheet1')
     # ic(df_data)
-    filename = fr'C:\Users\sosoho\DakotaProjects\COMPUMAG\ConferenceResults\HC_MC_1mm\sim_result_table.dat'
+    filename = fr'C:\Users\sosoho\DakotaProjects\TESLA_HOM\sim_result_table.dat'
     df_data = pd.read_csv(filename, sep='\s+')
     x = model_input['random variables']
     obj = model_input['objective variables']
 
     # select random variables and onjective variables from dataframe
-    df_x_obj = df_data[x+obj].copy()
+    df_x_obj = df_data[x + obj].copy()
     ic(df_x_obj)
 
     return df_x_obj
@@ -954,8 +954,341 @@ def stroud(p):
     return nodes
 
 
-if __name__ == '__main__':
+def sub_lists(ll):
+    # initializing empty list
+    comb = []
 
+    # Iterating till length of list
+    for i in range(len(ll) + 1):
+        # Generating sub list
+        comb += [list(j) for j in combinations(ll, i)]
+    # Returning list
+    return comb[1:-1]
+
+
+def sobol_satelli_from_df(df, x_ind, obj_ind, N=1000):
+    """
+        A starts from 0 to N-1
+        B starts from N to 2N - 1
+        AB0 starts from 2N to 3N - 1
+    """
+    rand_vars = df.columns[x_ind]
+    obj_vars = df.columns[obj_ind]
+
+    ic("model output", df)
+
+    Sj = {}
+    STj = {}
+    for ob in obj_vars:
+        Sj[ob] = {}
+        STj[ob] = {}
+        for j, rv in enumerate(rand_vars):
+            E2Y = (1 / N) * (np.sum([df[ob][i] * df[ob][N + i] for i in range(N)]))
+            VEx = (1 / N) * np.sum([df[ob][N + i] * df[ob][(j + 2) * N + i] for i in range(N)]) - E2Y
+
+            EY = (1 / N) * np.sum([(df[ob][i]) for i in range(N)])
+            # ic(EY)
+            VY = (1 / N) * np.sum([(df[ob][i]) ** 2 for i in range(N)]) - EY ** 2
+
+            EVYx = (1 / N) * np.sum([(df[ob][i]) ** 2 - df[ob][i] * df[ob][(j + 2) * N + i] for i in range(N)])
+            # EVYx = (1/(2*N))*np.sum([(df[ob][i] - df[ob][(j+2)*N + i])**2 for i in range(N)])
+            # ic(VEx, EVYx, VY)
+
+            Sj[ob][f"V[E[{ob}|{rv}]]"] = VEx / VY
+            STj[ob][f"V[E[{ob}|{rv}]]"] = EVYx / VY
+
+    # ic(Sj)
+    return Sj, STj
+
+
+# def sobol_from_df(df, x_ind, obj_ind):
+#     x = df.columns[x_ind]
+#     obj = df.columns[obj_ind]
+#     print(x)
+#     print(obj)
+#     ic(df)
+#
+#     power_set = sub_lists(x)
+#
+#     Sj = {}
+#     STi = {}
+#     for ob in obj:
+#         Sj[ob] = {}
+#         STi[ob] = {}
+#         for subset in power_set:
+#         # for subset in x: # only main
+#             # ic(len(power_set))
+#             # ic(power_set)
+#             # ic(df_[ob], np.var(df_[ob]))
+#             var = np.var(df.groupby(subset)[ob].mean()) / np.var(df[ob])
+#
+#             if len(subset) == 1:
+#                 # print(subset, np.var(df_.groupby(subset)[ob].mean()), np.var(df_[ob]))
+#                 # if subset == ['a2']:
+#                 #     print(df_.groupby(subset)[ob].mean())
+#                 #     print(df_[ob])
+#                 Sj[ob][f'V[E[{ob}|{",".join(map(str, subset))}]]'] = var
+#
+#                 # total sobol
+#                 subset_inv = [s for s in x if s not in subset]
+#                 var_i = 1 - np.var(df.groupby(subset_inv)[ob].mean()) / np.var(df[ob])
+#                 STi[ob][f'V[E[{ob}|{",".join(map(str, subset))}]]'] = var_i
+#             # else:
+#             #     power_subset = sub_lists(subset)
+#             #     for rand_var in power_subset:
+#             #         var = var - Sj[ob][f'V[E[{ob}|{",".join(map(str, rand_var))}]]']
+#             #
+#             #     Sj[ob][f'V[E[{ob}|{",".join(map(str, subset))}]]'] = var
+#
+#     return Sj, STi
+
+
+def plot_sobol_indices(dff, objectives, which=None, kind='stacked', orientation='vertical', normalise=True, group=None, reorder_index=None,
+                       selection_index=None):
+    # if which is None:
+    #     which = ['Main']
+    #
+    # start_keyword = "Main"
+    # interaction_start_keyword = "Interaction"
+    # pattern = r'\s+(-?\d\.\d+e[+-]\d+)\s+(-?\d\.\d+e[+-]\d+)\s+(\w+)'
+    # pattern_interaction = r'\s*(-?\d+\.\d+e[-+]\d+)\s+(\w+)\s+(\w+)\s*'
+    #
+    # with open(filepath, "r") as file:
+    #     # read the file line by line
+    #     lines = file.readlines()
+    #
+    #     # initialize a flag to indicate when to start and stop recording lines
+    #     record = False
+    #     record_interaction = False
+    #
+    #     # initialize a list to store the lines between the keywords
+    #     result = {}
+    #     result_interaction = {}
+    #     count = 0
+    #     # loop through each line in the file
+    #     for line in lines:
+    #         # check if the line contains the start keyword
+    #         if start_keyword in line:
+    #             # if it does, set the flag to start recording lines
+    #             record = True
+    #             result[count] = []
+    #             continue
+    #
+    #         if interaction_start_keyword in line:
+    #             record_interaction = True
+    #             result_interaction[count] = []
+    #             continue
+    #
+    #         # if the flag is set to record, add the line to the result list
+    #         if record:
+    #             if re.match(pattern, line):
+    #                 result[count].append(re.findall("\S+", line))
+    #             else:
+    #                 record = False
+    #                 count += 1
+    #
+    #         if record_interaction:
+    #             if re.match(pattern_interaction, line):
+    #                 result_interaction[count-1].append(re.findall("\S+", line))
+    #             else:
+    #                 record_interaction = False
+    #
+    # # ic(result, type(result))
+    # # ic(result_interaction)
+    # if selection_index:
+    #     result = {i: result[key] for i, key in enumerate(selection_index)}
+    # # result = result_interaction
+    # # check if any function is empty and repeat the first one
+    # # result[0] = result[2]
+    #
+    # df_merge = pd.DataFrame(columns=['main', 'total', 'vars'])
+    #
+    # # print the lines between the keywords
+    # # df_merge_list = []
+    # ic(result)
+    # for i, (k, v) in enumerate(result.items()):
+    #     df = pd.DataFrame(v, columns=['main', 'total', 'vars'])
+    #     df = df.astype({'main': 'float', 'total': 'float'})
+    #     # df_merge_list.append(df)
+    #     # ic(df)
+    #     # ic(df_merge)
+    #     if i == 0:
+    #         df_merge = df
+    #     else:
+    #         df_merge = pd.merge(df_merge, df, on='vars', suffixes=(f'{i}', f'{i+1}'))
+    #     # df.plot.bar(x='var', y='Main')
+    # # ic(df_merge_list)
+    # # df_merge = pd.merge(df_merge_list, on='vars')
+    # # ic(df_merge)
+    #
+    # df_merge_interaction = pd.DataFrame(columns=['interaction', 'var1', 'var2'])
+    # # ic(result_interaction.items())
+    # for i, (k, v) in enumerate(result_interaction.items()):
+    #     df = pd.DataFrame(v, columns=['interaction', 'var1', 'var2'])
+    #     df = df.astype({'interaction': 'float'})
+    #     if i == 0:
+    #         df_merge_interaction = df
+    #     else:
+    #         # df_merge_interaction = pd.merge(df_merge_interaction, df, on=['var1', 'var2'])
+    #         pass
+    #     # ic(df_merge_interaction)
+    #
+    #     # combine var columns
+    #     # df_merge_interaction["vars"] = df_merge_interaction[["var1", "var2"]].agg(','.join, axis=1)
+    #     # df.plot.bar(x='var', y='Main')
+    #
+    # # ic(df_merge)
+    #
+    # # group columns
+    # if group:
+    #     df_merge_T = df_merge.T
+    #     df_merge_T.columns = df_merge_T.loc['vars']
+    #     df_merge_T = df_merge_T.drop('vars')
+    #     for g in group:
+    #         df_merge_T[','.join(g)] = df_merge_T[g].sum(axis=1)
+    #
+    #         # drop columns
+    #         df_merge_T = df_merge_T.drop(g, axis=1)
+    #
+    #     # reorder index
+    #     if reorder_index:
+    #         df_merge_T = df_merge_T[reorder_index]
+    #     df_merge = df_merge_T.T.reset_index()
+    #     # ic(df_merge)
+    #
+    # # ic(df_merge_interaction)
+    #
+    # if normalise:
+    #     # normalise dataframe columns
+    #     for column in df_merge.columns:
+    #         if 'main' in column or 'total' in column:
+    #             df_merge[column] = df_merge[column].abs() / df_merge[column].abs().sum()
+    #
+    # # ic(df_merge)
+    # # filter df
+    # for w in which:
+    #     if w.lower() == 'main' or w.lower() == 'total':
+    #         dff = df_merge.filter(regex=f'{w.lower()}|vars')
+    #     else:
+    #         # create new column which is a combination of the two variable names
+    #         dff = df_merge_interaction.filter(regex=f'{w.lower()}|vars')
+    #         if not dff.empty:
+    #             dff['vars'] = df_merge_interaction[['var1', 'var2']].apply(lambda x: '_'.join(x), axis=1)
+    #     print(dff)
+    #     # ic(objectives)
+
+    cmap = 'tab20'
+
+    if not dff.empty:
+        if kind.lower() == 'stacked':
+            dff_T = dff.set_index('vars').T
+            if orientation == 'vertical':
+                ax = dff_T.plot.bar(stacked=True, rot=0)#, cmap=cmap
+                ax.set_xlim(left=0)
+                plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
+            else:
+                ax = dff_T.plot.barh(stacked=True, rot=0, edgecolor='k')#, cmap=cmap
+                ax.invert_yaxis()
+                # for bars in ax.containers:
+                #     ax.bar_label(bars, fmt='%.2f', label_type='center', color='white', fontsize=5)
+
+                ax.set_xlim(left=0)
+                # ax.set_yticklabels(objectives)
+                plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=4, loc='lower left', mode='expand')
+        else:
+            if orientation == 'vertical':
+                ax = dff.plot.bar(x='vars', stacked=True)#, cmap=cmap
+                ax.set_xlim(left=0)
+                ax.axhline(0.05, c='k')
+                plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
+            else:
+                ax = dff.plot.barh(x='vars', stacked=True)#, cmap=cmap
+                ax.set_xlim(left=0)
+                ax.axvline(0.05, c='k')
+                plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=4, loc='lower left', mode='expand')
+
+        plt.tight_layout()
+        plt.show()
+    else:
+        ic(f"No {w} found.")
+
+
+def plot_sobol(S, input_variable_names, objective_variables, ylabel='Sobol', table=False, plot_type="Stacked"):
+    S = pd.DataFrame.from_dict(S)
+    ic(S)
+    # plot
+    fig, ax = plt.subplots()
+    x = input_variable_names
+    obj = objective_variables
+    width = 0.5
+
+    # for ob in obj:
+    # rand_var_dict = {0: 'A', 1: 'B', 2: 'a', 3: 'b', 4: 'Ri'}
+    # rand_var_dict = {0: 'lh1', 1: 'lh3', 2: 'lh4', 3: 'dh3', 4: 'alpha_h', 5: 'ch2', 6: 'r_cyl', 7: 'offset_y'}
+    rand_var_dict = {}
+    for i, v in enumerate(x):
+        rand_var_dict[i] = v
+
+    if plot_type == "Stacked":
+        bottom, bottom1 = np.zeros(len(obj)), np.zeros(len(obj))
+        for key in x:
+            # for key in x.keys():
+            if key == 0:
+                S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width=width, label=r"$\mathbf{" + key + '}$')
+            else:
+                S.plot.barh(obj, [S[ob][f'V[E[{ob}|{key}]]'] for ob in obj], width=width, label=r"$\mathbf{" + key + '}$',
+                            bottom=bottom)
+
+            bottom += np.array([S[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
+            # bottom1 += np.array([STi[ob][f'V[E[{ob}|{key}]]'] for ob in obj])
+
+        ticks_loc = ax.get_xticks()
+        ax.xaxis.set_major_locator(mticker.FixedLocator(ticks_loc))
+        ax.set_xticklabels(obj)
+        ax.set_ylabel(ylabel)
+
+        # if table:
+        #     plot_table(S, x, ax)
+
+        lines, labels = ax.get_legend_handles_labels()
+
+        if int(len(rand_var_dict.keys())) > 5:
+            ncol = 5
+        else:
+            ncol = int(len(rand_var_dict.keys()))
+
+        plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=ncol, loc='lower left', mode='expand')
+
+        # ax[0].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
+        #        fancybox=True, shadow=True)
+        # ax[1].legend(loc="upper center", ncol=int(len(rand_var_dict.keys())), bbox_to_anchor=(0.0, 1.1),
+        #           fancybox=True, shadow=True)
+    else:
+        data = []
+        X = np.arange(len(x))
+        width = 1 / (len(x) + 2)
+        for i, ob in enumerate(obj):
+            data = list(S[ob].values())
+            ax.bar(X + i * width, data, width=width, label=ob)
+
+        plt.xticks([r + width for r in range(len(x))], x)
+
+        lines, labels = ax.get_legend_handles_labels()
+        if len(x) > 5:
+            ncol = 5
+        else:
+            ncol = len(x)
+        fig.legend(lines, labels, loc="upper center",
+                   ncol=ncol,
+                   fancybox=True, shadow=False,
+                   bbox_to_anchor=(0.5, 1.0))
+    # ax.set_xlim(left=0)
+    ax.set_ylim(bottom=0)
+    plt.tight_layout()
+    plt.show()
+
+
+if __name__ == '__main__':
     dd = {
         "random variables": ['x1', 'x2'],
         "objective variables": ['v1'],
@@ -999,6 +1332,13 @@ if __name__ == '__main__':
         # 'stat': [[87.7276, 3], [3.233, 0.1], [168.4549, 4], [11.5840, 0.2], [15.7575, 0.4]],
         'distribution': ['Uniform', 'Uniform', 'Uniform', 'Uniform'],
     }
+    dd_tesla = {
+        "random variables": ['h1', 'l1', 'd4', 'l2', 'h3', 'h2', 'h4', 'c14', 'lh1', 'lh2'],
+        "objective variables": ['response_fn_1', 'response_fn_2', 'response_fn_3', 'response_fn_4', 'response_fn_5'],
+        'bounds': [[5.76, 8.64], [40, 60], [4.8, 7.2], [34.4, 51.6], [1.464, 2.196], [25.2, 30.8], [5.6, 8.4], [0.14, 1.26], [8, 12], [12, 18]],
+        # 'stat': [[87.7276, 3], [3.233, 0.1], [168.4549, 4], [11.5840, 0.2], [15.7575, 0.4]],
+        'distribution': ['Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform'],
+    }
     dd_hc_mc_1mm = {
         "random variables": ['c34', 'lh', 'ch', 'l1', 'd4', 'de'],
         "objective variables": ['response_fn_1', 'response_fn_2'],
@@ -1009,25 +1349,25 @@ if __name__ == '__main__':
     dd_c3794_1mm = {
         "random variables": ['A', 'B', 'a', 'b', 'Ri'],
         "objective variables": ['response_fn_1', 'response_fn_2'],
-        'bounds': [[72.52, 74.52], [130.75, 132.75], [0.95, 2.95], [167.4549, 169.4549], [10.46, 12.46], [30.01, 32.01]],
+        'bounds': [[72.52, 74.52], [130.75, 132.75], [0.95, 2.95], [167.4549, 169.4549], [10.46, 12.46],
+                   [30.01, 32.01]],
         # 'stat': [[87.7276, 3], [3.233, 0.1], [168.4549, 4], [11.5840, 0.2], [15.7575, 0.4]],
         'distribution': ['Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform', 'Uniform'],
     }
 
     m = UQModel()
-    m.set_input_variables(dd_hc_mc_1mm)
+    m.set_input_variables(dd_tesla)
     m.set_sample_size(1000)
     m.set_model(input_from_df)
     m.run_analysis()
     # Sj, STj = m.sobol_df()
     Sj, STj = m.sobol_satelli()
     # Sj, STj = m.sobol_janon()
-    m.plot_sobol(Sj, 'Main indices', plot_type="Stacked")
+    # m.plot_sobol(Sj, 'Main indices', plot_type="Stacked")
     # m.plot_sobol(STj, 'Total indices')
-
+    #
     ic(Sj)
-    ic(STj)
-
+    # ic(STj)
     # x, w, mu = scipy.special.roots_hermite(2, True)
     # # ic(x, w/mu)
     #
@@ -1041,4 +1381,22 @@ if __name__ == '__main__':
     # ic(nodes.shape, nodes, weights)
     # x = 0.5 * (nodes + 1) * (b - a) + a
     # ic(x)
+    #
 
+
+    df = pd.read_excel(r'C:\Users\sosoho\DakotaProjects\TESLA_HOM\cubature_nodes.xlsx')
+    # print(df)
+    Sj, STi = sobol_satelli_from_df(df, range(10), range(10, 15))
+    ic(Sj)
+
+    # Create an empty dictionary to store the data for the DataFrame
+    df_data = {}
+    # Iterate through the outer dictionary (Y1, Y2, etc.)
+    for key, inner_dict in Sj.items():
+        values = list(inner_dict.values())
+        df_data[key] = values
+    # Create the DataFrame from the data dictionary
+    df = pd.DataFrame(df_data)
+    df = df.reset_index().rename(columns={"index": "vars"})
+    obj = [r"$f_\mathrm{min}$", '$S21_{2743}$', '$S21_{1738}$', '$S21_{1800}$', '$S21_{2585}$']
+    plot_sobol_indices(df, obj, kind='stacked', orientation='horizontal')

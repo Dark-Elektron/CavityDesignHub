@@ -10,15 +10,23 @@ def drawCavity(folder=None):
     # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
     # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = 73.52 * 1e-3, 131.75 * 1e-3, 106.25 * 1e-3, 118.7 * 1e-3, 150 * 1e-3, 187 * 1e-3, 369.63 * 1e-3
 
-    # # TESLA end cell 1
-    # A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = np.array([42, 42, 12, 19, 35, 57.6524, 103.353])*1e-3
+    # TESLA end cell 1
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = np.array([42, 42, 12, 19, 35, 57.6524, 103.353])*1e-3
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array([42, 42, 12, 19, 35, 57.6524, 103.353])*1e-3
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array([42, 42, 12, 19, 35, 57.6524, 103.353])*1e-3
     # A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = np.array([40.34, 40.34, 10, 13.5, 39, 55.716, 103.353])*1e-3
     # A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = np.array([40.34, 40.34, 10, 13.5, 39, 55.716, 103.353])*1e-3
 
-    midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
-                         71.98698698698699, 93.5, 171.1929])*1e-3
-    endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
-                         80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
+    # midC3795 = np.array([62.22222222222222, 66.12612612612612, 30.22022022022022, 23.113113113113116,
+    #                      71.98698698698699, 93.5, 171.1929])*1e-3
+    # endC3795 = np.array([62.58258258258258, 57.53753753753754, 17.207207207207208, 12.002002002002001,
+    #                      80.38038038038039, 93.31191678718535, 171.1929]) * 1e-3
+
+    # midC3794 = np.array([73.52, 131.5, 106.25, 118.7, 150, 187, 369.63])*1e-3
+    # endC3794 = np.array([73.52, 131.5, 106.25, 118.7, 150, 187, 369.63]) * 1e-3
+
+    midC3794v2 = np.array([73.52, 131.5, 106.25, 118.7, 150, 187, 369.63])*0.5e-3
+    endC3794v2 = np.array([73.52, 131.5, 106.25, 118.7, 150, 187, 369.63]) * 0.5e-3
     #
     # midFCCUROS5 = np.array([67.72, 57.45, 21.75, 35.95, 60, 93.5, 166.591])*1e-3
     # endFCCUROS5 = np.array([66.5, 51, 17, 23, 78, 85.77, 166.591]) * 1e-3
@@ -27,15 +35,16 @@ def drawCavity(folder=None):
     # endTESLA_l = np.array([65.42, 65.42, 16.22, 21.89, 63.25, 90.36, 167.62]) * 1e-3
     # endTESLA_r = np.array([68.12, 68.12, 14.60, 20.76, 63.25, 92.14, 167.62]) * 1e-3
     #
-    # # # # TESLA end cell 2
-    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3795
-    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = midC3795
-    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = midC3795
+    # # # # # TESLA end cell 2
+    A_m, B_m, a_m, b_m, Ri_m, L_m, Req_m = midC3794v2
+    A_el, B_el, a_el, b_el, Ri_el, L_el, Req_el = endC3794v2
+    A_er, B_er, a_er, b_er, Ri_er, L_er, Req_er = endC3794v2
 
     n_cell = 1
-    step = 0.008  # step in boundary points in mm
-    L_bp_l = 2 * L_m  #0.000  #
-    L_bp_r = 2 * L_m  #0.000  #
+    step = 0.000165  # step in boundary points in mm
+    step = 0.005  # step in boundary points in mm
+    L_bp_l = 0.000  #2 * L_m  #
+    L_bp_r = 4 * L_m  #0.000  #
 
     # calculate shift
     shift = (L_bp_r + L_bp_l + L_el + (n_cell - 1) * 2 * L_m + L_er) / 2
@@ -70,6 +79,7 @@ def drawCavity(folder=None):
     if folder is None:
         folder = default_folder
     with open(fr'{folder}\geodata.n', 'w') as fil:
+    # with open(fr'{folder}\tesla_mid_cell.n', 'w') as fil:
         fil.write("   2.0000000e-03   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")
         fil.write("   1.25000000e-02   0.0000000e+00   0.0000000e+00   0.0000000e+00\n")  # a point inside the structure
         fil.write("  -3.1415927e+00  -2.7182818e+00   0.0000000e+00   0.0000000e+00\n")  # a point outside the structure
@@ -115,8 +125,8 @@ def drawCavity(folder=None):
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                                [L_el + L_er - x2er + 2 * L_bp_l - shift, Req_er])
-                    pt = [L_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
+                                [L_el + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er])
+                    pt = [L_el + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
                             fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -125,8 +135,8 @@ def drawCavity(folder=None):
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
-                    pt = [L_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
+                    lineTo(pt, [L_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step)
+                    pt = [L_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # ARC
@@ -142,7 +152,10 @@ def drawCavity(folder=None):
                         else:
                             print("Found one")
 
-                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    if L_bp_r != 0:
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                    else:
+                        fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
 
                     # calculate new shift
                     shift = shift - (L_el + L_er)
@@ -153,8 +166,8 @@ def drawCavity(folder=None):
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                                [L_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
-                    pt = [L_el + L_m - x2 + 2 * L_bp_l - shift, y2]
+                                [L_el + L_m - x2 + L_bp_l + L_bp_r - shift, Req_m])
+                    pt = [L_el + L_m - x2 + L_bp_l + L_bp_r - shift, y2]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
                             fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -163,8 +176,8 @@ def drawCavity(folder=None):
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + L_m - x1 + 2 * L_bp_l - shift, y1], step)
-                    pt = [L_el + L_m - x1 + 2 * L_bp_l - shift, y1]
+                    lineTo(pt, [L_el + L_m - x1 + L_bp_l + L_bp_r - shift, y1], step)
+                    pt = [L_el + L_m - x1 + L_bp_l + L_bp_r - shift, y1]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # ARC
@@ -178,7 +191,8 @@ def drawCavity(folder=None):
                             fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
                         else:
                             print("Found one")
-                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
 
                     # calculate new shift
                     shift = shift - (L_el + L_m)
@@ -215,8 +229,8 @@ def drawCavity(folder=None):
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
                 pts = arcTo(L_m + L_bp_l - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                            [L_m + L_m - x2 + 2 * L_bp_l - shift, Req_m])
-                pt = [L_m + L_m - x2 + 2 * L_bp_l - shift, y2]
+                            [L_m + L_m - x2 + L_bp_l + L_bp_r - shift, Req_m])
+                pt = [L_m + L_m - x2 + L_bp_l + L_bp_r - shift, y2]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
                         fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -225,8 +239,8 @@ def drawCavity(folder=None):
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # STRAIGHT LINE TO NEXT POINT
-                lineTo(pt, [L_m + L_m - x1 + 2 * L_bp_l - shift, y1], step)
-                pt = [L_m + L_m - x1 + 2 * L_bp_l - shift, y1]
+                lineTo(pt, [L_m + L_m - x1 + L_bp_l + L_bp_r - shift, y1], step)
+                pt = [L_m + L_m - x1 + L_bp_l + L_bp_r - shift, y1]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # ARC
@@ -301,11 +315,14 @@ def drawCavity(folder=None):
                         fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
                     else:
                         print("Found one")
-                fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+
+                if L_bp_r != 0:
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
+                else:
+                    fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   3.0000000e+00   0.0000000e+00\n")
 
         # BEAM PIPE
         # reset shift
-        print("pt before", pt)
         shift = (L_bp_r + L_bp_l + (n_cell - 1) * 2 * L_m + L_el + L_er) / 2
 
         if L_bp_r != 0:  # if there's a problem, check here.
@@ -443,8 +460,8 @@ def drawCavity_flat_top(folder=None):
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l + lft_el - shift, Req_er - B_er, A_er, B_er, step, [pt[0], Req_er - B_er],
-                                [L_el + lft_el + L_er - x2er + 2 * L_bp_l - shift, Req_er])
-                    pt = [L_el + lft_el + L_er - x2er + 2 * L_bp_l - shift, y2er]
+                                [L_el + lft_el + L_er - x2er + L_bp_l + L_bp_r - shift, Req_er])
+                    pt = [L_el + lft_el + L_er - x2er + L_bp_l + L_bp_r - shift, y2er]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
                             fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -453,8 +470,8 @@ def drawCavity_flat_top(folder=None):
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + lft_el + L_er - x1er + 2 * L_bp_l - shift, y1er], step)
-                    pt = [L_el + lft_el + L_er - x1er + 2 * L_bp_l - shift, y1er]
+                    lineTo(pt, [L_el + lft_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er], step)
+                    pt = [L_el + lft_el + L_er - x1er + L_bp_l + L_bp_r - shift, y1er]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # ARC
@@ -479,8 +496,8 @@ def drawCavity_flat_top(folder=None):
                     # half of bounding box is required,
                     # start is the lower coordinate of the bounding box and end is the upper
                     pts = arcTo(L_el + L_bp_l + lft_el - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                                [L_el + lft_el + L_m - x2 + 2 * L_bp_l - shift, Req_m])
-                    pt = [L_el + lft_el + L_m - x2 + 2 * L_bp_l - shift, y2]
+                                [L_el + lft_el + L_m - x2 + L_bp_l + L_bp_r - shift, Req_m])
+                    pt = [L_el + lft_el + L_m - x2 + L_bp_l + L_bp_r - shift, y2]
                     for pp in pts:
                         if (np.around(pp, 12) != np.around(pt, 12)).all():
                             fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -489,8 +506,8 @@ def drawCavity_flat_top(folder=None):
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # STRAIGHT LINE TO NEXT POINT
-                    lineTo(pt, [L_el + lft_el + L_m - x1 + 2 * L_bp_l - shift, y1], step)
-                    pt = [L_el + lft_el + L_m - x1 + 2 * L_bp_l - shift, y1]
+                    lineTo(pt, [L_el + lft_el + L_m - x1 + L_bp_l + L_bp_r - shift, y1], step)
+                    pt = [L_el + lft_el + L_m - x1 + L_bp_l + L_bp_r - shift, y1]
                     fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                     # ARC
@@ -546,8 +563,8 @@ def drawCavity_flat_top(folder=None):
                 # half of bounding box is required,
                 # start is the lower coordinate of the bounding box and end is the upper
                 pts = arcTo(L_m + L_bp_l + lft - shift, Req_m - B_m, A_m, B_m, step, [pt[0], Req_m - B_m],
-                            [L_m + L_m + lft - x2 + 2 * L_bp_l - shift, Req_m])
-                pt = [L_m + L_m + lft - x2 + 2 * L_bp_l - shift, y2]
+                            [L_m + L_m + lft - x2 + L_bp_l + L_bp_r - shift, Req_m])
+                pt = [L_m + L_m + lft - x2 + L_bp_l + L_bp_r - shift, y2]
                 for pp in pts:
                     if (np.around(pp, 12) != np.around(pt, 12)).all():
                         fil.write(f"  {pp[1]:.7E}  {pp[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
@@ -556,8 +573,8 @@ def drawCavity_flat_top(folder=None):
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # STRAIGHT LINE TO NEXT POINT
-                lineTo(pt, [L_m + L_m + lft - x1 + 2 * L_bp_l - shift, y1], step)
-                pt = [L_m + L_m + lft - x1 + 2 * L_bp_l - shift, y1]
+                lineTo(pt, [L_m + L_m + lft - x1 + L_bp_l + L_bp_r - shift, y1], step)
+                pt = [L_m + L_m + lft - x1 + L_bp_l + L_bp_r - shift, y1]
                 fil.write(f"  {pt[1]:.7E}  {pt[0]:.7E}   1.0000000e+00   1.0000000e+00\n")
 
                 # ARC
@@ -641,7 +658,6 @@ def drawCavity_flat_top(folder=None):
 
         # BEAM PIPE
         # reset shift
-        print("pt before", pt)
         shift = (L_bp_r + L_bp_l + L_el + lft_el + (n_cell - 1) * 2 * L_m + (n_cell - 2)*lft + L_er + lft_er) / 2
         lineTo(pt, [L_bp_r + L_bp_l + 2 * (n_cell-1) * L_m + (n_cell-2)*lft + lft_el + lft_er + L_el + L_er - shift, Ri_er], step)
 
@@ -779,8 +795,7 @@ def linspace(start, stop, step=1.):
     Like np.linspace but uses step instead of num
     This is inclusive to stop, so if start=1, stop=3, step=0.5
     Output is: array([1., 1.5, 2., 2.5, 3.])
-  """
-    # print('\t\t', start, stop, int((stop - start) / abs(step) + 1))
+    """
     if start < stop:
         ll = np.linspace(start, stop, int(np.ceil((stop - start) / abs(step) + 1)))
         if stop not in ll:
@@ -794,7 +809,7 @@ def linspace(start, stop, step=1.):
         return ll
 
 
-def lineTo(prevPt, nextPt, step):
+def lineTo(prevPt, nextPt, step, plot=True):
     if prevPt[0] == nextPt[0]:
         # vertical line
         # check id nextPt is greater
@@ -832,11 +847,13 @@ def lineTo(prevPt, nextPt, step):
             px = px[::-1]
             py = linspace(nextPt[1], prevPt[1], step * np.sin(ang))
             py = py[::-1]
+    if plot:
+        plt.plot(px, py, marker='x') #
 
-    plt.plot(px, py, marker='x')
+    return np.array([px, py]).T
 
 
-def arcTo(x_center, y_center, a, b, step, start, end):
+def arcTo(x_center, y_center, a, b, step, start, end, plot=True):
     u = x_center  # <- x-position of the center
     v = y_center  # <- y-position of the center
     a = a  # <- radius on the x-axis
@@ -852,13 +869,37 @@ def arcTo(x_center, y_center, a, b, step, start, end):
     inbox = pts[inidx]
     inbox = inbox[inbox[:, 0].argsort()]
 
-    plt.plot(inbox[:, 0], inbox[:, 1], marker='+')
+    if plot:
+        plt.plot(inbox[:, 0], inbox[:, 1], marker='x')#
 
     return inbox
 
 
 if __name__ == '__main__':
 
+    # drawCavity(r'D:\Dropbox\PyMultipact\sample_domains')
+    drawCavity(r'D:\Dropbox\multipacting\MPGUI21')
     # drawCavity(r'D:\Dropbox\CavityDesignHub\utils')
-    drawCavity_flat_top(r'D:\Dropbox\CavityDesignHub\utils')
+
+
+    # drawCavity_flat_top(r'D:\Dropbox\CavityDesignHub\utils')
     # drawCapacitor()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

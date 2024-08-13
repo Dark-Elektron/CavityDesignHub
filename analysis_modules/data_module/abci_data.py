@@ -183,7 +183,7 @@ class ABCIData:
                     # y = np.insert(y, -1, 0).tolist()
 
                 self.data_dict[key] = [x, y]
-        print("At least it got here")
+        # print("At least it got here")
         # include impedance magnitude
         if {'Real Part of Longitudinal Impedance', 'Imaginary Part of Longitudinal Impedance'}.issubset(self.data_dict.keys()):
             # longitudinal

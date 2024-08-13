@@ -17,7 +17,7 @@ def read_output_from_cst_sweep(sim_folder, folders, requests):
     return df_
 
 
-if len(sys.argv) != 5:
+if len(sys.argv) != 6:
     print("Usage: python myscript.py param_file output_file partitions")
     sys.exit(1)
 
@@ -25,15 +25,12 @@ param_file = sys.argv[1]
 output_file = sys.argv[2]
 partitions = sys.argv[3]
 nodes_only = sys.argv[4]
-responses = sys.argv[5]
+num_responses = sys.argv[5]
 
-try:
-    partitions = int(partitions)
-except ValueError:
-    print("Partitions argument must be integer.")
-    sys.exit(1)
+assert isinstance(partitions, int) or isinstance(partitions, float), print("Partitions argument must be integer.")
+partitions = int(partitions)
 
-print(f"parameter_file: {param_file}, output_file: {output_file}")
+# print(f"parameter_file: {param_file}, output_file: {output_file}")
 
 # open parameter file and get parameters
 df = pd.read_csv(param_file, sep='\s+', header=None)
@@ -53,19 +50,15 @@ if nodes_only != 'ONLY_NODES':
     df_data = pd.read_excel(fr"{filename}", 'Sheet1', engine='openpyxl')
 
     for indx, row in df_data.iterrows():
-        # print(indx, row.tolist(), pars_in.tolist())
-        # match input parameters to output
-        # print(np.around(row.tolist()[:num_in_vars], 3), np.around(pars_in.tolist(), 3))
         tolerance = 1e-3
         if np.allclose(np.around(row.tolist()[:num_in_vars], 3), np.around(pars_in.tolist(), 3), rtol=tolerance, atol=tolerance):
-            print("Got here")
             # write output
             out = row.tolist()[num_in_vars:]
             with open(output_file, 'w') as f:
                 for o in out:
                     f.write(f"{o:20.10e}     f\n")
 else:
-    out = np.ones(len(responses))
+    out = np.ones(int(num_responses))
     with open(output_file, 'w') as f:
         for o in out:
             f.write(f"{o:20.10e}     f\n")

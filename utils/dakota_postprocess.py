@@ -71,6 +71,7 @@ def plot_sobol_indices(filepath, objectives, which=None, kind='stacked', orienta
 
     # print the lines between the keywords
     # df_merge_list = []
+    ic(result)
     for i, (k, v) in enumerate(result.items()):
         df = pd.DataFrame(v, columns=['main', 'total', 'vars'])
         df = df.astype({'main': 'float', 'total': 'float'})
@@ -139,7 +140,7 @@ def plot_sobol_indices(filepath, objectives, which=None, kind='stacked', orienta
             dff = df_merge_interaction.filter(regex=f'{w.lower()}|vars')
             if not dff.empty:
                 dff['vars'] = df_merge_interaction[['var1', 'var2']].apply(lambda x: '_'.join(x), axis=1)
-        # ic(dff)
+        print(dff)
         # ic(objectives)
 
         cmap = 'tab20'
@@ -153,6 +154,10 @@ def plot_sobol_indices(filepath, objectives, which=None, kind='stacked', orienta
                     plt.legend(bbox_to_anchor=(1.04, 1), ncol=2)
                 else:
                     ax = dff_T.plot.barh(stacked=True, rot=0, edgecolor='k')#, cmap=cmap
+                    ax.invert_yaxis()
+                    # for bars in ax.containers:
+                    #     ax.bar_label(bars, fmt='%.2f', label_type='center', color='white', fontsize=5)
+
                     ax.set_xlim(left=0)
                     ax.set_yticklabels(objectives)
                     plt.legend(bbox_to_anchor=(0, 1.02, 1, 0.2), ncol=4, loc='lower left', mode='expand')
@@ -316,14 +321,15 @@ def plot_sobol(filefolder):
     reorder_index = ['dh', 'lh,ch', 'l1', 'ah', 'l3', 'c34,d34', 'l4', 'd4', 'le,de']
     # obj = [r"$S_\mathrm{max}~\mathrm{[dB]}$", r"$S_\mathrm{min}~\mathrm{[dB]}$", r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
     # obj = [r"$S_\mathrm{max}~\mathrm{[dB]}$", r"$f(S_\mathrm{max})~\mathrm{[MHz]}$", r"$f(S_\mathrm{min})~\mathrm{[MHz]}$"]
-    obj = [r"$freq [MHz]$",	fr"$R/Q [Ohm]$", r"$Epk/Eacc []$",	r"$Bpk/Eacc [mT/MV/m]$", 'G', 'kcc', 'ff']
+    # obj = [r"$freq [MHz]$",	fr"$R/Q [Ohm]$", r"$Epk/Eacc []$",	r"$Bpk/Eacc [mT/MV/m]$", 'G', 'kcc', 'ff']
+    obj = [r"$f_\mathrm{min}$",  '$S21_{2743}$',  '$S21_{1738}$',  '$S21_{1800}$',  '$S21_{2585}$']
     # obj = [r"$freq [MHz]$", 'kcc']
     selection_index = [0, 1, 2]
     # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal', group=group, reorder_index=reorder_index, normalise=False)#
     # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal', reorder_index=reorder_index, normalise=False)#
     # plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total', 'Interaction'], kind='stacked', orientation='horizontal', selection_index=selection_index, normalise=False)#
 
-    plot_sobol_indices(fr"{filefolder}\dakota_HC.out", obj, ['main', 'Total'], kind='stacked', orientation='horizontal', normalise=True) #
+    plot_sobol_indices(fr"{filefolder}\dakota.out", obj, ['main', 'Total'], kind='stacked', orientation='horizontal', normalise=False) #
 
 
 def plot_settings():
@@ -340,7 +346,6 @@ def plot_settings():
     mpl.rcParams['figure.dpi'] = 100
 
 
-
 if __name__ == '__main__':
     plot_settings()
     plt.rcParams["figure.figsize"] = (8, 4)
@@ -353,11 +358,10 @@ if __name__ == '__main__':
     # filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_DQW_1mm"
     # filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_DQW_10%"
     # filefolder = fr"C:\Users\sosoho\DakotaProjects\Circuitmodel_DN_DQW_10%"
-    filefolder = fr"C:\Users\sosoho\DakotaProjects\Cavity\C3794_lhs"
+    filefolder = fr"C:\Users\sosoho\DakotaProjects\TESLA_HOM"
     plot_sobol(filefolder)
 
-    # quadrature_nodes_to_cst_par_input(filefolder, n=5)
-    # combine_params_output(filefolder, 5)
-
+    # quadrature_nodes_to_cst_par_input(filefolder, n=12)
+    #combine_params_output(filefolder, 12)
     # get_pce(filefolder)
 

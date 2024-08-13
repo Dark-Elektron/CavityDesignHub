@@ -18,7 +18,7 @@ def plot_settings():
 
     mpl.rcParams['axes.labelsize'] = 14
     mpl.rcParams['axes.titlesize'] = 14
-    mpl.rcParams['legend.fontsize'] = 12
+    mpl.rcParams['legend.fontsize'] = 10
     mpl.rcParams['legend.title_fontsize'] = 12
 
     mpl.rcParams['figure.dpi'] = 100
@@ -35,10 +35,10 @@ class GA:
         self.f2_interp = np.zeros(self.n_interp)
         self.interp_error = []
         self.interp_error_avg = []
-        self.ng_max = 20
+        self.ng_max = 50
         self.df_global = None
 
-        self.fig, axs = plt.subplot_mosaic([[1], [3]])
+        self.fig, axs = plt.subplot_mosaic([[1, 3]])
 
         self.ax1 = axs[1]
         self.ax3 = axs[3]
@@ -96,7 +96,7 @@ class GA:
         self.f2_interp = f2_interp
         self.interp_error.append(error)
         # print(error, np.average(self.interp_error))
-        self.interp_error_avg.append(np.average(self.interp_error))
+        self.interp_error_avg.append(np.linalg.norm(self.interp_error))
 
         ###############################################################
         # get exact solution
@@ -202,8 +202,8 @@ class GA:
             return self.run(n, df_ng)
         else:
             ic(df)
-            self.ax3.plot(self.interp_error, marker='P', label='Interpolation error')
-            self.ax3.plot(self.interp_error_avg, marker='X', label='Interpolation error avg.')
+            self.ax3.plot(self.interp_error, marker='P', label=r'$\epsilon$')
+            # self.ax3.plot(self.interp_error_avg, marker='X', label=r'$||\mathbf{\epsilon}||_2$')
             self.ax3.set_yscale('log')
             self.ax1.legend()
             self.ax3.legend()
@@ -488,7 +488,7 @@ class GA:
 
 
 class GAMult:
-    def __init__(self):
+    def __init__(self, n):
         self.pareto_shapes_sorted = None
         self.pareto_shapes = None
         self.u_bounds = None
@@ -500,7 +500,7 @@ class GAMult:
         self.objs_dict = {}
         self.constraints_dict = {}
 
-        self.ng_max = 50
+        self.ng_max = n
         self.objectives = []
         self.constraints = []
         self.weights = []
@@ -533,7 +533,7 @@ class GAMult:
 
         if n == 0:
             # update lists
-            self.ng_max = 50
+            # self.ng_max = 5
             self.objectives = objs
             self.vars_in = vars_in
             self.constraints = constraints
@@ -552,7 +552,7 @@ class GAMult:
                 self.constraints.append(f'{v[0]} >= {v[1][0]}')
                 self.constraints.append(f'{v[0]} <= {v[1][1]}')
 
-            self.df = self.generate_first_men(self.var_names, self.l_bounds, self.u_bounds, method='Uniform')
+            self.df = self.generate_first_men(self.var_names, self.l_bounds, self.u_bounds, method='LHS')
 
         # evaluate objective
         for obj in objs:
@@ -663,10 +663,12 @@ class GAMult:
 
         # chaos
         # print("Chaos")
-        df_chaos = self.chaos(self.var_names, self.l_bounds, self.u_bounds, 'Random', 100, n)
+        df_chaos = self.chaos(self.var_names, self.l_bounds, self.u_bounds, 'Uniform', 100, n)
+        df_chaos_lhs = self.chaos(self.var_names, self.l_bounds, self.u_bounds, 'LHS', 100, n)
+        df_chaos_rand = self.chaos(self.var_names, self.l_bounds, self.u_bounds, 'Random', 100, n)
 
         # take elites from previous generation over to next generation
-        df_ng = pd.concat([df_cross, df_mutation, df_chaos], ignore_index=True)
+        df_ng = pd.concat([df_cross, df_mutation, df_chaos, df_chaos_lhs, df_chaos_rand], ignore_index=True)
 
         # apply constraints
         if self.constraints:
@@ -736,7 +738,7 @@ class GAMult:
 
         return list(expe.T[0]), list(stdDev.T[0])
 
-    def generate_first_men(self, var_names, l_bounds, u_bounds, method='Uniform', no_of_initial_points=300,
+    def generate_first_men(self, var_names, l_bounds, u_bounds, method='LHS', no_of_initial_points=300,
                            generation=0):
         columns = var_names
         dim = len(columns)
@@ -868,7 +870,7 @@ class GAMult:
 
         return df_ng_mut
 
-    def chaos(self, var_names, l_bounds, u_bounds, method='Random', f=100, generation=0):
+    def chaos(self, var_names, l_bounds, u_bounds, method='LHS', f=100, generation=0):
         df = self.generate_first_men(var_names, l_bounds, u_bounds, method=method, no_of_initial_points=f,
                                      generation=generation)
         return df
@@ -996,23 +998,25 @@ class GAMult:
             functions[obj[1].__name__] = obj[1](*[X[i] for i, _ in enumerate(obj[2])]).flatten()
 
         if len(self.objectives) == 2:
-            fig, axs = plt.subplot_mosaic([[1], [3]])
+            fig, axs = plt.subplot_mosaic([[1, 3]])
 
             df_analytical = pd.DataFrame(functions)
             # apply function constraint
             if self.func_constraints:
                 df_analytical = self.apply_function_constraints(df_analytical, self.func_constraints)
 
-            axs[1].scatter(df_analytical['f1'], df_analytical['f2'], s=5, color='r')
+            axs[1].scatter(df_analytical['f1'], df_analytical['f2'], s=5, color='k', edgecolor='k', facecolor='none')
 
             axs[1].scatter(*[self.pareto_shapes_sorted[f"{obj[1].__name__}"] for obj in self.objectives], marker='o',
-                           s=7,
+                           s=7, color='r',
                            label=f'Pareto Front (Gen. {self.n - 1})', zorder=2)
-            axs[1].set_xlabel('f1')
-            axs[1].set_ylabel('f2')
-            axs[3].plot(self.interp_error, marker='P')
-            axs[3].plot(self.interp_error_avg, marker='X')
+            axs[1].set_xlabel('$f_1$')
+            axs[1].set_ylabel('$f_2$')
+            axs[3].plot(self.interp_error, marker='P', label=r'$\epsilon$')
+            # axs[3].plot(self.interp_error_avg, marker='X')
             axs[3].set_yscale('log')
+            axs[1].legend()
+            axs[3].legend()
             fig.suptitle(title)
             plt.show()
         elif len(self.objectives) == 3:
@@ -1027,11 +1031,11 @@ class GAMult:
 
             ax1.scatter(df_analytical['f1'], df_analytical['f2'], df_analytical['f3'], s=5, color='r', edgecolor='k', facecolor='none',)
 
-            ax1.scatter(*[self.pareto_shapes_sorted[f"{obj[1].__name__}"] for obj in self.objectives], marker='o', s=50, edgecolor='k',
+            ax1.scatter(*[self.pareto_shapes_sorted[f"{obj[1].__name__}"] for obj in self.objectives], c='r', marker='o', s=20,
                            label=f'Pareto Front (Gen. {self.n - 1})', zorder=20)
-            ax1.set_xlabel('f1')
-            ax1.set_ylabel('f2')
-            ax1.set_zlabel('f3')
+            ax1.set_xlabel('$f_1$')
+            ax1.set_ylabel('$f_2$')
+            ax1.set_zlabel('$f_3$')
             ax1.set_xlim(0, 8)
             ax1.set_ylim(14.5, 17)
             ax1.set_zlim(-0.1, 0.2)
@@ -1056,7 +1060,7 @@ def w_average(df, weights, shape):
     return x_wavg, y_wavg
 
 
-def f1(x, y):
+def f1(x, y, z):
     # convert explicitly to float
     x = x.astype(float)
     y = y.astype(float)
@@ -1070,10 +1074,11 @@ def f1(x, y):
     # f = x
     # f = x
     f = 0.5 * (x ** 2 + y ** 2) + np.sin(x ** 2 + y ** 2)
+    f = -10*(np.exp(-0.2*np.sqrt(x**2 + y**2)) + np.exp(-0.2*np.sqrt(y**2 + z**2)))
     return f
 
 
-def f2(x, y):
+def f2(x, y, z):
     # convert explicitly to float
     x = x.astype(float)
     y = y.astype(float)
@@ -1081,6 +1086,7 @@ def f2(x, y):
     # f = (1 + y)/x
     # f = (1+y)*np.exp(-x/(1+y))
     f = (3 * x - 2 * y + 4)**2 / 8 + (x - y + 1)**2 / 27 + 15
+    f = np.abs(x)**0.8 + 5*np.sin(x**3) + np.abs(y)**0.8 + 5*np.sin(y**3) + np.abs(z)**0.8 + 5*np.sin(z**3)
     return f
 
 
@@ -1094,21 +1100,28 @@ def f3(x, y):
 
 if __name__ == '__main__':
     plot_settings()
-    ga = GA()
-    ga.run(1)
-    # ga.run_sensitivity(1)
-    ga.show()
+    # ga = GA()
+    # ga.run(1)
+    # # ga.run_sensitivity(1)
+    # ga.show()
 
-    vars_in = [['x1', [-3, 3]], ['x2', [-3, 3]]]
-    objs = [['min', f1, ['x1', 'x2']], ['min', f2, ['x1', 'x2']], ['min', f3, ['x1', 'x2']]]
-    n = 10
+    # ++++++++++++++++++++++++++++++++++++++++++
+    # vars_in = [['x1', [-3, 3]], ['x2', [-3, 3]]]
+    # objs = [['min', f1, ['x1', 'x2']], ['min', f2, ['x1', 'x2']], ['min', f3, ['x1', 'x2']]] # viennet
+    # ++++++++++++++++++++++++++++++++++++++++++
+    vars_in = [['x1', [-5, 5]], ['x2', [-5, 5]], ['x3', [-5, 5]]]
+    objs = [['min', f1, ['x1', 'x2', 'x3']], ['min', f2, ['x1', 'x2', 'x3']]]
+    n = 50
     constraints = None
     # func_constraints = ['f2/(0.858*np.exp(-0.541*f1)) >= 1', 'f2/(0.728*np.exp(-0.295*f1)) >= 1']
     # func_constraints = ['f2 + 9*f1 >= 6', '-f2 + 9*f1 >= 1']
 
-    ga = GAMult()
+    ga = GAMult(n)
     ga.ea(vars_in, objs, constraints)
 
-    ga.plot(title=r'$\mathbf{Viennet~function}$' + '\n' + r'Minimise = $\left\{ f_1(x, y) = 0.5\left(x^2+y^2\right)+\sin \left(x^2+y^2 \right) \right.,$ ' + '\n \t' +
-                  r'$f_2(x, y) = \frac{(3 x-2 y+4)^2}{8}+\frac{(x-y+1)^2}{27}+15,$' + '\n\t' +
-                  r'$\left. f_3(x, y) = \frac{1}{x^2+y^2+1}-1.1 \exp \left( -\left(x^2+y^2\right) \right) \right\}$')
+    # ga.plot(title=r'$\mathbf{Viennet~function}$' + '\n' + r'Minimise = $\left\{ f_1(x, y) = 0.5\left(x^2+y^2\right)+\sin \left(x^2+y^2 \right) \right.,$ ' + '\n \t' +
+    #               r'$f_2(x, y) = \frac{(3 x-2 y+4)^2}{8}+\frac{(x-y+1)^2}{27}+15,$' + '\n\t' +
+    #               r'$\left. f_3(x, y) = \frac{1}{x^2+y^2+1}-1.1 \exp \left( -\left(x^2+y^2\right) \right) \right\}$')
+
+    ga.plot(title=r'$\mathbf{Kursawe~function}$' + '\n' + r'Minimise = $\left\{ f_1(x_1, x_2, x_3) = \sum_{i=1}^2 \left[-0.2\sqrt{x_i^2+x_{i+1}^2}\right]\right.,$ ' + '\n \t' +
+                  r'$\left. f_2(x_1, x_2, x_3) = \sum_{i=1}^3\left[\vert x_i \vert^{0.8} + 5\sin(x_i^3) \right] \right\}$')

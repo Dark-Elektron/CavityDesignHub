@@ -441,17 +441,18 @@ def plot_frequency_line(ee_file, mm_file):
 
 if __name__ == '__main__':
     plt.rcParams["figure.figsize"] = (10, 3)
-    # sim_folder = r"D:\CST Studio\3. W\Module"
-    # unique_marker = 'Eigenmode_3794(800MHz)_2HC_1FPC'
-    sim_folder = r"D:\CST Studio\PhD\tt\Assembly"
-    unique_marker = 'E_C3795_2DQW_DN'
+    sim_folder = r"D:\CST Studio\MuCol_Study\Assembly\Eigenmode"
+    unique_marker = 'TESLA_9_cell_2QRWG_1FPC'
+    sim_folder = r"D:\CST Studio\PhD\W\Assembly"
+    unique_marker = 'C3794_4HC_1FPC_3000_3200'
     folders = []
     for filepath in os.listdir(sim_folder):
         if unique_marker in filepath:
             if os.path.isdir(os.path.join(sim_folder, filepath)):
                 folders.append(filepath)
     ic(folders)
-    folders = [unique_marker]
+    # folders = [unique_marker]
+    folders = ['C3794_4HC_1FPC_3000_3200']
     ic(folders)
     req = ["Frequency (Multiple Modes)", "Q-Factor (lossy E) (Multiple Modes)", "R over Q beta=1 (Multiple Modes)",
            "RQT", "Z_kOhm", "Z_T_kOhm_m"]
@@ -479,4 +480,5 @@ if __name__ == '__main__':
     # ee_file = fr'D:\CST Studio\3. W\Eigenmode\E_C3794_EE.xlsx'
     # mm_file = fr'D:\CST Studio\3. W\Eigenmode\E_C3794_MM.xlsx'
     # plot_frequency_line(ee_file, ee_file)
+
 

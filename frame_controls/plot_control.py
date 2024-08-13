@@ -87,7 +87,7 @@ class PlotControl:
         self.ui.gl_Plot_Area.addWidget(self.plt)
         self.fig = self.plt.fig
         self.ax = self.plt.ax
-        self.initial_prop_cycler, _ = itertools.tee(self.ax._get_lines.prop_cycler)
+        # self.initial_prop_cycler, _ = itertools.tee(self.ax._get_lines.prop_cycler)
         self.ax_right = self.plt.ax_right
         self.axins = None
         self.indicate_inset = None
@@ -104,12 +104,23 @@ class PlotControl:
 
         # class lists
         self.freq_glob = []
-        self.baseline_line_objects = []
+        self.baseline_line_objects = {'longitudinal': {},
+                                      'transversal': {}}
 
         # class dictionaries
         self.pts_dict = {}  # holds the plot information and plot
         # structure self.pts = {key1: {plot_widget: value, plot: value}}
         self.plot_dict = {}
+        self.axes_elements = {
+            'lines': {},
+            'scatter': {},
+            'bar': {},
+            'text': {},
+            'axvline': {},
+            'axhline': {},
+            'patches': {}
+        }
+
         self.f_list_sorted = {}
         self.mode_list_sorted = {}
         self.args_dict = {'Code': [],
@@ -144,6 +155,108 @@ class PlotControl:
 
         self.initUI()
         self.signals()
+
+    def signals(self):
+        self.ui.pb_Reset_Colors.clicked.connect(lambda: self.reset_colors())
+        # self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
+        self.le_Color.textChanged.connect(lambda: self.plt.update_object_properties({'color': self.le_Color.text()}))
+        self.ui.dsb_Line_Width.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'lw': self.ui.dsb_Line_Width.value()}))
+        self.ui.cb_Line_Style.currentTextChanged.connect(
+            lambda: self.plt.update_object_properties({'ls': self.ui.cb_Line_Style.currentText()}))
+        self.ui.cb_Marker.currentTextChanged.connect(
+            lambda: self.plt.update_object_properties({'marker': self.ui.cb_Marker.currentText(), 'mec': 'k'}))
+        self.ui.dsb_Marker_Size.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'ms': self.ui.dsb_Marker_Size.value()}))
+        self.ui.dsb_Alpha.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'alpha': self.ui.dsb_Alpha.value()}))
+        self.ui.sb_Layer.valueChanged.connect(
+            lambda: self.plt.update_object_properties({'zorder': self.ui.sb_Layer.value()}))
+
+        # plot abci impedance
+        self.ui.pb_Plot.clicked.connect(lambda: self.plot())
+
+        # refresh plot
+        self.ui.pb_Refresh.clicked.connect(lambda: self.plot())
+
+        # toggle plot menu
+        # self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: animate_width(self.ui.w_Plot_Menu, 0, 500, True))
+        # self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: self.ui.w_Plot_Area_Buttons.setEnabled(
+        #     True) if self.ui.w_Plot_Menu.maximumWidth() == 0 else self.ui.w_Plot_Area_Buttons.setDisabled(True))
+
+        # signal for plot menu pages
+        self.ui.pb_Machine_Parameters.clicked.connect(lambda: self.toggle_page('Machine Parameters'))
+        self.ui.pb_Plot_Decorations.clicked.connect(lambda: self.toggle_page('Plot Decorations'))
+        self.ui.pb_Plot_Element_Format.clicked.connect(lambda: self.toggle_page('Plot Element Format'))
+
+        # signal for plot argument entrmake widgets rey self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda:
+        # animate_height(self.ui.w_Plot_Args, 0, 200, True))
+
+        # signal for threshold
+        self.ui.pb_Load_Machine_Parameters.clicked.connect(
+            lambda: open_file(self.ui.le_Machine_Parameters_Filename,
+                              start_folder=str(self.main_control.projectDir / "OperatingPoints")))
+        self.ui.cb_Longitudinal_Threshold.stateChanged.connect(
+            lambda: self.calc_limits('monopole', self.ui.ccb_Operation_Points.currentText()))
+        self.ui.cb_Transverse_Threshold.stateChanged.connect(
+            lambda: self.calc_limits('dipole', self.ui.ccb_Operation_Points.currentText()))
+
+        self.ui.le_Machine_Parameters_Filename.textChanged.connect(
+            lambda: self.load_operating_points(self.ui.le_Machine_Parameters_Filename.text()))
+
+        # signal for inset plot
+        self.ui.cb_Show_Hide_Inset.clicked.connect(lambda: self.plot_inset())
+
+        # add plot
+        self.ui.pb_Add_Row.clicked.connect(self.tableWidget.add_row)
+        # clear plots
+        self.ui.pb_Clear.clicked.connect(lambda: self.clear_plots())
+        # clear lines
+        self.ui.pb_Clear_Lines.clicked.connect(lambda: self.clear_lines())
+        # clear texts
+        self.ui.pb_Clear_Texts.clicked.connect(lambda: self.clear_texts())
+
+        # signals for cutoff
+        # self.ui.cb_Check_1.clicked.connect(lambda: self.plot_cutoff(0, self.ui.cb_Check_1))
+        # self.ui.cb_Check_2.clicked.connect(lambda: self.plot_cutoff(1, self.ui.cb_Check_2))
+        # self.ui.cb_Check_3.clicked.connect(lambda: self.plot_cutoff(2, self.ui.cb_Check_1))
+
+        # update label
+        self.ui.pb_Apply_Axis_Labels.clicked.connect(lambda: self.update_labels())
+
+        # plot text
+        # x, y = self.plt.ax.get_xlim()[1]/2, self.plt.ax.get_ylim()[1]/2
+        self.ui.pb_Add_Textt.clicked.connect(lambda: self.plt.add_text(
+            text=self.ui.le_Plot_Text_2.text(), box=self.ui.cb_Text_Box.currentText(),
+            size=self.ui.sb_Annotation_Text_Size.value(), rotation=self.ui.sb_Rotation.value(),
+            xycoords='axes fraction'))
+
+        # plot axvline
+        self.ui.pb_Add_Vline.clicked.connect(lambda: self.plt.add_axvline(self.ui.dsb_Axvline_X.value()))
+
+        # add rectangular patch
+        self.ui.pb_Add_Patch.clicked.connect(lambda: self.plt.add_patch(
+            (self.ui.le_Patch_Pos_X.text(), self.ui.le_Patch_Pos_Y.text()), self.ui.le_Patch_Size_A.text(),
+            self.ui.le_Patch_Size_B.text(),
+            self.ui.cb_Patch_Type.currentText().lower()))
+
+        # switch axis
+        self.ui.cb_Active_Axis.currentTextChanged.connect(lambda: self.switch_axis())
+
+        # frequently used plot labels combobox signal
+        # self.ui.ccb_Freq_Used_Xlabel.currentTextChanged.connect(lambda: self.le_Xlabel.setText(
+        #     self.ui.ccb_Freq_Used_Xlabel.currentText()))
+        # self.ui.ccb_Freq_Used_Ylabel.currentTextChanged.connect(lambda: self.le_Ylabel.setText(
+        #     self.ui.ccb_Freq_Used_Ylabel.currentText()))
+
+        self.ui.ccb_Operation_Points.currentTextChanged.connect(
+            lambda: self.operation_points_selection(self.ui.ccb_Operation_Points.currentText()))
+
+        # change plot mode to draw
+        self.ui.cb_Draw.stateChanged.connect(lambda: self.plt.change_plot_mode(self.ui.cb_Draw.checkState()))
+
+        # check if signal emitted
+        self.ui.cb_Transverse_Threshold.stateChanged.connect(lambda: print('State was changed at least once.'))
 
     def matplotlib_colors(self):
         pb_Color = QPushButton()
@@ -520,105 +633,6 @@ class PlotControl:
                 ax_selected.set_ylim(min(y), max(y))
                 ax_selected.set_xlim(min(xr), max(xr))
 
-    def signals(self):
-        self.ui.pb_Reset_Colors.clicked.connect(lambda: self.reset_colors())
-        # self.ui.pb_Add.clicked.connect(lambda: self.createPlotTypeWidget())
-        self.le_Color.textChanged.connect(lambda: self.plt.update_object_properties({'color': self.le_Color.text()}))
-        self.ui.dsb_Line_Width.valueChanged.connect(
-            lambda: self.plt.update_object_properties({'lw': self.ui.dsb_Line_Width.value()}))
-        self.ui.cb_Line_Style.currentTextChanged.connect(
-            lambda: self.plt.update_object_properties({'ls': self.ui.cb_Line_Style.currentText()}))
-        self.ui.cb_Marker.currentTextChanged.connect(
-            lambda: self.plt.update_object_properties({'marker': self.ui.cb_Marker.currentText(), 'mec': 'k'}))
-        self.ui.dsb_Marker_Size.valueChanged.connect(
-            lambda: self.plt.update_object_properties({'ms': self.ui.dsb_Marker_Size.value()}))
-        self.ui.dsb_Alpha.valueChanged.connect(
-            lambda: self.plt.update_object_properties({'alpha': self.ui.dsb_Alpha.value()}))
-        self.ui.sb_Layer.valueChanged.connect(
-            lambda: self.plt.update_object_properties({'zorder': self.ui.sb_Layer.value()}))
-
-        # plot abci impedance
-        self.ui.pb_Plot.clicked.connect(lambda: self.plot())
-
-        # refresh plot
-        self.ui.pb_Refresh.clicked.connect(lambda: self.plot())
-
-        # toggle plot menu
-        # self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: animate_width(self.ui.w_Plot_Menu, 0, 500, True))
-        # self.ui.pb_Plot_Area_Menu.clicked.connect(lambda: self.ui.w_Plot_Area_Buttons.setEnabled(
-        #     True) if self.ui.w_Plot_Menu.maximumWidth() == 0 else self.ui.w_Plot_Area_Buttons.setDisabled(True))
-
-        # signal for plot menu pages
-        self.ui.pb_Machine_Parameters.clicked.connect(lambda: self.toggle_page('Machine Parameters'))
-        self.ui.pb_Plot_Decorations.clicked.connect(lambda: self.toggle_page('Plot Decorations'))
-        self.ui.pb_Plot_Element_Format.clicked.connect(lambda: self.toggle_page('Plot Element Format'))
-
-        # signal for plot argument entrmake widgets rey self.ui.pb_Collapse_Shape_Parameters.clicked.connect(lambda:
-        # animate_height(self.ui.w_Plot_Args, 0, 200, True))
-
-        # signal for threshold
-        self.ui.pb_Load_Machine_Parameters.clicked.connect(
-            lambda: open_file(self.ui.le_Machine_Parameters_Filename,
-                              start_folder=str(self.main_control.projectDir / "OperatingPoints")))
-        self.ui.cb_Longitudinal_Threshold.stateChanged.connect(
-            lambda: self.calc_limits('monopole', self.ui.ccb_Operation_Points.currentText()))
-        self.ui.cb_Transverse_Threshold.stateChanged.connect(
-            lambda: self.calc_limits('dipole', self.ui.ccb_Operation_Points.currentText()))
-
-        self.ui.le_Machine_Parameters_Filename.textChanged.connect(
-            lambda: self.load_operating_points(self.ui.le_Machine_Parameters_Filename.text()))
-
-        # signal for inset plot
-        self.ui.cb_Show_Hide_Inset.clicked.connect(lambda: self.plot_inset())
-
-        # add plot
-        self.ui.pb_Add_Row.clicked.connect(self.tableWidget.add_row)
-        # clear plots
-        self.ui.pb_Clear.clicked.connect(lambda: self.clear_plots())
-        # clear lines
-        self.ui.pb_Clear_Lines.clicked.connect(lambda: self.clear_lines())
-        # clear texts
-        self.ui.pb_Clear_Texts.clicked.connect(lambda: self.clear_texts())
-
-        # signals for cutoff
-        # self.ui.cb_Check_1.clicked.connect(lambda: self.plot_cutoff(0, self.ui.cb_Check_1))
-        # self.ui.cb_Check_2.clicked.connect(lambda: self.plot_cutoff(1, self.ui.cb_Check_2))
-        # self.ui.cb_Check_3.clicked.connect(lambda: self.plot_cutoff(2, self.ui.cb_Check_1))
-
-        # update label
-        self.ui.pb_Apply_Axis_Labels.clicked.connect(lambda: self.update_labels())
-
-        # plot text
-        # x, y = self.plt.ax.get_xlim()[1]/2, self.plt.ax.get_ylim()[1]/2
-        self.ui.pb_Add_Textt.clicked.connect(lambda: self.plt.add_text(
-            text=self.ui.le_Plot_Text_2.text(), box=self.ui.cb_Text_Box.currentText(),
-            size=self.ui.sb_Annotation_Text_Size.value(), rotation=self.ui.sb_Rotation.value(),
-            xycoords='axes fraction'))
-
-        # plot axvline
-        self.ui.pb_Add_Vline.clicked.connect(lambda: self.plt.add_axvline(self.ui.dsb_Axvline_X.value()))
-
-        # add rectangular patch
-        self.ui.pb_Add_Patch.clicked.connect(lambda: self.plt.add_patch(
-            (self.ui.le_Patch_Pos_X.text(), self.ui.le_Patch_Pos_Y.text()), self.ui.le_Patch_Size_A.text(),
-            self.ui.le_Patch_Size_B.text(),
-            self.ui.cb_Patch_Type.currentText().lower()))
-
-        # switch axis
-        self.ui.cb_Active_Axis.currentTextChanged.connect(lambda: self.switch_axis())
-
-        # frequently used plot labels combobox signal
-        # self.ui.ccb_Freq_Used_Xlabel.currentTextChanged.connect(lambda: self.le_Xlabel.setText(
-        #     self.ui.ccb_Freq_Used_Xlabel.currentText()))
-        # self.ui.ccb_Freq_Used_Ylabel.currentTextChanged.connect(lambda: self.le_Ylabel.setText(
-        #     self.ui.ccb_Freq_Used_Ylabel.currentText()))
-
-        self.ui.ccb_Operation_Points.currentTextChanged.connect(
-            lambda: self.operation_points_selection(self.ui.ccb_Operation_Points.currentText()))
-
-        # change plot mode to draw
-        self.ui.cb_Draw.stateChanged.connect(lambda: self.plt.change_plot_mode(self.ui.cb_Draw.checkState()))
-
     def initUI(self):
         # self.createPlotTypeWidget()
         self.ui.w_Custom_Color.hide()
@@ -651,7 +665,7 @@ class PlotControl:
         self.ui.w_Machines_View.hide()
 
         self.populate_plot_elements_table()
-        self.set_latex_text_color()
+        # self.set_latex_text_color()
 
     def plot(self):
         # try:
@@ -677,7 +691,6 @@ class PlotControl:
                 pass
             else:
                 self.make_other_plot(key)
-
         # toggle axis labels
         self.toggle_axis_labels()
 
@@ -710,9 +723,9 @@ class PlotControl:
 
         # plot thresholds if threshold is checked
         if self.ui.cb_Longitudinal_Threshold.checkState() == 2:
-            self.calc_limits('monopole')
+            self.calc_limits('monopole', self.ui.ccb_Operation_Points.currentText())
         if self.ui.cb_Transverse_Threshold.checkState() == 2:
-            self.calc_limits('dipole')
+            self.calc_limits('dipole', self.ui.ccb_Operation_Points.currentText())
 
         self.update_labels()
         self.fig.canvas.draw_idle()
@@ -858,7 +871,7 @@ class PlotControl:
                     xr = np.array(xr)*scaleX
                     # scale y axis]
                     # y = [a * scaleY for a in y]
-                    y = np.array(y)*scaleX
+                    y = np.array(y)*scaleY
 
                     # set global frequency only if the impedance magnitude is requested
                     self.freq_glob = xr
@@ -888,9 +901,9 @@ class PlotControl:
                         plt.show()
 
                     # scale x axis]
-                    xr = [a * scaleX for a in xr]
+                    xr = np.array(xr)*scaleX
                     # scale y axis]
-                    y = [a * scaleY for a in y]
+                    y = np.array(y)*scaleY
 
                     # reset global frequency if the impedance magnitude is not requested
                     self.freq_glob = []
@@ -969,7 +982,7 @@ class PlotControl:
                     xr = np.array(xr)*scaleX
                     # scale y axis]
                     # y = [a * scaleY for a in y]
-                    y = np.array(y)*scaleX
+                    y = np.array(y)*scaleY
 
                     # set global frequency only if the impedance magnitude is requested
                     self.freq_glob = xr
@@ -977,9 +990,9 @@ class PlotControl:
                     xr, y, _ = abci_data_trans.get_data(request)
 
                     # scale x axis]
-                    xr = [a * scaleX for a in xr]
+                    xr = np.array(xr)*scaleX
                     # scale y axis]
-                    y = [a * scaleY for a in y]
+                    y = np.array(y)*scaleY
 
                     # reset global frequency if the impedance magnitude is not requested
                     self.freq_glob = []
@@ -1380,7 +1393,10 @@ class PlotControl:
                         self.other_data_filtered = self.other_data[key][id_][
                             self.other_data[key][id_][filter_[0]] == value]
 
+                    # convert column names to string
+                    self.other_data_filtered.columns = self.other_data_filtered.columns.astype(str)
                     x_data = [a * scaleX for a in self.other_data_filtered[requestX].tolist()]
+
                     self.freq_glob = x_data
                     for j in range(len(requestY)):
                         y = [a * scaleY for a in self.other_data_filtered[requestY[j]].tolist()]
@@ -1661,57 +1677,51 @@ class PlotControl:
                 self.ui.le_Beta_XY.setText(f'{list(self.operation_points.loc["beta_xy [m]", cols])}')
                 self.ui.le_N_Cav.setText(f'{list(self.operation_points.loc["N_c []", cols])}')
 
-    def calc_limits(self, mode, selection=None):
+    def calc_limits(self, mode, selection):
         if self.operation_points is not None:
             if len(self.freq_glob) > 0:
                 if self.ui.cb_Longitudinal_Threshold.checkState() == 2 or \
                         self.ui.cb_Transverse_Threshold.checkState() == 2:
-                    E0 = [45.6, 80, 120, 182.5]  # [GeV] Energy
-                    nu_s = [0.025, 0.0506, 0.036, 0.087]  # Synchrotron oscillation tune
-                    I0 = [1400, 135, 26.7, 5]  # [mA] Beam current5.4 * 2
-                    alpha_c = [1.48, 1.48, 0.73, 0.73]  # [10−5] Momentum compaction factor
-                    tau_z = [424.6, 78.7, 23.4, 6.8]  # [ms] Longitudinal damping time
-                    tau_xy = [849.2, 157.4, 46.8, 13.6]  # [ms] Transverse damping time
-                    f_rev = [3.07, 3.07, 3.07, 3.07]  # [kHz] Revolution frequency
-                    beta_xy = 50
-                    n_cav = [56, 112, 128, 140]  # 1_2_2_25
+                    # E0 = [45.6, 80, 120, 182.5]  # [GeV] Energy
+                    # nu_s = [0.025, 0.0506, 0.036, 0.087]  # Synchrotron oscillation tune
+                    # I0 = [1400, 135, 26.7, 5]  # [mA] Beam current5.4 * 2
+                    # alpha_c = [1.48, 1.48, 0.73, 0.73]  # [10−5] Momentum compaction factor
+                    # tau_z = [424.6, 78.7, 23.4, 6.8]  # [ms] Longitudinal damping time
+                    # tau_xy = [849.2, 157.4, 46.8, 13.6]  # [ms] Transverse damping time
+                    # f_rev = [3.07, 3.07, 3.07, 3.07]  # [kHz] Revolution frequency
+                    # beta_xy = 50
+                    # n_cav = [56, 112, 128, 140]  # 1_2_2_25
 
-                    if selection is None or selection == '':
-                        if self.operation_points.empty:
-                            pass
-                        else:
-                            E0 = list(self.operation_points.loc["E [GeV]"])
-                            nu_s = list(self.operation_points.loc["nu_s []"])
-                            I0 = list(self.operation_points.loc["I0 [mA]"])
-                            alpha_c = list(self.operation_points.loc["alpha_p [1e-5]"])
-                            tau_z = list(self.operation_points.loc["tau_z [ms]"])
-                            tau_xy = list(self.operation_points.loc["tau_xy [ms]"])
-                            f_rev = list(self.operation_points.loc["f_rev [kHz]"])
-                            beta_xy = list(self.operation_points.loc["beta_xy [m]"])
-                            n_cav = list(self.operation_points.loc["N_c []"])
-                    else:
-                        cols = selection.split(', ')
-                        E0 = list(self.operation_points.loc["E [GeV]", cols])
-                        nu_s = list(self.operation_points.loc["nu_s []", cols])
-                        I0 = list(self.operation_points.loc["I0 [mA]", cols])
-                        alpha_c = list(self.operation_points.loc["alpha_p [1e-5]", cols])
-                        tau_z = list(self.operation_points.loc["tau_z [ms]", cols])
-                        tau_xy = list(self.operation_points.loc["tau_xy [ms]", cols])
-                        f_rev = list(self.operation_points.loc["f_rev [kHz]", cols])
-                        beta_xy = list(self.operation_points.loc["beta_xy [m]", cols])
-                        n_cav = list(self.operation_points.loc["N_c []", cols])
+                    # if selection is None or selection == '':
+                    #     if self.operation_points.empty:
+                    #         pass
+                    #     else:
+                    #         E0 = list(self.operation_points.loc["E [GeV]"])
+                    #         nu_s = list(self.operation_points.loc["nu_s []"])
+                    #         I0 = list(self.operation_points.loc["I0 [mA]"])
+                    #         alpha_c = list(self.operation_points.loc["alpha_p [1e-5]"])
+                    #         tau_z = list(self.operation_points.loc["tau_z [ms]"])
+                    #         tau_xy = list(self.operation_points.loc["tau_xy [ms]"])
+                    #         f_rev = list(self.operation_points.loc["f_rev [kHz]"])
+                    #         beta_xy = list(self.operation_points.loc["beta_xy [m]"])
+                    #         n_cav = list(self.operation_points.loc["N_c []"])
+                    # else:
+                    cols = selection.split(', ')
+                    E0 = list(self.operation_points.loc["E [GeV]", cols])
+                    nu_s = list(self.operation_points.loc["nu_s []", cols])
+                    I0 = list(self.operation_points.loc["I0 [mA]", cols])
+                    alpha_c = list(self.operation_points.loc["alpha_p [1e-5]", cols])
+                    tau_z = list(self.operation_points.loc["tau_z [ms]", cols])
+                    tau_xy = list(self.operation_points.loc["tau_xy [ms]", cols])
+                    f_rev = list(self.operation_points.loc["f_rev [kHz]", cols])
+                    beta_xy = list(self.operation_points.loc["beta_xy [m]", cols])
+                    n_cav = list(self.operation_points.loc["N_c []", cols])
 
                     unit = {'MHz': 1e6,
                             'GHz': 1e9}
 
                     Z_list, ZT_le = [], []
                     if mode == 'monopole':
-                        # trim f
-                        # f_list = f_list[0:len(f_list) - 100]
-                        # f_list = self.freq_glob[0:len(self.freq_glob)]
-
-                        # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
-
                         f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
                                              self.ui.dsb_Frange_Max.value(),
                                              num=1000) * unit[self.ui.cb_Frange_Unit.currentText()]
@@ -1731,7 +1741,7 @@ class PlotControl:
                             # but the values printed on the line editor are for one cavity
                             self.plot_baselines(f_list / unit[self.ui.cb_Frange_Unit.currentText()],
                                                 self.ui.sb_Ncav_per_Mod.value() * np.array(Z_list) * 1e-3,
-                                                mode, labels=selection.split(', '))  # to kOhm
+                                                mode, labels=cols)  # to kOhm
 
                             self.ui.le_Zth_Long.setText(f"[{Z_le}]")
                         except ZeroDivisionError:
@@ -1739,9 +1749,6 @@ class PlotControl:
                         return f_list, Z_list
 
                     elif mode == 'dipole':
-                        # f_list = self.freq_glob[0:len(self.freq_glob)]
-                        # f_list = np.linspace(0, self.freq_glob[-1], num=1000)
-
                         f_list = np.linspace(self.ui.dsb_Frange_Min.value(),
                                              self.ui.dsb_Frange_Max.value(),
                                              num=1000) * unit[self.ui.cb_Frange_Unit.currentText()]
@@ -1757,7 +1764,7 @@ class PlotControl:
                             self.ui.le_Zth_Trans.setText(f"[{ZT_le}]")
                             self.plot_baselines(f_list / unit[self.ui.cb_Frange_Unit.currentText()],
                                                 self.ui.sb_Ncav_per_Mod.value() * np.array(Z_list) * 1e-3,
-                                                mode, labels=selection.split(', '))  # to kOhm
+                                                mode, labels=cols)  # to kOhm
 
                         except ZeroDivisionError:
                             print("ZeroDivisionError, check input")
@@ -1770,6 +1777,62 @@ class PlotControl:
             print("Please load a valid operation point(s) file.")
 
     def plot_baselines(self, f_list, Z_list, mode, labels):
+        if mode == 'monopole':
+            # plot baselines
+            for i, (z, lab) in enumerate(zip(Z_list, labels)):
+                if f'{lab}_line' not in self.baseline_line_objects['longitudinal'].keys():
+                    aa = self.ax.plot(f_list, z, ls='--', c='k')
+
+                    # keep record
+                    self.baseline_line_objects['longitudinal'][f'{lab}_line'] = aa[0]
+
+            for i, (z, lab) in enumerate(zip(Z_list, labels)):
+                if f'{lab}_label' not in self.baseline_line_objects['longitudinal'].keys():
+                    pos = self.plt.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
+                    indx = np.argmin(abs(f_list - pos[0]))
+                    x, y = self.plt.axis_data_coords_sys_transform(self.ax, f_list[indx], z[indx], True)
+
+                    labe = lab.split('_')
+                    if len(labe) > 1:
+                        txt = r"$\mathrm{" + fr"{lab.split('_')[0]}_" + "\mathrm{" + fr"{lab.split('_')[1]}" + r"}}$"
+                    else:
+                        txt = r"$\mathrm{" + fr"{lab}" + r"}$"
+
+                    ab = self.plt.add_text(txt, box="Square", xy=(x, y), xycoords='axes fraction', size=14)
+
+                    # keep record
+                    self.baseline_line_objects['longitudinal'][f'{lab}_label'] = ab
+        else:
+            # plot baselines
+            for i, (z, lab) in enumerate(zip(Z_list, labels)):
+                if f'{lab}_line' not in self.baseline_line_objects['transversal'].keys():
+                    aa = self.ax.axhline(z, ls='--', c='k')
+                    # keep record
+                    self.baseline_line_objects['transversal'][f'{lab}_line'] = aa
+
+            for i, (z, lab) in enumerate(zip(Z_list, labels)):
+                if f'{lab}_label' not in self.baseline_line_objects['transversal'].keys():
+                    pos = self.plt.axis_data_coords_sys_transform(self.ax, 0.01, 0.5)
+                    # pos2 = self.axis_data_coords_sys_transform(self.ax, pos[0], pos[1], True)
+                    indx = np.argmin(abs(f_list - pos[0]))
+                    x, y = self.plt.axis_data_coords_sys_transform(self.ax, f_list[indx], z, True)
+
+                    labe = lab.split('_')
+                    if len(labe) > 1:
+                        txt = r"$\mathrm{" + fr"{lab.split('_')[0]}_" + "\mathrm{" + fr"{labels[i].split('_')[1]}" + r"}}$"
+                    else:
+                        txt = r"$\mathrm{" + fr"{lab}" + r"}$"
+
+                    ab = self.plt.add_text(txt, box="Square", xy=(x, y), xycoords='axes fraction', size=14)
+
+                    # keep record
+                    self.baseline_line_objects['transversal'][f'{lab}_label'] = ab
+
+        self.ax.autoscale(True, axis='y')
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+
+    def plot_baselines_bands(self, f_list, Z_list, mode, labels):
         if mode == 'monopole':
             # plot baselines
             for i, z in enumerate(Z_list):
@@ -1830,6 +1893,30 @@ class PlotControl:
         self.fig.canvas.flush_events()
 
     def remove_baselines(self):
+        if self.ui.cb_Longitudinal_Threshold.checkState() == 0:
+            for line in self.baseline_line_objects['longitudinal'].values():
+                if line in self.ax.get_lines():
+                    line.remove()
+
+                if line in self.ax.findobj():
+                    line.remove()
+            self.baseline_line_objects['longitudinal'].clear()
+
+        if self.ui.cb_Transverse_Threshold.checkState() == 0:
+            for line in self.baseline_line_objects['transversal'].values():
+                if line in self.ax.get_lines():
+                    line.remove()
+
+                if line in self.ax.findobj():
+                    line.remove()
+            self.baseline_line_objects['transversal'].clear()
+
+        self.ax.autoscale(True, axis='y')
+        self.ax.relim()
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+
+    def remove_baselines_bands(self):
         for line in self.baseline_line_objects:
             if line in self.ax.get_lines():
                 line.remove()
