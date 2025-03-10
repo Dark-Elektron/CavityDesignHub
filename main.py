@@ -52,7 +52,7 @@ from utils.shared_functions import animate_width, f2b_slashes
 # C:\Users\sosoho\anaconda3\envs\PhD\Scripts\pyrcc5 qss/icons.qrc -o icons_rc.py
 # git push -f  https://github.com/Dark-Elektron/CavityDesignHub.git master
 # git push https://github.com/Dark-Elektron/CavityDesignHub.git master
-# sphinx-autobuild ./source ./_build/html
+# sphinx-autobuild ./source ./build/html
 # sphinx-apidoc -o source .. -f
 # make html
 

@@ -11,15 +11,15 @@ class ABCIGeometry(Geometry):
     def __init__(self):
         super().__init__()
 
-        # create node_editor folder on initialisation
-        self.L_all = None
-        self.abci = None
-        path = os.getcwd()
-        path = os.path.join(path, "node_editor")
-        if os.path.exists(path):
-            pass
-        else:
-            os.mkdir(path)
+        # # create node_editor folder on initialisation
+        # self.L_all = None
+        # self.abci = None
+        # path = os.getcwd()
+        # path = os.path.join(path, "node_editor")
+        # if os.path.exists(path):
+        #     pass
+        # else:
+        #     os.mkdir(path)
 
         self.fid = 0
         # initiate codes
