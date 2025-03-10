@@ -4,10 +4,11 @@ import shutil
 from distutils import dir_util
 import matplotlib as mpl
 import numpy as np
-import oapackage
+# import oapackage
 import pandas as pd
 from icecream import ic
 from matplotlib import pyplot as plt
+from paretoset import paretoset
 from scipy.interpolate import griddata
 from scipy.stats import qmc
 
@@ -400,22 +401,37 @@ class GA:
         df = pd.DataFrame.from_dict(data)
         return df
 
-    @staticmethod
-    def pareto_front(df):
+    # @staticmethod
+    # def pareto_front(df):
+    #
+    #     datapoints = df.loc[:, ['f1', 'f2']] * (-1)
+    #     pareto = oapackage.ParetoDoubleLong()
+    #     # ic(datapoints)
+    #     for ii in range(0, datapoints.shape[0]):
+    #         w = oapackage.doubleVector(tuple(datapoints.iloc[ii].values))
+    #         pareto.addvalue(w, ii)
+    #     # pareto.show(verbose=1)  # Prints out the results from pareto
+    #
+    #     lst = pareto.allindices()  # the indices of the Pareto optimal designs
+    #     poc = len(lst)
+    #     reorder_idx = list(lst) + [i for i in range(len(df)) if i not in lst]
+    #
+    #     return reorder_idx, poc, lst
+
+    def pareto_front(self, df):
+        # datapoints = np.array([reverse_list(x), reverse_list(y), reverse_list(z)])
+        # reverse list or not based on objective goal: minimize or maximize
+        # datapoints = [self.negate_list(df.loc[:, o[1]], o[0]) for o in self.objectives]
 
         datapoints = df.loc[:, ['f1', 'f2']] * (-1)
-        pareto = oapackage.ParetoDoubleLong()
-        # ic(datapoints)
-        for ii in range(0, datapoints.shape[0]):
-            w = oapackage.doubleVector(tuple(datapoints.iloc[ii].values))
-            pareto.addvalue(w, ii)
-        # pareto.show(verbose=1)  # Prints out the results from pareto
+        bool_array = paretoset(datapoints)  # the indices of the Pareto optimal designs
+        lst = np.where(bool_array)[0]
+        self.poc = len(lst)
 
-        lst = pareto.allindices()  # the indices of the Pareto optimal designs
-        poc = len(lst)
         reorder_idx = list(lst) + [i for i in range(len(df)) if i not in lst]
 
-        return reorder_idx, poc, lst
+        # return [optimal_datapoints[i, :] for i in range(datapoints.shape[0])]
+        return reorder_idx, lst
 
     def recursive_save(self, df, filename, pareto_index, poc):
         styler = self.color_pareto(df, poc)
