@@ -13,6 +13,8 @@ PhD_Thesis
 exe/own_exe
 manual_run/slans/Cavity
 dist
+docs/build
+docs/_build
 utils/multipacting_codes
 __pycache__/
 .idea
